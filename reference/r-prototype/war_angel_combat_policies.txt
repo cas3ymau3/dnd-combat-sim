@@ -1,0 +1,250 @@
+COMBAT POLICIES
+
+General rules/updates 
+ - note that we automatically miss if we roll a natural 1, regardless of whether the total 
+   is greater than enemy AC 
+ - note that spell damage from true-strike and wrathful smite is doubled on critical hits 
+ - note that if an enemy has the vexed condition, our next attack roll against them is made with 
+   advantage 
+ - note that if an enemy has the sap condition, their next attack roll against us has disadvantage
+   (this is irrelevant since we aren't currently modeling incoming damage) 
+ - mechanically, guided strike adds +10 to an attack roll when triggered and we only use it (expend
+   a charge) if doing so would change a miss into a hit 
+ - make 1 attack of opportunity per combat; at the start of each combat, randomly select whether this 
+   attack occurs: (i) before our turn-01, (ii) between our turn-01 and our turn-02, (iii) between our turn-02 and our turn-03
+   (iv) between our turn-03 and our turn-04 and (v) after our turn-04
+
+Level-01 Combat Policy 
+ - use rapier as weapon = 1d8 + DEX + dueling bonus (2) on hit
+ - rapier weapon mastery means each attack applies vex status on hit 
+ - make 1 attack with the attack action our turn 
+ - policy is the same in all 4 combats per day and in all 4 turns of each combat 
+
+Level-02 Combat Policy 
+ - get pact of the blade, allowing us to use CHA for weapon attacks 
+ - use longsword as weapon = 1d8 + CHA + dueling (2) on hit 
+ - longsword weapon mastery means we apply sap on enemy on hit, but no longer benefit from vex 
+ - make 1 attack with the attack action on our turn 
+ - policy is the same in all 4 combats per day and in all 4 turns of each combat 
+
+Level-03 Combat Policy 
+ - identical to level-02 combat policy 
+
+Level-04 Combat Policy 
+ - identical to level-02 combat policy 
+
+Level-05 Combat Policy 
+ - use longsword as weapon = 1d8 + CHA + dueling (2) on hit 
+ - cast true-strike with action each turn, dealing weapon damage + 1d6 on hit  
+ - use war priest to make BA weapon attacks whenever charges are available 
+ - assume 1/3 probability of having a +1 magic weapon (resolve at the start of each combat)
+ - use guided strike a maximum of once in combat 1
+ - in combats 2, 3, 4, use guided strike on any miss it would change to a hit, if charges avail
+ 
+Level-06 Combat Policy 
+ - use longsword as weapon = 1d8 + CHA + dueling (2) on hit 
+ - cast true-strike with action each turn, dealing weapon damage + 1d6 on hit  
+ - assume 1/2 probability of having a +1 magic weapon (resolve at the start of each combat)
+ - combat- and turn-specific action economy: 
+   * in combat 1: 
+     + on turn 1: action::true-strike and, on hit, BA::wrathful-smite (use pact magic slot) 
+     + on turns 2-4: action::true-strike + BA::war-priest
+     + use guided strike a maximum of once in this combat 
+   * in combat 2: 
+     + if magic weapon is active:
+       - on turn 1: action::true-strike and, on hit, BA::wrathful-smite (use pact magic slot) 
+       - on turns 2-4: action::true-strike + BA::war-priest
+       - exception: on turns 2-4 if we crit with our true-strike attack, use BA to do wrathful smite instead of war priest 
+       - guided strike on any miss it would change to a hit, if charges avail
+     + if magic weapon is not active: 
+       - do: action::true-strike and, on hit BA::wrathful-smite every turn 
+       - for wrathful smite: use pact magic slot, then free-cast, then cleric slots 
+       - use guided strike on any miss it would change to a hit if charges avail 
+   * in combat 3: 
+     + if any war priest charges available, do: action::true-strike + BA::war-priest 
+     + once all war priest charges are expended, do: action::true-strike and, on hit, BA::wrathful-smite 
+     + exception: if we crit with our true-strike attack roll, use wrathful smite instead of war priest even if charges available
+     + for wrathful smite: use pact magic slot (if avail), then free-cast (if avail), then cleric slots
+     + use guided strike on any miss it would change to a hit if charges avail      
+   * in combat 4: 
+     + on turn 1: action::true-strike + BA::wrathful-smite (use pact magic slot) 
+     + on turns 2-4: action::true-strike + BA::war-priest
+     + use guided strike on any miss it would change to a hit if charges avail 
+
+Level-07 Combat Policy 
+ - use longsword as weapon = 1d8 + CHA + dueling (2) on hit 
+ - cast true-strike with action each turn, dealing weapon damage + 1d6 on hit  
+ - assume 1/2 probability of having a +1 magic weapon (resolve at the start of each combat)
+ - combat- and turn-specific action economy: 
+   * in combat 1: 
+     + on turn 1: action-surge::attack(x1) + action::true-strike and, on hit, BA::wrathful-smite (use pact magic slot) 
+     + on turns 2-4: action::true-strike + BA::war-priest
+     + use guided strike a maximum of once in this combat 
+   * in combat 2: 
+     + if magic weapon is active:
+       - on turn 1: action-surge::attack(x1) + action::true-strike and, on hit, BA::wrathful-smite (use pact magic slot) 
+       - on turns 2-4: action::true-strike + BA::war-priest
+       - exception: on turns 2-4 if we crit with our true-strike attack, use BA to do wrathful smite instead of war priest 
+       - guided strike on any miss it would change to a hit, if charges avail
+     + if magic weapon is not active: 
+       - do: action::true-strike and, on hit BA::wrathful-smite every turn 
+       - for wrathful smite: use pact magic slot, then free-cast, then cleric slots 
+       - use guided strike on any miss it would change to a hit if charges avail 
+   * in combat 3: 
+     + if action-surge is available, use it on turn 1 to make an extra attack(x1)
+     + if any war priest charges available, do: action::true-strike + BA::war-priest 
+     + once all war priest charges are expended, do: action::true-strike and, on hit, BA::wrathful-smite every turn
+     + exception: if we crit with an attack roll, use wrathful smite instead of war priest even if charges available
+     + for wrathful smite: use pact magic slot (if avail), then free-cast (if avail), then cleric slots
+     + use guided strike on any miss it would change to a hit if charges avail      
+   * in combat 4: 
+     + on turn 1: action-surge::attack(x1) + action::true-strike + BA::wrathful-smite (use pact magic slot) 
+     + on turns 2-4: action::true-strike + BA::war-priest
+     + use guided strike on any miss it would change to a hit if charges avail 
+
+
+Level-08 Combat Policy 
+ - use longsword as weapon = 1d8 + CHA + dueling (2) on hit 
+ - cast true-strike with action each turn, dealing weapon damage + 1d6 on hit  
+ - new definition: setup attacks = attacks made using action surge or war priest that we make *before&* we use true-strike; 
+                   we apply brutality::bluff to these attacks to give ourselves advantage on our true-strike attack rolls 
+ - assume 1/2 probability of having a +1 magic weapon (resolve at the start of each combat)
+ - note we can only use brutality::bluff a maximum of once per turn
+ - combat- and turn-specific action economy: 
+   * In combat 1
+     + on round 1: action-surge::attack(x1)_{brutality::bluff} + action::true-strike and, on hit, BA::wrathful-smite (use pact magic slot)
+     + on rounds 2-4: BA::war-priest_{brutality::bluff} + action::true-strike 
+     + use brutality::bluff if we hit with attack of opportunity
+     + use guided strike a maximum of once in this combat
+     + on turns 01 and 02, only use guided strike on setup attacks (action-surge/war priest) 
+     + on turns 03 and 04, can use guided strike on any miss (incl. true-strike) if still haven't used a charge 
+   * in combat 2: 
+     + if magic weapon is active:
+       - on turn 1: action-surge::attack(x1)_{brutality::bluff} + action::true-strike and, on hit, BA::wrathful-smite (use pact magic slot)
+       - on turns 2-4: BA::war-priest_{brutality::bluff} + action::true-strike 
+       - use brutality::bluff if we hit with attack of opportunity
+       - on turns 01 and 02, only use guided strike on setup attacks (action-surge/war priest) 
+       - on turns 03 and 04, can use guided strike on any miss (incl. true-strike) 
+       - use guided strike a maximum of once per turn, but no restriction on number of uses per combat
+     + if magic weapon is not active: 
+       - do: action::true-strike and, on hit BA::wrathful-smite every turn 
+       - for wrathful smite: use pact magic slot, then free-cast, then cleric slots 
+       - don't use any charges of brutality::bluff 
+       - use guided strike a maximum of once in this combat 
+   * in combat 3: 
+     + if action-surge is available at start of combat: 
+       - turn 1: action-surge::attack(x1)_{brutality::bluff} + action::true-strike and, on hit, BA::wrathful-smite
+       - turns 2-4: BA::war-priest_{brutality::bluff} + action::true-strike 
+       - use brutality::bluff if we hit with attack of opportunity
+       - use guided strike on any miss it would change to a hit if charges avail  
+       - use guided strike a maximum of once per turn, but no restriction on number of uses per combat
+     + if we have no available uses of action-surge at the start of combat: 
+       - do: action::true-strike and, on hit BA::wrathful-smite every turn 
+       - for wrathful smite: use pact magic slot, then free-cast, then cleric slots 
+       - use brutality::bluff on any hit until we have no more charges available 
+       - use guided strike on any miss it would change to a hit if charges avail 
+       - use guided strike a maximum of once per turn, but no restriction on number of uses per combat
+   * In combat 4
+     + on round 1: action-surge::attack(x1)_{brutality::bluff} + action::true-strike and, on hit, BA:wrathful-smite (use pact magic slot)
+     + on rounds 2-4: BA::war-priest_{brutality::bluff} + action::true-strike 
+     + use brutality::bluff if we hit with attack of opportunity
+     + use guided strike on any miss it would change to a hit if charges avail  
+     + use guided strike a maximum of once per turn, but no restriction on number of uses per combat
+
+
+Level-09 Combat Policy 
+ - exact same policy as level-08 with one modification: 
+ - in combat 2, if magic weapon is not active, use up to 2 charges of brutality::bluff (on hit with either true-strike or attack of opportunity)
+
+
+Level-10 Combat Policy
+ - general rules/notes
+   * use longsword as weapon = 1d8 + CHA + dueling (2) on hit
+   * assume 1/2 probability of having a +1 magic weapon (resolve at the start of each combat)
+   * no longer use true strike, instead we use our action every turn to take the attack action and make two weapon attacks, dealing weapon damage on each hit
+   * note we can use our BA in between the first and second attack granted by the attack action and/or between the first and second attack granted by action surge 
+   * no longer make `setup attacks'; now we do action::attack(x2) first thing on each our turns, then, if we are using it, make attacks with action surge and then, 
+     if we are using it, make a BA weapon attack using war priest. If we are using our BA to do wrathful smite, we use it after our first successful hit with a 
+     weapon attack on our turn. 
+   * use brutality::bluff on the first hit each turn in combats 1, 4, and in combat 2 if we have magic weapon active 
+   * use brutality::bluff on the first hit each turn in combat 3 until all brutality charges are expended 
+   * note we can only use brutality::bluff a maximum of once per turn
+ - combat- and turn-specific action economy: 
+   * In combat 1:
+     + turn 1: action::attack(x2) + action-surge::attack(x2) + (on first hit) BA::wrathful-smite (use pact magic slot)
+     + turns 2, 3, and 4: action::attack(x2) + (on first hit) BA::war-priest
+     + use brutality::bluff if we hit with attack of opportunity
+     + use guided-strike a maximum of 1 time this combat, on first miss it would change to a hit 
+   * in combat 2: 
+     + if magic weapon is active:
+       - turn 1: action::attack(x2) + action-surge::attack(x2) + (on first hit) BA::wrathful-smite (use pact magic slot)
+       - turns 2, 3, and 4: action::attack(x2) + (on first hit) BA::war-priest
+       - use brutality::bluff if we hit with attack of opportunity
+       - use guided strike on any miss it would change to a hit if charges avail  
+       - use guided strike a maximum of once per turn, but no restriction on number of uses per combat
+     + if magic weapon is not active: 
+       - do: action::attack(x2) + (on first hit) BA::wrathful-smite on every turn 
+       - for wrathful smite: use pact magic slot, then free-cast, then cleric slots 
+       - don't use any charges of brutality::bluff 
+       + use guided-strike a maximum of 1 time this combat, on first miss it would change to a hit 
+   * in combat 3: 
+     + if action-surge is available at start of combat: 
+       - turn 1: action::attack(x2) + action-surge::attack(x2) + (on first hit) BA::wrathful-smite (use pact magic slot)
+       - turns 2-4: action::attack(x2) + (on first hit) BA::war-priest
+       - use brutality::bluff if we hit with attack of opportunity
+       - use guided strike on any miss it would change to a hit if charges avail  
+       - use guided strike a maximum of once per turn, but no restriction on number of uses per combat
+     + if we have no available uses of action-surge at the start of combat: 
+       - do: action::attack(x2) + (on first hit) BA::wrathful-smite on every turn 
+       - for wrathful smite: use pact magic slot, then free-cast, then cleric slots  
+       - use guided strike on any miss it would change to a hit if charges avail 
+       - use guided strike a maximum of once per turn, but no restriction on number of uses per combat
+
+
+Level-11 Combat Policy 
+ - identical to level-10 combat policy 
+
+Level-12 Combat Policy 
+ - nearly identical to level-11 combat policy with one exception 
+ - exception: 
+   * instead of: assume 1/2 probability of having a +1 magic weapon (resolve at the start of each combat)
+   * replace with: we have always have at least a +1 magic weapon; assume 1/2 probability of having a +2 magic weapon (resolve at the start of each combat)
+ - then, update the conditional logic for combat 2 accordingly. Now the conditions depend on whether or not we have a +2 magic weapon active 
+ 
+Level-13 Combat Policy 
+ - we have always have at least a +1 magic weapon; assume 3/4 probability of having a +2 magic weapon (resolve at the start of each combat)
+ - default: use brutality bluff on first hit each round (subject to further gating) 
+ - default: use brutality bluff when we hit with attacks of opportunity (subject to further gating) 
+ - use guided strike a maximum of once in combat 1
+ - use guided strike a maximum of once in combat 2 if we start combat 2 with 2 or more CD charges 
+ - use guided strike on any applicable misses in combat 3 and combat 4, if any charges remain after creating shield of faith  
+ - always have prefer_smite_on_crit set to FALSE
+ - in round-1 of every combat 
+   * action::bless + BA::channel-divinity::shield-of-faith 
+   * for casting bless, first use pact magic slot, then first level cleric slots (cler1)
+ - in round 1 of combat 1, combat 4, combat 2 if we have a +2 magic weapon, and combat 3 if we still have action surge charges available
+   * use action surge to make 2 attacks 
+ - on rounds 2, 3, and 4 of every combat 
+   * use our action to attack, i.e., do action::attack(x2)
+ - on rounds 2, 3 and 4 of combat 1, combat 4, and combat 2 if we have a +2 magic weapon
+   * use BA::war-priest 
+ - on rounds 2, 3, and 4 of combat 2 if we only have a +1 magic weapon 
+   * use BA::wrathful smite on our first successful hit
+   * for casting wrathful smite: first use our free cast, then our pact magic spell slot if available, 
+     then our level-1 cleric spell slots (cler1) if available, then our level-2 cleric spell slots (cler2) if available
+   * only use brutality::bluff a maximum of twice during this combat
+ - on rounds 2, 3 and 4 of combat 3 
+   * use BA::war-priest if we have any charges remaining 
+   * use wrathful smite if we don't have any war priest charges and we still have spell slots 
+   * for casting wrathful smite: first use our free cast, then our pact magic spell slot if available, 
+     then our level-1 cleric spell slots (cler1) if available, then our level-2 cleric spell slots (cler2) if available
+
+
+
+
+
+
+
+
+
+

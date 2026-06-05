@@ -1,0 +1,673 @@
+Moniker: The Preservation Outrider
+Classes: Ranger-08 (Hunter), Druid-12 (Circle of Preservation)
+Species: Elf (Wood) 
+ - size: medium 
+ - speed: 30ft 
+ - darkvision: 60ft 
+ - elven lineage (wood): druidcraft, longstrider (lvl-03), pass without trace (lvl-05)
+ - fey ancestry: advantage on saves against charmed
+ - keen senses: proficiency in perception
+ - trance: long rest in 4h; don't sleep 
+Sex: Female 
+Background: Farmer  
+ - ability scores: STR, CON, WIS   
+ - feat: tough
+ - skills: animal handling, nature  
+ - tools: carpenter's tools   
+ - languages: common, common sign language, elvish 
+ - equipment (gold buy): 50gp
+Point-Buy Stats 
+ - STR = 15 (+2) = 17 
+ - DEX = 14
+ - CON = 14
+ - INT = 08 
+ - WIS = 12 (+1) = 13 
+ - CHA = 08
+ASI's/Feats: 
+ - lvl-00: tough
+ - lvl-05: mounted combatant: +1 STR (STR=18)
+ - lvl-08: war-caster: +1 WIS (WIS=14) 
+ - lvl-12: great weapon master: +1 STR (STR=19) 
+ - lvl-16: ASI: +1 STR (STR=20), +1 WIS (WIS=15)
+ - lvl-20: epic boon of fate: +1 WIS (WIS=16)
+Progression Summary: 
+  - lvl-01: ranger-01 --> skill proficiencies, DEX/STR save, weapon prof./mastery, med armor, favored enemy, spellcasting
+  - lvl-02: ranger-01, druid-01 --> druidic, spellcasting, magician
+  - lvl-03: ranger-01, druid-02 --> wild shape, wild companion 
+  - lvl-04: ranger-01, druid-03 (preservation) --> preserved land, frugal casting, circle spells (bless), lvl-02 druid spells (aid, barkskin)
+  - lvl-05: ranger-01, druid-04 (preservation) --> mounted combatant: +1 STR (STR=18) 
+  - lvl-06: ranger-02, druid-04 (preservation) --> fighting-style::protection, deft explorer (expertise)
+  - lvl-07: ranger-03 (hunter), druid-04 (preservation) --> hunter's lore, hunter's prey::colossus-slayer 
+  - lvl-08: ranger-04 (hunter), druid-04 (preservation) --> war-caster: +1 WIS (WIS=14)
+  - lvl-09: ranger-05 (hunter), druid-04 (preservation) --> extra attack, lvl-02 ranger spells (magic weapon)
+  - lvl-10: ranger-05 (hunter), druid-05 (preservation) --> wild resurgence, circle spells, lvl-03 druid spells
+  - lvl-11: ranger-05 (hunter), druid-06 (preservation) --> improved preservation
+  - lvl-12: ranger-05 (hunter), druid-07 (preservation) --> primal strike, circle spells, lvl-04 druid spells 
+  - lvl-13: ranger-05 (hunter), druid-08 (preservation) --> great weapon master: +1 STR (STR=19) 
+  - lvl-14: ranger-06 (hunter), druid-08 (preservation) --> roving 
+  - lvl-15: ranger-07 (hunter), druid-08 (preservation) --> defensive tactics::multiattack.defense
+  - lvl-16: ranger-08 (hunter), druid-08 (preservation) --> ASI: +1 STR (STR=20), +1 WIS (WIS=15)
+  - lvl-17: ranger-08 (hunter), druid-09 (preservation) --> circle spells, lvl-05 druid spells 
+  - lvl-18: ranger-08 (hunter), druid-10 (preservation) --> facilitated restoration 
+  - lvl-19: ranger-08 (hunter), druid-11 (preservation) --> 6th level druid spells (heroes' feast)
+  - lvl-20: ranger-08 (hunter), druid-12 (preservation) --> epic boon of fate: +1 WIS (WIS=16)
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `ranger-druid'
+ - lvl-01: slots = 2; prepared: 2-0; max level: 1-0
+ - lvl-02: slots = 3; prepared: 2-4; max level: 1-1
+ - lvl-03: slots = 4-2; prepared: 2-5; max level: 1-1
+ - lvl-04: slots = 4-3; prepared: 2-6; max level: 1-2
+ - lvl-05: slots = 4-3-2; prepared: 2-7; max level: 1-2
+ - lvl-06: slots = 4-3-2; prepared: 3-7; max level: 1-2
+ - lvl-07: slots = 4-3-3; prepared: 4-7; max level: 1-2
+ - lvl-08: slots = 4-3-3; prepared: 5-7; max level: 1-2
+ - lvl-09: slots = 4-3-3-1; prepared: 6-7; max level: 2-2
+ - lvl-10: slots = 4-3-3-2; prepared: 6-9; max level: 2-3
+ - lvl-11: slots = 4-3-3-3-1; prepared: 6-10; max level: 2-3
+ - lvl-12: slots = 4-3-3-3-2; prepared: 6-11; max level: 2-4
+ - lvl-13: slots = 4-3-3-3-2-1; prepared: 6-12, max level: 2-4
+ - lvl-14: slots = 4-3-3-3-2-1; prepared: 6-12, max level: 2-4 
+ - lvl-15: slots = 4-3-3-3-2-1; prepared: 7-12, max level: 2-4
+ - lvl-16: slots = 4-3-3-3-2-1; prepared: 7-12, max level: 2-4 
+ - lvl-17: slots = 4-3-3-3-2-1-1; prepared: 7-14; max level: 2-5 
+ - lvl-18: slots = 4-3-3-3-2-1-1; prepared: 7-15; max level: 2-5
+ - lvl-19: slots = 4-3-3-3-2-1-1-1; prepared: 7-16; max level: 2-6
+ - lvl-20: slots = 4-3-3-3-2-1-1-1; prepared: 7-16; max level: 2-6
+
+MECHANICAL CONCEPT NOTES
+ - general: we're a STR-based ranger that rides a mount (riding/warhorse); we deal damage through weapon (lance) attacks, augmented by feats 
+   (mounted combatant, GWM), class/subclass features (primal strikes, colossus slayer), spells (bless, magic weapon), and our mount (hooves)
+ - general: we leverage key spells (aid, bless, barkskin), the preservation druid signature feature (preserved land), and protection fighting
+   style to keep our mount alive; as we progress we get other spells to augment its capabilities/flexibility further -- from free casts of 
+   longstrider/pass without trace via elven lineage, all the way up through heroes feast at level-19 to further boost it's HP 
+ - preservation druid frugal casting feature also lets us gain proficiency with smith's tools, which we can use to craft barding for our mount,
+   reducing our reliance on barkskin (though barkskin will still be better until much later levels); in addition, this feature in combination 
+   with war caster will allow us to cast all our ranger/druid spells while we have our hands full with weapons/shields 
+ - in terms of equipment, we go mounted and fight with a lance + shield
+ - as a spellcaster, we are primarily a utility caster and healer; due to overlap between the ranger and druid spell lists, we can build out 
+   higher level spellcasting abilities without losing lower level functionality even as we multiclass. As a result, and because we aren't 
+   relying on spells for damage in combat, we will be able to prepare most/almost all of the good utility spells, including many great rituals
+ - in combat, we aren't a pure DPS. Instead we are a hybrid damage dealer and support caster who uses their first turn in combat to set up 
+   their preserved land feature (as a BA) and casts a support spell requiring concentration (ex. bless) on turn 01 of each combat. 
+
+THEMATIC CONCEPT NOTES: 
+ - TBD
+ - themes (TBD): horses, hunting, tracking, survival, knowledge/understanding of natural environments (ecologist), harmony with nature, 
+                 respect for nature's power/wrath, protection/restoration of sacred natural spaces, anti-urbanism
+ - traits (TBD):  
+
+SYNERGISTIC MAGIC ITEMS: 
+ - common:
+ - uncommon: 
+ - rare: 
+ - very rare: 
+ - legendary: 
+ - artifact: 
+   
+MAX LEVEL MAGIC ITEMS
+- lvl-20 (~6 items, max 1 legendary/artifact) '
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+NOTE: DPR calculations don't, as yet, factor in increased damage from critical hits
+
+#######
+Level-01: Ranger-01
+ - feat: tough 
+   * increase HP by 2x character level (2) and by 2 each time you gain a level    
+ - saving throw proficiencies: STR, DEX   
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * ranger (3): stealth, insight, survival     
+   * farmer (2): animal handling, nature    
+   * wood elf (1): perception
+   * tools (1): carpenter's tools 
+   * languages (3): common, common sign language, elvish  
+ - weapon/armor proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light + medium armor, shields 
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (farmer) + 150gp (ranger)
+   * weapons: lance (10gp), whip (2gp)
+   * armor: chain shirt (50gp), shield (10gp), leather barding (40gp)
+   * tools: none
+   * foci: druidic.focus::sprig.of.mistletoe (1gp)
+   * gear: explorer's pack (10gp), traveler's clothes (2gp), riding horse (75gp)
+   * spare coin: 0gp
+ - combat equipment:
+   * lance = 1d10 piercing (topple); heavy, reach, two-handed (unless mounted) 
+   * whip = 1d4 slashing (slow); finesse, reach   
+   * armor: chain shirt + shield
+   * AC: 13 + 2(DEX) + 2(shield) = 17
+   * mount AC: 11 + 1(DEX) = 12
+ - weapon masteries (2) 
+   * lance (topple), whip (slow) 
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+ - spell slots: 2
+ - spells prepared: ranger (2)
+   * lvl-1 (ranger): goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+    
+NOTE: Start out ranger-01 to get an extra skill proficiency, proficiency in STR and DEX saving throws, martial weapon and medium armor proficiency, weapon mastery, and extra cash from gold buy (150 if we start ranger vs. 50 if we start druid). Use the extra gold to get ourselves a riding horse, some leather barding for the horse, as well as a lance and shield. While riding the mount, we can wield the lance and a shield at the same time. With the barding, the mount's AC is increased to 12 (instead of it's base 11) and it has 13 HP. Take goodberry as a ranger spell so that we can revive the horse easily if it gets downed. For our other ranger spell, take jump so we can cast it on our mount and gain superior mobility. For our secondary weapon, take the whip. This works fine if we get knocked off our horse and can't use the lance. But it also works well on the horse since we can kite in, attack enemies with the whip at range and slow them, then use our mount's movement/dash to get out of range. Works well on enemies that we can't topple. Hunter's mark + the lance is pretty much the best damage you can do at lvl-01. We can also use our mount's action to do its hooves attack for even more damage (+5 to hit, 1d8+3 dmg on hit) if we want to get into melee, and it will have advantage on this attack if we've toppled the target with our lance. In terms of resources, assume we cast goodberry at the end of each adventuring day, and use our other spell slot to cast jump on the horse, meaning we only use hunter's mark with our free casts from favored enemy. At level-01, the average monster has an AC of 13, a +1 CON save (against our DC-13 topple), and a +4 to hit (12 dmg on hit). With a +5 attack bonus, we have a 65% chance to hit and targets will fail against our topple 55% of the time. For now, let's assume that we (i) have hunter's mark active for 1/3 of our attacks, (ii) that we use the horse's hooves attack 50% of the time, and (iii) that we make 4 attacks of opportunity per day (1/2 of them on marked enemies). Then, our estimated DPR calcs to: 
+ (attacks w/hunter's mark) = (1/3)_{HM active}*(20/16)_{attacks per day}*(0.65)*(12) = 3.25
+ (attacks w/o hunter's mark) = (2/3)_{HM inactive}*(20/16)_{attacks per day}*(0.65)*(8.5) = 4.60
+ (hooves, no. adv) = (0.35 + 0.65*0.45)_{miss or hit + no topple}*(0.65*0.5)_{used hooves, hit}*(7.5) = 1.57
+ (hooves, w/adv.) = (0.65*0.55)_{hit + toppled}*(0.8775*0.5)_{used hooves, hit}*(7.5) = 1.18
+ (estimated DPR): 10.60 
+ (HP/THP): 14
+ (Mount HP/THP): 13
+So this is very good. Already in mid B-class for damage in tier-01 (10-13) according to Treantmonk, under what I think are some pretty conservative assumptions. At level-01! Plus we have a functional speed of 60ft when we are mounted, can use jump to boost this even further, and get extra action economy (dash/disengage) via our mount's action. Defensively, we have pretty good AC and can effectively kite dangerous creatures, making us very hard to hit. Overall, we are very strong for level-01. To wrap up, a short note on skill proficiencies. As a mounted character, it's nice that we get animal handling through the farmer background. It depends how DM's manage this, but in general it should help us make skill checks while mounted. Usually, this part of the farmer background sucks, but we actually can make use of it in this build. In addition, getting proficiency in nature and perception from our background + species is super nice, since it means we can take other WIS based skills (insight, survival) and stealth as ranger skill proficiencies. With this, we'll be proficient in all WIS-based skill except for medicine and religion (fine), which is good because it means we can still lean on these skills a fair amount despite our relatively low WIS score. Next, carpenter's tools is actually a decent tool proficiency for a STR-based character, since the tools can be used to seal or pry open a door or container, which can be useful for treasure hunting/exploration. Unfortunately, we didn't have the gold to pick up a set of carpenter's tools at character creation. But they are pretty cheap (8gp) so we should be able to acquire them in short order. And finally, we get stealth because it's very thematic and useful for a tracker/hunter type character, and we won't ever be bumping our DEX (though we will get pass without trace to make ourselves really stealthy when need be). 
+
+
+
+
+#######
+Level-02: Ranger-01, Druid-01
+ - skill/tool proficiencies: 
+   * ranger (3): stealth, insight, survival     
+   * farmer (2): animal handling, nature    
+   * wood elf (1): perception
+   * tools (1): carpenter's tools 
+   * languages (4): common, common sign language, druidic, elvish  
+ - druidic 
+   * add druidic to languages 
+   * can leave coded messages to other druids 
+   * always have speak with animals prepared 
+ - primal order::magician 
+   * learn one extra druid cantrip 
+   * add WIS to arcana and nature checks 
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (2): guidance, message
+   * magician (1): produce flame 
+ - spell slots: 3
+ - spells prepared: ranger (2), druid (4)
+   * lvl-1 (ranger): goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water, detect magic (R), longstrider, protection from evil and good
+   * lvl-1 (druidic): speak with animals (R) 
+    
+NOTE: Level-02 and we go druid-01. We learn druidic, and we get speak with animals which we can use to converse with our mount (nice/thematic) as well as other beasties we encounter. We also get our primal order, and we take magician since we already had martial weapon/medium armor proficiency, gaining us an additional druid cantrip and a bonus to our arcana and nature checks. With magician, we now have a +4 to our nature checks despite only having WIS=13, which is kind of nice/thematic. Main thing we get here is more spellcasting, including 3 cantrips, 4 new druid spells, and another spell slot. For cantrips, we take guidance since it's good and since we can use it to help our mount navigate difficult terrain/maneuvers out of combat. Then we take message for utility (dovetails with our stealth proficiency) and produce flame so we have a source of fire and light. Then for spells, we take create/destroy water, detect magic, longstrider and protection from good and evil. Currently, we lack the spell slots to fully leverage this diverse array of spells. In practice, I think we should use 1 of our slots on goodberry each day, then use 1 for an additional casting of hunter's mark, and leave the last as a flex slot that we can use on jump, longstrider, create/destroy water, or protection from good and evil as needed. In terms of spell selection: jump and longstrider are straightforward buffs that we can apply to our mount and which fit with our mounted character/combat identity. Detect magic is a handy all around utility spell and a ritual. Create/destroy water gives us a way to create water for our mount, and has some interesting utility applications. And PfEG is a nice pick up since it can help prevent our mount from getting charmed or frightened by extraplanar entities, which would nerf us pretty hard in combat. In general, we chose spells that are going to allow us to take care of our horse while we are out adventuring (food, water, fire/light), which is kind of the core of this character concept. And we don't take healing spells yet since we don't have enough spell slots. In terms of DPR, two things change here. First, we get another cast of hunter's mark per day, so let's assume that this means we get the HM bonus on 50% of our attacks. Second, monster AC increases to 14 and the average monster CON save increases to +2. This means ours and our horses chance to hit decreases, as does our chance of successfully toppling enemies with our lance. Factoring in these changes, our new estimated DPR is: 
+ (attacks w/hunter's mark) = (1/2)_{HM active}*(20/16)_{attacks per day}*(0.6)*(12) = 4.5
+ (attacks w/o hunter's mark) = (1/2)_{HM inactive}*(20/16)_{attacks per day}*(0.6)*(8.5) = 3.19
+ (hooves, no. adv) = (0.4 + 0.6*0.5)_{miss or hit + no topple}*(0.6*0.5)_{used hooves, hit}*(7.5) = 1.58
+ (hooves, w/adv.) = (0.6*0.5)_{hit + toppled}*(0.84*0.5)_{used hooves, hit}*(7.5) = 0.95
+ (estimated DPR): 10.22 
+ (HP/THP): 22.5
+ (Mount HP/THP): 13
+Ok so the increased AC and reduced chance of toppling outweighed the gain from one more cast of hunter's mark, resulting in a small drop in DRP here. But it's not a lot, and we're still doing really good damage for tier-01. Plus we just added a bunch of nice utility via additional spellcasting. 
+
+
+
+STOPPED AT LVL-03 
+
+ - wild shape (x2/LR, +1 on SR) 
+   * 4 known forms (<= CR=1/4)
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + octopus = small, 5 speed/30 swim, darkvision (30ft), water breathing, underwater camouflage
+     + panther = medium, 50 speed/40 climb, darkvision (60ft), +6 stealth, pounce + prowl 
+ - wild companion = find familiar (fey) w/o material components using slot or wildshape 
+
+
+
+
+
+###################################################################################################################
+EXTRA NOTES 
+
+
+CONCEPT 
+ - buy a riding horse / warhorse 
+ - go druid-03 (preservation) 
+   * preserved land = use wild shape for BA +1d4+druid-level THP if you end turn there 
+     w/extra mobility of horse, we should be fine 
+   * bonus tool proficiency = smith's tools so we can craft barding for the horse (eventually)
+   * spells: goodberry, jump, longstrider, cure wounds, barkskin
+   * circle spells: bless, sanctuary, lesser restoration, beacon of hope
+   * frugal casting means you can cast druid spells w/o material components
+     this means war-caster will allow us to do all casting with weapon and shield in hand
+ - go ranger-05 (hunter) to get interception/protection, magic weapon, extra attack, colossus slayer 
+ - use shield + lance and use GWM for damage 
+ - go STR-based ranger; take mounted combatant, war-caster, GWM, ASI, and epic boon of fate (+1 WIS) as feats
+ - playstyle: 
+   * damage comes from bless + magic weapon + class/subclass features (HM, primal strikes, colossus slayer) + mounted combat advantage/weapon
+   * we aren't a pure DPS tho, and we spend our first turn setting up a utility/healing spell (ex. bless) + our preserved land feature 
+   * then we just do attack (x2) + BA:spell/effect = jump, sanctuary, use goodberry, move preserved land (etc.)
+   * mount gives us mobility which lets us kite in and out of our preserved land + extra action economy (damage w/hooves/disengage) and, once 
+     we get mounted combatant, advantage on attacks against medium or smaller creatures 
+   * use spells for fortifying HP and utility purposes; choose utility spells in combat to best fit the situation (default is bless) 
+   * keep mount alive with: preserved land, protection fighting style, mounted combatant (veer, leap aside), bless (for saves), aid, barkskin,
+     and barding crafted with smith's tools 
+   * overlapping progression ranger/druid lets us retain lots of out of combat utility spells and helpful rituals
+   
+Species: 
+ - Wood Elf --> gets you longstrider and pass w/o trace for free x1/day
+
+Background: 
+ - Farmer --> gets you tough, STR, WIS ability scores
+
+Point-Buy Stats 
+ - STR = 15 (+2) = 17
+ - DEX = 14
+ - CON = 14 
+ - INT = 08 
+ - WIS = 12 (+1) = 13
+ - CHA = 08
+
+
+#######
+Level-01: Ranger-01
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+ - spell slots: 2
+ - spells prepared: ranger (2)
+   * lvl-1 (ranger): goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+
+#######
+Level-02: Ranger-01, Druid-01
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (2): guidance, message
+   * magician (1): produce flame 
+ - spell slots: 3
+ - spells prepared: ranger (2), druid (4)
+   * lvl-1 (ranger): goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water, detect magic (R), longstrider, protection from evil and good
+   * lvl-1 (druidic): speak with animals (R) 
+
+#######
+Level-03: Ranger-01, Druid-02
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (2): guidance, message
+   * magician (1): produce flame 
+ - spell slots: 4-2
+ - spells prepared: ranger (2), druid (5)
+   * lvl-1 (ranger): goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water, cure wounds, detect magic (R), healing word, protection from evil and good
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR)
+
+#######
+Level-04: Ranger-01, Druid-03 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (2): guidance, message
+   * magician (1): produce flame 
+ - spell slots: 4-3
+ - spells prepared: ranger (2), druid (6)
+   * lvl-1 (ranger): goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water, cure wounds, detect magic (R)
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin
+   * lvl-2 (preservation): lesser restoration, protection from poison
+
+#######
+Level-05: Ranger-01, Druid-04 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-2
+ - spells prepared: ranger (2), druid (7)
+   * lvl-1 (ranger): goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water, cure wounds, detect magic (R)
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin, locate animals and plants (R)
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+
+NOTE: maybe prepare continual flame once for your horse with a hooded lantern so it always has a light source
+
+#######
+Level-06: Ranger-02, Druid-04 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-2
+ - spells prepared: ranger (3), druid (7)
+   * lvl-1 (ranger): cure wounds, goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water, detect magic (R)
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin, locate animals and plants (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+
+#######
+Level-07: Ranger-03 (Hunter), Druid-04 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3
+ - spells prepared: ranger (4), druid (7)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin, beast sense (R), locate animals and plants (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+
+
+#######
+Level-08: Ranger-04 (Hunter), Druid-04 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3
+ - spells prepared: ranger (5), druid (7)
+   * lvl-1 (ranger): cure wounds, detect magic (R), detect poison and disease (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin, beast sense (R), locate animals and plants (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+
+#######
+Level-09: Ranger-05 (Hunter), Druid-04 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-1
+ - spells prepared: ranger (6), druid (7)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin, beast sense (R), locate animals and plants (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): magic weapon, silence (R)
+
+#######
+Level-10: Ranger-05 (Hunter), Druid-05 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-2
+ - spells prepared: ranger (6), druid (9)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin, beast sense (R), locate animals and plants (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): magic weapon, silence (R)
+   * lvl-3 (druid): revivify, water walk (R)
+   * lvl-3 (preservation): beacon of hope, plant growth
+
+#######
+Level-11: Ranger-05 (Hunter), Druid-06 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-3-1
+ - spells prepared: ranger (6), druid (10)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin, beast sense (R), locate animals and plants (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): magic weapon, silence (R)
+   * lvl-3 (druid): aura of vitality, revivify, water walk (R)
+   * lvl-3 (preservation): beacon of hope, plant growth 
+
+#######
+Level-12: Ranger-05 (Hunter), Druid-07 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-3-2
+ - spells prepared: ranger (6), druid (11)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin, beast sense (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): magic weapon, silence (R)
+   * lvl-3 (druid): aura of vitality, revivify, water walk (R)
+   * lvl-3 (preservation): beacon of hope, plant growth 
+   * lvl-4 (druid): fire shield, freedom of movement 
+   * lvl-4 (preservation): aura of life, death ward 
+
+#######
+Level-13: Ranger-05 (Hunter), Druid-08 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: ranger (6), druid (12)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin, beast sense (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): magic weapon, silence (R)
+   * lvl-3 (druid): aura of vitality, revivify, water walk (R)
+   * lvl-3 (preservation): beacon of hope, plant growth 
+   * lvl-4 (druid): fire shield, freedom of movement, locate creature  
+   * lvl-4 (preservation): aura of life, death ward 
+
+#######
+Level-14: Ranger-06 (Hunter), Druid-08 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: ranger (6), druid (12)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): aid, augury (R), barkskin, beast sense (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): magic weapon, silence (R)
+   * lvl-3 (druid): aura of vitality, revivify, water walk (R)
+   * lvl-3 (preservation): beacon of hope, plant growth 
+   * lvl-4 (druid): fire shield, freedom of movement, locate creature  
+   * lvl-4 (preservation): aura of life, death ward 
+
+#######
+Level-15: Ranger-07 (Hunter), Druid-08 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: ranger (7), druid (12)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): augury (R), barkskin, beast sense (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): aid, magic weapon, silence (R)
+   * lvl-3 (druid): aura of vitality, revivify, water walk (R)
+   * lvl-3 (preservation): beacon of hope, plant growth 
+   * lvl-4 (druid): fire shield, freedom of movement, locate creature, polymorph   
+   * lvl-4 (preservation): aura of life, death ward 
+
+#######
+Level-16: Ranger-08 (Hunter), Druid-08 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: ranger (7), druid (12)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): augury (R), barkskin, beast sense (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): aid, magic weapon, silence (R)
+   * lvl-3 (druid): aura of vitality, revivify, water walk (R)
+   * lvl-3 (preservation): beacon of hope, plant growth 
+   * lvl-4 (druid): fire shield, freedom of movement, locate creature, polymorph   
+   * lvl-4 (preservation): aura of life, death ward 
+
+#######
+Level-17: Ranger-08 (Hunter), Druid-09 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-3-2-1-1
+ - spells prepared: ranger (7), druid (14)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): augury (R), barkskin, beast sense (R), locate object
+   * lvl-2 (preservation): lesser restoration, protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): aid, magic weapon, silence (R)
+   * lvl-3 (druid): aura of vitality, revivify, water walk (R)
+   * lvl-3 (preservation): beacon of hope, plant growth 
+   * lvl-4 (druid): fire shield, freedom of movement, locate creature, polymorph   
+   * lvl-4 (preservation): aura of life, death ward 
+   * lvl-5 (druid): antilife shell, commune with nature (R)
+   * lvl-5 (preservation): greater restoration, hallow
+
+NOTE: probably don't need barkskin at this level if we've successfully crafted barding for our horse (AC=18); switch this out for 
+      dispel magic 
+
+#######
+Level-18: Ranger-08 (Hunter), Druid-10 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-3-2-1-1
+ - spells prepared: ranger (7), druid (15)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): augury (R), barkskin, beast sense (R), locate object
+   * lvl-2 (preservation): lesser restoration (free xWIS/LR), protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): aid, magic weapon, silence (R)
+   * lvl-3 (druid): aura of vitality, revivify, water walk (R)
+   * lvl-3 (preservation): beacon of hope, plant growth 
+   * lvl-4 (druid): divination (R), fire shield, freedom of movement, locate creature, polymorph   
+   * lvl-4 (preservation): aura of life, death ward 
+   * lvl-5 (druid): antilife shell, commune with nature (R)
+   * lvl-5 (preservation): greater restoration (free xWIS/LR), hallow
+
+
+#######
+Level-19-20: Ranger-08 (Hunter), Druid-11 (Preservation)
+ - spellcasting 
+ - cantrips:
+   * wood elf (1): druidcraft 
+   * druid (3): guidance, message, spare the dying
+   * magician (1): produce flame 
+ - spell slots: 4-3-3-3-2-1-1-1
+ - spells prepared: ranger (7), druid (16)
+   * lvl-1 (ranger): cure wounds, detect magic (R), goodberry, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (druid): create/destroy water
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (wood elf): longstrider (free x1/LR) 
+   * lvl-1 (preservation): bless, sanctuary 
+   * lvl-2 (druid): augury (R), barkskin, beast sense (R), locate object
+   * lvl-2 (preservation): lesser restoration (free xWIS/LR), protection from poison
+   * lvl-2 (wood elf): pass without trace (free x1/LR)
+   * lvl-2 (ranger): aid, magic weapon, silence (R)
+   * lvl-3 (druid): aura of vitality, revivify, water walk (R)
+   * lvl-3 (preservation): beacon of hope, plant growth 
+   * lvl-4 (druid): divination (R), fire shield, freedom of movement, locate creature, polymorph   
+   * lvl-4 (preservation): aura of life, death ward 
+   * lvl-5 (druid): antilife shell, commune with nature (R)
+   * lvl-5 (preservation): greater restoration (free xWIS/LR), hallow
+   * lvl-6 (druid): heroes' feast (alts: wind walk, transport via plants)
+
+Note: 8th level slot (1) = aid (35 hp)
+      7th level slot (1) = heroes feast (2d10 hp)
+      6th level slot (1) = +3 magic weapon
+      5th level slot (2) = antilife shell, aid (20 hp)
+      4th level slot (3) = aura of life, death ward, fire shield, freedom of movement
+      3rd level slot (3) = +2 magic weapon, aura of vitality, beacon of hope, bless
+      2nd level slot (3) = +1 magic weapon, aid, barkskin, bless 
+      1st level slot (4) = bless, cure wounds, goodberry, jump, longstrider, sanctuary

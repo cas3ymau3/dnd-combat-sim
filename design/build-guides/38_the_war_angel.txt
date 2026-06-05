@@ -1,0 +1,663 @@
+Moniker: The War Angel 
+Classes: Fighter-12 (Gladiator), Warlock-01, Cleric-07 (War)
+Species: Dwarf  
+ - size: medium
+ - speed: 30ft 
+ - darkvision: 120ft 
+ - dwarven resilience: resistance to poison; adv on saves to end/avoid poisoned 
+ - dwarven toughness: +1 to max HP, and +1 HP each time you gain a lvl
+ - stonecunning (PBx/LR): BA tremorsense; range 60ft; dur 10m; have to be on/touching stone to activate
+Sex: Female 
+Background: Wayfarer  
+ - ability scores: DEX, WIS, CHA   
+ - feat (modified): tough
+ - skills: insight, stealth  
+ - tools: thieves' tools  
+ - languages: common, common sign language, dwarvish 
+ - equipment (gold buy): 50gp
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15
+ - CON = 08
+ - INT = 08 
+ - WIS = 15 (+1) = 16 
+ - CHA = 15 (+2) = 17
+ASI's/Feats: 
+ - lvl-00: tough
+ - lvl-06: shadow touched: +1 CHA (CHA=18)
+ - lvl-09: ASI: +2 CHA (CHA=20)
+ - lvl-11: mage slayer: +1 DEX (DEX=16) 
+ - lvl-15: resilient: +1 DEX (DEX=17)
+ - lvl-19: epic boon of speed: +1 DEX (DEX=18)
+Progression Summary: 
+ - lvl-01: fighter-01 --> STR/CON save, dueling, weapon mastery (longsword), second wind
+ - lvl-02: fighter-01, warlock-01 --> true-strike (CHA), pact magic, pact of the blade 
+ - lvl-03: fighter-01, warlock-01, cleric-01 --> thaumaturge, bless, shield of faith 
+ - lvl-04: fighter-01, warlock-01, cleric-02 --> channel divinity (divine spark) 
+ - lvl-05: fighter-01, warlock-01, cleric-03 (war) --> guided strike, war priest, magic weapon, prayer of healing, cantrip scaling
+ - lvl-06: fighter-01, warlock-01, cleric-04 (war) --> shadow touched: +1 CHA (CHA=18), wrathful smite 
+ - lvl-07: fighter-02, warlock-01, cleric-04 (war) --> tactical mind, action surge 
+ - lvl-08: fighter-03 (gladiator), warlock-01, cleric-04 (war) --> brutality, combat theatrics 
+ - lvl-09: fighter-04 (gladiator), warlock-01, cleric-04 (war) --> ASI: +2 CHA (CHA=20)
+ - lvl-10: fighter-05 (gladiator), warlock-01, cleric-04 (war) --> extra attack, tactical shift 
+ - lvl-11: fighter-06 (gladiator), warlock-01, cleric-04 (war) --> mage slayer: +1 DEX (DEX=16) 
+ - lvl-12: fighter-06 (gladiator), warlock-01, cleric-05 (war) --> lvl-03 slots; +2 magic weapon 
+ - lvl-13: fighter-06 (gladiator), warlock-01, cleric-06 (war) --> war god's blessing (shield of faith) 
+ - lvl-14: fighter-07 (gladiator), warlock-01, cleric-06 (war) --> flourish parry 
+ - lvl-15: fighter-08 (gladiator), warlock-01, cleric-06 (war) --> resilient (DEX): +1 DEX (DEX=17)
+ - lvl-16: fighter-09 (gladiator), warlock-01, cleric-06 (war) --> indomitable, tactical master (rapier)
+ - lvl-17: fighter-10 (gladiator), warlock-01, cleric-06 (war) --> bolder brutalities (stagger)
+ - lvl-18: fighter-11 (gladiator), warlock-01, cleric-06 (war) --> extra attack (x2)
+ - lvl-19: fighter-12 (gladiator), warlock-01, cleric-06 (war) --> epic boon of speed: +1 DEX (DEX=18) 
+ - lvl-20: fighter-12 (gladiator), warlock-01, cleric-07 (war) --> blessed strikes::divine strike
+
+MECHANICAL CONCEPT NOTES
+ - go dwarf + tough at character creation in order to be able to dump CON so we can invest in DEX, WIS, AND CHA. 
+ - in general: you are not a true caster; use spells to buff martial abilities, concentrate on spells only when useful, but don't 
+   care if our concentration is broken
+ - start fighter-01 to get CON save proficiency; eventually when we are gaining advantage on saving throws via brutality each turn, 
+   we can concentrate on cleric spells to boost damage; we also get dueling fighting style for a nice damage boost during early levels
+ - immediately take warlock-01 to get pact of the blade and CHA-based true-strike 
+ - then go war cleric and take shadow-touched to get war priest, magic weapon, prayer of healing, and wrathful smite 
+ - we use war priest (w/prayer of healing) + wrathful smite to weaponize our BA; we use magic weapon and dueling 
+   fighting style to boost flat damage from weapon attacks; we also get a bonus to true-strike damage from cantrip scaling which will 
+   help prop up our damage in tier-02 while we're making our way to extra attack; action surge also helps with this. 
+ - with WIS=16, we can use war priest 9x per LR (assuming 1 SR and 1 PoH); with 4 lvl-01 cleric spell slots, plus a pact magic slot 
+   that recovers on a short rest (and with PoH) *and* a free-cast from shadow-touched, we can use wrathful smite up to 8x per LR. 
+   Between this and war priest, we should have a way to weaponize our BA in all 16 rounds of combat/day. Excellent.  
+ - defensively, we go sword and board with medium armor and a 15 DEX to have a respectable 18 AC; if we really need it, we can also 
+   use shield of faith, though we won't be able to concentrate reliably until later levels
+ - At level-08 we get brutality, now we can use a sap weapon (longsword) and also give it the vex property when we attack (with the 
+   bluff option). This also gives us advantage on the next saving throw we make until our next turn, which is a huge defensive buff
+   and one which we can also use to maintain concentration on spells.
+ - With prayer of healing and CHA=20, we can use brutality 15x per LR (assuming 1 short rest and 1 PoH); this is almost every turn
+   So now we should be attacking with a +1 weapon with advantage consistently, and making most saving throws with advantage
+ - Keep going with fighter until fighter-06 to get extra attack and mage slayer (awesome feat + very thematic + synergizes w/prayer of 
+   healing). Once we get extra attack, stop using true-strike. Now that we've capped CHA, all our future feats we put into DEX in order 
+   to boost our DEX save, AC, and initiative. 
+ - After fighter-06, we go back to cleric to get cleric-06, which gets us lvl-03 spell slots (+2 magic weapon) and war god's blessing. With 
+   5 uses of channel divinity per day (3 base, +1 from SR, +1 from PoH) we can now use war god's blessing at the start of every combat to give 
+   ourselves a +2 to AC (via non-concentration shield of faith). Between this, war priest, and wrathful smite, we should have a good use of our 
+   BA in every round of combat. 
+ - starting at level-14, we go back to fighter to pick up flourish parry (+CHA to AC against melee attacks with reaction), resilient DEX, indomitable, 
+   and tactical master; tactical master let's us switch over to a rapier (vex weapon) and add the sap mastery to one attack per turn. This gives us 
+   more uptime on vex (since it can proc on each attack). We can also concentrate on bless in order to boost our chance to hit/damage even further. 
+ - at lvl-17 we get bolder brutalities. We can use the stagger option of bolder brutalities to give enemies disadv on our wrathful smites, potentially 
+   making that a very effective tool against targets that can be frightened (another way of imposing disadv. on all attack rolls). 
+ - finishing out, we go fighter-12 to get extra attack x2 and another feat. I pick epic boon of speed since we don't have any built in mobility bonuses
+   and we like imposing disadvantage on opportunity attacks. But combat prowess is probably the best for offense. Medium armor master would give us 
+   another base +1 to our AC, but that feels kind boring and we have a lot of ways to buff armor class when needed. Epic boon of fate could give us
+   even more protection on saving throws (including CON). Pick your favorites. 
+ - at lvl-20 we take cleric-07 to get a 4th level spell slot and blessed strikes, which adds another flat 1d8 (4.5) to our DPR. 
+ - Overall, we get to play a `battlemage' style gish character that is mostly just a martial character in combat. We get to take WIS and CHA as primary 
+   and secondary stats at character creation, which gives us a nice balanced set of skill and saving throw proficiencies 
+ - We ultimately end up being able to buff our own attacks and impose disadvantage on enemies super reliably, while simultaneously building great 
+   defensive utility and protection on saving throws. We won't ever be top tier in damage, but we'll be super effective in combat, while pulling off 
+   a somewhat eccentric (albeit very thematically synergistic) multiclass. 
+
+THEMATIC CONCEPT NOTES: 
+ - `joan of arc' meets 'khorne' (from Warhammer); blood for the blood god; dark/shadowy deity that venerates violence. We are their sword.
+ - we are the avatar of a (dark) war god; we venerate our patron deity through valiant conquest on the field of battle; and through acts of violence, 
+   dominance, and savagery; and through our triumphs on the battlefield we entreat others to seek glory and greatness in the name of our lord
+ - I think ours is a god of ferocious self-empowerment; our faith manifests in our ability to make ourselves strong and fierce, when others 
+   would think us week and febrile. Where there are those that would abuse power to suppress and subjugate, our lord gives the common people 
+   the power to seek righteous retribution, and visit destruction on those who would underestimate the faithful
+ - despite having CON=08, because we go dwarf + tough, I would just ignore any sort of physical weakness themes
+ - similarly, we are just taking warlock for mechanical purposes, don't lean into it thematically for any reason. 
+ - could go with a kind of `Joan of Arc' style; zealous and ardent and maybe a little touched; but a virtuoso on the battle field 
+ - We are perhaps diminutive for our archetype: we aren't a massive barbarian/bulwark of STR, instead we rely on guile, cunning, skill,
+   and overall weapon mastery to deal damage and hamstring our foes
+ - We revel in the thrill of the fight; we don't deal overwhelming damage and end it too soon; we take our foes down slowly, savoring each    
+   wounding blow; something traumatic has driven us to revel in the fight, and to want to showcase the pain and brutality of war; this is 
+   why we eventually become a gladiator -- to put our grisly business in full view of the public, and force them to reconcile with their
+   own thirst for blood 
+ - Our CHA is based in our physical beauty, ability to intimidate; our wisdom is based in our insightfulness, intuitiveness, and instincts
+ - We are the underdog of our gladiator cohort; female and undersized; devout and cunning instead of simply brawny and brutal; we are more 
+   than meets the eye and our foes underestimate us at their own peril 
+ - I like the idea that our character hates paladins (for some personal reason), despite the fact that mechanically we end up looking a lot 
+   like one, and constantly seeks to outdo them in combat. 
+ - As our character progresses, we could have her continue to `master the sword forms' a la Wheel of Time, eventually becoming a blademaster
+ - themes: sword mastery, downtrodden, underdog, tests/acts of faith, speaking truth/bringing retribution to the powerful,
+           personal empowerment, overcoming self doubt/loathing, finding purpose and self-worth through action, creation through destruction, 
+           defense of the powerless, violence/vengeance as acts of love and devotion, humbling the proud/tyrannical, facing the evil within,
+           seeing and knowing the dark side of the self
+ - traits: beautiful, intuitive, self-aware, graceful, athletic, competitive, hardworking, devout, proud, loyal, reliable, inspirational 
+           self-loathing, masochistic, untrusting, spiteful, pessimistic, reckless, un-phased by destruction/violence, savage, scary
+
+SYNERGISTIC MAGIC ITEMS: 
+ - common:
+ - uncommon: 
+ - rare: 
+ - very rare: 
+ - legendary: 
+ - artifact: 
+   
+MAX LEVEL MAGIC ITEMS
+- lvl-20 (~6 items, max 1 legendary/artifact)   
+
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+#######
+Level-01: Fighter-01
+ - feat: tough 
+   * increase HP by 2x character level (2) and by 2 each time you gain a level    
+ - feat: fighting-style::dueling 
+   * when holding melee weapon in 1 hand and no other weapons, gain +2 to dmg rolls with that weapon 
+ - saving throw proficiencies: STR, CON   
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * fighter (2): intimidation, perception     
+   * wayfarer (2): insight, stealth    
+   * tools (1): thieves' tools 
+   * languages (3): common, common sign language, dwarvish  
+ - weapon/armor proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light/med/heavy armor, shields 
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (wayfarer) + 155gp (fighter)
+   * weapons: shortbow (25gp), longsword (15gp), rapier (25gp), quiver of arrows x3 (3gp)
+   * armor: chain shirt (50gp), shield (10gp)
+   * tools: thieves' tools (25gp)
+   * foci: holy-symbol::emblem (5gp), arcane.focus::crystal (10gp)
+   * gear: explorer's pack (10gp), x3 perfume (15gp), rations x6 (3gp), traveler's clothes (2gp)
+   * spare coin: 7gp
+ - combat equipment:
+   * rapier = 1d8 piercing (vex); finesse 
+   * shortbow = 1d6 piercing (vex); ammunition (range 80/320); two-handed   
+   * armor: chain shirt
+   * AC: 13 + 2(DEX) + 2(shield) = 17
+ - second wind (x2/LR, +1 per SR)  
+   * BA to heal 1d10 + fighter-lvl (1)
+ - weapon masteries (3) 
+   * longsword (sap), shortbow (vex), shortsword (vex)
+       
+NOTE: Start out fighter-01 to get proficiency in STR/CON saves. The CON save proficiency will be relevant at later levels when we start concentrating on spells. STR and CON will also end up being our weakest stats, so save proficiency also safeguards our weakest saving throws. Great. Fighter-01 also gets us the dueling fighting style, and weapon masteries. The only weapon masteries that matter for us in the long run are longsword and rapier mastery. And we'll be using a longsword for a long time starting next level. Here at lvl-01, we should use a rapier, wear a shield and use a shortbow if we need to make ranged attacks. Between a fighter's d10 hit die, dwarven toughness (+1HP) and the tough feat (+2HP), we still start out having 12 HP at lvl-01, despite having CON=08. With high WIS and CHA, we have a decent set of skill proficiencies (+5 to perception, insight, and intimidation) and we can also do well with stealth and thieves' tools (+4) so that's not bad. Nothing super juicy here at lvl-01, but fighters are pretty good at lvl-01, so we end out ok. For our simulated DPR we consider 4 combats with 4 combat rounds each where we make a single attack against an AC-13 enemy in each round, and we make 1 attack of opportunity in each combat. 
+ (simulated DPR): 8.32 
+ (HP/THP): 12
+Not bad. Moving on. 
+
+
+
+
+#######
+Level-02: Fighter-01, Warlock-01
+ - eldritch invocations (1) 
+   * pact of the blade 
+ - combat equipment:
+   * longsword = 1d8 slashing (sap) 
+   * shortbow = 1d6 piercing (vex); ammunition (range 80/320); two-handed   
+   * javelin = 1d6 piercing (slow); thrown (range 30/120)
+   * armor: chain shirt
+   * AC: 13 + 2(DEX) + 2(shield) = 17
+ - weapon masteries (3) 
+   * longsword (sap), shortbow (vex), javelin (slow)
+ - cantrips: 
+   * warlock (2): true-strike, blade ward
+ - spell slots: 1_{1}
+ - spells prepared: warlock (2)
+   * lvl-1 (warlock): charm person, expeditious retreat 
+
+NOTE: Alright, lvl-02 and we take an early warlock dip. We get pact of the blade, allowing us to use CHA to make attacks with a longsword which increases our chance to hit and damage. With pact of the blade we can also summon a pact weapon with a BA. This lets us summon a javelin with our BA on our turn and then throw it at an enemy with our attack/true-strike action. Since javelins still benefit from our dueling fighting style, and since we can use CHA for attack and damage rolls, they do more damage than our shortbow at range. Since they only require one hand to throw, we can also still use them with our shield. Because of this we switch up our weapon masteries to include javelins, but keep shortbows so that we still have a longer ranged option available. Most of the time we just want to use the longsword since that's kind of our character's identity. Of course, warlock-01 also gets us pact magic. For cantrips, we take true-strike and blade ward, and blade ward becomes our go-to concentration spell if we have the opportunity to cast it (e.g, pre-cast, out of range, etc.). Between our decent AC, sap mastery and blade ward we will be pretty hard to hit so we might actually be able to maintain concentration (though obviously no biggie if we lose it). We don't need to use true-strike right now, but we will in a bit. And it's nice to have the ability to change our damage type to radiant if we need. In terms of warlock spells, I went with charm person and expeditious retreat. So here's the deal -- ideally as we move forward with this build we will use all of our spell slots to (i) cast magic weapon, (ii) cast prayer of healing or (iii) make BA wrathful smites. So there really isn't a lot of wiggle room for other utility/damage spells. That said, we will eventually have CHA=20 on this character, so having charm person could very well come in handy. Especially if we know we aren't going to be fighting. And we won't have any other mobility boosting abilities outside of those we get from the fighter base class (tactical shift) until very late in our career. So not a ton of speed for a melee character. Given that, expeditious retreat feels like a good pick if we need to cast it to get into the fight. And again, we won't be sad if we lose concentration on it, since we will very soon have better things to do with our BA than dash. Anyway, that's the logic here. In terms of DPR, monster AC goes up by 1 (to 14), but we increase our chance to hit by 1 through pact of the blade. So those offset. Then we get the boost from using CHA for our damage modifier (instead of DEX), but we lose the extra chance to hit from vex. All in all, we lose some DPR from giving up the rapier, but we've gained a bunch of defensive utility (via blade ward + sap mastery) and we feel good getting up close and personal with enemies in melee. 
+ (simulated DPR): 7.39
+ (HP/THP): 18.5
+
+
+
+
+#######
+Level-03: Fighter-01, Warlock-01, Cleric-01
+ - divine order::thaumaturge 
+   * learn one additional cleric cantrip 
+   * +WIS(3) to arcana and religion checks 
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): true-strike, blade ward
+   * cleric (3): guidance, light, sacred flame
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 3_{1} 
+ - spells prepared: warlock (2), cleric (4)
+   * lvl-1 (warlock): charm person, expeditious retreat 
+   * lvl-1 (cleric): cure wounds, detect magic (R), purify food and drink (R), shield of faith
+
+NOTE: Ahhh ok, ok, I know. Three levels and three different classes! What is this multiclass monstrosity!? I agree it's a bit messy right now. But we're going to stick with cleric for a bit here, and things will start to sort out soon, I promise. But yeah, here at lvl-03, we go cleric-01. We get divine order and since we already have proficiency with heavy armor and martial weapons, we go with thaumaturge. This gives us an extra cantrip and allows us to add our WIS modifier (+3) to arcana and religion checks. Now we're never going to improve our WIS, and we only have INT=08. So we only end up with a +2 in these skills. But still, it's nice to not suck at things. For cleric cantrips, we go for guidance, light, sacred flame, and thaumaturgy. Guidance is just a great all around skill buffer (and we have some nice proficiencies we can boost) and thaumaturgy is very thematic and also gives us advantage on intimidation checks. With a +3 in CHA, proficiency in intimidation (+2), guidance (+2.5), and thaumaturgy (advantage), we could already pull of some high level intimidation checks (+11 on avg). So yeah, lean in to that and scare the living daylights out of people to get your way. Other than those two, I would say just pick your favorites (cleric cantrips aren't great), but I like the utility + thematic consistency of light and sacred flame. Sacred flame also gives us a ranged attack that we can do while holding our sword + shield (though we'll only ever have a +2 mod). In terms of cleric spells, we get to prepare 4. I took cure wounds, detect magic, purify food and drink, and shield of faith. Bless is probably the best spell we can cast for upping our overall DPR, but it takes a whole action on turn-01 to set up which means we won't be making an attack and with CON=08 we're just going to lose it as soon as we have to make a concentration check. Instead I think we just assume that we'll be using our spell slots to cast expeditious retreat or shield of faith in each combat with our BA on round 1. Using our BA to cast a spell doesn't cost us any damage (yet) and we don't really care that much if we lose concentration on either of these. Alternatively, we could cast cure wounds/charm person out of combat. Other than that we just take rituals to increase our overall utility. Given that, we actually see *zero* improvements to our already paltry DPR by going cleric-01 here. But we do have a lot of built in defensive features now, and we can contribute a surprising amount of utility for someone who's combat role is just swiping at things with a long sword. 
+ (simulated DPR): 7.39
+ (HP/THP): 25
+Worth noting that a lvl-03 cleric with CON=14 would have 24 HP at this level, so our species + origin feat combo is working to keep us in a reasonable place in terms of tankiness. 
+
+
+
+
+#######
+Level-04: Fighter-01, Warlock-01, Cleric-02
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark = magic action, heal 1d8 + WIS or deal 1d8 + WIS radiant/necrotic on CON save
+   * turn undead = magic action; undead w/in 30ft WIS save or frightened + incapacitated for 1m
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): true-strike, blade ward
+   * cleric (3): guidance, light, sacred flame
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4_{1} 
+ - spells prepared: warlock (2), cleric (5)
+   * lvl-1 (warlock): charm person, expeditious retreat 
+   * lvl-1 (cleric): cure wounds, detect magic (R), purify food and drink (R), sanctuary, shield of faith
+
+NOTE: Alright, another pretty dead level to round out tier-01 for us here. We go cleric-02 and get channel divinity (CD). Turn undead is obviously great if we happen to be fighting undead, but I would probably just use CD to do divine spark 3x per LR and give myself or my party members a bit of extra healing. We get more spell slots and we get to prepare an additional cleric spell. I took sanctuary since it's non-concentration, a BA to cast, and can be helpful if an ally is in a tough situation. With effectively 5 lvl-01 spell slots per LR (one pact magic slot that comes back on a SR) we might actually have the slots to use this. But ideally we're just casting expeditious retreat/shield of faith in combat, or using cure wounds/charm person out of combat. Monster AC increases to 15 here at level 04, which means we actually lose DPR which sucks. Damage wise, we're at the bottom of the barrel in C-level for tier-01 average damage. We could have done a bit more damage if we continued to use the rapier instead of switching over to the longsword at lvl-02, but I think longsword (sap) mastery is an important part of our character's identity, so we're just going to live with it. I wouldn't play this character in a low-level campaign setting or low-level one-shot. Right so for our DPR: 
+(simulated DPR): 6.81
+(HP/THP): 31.5
+This puts our tier-01 average DPR at 7.48, which is right at the bottom of C-level. But we do have quite a bit of healing and defensive features. Whatever, moving on. 
+
+
+
+
+#######
+Level-05: Fighter-01, Warlock-01, Cleric-03 (War) 
+ - proficiency bonus (PB): +3 
+ - cantrip scaling: 
+   * true strike: 1d6 
+   * sacred flame: 2d8
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark = magic action, heal 1d8 + WIS or deal 1d8 + WIS radiant/necrotic on CON save
+   * turn undead = magic action; undead w/in 30ft WIS save or frightened + incapacitated for 1m
+   * guided strike = when you/ally in 30ft miss w/attack roll, use CD to give +10 to roll (consumes rxn if ally) 
+ - war priest 
+   * make BA weapon attack WISx(3)/SR
+ - combat equipment:
+   * longsword = 1d8 slashing (sap) 
+   * shortbow = 1d6 piercing (vex); ammunition (range 80/320); two-handed   
+   * javelin = 1d6 piercing (slow); thrown (range 30/120)
+   * armor: breastplate
+   * AC: 14 + 2(DEX) + 2(shield) = 18
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): true-strike, blade ward
+   * cleric (3): guidance, light, sacred flame
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 5_{1}-2
+ - spells prepared: warlock (2), cleric (6)
+   * lvl-1 (warlock): charm person, expeditious retreat 
+   * lvl-1 (cleric): cure wounds, detect magic (R), purify food and drink (R), sanctuary
+   * lvl-1 (war): guiding bolt, shield of faith
+   * lvl-2 (cleric): augury (R), prayer of healing
+   * lvl-2 (war): magic weapon, spiritual weapon
+
+NOTE: Whew, ok thank the *lord*! We get to lvl-05 and go cleric-03 and we get a *bunch* of nice stuff. First off, our PB increases and we get cantrip scaling. Cantrip scaling means we can now use true-strike to deal extra damage with our action. Second we get our cleric subclass and we're going with the domain of war. War domain gives us a new use for our channel divinity, guided strike, which we can use to add +10 to an attack roll on a miss. Note that it's optimal to use this preferentially on true-strike attacks, since those do more damage. Accordingly, in our simulation code, we don't allow guided strike uses on AoOs here at level 5. We also get the war priest ability, which lets us use our BA to make a weapon attack WIS(3) times per SR. Combined with prayer of healing (and assuming 1 SR per day) we can use this ability 9x per LR. This represents a very significant boost to our DPR. Finally, and we've already gotten into it a bit, war domain gives us bound spells. We get guiding bolt and shield of faith as lvl-01 spells. This is nice because we were already using shield of faith, so it frees up a spell preparation. And then for lvl-02 spells we get magic weapon and spiritual weapon. Since we won't be increasing our WIS beyond 16, we probably won't ever use guiding bolt or spiritual weapon. But magic weapon is great since it boosts our chance to hit and damage. For our new spell preparations, we absolutely *have* to pick up prayer of healing, and then we also take augury since it's a good spell and can be cast as a ritual. In terms of spellcasting resources, we should use one of our second level slots to cast prayer of healing once per day. This gives us an extra channel divinity, recharges our war priest ability, and recovers our pact magic spell slot. Then we should use our other second level slot to cast magic weapon. With a 1h duration, I'll assume that we can have magic weapon active for 1-2 combats per day (avg 1/3 of combats). Right, so then for our DPR calculation, monster AC stays put at 15 here at lvl-05, so we see some very nice gains: 
+ (simulated DPR): 16.73
+ (HP/THP): 38
+Ok so this still pretty modest tier-02 damage, but let's just look at where we came from. From lvl-04 to lvl-05 we increased our DPR by more than 140%, which is awesome. This is also nice since it mirrors the jump that straight-classed characters (e.g., martials who get extra attack) get at this level. And in terms of HP we're exactly on par with a lvl-05 cleric with a +2 CON modifier, and we still have all the same excellent defensive and utility features that we had in tier-01. Let's also assume that we've cobbled together 400gp to get ourselves some breastplate armor, which boosts our base (shielded) AC to 18 (and 20 w/shield of faith). So this character should absolutely feel a *lot* more powerful to play here at lvl-05. 
+
+
+
+
+#######
+Level-06: Fighter-01, Warlock-01, Cleric-04 (War) 
+ - feat: shadow-touched 
+   * ASI: +1 CHA (CHA=18) 
+   * shadow magic: invisibility + one lvl-01 illusion/necromancy spell (free x1/LR) 
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): true-strike, blade ward
+   * cleric (4): guidance, light, resistance, sacred flame 
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 5_{1}-3
+ - spells prepared: warlock (2), cleric (7)
+   * lvl-1 (warlock): charm person, expeditious retreat 
+   * lvl-1 (cleric): cure wounds, detect magic (R), purify food and drink (R), sanctuary
+   * lvl-1 (war): guiding bolt, shield of faith
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-2 (cleric): aid, augury (R), prayer of healing
+   * lvl-2 (war): magic weapon, spiritual weapon
+   * lvl-2 (shadow-touched): invisibility (free x1/LR)
+
+NOTE: Alright, another nice level for us here. Lvl-06 and we go cleric-04 which gets us our first (long awaited) ASI/feat. We're going to take shadow-touched, which lets us bump our CHA to 18 (increasing our chance to hit an damage) and learn the invisibility and wrathful smite spells (and cast them for free x1/LR). Adjust the flavor of this feat however you need, but I don't think it's actually that much of a stretch. Perhaps our god is a one of the darker gods of war and conquest (a la khorne), and so our abilities have a bit of a shadowy flavor. We've always been DEX-y and stealthy, so shadows/invisibility also fit. Both spells are great. But in terms of DPR wrathful smite is the key. This not only allows us to further weaponize our BA when we aren't using war priest, but also means we're adding addition control in combat by inflicting fear (and we will successfully frighten enemies, since we can leverage our high CHA-based spell DC). This also fits super cleanly into our character's identity and proficiency/strength in the intimidation skill. At cleric-04 we also get another 2nd level spell slot and another spell preparation. I took aid here. We've officially dipped 0.5 HP below where a straight-classed cleric with CON=14 would be at this level. So we're ever so slightly more fragile than we want to be. We could use a 2nd level slot to cast aid each day and rectify this. But probably we're fine, and we want to use that new 2nd level slot to cast magic weapon another time, increasing the number of combats we have uptime on it to 2/4 combats per LR (50% uptime). This is what I'm going to assume for our updated DPR calculation. Eventually, however, we will get more spell slots and aid could be a good option then. So I'll just prepare it now in case we want to use it. Ok so for DPR, we got a +1 to CHA, we get increased uptime on magic weapon, and we can cast wrathful smite up to 8x per LR (4 lvl-01 cleric spell slots, 1 pact magic spell slot which we recover on a SR and with prayer of healing, plus one free cast). With 9x uses of war-priest and up to 8x uses of wrathful smite, we now have a way to weaponize our BA on nearly every round of combat per day. Though, in practice, given constraints on resource recovery, we won't always do this. But in general, this is one of the really nice synergies of this build. Another one is that we can use our channel divinity to do guided strike to ensure that we land a hit so that we can cast wrathful smite. This makes the damage we can deal with wrathful smite very reliable. Since wrathful smite damage is also doubled on crits, we should prioritize using it when we crit. Obviously, there could be situations where we want to use our BA to cast expeditious retreat/shield of faith/sanctuary or where we want to save lvl-01 slots for cure wounds/charm person, but for the purposes of DPR calculation, I'm going to assume that we are exclusively using our BA to do war priest or wrathful smite. Note, wrathful smite does less damage (3.5) than our war priest attacks (8.5), even when we crit (7). So we still want to make sure we use all our war priest attacks if we can. As a result we don't actually want to cast wrathful smite the full 8x we are capable of doing per day. This means we have a little wiggle room for other spells like cure wounds, shield of faith, expeditious retreat, charm person, etc. So that's nice. With enemy AC still locked at 15, this brings our new DPR to: 
+ (simulated DPR): 21.03
+ (HP/THP): 44.5
+Ok so still in D-level for tier-02 damage, but right up at the very tippy top of it (15-21) and we're moving up quickly! We're a smidge behind a straight-classed cleric with CON=14 for HP (45), but not by a lot. And we're contributing a lot of great control in combat via sap mastery and fear (from wrathful smite) and a lot of interesting utility out of combat via augury + stealth/invisibility + our interesting skill proficiencies and guidance. I feel like I would definitely enjoy playing this character so far here in tier-02. Oh and I forgot, we get another cleric cantrip at lvl-04. I took resistance since we have a kind of damage reduction theme going on, but pick whatever you want. Also, just as an aside - we get slightly more damage when use guided strike on AoOs at this level, so we adjust that parameter. 
+
+
+
+
+#######
+Level-07: Fighter-02, Warlock-01, Cleric-04 (War) 
+ - action surge (x1/SR)
+ - tactical mind 
+   * expend use of second wind to give yourself 1d10 + fighter-lvl(2) to any ability check 
+   * don't expend use if you still fail
+
+NOTE: Alright, lvl-07 and we're going back to fighter. We take fighter-02 and we get action surge and tactical mind. Because we're casting prayer of healing each day, we actually get increased value out of both of these since action surge and second wind both recover on a SR. Action surge is the only one that matters for our DPR, but tactical mind also dovetails with our character's surprisingly cunning and skillful nature. Very cool. In terms of DPR, we'll assume that we use action surge 3x per LR and that we preferentially use it when we have magic weapon active. Specifically, the way I modeled this, we end up using action surge with magic weapon about 60% of the time, given 50% uptime on magic weapon and the fact that we have to recharge action surge uses out of combat. Now we can't do true-strike when we action surge (since we can't take the magic action), but it's still a nice boost to our overall DPR, and it will become even more valuable when we get extra attack in a few levels. Unfortunately, monster AC does increase to 16 here at lvl-07, which depresses the value we see from action surge. In fact, we end up with nearly exactly the same DPR as we had at lvl-06. Kind of a bummer. But it is worth noting that with the fighter's d10 hit die, we're back to being right on par with a straight-classed CON=14 cleric in terms of HP (52). So that's nice. 
+ (simulated DPR): 21.26
+ (HP/THP): 52
+Still at the very tip of D-level for tier-02 damage. But not for long! Also, note - since we're making enough attacks that we almost always miss enough to use all our guided strikes, we can set the `guided strike on AoO' parameter to FALSE at this level. 
+
+
+
+#######
+Level-08: Fighter-03 (Gladiator), Warlock-01, Cleric-04 (War) 
+ - skill/tool proficiencies: 
+   * fighter (2): intimidation, perception     
+   * wayfarer (2): insight, stealth   
+   * gladiator (1): deception
+   * tools (1): thieves' tools 
+   * languages (3): common, common sign language, dwarvish 
+ - combat theatrics 
+   * athletic flair = + CHA to DEX (acrobatics) and STR (athletics) checks 
+   * bonus proficiency = gain proficiency in [acrobatics, athletics, deception, intimidation, performance]
+ - brutality (xCHA/SR) 
+   * bleed = add sap mastery to weapon attack, +CHA mod damage on hit 
+   * bluff = add vex mastery to weapon attack, + adv on next saving throw before next turn 
+   * stumble = add topple mastery to weapon attack, target can take action or BA not both 
+ 
+NOTE: Ok this is another big one. Lvl-08 and we go fighter-03 and take our subclass. And yeah, we're going with gladiator. We get two lvl-03 features from gladiator. The first is combat theatrics, which gets us a new skill proficiency (I took deception) and the ability to add our CHA modifier (+4) to acrobatics and athletics checks. It's actually quite funny, but this feature, in combination with our thaumaturge ability to add our WIS modifier to our arcana and religion checks, plus our unconventional skill distribution actually makes us a very balanced character, skill-wise. Just for the sake of it, below is what our skill bonuses look like now (and note we're going to get a +1 in all our proficient skills next level): 
+	athletics: +3  	acrobatics: +6		 arcana: +2		 animal handling: +3	deception: +7
+                       	sleight of hand: +2      history: -1             insight: +6		intimidation: +7
+                       	stealth: +5              investigation: -1       medicine: +3		performance: +4
+	                                         nature: -1              perception: +6		persuasion: +4
+	                                         religion: +2            survival: +3
+Pretty wild. We're actually good at almost everything. I mean, we have a positive modifier in everything except history, investigation, and nature, and we have good modifiers in lots of different (useful) skills (and thieves' tools). Plus we have guidance and tactical mind. It certainly wasn't something I thought of when making this build. But it's a really cool side effect of our particular multiclass that we end up being such a well-rounded generalist. And while I certainly don't think that this character is well-suited to being a full on skill monkey, it is nice that you could insert them into almost any scenario and they would be able to do something helpful pretty well. Right so then the main feature we get with our gladiator subclass is, of course, brutality. This feature gives us three different ways to modify our weapon attacks (bleed, bluff, and stumble). We can modify attacks in this way CHA x/SR, but obviously we are already using prayer of healing. So for this character, with CHA=18, we already have 12x uses of brutality per LR. Now, what are we going to do with this? Well, the bleed option is the best for pure damage. And for an alternate build of this character that's more focused on damage, I would just use a rapier throughout our entire career and start using bleed on basically every attack. But I'm actually going to say the option that we care the most about is the bluff option. This still boosts our damage by granting us advantage on subsequent attacks against a vexed target. But it also gives us advantage on the next saving throw we make before the end of our next turn. This is going to be quite valuable as we move forward. More specifically, even with CON=08, with proficiency in CON saves and advantage on CON saving throws from the bluff feature, we will be able to concentrate somewhat reliably on spells during combat. We won't need this right now, though we could use it to ensure that we don't lose concentration on expeditious retreat or shield of faith. But we will eventually benefit greatly from this ability. Of course, concentration checks aren't the only saving throw we might make, but in general the prospect of having advantage on saving throws during most turns of combat is the reason why the bluff option is the most attractive. Ok, so in terms of optimized combat, we have several new guiding principles. The first is that we want to use brutality::bluff to give ourselves advantage on our true-strike strike attacks. This is because true-strike is currently our most damaging attack, and also benefits the most from the increased crit chance that advantage provides. There are four ways we can set this up: 
+  - (1) on our turn, use our BA to make a war priest attack, on hit apply brutality::bluff, then use our action to true-strike w/advantage
+  - (2) on our turn, use action surge, take the attack action, apply brutality::bluff on hit, then use our second (normal) action to true-strike w/advantage 
+  - (3) on an enemy's turn, use our reaction to make an opportunity attack, apply brutality::bluff on hit, then use our action on our turn to true-strike w/advantage
+  - (4) on our turn do: true-strike + BA::wrathful-smite, and apply brutality::bluff on hit, then use our action our next turn to true-strike w/advantage 
+Options (1) and (2) are the most reliable because they generate and use the advantage within the same turn. Options (3) and (4) depend on events between turns lining up correctly, but are still useful. Given this, we should use brutality charges according to the following paradigm:  
+  - if we use our BA to make a war priest attack (first attack on our turn), then apply brutality::bluff to the attack on hit
+  - if we use action surge to make an initial attack, apply brutality::bluff to the attack on hit
+  - use brutality::bluff when we hit with attacks of opportunity on enemy turns 
+  - use brutality::bluff on our true-strike attack if we do true-strike + wrathful smite on our turn
+The second combat principle relates to the use of guided strike. As it turns out, with the addition of brutality, the best use of our guided strike is now to make sure that we land our setup attacks -- i.e., our BA war priest attacks or our action surge attacks -- versus using guided strike to ensure we land the true-strike attacks themselves. This might seem a bit counterintuitive, given that our true-strike attacks are our main source of damage, but the reason is that using guided strike on our setup attacks improves our damage potential by both increasing the chance that we deal damage with our setup attacks *and* by increasing the chance to hit/crit on subsequent true strike attacks by applying vex. Even though the increased chance to hit from advantage (+4.5) is smaller than that conveyed by guided strike (+10), we gain more expected damage overall if we use guided strike to make sure that we land setup attacks since this increases expected damage from setup attacks *and* expected damage from subsequent true-strike attacks through vex. For this reason, we should follow the following paradigm regarding the use of guided strike: 
+  - if we miss with a BA war priest or action surge setup attack, then we should use guided strike if it will turn the miss into a hit
+  - if we are doing true-strike + BA::wrathful-smite and we miss with the initial true strike attack, then use guided strike if it will turn the miss into a hit 
+Finally, let's talk about how we utilize our limited resources throughout the day. Ok, so we have a max of 3 war priest charges and 4 uses of brutality. We also have a pact magic spell slot and 1 charge of action surge. All of these resources recover on a SR. Our current assumption is that we cast prayer of healing after combat 1, and then take a short rest after combat 3. So for combats 1 and 4 we will have all our uses of war priest and brutality, our action surge, and our pact magic slot available to us. If we can, we should use them all during each of these combats since we'll recover them immediately afterwards. This means, our ideal action economy in combats 1 and 4 is very deterministic. Specifically we do: 
+  - turn 1: action-surge::attack_{brutality::bluff} + action::true-strike + BA::wrathful-smite 
+  - turns 2, 3, and 4: BA::war-priest_{brutality::bluff} + action::true-strike 
+  - we assume 1 AoO per combat and that we use brutality::bluff on hit
+Note that if we hit with everything, this action plan would result in us using brutality::bluff 5 times, which is more charges than we have available. But with about an 80% chance to hit, we miss with about 1 out of every 5 attacks. And when we do miss with 1 setup attack, then we will have exactly the number of brutality charges we need. Now, as we discussed above, the chances of us missing with setup attacks are also reduced by our use of guided strike, which increases the chances that we hit the constraint on uses of brutality::bluff. But I think this is the best we can do. Next up, channel divinity. We start with 2 channel divinity charges, and gain 1 additional one on a SR. Since we only get 1 (rather than all) CD charges back on a SR, combat 1 and combat 4 are different in this regard. Specifically, we have an incentive to only use 1 CD charge in combat 1 so that we end up with 2 charges to use across combats 2 and 3. But then in combat 4, we want to use all available charges since we'll recover all of them when we long rest post-combat. That said, in expectation we'll only miss with about 1 attack per combat. So in expectation we only need to have 1 charge going in to combat 4. That means we can use both charges we have available across combats 2 and 3. So basically, the only restriction we need to code in is that we use a maximum of 1 CD charge in combat 1. Then, for all other combats we just use CD charges when we miss with setup attacks/true-strikes if we have them available. Given our resource recovery pattern, this should result in us using all 4 charges throughout the adventuring day, and having more available across combats 2/3 where we are stretching resources more thinly. Ok so then speaking of combats 2 and 3, what is our action plan in these fights? Well, basically we will have 3 war priest charges, 4 brutality charges, 6 uses of wrathful smite (including our free-cast), 1 action surge, and 2 uses of channel divinity to use across 8 combat rounds. Right so starting with war priest and action surge. These abilities both give us extra attacks, and extra attacks are more valuable (damage-wise) if we have magic weapon active. On average, we should have magic weapon active in 1 of these two-combats (though note, the way we have it coded it's randomly assigned). So the decision rule is: if we have magic weapon active then we follow the same action plan we use for combats 1 and 4. That is, use action surge + wrathful smite on turn-01, use war priest on turns 2, 3, and 4, and use brutality::bluff whenever we hit with a setup attack or attack of opportunity. And if we don't have magic weapon active, then we do true-strike + BA::wrathful-smite on every turn and don't use any brutality charges. However, to guard against the case where have zero magic weapon uptime in combats 2 and 3, we also want to state that if we start combat 3 with more than zero war priest charges, then we should revert to our combat 1/4 strategy. This just means that if we didn't have magic weapon in combat 2 and then start combat 3 and realize we don't have magic weapon again, we still use our war priest and brutality charges before they recover. On average, this should result in us using all 3 war priest charges, all 4 brutality charges, and 5 of 6 wrathful smites across these two combats. Assuming we miss w/about 1 attack per combat we will also end up using 2 guided strikes across these two combats. Perfect. Right, so boiling all this down so it's clear what our simulated DPR is coming from. In summary, here is what we're doing: 
+ - In combat 1
+   * turn 1: action-surge::attack_{brutality::bluff} + action::true-strike + BA::wrathful-smite (use pact magic slot)
+   * turns 2, 3, and 4: BA::war-priest_{brutality::bluff} + action::true-strike 
+   * make 1 AoO per combat and use brutality::bluff on hit
+   * use guided-strike a maximum of 1 time
+   * on turns 01 and 02, only use guided strike on setup attacks (action-surge/war priest) 
+   * on turns 03 and 04, can use guided strike on any miss (incl. true-strike) if still haven't used a charge 
+ - In combats 2 and 3 
+   * if magic weapon is active, or it's combat 03 and we still have non-zero war priest charges left 
+     + turn 1: action-surge::attack_{brutality::bluff} + action::true-strike + BA::wrathful-smite 
+     + turns 2, 3, and 4: BA::war-priest_{brutality::bluff} + action::true-strike 
+     + make 1 AoO per combat and use brutality::bluff on hit
+     + on turns 01 and 02, only use guided strike on setup attacks (action-surge/war priest) 
+     + on turns 03 and 04, use guided strike on any miss (incl. true-strike) 
+   * if magic weapon is not active 
+     + turn 1, 2, 3, 4: action::true-strike + BA::wrathful-smite 
+     + use free-cast first, then pact slot, then cleric slots for wrathful smite casts
+     + don't use any brutality charges 
+     + make 1 AoO per combat (no brutality)
+     + use guided strike if you miss with a true-strike attack 
+ - In combat 4 
+   * turn 1: action-surge::attack_{brutality::bluff} + action::true-strike + BA::wrathful-smite 
+   * turns 2, 3, and 4: BA::war-priest_{brutality::bluff} + action::true-strike 
+   * make 1 AoO per combat and use brutality::bluff on hit
+   * can use guided strike on any miss
+Given all this, and the fact that monster AC has remained stable at AC-16, our new DPR calcs to: 
+ (simulated DPR): 23.36 
+ (HP/THP): 59.5
+Right so this is still pretty low, but we did see a meaningful damage increase from integrating brutality into our attacks (about +2 DPR). And with this, we officially scrapped our way back into the bottom of C-level for tier-02 DPR (22-28, according to Treantmonk's tiers). This is pretty impressive, especially considering that brutality::bluff is a combination of an offensive and defensive feature. Like, it's easy to forget that in using bluff so consistently we've also just given ourselves advantage on the first saving throw we make on ~75% of turns in combat. So that's pretty great. And the combat theatrics feature gives us a whole bunch of interesting ways to affect gameplay via our diverse and impressive skillset. Ok, whew. What a marathon of a level note. Moving on! 
+
+
+
+
+#######
+Level-09: Fighter-04 (Gladiator), Warlock-01, Cleric-04 (War) 
+ - proficiency bonus (PB): +4 
+ - ASI: +2 CHA (CHA=20) 
+ - second wind (x3/LR, +1 per SR)  
+   * BA to heal 1d10 + fighter-lvl (4)
+ - weapon masteries (4) 
+   * javelin (slow), longsword (sap), rapier (vex), shortbow (vex)
+
+NOTE: Alright lvl-09 and we go fighter-04. Super straightforward level here. We get another use of second wind (x5 per LR w/prayer of healing), which is a nice source of healing for us. We can also use it to boost ability checks with tactical mind. And we get an extra weapon mastery. I picked rapiers back up since we will eventually switch back over to them, but pick whatever you want for now. Then we get an ASI and we use it to bump our CHA to 20. This means more uses of brutality, higher chance to hit and higher damage on hit, and higher spell DC on our wrathful smites. We also get a proficiency bonus increase and monster AC stays put at 16. All of this translates to a nice increase in our overall damage. In terms of combat tactics, we now have 5 uses of brutality per SR. In theory, this means 15 uses per LR, which is almost every round. In practice, however, since we only have 4 rounds per combat, we can only use brutality once per turn, and we can't `bank' brutality uses across short rests we won't always achieve this theoretical limit. So how will this work in practice? Well, according to the plan outlined in the level note above (for lvl-08), in combats 1 and 4 we could potentially use brutality 5 times if we use it on every attack and on an enemy turn with an opportunity attack. So nothing changes there. Then, for combats 2 and 3 all we do is say that if we are in `true-strike mode' where we are just doing true-strike + BA::wrathful-smite on each turn, then we can apply brutality up to 2 times when we hit with true-strike attacks on turns 1, 2, or 3 (not on turn 4, since we won't benefit from it then) or when we make an opportunity attack. Using this logic, we will reliably use all 5 brutality charges across combats 2 and 3 and will gain advantage on some of our true-strike attacks during the combat where we are in `true-strike' mode. This is also nice since increasing our crit chance increases our damage a bit more when we're using wrathful smite (since crits also double damage for wrathful smite). Ok. So that's how we're going to play it. Now, unfortunately, all this optimization work we've done for levels 08 and 09 isn't going to matter next level when we get extra attack, as then all of our attacks are the same value and we'll just apply vex using the first attack that hits each turn. But factoring in this tactical change here at lvl-09, as well as the increase in our CHA and PB, our updated DPR calcs to: 
+ (simulated DPR): 27.59  
+ (HP/THP): 67 HP
+Alright, so now right at the top of C-level for damage in tier-02 now (22-28), which is *much* better than where we started for tier-02. But still putting out lots of defensive utility and control. And in terms of HP, we're back to being a full 1HP ahead of a straight-classed cleric with CON=14. Sweet. All in all, I think we've done a decent job of floating our damage through tier-02 while en route to extra attack and still gaining meaningful boosts to our overall playability (defense, utility, control, healing, out-of-combat potential, etc.). And next level is a big one damage-wise.
+
+
+
+
+#######
+Level-10: Fighter-05 (Gladiator), Warlock-01, Cleric-04 (War) 
+ - extra attack 
+ - tactical shift 
+   * when you activate second wind with a BA you can move 1/2 speed w/o provoking AoOs 
+
+NOTE: Ok lvl-10, we go fighter-05 and we get two new things. First, we get tactical shift. Ideally we don't have to use this, since we want to use our BA to deal damage each turn. But given that we have only had expeditious retreat to help us with mobility thus far, it's quite nice to get another mobility option (much less one that doubles as a healing/defensive option). Then, of course, the big thing at fighter-05 is that we *finally* get exxxtraaaa atttaaackk (choir sings). Extra attack not only represents a significant damage boost for us, but it also makes our lives so much simpler in terms of managing our brutality charges and fighting strategically. This is because we will no longer be using true-strike (since we have to take the attack action to benefit from extra attack) and so every single one of our attacks -- whether from the attack action, war-priest, action-surge, or reaction attacks -- are identical in terms of damage value (conditional on magic weapon). This means that we can just use brutality to apply vex to the first attack we hit with each turn -- whether it be our first attack, second attack, third/fourth attack (if we're using action surge) or a BA war priest attack -- and we will pretty much always get value out of doing so. This also simplifies our strategy for deploying guided strike. Since every one of our attacks is equal, we don't have to worry about prioritizing using guided strike on setup attacks. So we just set a limit of 1 use in combat 1, and then use it whenever we miss and it's available moving forward for combats 2, 3, and 4. Next, because we are making so many more attacks and we don't have to be as careful about setting up vex for specific attacks, we can be a bit more strategic with how we deploy wrathful smite vs. war priest in combats 2 and 3. Specifically, we can change our approach so that we use wrathful smite whenever we crit (if we have slots left) in combat 2 and combat 3. We keep the same overarching logic related to magic weapon, since we still want to maximize number of attacks when we have magic weapon, but we allow for some flexibility when it comes to when we deploy wrathful smite in order to maximize the value of crits. Technically I would say that the build is `complete' at this level, though we still have a lot of meat on the bone to get to at later levels. But conceptually, the backbone of the build was always to combine the BA attacks and spells you get through war cleric with the brutality ability, and that aspect of the build is fully developed at this stage. And it's nice that we don't have to wait too too long to get to this point. Ok so in terms of our simulation model, here's the new strategic paradigm: 
+ - General rules: 
+   * no longer use true strike, taking attack action instead
+   * use our action every turn to take the attack action and make two weapon attacks; note we can take a BA in between these two attacks
+   * use brutality bluff on the first attack that we hit with each turn in combats 1, 4, and in combat 2 or 3 if we have magic weapon active 
+   * use our action to attack before we use our bonus action on our turn (order of operations)
+   * in combats 2 and 3 if we crit with one of our attacks, use BA::wrathful smite on that turn (if slots available) 
+ - In combat 1:
+   * turn 1: action-surge::attack(x2) + action::attack(x2) + BA::wrathful-smite (use pact magic slot)
+   * turns 2, 3, and 4: action::attack(x2) + BA::war-priest
+   * make 1 AoO per combat and use brutality::bluff on hit
+   * use guided-strike a maximum of 1 time this combat, on any miss 
+   * apply brutality::bluff on first successful hit each turn 
+ - In combats 2 and 3: 
+   * general rules: 
+     + use guided strike on any miss, a maximum of once per turn
+     + no limit on uses of guided strike per combat 
+     + when casting wrathful smite, use free-cast first, then pact slot, then cleric slots
+   * if magic weapon is active 
+     + turn 1: action-surge::attack(x2) + action::attack(x2) + BA::wrathful-smite 
+     + turns 2, 3, and 4: action::attack(x2) + BA::war-priest
+     + exception: if we crit on an attack granted by action surge the attack action, then immediately use BA that turn to crit with wrathful smite (if slots are available)
+     + apply brutality::bluff on first successful hit each turn
+     + make 1 AoO per combat and use brutality::bluff on hit
+   * if magic weapon is not active 
+     + if it's combat 2: 
+       - do: action::attack(x2) + BA::wrathful-smite each turn
+       - make 1 AoO per combat
+       - do not apply brutality::bluff to any attacks 
+     + if it's combat 3: 
+       - use action-surge on turn-01 if it's still available
+       - use BA to make a war-priest attack each turn until all war priest charges are expended 
+       - exception: if we crit on an attack granted by action surge the attack action, then immediately use BA that turn to crit with wrathful smite (if slots are available)
+       - once war priest charges are expended do: action::attack(x2) + BA::wrathful-smite for all remaining turns 
+       - use brutality::bluff on first hit each turn until all brutality charges are expended 
+ - In combat 4 
+   * turn 1: action-surge::attack(x2) + action::attack(x2) + BA::wrathful-smite  
+   * turns 2, 3, and 4: action::attack(x2) + BA::war-priest 
+   * make 1 AoO per combat and use brutality::bluff on hit
+   * can use guided strike on any miss
+
+Given all this, and the fact that average monster AC stays put at 16 here at lvl-10, our DPR can be simplified to:  
+ (simulated DPR): 35.32
+ (HP/THP): 74.5
+That's a whopping 28% increase in DPR over lvl-09 and puts us right at the top of of B-tier for damage in tier-02 (29-36 DPR). Woohoo! What a great way to round out tier-02! With lvl-10 factored in, our average tier-02 DPR maths out to: 24.22 DPR. So that's basically right in the middle of C-tier overall for tier-02 (Treantmonk's threshold for C-tier is 22-28 DPR), but just look at where we came from. At lvl-05 we were dealing 16.73 DPR and by lvl-10 we're up to 35.32 DPR. That's a 111% increase in damage over the tier-02 levels, which is really good. Furthermore, for a lot of builds, the damage profile just makes one big jump at level-05 (when, for example, traditional martials get extra attack) and then plateaus quite noticeably throughout the rest of tier-02. Our character get's progressively stronger throughout tier-02, with meaningful jumps at nearly every level in tier-02. And we end up doing significantly better than baseline in terms of damage (high B-tier by lvl-10). Especially considering tier-02 is where a lot of the meat of most campaigns take place, I feel pretty good about how the power curve of this character shaped up. 
+
+
+
+
+#######
+Level-11: Fighter-06 (Gladiator), Warlock-01, Cleric-04 (War) 
+ - cantrip scaling
+   * true-strike: 2d6
+   * sacred flame: 3d8
+ - feat: mage slayer
+   * ASI: +1 DEX (DEX=16) 
+   * concentration breaker: when you damage enemies they have disadv. on CON saves to maintain concentration 
+   * guarded mind: when you fail a INT/WIS/CHA saving throw you can succeed instead (x1/SR)  
+
+NOTE: Alright lvl-11 and we go fighter-06. We take the mage slayer feat and boost our DEX to 16. Mage slayer doesn't do anything for our damage, unfortunately. But it is simply too good to pass up for this character. First off, the guarded mind feature recharges on a SR and therefore also when we cast prayer of healing. That means we get to benefit from this feature 3x per day. That means we can auto-succeed on a mental save in 3/4 combats per day. That's on top of the advantage on saving throws that we're generating via brutality::bluff. Pretty great. Second, the concentration breaker feature dovetails so well with the overall theme/identity of this character. I mean think about it, we've been imposing debuffs via sap and wrathful smite for our entire career. We also are leveraging brutality::bluff to give ourselves advantage on saving throws and just got more saving throw buffs via guarded mind. Now we also impose disadvantage on enemy concentration checks. It just seems fitting. Plus with up to 3 attacks (5 with action surge) per turn, we can force enemies to make lots of saves. Overall, the way this character works is to use a combination of spells/martial features to gain attack buffs and impose debuffs on enemy attacks. The mage slayer feat just seems very appropriate for this kind of gish-y/spellsword character. Finally, mage slayer bumping DEX also foreshadows where we're headed with the rest of our ASI/feats. Namely, now that we've capped CHA we can take feats to bump DEX and improve our initiative, DEX save, and armor class. Because avg monster AC goes up to 17, and because mage slayer doesn't boost our damage, our DPR does drop a tad here at the start of tier-03. But we're still riding pretty high from the bump we saw at level-10. In terms of tier-03 damage, we're back in the basement in C-level (34-41), but it's early days. Anyway, DPR now calcs to: 
+ (simulated DPR): 33.70
+ (HP/THP): 82
+
+
+
+
+#######
+Level-12: Fighter-06 (Gladiator), Warlock-01, Cleric-05 (War) 
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark = magic action, heal 1d8 + WIS or deal 1d8 + WIS radiant/necrotic on CON save
+   * turn undead = magic action; undead w/in 30ft WIS save or frightened + incapacitated for 1m
+   * guided strike = when you/ally in 30ft miss w/attack roll, use CD to give +10 to roll (consumes rxn if ally) 
+   * sear undead = magic action; undead w/in 30ft WIS save or frightened + incapacitated for 1m and take WIS(3)d8 radiant
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): true-strike, blade ward
+   * cleric (4): guidance, light, resistance, sacred flame 
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 5_{1}-3-2
+ - spells prepared: warlock (2), cleric (9)
+   * lvl-1 (warlock): charm person, expeditious retreat 
+   * lvl-1 (cleric): cure wounds, detect magic (R), purify food and drink (R), sanctuary
+   * lvl-1 (war): guiding bolt, shield of faith
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-2 (cleric): aid, augury (R), prayer of healing
+   * lvl-2 (war): magic weapon, spiritual weapon
+   * lvl-2 (shadow-touched): invisibility (free x1/LR)
+   * lvl-3 (cleric): meld into stone (R), speak with dead
+   * lvl-3 (war): crusader's mantle, spirit guardians
+  
+NOTE: Alright, lvl-12 and we're headed back to cleric. We go cleric-05 and we get a few things. First, we get an upgrade to our turn undead channel divinity feature. Now we can do sear undead and also deal damage when we do turn undead. As with the base feature, it's good if we're dealing with undead. Otherwise, not impactful. Indeed for our DPR calculations, we continue to assume that we use all our channel divinities to do guided strike. The big thing we get at cleric-05 is lvl-03 spells and slots. War cleric bound spells are crusader's mantle and spirit guardians. These are both very good. We can also use 3rd level slots to give ourselves a +2 magic weapon. More on this below. In terms of preparations, we get 2 new cleric spells and I'm going with meld into stone and speak with dead. Meld into stone has some interesting stealth applications, and it's also a great way to get a short or long rest in a dangerous situation. Need to take a break in a dangerous dungeon -- just meld into stone. Getting wrecked by some BBEG in their lair and can't effectively escape? Try meld into stone. Because we get so much of our resources back on a SR (action surge, channel divinity, second wind, brutality, pact magic slot, war priest) it is just a good idea to have a tool that we can use to help us get those resources back when we really need them. This is especially true since we can cast spells on ourselves while merged with stone. So we can hide via meld into stone, cast prayer of healing, and we're basically back at full strength. Super nice. It's also a ritual so we won't be tempted to spend our spell slots on it. It also synergizes with our skill proficiencies and dwarf abilities (in addition to the thematic consistency for the dwarf species). More specifically, being merged with stone makes you blind and you have disadvantage on perception checks to perceive what's happening outside. But we are proficient in perception and can use tremorsense while touching stone. So neither of those penalties would affect us, making meld with stone a more effective reconnaissance and infiltration tactic (we are also proficient in stealth FWIW). Anyway, cool spell that rarely gets used but which would actually be pretty good on this character. Adds a bit more supernatural flair as well, which I like. For the second spell (speak with dead) -- I think it's just about having a utility option that dovetails with our high CHA, and proficiency in deception and intimidation. Unlike most clerics, we will be quite good at getting information out of the dead, and we haven't picked up any social interaction utility spells since we got charm person way back at lvl-02. It's also a spell that we are more likely to cast in non-combat/information gathering scenarios where it's less likely to be in competition with our combat spells. So yeah, we take meld with stone and speak with dead as preparations. Right so the big question the new spellcasting resources we get at cleric-05 pose is how should we spend our spell slots? It's worth stating upfront that, while spirit guardians is still good, it's not going to be as effective for our character since we only have WIS=16 so the DC to save against it will be pretty low (DC-15). Given this, I think the primary option is to use both 3rd level slots to upcast magic weapon (giving us 2hr of +2 magic weapon uptime). The secondary option would be to cast crusader's mantle on turn-01 of two combats per day, then use action surge to make attacks on the same turn. As a theoretical maximum, crusader's mantle can potentially give us more damage. We forgo two attacks to cast it, but we then get +2.5 dmg on all subsequent hits during combat and provide this buff to our allies. By contrast, having +2 magic weapon will allow us to continue to make the same number of attacks and boost our chance to hit in addition to our damage. But the damage buff is slightly smaller. The risk with crusader's mantle, of course, is that we get hit and lose concentration in which case it would be a strict DPR loss. In general, accounting for the fact that we have to sacrifice attacks, lose increased hit chance from magic weapon, and given the non-trivial chance that we lose concentration on the spell, it's pretty clear that magic weapon is better for our personal DPR. That said, in terms of party-wide DPR, if we have at least one other party member who likes to make weapon attacks, then I think crusader's mantle would be an aggregate DPR gain. Practically, if we're in a fight against many small enemies where concentration checks are likely to be easy to make, or in a situation where buffing our allies would greatly increase our overall damage party-wide, we should use crusader's mantle. Or if we have access to a +1 or +2 magic weapon already, then we should use crusader's mantle. Or if we just want to use crusader's mantle since it's more fun and thematic -- it probably won't be a big DPR loss. So it's a nice option to have for overall combat versatility. For the purposes of this DPR calculation, however, I'm just going to assume that we use both our 3rd level slots to give ourselves a +2 magic weapon for an additional 2h per day on top of the 2h per day when we have a +1 magic weapon. Boring but effective. Given this, I'm going to assume that we have a +2 magic weapon in 1/2 our daily combats, and a +1 magic weapon in the other half. Given this, our DPR calcs to:   
+ (simulated DPR): 38.11 DPR
+ (HP/THP): 88.5
+Nice. So that puts us squarely into the middle of C-level for tier-03 damage (34-41). Not bad. Certainly a pretty big DPR jump just from getting a few extra spell slots. Love to see it. 
+
+
+
+
+#######
+Level-13: Fighter-06 (Gladiator), Warlock-01, Cleric-06 (War) 
+ - proficiency bonus (PB): +5 
+ - channel divinity (x3/LR, +1 on SR) 
+   * divine spark = magic action, heal 1d8 + WIS or deal 1d8 + WIS radiant/necrotic on CON save
+   * turn undead = magic action; undead w/in 30ft WIS save or frightened + incapacitated for 1m
+   * guided strike = when you/ally in 30ft miss w/attack roll, use CD to give +10 to roll (consumes rxn if ally) 
+   * sear undead = magic action; undead w/in 30ft WIS save or frightened + incapacitated for 1m and take WIS(3)d8 radiant
+ - war god's blessing 
+   * can use CD to cast shield of faith or spiritual weapon; when you do no concentration required lasts for 1m
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): true-strike, blade ward
+   * cleric (4): guidance, light, resistance, sacred flame 
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 5_{1}-3-3
+ - spells prepared: warlock (2), cleric (10)
+   * lvl-1 (warlock): charm person, expeditious retreat 
+   * lvl-1 (cleric): bless, cure wounds, detect magic (R), sanctuary
+   * lvl-1 (war): guiding bolt, shield of faith
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-2 (cleric): aid, augury (R), prayer of healing
+   * lvl-2 (war): magic weapon, spiritual weapon
+   * lvl-2 (shadow-touched): invisibility (free x1/LR)
+   * lvl-3 (cleric): meld into stone (R), speak with dead, water walk (R)
+   * lvl-3 (war): crusader's mantle, spirit guardians
+
+NOTE: Alright, lvl-13 and we go cleric-06. We get a proficiency bonus increase, an extra use of our channel divinity (so up to 5x per LR), an extra 3rd level spell slot, one new spell preparation, and the war god's blessing feature, which let's us use our CD to cast spiritual weapon or shield of faith without concentration or a spell slot. In terms of spells, take water walk as a new preparation, and switch out purify food and drink for bless. It doesn't really matter what new spell we take. I went with water walk since it's a ritual and we value mobility/being able to get into melee and it is easy to just do and provide a buff for the whole party. But the real thing we need here is bless. Between the increase in our proficiency bonus (which boosts our CON save) and the war god's blessing feature (which we can use to buff our AC), I think it is now quite reasonable to concentrate on bless in combat. Recall that bless itself provides a +1d4 to saving throws, which will also help with concentration. Ok so what do we do combat-wise? The assumption here is that we'll cast bless and then use a CD to cast shield of faith as a BA without concentration on turn-01 of every combat. With shield of faith active, we have an AC of 20 and with bless active our base bonus to concentration checks is +6.5 and we will likely have advantage because we're using brutality::bluff nearly every round. If we think of advantage as a straight +4.5 to the save, then our modifier is approximately +11 and that's with CON=08. Not bad! In our simulation model, at this level we assume that enemy monsters have a +11 to hit, make 3 attacks on their turn, deal 28 damage on hit, and that there is a 50% chance that they target our character with each attack. This 50% assumption seems pretty reasonable to me, but obviously tweaking this up or down will affect our average damage output. But, in general, the 50% targeting assumption reflects a host of factors including: (i) the fact that we are a melee fighter and are thus more likely to be targeted by attacks, (ii) that we are just one potential target out of many the enemy could choose from, and (iii) that enemies may choose to do things other than make attacks (or deal damage) on their turn. Anyway, under these assumptions, we make between 9-10 concentration checks per adventuring day (succeeding 80% of the time), and we maintain concentration on bless for ~82% of combat rounds. Pretty good. If instead, we assume that there is a flat 75% chance that the enemy targets our character with *all 3* of their attacks each turn, we make ~12 concentration checks per day, and only maintain about 71% bless uptime. This change in assumptions results in about a flat loss of about 1 DPR. I say this just to provide a data point on the sensitivity of our DPR to changes in these enemy attack assumptions. Now, pursuing this strategy obviously means that we are sacrificing making some attacks on round-01 of combat which will hurt our DPR a bit, though it is worth noting we it's quite possible to pre-cast our bless + shield-of-faith setup, in which case this tradeoff wouldn't be necessary. It also means that we no longer have as many CD charges available to use on guided strike (now only once per day), which also hurts our DPR, though this is offset by the increased chance to hit provided by bless. Finally, it also means that we're using 4 first level spell slots to cast bless each day, which means we'll end up using wrathful smite only 3 times per day (instead of 7). This is because we functionally have 7 first level slots: 4 lvl-1 cleric slots plus 1 pact magic slot that recovers 2x per day (w/prayer of healing + short rest). We use 4 of these slots on bless, leaving 3 + our free-cast from shadow-touched for wrathful smite. But we still want to use war priest all 9 times, so we only end up having space for 3 wrathful smites. This is fine, and totally worth it. Plus bless is also providing benefits to our allies, which they will like. The reason for using bless over crusader's mantle, is that we can use bless while still using magic weapon and the two effects will stack to increase our damage. By contrast it's impossible to have both bless and crusader's mantle active since they both require concentration, and we don't have enough 3rd level slots to stack magic weapon and crusader's mantle consistently. So yeah, bless + magic weapon is our best bet. Now, in terms of our new 3rd level spell slot -- for DPR purposes, I'm going to assume that we upcast magic weapon one more time per day giving us 75% uptime on +2 magic weapon. Notably, this also frees up a second level slot, since our assumption is that we only need to cast magic weapon 4x per day (though we could use the slot to cast it more and keep higher uptime, if need be). We could use this to cast wrathful smite at lvl-02 once per day to boost our DPR just a teeny bit further, if we wanted. But I think it's better to use this 2nd level slot to cast aid on ourselves and two other allies in order to gain 5 more HP. For a while now, we've been front lining like a fighter but with the HP of a cleric (slightly more, but not by a lot). Initially, this didn't make much difference, but over time we've lagged a bit further behind where other martial frontliners like paladins, fighters, and barbarians would be in terms of HP. As a benchmark, a lvl-13 fighter with CON=14 would have 108HP on average. We're sitting at 95HP. But with aid, we'd be up at 100HP, which is better. Plus, we have more healing than fighters and have a bunch of built in defensive utility. Moreover, of course, if we're in a campaign setting where we have access to +2 magic weapons, then we could have been using our high level slots on aid all the way up to this point. So yeah, assuming we use our all our 3rd level slots on (+2) magic weapon, and use our extra second level slot to cast aid on ourselves/a few allies at the start of the adventuring day, our new DPR calcs to
+ (TOTAL): 34.68 DPR 
+ (HP/THP): 95 (+5, aid) = 100 HP
+So taking everything into account our DPR drops by a little less than 4 due to our making fewer overall attacks. But we're still in C-tier (34 DPR is the bottom of Treantmonk's C-range for tier-03), and in exchange for this DPR loss we've gained (i) an essentially permanent +2 to our AC and (ii) consistent uptime on bless for us and 2 of our allies in every combat and (iii) +5 HP (from aid). Based on the defensive utility alone, I think this tradeoff is well worth it. I mean, with bless active, our saving throw stat line is: STR(+6.5), DEX(+5.5), CON(+6.5), INT(+1.5), WIS(+5.5), CHA(+6.5) and we're getting consistent uptime on bluff from using brutality (advantage on saving throws) and we have mage slayer to protect ourselves against mental saves when we fail (in particular INT saves, which are our weakest). That's pretty wild. Given that many creatures at higher CR will be immune to frightened, changing combat tactics to use wrathful smite less is also probably an overall tactical gain. Finally, it's worth noting that even though we've saturated a bit on chance to hit here, we will gain even more value from the combination of bless + magic weapon as we continue to progress and average monster AC increases. 
+
+
+
+
+#######
+Level-14: Fighter-07 (Gladiator), Warlock-01, Cleric-06 (War) 
+ - flourish parry 
+   * when an enemy hits you w/a melee attack roll, can use rxn to add CHA(5) to AC, potentially 
+     causing attack to miss 
+ - flourish counter 
+   * if flourish parry causes attack to miss, can make counter attack as part of rxn; make weapon 
+     attack and add brutality effect w/o expending a charge
+   * x1 use of flourish counter/LR; can restore by consuming uses of second wind (no action required)
+ 
+NOTE: Alright another cool level here. We are lvl-14 and we go fighter-07 to get our next gladiator subclass feature: flourish parry. Flourish parry lets us use our reaction in response to getting hit with a melee attack to add our CHA modifier to our AC potentially causing the triggering attack to miss. Note, unlike the defensive duelist feat, this only applies to the triggering attack rather than all attacks until your next turn. It also only works on melee attacks. But that's ok. With a base AC of 20 (with war god's blessing - shield of faith active) we are already hard to hit, and with a CHA=20 flourish parry is as good as casting the shield spell. And since we're a melee character, we're most likely to be taking hits in melee. So it's very likely that we can use this to negate one hit per round when we want to. Also, let's not forget that we apply the sap mastery property nearly every round. So an enemy attacking us will likely have disadvantage on their first attack, and then we can use flourish parry on their second attack. This makes us quite difficult to hit. As a fun aside, if we wanted to go for max defense we could also concentrate on blade ward which would give us an AC of 27.5 (on average) when we use flourish parry. Pretty good. For reference, with a +11 attack modifier, a monster attacking us with disadvantage against AC-20 will only hit around 36% of the time. And with flourish parry bringing our AC to 25 the same monster will only have a 35% chance to hit with a straight attack roll. So yeah, on average we're probably now only being hit 35% of the time. And we gain more value out of flourish parry than other builds because of our high base AC and our use of the sap mastery. Flourish parry also gives us the option to do a `flourish counter' when we cause a target to miss with our flourish parry. For the counter, we can, as part of the same reaction, make a weapon attack and add in a brutality effect without expending a brutality charge. We can do the counter once per long rest for free, and then we have to expend second wind charges to do it again. This is great for us because we are using prayer of healing, meaning we're getting an additional use of second wind each day (x5 per LR). Well, technically this is the same as a straight-classed fighter, but at least we aren't getting *fewer* second winds. Right, so with flourish counter, second wind is now a resource that we can use to deal additional damage. Great. Now we also depend on it quite a bit for healing, so I wouldn't imagine that we're using all our second wind charges for flourish counter. But for now let's assume that we use 2-3 second wind charges per LR to do flourish counters. Note I'm also going to assume that we do these flourish counters *in addition* to the normal attacks of opportunity that we make each day. Even though they both consume our reaction, this assumption feels right since we don't have any other demands on our reaction and the situations where we're using flourish parry versus making attacks of opportunity are different. Next, when we use flourish counter, I'm also going to say that we should use the `bleed' rather than `bluff' brutality option. This is because we have a high enough chance to hit with bless, magic weapon and the bluff attacks we make on our turn, that using bluff to gain vex on our flourish counters has less value than just doing additional damage with bleed. Plus with the addition of flourish parry, we end up having to make fewer concentration checks (since enemy attacks miss), meaning the saving throw boost from more applications of bluff is also less impactful. For reference, even using the `bleed' option, we still maintain concentration on bless for ~85% of combat rounds in our simulation, and because we have bless up so reliably we are also more saturated on chance to hit. Plus, using bleed on the counter attacks also just makes them feel a bit more cool, special, and flashy. So for all those reasons, we opt to use `bleed' instead of `bluff' on flourish parries. That said, if you just want to keep things simple and continue to use bluff, it only reduces DPR by abou 0.6, so not a big deal. Other than flourish parry, nothing about our combat tactics changes here at level-14. So then, accounting for all this, our new DPR calcs to: 
+ (TOTAL): 37.96 DPR 
+ (HP/THP): 102.5 (+5, aid) = 107.5 HP
+Nice, so this is right back up in to the middle of C-tier for DPR in tier-03 and that's great. This character has always been more of a defensive bulwark then a pure damage machine, but we don't want to be lagging too hard in the damage department. And the addition of flourish parry here gives us a really nice boost. I think it's also just a really cool level where a lot of the synergies of this multiclass come together to produce a really fun playstyle, and one where our defensive boosts translate into more damage by allowing us to better maintain concentration and use our limited resources for damage instead of healing. 
+
+
+
+
+#######
+Level-15: Fighter-08 (Gladiator), Warlock-01, Cleric-06 (War) 
+ - feat: resilient (DEX) 
+   * ASI: +1 DEX (DEX=17) 
+   * bonus proficiency: gain proficiency in DEX saving throws 
+ 
+NOTE: Ok kind of a dead level here, and one of the only such levels in this build. We are lvl-15 and we go fighter-08 to pick up another feat. My pick here is to go for resilient (DEX). I know, I know, it's another defensive feat and we're already a pretty defensively oriented character. But I think it's just the best option of those available. Here are a few of the alternatives I thought of: alert, charger, defensive duelist, sentinel, shield master. Ok lets take these one by one. Alert is nice, but doesn't allow us to boost our DEX so we'd be stuck on an odd number for by the end of our career. And it does nothing for our DEX save, which is one of the most important saving throws in the game and not one of our strongest. Charger would potentially give us a bit of extra damage, but we don't have any features that boost our mobility so it would likely be difficult to ensure that we're getting the charge bonus reliably. Defensive duelist won't do anything for us at this level, and even next level when we pick up a rapier it would just be a slightly better version of flourish parry (defensively, anyway) so its additional value would be pretty marginal. Sentinel would give us extra control, and allow us to boost our DEX. But does nothing for us defensively, and we aren't truly built to be a tank-type character. We don't have super high HP and we aren't ever going to use a reach weapon. We have lots of features to help us prevent taking hits, but don't actually *want* to be targeted with attacks unless we have to be. So while sentinel would probably help us to land more opportunity attacks, which would boost our damage, I don't think it would actually be that good of a fit. Finally, shield master would give us evasion on successful DEX saves, but those would be one of our weakest saving throws, so it wouldn't work that often. And it would also give us a free trip action once per turn, but the DC would be based on our STR score which is bad. So that wouldn't work often either. Plus, we are already getting advantage + bless on a good number of our attacks, so knocking prone would mostly just be for mobility control. So yeah, for all those reasons, I think resilient (DEX) is just the best bet. With proficiency in DEX saving throws, our new saving throw stat-line is as follows: STR(+4), DEX(+8), CON(+4), INT(-1), WIS(+3), CHA(+5). And, as previously, we'll have a persistent +2.5 from bless, advantage on the first save we make each turn, and mage slayer in case we fail mental saves. If we consider advantage a flat +4.5, then for the first save on each of our turns (assuming we have bless) our saving throw stat line is actually more like: STR(+11), DEX(+15), CON(+11), INT(+6), WIS(+10), CHA(+12). Now that's pretty good, and very well balanced across the board. Ok but now for the bad news. Average monster AC increases to 18 here at lvl-15, and monster chance to hit increases to +12. CR-15 monsters also do more damage on hit (32), so we're looking at a DC-16 concentration checks when we get hit. Given these changes, we might think that going back to using bluff on our flourish counters to improve our vex chaining and give us a better chance of maintaining concentration on bless. But it's not the case. We actually still do better (in terms of DPR) using bleed on our flourish counters than if we use bluff. That said the difference isn't large (only around 0.5 DPR), so if there are other incentives to use bluff (e.g., enemies that force lots of saving throws) we can be flexible. For the purposes of our simulation, however, our combat tactics remain exactly the same as at level-14. Given this, and taking the increase in monster AC/damage into account, our new DPR calcs to: 
+(TOTAL): 36.59 DPR 
+(HP/THP): 110 (+5, aid) = 115 HP
+That's actually really not that bad. We only lost 1.4 DPR at a level where monsters increased in difficulty and we took a purely defensive feat. Plus, we're going to get a pretty big boost to damage next level. So let's keep going. 
+
+
+# STOPPED HERE 
+
+
+#######
+Level-16: Fighter-09 (Gladiator), Warlock-01, Cleric-06 (War) 
+ - indomitable (x1/LR)
+   * if you fail a saving throw, you can reroll it with a bonus equal to fighter-lvl (9)
+ - tactical master  
+   * when you attack w/a weapon whose mastery property you can use, you can replace that 
+     property with push, sap, or slow
+ - combat equipment:
+   * rapier = 1d8 piercing (vex)  
+   * armor: breastplate
+   * AC: 14 + 2(DEX) + 2(shield) + 2(shield-of-faith) = 20
+
+NOTE: Ok, another fun level here. We are lvl-16 and we go fighter-09. We get two new base class features here -- indomitable and tactical master. Indomitable gives us even more saving throw protection x1 per long rest. I would think of this working alongside mage slayer, except that we can apply it to any saving throw we want (including concentration checks), not just mental saves. But between all our saving throw protecting features, this is just the cherry on top and we should definitely be making our saves. The next feature -- tactical master -- is the big one. This feature lets us replace the mastery property of the weapon we're using with either push, sap, or slow. Why does this matter? Well, for our entire career we've been using the longsword in order to make sure that we're applying the sap property to our enemies. And since level-08 when we got our gladiator subclass, we've been using brutality to give ourselves advantage on around 1/3 of our attacks. But the reason we've been doing it this way is partially because we really want to use gain the additional effect of the brutality::bluff option -- that is advantage on our next saving throw. But here's the thing -- sap is a mastery property that only matters 1x per turn. Once you hit an enemy with a sap weapon, they have disadvantage on their next attack roll. Hitting them again with a sap weapon does nothing. By contrast, vex is a mastery property that you can reapply with every single attack. So we would really prefer to be attacking with a vex weapon and then giving ourselves the sap property only once per turn. So why am I saying all this. Well, with tactical master in hand, we can switch our main weapon over to a rapier, which is a vex weapon. Now, at a baseline, we're applying vex with all of our attacks. Then, once per turn, we can use tactical master to make our rapier apply the sap property and use the brutality::bluff option when we do so to give it vex as well. This means we can carry on with our normal combat strategy, except now we have a chance to apply vex on every attack. This represents a substantial boost to our damage and is another fun synergy of this build that keeps our damage relevant as we head towards tier-04. In terms of our DPR calculation.... XXXXX  
+(TOTAL): XXXX DPR 
+(HP/THP): XXXX HP
+Right back up into the top of C-tier for tier-03 damage. And off the back off a defensive feature in indomitable and a versatility feature in the form of tactical master. Pretty cool.  
+
+
+
+
+#######
+Level-17: Fighter-10 (Gladiator), Warlock-01, Cleric-06 (War) 
+ - proficiency bonus (PB): +6
+ - cantrip scaling 
+   * true-strike: 3d6 
+   * sacred flame: 4d8
+ - brutality (xCHA/SR) 
+   * bleed = add sap mastery to weapon attack, +CHA mod damage on hit 
+   * bluff = add vex mastery to weapon attack, + adv on next saving throw before next turn 
+   * stumble = add topple mastery to weapon attack, target can take action or BA not both 
+   * rive = add cleave mastery to weapon attack, add ability mod to second attack 
+   * rush = add push mastery to weapon attack, immediately move up to 1/2 speed w/o provoking AoOs
+   * stagger = add slow mastery to weapon attack, target has disadv. on next saving throw before next end of your next turn
+
+
+NOTE:
+
+Monster AC: 18
+
++13 to hit, advantage, bless: 99.75%
++13 to hit, advantage, no bless: 96%
++13 to hit, no advantage, bless:  92.5%
++13 to hit, no advantage, no bless: 80%
+
++12 to hit, advantage, bless: 98.125%
++12 to hit, advantage, no bless: 93.75%
++12 to hit, no advantage, bless: 87.5%
++12 to hit, no advantage, no bless: 75%
+
+chance to be hit by +13 attack roll (AC-20, disadv): 42.25%
+chance to be hit by +13 attack roll (AC-25): 40%
+chance to make DC-18 concentration check (adv, bless, +4): 97.4%
+chance to make DC-18 concentration check (no adv, bless, +4): 47.5% 
+avg chance to succeed on saving throw: 72.5%
+avg chance of losing concentration: (0.5)*(0.4225 + 0.40)*(1-0.725) = 11.3%
+probability of maintaining concentration (4 rounds): 100%, 88.7%, 77%, 70%
+avg chance of having concentration spell up (4 rounds): 84% 
+
+
+
+
+
+
+
+   

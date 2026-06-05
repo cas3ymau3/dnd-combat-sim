@@ -1,0 +1,398 @@
+Moniker: Hellshadow Blood Hunter 
+Classes: Ranger-02, Blood.Hunter-18 (Profane.Soul::Fiend) 
+Species: Tiefling (Infernal) 
+ - size: medium or small  
+ - speed: 30ft 
+ - darkvision (60ft) 
+ - fiendish legacy 
+   * otherworldly presence: thaumaturgy 
+   * resistance to fire damage 
+   * fire bolt (lvl-00), hellish rebuke (lvl-03), darkness (lvl-05) 
+Sex: Female 
+Background: Guide 
+ - ability scores: DEX, CON, WIS  
+ - feat: MI::druid 
+ - skills: stealth, survival 
+ - tools: cartographer's tools 
+ - languages: common, common sign language, infernal
+ - equipment (gold buy): 50gp
+Point-Buy Stats 
+ - STR = 08
+ - DEX = 15 (+2) = 17 
+ - CON = 13 (+1) = 14 
+ - INT = 13 
+ - WIS = 14 
+ - CHA = 08
+ASI's/Feats: 
+ - lvl-00: MI: druid  
+ - lvl-04: sentinel: +1 DEX (DEX=18)
+ - lvl-10: crossbow expert: +1 DEX (DEX=19)
+ - lvl-14: ASI: +1 DEX, +1 WIS (DEX=20, WIS=15)
+ - lvl-18: resilient (WIS): +1 WIS (WIS=16)
+Progression Summary
+ - lvl-01: ranger-01 ----------------------------------> spellcasting, weapon/armor prof., weapon mastery (2), cantrips
+ - lvl-02: ranger-01, blood.hunter-01 -----------------> + alchemist supplies, hunter's bane, blood maledict (marked)
+ - lvl-03: ranger-01, blood.hunter-02 -----------------> TWF, crimson rite (flame), hellish rebuke
+ - lvl-04: ranger-01, blood.hunter-03 (profane.soul) --> cantrips (blade ward, minor illusion), pact magic (witch bolt, agathys)
+ - lvl-05: ranger-01, blood.hunter-04 (profane.soul) --> sentinel: +1 DEX (DEX=18), darkness
+ - lvl-06: ranger-01, blood.hunter-05 (profane.soul) --> extra attack, hemocraft die (1d6), +1 warlock spell (PfGE) 
+ - lvl-07: ranger-02, blood.hunter-05 (profane.soul) --> blind fighting, deft explorer, +1 ranger spell (fog cloud) 
+ - lvl-08: ranger-02, blood.hunter-06 (profane.soul) --> brand of castigation, +1 curse (binding), maledict x2/rest, +1 pact slot 
+ - lvl-09: ranger-02, blood.hunter-07 (profane.soul) --> mystic frenzy, scorching ray, +1 crimson rite (storm), lvl-02 pact slots
+ - lvl-10: ranger-02, blood.hunter-08 (profane.soul) --> crossbow expert: +1 DEX (DEX=19), change BH fight-style to archery
+ - lvl-11: ranger-02, blood.hunter-09 (profane.soul) --> grim psychometry, +1 warlock spell (hold person) 
+ - lvl-12: ranger-02, blood.hunter-10 (profane.soul) --> +1 warlock cantrip (EB), dark augmentation, +1 curse (eyeless)
+ - lvl-13: ranger-02, blood.hunter-11 (profane.soul) --> brand of the sapping scar, +1 warlock spell, hemocraft die (1d8)
+ - lvl-14: ranger-02, blood.hunter-12 (profane.soul) --> ASI: +1 DEX, +1 WIS (DEX=20, WIS=15) 
+ - lvl-15: ranger-02, blood.hunter-13 (profane.soul) --> brand of tethering, maledict x3/rest, lvl-03 pact-slots, hunger of hadar 
+ - lvl-16: ranger-02, blood.hunter-14 (profane.soul) --> +1 crimson rite (oracle), hardened soul, +1 curse (bloated agony)
+ - lvl-17: ranger-02, blood.hunter-15 (profane.soul) --> +1 warlock spell, fireball 
+ - lvl-18: ranger-02, blood.hunter-16 (profane.soul) --> resilient (WIS): +1 WIS (WIS=16) 
+ - lvl-19: ranger-02, blood.hunter-17 (profane.soul) --> +1 warlock spell, maledict x4/rest, hemocraft die (1d10)
+ - lvl-20: ranger-02, blood.hunter-18 (profane.soul) --> blood curse of the soul eater
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `ranger-warlock'
+ - lvl-01: slots = 2; prepared: 2-0; max level: 1-0 
+ - lvl-02: slots = 2; prepared: 2-0; max level: 1-0 
+ - lvl-03: slots = 2; prepared: 2-0; max level: 1-0
+ - lvl-04: slots = 3_{1}; prepared: 2-2; max level: 1-1
+ - lvl-05: slots = 3_{1}; prepared: 2-2; max level: 1-1
+ - lvl-06: slots = 3_{1}; prepared: 2-3; max level: 1-1
+ - lvl-07: slots = 3_{1}; prepared: 3-3; max level: 1-1
+ - lvl-08: slots = 4_{2}; prepared: 3-3; max level: 1-1
+ - lvl-09: slots = 2-2_{2}; prepared: 3-4; max level: 1-2
+ - lvl-10: slots = 2-2_{2}; prepared: 3-4; max level: 1-2
+ - lvl-11: slots = 2-2_{2}; prepared: 3-5; max level: 1-2
+ - lvl-12: slots = 2-2_{2}; prepared: 3-5; max level: 1-2
+ - lvl-13: slots = 2-2_{2}; prepared: 3-6; max level: 1-2
+ - lvl-14: slots = 2-2_{2}; prepared: 3-6; max level: 1-2
+ - lvl-15: slots = 2-0-2_{2}; prepared: 3-7; max level: 1-3
+ - lvl-16: slots = 2-0-2_{2}; prepared: 3-7; max level: 1-3
+ - lvl-17: slots = 2-0-2_{2}; prepared: 3-8; max level: 1-3
+ - lvl-18: slots = 2-0-2_{2}; prepared: 3-8; max level: 1-3
+ - lvl-19: slots = 2-0-2_{2}; prepared: 3-9; max level: 1-3
+ - lvl-20: slots = 2-0-2_{2}; prepared: 3-9; max level: 1-3
+
+MECHANICAL CONCEPT NOTES
+ - main `trick' of this build is to try and trap enemies in fog-cloud/darkness to gain offensive/defensive buffs 
+ - start out as standard dual-wielding melee fighter, eventually (once we get crossbow expert), switch over to scimitar + crossbow 
+ - take TWF as first fighting style while melee, then switch blood hunter style to archery; take blind-fighting for ranger style
+ - w/crossbow expert, we essentially can stack the effects of: blind-fighting, archery, and TWF. 
+ - critical assumption: making attack.1 with a scimitar (nick) allows us to make a second attack w/a hand crossbow as part of attack action 
+ - use nick to keep BA `free' while dual-wielding so we can: cast BA spells (HM, HoT, agathys, witch bolt, jump), crimson rite, blood curses, etc.
+ - profane-soul::fiend gives us rerolls on our rite of the flame damage, which become progressively stronger (works well w/lots of blood hunter lvls) 
+ - starting at lvl-07 (when we get blindfighting) we use limited spell slots (and free casts) to cast fog-cloud/darkness, then use sentinel/nets to 
+   keep enemies restrained within; eventually we extend this to hunger of hadar for more dmg 
+ - use MI::druid to get mending (which we can use to fix nets we use in combat), guidance (which is generally useful) and a lvl-01 druid spell; for 
+   the spell, start with `jump' until lvl-07, then switch over (if desired) to `fog cloud' to increase the number of obscuring spell casts 
+ - marked blood curse doubles our rite damage (on 1 turn) which also stacks with fiend patron crimson rite effect, so we start with that one 
+ - then we get blood curse of binding for another non-concentration restrain option, then eyeless for defensive utility, then agony because meh
+ - build defensive utility through: blinding enemies, dark augmentation, resilient, blood curse of eyeless, blood curse of souleater, spells
+   (e.g., cure wounds, armor of agathys, mirror image)
+ - brand of castigation and (eventually) sapping scar/brand of tethering all serve to help keep enemies stuck in darkness and forced to fight us 
+ - deal damage on enemy turns with reaction (hellish rebuke), spells (armor of agathys), or through reducing speed in dangerous areas (hadar) 
+ - switching over to archery fighting style at lvl-10, and creating advantage thru fog-cloud/darkness offsets slow progression towards capping DEX 
+ - lots of great utility through ranger skills, expertise, blood hunter proficiencies/abilities (alchemist tools, grim psychometry) 
+
+THEMATIC CONCEPT NOTES: 
+ - our patron seeks us out because we are a wayfinder and they are in search of someone/thing which has escaped the nine hells 
+ - we reluctantly (at first) accept the pact in order to gain the power to pursue our own interests/motivations
+ - perhaps we are also in search of something/someone with a deep connection to our origins or personal history  
+ - as we continue deeper down our path, we discover more and more powerful blood magic, eventually taking us to a point where we question 
+   whether or not we've lost ourselves, and if the ends justify the means 
+ - perhaps we grew up in an area plagued by a hellish influence, and have some vague memories of a traumatic experience that shaped our early 
+   life and led us to develop the skills we need to discover who is responsible and hunt them down (vengeance plot) 
+ - perhaps we were cast out/betrayed from a position of power in the infernal/evil hierarchy in our origin area, survived unexpectedly and 
+   now have teamed up with a sympathetic patron to bring down the establishment of another demonic/infernal power broker 
+ - play this character like Denzel in `Training Day' meets Keanu in `Constantine' where it's not clear where the line is/who's crossing it. 
+ - we are a white hat, but don't fuck around, and it's clear that there's some real shady/nasty shit that we've got ourselves involved with 
+ - themes: nine hells, fire, shadow/smoke/darkness, stealth, mystery, infernal augmentation, blood war, interplanar plots/intrigue
+ - traits: urban, tough/gritty, street-smart, composed, scarred, traumatized, observant, clever, resourceful, determined, guarded, distrusting 
+ - let our rite of the flame hand-crossbow eventually become the `hellfire hand crossbow' from BG3
+
+SYNERGISTIC MAGIC ITEMS: 
+ - common:
+ - uncommon: 
+ - rare: 
+ - very rare: 
+ - legendary: 
+ - artifact: 
+   
+MAX LEVEL MAGIC ITEMS
+- lvl-20 (~6 items, max 1 legendary/artifact)   
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+#######
+Level-01: Ranger-01
+ - feat: magic-initiate (druid)  
+   * learn two cantrips and one lvl-01 spell from the druid spell list 
+   * can change one chosen spell whenever you gain a level
+ - saving throw proficiencies: STR, DEX    
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * ranger (3): insight, investigation, perception     
+   * guide (2): stealth, survival 
+   * tools (1): cartographer's tools   
+   * languages (3): common, common sign language, infernal  
+ - weapon/armor proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light/medium armor + shields  
+ - weapon masteries (2)
+   * shortswords = 1d6 piercing (vex); finesse, light
+   * scimitars = 1d6 slashing (nick); finesse, light
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (guide) + 150gp (ranger)
+   * weapons: shortsword (10gp), scimitar (25gp)
+   * armor: studded leather (45gp) 
+   * tools: cartographer's tools (15gp), alchemist's supplies (50gp) 
+   * foci: druidic-focus::sprig-of-mistletoe (1gp)
+   * gear: burglar's pack (16gp), traveler's clothes (2gp), caltrops x3 (3gp), net x3 (3gp)
+   * spare coin: 30 gp
+ - combat equipment:
+   * weapons: shortsword + scimitar
+   * armor: studded leather  
+   * AC: 12 + 3(DEX) = 15
+ - favored enemy 
+   * always have hunter's mark prepared
+   * can cast it 2x per LR without expending a spell slot 
+ - spellcasting 
+ - cantrips: 
+   * otherworldly presence (1): thaumaturgy 
+   * infernal legacy (1): fire bolt
+   * magic-initiate::druid (2): mending, guidance 
+ - spell slots: 2 
+ - spells prepared: ranger (2)
+   * lvl-1 (ranger): cure wounds, detect magic (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (MI:druid): jump (free x1/LR)   
+
+NOTE: Start out as a standard TWF ranger. Dual wield shortsword and scimitar. Use fire bolt for ranged attacks. Leverage vex and nick mastery + hunter's mark (HM) for great lvl-01 damage. Use jump for additional mobility to get into melee. Use nets + mending or caltrops for non-concentration restrain/control. Save spell slots for HM and cure wounds (as needed). Use your cartographers tools to help navigate. Use guidance + useful proficiencies to crush important skill checks. Note that in order to cast spells with somatic or material components, you will need a free hand. So when attacking, you should draw your second weapon as part of the attack, then sheath it using your free action on each turn. Assuming an enemy AC of 13 (see monster save/AC table), our chance to hit with our first shortsword attack is 0.65. If we hit, we have advantage on our second attack, which would give us a hit probability of 0.88. Assuming full uptime on hunter's mark, we do 2d6 dice dmg on hit. So our overall DPR is: 
+  (both hit): (0.65)*(0.88)*(17) + 
+  (first hit only): (0.65)*(0.12)*(10) + 
+  (second hit only): (0.35)*(0.65)*(7) + 
+  = 12.1 DPR
+In addition, assume that we get to make an attack of opportunity on 1/4 of combat rounds, adding an additional:
+ (opportunity attacks): (0.25)*(0.65)*(10) = 1.625
+Bringing our total to: 
+ (total  DPR): 12.1 + 1.63 = 13.73
+
+
+
+#######
+Level-02: Ranger-01, Blood.Hunter-01
+ - skill/tool proficiencies: 
+   * ranger (3): insight, investigation, perception     
+   * guide (2): stealth, survival 
+   * tools (1): cartographer's tools, alchemist's supplies  
+   * languages (3): common, common sign language, infernal  
+ - hunter's bane 
+   * advantage on survival checks to track fey, fiends, or undead
+   * advantage on INT checks to recall information about such creatures 
+   * hemocraft modifier = WIS; DC = 8+PB+WIS (12)
+   * hemocraft die (1d4)
+ - blood maledict (x1/SR)
+   * blood curse of the marked = BA mark creature w/in 30ft; until end of turn when you hit 
+     marked creature with weapon for which you have crimson rite, roll an additional hemocraft die; 
+     amplify: you have adv on your next attack roll against the marked target
+ - spellcasting 
+ - cantrips: 
+   * otherworldly presence (1): thaumaturgy 
+   * infernal legacy (1): fire bolt
+   * magic-initiate::druid (2): mending, guidance
+ - spell slots: 2 
+ - spells prepared: ranger (2)
+   * lvl-1 (ranger): cure wounds, detect magic (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (MI:druid): jump (free x1/LR)   
+
+NOTE: Gain proficiency with alchemist's supplies. Can use this to craft acid, alchemist's fire, oil, and perfume. Do this if you have time/money. And use hunter's bane if appropriate. Otherwise blood.hunter-01 doesn't actually give us anything. Same tactics as lvl-01. 
+
+
+
+
+#######
+Level-03: Ranger-01, Blood.Hunter-02
+ - crimson rite (1d4)
+   * BA to activate; take 1 hemocraft die necrotic dmg; lasts until short/long rest
+   * rite of the flame = extra rite damage is fire dmg 
+ - fighting-style::two-weapon-fighting 
+   * when you make the extra attack granted by the light property, you can add your ability modifier to the damage
+ - spellcasting 
+ - cantrips: 
+   * otherworldly presence (1): thaumaturgy 
+   * infernal legacy (1): fire bolt
+   * magic-initiate::druid (2): mending, guidance 
+ - spell slots: 2 
+ - spells prepared: ranger (2)
+   * lvl-1 (ranger): cure wounds, detect magic (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (MI:druid): jump (free x1/LR)  
+   * lvl-1 (infernal legacy): hellish rebuke (free x1/LR) 
+
+NOTE: Blood.hunter-02 and we get our fighting-style. Start out with two-weapon fighting. Assume that our DM is going to let us use the Tasha's martial versatility rules, which would let us change this when we gain a feat/ASI in blood.hunter. Gain crimson rite. Take rite of the flame for future synergy with profane soul subclass. I would probably just activate the rite immediately on our scimitar after each rest, unless we don't have the hp. It lasts until the next rest, and you're going to take the dmg anyway, so you might as well get it going out of combat. Plus then the dmg from activating it doesn't risk breaking your concentration. Note, now that we have crimson rite, switch over to drawing-then-stowing the shortsword as part of your attack pattern (rather than the scimitar) so that you can keep the scimitar in hand for making opportunity attacks. Character lvl-03 infernal legacy gets us hellish rebuke. Probably wouldn't use a spell slot on this here, but the free cast is another small boost to our damage. Assuming we have hunter's mark and crimson rite active on 100% of combat turns, then against an enemy with AC-14 (see monster save/ac table), our standard round of attacks would deal
+  (both hit): (0.6)*(0.84)*(22.5) + 
+  (first hit only): (0.6)*(0.16)*(10) + 
+  (second hit only): (0.4)*(0.6)*(12.5) + 
+  (opportunity attacks): (0.25)*(0.6)*(12.5) +
+In addition, on two rounds per day (assuming 1 short rest) we get to use blood curse of the marked for an additional d4 fire damage on hit with our scimitar. This adds: 
+  (blood curse): (0.125)[(0.6)*(0.84) + (0.4)*(0.6)]*(2.5)
+Finally, we also get to cast hellish rebuke once per day. Assuming an enemy DEX save of +2, enemies will fail our DC-12 save check 45% of the time, taking 2d10 (11) fire damage when they fail. This adds: 
+  (hellish rebuke): (0.0625)*(0.45)*(11)
+Bringing our overall total to: 
+  (total DPR) = 17.72
+
+
+# STOPPED HERE
+
+#######
+Level-04: Ranger-01, Blood.Hunter-03 (Profane.Soul::Fiend)
+ - rite focus (fiend) 
+   * when using rite of the flame, when you roll a 1 or 2 on your hemocraft die, you can reroll and use either roll 
+ - spellcasting 
+ - cantrips: 
+   * otherworldly presence (1): thaumaturgy 
+   * infernal legacy (1): fire bolt
+   * magic-initiate::druid (2): mending, guidance 
+   * warlock (2): blade ward, minor illusion 
+ - spell slots: 3_{1} 
+ - spells prepared: ranger (2), warlock (2)
+   * lvl-1 (ranger): cure wounds, goodberry 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (MI:druid): jump (free x1/LR)   
+   * lvl-1 (infernal legacy): hellish rebuke (free x1/LR)
+   * lvl-1 (warlock): armor of agathys, detect magic (R)  
+
+NOTE: Lvl-04 and we get our blood.hunter subclass. We go profane.soul with a fiend patron. The fiend patron rite focus lets us reroll 1's and 2's when using rite of the flame. This makes the average value of a hemocraft die roll go from 2.5 to 3, which isn't much right now. But eventually we'll be rolling d10s for our hemocraft die, and in that case this feature would boost damage from 5.5 to 6.3, so it becomes more valuable over time. Plus, recall that we roll additional hemocraft die when we use blood curse of the marked, which essentially doubles the value of this feature. Next, profane soul lets us learn two warlock cantrips, gain a single pact magic slot (which recovers on a SR), and learn two lvl-01 warlock spells. For the cantrips, since our WIS is pretty low, we're going for defense and utility. Given our low-ish AC, blade ward is an excellent use of our concentration when we're not using HM. So we pick that up. Then we also take minor illusion, which we can combine with thaumaturgy to make decently effective distractions. For our leveled spells, I opted for learning armor of agathys and detect magic as warlock spells, then swapping detect magic for goodberry as a ranger spell. Basically, we're switching things around in order to pick up armor of agathys and goodberry as new spell preparations. Both are defensive, and meant to help us with our survivability while we're still just mucking it up as a TWF melee character. With 1 assumed SR per adventuring day, we effectively have four lvl-01 spell slots. We get two free casts of HM per day, meaning we have about 2 spell slots to us casting things like cure wounds, hellish rebuke, armor of agathys, and goodberry. At this level, I would probably prioritize using my free slots on goodberry at the end of the day, so that the party has 1HP revives available for when I inevitably go down. But if you are just trying to crank out damage, then armor of agathys + hellish rebuke is the way to go. At this level we also start to see the reason for keeping our BA `free' in this character build, since we want to cast HM on turn-01, then activate our crimson-rite on turn-02, then use blood curse of the marked or armor of agathys on turn 3/4. You get the point. We have a number of things to do with our BA that make us progressively stronger over the course of a fight. So we load all our damage into our action, and then keep sequentially buffing ourselves with our BA round over round. 
+
+
+
+
+#######
+Level-05: Ranger-01, Blood.Hunter-04 (Profane.Soul::Fiend)
+ - proficiency bonus (PB): +3 
+ - cantrip scaling 
+   * fire bolt = 2d10 
+ - feat: sentinel
+   * ASI: +1 DEX (DEX=18) 
+   * guardian: immediately after a creature w/in 5ft of you disengages or hits an ally, you can make an AoO
+   * halt: when you hit a creature with an AoO, their speed becomes 0 for the rest of the turn 
+ - spellcasting 
+ - cantrips: 
+   * otherworldly presence (1): thaumaturgy 
+   * infernal legacy (1): fire bolt
+   * magic-initiate::druid (2): mending, guidance 
+   * warlock (2): blade ward, minor illusion 
+ - spell slots: 3_{1} 
+ - spells prepared: ranger (2), warlock (2)
+   * lvl-1 (ranger): cure wounds, goodberry 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (MI:druid): jump (free x1/LR)   
+   * lvl-1 (infernal legacy): hellish rebuke (free x1/LR)
+   * lvl-1 (warlock): armor of agathys, detect magic (R) 
+   * lvl-2 (infernal legacy): darkness (free x1/LR)
+
+NOTE: Alright, lvl-05. First off we get a PB increase (+3) and cantrip scaling (firebolt = 2d10). At blood.hunter-04 we also get a feat and we go with sentinel. This lets us boost our DEX to 18 (increasing our dmg and chance to hit) and also gives us the guardian and halt features. We're going to make great use of both these features in just a few levels. But for now they represent a nice boost to our damage output outside our turn (we're able to attack when allies near us are attacked) and means we can shut down single targets pretty easily with just our reaction. There is already some synergy between sentinel and spells like armor of agathys and hellish rebuke. But it's going to get even better. For now, we should think of sentinel as a nice-but-not-game-changing damage + control feature. Finally, at character lvl-05 we get our second infernal legacy spell, which is darkness. Again, right here at this level, it doesn't do a whole lot for us (though is a situationally good spell on its own). In just a few levels, we're going to really like having it. In general, our tactics and playstyle shouldn't be much changed from previous levels. For a quick damage check here, if we were to do a full round of attacks with HM and crimson rite active on an enemy that we marked with blood curse of the marked and who hit us on their turn and proc'd both agathys and hellish rebuke, we would do: 4d6+8(DEX)+6(rite)+5(agathys)+11(rebuke) = 44 dmg. Pretty good. For end of tier-1 we're middle of the pack. Our ranger dip delaying extra attack hurts us quite a bit. But stacking HM and crimson rite is about as good as you can do for tier-1 damage anyways. Our main limitation is that we're sitting at AC-16 and trying to fight in melee. 
+
+
+
+
+#######
+Level-06: Ranger-01, Blood.Hunter-05 (Profane.Soul::Fiend)
+ - extra attack 
+ - hunter's bane 
+   * advantage on survival checks to track fey, fiends, or undead
+   * advantage on INT checks to recall information about such creatures 
+   * hemocraft modifier = WIS; DC = 8+PB+WIS (12)
+   * hemocraft die (1d6)
+ - spellcasting 
+ - cantrips: 
+   * otherworldly presence (1): thaumaturgy 
+   * infernal legacy (1): fire bolt
+   * magic-initiate::druid (2): mending, guidance 
+   * warlock (2): blade ward, minor illusion 
+ - spell slots: 3_{1} 
+ - spells prepared: ranger (2), warlock (3)
+   * lvl-1 (ranger): cure wounds, goodberry 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (MI:druid): jump (free x1/LR)   
+   * lvl-1 (infernal legacy): hellish rebuke (free x1/LR)
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), detect magic (R) 
+   * lvl-2 (infernal legacy): darkness (free x1/LR)
+
+NOTE: Lvl-06 and we go blood.hunter-05. We get extra attack, our hemocraft die increases to a d6, and we get to learn one new additional warlock spell. For the spell, I just took comprehend languages, since it's a pretty useful ritual and fits with our `detective' character identity. Unseen servant could also be a good option. But I would definitely avoid choosing something that requires a spell slot. Note that with our fiend-pact rite focus, our d6 hemocraft die does an average of 4.2 damage on hit. Extra attack is really nice for us, since it enables us to make three attacks while keeping our bonus action free (if we leverage the nick mastery). Notably, it also makes using the nets that we carry around more appealing, since we can use a net with our first attack, and still make two additional weapon attacks (at advantage if they fail) with the attack action (leveraging light + nick). And our BA is still free. And with the mending cantrip from MI:druid, we can fix any net that isn't completely destroyed post combat. So yeah, lean in to the net life. For our DPR, assuming we have permanent uptime on HM and crimson rite, our basic attack set would deal 6d6+12(DEX)+8.4(rite) = 41.4 dmg. If we've used curse of the marked, this goes up to 49.8 (two more rite procs). Maxing it out with agathys and hellish rebuke, we could get all the way up to 65.8. Really strong for early tier-2. 
+
+
+
+
+###################################################################################################################
+EXTRA NOTES 
+
+ranger-02 + blood hunter-18 (profane soul: fiend)
+
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15 (+2) = 17 
+ - CON = 14 
+ - INT = 12 (+1) = 13 
+ - WIS = 14 
+ - CHA = 08  
+
+assume that using a nick weapon with your first attack allows you to make the additional attack granted by the light action (i.e, a second attack with a hand-crossbow) as part of the attack action. This way, we can get 3 attacks that add our DEX mod to damage with the attack action (once we get extra attack) and still keep our BA free for doing other stuff. This seems consistent with what is the consensus on RAW online. 
+
+Species: Tiefling (Infernal) 
+ - size: medium or small  
+ - speed: 30ft 
+ - darkvision (60ft) 
+ - fiendish legacy 
+   * otherworldly presence: thaumaturgy 
+   * resistance to fire damage 
+   * fire bolt (lvl-00), hellish rebuke (lvl-03), darkness (lvl-05) 
+
+Feats: 
+ - lvl-00: MI: druid --> mending, guidance, jump (free x1/LR) 
+ - lvl-04: Sentinel: +1 DEX (DEX=18)
+ - lvl-10: Crossbow Expert: +1 DEX (DEX=19)
+ - lvl-14: ASI: +1 DEX, +1 WIS (DEX=20, WIS=15)
+ - lvl-18: resilient (WIS): +1 WIS (WIS=16)
+
+Blood Curses
+ - blood curse of the marked (lvl-02)
+ - blood curse of binding (lvl-08)
+ - blood curse of the eyeless (lvl-12)
+ - blood curse of bloated agony (lvl-16)
+ - blood curse of the souleater (lvl-20)
+
+Crimson Rites 
+ - rite of the flame (lvl-03) 
+ - rite of the storm (lvl-09) 
+ - rite of the oracle (lvl-16)
+ 
+Progression: 
+ - lvl-01: ranger-01 --> cure wounds, detect magic, favored enemy, weapon mastery, martial weapons/med armor
+ - lvl-02: ranger-01, blood-hunter-01 --> alchem supplies, hunter's bane, blood maledict 
+ - lvl-03: ranger-01, blood-hunter-02 --> TWF, crimson rite, hellish rebuke
+ - lvl-04: ranger-01, blood-hunter-03 (profane soul) --> blade ward, minor illusion, witch bolt, armor of agathys
+ - lvl-05: ranger-01, blood-hunter-04 (profane soul) --> sentinel: +1 DEX (DEX=18), darkness
+ - lvl-06: ranger-01, blood-hunter-05 (profane soul) --> extra attack, hemocraft die (1d6), +1 spell known (PfGE) 
+ - lvl-07: ranger-02, blood-hunter-05 (profane soul) --> blind fighting, deft explorer (expertise)
+                                                         cure wounds, detect magic, fog cloud 
+ - lvl-08: ranger-02, blood-hunter-06 (profane soul) --> brand of castigation, +1 curse (binding), maledict x2/rest
+                                                         +1 lvl-01 spell slot 
+ - lvl-09: ranger-02, blood-hunter-07 (profane soul) --> mystic frenzy, scorching ray, +1 crimson rite (lightning)
+                                                         lvl-02 pact slots, +1 spell known (invis, mirror img)
+ - lvl-10: ranger-02, blood-hunter-08 (profane soul) --> crossbow expert: +1 DEX (DEX=19), change BH fight-style to archery
+                                                         change ranger spells to: cure wounds, HoT, fog cloud
+ - lvl-11: ranger-02, blood-hunter-09 (profane soul) --> grim psychometry, +1 spell known (hold person) 
+ - lvl-12: ranger-02, blood-hunter-10 (profane soul) --> +1 cantrip (EB), dark augmentation, +1 blood curse
+ - lvl-13: ranger-02, blood-hunter-11 (profane soul) --> brand of the sapping scar, +1 spell known, hemocraft 1d8
+ - lvl-14: ranger-02, blood-hunter-12 (profane soul) --> ASI: +1 DEX, +1 WIS (DEX=20, WIS=15) 
+ - lvl-15: ranger-02, blood-hunter-13 (profane soul) --> brand of tethering, maledict x3/rest, 3rd lvl pact slots 
+                                                         +1 spell known (hunger of hadar) 
+ - lvl-16: ranger-02, blood-hunter-14 (profane soul) --> +1 crimson rite (oracle), hardened soul, +1 blood curse
+ - lvl-17: ranger-02, blood-hunter-15 (profane soul) --> +1 spell known, fireball 
+ - lvl-18: ranger-02, blood-hunter-16 (profane soul) --> resilient (WIS): +1 WIS (WIS=16) 
+ - lvl-19: ranger-02, blood-hunter-17 (profane soul) --> +1 spell known, maledict x4/rest, hemocraft die 1d10  
+ - lvl-20: ranger-02, blood-hunter-18 (profane soul) --> + blood curse of the souleater

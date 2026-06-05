@@ -1,0 +1,391 @@
+Moniker: Fist of the Summer Court
+Classes: Barbarian-14 (Wildheart), Warlock-5 (Archfey)
+Race: Eladrin (Summer)
+ - size = medium
+ - speed = 30ft 
+ - darkvision (60ft)
+ - fey ancestry = adv. on saves against charmed 
+ - keen senses = proficiency in perception
+ - fey step = BA teleport (30ft); PBx/day
+   * summer (lvl-3) = creatures you choose w/in 5ft of destination take PB fire damage
+ - trance 
+   * when you finish a trance, you can change season, and gain 2 weapon/tool 
+     proficiencies (healer's kit, thieves' tools) 
+Background: survivalist (custom) = proficiency in medicine, survival, herbalism kit
+            basically spent time as a cowboy prior to adventuring, out in the wild 
+            wrangling/husbanding animals and living off the land
+Point-Buy Stats 
+ - STR: 15 (+2) = 17
+ - DEX: 13 (+1, resilient) = 14
+ - CON: 14 
+ - INT: 8
+ - WIS: 10 
+ - CHA: 12 (+1) = 13
+ASI/Feats 
+ - lvl-1: resilient (DEX=14) 
+ - lvl-6: feat: slasher (STR=18)
+ - lvl-10: feat: skill expert (STR=19, proficiency in deception, expertise in animal handling)
+ - lvl-13: ASI: STR=20, CHA=14 
+ - lvl-17: dual-wielder
+
+
+PROGRESSION SUMMARY 
+ - lvl-1: barbarian-1 
+ - lvl-2: barbarian-1, warlock-1
+ - lvl-3: barbarian-1, warlock-2
+ - lvl-4: barbarian-2, warlock-2
+ - lvl-5: barbarian-3 (wildheart), warlock-2
+ - lvl-6: barbarian-4 (wildheart), warlock-2
+ - lvl-7: barbarian-5 (wildheart), warlock-2
+ - lvl-8: barbarian-6 (wildheart), warlock-2
+ - lvl-9: barbarian-7 (wildheart), warlock-2 
+ - lvl-10: barbarian-8 (wildheart), warlock-2 
+ - lvl-11: barbarian-9 (wildheart), warlock-2 
+ - lvl-12: barbarian-9 (wildheart), warlock-3 (archfey)
+ - lvl-13: barbarian-9 (wildheart), warlock-4 (archfey) 
+ - lvl-14: barbarian-9 (wildheart), warlock-5 (archfey) 
+ - lvl-15: barbarian-10 (wildheart), warlock-5 (archfey) 
+ - lvl-16: barbarian-11 (wildheart), warlock-5 (archfey) 
+ - lvl-17: barbarian-12 (wildheart), warlock-5 (archfey) 
+ - lvl-18: barbarian-13 (wildheart), warlock-5 (archfey) 
+ - lvl-19: barbarian-14 (wildheart), warlock-5 (archfey)
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES  
+
+
+Level-1: Barbarian-1 
+ - feat: resilient (DEX)
+ - saving throw proficiencies: STR, CON 
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * barbarian (2): animal handling, nature 
+   * elf (1): perception 
+   * survivalist (2): medicine, survival
+   * languages: common, elvish, sylvan
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, martial melee weapons 
+   * armor: light armor, medium armor, shields
+   * tools: herbalism kit (survivalist), healer's kit (eladrin), thieves' tools (eladrin)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (background) + 75gp (barbarian)
+   * weapons: glaive (20gp), battleaxe (10gp)
+   * tools: herbalists' kit (5gp), healer's kit (5gp), thieves' tools (25gp) 
+   * gear: explorer's pack (10gp) 
+   * armor: chain shirt (50gp) 
+   * spare coin: 0gp
+ - combat equipment:
+   * weapon
+     + glaive = 1d10 slashing (graze); heavy, reach, two-handed
+     + battleaxe = 1d8 slashing (topple); versatile (1d10)
+   * armor: chain mail
+   * armored AC = 13 + 2(DEX) = 15 
+ - weapon mastery (2): glaives (graze), battleaxes (topple) 
+ - rage
+   * number of uses: 2
+   * damage bonus: +2
+
+NOTE: We're taking resilient DEX at first level to get a +2 DEX and to give ourselves proficiency in DEX saves. We won't be increasing our DEX any further on this character, and spell damage from DEX saves is an often-used way to get around rage's inherent damage resistance. Taking resilient makes us much tanky-er from the start, which is especially good since we'll be multiclassing right away. In combat, stick to the barbarian basics. Attack with the glaive for consistent damage and reach and with the battleaxe to knock enemies prone. With fey step, we can BA misty step 30ft 2x/long rest, which gives us good mobility. Also, with proficiency in nature, medicine and the herbalists kit, we are decently capable of gathering/extracting materials from our surroundings and crafting potions. This kind of druid-y stuff is a big part of how we will deliver out of combat utility with this character. 
+
+
+Level-2: Barbarian-1, Warlock-1 
+ - pact magic 
+ - eldritch invocations (1)
+   * pact of the tome = +3 cantrips, +2 lvl-1 ritual spells, +1 lvl-1 spell slot
+ - cantrips: 
+   * warlock (2): friends, green-flame blade 
+   * pact of the tome (3): guidance, resistance, produce flame
+ - spell slots: 2_{1} 
+ - spells prepared: 2 (warlock)
+   * lvl-1 (warlock): armor of agathys, charm-person
+   * lvl-1 (pact of the tome): detect magic, alarm
+
+NOTE: Switching to warlock here. Pact of the tome (PotT) might seem weird, but we're mostly going to be using our warlock levels to give us out-of-combat utility. PotT gives us a lot of that. I would think of the book as a kind of survival-guide granted to our character by their archfey patron. Our summer-eladrin character is naturally fire-themed, so produce flame and green-flame blade are good fits (the latter gives us a nice way to do damage while we aren't raging). Armor of agathys is a staple for melee warlocks (though not particularly thematic). Alarm  fits with our survivalist background and is moderately useful. All the other spells (guidance, resistance, detect magic) can be viewed as `channeling primal knowledge' through contacting the ancestral fey spirits. This will be a big theme for this character, who will have a lot more out of combat utility than the typical barbarian. Finally, with a 13 CHA, spells like friends and charm person let us lean into our fey theme little bit, too, and have slghtly better capacity in social interactions than your typical barbarian. 
+
+
+Level-3: Barbarian-1, Warlock-2 
+ - fey step improvement (summer)
+ - magical cunning = recover 1/2 pact magics slots in 1m 1x per long rest
+ - combat equipment:
+   * weapon
+     + glaive = 1d10 slashing (graze); heavy, reach, two-handed
+     + battleaxe = 1d8 slashing (topple); versatile (1d10)
+   * armor: chain mail [+ shield]
+   * armored AC = 13 + 2(DEX) [+ 2(shield)] = 15[17]
+ - eldritch invocations (3)
+   * pact of the tome = +3 cantrips, +2 lvl-1 ritual spells, +1 lvl-1 spell slot
+   * otherworldly leap = cast jump on yourself at will 
+   * lessons of the first ones (magic initiate) 
+ - cantrips: 
+   * warlock (2): friends, green-flame blade 
+   * pact of the tome (3): guidance, resistance, produce flame
+   * magic initiate (2): message, druidcraft
+ - spell slots: 3_{2} 
+ - spells prepared: 3 (warlock)
+   * lvl-1 (warlock): armor of agathys, charm-person, comprehend languages
+   * lvl-1 (pact of the tome): detect magic, alarm
+   * lvl-1 (magic initiate): animal friendship
+ 
+NOTE: At Warlock-2, we get 2 more eldritch invocations as well as another warlock spell slot and the ability to prepare another warlock spell. We also get the magical cunning warlock base class feature, which allows us to recover half (1) of our pact magic slots 1x/long rest without taking a short rest. Super nice. Now for the invocations. We take otherworldly leap which allows us to cast jump on ourselves for free. With 17 STR, this means we can now running long (high) jump 51ft (18ft) and 24ft (9ft) from a standstill. Assume that when we aren't incapacitated, we are casting this on ourselves all the time. This means that we should have it up whenever we roll initiative. In combination with our fey step species ability, we now have excellent mobility and be able to get into melee easily. Notably, at level-3 our fey step ability also gains an extra feature based on our seasonal alignment. I would say stick with summer (PB fire damage after teleport) since it doesn't require a save (our CHA is low) and it is consistent with our fiery theme. For our second invocation we take lessons of the first ones, which we use to get magic initiate, which we use to get: message, druidcraft, and animal friendship. Thematically, lessons of the first ones leans into our `primal knowledge' themed barbarian character. Mechanically, these spells (esp. message and animal friendship) are going to be helpful for us as we progress towards being a kind of `beast whisperer' character who can commune with local fauna and enlist them to help the party out of combat (e.g., for scouting, creating distractions, etc.). For now, just enjoy jumping around. Oh and if you haven't yet, pick up a shield for when you are fighting with the whip, as this represents a nice boost to our AC. 
+
+
+Level-4: Barbarian-2, Warlock-2 
+ - danger sense 
+ - reckless attack 
+
+NOTE: Pretty simple level here. Danger sense gives us advantage on DEX saves. We're already proficient in those, so now we should rarely fail even though our DEX isn't amazing. Reckless attack is a barbarian staple, and part of what makes the class an offensive powerhouse. Since we've mostly gone for defensive/utility features thus far, our damage at this level will be a bit lacking. Reckless attack is definitely a nice way to give it a boost. 
+
+
+Level-5: Barbarian-3 (Wildheart), Warlock-2 
+ - proficiency bonus (PB): +3
+ - primal knowledge
+   + gain one barbarian skill proficiency 
+   + while raging, can use STR for acrobatics, intimidation, perception, stealth
+     and survival checks
+ - skill proficiencies: 
+   * barbarian (3): animal handling, nature, intimidation
+   * elf (1): perception 
+   * survivalist (2): medicine, survival
+   * languages: common, elvish, sylvan
+ - rage: 
+   * number of uses: 3
+ - subclass (wildheart) 
+   * animal speaker 
+   * rage of the wilds
+     + bear = resistance to two damage types 
+     + eagle = disengage + dash as BA 
+     + wolf = pack tactics 
+ - cantrips: 
+   * warlock (2): friends, green-flame blade 
+   * pact of the tome (3): guidance, resistance, produce flame
+   * magic initiate (2): message, druidcraft
+ - spell slots: 3_{2} 
+ - spells prepared: 3 (warlock)
+   * lvl-1 (warlock): armor of agathys, charm-person, comprehend languages
+   * lvl-1 (pact of the tome): detect magic, alarm
+   * lvl-1 (magic initiate): animal friendship
+   * lvl-1 (wildheart): speak with animals, beast sense (ritual only) 
+
+NOTE: Alright, at level-5 we go barbarian-3 and get a number of new features. First, from the base-class we get another use of rage (3 per day, recover 1 on short rest, all on long rest). We also get the new 2024 barbarian primal knowledge feature, which is awesome. Right off the bat it gives us another barbarian skill proficiency. I took intimidation to give our character an effective way to leverage our (relatively) high CHA in social interactions. Primal knowledge also lets us use STR instead of DEX/WIS/CHA for acrobatics, intimidation, perception, stealth, and survival checks. This is a big boost to our character's out of combat utility. Especially given that we are already proficient in a number of these skills. Next, at barbarian-3 we also get our subclass, and we're going with path of the wildheart. In addition to being super thematic for our feywild cowboy character, we get some awesome new features that significantly expand our utility in and out of combat. First off, we get the animal speaker ability, which lets us cast speak with animals and beast sense as rituals. With these spells in hand, we can now (i) cast animal friendship to charm any beast we encounter in the wild, (ii) cast speak with animals and ask/tell the beast to do us a favor (e.g., go into that cave over there) and then (iii) cast beast-sense to watch/hear through the beast's eyes while it's scouting. It's kind of the long-way around to recreating the find-familiar spell (which we could have taken with PotT), but it allows us to make use of any beasts we encounter in the wild -- many of which are likely better suited to the context/more impressive than a familiar would be. In addition, animal friendship + speak with animals also lets you use local animals for distraction instead of just scouting. For example, we could convince a herd of local buffalo to stampede, or convince an owlbear to go rampage through a nearby town. In general, the animal-speaker ability, in combination with the utility features we gained through taking warlock levels, now gives this character a meaningful way to make use of local fauna to assist with the party's adventuring goals. Obviously it's not comparable to the level of utility you'd get from a full druid or wizard, but for a barbarian it's really good. And I think it would make this character a lot of fun to play. 
+
+Finally, when we gain our wildheart subclass, we also get the rage of the wilds feature. This feature lets us choose an animal spirit to embody whenever we start our rage. Bear let's us choose two damage resistances to gain (not force/psychic). Eagle let's us disengage + dash as a bonus action on our turn. Wolf lets us give advantage to allies making melee attacks against enemies within 10ft of us. I would say that I would pick the eagle form as a default, since it would allow us to make the most out our otherworldly leap ability. But great thing about this feature is the flexibility, which is newly added to the 2024 version of the subclass. So definitely pick whichever one makes the most sense for the situation. 
+
+
+Level-6: Barbarian-4 (Wildheart), Warlock-2
+ - combat equipment:
+   * weapon
+     + glaive = 1d10 slashing (graze); heavy, reach, two-handed
+     + battleaxe = 1d8 slashing (topple); versatile (1d10) 
+     + whip = 1d4 slashing (slow); finesse, reach
+   * armor: breastplate [+ shield]
+   * armored AC = 14 + 2(DEX) [+ 2(shield)] = 16[18]
+ - feat: slasher (STR=18) 
+ - weapon mastery (3): glaives (graze), battleaxes (topple), whips (slow) 
+
+NOTE: At level-6, we go barbarian-4 to get a (long-awaited) ability score increase. Here we take the half-feat slasher, which let's us boost our STR to 18, increasing our chance to hit, damage, jump distance, DEX-based abilities, and greatly increasing our ability to lock-down single target enemies. In particular, the slasher feat states that whenever we hit a creature with an attack that deals slashing damage we can reduce their speed by 10ft until the start of our next turn. This feature dovetails very nicely with the weapon masterird we've selected. Specifically, when we use our glaive, even if we miss with our attack, we still do slashing damage to the enemy we attack because of the graze mastery feature. So this is a guaranteed slow. The whip both does slashing damage and has the slow mastery property (only weapon like this). So when we hit with our whip, we reduce the enemy's speed by 20ft. This is a bigger debuff, but requires that we hit. Finally, the battleaxe can potentially knock an enemy prone (DC-15 CON save) and reduce their speed by 10ft with slasher. This is the biggest debuff, but requires that we hit and the enemy to fail a save. With this full suite of slashing-weapon options, in combination with our great mobility, we will be able to reliably get on top of high-value targets and make it hard for them to escape. In addition to tanking damage, this is the primary in-combat utility that our character provides. Finally, at level-6, I assume we've managed to scrape together 400 gold so that we can buy ourselves a breastplate and increase our AC t to base 16, and 18 if we're wielding the shield. 
+
+
+Level-7: Barbarian-5 (Wildheart), Warlock-2 
+ - extra attack 
+ - fast movement (40ft)
+
+NOTE: At level-7, we go barbarian-5, which gets us extra attack (finally!) and fast movement. Extra attack is a huge boon, as it fully doubles our damage potential each turn, and gives us extra opportunities to inflict slows via slasher. Extra movement is also clutch since it means that our movement + dash is up to 80ft per round which allows us to take full advantage of our jumping capability. For example, in eagle form (with the BA dash), we can run 20ft, jump up to 55 feet (20ft vertically) and still attack on our turn.  
+
+ 
+Level-8: Barbarian-6 (Wildheart), Warlock-2
+ - rage: 
+   * number of uses: 4
+ - aspect of the wilds = bonus proficiency on long-rest
+   * elephant = athletics or insight
+   * owl = perception or investigation
+   * spider = stealth or survival
+
+NOTE: Ok, we're level 8 and we're going barbarian-6. We get our second wildheart subclass feature, aspect of the wilds, which lets us gain a bonus skill proficiency depending on what animal spirit you choose. As a default, I might go spider to get stealth proficiency, which is always nice. But I think going owl for expertise in perception or elephant for athletics proficiency would also be totally valid baseline options. Obviously do what makes sense in the given situation; you can switch out which animal spirit you're aligning with on a long rest. The flexibility they added to this subclass in the new 2024 PHB really makes it shine, and this new feature adds significantly to our barbarian's overall utility. In addition, we get another use of rage per day, which helps fuel our capabilities both in and out of combat. 
+
+
+Level-9: Barbarian-7 (Wildheart), Warlock-2
+ - proficiency bonus (PB): +4
+ - feral instinct = advantage on initiative rolls
+ - instinctive pounce = move half speed when you activate rage
+
+NOTE: At level-9, we go barbarian-7. We only get a couple of new features here. Our proficiency bonus increases, giving us one more fey step per long rest (up to 4). We also get barbarian base-class features feral instinct and instinctive pounce, which will help us get into combat more easily. Again, in combination with our super high mobility, we should have no problem getting on top of high-value targets quickly. 
+
+
+Level-10: Barbarian-8 (Wildheart), Warlock-2
+ - feat: skill expert (STR=19, proficiency in deception, expertise in animal handling)
+ - skill proficiencies (* indicates expertise): 
+   * barbarian (3): animal handling*, nature, intimidation
+   * elf (1): perception 
+   * survivalist (2): medicine, survival
+   * skill expert (1): deception
+   * languages: common, elvish, sylvan
+
+NOTE: Ok this is a weird level, and I thought about what to do here a lot. Obviously we could have just capped our STR at 20 with an ASI, which would have increased our offensive capability and also helped us with all our skill checks while we're raging. We could have also taken another martial half feat (e.g., charger, polearm master, etc.) to give us more damage and combat utility. Instead we take skill expert to increase our STR to 19 (which doesn't increase our modifier) and gain proficiency in deception and expertise in animal handling -- huh?. The rational for this seemingly odd choice is as follows. First, this character is soon going to be taking levels in warlock, and (spoiler) we're going to go for the archfey subclass. So trickery and deception are on theme. Plus, when it comes to having additional skill proficiencies, I think it really only makes sense if you get them sooner rather than later. I mean, in terms of how a character actually progresses/evolves through their career, it seems less meaningful to change/add something once you're already in the late game. Level 10 is early enough that it feels like our character is still growing into their final form, which, in this case, means embracing the tricksy, deceptive nature of the feywild. It also gives our character another way to meaningful RP in social interactions (now we have deception and intimidation), which barbarians often find lacking. This, I think, will make this character more fun to play for the next couple levels than if we just increased our STR and did a bit more damage. Second, given our low WIS score, expertise in animal handling makes it *much* more likely that we will be able to successfully recruit beast companions to help us. This is not only super thematic for our feywild-wildheart barbarian, but also one of the core out-of-combat utility capabilities that we're shooting for with this build. Finally, we're going to get a nice bump to our damage and combat utility next level anyway, so it doesn't feel as bad to hold off on maxing STR here. 
+
+
+Level-11: Barbarian-9 (Wildheart), Warlock-2
+ - rage: 
+   * number of uses: 4
+   * damage bonus: +3 
+ - brutal strikes: 
+   * forceful blow = 15 foot push and move 1/2 speed w/o provoking OoAs 
+   * hamstring blow: -15ft enemy movespeed on hit until start of your next turn
+
+NOTE: Ok at level-11, we are barbarian-9 and we get access to the new 2024 class feature brutal strikes, which is awesome. The way brutal strikes works is, if we have advantage on an attack (either from reckless attack or some external source) we can forgo that advantage in order to potentially add 1d10 in damage *plus* an additional weapon-mastery like effect. So now when we hit with a brutal strike, we can add either (i) a 15ft push + moving half our speed (forceful blow), or (ii) reduce enemy movement speed by 15ft until the start of our next turn (hamstring blow). While forceful blow will obviously be situationally the best choice, our character is definitely built to get the most out of using hamstring blow. For example, if we hit with a hamstring blow using our battleaxe we (i) reduce enemy movespeed by 10ft from slasher (ii) potentially knock the enemy prone with topple (DC-16), and (iii) reduce their movespeed by 15ft from hamstring blow. So if everything goes through, the enemy is prone with 25ft less movespeed. For a lot of creatures, this means they won't even be able to stand up and move on their turn. If we hit an opponent with a hamstring blow using our whip, their movement speed is reduced by 35ft (10 from slasher, 10 from slow, 15 from hamstring blow). And that is without any opportunity to save. Ouch. Now with brutal strikes in hand, our character's capacity to be an annoying lock-down tank in combat is much improved. We can go bear-form when we rage, get resistance to whatever damage the enemy is doing, use our high mobility to get on top of high value targets, then do decent damage while making it very hard for them to escape or reposition. At barbarian-9 we also get an increase to our rage damage bonus (up to +3), which is nice, and offsets the damage gain we delayed by taking skill expert in our last level. 
+
+
+Level-12: Barbarian-9 (Wildheart), Warlock-3 (Archfey) 
+ - subclass (archfey)
+   * steps of the fey
+     + refreshing step = +1d10 THP to creature you can see at destination
+     + taunting step = creatures w/in 5ft of origin make WIS save (DC-13) or taunted
+ - cantrips: 
+   * warlock (2): friends, green-flame blade 
+   * pact of the tome (3): guidance, resistance, produce flame
+   * magic initiate (2): message, druidcraft
+ - spell slots: 1-2_{2} 
+ - spells prepared: 4 (warlock)
+   * lvl-1 (warlock): charm-person, comprehend languages
+   * lvl-1 (pact of the tome): detect magic, alarm
+   * lvl-1 (magic initiate): animal friendship
+   * lvl-1 (wildheart): speak with animals, beast sense (ritual only) 
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-2 (warlock): borrowed knowledge, spider climb
+   * lvl-2 (archfey): calm emotions, phantasmal force, misty step (free CHAx/long-rest)
+
+NOTE: Ok we're level-12 and we're going back to warlock to get a bunch of super nice stuff. At warlock-3 we get our subclass, and, as should be obvious by now, we're going with the Archfey, which is super thematic for our tricky, animal-loving, eladrin character. In terms of features, first we get the subclass feature `steps of the fey' which lets us learn the misty step spell, cast it CHA times per day for free (only once right now) and adds an additional rider effect when we cast it (refreshing step or taunting step). In combination with our eladrin fey step ability, this means we now have 5 free casts of misty step per day which also do additional things -- either damage for our eladrin fey step, or THP/taunting with our archfey ability. All in all this amounts to even more mobility and combat utility for our jumpy/teleport-y character. For steps of the fey specifically, our save DC for taunting step is pretty low (DC-13), so I would say maybe use the refreshing step option as a default. For example, there's no reason we couldn't choose to give ourselves those THP, even though we'll be super tanky as is. 
+
+In addition to steps of the fey, our subclass also gives us access to some bound spells. Specifically, we get access to sleep and faerie fire as level-1 spells and to calm emotions, phantasmal force and misty step as level-2 spells. None of these are really game changers, but all could be useful. In particular, I could imagine our character using sleep to pacify a beast that we are trying to charm/interact with. With a level-2 spell slot, an average cast of the sleep spell could render unconscious a beast with 30HP, which would include most CR-1/2 or lower beasts. We could also just use it to put a bunch of smaller creatures/NPCs to sleep and that's also useful. Faerie fire isn't going to be great because of our low spell DC, and the same goes for calm emotions and phantasmal force. Though willing creatures can voluntarily fail the save for calm emotions. Calm emotions also technically only works on humanoids, but I would ask your DM if you would let our character use it on beasts (perhaps subject to an animal handling check) since I think it could have some utility/RP potential there (think Chris Pratt in Jurassic park facing down the raptors). Anyway, nice to have as options. 
+
+In addition to our subclass spells, we also get access to level-2 warlock spells and get to prepare one additional warlock spell. I think borrowed knowledge -- which gives us proficiency in a skill of our choice for an hour when we cast it -- is an auto include for us. Not only does it fit perfectly with the `primal knowledge' theme of our character, but it also dovetails really well with our primal knowledge and aspect of the wilds features since it doesn't require concentration, meaning we can cast it and then still benefit from it after we rage. Being able to essentially hand pick *two* additional skill proficiencies to take into any situation fits perfectly with the concept of our character as a barbarian who offers a lot of great utility out of combat. I think I would also drop armor of agathys -- which given that we're level-12 and our character is inherently tanky -- is no longer very useful in order to pick up spider climb. I choose spider climb here because it just *feels* like our animalistic character should have the ability to climb (indeed it was a part of the original totem barb subclass). Plus, in combination with our permanent jump status, it means we can ostensibly fly as long as there are surfaces to land on at the end of our turn. 
+
+Level-13: Barbarian-9 (Wildheart), Warlock-4 (Archfey) 
+ - ASI: STR=20, CHA=14
+ - proficiency bonus (PB): +5
+ - cantrips: 
+   * warlock (3): friends, green-flame blade, elementalism
+   * pact of the tome (3): guidance, resistance, produce flame
+   * magic initiate (2): message, druidcraft
+ - spell slots: 1-2_{2} 
+ - spells prepared: 5 (warlock)
+   * lvl-1 (warlock): charm-person, comprehend languages
+   * lvl-1 (pact of the tome): detect magic, alarm
+   * lvl-1 (magic initiate): animal friendship
+   * lvl-1 (wildheart): speak with animals, beast sense (ritual only) 
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-2 (warlock): borrowed knowledge, spider climb, invisibility
+   * lvl-2 (archfey): calm emotions, phantasmal force, misty step (free CHAx/long-rest)
+   
+NOTE: Level-13, we go for Warlock-4. We take an ASI to boost our STR to 20 and our CHA to 14. Our proficiency bonus also increases to 5. Increasing our CHA increases the DC of our warlock spells (namely, animal friendship) and our base modifier for our intimidation and deception checks. Thanks to the +1 to our CHA and PB, we now also get 7 free misty steps per long rest (5 from eladrin, 2 from archfey). This is so much free mobility that I think we should probably default to taking bear form when we rage rather than eagle form (if we don't already). Even though eagle would give us the most mobility (with our 40 move speed, constant jump spell effect, and ability to dash on a BA), we can get nearly as much with misty step and still benefit from the damage resistances of bear form. So yeah, that CHA increase actually matters. Obviously, increasing our STR increases our chance to hit, damage, and the modifier for the primal knowledge ability checks we make while raging. We also get warlock cantrip and another level-2 warlock spell. I took elementalism and invisibility to fit with our primal-magic / fey-teleportation (appearing/disappearing) theme. Invisibility is also just another awesome tool in our belt for out-of-combat utility, which is kind of our thing. Hoorah, moving on! 
+
+
+Level-14: Barbarian-9 (Wildheart), Warlock-5 (Archfey) 
+- eldritch invocations (5)
+   * pact of the tome = +3 cantrips, +2 lvl-1 ritual spells, +1 lvl-1 spell slot
+   * otherworldly leap = cast jump on yourself at will 
+   * lessons of the first ones (magic initiate) 
+   * master of myriad forms = alter self on yourself at will 
+   * gaze of the two minds = create connection with willing creature (pilot beast)
+ - cantrips: 
+   * warlock (3): friends, green-flame blade, elementalism
+   * pact of the tome (3): guidance, resistance, produce flame
+   * magic initiate (2): message, druidcraft
+ - spell slots: 1-0-2_{2} 
+ - spells prepared: 6 (warlock)
+   * lvl-1 (warlock): charm-person, comprehend languages
+   * lvl-1 (pact of the tome): detect magic, alarm
+   * lvl-1 (magic initiate): animal friendship
+   * lvl-1 (wildheart): speak with animals, beast sense (ritual only) 
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-2 (warlock): borrowed knowledge, spider climb, invisibility
+   * lvl-2 (archfey): calm emotions, phantasmal force, misty step (free CHAx/long-rest)
+   * lvl-3 (warlock): summon fey
+   * lvl-3 (archfey): blink, plant growth
+
+NOTE: Probably my favorite level in this whole build. At level-14, we go warlock-5 and we get (i) two new eldritch invocations, (ii) 3rd level warlock spell slots and (iii) 3rd level archfey bound spells. The fun thing is that we get a lot out of each of these new features. 
+
+For eldritch invocations we take (a) master of myriad forms -- which allows us to cast alter self at will, and (b) gaze of the two minds which lets us touch a willing creature in order to establish a bond, and maintain that bond with our BA for up to an hour. While bonded, we can see/hear through the bonded creature's senses and cast spells as if from either your or the bonded creatures location as long as you are within 60ft. Starting with master of myriad forms -- the alter self spell has some really great flavor for our character. One option listed in the spell description says we can give ourself magical natural weapons, like claws or spines, including those which do slashing damage (to proc our slasher feat). So we should probably just default to doing that all the time and make it so we physically adopt some of the features of the animal spirits we're channeling. It also gives us permanent free access to an aquatic form (with swim speed and water breathing), which is great for exploration. It also lets us lean into our trickery/subterfuge capabilities by taking on different humanoid shapes. I think I would also try to use this spell when I'm out communicating with beasts in the nearby environment, adopting some aspects of their form to seem friendlier/more appealing (you can also make animal sounds/scents with druidcraft). Gaze of two minds is the final piece of our capstone ability to `warg' into beast familiars. First we cozy up to a friendly-neighborhood beasty (leveraging alter-self, druidcraft, nature/animal handling) then we charm it with animal friendship, ritual cast speak with animals so we can talk to it, connect via gaze of two minds so we can look through their senses, and then use message to telepathically communicate with it/give it directions (we share a language via animal friendship) as long as they are within 120ft of us. What's nice about this is that we can still cast spells while using gaze of two minds and it doesn't require concentration (unlike beast sense), so we can continually re-up speak with animals to keep the bond going for a long time. It really is just a glorified version of find familiar, but again I think the potential to leverage this ability as a *barbarian* and with some much more impressive/useful beasts that you encounter in the environment makes it much more flavorful and fun. Of course, if we had to, we could also use gaze of two minds on humanoid NPC we charm, and then pilot them into various locations, cast friends and charm person from their space, etc. So it's not limited to just beasts, strictly speaking. 
+
+Next for our spells. As an archfey warlock we get access to blink and plant growth as level-3 bound spells. Both are very good for us. Both are non-concentration, so we can cast them and then go into a rage. A blinking, bear-spirit barbarian that can teleport and jump 60ft is fun to think about, and incredibly tanky. Plant growth synergizes very well with our enemy-slow combat utility features. Enemies with in the area affected by plant growth have their movement reduced by a factor of 4. So plant growth + slasher + weapon-mastery (slow/topple) +  brutal strikes (hamstring strike) is a crazy amount of slowing capability. For example a creature with a base movement speed of 75ft would only be able to move 10ft if we were to hamstring-strike it with our whip and it had to move through the plant growth. The spell also has some nice potential out of combat if we use it to enrich a natural area for our beast/animal buddies. For our other level-3 warlock spells (those not bound to the archfey subclass), I think summon fey is the best option and really the only one that we want. Sure, we could take fly, but we've invested so much in mobility features of our own that just magically being able to fly seems like a waste. Plus it's concentration. Summon fey is also concentration, but provides good utility options in and out of combat. In combat, it's another body on the field. It has decent HP and attacks and can potentially charm or blind enemies, both of which are situationally useful. Out of combat, it's a viable target for your gaze of two minds, so you can use it as a default scout there are no beasts around. It has decent stats (+3 stealth) and darkvision. You can also use it's mirthful teleport ability to potentially charm beasts you want to recruit, teeing them up for animal friendship, adding another dimension to our animal handling capability. 
+
+Ok, whew! I think that's all I want to say about what we get at this level. Super happy with the build as it stands now. Let's keep going! 
+
+
+
+Level-15: Barbarian-10 (Wildheart), Warlock-5 (Archfey)
+ - weapon mastery (4): glaives (graze), battleaxes (topple), whips (slow), greataxes (cleave) 
+ - combat equipment:
+   * weapon
+     + glaive = 1d10 slashing (graze); heavy, reach, two-handed
+     + battleaxe = 1d8 slashing (topple); versatile (1d10) 
+     + whip = 1d4 slashing (slow); finesse, reach
+     + greataxe = 1d12 slashing (cleave); heavy, two-handed 
+ - nature speaker = commune with nature (only as ritual) 
+ - cantrips: 
+   * warlock (3): friends, green-flame blade, elementalism
+   * pact of the tome (3): guidance, resistance, produce flame
+   * magic initiate (2): message, druidcraft
+ - spell slots: 1-0-2_{2} 
+ - spells prepared: 6 (warlock)
+   * lvl-1 (warlock): charm-person, comprehend languages
+   * lvl-1 (pact of the tome): detect magic, alarm
+   * lvl-1 (magic initiate): animal friendship
+   * lvl-1 (wildheart): speak with animals, beast sense (ritual only) 
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-2 (warlock): borrowed knowledge, spider climb, invisibility
+   * lvl-2 (archfey): calm emotions, phantasmal force, misty step (free CHAx/long-rest)
+   * lvl-3 (warlock): summon fey
+   * lvl-3 (archfey): blink, plant growth
+   * lvl-5 (wildheart): commune with nature (ritual only)
+
+NOTE: At level-15, we go barbarian-10. We get another weapon mastery. I think the greataxe is a good choice since it is a slashing weapon, does a lot of damage (d12) and has the cleave property, which allows us to make another attack at a creature within 5ft of our original target on a hit. We don't add our STR modifier to he second cleave attack, but we do add our rage bonus. Plus, if we hit, then we can slow down two enemies with our slasher effects at once. We also get the wildheart subclass feature nature speaker, which lets us cast commune with nature as a ritual. This is a 5th level spell, and can be very powerful if used correctly. It lets you ascertain 3 facts about your environment as they pertain to (i) terrain/bodies of water, (ii) animals, plant, minerals, peoples, or other natural resources, (iii) powerful fey, fiends, celestials, undead or dragons, (v) influence from other planes or (vi) buildings. Not only is this very thematic for our character, but I think we also have more practical uses of this spell than he typical wildheart. For example, we could cast this spell to ascertain the location, number, ad temperament/disposition of powerful beasts in your area, and then use this information to track down a beast ally to recruit to the party. Anyway, lots of opportunities to have fun outside of combat with this spell, so make the most of it. 
+
+
+Level-16: Barbarian-11 (Wildheart), Warlock-5 (Archfey) 
+ - relentless rage 
+
+NOTE: Yep, that's it. We just get the relentless rage base-class feature here. This feature lets us pop up to 2x our barbarian-level in hit points when we take damage that brings us to zero while we're raging (so 22 HP for now). With resistance to damage, this will feel more like 4x our level in hit points. Definitely helps us stay in the fight. 
+
+Level-17: Barbarian-12 (Wildheart), Warlock-5 (Archfey) 
+ - 
+
+
+
+notes
+
+Recruit beast tech: 
+ - cast animal friendship (requires spell slot) - duration 24h
+ - cast speak with animals (ritual) - duration 10m - tell beast what to do
+ - cast beast sense (ritual, concentration) - duration 1h - watch/hear through beast eyes
+ - when you get gaze of two minds, you can start looking through the beasts eyes/senses while 
+   speak with animals is still up, allowing you to use message to communicate with the beast 
+   if it's within 120 ft
+ 
+
+
+Weapons 
+ - greatsword (graze) = heavy, two-handed, guaranteed slow 
+ - glaive (graze) = heavy, reach, two-handed + guaranteed slow
+ - whip (slow) = reach + 20ft slow on hit (35ft slow with brutal strikes) 
+
+Warlock spells: 
+ - cantrips: friends, green-flame blade, elementalism, true strike 
+ - lvl-1: armor of agathys, charm person, comprehend languages, detect magic, speak with animals
+ - lvl-2: borrowed knowledge, invisibility, mirror image, shatter
+ - lvl-3: summon fey, fly, thunderstep, dispel magic, gaseous form
+
+Eldritch invocations 
+  - pact of the tome (lvl-1: find-familiar, comprehend languages, identify, alarm, detect magic
+                     cantrips: guidance, druidcraft, produce flame, control flames, create bonfire, 
+                               resistance, thaumaturgy, mending, message, blade ward)
+                    (no level prerequisite)
+ - otherworldly leap (lvl-2) - jump spell at will (note: can cast on self or mount) 
+ - lessons of the first ones (lvl-2) - alert, magic initiate, savage attacker, skilled
+   * magic initiate spells: beast bond, detect magic, ensnaring strike, goodberry, longstrider
+                            animal friendship
+ - master of myriad forms (lvl-5) 
+ - gaze of two minds (lvl-5)
+
+
+ 

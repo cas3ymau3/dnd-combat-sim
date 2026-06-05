@@ -1,0 +1,638 @@
+Moniker: The Green Knight
+Classes: Fighter=9+ (Eldritch Knight), Druid-8 (Land)
+Race: Human 
+ - size = medium 
+ - speed = 30ft 
+ - resourceful = heroic advantage 1x/LR
+ - skillful = proficiency in 1 skill (insight)
+ - versatile = gain a 1st level feat (skilled) 
+Background: Woodsman
+ - skill proficiencies: stealth, survival (alt: medicine) 
+ - tool proficiencies: woodcarver's tools (alt: herbalism kit) 
+ - languages: common, common sign language, druidic
+Point-Buy Stats 
+ - STR = 8 
+ - DEX = 14 
+ - CON = 14 
+ - INT = 15 (+2) = 17
+ - WIS = 12 (+1) = 13
+ - CHA = 8
+ASI/Feats 
+ - lvl-0 (human): skilled = proficiency in (3) skills
+   * perception, arcana, nature
+ - lvl-0 (background): magic initiate (INT)
+   * cantrips (2): shillelagh, produce flame
+   * lvl-1 spells (1): ensnaring strike 
+ - lvl-1 (fighter): fighting style (dueling)
+ - lvl-4: war caster (INT)
+ - lvl-6: ASI (INT) 
+ - lvl-7 (fighter): fighting style (two-weapon fighting)
+ - lvl-8: resilient (WIS) 
+ - lvl-13: resilient (DEX)
+ - lvl-17: mage slayer (DEX)
+PROGRESSION SUMMARY 
+ - lvl-1: fighter-1
+ - lvl-2: fighter-2 
+ - lvl-3: fighter-3 (eldritch knight) 
+ - lvl-4: fighter-4 (eldritch knight) 
+ - lvl-5: fighter-5 (eldritch knight) 
+ - lvl-6: fighter-6 (eldritch knight) 
+ - lvl-7: fighter-7 (eldritch knight) 
+ - lvl-8: fighter-8 (eldritch knight) 
+ - lvl-9: fighter-9 (eldritch knight) 
+ - lvl-10: fighter-9 (eldritch knight), druid-1 
+ - lvl-11: fighter-9 (eldritch knight), druid-2 
+ - lvl-12: fighter-9 (eldritch knight), druid-3 (land) 
+ - lvl-13: fighter-9 (eldritch knight), druid-4 (land) 
+ - lvl-14: fighter-9 (eldritch knight), druid-5 (land) 
+ - lvl-15: fighter-9 (eldritch knight), druid-6 (land) 
+ - lvl-16: fighter-9 (eldritch knight), druid-7 (land) 
+ - lvl-17: fighter-9 (eldritch knight), druid-8 (land) 
+ - lvl-18: fighter-10 (eldritch knight), druid-8 (land) 
+ - lvl-19: fighter-11 (eldritch knight), druid-8 (land) 
+ - lvl-20: fighter-11 (eldritch knight), druid-9 (land) 
+
+CONCEPT NOTES: This build makes use of several of the updated spells in the new 2024 PHB, specifically the updated shillelagh and true strike cantrips, as well as the level-4 `fount of moonlight' bard/druid spell. Here are a few notes on these spells. Shillelagh still takes a BA to cast and converts a club or quarterstaff into a weapon that uses your spellcasting modifier for attack and damage rolls. The difference is that now, casting the spell immediately converts the base damage of the weapon to 1d8, and this increases to 1d10 at level-5, a d12 at level-11, and 2d6 at level-17. You can also change the damage type of the shillelagh weapon to force damage (for overcoming resistances). True strike in 2024 is now an entirely different spell. Now it allows you to make an attack with a weapon (that you're proficient with) and use your spellcasting ability modifier for attack and damage rolls. Additionally, if the weapon hits, you can change its damage type to radiant. Additionally, starting at level-5, when you hit with true strike the attack does additional radiant damage. This extra radiant damage is 1d6 at level-5, 2d6 at level-11, and 3d6 at level-17. Finally, fount of moonlight is a concentration spell that makes each of your melee attacks do an additional 2d6 on hit. You can also use your reaction when you take damage to try and blind the creature that damaged you. Ok, so with that background, the concept for this build is to leverage the level-7 `war magic' ability of the eldritch knight, which allows you to replace one of your attacks with a cantrip when you take the attack action to both (i) make attacks with a shillelagh-ed weapon and (ii) use true strike. Once we reach level-7, dual wielding a shillelagh and another light weapon will allow us to make additional attacks with our bonus action. Ultimately, when we reach druid-7 (at level-16), we get fount of moonlight and then add 2d6 to each of our weapon attacks (we also get another 1d8 from elemental-fury::primal-strikes). For flavor, we should think of this character as a `primal-magic' eldritch knight. I didn't want to lean to heavily into the fey side of this, so think more highlander/druidic warrior. The green knight moniker is meant to capture this idea. 
+
+ADDENDUM (NOTE TO SELF): New 2024 conjure minor elemental spell might be better than fount of moonlight, and can be upcast. Consider redescribing build based around this spell after level 13. Yeah -- after looking into it conjure minor elementals is better since it can be upcast for more damage. Plus it's druid-y so it would be thematic for this character. Definitely switch over the build. 
+
+BACKGROUND NOTES: 
+ - grew up serving/living in a community home to an ancient druid, who was your mentor
+ - you tried to glean a little of their magic, and as much of their knowledge as you could 
+ - a (tragic) event in your past destroyed your home (killing your mentor), now you seek to reclaim it 
+ - though you were always better with the sword than you were at weaving the threads of magic, you 
+   have a great appreciation for the value of a strong mind
+ - you revere/idolize great magic users; part of your character's arc will be learning that they can
+   be evil, and how to fight against them
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+Level-1: Fighter-1 
+ - feat: magic initiate (INT)
+   * cantrips (2): shillelagh (m), produce flame
+   * lvl-1 spells (1): ensnaring strike (free x1/day)
+ - feat: skilled = proficiency in (3) skills
+ - feat: fighting-style::dueling
+ - saving throw proficiencies: STR, CON 
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * fighter (2): acrobatics, athletics  
+   * human (1): insight 
+   * woodsman (2): stealth, survival
+   * skilled (3): perception, arcana, nature
+   * languages: common, common sign language, druidic
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, martial melee weapons 
+   * armor: light armor, medium armor, heavy armor, shields
+   * tools: woodcarver's tools (woodsman)
+ - weapon masteries (3): clubs (slow), quarterstaffs (topple), longbows (slow)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (background) + 175gp (fighter)
+   * weapons: tonfa/club (1sp), quarterstaff (2sp), longbow (50gp)
+   * tools: woodcarver's tools (1gp)
+   * gear: explorer's pack (10gp), quiver (20 arrows, 1gp), hunter's trap x2 (10gp), druidic-focus (0gp)
+   * armor: chain shirt (50gp), shield (10gp)
+   * spare coin: 92.7 gp
+ - combat equipment:
+   * weapon
+     + quarterstaff = 1d6 bludgeoning (topple); versatile (1d8)
+     + club = 1d4 bludgeoning (slow); light
+     + longbow = 1d8 piercing (slow); ammunition, range (150/600), heavy, two-handed 
+   * armor: chain mail
+   * armored AC = 13 + 2(DEX) + 2(shield) = 17 
+ - second wind (2 uses; regain 1 on SR, all on LR)
+   * BA heal 1d10 + fighter level 
+ 
+NOTE: Start out wielding a quaterstaff and shield. Take shillelagh with magic initiate to make INT based attacks with our staff. Note that shillelagh requires material components to cast, so the assumption is that you walk around without your shield in hand constantly casting shillelagh every 1m on your staff then use your object interaction on your first turn in combat to draw your shield. Take produce flame as our other magic initiate cantrip so that we have a source of light, and a way to make INT-based ranged attacks.  Note that we can't perform this spells somatic components while holding both our quarterstaff and shield. As for our level-1 spell, ensnaring strike is going to be really good for us. It's a BA to cast, verbal components only, and requires a creature to make a STR save the next time we hit them with a weapon attack. If they fail, they are restrained and take 1d6 piercing at the start of each of their turns. Even though this is a STR save, our INT is high, so our DC will be very good (at level-1 it's DC-13). Right now we can only cast it 1x per long-rest, but this will change soon. Take the dueling fighting style to boost our damage. With shillelagh up, our quarterstaff does 1d8. With dueling adding +2, this nearly equivalent to hitting with a greatsword (6.5 vs 7 on hit). Don't forget that being a human gives us 1 use of heroic advantage per day. Use it to land some whacks with the quarterstaff! 
+
+
+
+Level-2: Fighter-2 
+ - action surge (x1/LR)
+ - second wind (2 uses; regain 1 on SR, all on LR)
+   * BA heal 1d10 + fighter level
+   * tactical mind = +1d10 to ability check on fail; not expended if you still fail 
+
+NOTE: We get action surge, we can use for mobility/to boost our damage a little bit. Note that in the 2024 PHB, you can't take the Magic action when you action surge. We also get the new tactical mind feature, which allows us to use our second wind to try and change failed ability checks to successes. Nice out of combat utility for our character who has a variety of skills, can also be combined with heroic advantage for those important skill checks. 
+
+
+
+Level-3: Fighter-3 (Eldritch Knight) 
+ - subclass: eldritch knight 
+   * spellcasting 
+   * war bond = 1m ritual to bond w/weapon (can't be disarmed, summon as BA) 
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+ - spell slots: 2 
+ - spells prepared: 3 (eldritch-knight)
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): absorb elements, earth tremor, expeditious retreat
+
+
+NOTE: Ok we're fighter-3 and we get our subclass. We're going eldritch knight. Right away we get war-bond, which we should use on our quarterstaff so that we can't be disarmed of it, and we can summon it if we don't have it for some reason. This is nice since we won't be very effective attacking with anything that doesn't have shillelagh cast on it. We also get spellcasting. At level-3 an eldritch knight knows two wizard cantrips and can prepare 3 spells, two of which must be from the abjuration or evocation school. For cantrips, we're going to take true-strike, which is new and (vastly) improved in 2024. We won't actually be using it for another couple levels, but it is an essential pick for this build (see concept note above). Blade ward has also been reworked in 2024. Now you cast it as a reaction in response to a creature targeting you with a melee attack and it imposes disadvantage on the attack. 
+
+For 1st-level spells, I like absorb elements (if it's included in the 2024 spell list) since our DEX save isn't the greatest, so we're vulnerable to AOE spells/abilities, many of which do elemental damage. The spell also gives us a way to do a little extra damage if we tank an elemental hit, and it's thematic for our primal eldritch knight. Of course shield is another good option, but right now our AC is pretty high, plus we get more uses of second wind than we did in 2014, so we have better healing. Taking blade ward as our second wizard cantrip also partially makes up for not taking shield. Next up is earth tremor (evocation). This spell requires all creatures within 10ft of you to make a DEX save or take 1d6 bludgeoning damage and fall prone. It also makes the area within the 10ft radius difficult terrain. Other evocation options, such as burning hands, are better for straight damage, but knocking enemies prone is really good for us since it reduces their movement and gives us advantage on subsequent attacks. We can also combine earth tremor with action surge to knock prone and then attack. Right now we can also knock prone with our quarterstaff (topple), but this will change in a few levels. 
+
+There's also an important aside that comes up for us here. In the new 2024 PHB, the rules on casting multiple spells in a turn have been changed. The new rules state that you can only *expend 1 spell slot* on your turn. This means that we can cast spells granted to us by features/abilities and still cast a different spell using a spell slot on our turn. For us, this applies to the free casting of ensnaring strike granted to us by our magic-initiate feat. For example, we could (i) cast ensnaring strike without expending a spell slot as a BA using magic initiate, then cast earth tremor using a spell slot, then action-surge and attack, procing our ensnaring strike. This combo would leave an enemy (i) prone, (ii) restrained, and (iii) in difficult terrain. This type of use of ensnaring strike will also apply with other spell combos we get at future levels. But it's worth mentioning it here. 
+
+Finally, I think expeditious retreat is a necessary inclusion. We are at our best as a melee attacker, so mobility skills are essential to help us get on top of enemies. This spell gives us a BA dash as long as we're concentrating on it. Use it to chase down escaping/squishy enemies then knock them prone/restrain them. Note that all of our eldritch knight spells require somatic components (except true strike, which we aren't using right now) so we can't have our shield in hand when we cast them. The only one this is really a problem for is absorb elements. Depending on the situation, consider dropping the shield so you can cast effectively. This will only matter for this level (level-3). 
+
+Other honorable mention 1st-level spells include: burning hands, ice knife, chromatic orb, hellish rebuke, grease, dissonant whispers, detect magic
+
+
+
+Level-4: Fighter-4 (Eldritch Knight) 
+ - weapon masteries (4): clubs (slow), quarterstaffs (topple), longbows (slow), scimitars (nick)
+ - second wind (3 uses; regain 1 on SR, all on LR) 
+ - feat: war-caster  
+   * ASI: INT=18
+   * concentration: advantage on concentration checks 
+   * reactive spell: can cast 1-action 1-target spells as reactions when making AoO
+   * somatic components: can perform somatic components while wielding weapons/shields
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+ - spell slots: 3 
+ - spells prepared: 4 (eldritch-knight)
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): absorb elements, earth tremor, expeditious retreat, detect magic
+
+NOTE: At level-4, we are fighter-4 and we get our first feat/ASI. We take warcaster here to boost our INT to 18, which increases our attack/damage modifier for our shillelagh as well as our spell DC. It also gives us advantage on concentration checks (we are already proficient, nice) and lets us cast spells as opportunity attacks. Right now we have literally no good uses for that (true strike before level 5 is just the same as hitting with our shillelagh-ed quarterstaff), but we will. Finally, it lets us perform the somatic components of spells while holding weapons/shields, so we can comfortably wield shield + quarterstaff and cast all our spells. Problem solved. Currently none of our spells have material components except shillelagh - so still assume we're constantly casting that and then draw our shield on the first turn of combat. We get another level-1 wizard spell. Pick your favorites here. I think having detect magic for our `magical-knowledge' character. Find familiar is obviously also a great option for scouting, but I kind of prefer not to have to manage/RP the familiar. As I said, pick your favorites. Finally, at fighter-4 we also get an extra weapon mastery, which we use on scimitars (relevant at lvl-7), and we get an additional use of second wind (sweet). 
+
+
+
+Level-5: Fighter-5 (Eldritch Knight) 
+ - proficiency bonus (PB): +3
+ - extra attack 
+ - tactical shift 
+ - cantrip improvement: 
+   * shillelagh (1d10) 
+   * true-strike (1d6)
+   * produce-flame (2d8) 
+ - combat equipment:
+   * armor: breastplate
+   * armored AC = 14 + 2(DEX) + 2(shield) = 18
+
+NOTE: Ok so at fighter-5 we get a few things. First, we get extra attack, which is awesome. We also get cantrip improvements. Our shillelagh-ed quarterstaff now does 1d10 force damage on hit, which is great. So 2d10 + 2INT (17) damage on a normal round of attacks, and 34 if we action surge. In addition our true strike cantrip now does an additional 1d6 radiant damage on hit when we cast it. This means we can now take advantage of our warcaster feat, and make true-strike attacks of opportunity that do 1d10 + 1d6 + INT (13) force/radiant damage. All-in-all a very nice boost to our damage. Next, we get tactical shift -- a new 2024 feature -- which lets us move half our speed w/o provoking AoOs when we use our second wind. Great for healing and getting out of trouble. I also assume that we've earned enough gold to afford a new set of breastplate armor (400 gp), boosting our AC up to 18. 
+
+
+
+Level-6: Fighter-6 (Eldritch Knight) 
+ - ASI: INT=20 
+ 
+NOTE: Yep. that's actually it. No new spells. No new abilities. Just a plane-jane ability score increase. But it's pretty awesome to max our main ability score by level 6. In addition, we're going to be making even more attacks per round next level, so getting our INT modifier up is the main way we're going to boost our damage. Huzzah! 
+
+
+
+Level-7: Fighter-7 (Eldritch Knight) 
+ - war magic = replace one attack with wizard cantrip during attack action
+ - feat: fighting-style::two-weapon-fighting
+ - combat equipment:
+   * weapon (dual wield) 
+     + club = 1d4 bludgeoning (slow); light
+     + scimitar = 1d6 slashing (nick); light, finesse 
+   * armor: breastplate
+   * armored AC = 14 + 2(DEX) = 16
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+ - spell slots: 4-2 
+ - spells prepared: 5 (eldritch-knight)
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): absorb elements, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, mirror image 
+
+NOTE: Big level here. First, at fighter-7 we get the iconic eldritch knight war magic feature. In 2014, this feature allowed the EK to cast a cantrip and then make a weapon attack as a BA. Now in 2024, it allows us to replace one of the attacks we make when we take the attack action with a cantrip, freeing up our BA. As alluded to in the concept note above, this ability forms the core of our shillelagh + true-strike build. With war magic in hand, we drop our shield and quarterstaff, switch our fighting style over to two-weapon fighting (TWF), and start dual wielding a club (I'd reflavor this as a tonfa or night-stick) and a scimitar. As always, we're constantly casting shillelagh on the club while we're walking around and draw our scimitar when a fight starts. Then, when we take the attack action, we replace our first attack with a casting of the true-strike cantrip using our scimitar. This does 2d6+INT on hit. Since scimitars have the `nick' property, if we hit then we can make an additional attack with our shillelagh-tonfa as part of the same attack. Since we switched our fighting style to TWF, this does 1d10+INT on hit and slows the enemy 10ft. Then we take our second attack with our shillelagh-tonfa to do another 1d10+INT damage. So 2d10+2d6+3INT or 33 damage with our basic rounds of attacks, which is very good. Notably, we can do all of this and still free up our bonus action for things like second wind/tactical shift, expeditious retreat dash, or ensnaring strike. Our highest damage combo in a single round would be: 
+ 
+  BA:ensnaring-strike(lvl-2) + attack(1):true-strike:scimitar(nick) + attack(2):shillelagh(slow) + attack(3):shillelagh(slow)
+  + action-surge + attack(4):true-strike:scimitar(nick) + attack(5):shillelagh(slow) + attack(6):shillelagh(slow)
+
+Which would do a whopping: 2d6 + 2*(2d10+2d6+3INT) = 73 damage. That's a very high single-round burst for level-7! 
+
+At EK-7 we also get access to level-2 wizard spells. There are a lot of great options here. I went with mirror image since our AC takes a hit (to 16) now that we're dual-wielding instead of carrying a shield. Mirror image is non-concentration and doesn't require material components, so we can cast it to boost survivability when we need it. It's also been buffed in the 2024 PHB (now your images are protected by your AC, instead of being vulnerable to every attack). Next, I went with blindness/deafness. I took this over other options for a few reasons (i): enemies who are blinded have disadvantage on attacks and attackers have advantage against them; this simultaneously boosts our survivability against blinded opponents and means we have advantage on the many attacks we make each round, (ii) it's not concentration and doesn't require material components, so we can cast it on a key enemy and still use ensnaring strike/expeditious retreat, (iii) it's not commonly resisted; less than 5% of monsters have resistance/immunity to blindness, so it's a general purpose debuff that's likely to work in most situations (in contrast to something like hold-person or ray of enfeeblement), (iv) we have ways of restraining and slowing enemies, so spells like rime's binding ice or earthen grasp feel a bit redundant. We can also use it with our ensnaring-strike action surge combo in order to blind and restrain an enemy in one turn. Finally, even though it's a CON save, our save DC is high (DC-16), so it still has a good chance of working/sticking. Of course, if you disagree and think blindness/deafness is garbage feel free to pick your favorites. Other honorable mention level-2 spells include: hold person, ray of enfeeblement, suggestion, web, rime's binding ice, earthen grasp, misty step, invisibility. 
+
+In terms of general playstyle, I think this character is now built to have great sustained DPS (TWF, shillelagh, true-strike) with some good defensive options (blade ward, absorb elements, mirror image, second wind) to stay in the fight, and the ability to selectively deploy some powerful control options (ensnaring strike, earth tremor, blindness/deafness). All this while still having great out of combat proficiencies (insight, survival, nature, stealth, arcana) to play around with. Sounds like a super fun character to play! 
+
+
+
+Level-8: Fighter-8 (Eldritch Knight) 
+ - feat: resilient (WIS)
+   * WIS = 14
+ - saving throw proficiencies: STR, CON, WIS
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+ - spell slots: 4-2 
+ - spells prepared: 6 (eldritch-knight)
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): absorb elements, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image
+
+NOTE: Ok we're fighter-8, and we get another feat/ASI (gotta love fighters). We're gonna take resilient WIS to boost our WIS score to 14 and give ourselves proficiency in WIS saves. We're getting towards mid-level, and there are going to start being some nasty effects that occur on failed WIS saves. We won't be increasing our WIS again, so it's super nice to get proficiency. Now our WIS save is a +5, and it will be +6 next level. In addition, I think this is consistent with the `mentally-empowered' fighter type character that we're building. In terms of the character arc, I think taking resilient (WIS) could also be part of recognizing the threat posed by high-level magic users who aren't necessarily using their abilities for good. More practically, we've already maxed our INT, and we're going to start taking druid levels soon, so boosting our WIS seems like a good idea. At fighter-8 we also get another eldritch-knight spell. I know hold-person is situational, but when it works it's going to be sooo good for this character. We'll have a high save DC, and if we can paralyze an enemy then we will crit with all of our many weapon attacks per round. It synergizes very well with action-surge (hold-person + action-surge:attack) and upcasts relatively well (allowing you to target multiple enemies), which is relevant since we're going to be getting higher level spell slots soon. It does require material components to cast, but generally that won't be a big issue since you will cast hold person on one turn, then start attacking the next turn (giving you ample free-object interactions to stow/draw weapons). The only time you have to be careful is when you're going to use it with action-surge. In this case, you have to be sure to start your turn with one weapon (the scimitar) stowed so that you can cast the spell, action surge, use your free object interaction to draw a weapon, then do a full round of attacks. Anyway, maybe your DM won't care about this stuff, but good to know in case they are rules sticklers. And of course, if hold-person isn't your cup of tea, pick your favorites :)
+
+
+
+
+Level-9: Fighter-9 (Eldritch Knight) 
+ - proficiency bonus (PB): +4
+ - indomitable (x1/LR) 
+ - tactical master = swap weapon mastery to push, sap, or slow
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+ - spell slots: 4-2 
+ - spells prepared: 6 (eldritch-knight)
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image
+
+NOTE: At level-9, we're fighter-9. Our proficiency bonus increases to +4 and we get two new class features. First we get indomitable, which was buffed in the 2024 PHB. Now indomitable lets us (1x per long rest) reroll a failed saving throw and add our fighter level (+9). We are already going to be pretty good on WIS saves (+6), CON saves to maintain concentration (advantage, +6) and INT saves (+5), but this should help us with DEX saves (+2) and STR saves (+3) -- which are both common and where we are still a bit weak. God-forbid we have to make a CHA save (-1), we can use this too (no more banishment!). For a character who is all about the guarded-mind and being a mage-slayer, this is a great ability. Next we get the tactical-master class feature, which gives us the option to change the mastery feature of weapons we have mastered to push, sap, or slow whenever we hit. This will mostly be useful for our shillelagh club, since we'll still want nick on our scimitar to potentially free up our BA. I would probably switch it to sap as a default, to impose disadvantage on my enemy's next attack. This boosts our survivability a bit more, which took a hit when we started dual-wielding. Obviously being able to push enemies to reposition/drop them into hazards is also nice to have in our back pocket. In general, this feature gives us additional control versatility, on top of what we can already do with our spellcasting. Very nice! 
+
+Aaaand....that's going to be it for fighter levels (for a long-while, anyway). Even though we have eldritch strike (lvl-10) and three attacks (lvl-11) around the corner, I think we've gotten the best out of the fighter class and eldritch knight subclass. I think the greatest improvement we can make to our character at this point is to get them more spells and spell slots. Since we eventually want to chase down the 4th-level spell `fount of moonlight', this means going druid. So let's do it. As another final addendum on the survivability front, I would also switch out our absorb elements spell for the shield spell when we take level-9. We can only change our EK spells when we gain a level, so this will be our last opportunity to do so for a long time. And we can get absorb elements back next level. Shield also is also more relevant for us now since our AC is pretty low, and we can use indomitable to help us with DEX saves. 
+
+
+
+
+Level-10: Fighter-9 (Eldritch Knight), Druid-1 
+ - druidic
+   * learn druidic (we know it already)
+   * speak with animals always prepared 
+ - primal order: magician
+   * +1 druid cantrip
+   * WIS to nature checks 
+ - spellcasting 
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+   * druid (2): guidance, resistance
+   * magician (1): elementalism
+ - spell slots: 4-3 
+ - spells prepared: 6 (eldritch-knight), druid (4); * indicates class/subclass bound spell  
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image
+   * lvl-1 (druid): absorb elements, cure wounds, healing word, jump (m)
+                    speak with animals* 
+
+NOTE: Level-10 and we're going druid-1. In terms of non-spellcasting features, we get druidic (we already had it, maybe you can convince your DM to let you take another language -- I think primordial makes sense), and we get our primal order. We choose magician since we already have armor/martial weapon proficiency, making nature our single best skill (+11), which I think is thematic. Other than that, going druid gains us a bit of additional spellcasting. First, we get 3 new druid cantrips (+1 from magician). Our WIS is low, so take the utility options. I think guidance and resistance are auto-includes. These are now both cast as reactions in response to a failed ability check/save making them useful even in combat. Having these cantrips further bolsters our character as a skill monkey and saving throw dynamo (note, we can combine indomitable and resistance to get +11.5 to a save on avg). I think elementalism is the most fun and has the best flavor for our primal-themed character, so I'd take that, but something like message might be more useful in practice. For leveled spells, EK's are 1/3 casters, so our fighter-based caster level is our fighter level divided by 3 rounded up. This means at fighter-9 we are only a third level-caster. Taking druid-1 makes us a 4th-level multiclass caster and so we get one additional 2nd-level spell slot (3 total). We also get to prepare 4 1st-level druid spells. Given our low WIS, we are going to prioritze spells that help with (i) emergency healing and (ii) combat utility. For healing, healing word is very good, and gives us a way to res fallen allies from range. Cure wounds was buffed in the 2024 PHB, and now is a pretty good burst heal if we upcast it (4d8+WIS = 20hp, which is better than what we get from second wind). In terms of utility, we get absorb elements back as a druid spell (now we have both shield and absorb elements, nice!) and we take the jump spell. Jump was reworked in 2024 -- now it is a bonus action to cast, but instead of tripling your jump distance, it gives you the ability to jump 30ft using 10ft of movement once on each turn (still non-concentration). This is actually great for us, not only for the action economy, but also because with our low STR score, the old jump spell wouldn't do much for us. Now it gives us some good additional mobility and we can use it in combination with expeditious retreat if we want to. It can also be upcast to target multiple creatures. That said, it does have a material component -- so it joins shillelagh and hold-person on the list of spells that we have to have a free hand to cast. Oh yeah and as a druid we also get speak with animals. We have bad CHA and not great animal handling, so we probably won't get a ton out of this, but it is a ritual so at least we don't have to burn a slot in those situations where it would be useful to cast it. 
+
+
+
+
+Level-11: Fighter-9 (Eldritch Knight), Druid-2 
+ - cantrip improvement: shillelagh (1d12), true-strike (2d6), produce-flame (3d8)
+ - wild shape
+   * 2 uses; regain 1 on SR, all on LR
+   * 3 known forms (<= CR 1/4):
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + octopus = small, 5 speed/30 swim, darkvision (30ft), water breathing, underwater camouflage
+ - wild companion = find familiar (fey) w/o material components using slot or wild-shape
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+   * druid (2): guidance, resistance
+   * magician (1): elementalism
+ - spell slots: 4-3-2 
+ - spells prepared: 6 (eldritch-knight), druid (5); * indicates class/subclass bound spell
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image
+   * lvl-1 (druid): absorb elements, cure wounds, healing word, jump (m), detect magic 
+                    speak with animals*, find familiar (fey)*
+
+NOTE: At level-11, we're going druid-2. We get wild shape, which we can use 2x per day and let's us know 3 forms. We probably won't be using this feature a lot, and certainly not in combat. So I picked beast forms that I think provide some good utility. Note that for the new 2024 druid, we retain our HP, hit dice, INT/WIS/CHA scores, class features, languages, feats, and skill/saving throw proficiencies while in beast form (and use our PB for them). This means that we can use our stealth and perception proficiency (+4) and INT (+5) score while we are wild-shaped. The fox is tiny, has darkvision (which we don't), a burrow speed, and a better DEX score (16) than we do. So we'll be our stealthiest when we're in fox form. Probably the default form I would use if I needed darkvision during exploration. The cat is similar, but has a climb speed, only a +2 DEX (same as us) and lacks darkvision (so weird). The main reason for taking the cat is because I think there's a big benefit to having a beast form that is a domesticated animal. Much easier to move around in human-dominated environments as a cat than as a giant lizard or wolf spider. Plus wizards often have cat familiars, so we can think of the cat as a kind of wizard-subterfuge ability. In addition to providing their own forms of utility, the fox and the cat are also great for the simple reason that it is potentially quite useful to be able to transform your tanky DPS fighter into a tiny unobtrusive creature. Finally, since there's no longer a level-restriction on beasts with swim speeds in the 2024 PHB, take the octopus to give yourself an aquatic form with great exploration/stealthing abilities. Moving on from wild shape, we also get the wild companion ability at this level, which lets us cast find familiar (fey) without material components using either our wild shape or a spell slot. This is nice because we can summon a flying fey creature as our familiar, giving us good options for scouting. Mechanically, both wild shape and wild companion aren't super strong at this level but both add a little to our (admittedly already formidable) out-of-combat utility. 
+
+At druid-2, we also get to prepare 1 additional druid spell. Personally, I think having detect magic is a good option to stock as default, since we had it at earlier levels, it's thematic/useful for our character, and we can cast it as a ritual. Longstrider would also be a good option, but we already have jump, expeditious retreat, and tactical shift for mobility (though it does stack with all of these). Ultimately, I think longstrider just doesn't do enough to justify an action and one of our relatively few spell slots in combat, and is hard to pre-cast effectively. Fog cloud is also situationally very good -- as it can be used to cover an escape or to shut down a pesky ranged attacker. Goodberry and protection from good and evil can also be nice. Take whatever makes sense. Perhaps more importantly, taking druid-2 gets us two 3rd-level spell slots which we can use to upcast: ensnaring strike (3d6), cure wounds (6d8), earth tremor (3d6) or hold-person, blindness/deafness, and jump (which can all target additional creatures when upcast). Having these additional higher-level slots not only makes us more effective with our big spells, but means we can save more of our first-levels for defensive reaction spells (shield, absorb elements). Narratively, I think our character is having some awakening of primal magic within them, perhaps as part of some desire to combat evil arcane magic users, and this is giving us new abilities to connect/channel the power of nature and enhancing our own magical prowess. Finally, our cantrips also level up at level-11. As our main source of damage, this is big for us. Now our basic round of attacks (true-strike + shillelagh-2x) will do 3d6 + 2d12 + 15 = 38.5 damage and our biggest nova round damage goes up to 87.5 damage.
+
+
+
+
+Level-12: Fighter-9 (Eldritch Knight), Druid-3 (Land)  
+ - wild shape
+   * 2 uses; regain 1 on SR, all on LR
+   * 4 known forms (<= CR 1/4):
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + octopus = small, 5 speed/30 swim, darkvision (30ft), water breathing, underwater camouflage
+     + elk = large, 50 speed, STR +3, draft animal/mount, +3 STR
+   * land's aid = cast wither and bloom using wild shape as magic action (2d6)
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+   * druid (2): guidance, resistance
+   * magician (1): elementalism
+   * temperate land (1): shocking grasp 
+ - spell slots: 4-3-3 
+ - spells prepared: 6 (eldritch-knight), druid (6); * indicates class/subclass bound spell
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image
+   * lvl-1 (druid): absorb elements, cure wounds, healing word, jump (m) 
+                    speak with animals*, find familiar (fey)*
+   * lvl-2 (druid): silence, heat metal (m)  
+                    misty step*, sleep* (m)
+
+NOTE: Ok, at level-12 we go druid-3 and we get our druid subclass. We're going to go circle of the land. And in particular, barring any extenuating circumstances, we're almost always going to be resonating with the temperate land circle. In this way we are kind of a classic, forest-y druid, which makes sense given our character's origins and backstory. A different version of this character would go for circle of stars as their subclass, which would get us some nice features down the road. But both thematically, and because we're entering the late game, I think land druid gives us the biggest payoff in the near-term. In terms of features, at level-3 land druids get the 'land's aid' feature, which lets us expend a wild shape as a magic action to (essentially) cast wither and bloom. It's a very minor heal/damage, but one that we can cast without a spell slot, so that's nice. We also get access to circle spells that we always have prepared. For temperate land, we get the shocking grasp cantrip -- which could be situationally useful -- and we also get the misty step and sleep spells. Misty step is huge for us, giving us an on demand 30ft teleport as a BA that doesn't require material components. Plus we can stack it with jump for extra mobility. And I think sleep is underrated. At level-12, it won't have very much use in combat, but even at level-1 it can easily put decent number of NPCs to sleep. And when upcast, it can easily incapacitate a couple of lower-level creatures (such as guards), potentially allowing you to make a sneaky infiltration or stop someone from running to sound the alarm or use an object/item, etc. Compared to the other circles (arid, polar, tropical) the temperate land bound spells definitely provide the most utility for our character. At druid-3 we also get access to 2nd level druid spells, and there are actually a lot of great options. For combat scenarios, I would take heat metal (devastating against martial types) and silence (devastating against mage types). Notably, our true-strike cantrip does not require a verbal component. So we can cast silence and still do our basic round of attacks without issue. Since it's non-concentration, we can also use silence with our free ensnaring-strike action-surge combo, though we have to be sure to cast ensnaring-strike first, since it does have a verbal component. This is a great way to silence and restrain a noodle-armed mage in a single turn. And if we've already used our free ensnaring-strike cast, we can still cast silence, action-surge, then make grapple attempts with our attacks and use our heroic advantage and/or tactical mind (second wind) to make it stick. The new 2024 version of barkskin is also a really good option for us. New barkskin is no longer concentration, and gives us AC-17 for 1hr. This is a +1 boost for us which we would love to have. Obviously, at this level, we might have some magic items that boost our AC a bit, but if not, barkskin could be good. Enlarge/reduce is also a good combat option, since it would give us +1d4 on each of our weapon attacks, but I don't love the flavor. For exploration/infiltration, I think packing darkvision (since we don't have it) and pass without trace makes a lot of sense. Other great utility options include enhance ability, lesser restoration, locate object, locate animals/plants, and air bubble. In general, I think stocking the combat options as a default makes sense, since our character is first-and-foremost a fighter. But of course, as always, pick your favorites, and take what makes sense in the given scenario. 
+
+Finally, at druid-3 we get to know another beast form (4 total). We take the elk form in case we want to boost our strength (up to +3) or want to run fast/carry someone as a mount. Note that we could cast expeditious retreat on ourselves, then wild shape into an elk to get 150ft of movement per turn for 10m. While this would take two rounds to set up (both expeditious retreat and wildshape are BAs), this could be useful for catching up to/running away from something. 
+
+
+
+Level-13: Fighter-9 (Eldritch Knight), Druid-4 (Land)  
+ - proficiency bonus (PB) = +5
+ - feat: resilient (DEX) 
+   * DEX = 15
+ - saving throw proficiencies: STR, CON, WIS, DEX 
+ - wild shape
+   * 2 uses; regain 1 on SR, all on LR
+   * 3 known forms (<= CR 1/2):
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + octopus = small, 5 speed/30 swim, darkvision (30ft), water breathing, underwater camouflage
+     + warhorse = large, 60 speed, can be used as draft animal/mount, +4 STR
+   * land's aid = cast wither and bloom using wild shape as magic action (2d6)
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+   * druid (3): guidance, resistance, message
+   * magician (1): elementalism
+   * temperate land (1): shocking grasp 
+ - spell slots: 4-3-3-1 
+ - spells prepared: 6 (eldritch-knight), druid (7); * indicates class/subclass bound spell
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image
+   * lvl-1 (druid): absorb elements, cure wounds, healing word, jump (m) 
+                    speak with animals*, find familiar (fey)*
+   * lvl-2 (druid): silence, heat metal (m), pass without trace (m),   
+                    misty step*, sleep* (m)
+
+NOTE: At level-13 we go druid-4. We take resilient DEX to boost our DEX to 15 and give ourselves proficiency in DEX saving throws. This is especially nice since our PB also increases at this level. So instead of having a DEX save of +2 (which we did at level-12), now we have a +7, which feels a lot better. Not having to worry too much about DEX saves takes a LOT of pressure off us in terms of using spell slots to cast absorb elements, or using our indomitable feature, and is more important now that we're in the late game and enemies have the ability to unload big damage on DEX saves. We also now have proficiency in all the most important saving throws in the game, in addition to having a +5 INT, making us a super hard character to control, especially for magic users. Really our only bad saving throw is CHA, which is very rare, and we can always use indomitable (+resistance) if we have to. I think this `guarded-mind on a martial character' flavor is a core part of our character's identity, so I like this feat a lot here even if it's a half feat that doesn't increase our DEX ability modifier. We also get an improvement to our wildshape feature; now we can wild shape into beasts of CR 1/2 or less. This means we can replace the elk for the warhorse, which is faster and stronger. We could have also taken reef shark for our aquatic form, instead of octopus. The shark has pack tactics, is faster, has blindsight and has way more hit points (22 vs 3). But it still won't be any good in combat at this level and has lower DEX (13) than we do. The octopus has advantage on stealth checks underwater (underwater camouflage), has an ink-cloud escape ability, and can hold it's breath out of water for 30m. All-in-all, I think as a scout/exploration form, the octopus is still more useful so we'll stick with that. At druid-4, we also get an additional druid cantrip. I took message, but it's really all for flavor so take whatever you want. We get to prepare 1 more druid spell. I think pass without trace is a good default, but choose whatever makes sense (darkvision, enhance ability, lesser restoration, locate object, locate animals/plants, enlarge/reduce). And finally, we get a 4th level spell slot for upcasting our favorite big spells (ensnaring strike, earth tremor, cure wounds, heat metal, blindness/deafness, hold person, jump). 
+      
+
+
+Level-14: Fighter-9 (Eldritch Knight), Druid-5 (Land)  
+ - wild resurgence  
+ - wild shape
+   * 2 uses; regain 1 on SR, all on LR
+   * 5 known forms (<= CR 1/2):
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + octopus = small, 5 speed/30 swim, darkvision (30ft), water breathing, underwater camouflage
+     + warhorse = large, 60 speed, can be used as draft animal/mount, +4 STR
+     + spider = tiny, 20 speed/20 climb, darkvision (30ft), spider climb
+   * land's aid = cast wither and bloom using wild shape as magic action (2d6)
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+   * druid (3): guidance, resistance, message
+   * magician (1): elementalism
+   * temperate land (1): shocking grasp 
+ - spell slots: 4-3-3-2 
+ - spells prepared: 6 (eldritch-knight), druid (9); * indicates class/subclass bound spell
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image
+   * lvl-1 (druid): absorb elements, cure wounds, healing word, jump (m) 
+                    speak with animals*, find familiar (fey)*
+   * lvl-2 (druid): silence, heat metal (m), pass without trace (m)    
+                    misty step*, sleep* (m)
+   * lvl-3 (druid): plant growth, dispel magic
+                    lighting bolt* (m)
+
+NOTE: Level-14 and we're druid-5. We get a couple of nice things. First, we get the wild resurgence feature, which lets us expend spell slots to give ourself uses of wild shape or expend wild shapes to give ourselves a level-1 spell slot (but only 1x/long rest). This means we can always wild shape into a fox to get darkvision as long as we have spell slots, or if we need one last healing word to res a fallen ally but are all out of spell slots, we can burn a wild shape to do that. Flexibility is always appreciated. I think in general, if we're doing multiple combats per day, we would appreciate 1 extra level-1 slot for casting shield, absorb elements, or ensnaring strike. Next, we get one additional known form for wild-shape. There aren't a ton of appealing options. I chose the spider since it has the same DEX as us (+2), is tiny and has darkvision and the ability to spider climb. It's slow but it would be good for sneaking into take a peek at something unobtrusively, which is more utility than I think any other option available to us at this level. 
+
+The big thing we get here is access to level-3 druid spells. I think I would take plant growth, which is a super good control option, has some nice out-of-combat RP potential (with the long cast), and is very on brand for a (temperate) land druid. It's also not concentration, and doesn't require material components, so we should have no problems casting it in combat. I also took dispel magic because we've invested a lot into an ant-magic-user combat identity, and what mage slayer would be complete without dispel magic? It does use our WIS modifier when we use it to attempt to end magical effects of a higher-level than what we cast it at, which isn't great. But we can upcast it and we do have human heroic advantage in our back pocket if we really need to try and make it stick. Other honorable mentions for 3rd level spells include: aura of vitality, protection from energy, revivify, water breathing. As always, do what moves you. Finally, we get lighting bolt as a bound spell for temperate land. The DC won't be very good for us, since we have to cast it with WIS, and it does require material components. But it does good damage and can ignite stuff. Upcast it to deal big damage to slow/hard hitting enemies you don't want to get close to. 
+
+
+
+Level-15: Fighter-9 (Eldritch Knight), Druid-6 (Land)  
+ - natural recovery 
+   * cast 1 bound circle spell for free 1x/long rest
+   * recover 1/2 druid level (rounded up) spell slots per SR  
+ - wild shape
+   * 3 uses; regain 1 on SR, all on LR
+   * 5 known forms (<= CR 1/2):
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + octopus = small, 5 speed/30 swim, darkvision (30ft), water breathing, underwater camouflage
+     + warhorse = large, 60 speed, can be used as draft animal/mount, +4 STR
+     + spider = tiny, 20 speed/20 climb, darkvision (30ft), spider climb
+   * land's aid = cast wither and bloom using wild shape as magic action (2d6)
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+   * druid (3): guidance, resistance, message
+   * magician (1): elementalism
+   * temperate land (1): shocking grasp 
+ - spell slots: 4-3-3-3-1 
+ - spells prepared: 6 (eldritch-knight), druid (10); * indicates class/subclass bound spell
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image
+   * lvl-1 (druid): absorb elements, cure wounds, jump (m) 
+                    speak with animals*, find familiar (fey)*
+   * lvl-2 (druid): silence, heat metal (m), darkvision (m), pass without trace (m)    
+                    misty step*, sleep* (m)
+   * lvl-3 (druid): plant growth, dispel magic, revivify (m)
+                    lighting bolt* (m)
+
+NOTE: At level-15, we are druid-6 and we get our next land druid feature: natural recovery. This is a clutch ability for us, and one of the main reasons for pursuing this subclass. Natural recovery les us do two things. First, it lets us cast 1 of our circle spells for free 1x per day. Misty step seems like the obvious default choice to me. Notably, under the new `one expended spell slot per turn' rules, we can use this feature to cast misty step as a BA (w/o expending a lot), and still cast a different leveled spell on the same turn (ex. misty step + plant growth to strand someone, misty step + blindness to escape and hide). Pretty rad. Natural recovery also let's us recover half our druid-level in spell slots on a SR. Right now we can recover 3 levels worth of spell slots. Personally, I think getting back 3 level-1 spell slots on a SR is going to be very helpful for our character, who not only has low AC and depends pretty heavily on shield and absorb element for survivability, but also on BA ensnaring strikes for control and damage. With natural recovery, we can feel pretty good about burning through level-1 spell slots, knowing we can get a bunch of them back on a SR. At druid-6 we also get another use of wildshape (3 per day) and another prepared spell. For the spell, I opted to stock darkvision as a 2nd-level spell and revivify as a 3rd level spell, and to drop healing word. The logic here is that we have enough spell slots now that we don't mind casting darkvision whenever we need it -- it's non-concentration and lasts all day (8h) -- and doing so frees up our wildshapes (since we no longer have to transform into a fox for darkvision) for land's aid (wither and bloom) heals, which are a reasonable substitute for healing word. We can also use our wild-shapes to cast find familiar (wild companion) and use our familiar to deliver cure-wounds touch spells from range, which also replicates the functionality of healing word. Dropping healing word allows us to take revivify, which can obviously be a life-saver. I would assume by this level, other players in our party would be capable of casting it. We'd be in trouble if we were the party's main healer. But it's one of those spells where having redundancy within the party is super valuable. If we don't have AC-17 or higher from magic items yet, and we're in a situation where darkvision won't matter, then I think barkskin would also be a very good option. Finally, at druid-6 we also get a 5th level spell slot, which we should use for upcasting our big spells. For reference, a 5th level hold person or blindness/deafness could target 4 creatures, potentially ending an encounter before it starts. 5th level jump can get 5 creatures, so potentially a movement buff for your entire party. 5th level ensnaring strike does 5d6 (17.5) piercing damage every turn until the enemy saves. 5th level lightning bolt does 10d6 (35) damage on hit. 5th level cure wounds would heal 10d8 (45) hit points. 5th level heat metal would do 5d8 (22.5) damage per round. 5th level sleep can KO an enemy with 13d8 (58.5) hit points. And of course, 5th level dispel lets us automatically end effects from 5th level or lower spells. So we have some good options for upcasting. 
+
+
+
+Level-16: Fighter-9 (Eldritch Knight), Druid-7 (Land)  
+ - elemental fury
+    * primal-strike = +1d8 cold/fire/lightning/thunder per turn on weapon hit
+ - wild shape
+   * 3 uses; regain 1 on SR, all on LR
+   * 6 known forms (<= CR 1/2):
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + octopus = small, 5 speed/30 swim, darkvision (30ft), water breathing, underwater camouflage
+     + warhorse = large, 60 speed, can be used as draft animal/mount, +4 STR
+     + spider = tiny, 20 speed/20 climb, darkvision (30ft), spider climb
+     + giant sea horse = large, 40 speed, can be used as underwater mount, +1 STR
+   * land's aid = cast wither and bloom using wild shape as magic action (2d6)
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+   * druid (3): guidance, resistance, message
+   * magician (1): elementalism
+   * temperate land (1): shocking grasp 
+ - spell slots: 4-3-3-3-2 
+ - spells prepared: 6 (eldritch-knight), druid (11); * indicates class/subclass bound spell
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image
+   * lvl-1 (druid): absorb elements, cure wounds, jump (m) 
+                    speak with animals*, find familiar (fey)*
+   * lvl-2 (druid): silence, heat metal (m), darkvision (m)    
+                    misty step*, sleep* (m)
+   * lvl-3 (druid): plant growth, dispel magic, revivify (m)
+                    lighting bolt* (m)
+   * lvl-4 (druid): fire shield (m), fount of moonlight
+                    freedom of movement* (m)
+                    
+NOTE: Okay, level-16 is a big one for this build. Kind of a capstone level in a way. At level-16, we go druid-7 and get a couple of nice things. First we get the `elemental fury' base class feature which lets us choose either the potent spellcasting or primal strike boon. We go with primal strikes since we aren't going to doing any damage with our druid cantrips. Primal strikes let's us add 1d8 elemental damage to one of our weapon attacks once per turn. A small but very consistent buff to our DPR. FWIW, I feel like I would choose lightning by default as it seems the most thematic for our character. We also get another wild-shape form, though still nothing with a fly speed. I opted for giant sea horse since it has a +2 DEX (same as us), a +1 STR, and is large/can be used as an underwater mount. This could be helpful if we're traveling underwater with someone without a swim speed. We could also pick reef shark, which has blindsight (30dt) and more hit points, but it's only medium size and if we're on our own I'd prefer to be an octopus. We're going to switch it out for a flying form next level anyway, so don't get too attached...
+
+Moving on from wild-shape, the big draw at druid-7 is that we get access to 4th level druid spells. Right off the bat, as a temperate land druid, we get freedom of movement which is a stellar buff for our character. Freedom of movement means we are unrestricted by difficult terrain (including, for example the terrain created by our plant growth spell), we can't be paralyzed or restrained or have our speed reduced in any way by magical effects. We can also use 5ft of movement to automatically escape a grapple or non-magical restraint and we have no penalties for moving underwater. I think this spell is a really nice addition to our arsenal of things that helps us fight mages and magic users, who might often try to inhibit our restrain us with magical abilities. Plus, if we wanted we could cast this for free once per day using our natural recovery feature. It's also a 1h buff and doesn't require concentration so we will have no issues using it in combination with our other main spells. In terms of prepared spells, there are some good ones we now have access to. Stoneskin -- which gives you resistance to non-magical bludgeoning, piercing, and slashing damage -- got a rework in the 2024 PHB and is no longer concentration (check this!). This could be a nice boost to our survivability. Polymorph is a fantastic spell with a lot of out-of-combat utility. Locate creature can be situationally clutch. Grasping vine also got a rework in 2024 (it now does damage and grapples when it hits), but would still use our WIS modifier to hit, so not great. Control water is also great, but also uses our WIS mod. 
+
+But in truth, there are two main reasons we're excited about 4th level spells. The first is fire shield. Fire shield is an amazing spell for low-WIS melee druids. It's not concentration (though does require material components), lasts 10m, and provides us with a shield that either gives us resistance to cold (warm shield) or fire (chill shield) damage. Fire damage is super common, and we don't have very high AC, so I would probably default to the chill shield. Our chill shield also does damage (2d8 cold) to any creature that hits us with a melee attack. This will be very good for us since we will be in melee a lot and have low AC, allowing us to proc it reliably. As an aside, being able to cast the chill shield also kind of completes our primal elementalist identity, in a way. We have fire options with produce flame (and fire shield), lightning options with shocking grasp and lightning bolt, earth/plant options with ensnaring strike, earth tremor, and plant growth, and now a cold-based option with the chill shield. Of course, we also have primal-strikes and elementalism for all-elemental flavor. But for whatever reason this kind of elemental balance satisfies me, and is another reason for taking the fire-shield spell. We have to drop pass without trace to get it, but this seems like a fair tradeoff. And obviously, we can still take PWT in situations where we know we're going to need it. 
+
+Saving the best for last, the PRIMARY reason we're stoked about 4th level spells is, of course, the new spell `fount of moonlight' (queue choir sound). So what does this spell do? While we're concentrating on it (up to 10m) fount of moonlight (FoM) (i) wreathes our body in cool light for the duration, causing us to emit bright light in a 20ft radius and dim light for an additional 20ft, (ii) gives us resistance to radiant damage, (iii) allows our melee attacks to do an additional 2d6 radiant damage on hit, and (iv) gives us a special use of our reaction where we can try to blind a target in response to taking damage from them. Ok so we love pretty much every part of this freaking awesome spell. First off, if for some reason we are fighting in the dark and don't have darkvision up, fount of moonlight gives us a light source. Second, while radiant damage isn't super common, any damage resistance is great for our low AC character, and we can stack it with fire shield to get resistance to fire and radiant damage. Third, we already have been using the true-strike cantrip to deal radiant damage with weapon attacks and the blindness/deafness spell to blind enemies for a long while now. So the extra damage and new reaction ability are very thematically consistent with our character's previous abilities. It does require concentration, so we can't use it and cast our other faves like ensnaring strike, hold person, or heat metal. But it doesn't require material components -- so no awkward drawing/stowing of weapons to cast it -- and we can still use blindness/deafness, silence, plant growth, earth tremor, lightning bolt and all our combat utility/mobility spells (jump, shield, absorb elements, misty step, mirror image, dispel magic, fire shield) while we're concentrating on it.  
+
+And finally and most importantly, we do 3 weapon attacks per round by default, and can do up to 6 if we action surge. So this fount of moonlight (FoM) represents a HUUGE boost to our damage! For our base round of attacks, we would now do 2d12 (shillelagh) + 3d6 (scimitar true-strike) + 1d8 (primal-strike) + 6d6 (FoM) + 15 = 64 damage per round. And our best nova move would be to do six attacks with action-surge while this spell is active. This would do 123.5 per round, on average. While this isn't going to be top of the list for either sustained DPR or nova damage, it is going to be high up on both lists. We're also going to get another boost to our damage when our cantrips improve next level. So, woo-hoo, moving on! 
+
+
+
+Level-17: Fighter-9 (Eldritch Knight), Druid-8 (Land)
+ - proficiency bonus (PB): +6
+ - cantrip improvement: true-strike (3d6), shillelagh (2d6), produce-flame (4d8)  
+ - feat: mage-slayer 
+   * DEX = 16 
+   * concentration breaker = enemies have disadv. on conc. checks when you hit them 
+   * guarded mind = x1 legendary resist against INT/WIS/CHA save per day
+ - wild shape
+   * 3 uses; regain 1 on SR, all on LR
+   * 6 known forms (<= CR 1):
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + octopus = small, 5 speed/30 swim, darkvision (30ft), water breathing, underwater camouflage
+     + flying snake = 30 speed/60 fly/ 30 swim, blindsight (10ft), flyby, +4 DEX 
+     + moorbounder = large, 70 speed, darkvision (60ft), can be used as mount, +4 STR
+     + giant eagle = large, 10 speed/80 fly, keen sight, can be used as mount +3 STR, +3 DEX 
+   * land's aid = cast wither and bloom using wild shape as magic action (2d6)
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (2): true-strike, blade-ward 
+   * druid (3): guidance, resistance, message
+   * magician (1): elementalism
+   * temperate land (1): shocking grasp 
+ - spell slots: 4-3-3-3-2-1 
+ - spells prepared: 6 (eldritch-knight), druid (12); * indicates class/subclass bound spell
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image
+   * lvl-1 (druid): absorb elements, cure wounds, jump (m) 
+                    speak with animals*, find familiar (fey)*
+   * lvl-2 (druid): silence, heat metal (m), darkvision (m), pass without trace (m),    
+                    misty step*, sleep* (m)
+   * lvl-3 (druid): plant growth, dispel magic, revivify (m)
+                    lighting bolt* (m)
+   * lvl-4 (druid): fire shield (m), fount of moonlight
+                    freedom of movement* (m)
+
+NOTE: Ok here we are at level-17. We get a proficiency bonus increase and we go druid-8 and get our last feat. As with every build, by the time you get to this level it's hard to decide what to take. For us, we definitely want something that is a half-feat with DEX, in order to get our modifier up to +3, but that still leaves lots of options. Personally, I like the mage slayer feat. It boosts our DEX, makes us more effective at disrupting concentration, and gives us a free `legendary' resistance on an INT/WIS/CHA save once per day. Combined with indomitable, and we will be very very hard to control with mental effects. It's also very consistent with our character's identity, motivations, etc. In taking this feat, we become a true bane to the all the power-hungry (arcane) magic users who would despoil the natural world for their selfish and destructive aims. We also get to prepare another druid spell (up to 12 now). I just put pass without trace (PWT) back on our default list, since we just boosted our DEX and PB, so now we can be extra stealthy (+19 to stealth with PWT). Also, there aren't any 4th level spells I'm truly in love with as defaults (maybe polymorph or stone-skin). At druid-8 we also get a significant improvement to our wildshape. We can assume CR-1 or lower beast forms, and we can assume forms with a fly speed. Given this, we switch out giant sea horse, warhorse, and spider and switch in giant eagle, moorbounder, and flying snake. The giant eagle is a druid staple. It can fly, is fast (80 speed) and at large size can carry other party members. Default form for out-of-combat flying situations. The moorbounder is a straight improvement over the warhorse as a land mount. It's faster (70 speed), has darkvision, and is just as strong. The only potential advantage of the warhorse would be that it's a very common domesticated animal, and so maybe wouldn't draw as much attention. And finally the flying snake, maybe my favorite beast form. It's tiny, can fly and swim, doesn't provoke opportunity attacks, has a +4 DEX (better than us). It also has blindsight, but only out to 10ft, which can be awkward if you're trying to perceive things over any sort of distance. But mostly, when I think of this form, I imagine casting PWT on ourselves with would give us a +20 to stealth rolls, and then going wherever the hell I want without drawing attention. Plus, if we want a long-range flying scout that we can see through and perceive with normal vision, we can just cast find familiar. So yeah, flying snake rocks and we're going with it. At druid-8 we also get a sixth level spell slot. We don't have anything new that we want to upcast, but all the old faves (ensnaring strike, earth tremor, cure wounds, blindness/deafness, hold-person, heat metal, sleep, dispel magic, lightning bolt) will just be that much better. Finally, at level-17 we also get cantrip improvements. So now our basic round of attacks (with FoM active) would do 4d6 (shillelagh) + 4d6 (true-strike) + 6d6 (FoM) + 1d8 (primal strikes) + 15 (INT) = 68.5 damage, and our nova move would do 132.5 damage. 
+
+
+
+Level-18: Fighter-10 (Eldritch Knight), Druid-8 (Land)
+ - weapon masteries (5): clubs (slow), quarterstaffs (topple), longbows (slow), scimitars (nick), rapiers (vex)
+ - second wind/tactical mind
+   * 4 uses per day (recover 1 on SR, all on LR) 
+ - weapon masteries (5): 
+ - eldritch strike
+   * enemies you hit with attacks have disadv. on saves against spells you cast
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (3): true-strike, blade-ward, mind-sliver 
+   * druid (3): guidance, resistance, message
+   * magician (1): elementalism
+   * temperate land (1): shocking grasp 
+ - spell slots: 4-3-3-3-2-1 
+ - spells prepared: 7 (eldritch-knight), druid (12); * indicates class/subclass bound spell
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image, vortex warp
+   * lvl-1 (druid): absorb elements, cure wounds, jump (m) 
+                    speak with animals*, find familiar (fey)*
+   * lvl-2 (druid): silence, heat metal (m), darkvision (m), pass without trace (m),    
+                    misty step*, sleep* (m)
+   * lvl-3 (druid): plant growth, dispel magic, revivify (m)
+                    lighting bolt* (m)
+   * lvl-4 (druid): fire shield (m), fount of moonlight
+                    freedom of movement* (m)
+
+NOTE: I don't usually map out builds beyond level 17, but I like what we've built here enough to see it through all the way. At level-18, we turn back to fighter for fighter-10. Staying with druid would get us some nice things, including 5th level druid spells and, eventually, a 7th level spell slot. But I think our character's core identity has always been more fighter. And now that we are all leveled up in druid, going back to fighter gives us some very powerful abilities. First off, at fighter-10, we get another use of second wind/tactical mind (so up to 4 per day). Very nice ability for both in and out of combat, so it's nice to have more uses of it. We also get another weapon mastery, which doesn't really matter at all. I chose rapiers, but pick whatever you want and go true-strike with it, It won't be as good as our current nick-based dual-wielding setup. At level-10, eldritch-knights also get another wizard cantrip and gain the eldritch strike ability. The eldritch strike ability says that when we hit a creature with an attack using a weapon, that creature has disadvantage on the next saving throw it makes against a spell you cast before the end of your next turn. The mind sliver cantrip says that creatures that fail an INT save take damage and must also subtract 1d4 from the next save they make before the end of our next turn. So you can see where we're going with this. With our war magic ability to cast cantrips as part of the attack action, we can stack these abilities. 
+
+Specifically, we can use our (i) BA to (up)cast ensnaring strike, then take the attack action on our turn and (ii) cast mind-sliver with our first attack then (iii) hit them with our shillelagh with our second attack, giving them disadvantage via eldritch strike and procing ensnaring strike. This would mean that the target creature would have a -7 to their STR save, on average, against our DC-19 ensnaring strike. So with this combo we could very reliably restrain creatures that are Large or smaller, even if they have substantial bonuses to their STR save. Depending on how you interpret the eldritch strike ability, if you continued making weapon attacks on the enemy on your next turn, then you could continually impose disadvantage on the save to break out of the ensnaring vines. It depends on whether or not you interpret the ability as applying to subsequent saves made against spells that you cast on turns prior to the attack that applies eldritch strike. I could see DM's ruling either way on this. If your DM does say eldritch strike does disadvantage subsequent saves, then you can also make use of this ability with action surge. Specifically, you could cast a spell like blindness/deafness or hold-person, then if it works action surge and do mind-sliver + eldritch strike to give them a major debuff to their next save against the spell. But even if your DM rules the other way -- i.e., that you can't permanently impose disadvantage on saves to escape a spell by continuing to attack an enemy -- the mind-sliver + eldritch-strike + ensnaring-strike combo is still really good. And, of course, there's also the `standard' 2-turn combo where you just mind-sliver + eldritch-strike them on one turn, and then cast a spell on your next. So anyway you slice it, this is a great cantrip + ability combo to get.
+
+At fighter-10 we also get to prepare another wizard spell (so up to 7). I chose vortex warp (from strixhaven) since it's non-concentration, requires no material components, can be used on allies and enemies alike, and upcasts reasonably well. Even though we have invested some of our spellcraft into improving our mobility, we still aren't going to be flying around the battlefield, so to speak. Vortex warp gives us the ability to (attempt to) make our enemies come to us. Obviously, we also discussed other good options at previous levels. They include: binding ice, suggestion, mind whip, earth bind, borrowed knowledge, enlarge/reduce, invisibility, ray of enfeeblement, and so on. Pick your favorites. And that's it for level-18.
+
+ADDENDUM (NOTE TO SELF): It might be worth re-thinking the whole build from level-8 forward where we take vortex warp instead of hold-person as an EK spell. Or at least deciding upfront whether or not we're considering spells from all the different books versus just those that we know are in the 2024 PHB. Most of the things we take are pretty standard fare, so it wouldn't change all that much. But maybe worth revising and editing the build description at some point down the line.
+
+
+
+Level-19: Fighter-11 (Eldritch Knight), Druid-8 (Land)
+ - two extra attacks
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (3): true-strike, blade-ward, mind-sliver 
+   * druid (3): guidance, resistance, message
+   * magician (1): elementalism
+   * temperate land (1): shocking grasp 
+ - spell slots: 4-3-3-3-2-1 
+ - spells prepared: 8 (eldritch-knight), druid (12); * indicates class/subclass bound spell
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image, vortex warp
+                              rime's binding ice (m)
+   * lvl-1 (druid): absorb elements, cure wounds, jump (m) 
+                    speak with animals*, find familiar (fey)*
+   * lvl-2 (druid): silence, heat metal (m), darkvision (m), pass without trace (m),    
+                    misty step*, sleep* (m)
+   * lvl-3 (druid): plant growth, dispel magic, revivify (m)
+                    lighting bolt* (m)
+   * lvl-4 (druid): fire shield (m), fount of moonlight
+                    freedom of movement* (m)
+
+NOTE: Level-19. We go fighter-11 and we get a big payoff. First, on a much more minor note, we get to prepare another level-2 wizard spell. I chose rime's binding ice. Mostly this is because in combat we will now more-often-than-not be concentrating on Fount of Moonlight (FoM), which occupies our concentration. This means we can't cast ensnaring strike to restrain enemies. Rime's binding ice is an AOE freeze spell that does damage and reduces enemies' speed to zero (until they use an action to un-hinder themselves). It's non-concentration, so we can use it even while FoM is active. It also doesn't require verbal components (though it does require material ones), so it can be used inside a silence spell. Plus it's very consistent with our elementalist-type magical abilities. Of course, we're here at level 19, so it really is hard to say what 2nd-level spell will be most generally useful. As always, pick your favorites.
+
+Moving on, the big payoff here is, of course, that we get two extra attacks rather than one on our turn. This means we can add another 4d6 + 5 (2d6 shillelagh + 2d6 FoM + 5 from INT) to our basic attack combo, upping it to 87.5 DPR and another 8d6 + 10 to our nova round damage, upping it to 170.5 damage. Yikes, that's nasty. 
+
+
+Level-20: Fighter-11 (Eldritch Knight), Druid-9 (Land)
+ - wild shape
+   * 3 uses; regain 1 on SR, all on LR
+   * 7 known forms (<= CR 1):
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + octopus = small, 5 speed/30 swim, darkvision (30ft), water breathing, underwater camouflage
+     + flying snake = 30 speed/60 fly/ 30 swim, blindsight (10ft), flyby, +4 DEX 
+     + moorbounder = large, 70 speed, darkvision (60ft), can be used as mount, +4 STR
+     + giant eagle = large, 10 speed/80 fly, keen sight, can be used as mount +3 STR, +3 DEX 
+     + crag cat = large, 40 speed, darkvision (60ft), nondetection, spell turning
+   * land's aid = cast wither and bloom using wild shape as magic action (2d6)
+ - cantrips: 
+   * magic-initiate (2): shillelagh (m), produce-flame 
+   * eldritch-knight (3): true-strike, blade-ward, mind-sliver 
+   * druid (3): guidance, resistance, message
+   * magician (1): elementalism
+   * temperate land (1): shocking grasp 
+ - spell slots: 4-3-3-3-2-1-1 
+ - spells prepared: 8 (eldritch-knight), druid (14); * indicates class/subclass bound spell
+   * lvl-1 (magic-initiate): ensnaring strike
+   * lvl-1 (eldritch-knight): shield, earth tremor, expeditious retreat
+   * lvl-2 (eldritch-knight): blindness/deafness, hold-person (m), mirror image, vortex warp
+                              rime's binding ice (m)
+   * lvl-1 (druid): absorb elements, cure wounds, jump (m) 
+                    speak with animals*, find familiar (fey)*
+   * lvl-2 (druid): silence, heat metal (m), darkvision (m), pass without trace (m),    
+                    misty step*, sleep* (m)
+   * lvl-3 (druid): plant growth, dispel magic, revivify (m)
+                    lighting bolt* (m)
+   * lvl-4 (druid): fire shield (m), fount of moonlight
+                    freedom of movement* (m) 
+   * lvl-5 (druid): cone of cold (m), mass cure wounds
+                    tree stride*, commune with nature*
+  
+ 
+NOTE: It's level-20, so it doesn't matter a whole lot what we do here. Finishing out fighter gets us another ASI/feat. We could take tough, which would get us 40 more hit points. Or we could take some other combat mechanic feat (like medium armor master, sentinel, etc.). But I think we actually get more goodies out of finishing out with Druid-9. First going druid-9 means we're a 13th level caster, which gets us a level 7 spell slot. Upcasting is one of our best ways to increase our overall damage/utility, and so this is great. For example, a level 7 ensnaring strike (which we can set up/make stick with our mind-sliver + eldritch strike combo) will do 7d6 (24.5) damage each enemy turn (oh and also restrain them). We also get also get two new bound spells. First from the base class `commune with nature' feature we get to have the commune with nature spell always prepared. This is a super handy spell and it can be cast as a ritual. So that's awesome. Second, from our circle of temperate land, we get tree stride, which is amazing (doesn't require material components). And remember we can cast this once for free each day with natural recovery. It just feels appropriate at level-20, when we've achieved demigod-like status, to be able to teleport around the world. So thank you tree-stride. We also get to prepare 2 new druid spells (14 total), and we can access level 5 spells. There are some good ones here, including: antilife shell, greater restoration, scrying, reincarnate. So as always, pick your favorites/what makes sense. For me, I like cone of cold and mass cure wounds, primarily because they both give us some AOE abilities where we are otherwise mostly single-target focused with our abilities. They also both upcast well -- 7th level cone of cold does 10d8 (45) damage. and 7th level mass cure wounds heals up to 6 creatures for 7d8 + WIS (33.5) hp. The main drawback is that both these spells suffer from being cast with our low WIS modifier. Oh well. Finally, we also get to learn another wild shape form (7 total). I love the crag cat (from storm king's thunder) for level-20 play. First it has an inherent nondetection ability, making it undetectable by divination magic (f--k you again, wizards). It also has a crazy spell turning ability that makes it so that if it succeeds on a saving throw against a spell, the spell does nothing to the cat, but instead the spell's effects target the caster. In some ways, it's still silly to think about using wildshape in combat for any reason at this level (we probably shouldn't). I mean, as awesome as it is, the crag cat still only has 34 hit points. But it does seem so incredibly on-point for this character to mosh around in this non-detectable, anti-magic forest cat form. So hell yeah. We're going with crag cat for our final form. 
+
+And that's it for this build. 
+

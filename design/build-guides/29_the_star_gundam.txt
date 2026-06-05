@@ -1,0 +1,474 @@
+Moniker: The Star Gundam  
+Classes: Artificer-04 (Armorer), Druid-16 (Circle of Stars)    
+Species: Elf (High) 
+ - size: medium 
+ - speed: 30ft 
+ - darkvision: 60ft 
+ - elven lineage (high): wizard cantrip (true-strike), detect magic (lvl-03), misty step (lvl-05)
+ - fey ancestry: advantage on saves against charmed
+ - keen senses: proficiency in insight
+ - trance: long rest in 4h; don't sleep 
+Sex: Female 
+Background: Sage
+ - ability scores: CON, INT, WIS 
+ - feat: magic-initiate (wizard) --> blade ward, shocking grasp, shield 
+ - skill proficiencies: arcana, history 
+ - tool proficiency: calligrapher's supplies  
+ - languages: common, elvish, sylvan 
+ - equipment: 
+Point-Buy Stats: 
+ - STR = 08 
+ - DEX = 14
+ - CON = 14 
+ - INT = 12 (+1) = 13 
+ - WIS = 15 (+2) = 17
+ - CHA = 08
+ASI's/Feats:
+ - lvl-00: magic-initiate (wizard)
+ - lvl-05: resilient (WIS): +1 WIS (WIS=18) 
+ - lvl-08: spell sniper: +1 INT (INT=14) 
+ - lvl-12: ASI: +2 WIS (WIS=20) 
+ - lvl-16: heavy armor master: +1 CON (CON=15) 
+ - lvl-20: epic boon of energy resistance: +1 CON (CON=16)
+Progression Summary: 
+ - lvl-01: artificer-01 ------------------------------> magical tinkering, spellcasting, CON save proficiency
+ - lvl-02: artificer-01, druid-01 --------------------> druidic, primal order (magician), spellcasting
+ - lvl-03: artificer-02, druid-01 --------------------> replicate magic item (ruby of the war mage)
+ - lvl-04: artificer-03 (armorer), druid-01 ----------> arcane armor (heavy), infiltrator, shield(+1), right tool for the job 
+ - lvl-05: artificer-04 (armorer), druid-01 ----------> resilient (WIS): +1 WIS (WIS=18)
+ - lvl-06: artificer-04 (armorer), druid-02 ----------> wild shape, wild companion
+ - lvl-07: artificer-04 (armorer), druid-03 (stars) --> bound spells, starry form, switch artificer cantrip 
+ - lvl-08: artificer-04 (armorer), druid-04 (stars) --> spell sniper: +1 INT (INT=14) 
+ - lvl-09: artificer-04 (armorer), druid-05 (stars) --> lvl-3 spells (aura of vitality, PFE, elemental weapon); wild resurgence 
+ - lvl-10: artificer-04 (armorer), druid-06 (stars) --> cosmic omen 
+ - lvl-11: artificer-04 (armorer), druid-07 (stars) --> elemental fury; lvl-4 spells (fire-shield, FoM, CME) 
+ - lvl-12: artificer-04 (armorer), druid-08 (stars) --> ASI: +2 WIS (WIS=20) 
+ - lvl-13: artificer-04 (armorer), druid-09 (stars) --> lvl-5 spells (antilife shell, scrying, tree stride) 
+ - lvl-14: artificer-04 (armorer), druid-10 (stars) --> twinkling constellations (archer: 2d8+WIS) 
+ - lvl-15: artificer-04 (armorer), druid-11 (stars) --> lvl-6 druid spells (sunbeam) 
+ - lvl-16: artificer-04 (armorer), druid-12 (stars) --> heavy armor master: +1 CON (CON=15)
+ - lvl-17: artificer-04 (armorer), druid-13 (stars) --> lvl-7 druid spells (firestorm, plane shift) 
+ - lvl-18: artificer-04 (armorer), druid-14 (stars) --> full of stars (resist to B/P/S) 
+ - lvl-19: artificer-04 (armorer), druid-15 (stars) --> lvl-8 druid spells (sunburst, incendiary cloud), elemental fury (2d8)
+ - lvl-20: artificer-04 (armorer), druid-16 (stars) --> epic boon of dimensional travel: +1 CON (CON=16); switch to guardian 
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `artificer-druid'
+ - lvl-01: slots = 2; prepared: 2-0; max level: 1-0
+ - lvl-02: slots = 3; prepared: 2-4; max level: 1-1
+ - lvl-03: slots = 3; prepared: 3-4; max level: 1-1
+ - lvl-04: slots = 4-2; prepared: 4-4; max level: 1-1  
+ - lvl-05: slots = 4-2; prepared: 5-4; max level: 1-1 
+ - lvl-06: slots = 4-3; prepared: 5-5; max level: 1-1 
+ - lvl-07: slots = 4-3-2; prepared: 5-6; max level: 1-2
+ - lvl-08: slots = 4-3-3; prepared: 5-7; max level: 1-2
+ - lvl-09: slots = 4-3-3-1; prepared: 5-9; max level: 1-3 
+ - lvl-10: slots = 4-3-3-2; prepared: 5-10; max level: 1-3 
+ - lvl-11: slots = 4-3-3-3-1; prepared: 5-11; max level: 1-4
+ - lvl-12: slots = 4-3-3-3-2; prepared: 5-12; max level: 1-4 
+ - lvl-13: slots = 4-3-3-3-2-1; prepared: 5-14; max level: 1-5
+ - lvl-14: slots = 4-3-3-3-2-1; prepared: 5-15; max level: 1-5
+ - lvl-15: slots = 4-3-3-3-2-1-1; prepared: 5-16; max level: 1-6
+ - lvl-16: slots = 4-3-3-3-2-1-1; prepared: 5-16; max level: 1-6 
+ - lvl-17: slots = 4-3-3-3-2-1-1-1; prepared: 5-17; max level: 1-7
+ - lvl-18: slots = 4-3-3-3-2-1-1-1; prepared: 5-17; max level: 1-7 
+ - lvl-19: slots = 4-3-3-3-2-1-1-1-1; prepared: 5-18; max level: 1-8
+ - lvl-20: slots = 4-3-3-3-2-1-1-1-1; prepared: 5-18; max level: 1-8
+
+CONCEPT NOTES
+ - go armorer to get special weapon, magic items, heavy armor prof and use armor as spellcasting focus 
+ - go stars druid to get BA WIS-based spell attack;  
+ - true-strike with armorer special weapon and BA archer attack 
+ - scale damage with cantrip scaling, class/subclass features, and key druid spells (FoM, CME) 
+ - start out using infiltrator until we get spell sniper then main the guardian model 
+ - use spells/thunder gauntlets for superior control
+ - eventually you end up as a super tanky spellcaster with great melee combat prowess and high-level spells 
+ - leverage versatility of armor model + starry form to adapt to a given context  
+
+THEMATIC CONCEPT NOTES: 
+ - start off as a `spellshot' using a magical ranged weapon 
+ - eventually the armor becomes `part of us' (armor) and we turn into a kind of android 
+ - think `wild robot' meets `neon-genesis evangelion' or `samus aran' meets `mobile suit gundam' 
+ - astral-technomagic with a natural/fey theme (life magic) 
+ - radiant/lightning/fire themes, along with magically enhanced combat abilities 
+ - character-wise you're an arcanist, diviner, intellectual, and protector/healer 
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+
+#######
+Level-01: Artificer-01
+ - feat: magic-initiate (wizard) 
+   * cantrips: blade ward, shocking grasp  
+   * lvl-1 spell: shield 
+ - saving throw proficiencies: CON, INT   
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * artificer (2): investigation, perception     
+   * sage (2): arcana, history  
+   * keen senses (1): insight 
+   * languages (3): common, elvish, sylvan 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons
+   * armor: light/med armor, shields 
+   * tools: calligrapher's supplies (sage), 
+            cartographer's tools, thieves' tools, tinker's tools (artificer) 
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (sage) + 150gp (artificer)
+   * weapons: light crossbow (25gp), case of crossbow bots x2 (2gp)
+   * armor: hide armor (10gp) 
+   * tools: calligrapher's supplies (10gp), cartographer's tools (15gp), thieves' tools (25gp), tinker's tools (50gp)
+   * foci: druidic-focus::sprig of mistletoe (1gp) 
+   * gear: scholar's pack (40gp), traveler's clothes (2gp)
+   * spare coin: 20gp
+ - combat equipment:
+   * weapon: light crossbow
+     + light crossbow = 1d8 piercing (slow); ammunition (range 80/320), loading, two-handed  
+   * armor: hide armor 
+   * AC: 12 + 2(DEX) = 14
+ - magical tinkering 
+   * create item from list using magic action (xINT/LR) 
+   * item vanishes after 1hr
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): blade ward, shocking grasp 
+   * artificer (2): guidance, mending
+ - spell slots: 2 
+ - spells prepared: artificer (2)
+   * lvl-1 (magic-initiate): shield (free x1/LR)
+   * lvl-1 (artificer): detect magic (R), jump 
+    
+NOTE: True strike from range w/crossbow. Use blade ward to for extra durability. Use spell slots on shield. Use magical tinkering for additional utility. Use cartographer's tools as spellcasting focus for artificer spells (dovetails w/star druid theme) 
+
+
+
+#######
+Level-02: Artificer-01, Druid-01 
+ - skill proficiencies: 
+   * artificer (2): investigation, perception     
+   * sage (2): arcana, history  
+   * keen senses (1): insight 
+   * languages (4): common, elvish, sylvan, druidic 
+ - druidic 
+   * add druidic to languages 
+   * can leave coded messages to other druids 
+   * always have speak with animals prepared 
+ - primal order::magician 
+   * learn one extra druid cantrip 
+   * add WIS to arcana and nature checks 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): blade ward, shocking grasp 
+   * artificer (2): dancing lights, mending 
+   * druid (2): produce flame, starry wisp 
+   * magician (1): guidance 
+ - spell slots: 3 
+ - spells prepared: artificer (2), druid (4)
+   * lvl-1 (magic-initiate): shield (free x1/LR) 
+   * lvl-1 (artificer): detect magic (R), jump  
+   * lvl-1 (druid): cure wounds, faerie fire, healing word, ice knife 
+   * lvl-1 (druidic): speak with animals (R)
+
+NOTE: Still fight at range. Flavor cantrips/spells as magical `shots' coming from your crossbow to get the `spellshot' theme. You have radiant shots w/starry wisp/true-strike, fire shots with produce flame, ice shots with ice knife, a close range lightning blast with shocking grasp, etc. Still default to using spell slots for shield, but now you have the option to also use them for control/advantage (faerie fire), healing (cure wounds/healing word), or damage (ice knife). With magician primal order we have a +6 to arcana, a +4 to nature, and a +3 to history/investigation. The only INT-based skill we aren't excellent at is religion (+1), which makes sense. We also have a +5 to perception and insight. So a lot of useful skills and they fit exactly who we are trying to be with this character. Persona-wise, I would be a bit aloof, dispassionate, and naive of the human social world -- awkward nature-based android nerd. 
+
+
+
+#######
+Level-03: Artificer-02, Druid-01 
+ - replicate magic item: 
+   * plans (4): bag of holding, bead of nourishment, ruby of the war mage, +1 weapon
+   * items (2): ruby of the war mage, +1 weapon 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): blade ward, shocking grasp 
+   * artificer (2): dancing lights, mending 
+   * druid (2): produce flame, starry wisp 
+   * magician (1): guidance 
+ - spell slots: 3 
+ - spells prepared: artificer (3), druid (4)
+   * lvl-1 (magic-initiate): shield (free x1/LR) 
+   * lvl-1 (artificer): feather fall, identify (R), jump  
+   * lvl-1 (druid): cure wounds, faerie fire, healing word, ice knife 
+   * lvl-1 (druidic): speak with animals (R)
+   * lvl-1 (high-elf): detect magic (R) (free x1/LR) 
+
+NOTE: Make a +1 light crossbow and insert a ruby of the war mage in it. Now you can use that to cast all your druid/elf spells. Note you still need to hold cartographer's tools to cast artificer spells. Get beads of nourishment to RP like you don't eat anything/just use `energy beads' like an android. Create a bag of holding for party utility. We get detect magic as a high elf, so switch it out for identify as an artificer spell (fits our sage/magician theme). For our new prepared artificer spell, take feather fall for situational utility. Alternatively, could take expeditious retreat for situational speed. Either way, prioritize using slots for shield/faerie fire/ice knife.
+
+
+
+
+#######
+Level-04: Artificer-03 (Armorer), Druid-01 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons
+   * armor: light/med armor, shields 
+   * tools: calligrapher's supplies (sage), 
+            cartographer's tools, thieves' tools, tinker's tools (artificer)
+            smith's tools (armorer) 
+ - combat equipment:
+   * weapon: lightning launcher 
+     + lightning launcher = 1d6 lightning; thrown (90/300) 
+   * armor: chain mail (75gp), shield(+1)
+   * AC: 16 (disadvantage) + 3(shield) = 19
+ - right tool for the job 
+   * can now create artisan tools with magical tinkering
+ - replicate magic item: 
+   * plans (4): bead of nourishment, ruby of the war mage, +1 shield, +1 weapon
+   * items (2): bead of nourishment, +1 shield  
+ - arcane armor 
+   * as a magic action w/smith's tools in hand turn a suit of armor into arcane armor 
+   * no STR requirement
+   * quick don/doff = can take armor on/off w/utilize action 
+   * spellcasting focus = can use armor as focus for artificer spells 
+ - armor model (infiltrator) 
+   * special weapon: lightning launcher 
+   * lightning jolt = x1/turn when you hit with launcher, deal an additional 1d6 lightning dmg 
+   * powered steps = movement speed increases 5ft 
+   * advantage on stealth checks /cancel disadvantage from heavy armor 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): blade ward, shocking grasp 
+   * artificer (2): dancing lights, mending 
+   * druid (2): produce flame, starry wisp 
+   * magician (1): guidance 
+ - spell slots: 4-2 
+ - spells prepared: artificer (4), druid (4)
+   * lvl-1 (magic-initiate): shield (free x1/LR)
+   * lvl-1 (artificer): expeditious retreat, feather fall, identify (R), jump  
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (druid): cure wounds, faerie fire, healing word, ice knife 
+   * lvl-1 (druidic): speak with animals (R)
+   * lvl-1 (high-elf): detect magic (R) (free x1/LR)
+
+NOTE: Armorer subclass is huge for us. Right tool for the job lets us create artisan's tools with magical tinkering. So sell the ones we have in order to purchase chain mail armor (75gp). Move into arcane armor (chain mail) w/o needing STR. Switch out magic item plans in order to create a +1 shield for yourself, boosting AC to 19. Put ruby of the war mage into your lightning launcher. Now you can use the armor as a spellcasting focus for artificer spells and the launcher as a focus for your druid spells. Meaning you can cast spells, carry a shield, and still make weapon attacks with the lightning launcher. If DM allows, use +1 weapon plan to make an improved lightning launcher. Stay at range, make true-strike attacks with lightning launcher. Use spells for utility/mobility/damage/protection as needed. Upcast cure wounds, jump, or ice knife. Flavor arcane armor as `organic armor' that feels like evangelion. Like it kind of `grows' over you to cover you and give you a mega-man style gunblade appendage from which you cast spells and make weapon attacks. Note, since the lightning launcher is not actually a weapon you have to hold in your hand, you technically still have a free hand with which to perform somatic components even while holding a shield. If your DM doesn't like this, you can take war-caster instead of resilient WIS next level and the build still goes forward. Similarly, if your DM doesn't like you using true-strike with the lightning launcher, then you can use a sling or moon-touched sword as a weapon and still take war-caster. But let's assume it works as intended. We also get bound spells. Magic missile is super nice (since it doesn't matter that we don't have great INT and is thematic). Thunderwave is also thematic and it's nice to have some AOE, but it won't be a go to. 
+ 
+
+
+#######
+Level-05: Artificer-04 (Armorer), Druid-01 
+ - proficiency bonus (PB): +3 
+ - cantrip upgrade: 
+   * true-strike (+1d6), shocking grasp (2d8), produce flame (2d8), starry wisp (2d8)
+ - feat: resilient (WIS)
+   * ASI: +1 WIS (WIS=18) 
+   * gain proficiency in WIS saving throws
+ - saving throw proficiencies: CON, INT, WIS  
+ - replicate magic item: 
+   * plans (4): bead of nourishment, sending stones, +1 shield, +1 weapon
+   * items (2): bead of nourishment, sending stones   
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): blade ward, shocking grasp 
+   * artificer (2): dancing lights, mending 
+   * druid (2): produce flame, starry wisp 
+   * magician (1): guidance 
+ - spell slots: 4-2 
+ - spells prepared: artificer (5), druid (4)
+   * lvl-1 (magic-initiate): shield (free x1/LR)
+   * lvl-1 (artificer): false life, feather fall, identify (R), jump, longstrider   
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (druid): cure wounds, faerie fire, healing word, ice knife 
+   * lvl-1 (druidic): speak with animals (R)
+   * lvl-1 (high-elf): detect magic (R) (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+
+NOTE: Take resilient feat to bump WIS to 18 and gain proficiency in WIS saves. Switch out ruby of the war mage for sending stones and start making those for communication utility. Switch out expeditious retreat before we shift out of artificer levels (won't want to concentrate on it). Instead take false life (upcasts well, useful once we shift to melee) and longstrider (additional movespeed if we need it). Note we also get misty step as an additional mobility option through high elf. Between feather fall, jump, longstrider, misty step and powered steps, we should feel highly mobile / gundam suit like. With a boost to our PB and WIS mod, we get a +2 to perception and insight (+7). Cantrip upgrade boosts our true-strike lightning launcher damage to 3d6 + 1 + WIS on hit (15.5), which is not great but totally serviceable
+
+
+
+#######
+Level-06: Artificer-04 (Armorer), Druid-02 
+ - wild shape (x2/LR, +1 on SR) 
+   * 4 known forms (<= CR=1/4)
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + octopus = small, 5 speed/30 swim, darkvision (30ft), water breathing, underwater camouflage
+     + panther = medium, 50 speed/40 climb, darkvision (60ft), +6 stealth, pounce + prowl 
+ - wild companion = find familiar (fey) w/o material components using slot or wildshape 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): blade ward, shocking grasp 
+   * artificer (2): dancing lights, mending 
+   * druid (2): produce flame, starry wisp 
+   * magician (1): guidance 
+ - spell slots: 4-3 
+ - spells prepared: artificer (5), druid (5)
+   * lvl-1 (magic-initiate): shield (free x1/LR)
+   * lvl-1 (artificer): expeditious retreat, false life, feather fall, identify (R), jump   
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (druid): cure wounds, faerie fire, healing word, ice knife, longstrider 
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (high-elf): detect magic (R) (free x1/LR)
+   * lvl-1 (wild companion): find familiar
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+
+NOTE: Kind of a dead level. We get wild shape and wild companion from druid base class. Note this will be the only level where we have wildshape where we won't want to use it on starry form. Thematically, I would probably not use it to change into a beast form, but I suppose you could and just try to keep it kind of `organic machine' themed. In terms of forms, fox for flavor and burrow speed, cat for humanoid environments/climb speed, octopus for swimming, and panther for stealth/combat. For wild companion, I feel a little better about using this one. Sort of `wild robot' like to summon a little fey bird or something, but not exactly on brand for our character. We also get 1 additional druid spell. I opted to switch out longstrider for expeditious retreat as an artificer spell, then pick up longstrider as a druid spell. Now we have the full compliment of movement spells: jump, longstrider, expeditious retreat, feather fall, misty step. We don't have so many spell slots (yet) that we will want to use these ad nauseum, but we will have plenty of slots as we take more druid levels. And being supremely mobile will help our character once we dive into melee (and still helps us now to kite enemies from range). Honorable mention is thunderwave for some thematic AOE damage.
+
+
+
+#######
+Level-07: Artificer-04 (Armorer), Druid-03 (Circle of Stars)  
+ - combat equipment:
+   * weapon: lightning launcher 
+     + lightning launcher = 1d6 lightning; thrown (90/300) 
+   * armor: splint armor (200gp), shield(+1)
+   * AC: 17 (disadvantage) + 3(shield) = 20
+ - star map 
+   * crystal sphere (jewel) with little suspended stars that move/morph into constellations 
+   * while holding star map, you have guidance and guiding bolt prepared and can cast g-bolt for free xWIS/LR  
+ - starry form  
+   * alternate use of wild-shape (3 forms)
+   * archer = gain BA ranged spell attack (1d8 + WIS) 
+   * chalice = when you restore HP w/a spell slot, give additional 1d8+WIS HP (range 30ft) 
+   * dragon = treat 9 or lower as 10 when making INT/WIS check or CON save to maintain concentration
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): blade ward, shocking grasp 
+   * artificer (2): dancing lights, mending 
+   * druid (2): produce flame, starry wisp 
+   * magician (1): druidcraft 
+   * star map (1): guidance 
+ - spell slots: 4-3-2
+ - spells prepared: artificer (5), druid (6)
+   * lvl-1 (magic-initiate): shield (free x1/LR) 
+   * lvl-1 (artificer): expeditious retreat, false life, feather fall, identify (R), jump  
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (druid): cure wounds, faerie fire, healing word, longstrider
+   * lvl-1 (druidic): speak with animals (R)
+   * lvl-1 (high-elf): detect magic (R) (free x1/LR)
+   * lvl-1 (wild companion): find familiar 
+   * lvl-1 (star map): guiding bolt (free xWIS/LR) 
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-2 (druid): augury (R), pass without trace  
+
+NOTE: Get druid subclass. Go circle of stars. I would pretty much exclusively use wild shape to assume starry form at this point. Archer should be our go-to. Assume we can use our star map crystal as our `ruby of the war mage' so that we can still insert it into our lightning launcher. It doesn't really affect anything if we can't, but it is thematic to think of our lighting launcher as `upgrading' when we get our druid subclass. Now we can true-strike with our lightning launcher then take a `second shot' using the archer ability. This let's us do 3d6 + 1d8 + 2WIS(8) = 23 damage with our basic attack while in starry form. Pretty good. We can use chalice if we really need to boost our healing for some reason. And dragon form is great if we are in a situation where we are making INT/WIS skill checks. We also get free casts of guiding bolt, which are better than our true strike attack (4d6 vs 3d6 + WIS), plus they give us advantage on our next attack (incl. our archer BA attack). So we should use all of those. And since we have guiding bolt, drop ice knife in order to pick up augury and pass without trace as second level spells. We want aid but we're still playing a ranged infiltrator, so we don't need the extra HP that much just yet. We also still don't have an abundance of spell slots. We'll get it next level. Augury is super thematic (and useful) and with pass without trace is an excellent support spell that we can make full use of even in heavy armor (because of the infiltrator). Plus it seems very on theme to imagine  going predator with our arcane armor and becoming super stealthy. Star map also gives us guidance as a cantrip, so switch this out for druidcraft in our druid cantrips. Between dancing lights, druidcraft, and mending -- I think we have all the flavor abilities to RP a wild robot type character super effectively. We also get 3rd level slots. Use them to upcast: guiding bolt (6d6), cure wounds (6d8+WIS), jump, and longstrider. Let's also assume that we've scraped together 200gp to buy ourselves some splint armor, boosting our AC (with our +1 shield) up to 20. 
+
+
+
+#######
+Level-08: Artificer-04 (Armorer), Druid-04 (Circle of Stars)  
+ - feat: spell sniper 
+   * ASI: +1 INT (INT=14) 
+   * attack rolls for spells ignore half and 3/4 cover 
+   * being in melee doesn't impose disadvantage on ranged spell attacks 
+   * when you cast a spell that has a range of at least 10ft, you can increase it's range by 60ft
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): blade ward, shocking grasp 
+   * artificer (2): dancing lights, mending 
+   * druid (2): produce flame, starry wisp 
+   * magician (1): druidcraft 
+   * star map (1): guidance 
+ - spell slots: 4-3-3
+ - spells prepared: artificer (5), druid (7)
+   * lvl-1 (magic-initiate): shield (free x1/LR) 
+   * lvl-1 (artificer): expeditious retreat, false life, feather fall, identify (R), jump  
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (druid): cure wounds, faerie fire, healing word, longstrider
+   * lvl-1 (druidic): speak with animals (R)
+   * lvl-1 (high-elf): detect magic (R) (free x1/LR)
+   * lvl-1 (wild companion): find familiar 
+   * lvl-1 (star map): guiding bolt (free xWIS/LR) 
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-2 (druid): aid, augury (R), pass without trace  
+
+NOTE: Ok interesting level here. To understand what's going on, we need to talk about the spell sniper feat. Here's the wording: 
+Spell Sniper:
+ * General Feat (Prerequisite: Level 4+, Spellcasting of Pact Magic Feature) 
+ * ASI: +1 INT/WIS/CHA to a max of 20 
+ * Bypass Cover: Your attack rolls for spells ignore half cover and three-quarters cover 
+ * Casting in Melee: Being w/in 5ft of an enemy doesn't impose disadv. on your attack rolls with spells
+ * Increased range: When you cast a spell that has range >=10ft and requires an attack roll, you can increase the range by 60ft
+First, as a spell that requires an attack roll, I think it's pretty clear that the `bypass cover' and `casting in melee' features both apply to the true-strikes we make with our lightning launcher (the `increased range' feature doesn't apply because true-strike has a range of `self'). However, RAW I don't think the feat applies to our BA archer attacks. This is because the wording of archer just says make a `ranged spell attack' which is not the same as casting a spell and therefore is not an `attack roll with a spell'. A generous DM would allow bypass cover and casting in melee to apply to both our lightning launcher *and* BA archer attacks. A super generous one would allow the increased range feature to also apply to our BA archer attacks (which would mean we could true-strike and archer from 90ft). However, RAW, I think all three parts of the feat apply to our ranged cantrips/spells (produce flame, starry wisp, guiding bolt), the bypass cover and casting in melee features apply to our true-strike lightning launcher attacks, and none of the feat's features apply to our BA archer attacks. If you have a generous/super generous DM, then the spell sniper feat would allow you to switch to the guardian armor model, and make true-strike attacks with the thunder gauntlets and BA archer attacks in melee. 
+
+
+
+
+# STOPPED HERE
+
+ 
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+#####################################################################################
+EXTRA NOTES 
+
+Species: High Elf --> true-strike (WIS), detect magic, misty step
+Origin feat: MI:cleric --> mending, resistance, bless 
+Classes: Star druid + armorer artificer 
+Concept: Lunar magic wild robot gundam (Evangelion) 
+Point-Buy Stats: 
+ - STR = 08 
+ - DEX = 14
+ - CON = 14 
+ - INT = 12 (+1) = 13 
+ - WIS = 15 (+2) = 17 
+ - CHA = 08
+
+Progression: 
+ - lvl-00: MI:wizard: blade ward, firebolt, shield  
+ - lvl-01: artificer-01 --> magical tinkering; guidance + spare the dying; jump + detect magic; CON save proficiency
+ - lvl-02: artificer-01, druid-01 --> druidic, magician; produce flame, starry wisp; ice knife, cure wounds, faerie fire, healing word
+ - lvl-03: artificer-02, druid-01 --> replicate magic item: +1 weapon/shield, ruby of the war mage, bead of nourishment; identify (expeditious retreat <-> detect magic)
+ - lvl-04: artificer-03 (armorer), druid-01 --> heavy armor proficiency, arcane armor, infiltrator, lightning launcher + shield(+1), right tool for the job 
+ - lvl-05: artificer-04 (armorer), druid-01 --> resilient (WIS): +1 WIS (WIS=18)
+ - lvl-06: artificer-04 (armorer), druid-02 --> wild shape, wild companion
+ - lvl-07: artificer-04 (armorer), druid-03 (stars) --> guidance, free guiding bolts, switch MI spell (maybe), switch arti cantrip to message, switch to guardian 
+ - lvl-08: artificer-04 (armorer), druid-04 (stars) --> spell sniper: +1 INT (INT=14) 
+ - lvl-09: artificer-04 (armorer), druid-05 (stars) --> lvl-3 spells; wild resurgence 
+ - lvl-10: artificer-04 (armorer), druid-06 (stars) --> cosmic omen 
+ - lvl-11: artificer-04 (armorer), druid-07 (stars) --> elemental fury; lvl-4 spells (fire-shield/fount of moonlight/conjure minor elementals) 
+ - lvl-12: artificer-04 (armorer), druid-08 (stars) --> ASI: +2 WIS (WIS=20) 
+ - lvl-13: artificer-04 (armorer), druid-09 (stars) --> lvl-5 spells (antilife shell, scrying, tree stride) 
+ - lvl-14: artificer-04 (armorer), druid-10 (stars) --> twinkling constellations (archer +2d8+WIS) 
+ - lvl-15: artificer-04 (armorer), druid-11 (stars) --> lvl-6 druid spells (sunbeam) 
+ - lvl-16: artificer-04 (armorer), druid-12 (stars) --> heavy armor master: +1 CON, CON=15
+ - lvl-17: artificer-04 (armorer), druid-13 (stars) --> lvl-7 druid spells 
+ - lvl-18: artificer-04 (armorer), druid-14 (stars) --> full of stars (resist to B/P/S) 
+ - lvl-19: artificer-04 (armorer), druid-15 (stars) --> lvl-8 druid spells, improved elemental fury (2d8)
+ - lvl-20: artificer-04 (armorer), druid-16 (stars) --> epic boon of energy resistance: +1 CON (CON=16) 
+
+NOTES: 
+ - if you really need dmg, then conjure minor elementals + true-strike lightning launcher+ archer + elemental fury will give you the most (have to be at 15 ft range) 
+   + w CME at 8th level, it's +10d8 per hit, so 2d6(LL) + 3d6(TS) + 4d8 (archer, EF) + 20d8 (CME) + 2WIS = 5d6 + 24d8 + 10 = 135.5 
+ - if you want control, then true-strike thunder gauntlets + fount of moonlight + archer + elemental fury
+   + w FoM at 4th level, this is still: 1d8(TG) + 3d6(TS) + 2d6(FoM) + 4d8(archer,EF) + 2WIS = 5d8 + 5d6 + 10 = 50 + taunt/blind
+ - really nice that you can shift your specialization over turns/long-rests to suit whatever scenario you need, mixing and matching starry form with arcane armor model 
+ - start off as a spell-shot type character, once you get armorer, then you turn into a lunar/nature-based gundam (evangelion) 
+ - you'll be super tanky at the end (AC=21 at least, heavy armor master + full-of-stars, cosmic omen, CON/WIS proficiency) 
+
+Artificer Items 
+ - Armor of Gleaming (armor, common): armor never gets dirty 
+ - Bead of Nourishment (wondrous item, common): provides 1 day of nourishment 
+ - Clockwork Amulet (wondrous item, common): auto-roll a 10 on a d20 test (x1/day)
+ - Ersatz Eye (wondrous item, common): magical eye that replaces a lost natural eye 
+ - Horn of Silent Alarm (wondrous item, common): horn that can only be heard by specified creatures 
+ - Moon-touched sword (wondrous item, common)
+
+ 
+
+
+
+

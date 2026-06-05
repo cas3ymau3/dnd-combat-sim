@@ -1,0 +1,467 @@
+Moniker: The Darkmoon Piercer  
+Classes: Rogue-04 (Assassin), Warlock-04 (Hexblade), Bard-12 (College of Valor)    
+Species: Elf (Drow)
+ - size: medium 
+ - speed: 30ft 
+ - darkvision: 120ft 
+ - elven lineage (drow): dancing lights (lvl-00), faerie fire (lvl-03), darkness (lvl-05)
+ - fey ancestry: advantage on saves against charmed
+ - keen senses: proficiency in perception
+ - trance: long rest in 4h; don't sleep 
+Sex: Female 
+Background: Wayfarer
+ - ability scores: DEX, WIS, CHA 
+ - feat: Lucky 
+ - skill proficiencies: insight, stealth 
+ - tool proficiency: thieves' tools  
+ - languages: common, undercommon, elvish  
+ - equipment: 
+Point-Buy Stats: 
+ - STR = 08 
+ - DEX = 15 (+1) = 16
+ - CON = 14 
+ - INT = 08 
+ - WIS = 10
+ - CHA = 15 (+2) = 17
+ASI's/Feats:
+ - lvl-00: lucky
+ - lvl-05: ASI: +1 CHA (CHA=18), +1 DEX (DEX=17)  
+ - lvl-09: piercer: +1 DEX (DEX=18) 
+ - lvl-13: ASI: +2 CHA (CHA=20) 
+ - lvl-17: charger: +1 DEX (DEX=19)
+ - lvl-20: epic boon of irresistible offense: +1 DEX (DEX=20) / metamagic adept
+Progression Summary: 
+ - lvl-01: warlock-01 --> armor of shadows, pact magic, WIS save proficiency
+ - lvl-01: warlock-01, rogue-01 --> sneak attack, weapon mastery, + skill proficiency, expertise
+ - lvl-03: warlock-02, rogue-01 --> magical cunning; LotFO::savage attacker, eldritch mind, faerie fire (drow)   
+ - lvl-04: warlock-03 (hexblade), rogue-01 --> hex-pistol, med armor + shield; pact of the tome <-> armor of shadows
+ - lvl-05: warlock-04 (hexblade), rogue-01 --> ASI: +1 CHA (18) +1 DEX (17); eldritch mind <-> agonizing blast; darkness (drow)
+ - lvl-06: warlock-04 (hexblade), rogue-01, bard-01 --> inspiration, spellcasting
+ - lvl-07: warlock-04 (hexblade), rogue-01, bard-02 --> expertise, jack of all trades
+ - lvl-08: warlock-04 (hexblade), rogue-01, bard-03 (valor) --> combat inspiration, lvl-02 spells 
+ - lvl-09: warlock-04 (hexblade), rogue-01, bard-04 (valor) --> piercer: +1 DEX (DEX=18) 
+ - lvl-10: warlock-04 (hexblade), rogue-01, bard-05 (valor) --> font of inspiration, lvl-03 spells 
+ - lvl-11: warlock-04 (hexblade), rogue-01, bard-06 (valor) --> extra attack + cantrip
+ - lvl-12: warlock-04 (hexblade), rogue-01, bard-07 (valor) --> lvl-04 spells (fount of moonlight; greater invisibility); countercharm
+ - lvl-13: warlock-04 (hexblade), rogue-01, bard-08 (valor) --> ASI: +2 CHA (CHA=20) 
+ - lvl-14: warlock-04 (hexblade), rogue-01, bard-09 (valor) --> lvl-05 spells/slots (upcast bestow curse) 
+ - lvl-15: warlock-04 (hexblade), rogue-01, bard-10 (valor) --> magical secrets: prayer of healing, steel wind strike
+ - lvl-16: warlock-04 (hexblade), rogue-01, bard-11 (valor) --> lvl-06 spells/slots (yolande's regal presence) 
+ - lvl-17: warlock-04 (hexblade), rogue-01, bard-12 (valor) --> feat: charger; +1 DEX (DEX=19) 
+ - lvl-18: warlock-04 (hexblade), rogue-02, bard-12 (valor) --> cunning action 
+ - lvl-19: warlock-04 (hexblade), rogue-03 (assassin), bard-12 (valor) --> assassin, steady aim
+ - lvl-20: warlock-04 (hexblade), rogue-04 (assassin), bard-12 (valor) --> musket
+                                                                           epic boon of speed: +1 DEX (DEX=20)
+                                                                           epic boon of irresistible offense: +1 DEX (DEX=20)
+                                                                           alt: metamagic adept: 2 sorcery points: empower spell, seeking spell
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `warlock-bard'
+ - lvl-01: slots = 1_{1}; prepared: 2-0; max level: 1-0
+ - lvl-02: slots = 1_{1}; prepared: 2-0; max level: 1-0
+ - lvl-03: slots = 2_{2}; prepared: 3-0; max level: 2-0
+ - lvl-04: slots = 0-2_{2}; prepared: 4-0; max level: 2-0  
+ - lvl-05: slots = 0-2_{2}; prepared: 5-0; max level: 2-0 
+ - lvl-06: slots = 2-2_{2}; prepared: 5-4; max level: 2-1 
+ - lvl-07: slots = 3-2_{2}; prepared: 5-5; max level: 2-1
+ - lvl-08: slots = 4-4_{2}; prepared: 5-6; max level: 2-2
+ - lvl-09: slots = 4-5_{2}; prepared: 5-7; max level: 2-2 
+ - lvl-10: slots = 4-5_{2}-2; prepared: 5-9; max level: 2-3 
+ - lvl-11: slots = 4-5_{2}-3; prepared: 5-10; max level: 2-3
+ - lvl-12: slots = 4-5_{2}-3-1; prepared: 5-11; max level: 2-4 
+ - lvl-13: slots = 4-5_{2}-3-2; prepared: 5-12; max level: 2-4
+ - lvl-14: slots = 4-5_{2}-3-3-1; prepared: 5-14; max level: 2-5
+ - lvl-15: slots = 4-5_{2}-3-3-2; prepared: 5-15; max level: 2-5
+ - lvl-16: slots = 4-5_{2}-3-3-2-1; prepared: 5-16; max level: 2-6 
+ - lvl-17: slots = 4-5_{2}-3-3-2-1; prepared: 5-16; max level: 2-6
+ - lvl-18: slots = 4-5_{2}-3-3-2-1; prepared: 5-16; max level: 2-6 
+ - lvl-19: slots = 4-5_{2}-3-3-2-1; prepared: 5-16; max level: 2-6
+ - lvl-20: slots = 4-5_{2}-3-3-2-1; prepared: 5-16; max level: 2-6
+
+CONCEPT NOTES
+ - trying to maximize (within a reasonable build) the synergies between the thorn whip cantrip
+   the piercer feat, and the charger feat within a crit-fishing oriented build 
+ - we go hexblade to get improved critical on enemies affected by hexblade's curse 
+ - we go valor bard in order to be able to use thorn whip as part of the attack action
+ - take piercer feat to get enhanced critical on attacks that deal piercing damage 
+ - use luck points + spells + vex mastery to gain advantage on attacks, increasing crit chance 
+ - some flexibility with the end of the build; I went rogue-assassin for advantage on initiative 
+   and a bit more damage. Rogue scout would also give us a way to get out of melee (though we don't necessarily 
+   need to). Could also go into sorcerer (wild magic) to get tides of chaos + some sorcery points and metamagic 
+ - could go with dual wielding but want to keep BA available for hexblade's curse, inspiration, spells and
+   cunning actions (eventually) 
+
+THEMATIC CONCEPT NOTES:
+ - stealth, martial expertise, skillful, graceful, espionage 
+ - spy, scout, infiltrator, operator, huntress 
+ - moonlight (dark + light)
+ - fate, signs, omens, curses and dark blessings 
+ - unsettling charisma (intimidation, deception)
+ - mercilessness/cruelty of the underdark (drow) 
+ - Japanese edo-period style makeup (white face, red lip) + Youkai aesthetic (battle-ready) 
+ - patron is a weapon focused on righteous vengeance 
+ - as a bard we focus on honoring and venerating the (glorious) dead, and marking the injustice of their passing 
+ - backstory: hail from a warrior society which was dishonorably purged 
+ - potential analogs: cat woman, artemis, wonder-woman, percy de rollo, lark from midst, alita battle angel
+ - character arc can progress from cold-hearted vengeance to something more profound about honor, impermanence, and remembrance
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+
+#######
+Level-01: Warlock-01
+ - feat: lucky
+   * luck points: # of luck points equal to PB; spend them to impose advantage or disadvantage
+   * advantage: when roll a d20 test, use a luck point to roll it with advantage 
+   * disadvantage: when a creature rolls a d20 test, use a luck point to impose disadvantage
+ - saving throw proficiencies: WIS, CHA    
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * warlock (2): intimidation, deception      
+   * wayfarer (2): insight, stealth   
+   * keen senses (1): perception 
+   * languages (3): common, undercommon, elvish
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons
+   * armor: light armor 
+   * tools: thieves' tools (wayfarer)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (wayfarer) + 100gp (warlock)
+   * weapons: light crossbow (25gp), case of crossbow bots x2 (2gp), shortsword (10gp) 
+   * armor: none  
+   * clothing: traveler's clothes (2gp)
+   * tools: thieves' tools (25gp)
+   * foci: arcane-focus::crystal (10gp) 
+   * gear: caltrops (1gp), explorer's pack (10gp), grappling hook (2gp), 
+           2 pouches (1gp), perfume (5gp), 2 nets (2gp) 
+   * spare coin: 55gp 
+ - combat equipment:
+   * weapon: light crossbow
+     + light crossbow = 1d8 piercing (slow); ammunition (range 80/320), loading, two-handed  
+   * armor: none 
+   * unarmored AC = 13 + DEX(3) = 16 (with mage armor)
+ - eldritch invocations (1) 
+   * armor of shadows = can cast mage armor w/o spell slot 
+ - spellcasting 
+ - cantrips: 
+   * drow (1): dancing lights  
+   * warlock (2): minor illusion, true-strike 
+ - spell slots: 1_{1} 
+ - spells prepared: warlock (2)
+   * lvl-1 (warlock): charm person, witch bolt 
+    
+NOTE: Start Warlock so that we get WIS save proficiency. We'll only have WIS=10 for our entire career, whereas we'll be boosting our DEX a lot. Use true strike from range w/crossbow. Use witch bolt for BA damage and charm person if out of combat. Fun trickery/deception with minor illusion. True strike + witch bolt deals 1d8+3+ 1d12 = 14 damage per round on hit. Save gold-buy cash to buy medium armor and pistol when you get to level-04 
+
+
+
+
+#######
+Level-02: Warlock-01, Rogue-01 
+ - expertise
+   * gain expertise in two skills (deception, stealth)
+ - skill proficiencies (* indicates expertise): 
+   * warlock (2): intimidation, deception*      
+   * wayfarer (2): insight, stealth*   
+   * keen senses (1): perception 
+   * rogue (1): acrobatics 
+   * languages (4): common, undercommon, elvish, thieves' cant 
+ - sneak attack (1d6) 
+ - weapon masteries (2) 
+   * shortsword = 1d6 piercing (vex); finesse, light
+   * light crossbow = 1d8 piercing (slow); ammunition (range 80/320), loading, two-handed
+ 
+NOTE: Gain rogue proficiency, expertise in 2 skills, thieves' cant, sneak attack, and (2) weapon masteries. We already had proficiency with thieves' tools. For the skill proficiency, I went with acrobatics to give us one physical proficiency. Sleight of hand, investigation, and persuasion would also be good choices. For expertise, I went with stealth and deception. For weapon masteries, take shortswords and light-crossbows for now. If we have a source of advantage from range, then the crossbow is our best weapon option (ex., if we use luck points). But since we can use flanking/vex on the shortsword in melee to set up sneak attacks, we will probably do slightly more damage on average going into melee. We could even dual wield shortswords (drawing and stowing one each attack) when we aren't using witch bolt. Sneak attacking with the shortsword + witch bolt would deal 2d6+2+1d12 = 16.5 damage on hit. If we use a luck point to sneak attack with the crossbow, then we would do 18.5 damage in a round. 
+
+
+
+
+#######
+Level-03: Warlock-02, Rogue-01 
+ - feat: savage attacker 
+   * once per turn, roll weapon damage dice twice and use either roll 
+ - magical cunning 
+   * 1m rite to recover half pact magic spell slots (x1/LR) 
+ - eldritch invocations (3) 
+   * armor of shadows = can cast mage armor w/o spell slot 
+   * eldritch mind = advantage on CON saves to maintain concentration 
+   * lessons of the first ones = gain one origin feat (savage attacker)
+ - spellcasting 
+ - cantrips: 
+   * drow (1): dancing lights  
+   * warlock (2): minor illusion, true-strike 
+ - spell slots: 2_{2} 
+ - spells prepared: warlock (3)
+   * lvl-1 (warlock): armor of agathys, charm person, tasha's hideous laughter
+   * lvl-1 (drow): faerie fire (free x1/LR) 
+
+NOTE: We get two new eldritch invocations. Take eldritch mind for advantage on CON saves to maintain concentration and take lessons of the first ones in order to get savage attacker as an additional origin feat. We get magical cunning which gives us +1 warlock spell slot per day (nice). From our drow elven lineage we get to learn the faerie fire spell, and cast it for free x1/LR. Even though witch bolt probably still maximizes our personal damage, faerie fire should now be our go-to concentration spell. This is because it gives advantage on attack rolls against illuminated targets, allowing us to proc sneak attack every round. Plus it's also providing this buff to our allies. With savage attacker and sneak attack, a round from our light crossbow does 5.8 + 3.5 + 3 = 12.3 damage on hit. Since we'll be concentrating on faerie fire, we drop witch bolt and pick up armor of agathys, which we can cast in a pinch if need be. Then, since we won't be using witch bolt with our BA, our best offensive strategy at this level will be to dual wield shortswords in melee and use our BA to make an off-hand attack. This would deal: 4.5 + 3.5 + 3.5 + 3 = 14.5 per if we hit with both attacks. But we won't be doing this for very long, since we'll want our BA for other things, so fine if you just want to stick to the crossbow. Finally, with our new prepared spell we'll take tasha's hideous laughter (THL), which is a great control option that upcasts very well (though that isn't super relevant right now). 
+
+
+
+
+#######
+Level-04: Warlock-03 (Hexblade), Rogue-01 
+ - hex warrior 
+   * gain proficiency in med armor, shields, and martial weapons 
+   * once each LR, touch a non-two-handed weapon and use CHA instead of STR or DEX for attacks 
+ - hexblade's curse (x1/SR) 
+   * BA to curse a target 
+   * cursed targets take extra damage when hit equal to your PB 
+   * attack rolls on cursed target crit on 19 or 20 
+   * when target dies, you gain warlock-lvl + CHA hit points 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light + medium armor; shields 
+   * tools: thieves' tools (wayfarer)
+ - combat equipment:
+   * weapon: pistol
+     + pistol = 1d10 piercing (vex); ammunition (range 30/90), loading  
+   * armor: breastplate + shield 
+   * AC = 14 + 2(DEX) + 2(shield) = 18
+ - weapon masteries (2) 
+   * rapiers = 1d8 piercing (vex); finesse
+   * pistols = 1d10 piercing (vex); ammunition (range 30/90), loading
+ - eldritch invocations (3) 
+   * pact of the tome = learn 3 cantrips (any class) + 3 spells with ritual tag 
+   * eldritch mind = advantage on CON saves to maintain concentration 
+   * lessons of the first ones = gain one origin feat (savage attacker) 
+ - spellcasting 
+ - cantrips: 
+   * drow (1): dancing lights  
+   * warlock (2): minor illusion, true-strike 
+   * pact of the tome (3): guidance, thaumaturgy, thorn whip
+ - spell slots: 0-2_{2} 
+ - spells prepared: warlock (4)
+   * lvl-1 (warlock): armor of agathys, tasha's hideous laughter
+   * lvl-1 (drow): faerie fire (free x1/LR)  
+   * lvl-1 (pact of the tome): comprehend languages (R), unseen servant (R) 
+   * lvl-2 (warlock): hold person, suggestion 
+
+NOTE: Ok big level here. We get our warlock subclass and we're going hexblade. This gets us three very important things. First, we get proficiency in medium armor, shields, and martial weapons. So we drop armor of shadows and move into medium armor (I assume breastplate, but get whatever you can afford); we drop our crossbow in favor of a pistol, and we pick up a shield. Assuming we're able to get breastplate, we now have an AC of 18, which is great. And since we can draw a weapon as part of using it to make an attack, we can draw our pistol to make attacks, then use our object interaction to holster it, leaving us a free hand to use for casting spells (note: since we don't have pact of the blade, we can't use a weapon as a spellcasting focus, so we need a free hand to grab our crystal). Second, we get hexblade's curse -- which gives us extra damage and improved crit chance, as well as a heal when we a cursed target dies. Only x1/SR uses right now, but we should use it on cooldown. Third, we get the hex weapon component of the hex warrior feature. This let's us perform a ritual each day on a `weapon that we are proficient with and which lacks the two-handed property' after which we can use our CHA instead of our STR or DEX for attack and damage rolls with that weapon (pistol qualifies). Right now our CHA and DEX are both +3, but that's going to change next level when we bump our CHA. Since we dropped armor of shadows as an invocation, we pick up pact of the tome to get 3 new cantrips and 2 new 1st level rituals. Thorn whip is a must have for the build (even though we won't use it heavily for a while), but none of the others are essential. I like thaumaturgy gives us advantage on intimidation checks, which will kind of be our thing. Guidance is also obviously a good all-around for a rogue/face type character. For the rituals, pick your favorites. I don't want to deal with a familiar so I skipped that one and picked ones that seem most applicable for spying/infiltration purposes. Finally, we also get to prepare a new warlock spell and our warlock spell slots level up to lvl-2. Since we now have access to level 2 spells, I dropped charm person in favor of suggestion, and then took hold person. When applicable, hold-person would be an upgrade over faerie-fire for our concentration since it not only grants advantage but we also auto-crit on attacks w/in 5ft against paralyzed targets. Since we're going for a crit-fish type build, this is particularly useful. It also upcasts well. For damage, savage attacker is significantly better on the pistol than the crossbow, boosting damage from a single shot to 7.15 on average. This means our pistol sneak attack will do: 7.15 + 3.5 + 3 = 13.65 damage on hit. And if we've cursed the target, we do an additional 2 bringing the total to 15.65. If we manage to land hold person and shoot a cursed target from w/in 5ft, then we would do 2*(7.15+3.5)+5 = 26.3, which is really good. Overall, not crazy damage, but we get to stay relatively safe at range, provide some utility through faerie fire, and we've already started to significantly invest into the crit-fishing identity. 
+
+
+
+
+#######
+Level-05: Warlock-04 (Hexblade), Rogue-01
+ - ASI: +1 CHA (CHA=18), +1 DEX (DEX=17)
+ - proficiency bonus (PB) = +3
+   * luck points: 3/LR
+   * hexblade's curse: +3 damage
+   * expertise bonus: +6
+ - cantrip upgrade 
+   * thorn whip (2d6)
+   * true-strike (1d6) 
+ - eldritch invocations (3) 
+   * pact of the tome = learn 3 cantrips (any class) + 3 spells with ritual tag 
+   * agonizing blast = add CHA to damage rolls of chosen cantrip (thorn whip)
+   * lessons of the first ones = gain one origin feat (savage attacker) 
+ - spellcasting 
+ - cantrips: 
+   * drow (1): dancing lights  
+   * warlock (3): minor illusion, prestidigitation, true-strike 
+   * pact of the tome (3): guidance, thaumaturgy, thorn whip
+ - spell slots: 0-2_{2} 
+ - spells prepared: warlock (5)
+   * lvl-1 (warlock): armor of agathys, tasha's hideous laughter
+   * lvl-1 (drow): faerie fire (free x1/LR)  
+   * lvl-1 (pact of the tome): comprehend languages (R), unseen servant (R) 
+   * lvl-2 (warlock): hold person, misty step, suggestion  
+   * lvl-2 (drow): darkness (free x1/LR)
+
+NOTE: We take an ASI to bump our CHA to 18 and our DEX to 17. We could take a CHA half feat (e.g., war-caster), but we're going to be taking martial feats as we go on and will eventually be able to cap both CHA and DEX if we invest in DEX here. Bumping CHA means we get a +4 -- vs. a +3 in DEX -- meaning we can benefit from using CHA to make attack and damage rolls with our pistol. At character level-5, we also get a proficiency bonus boost (increasing the damage of our hexblade's curse) as well as a cantrip upgrade. Now when we true strike with our hex-pistol, we get an additional 1d6 radiant on hit. With savage attacker, sneak attack, true-strike, hexblade's curse and the increase in our CHA our pistol shots now do 7.15 + 3.5 + 3.5 + 3 + 4 = 21.15 on hit and 2*(14.15)+7 = 35.3 on crit. So a really nice bump to our damage potential. We also are going to switch out eldritch mind for agonizing blast (thorn whip) as an eldritch invocation. This kind of sucks right now, since we don't really want to use thorn whip for damage (though it's obviously a good option for control/forced movement). But this is going to be our last warlock level, and we can only change invocations on level-up in the class. So, since we're going to want agonizing blast with thorn whip later in the build, we gotta take the hit now. Next, we get to prepare another warlock spell and we're going to take misty step. At this level, with only 2 spell slots, we won't want to use it unless we have to. But it's not on the bard spell list and we want good non-concentration BA spells. A number of the other good offerings on the warlock list (mirror image, invisibility) are also on the bard list, so we can pick them up later. The only one that might come in handy is spider climb, but we are going to have a lot of other things competing for our concentration, so I think misty step is best. At warlock-04 we also get to learn another warlock cantrip. Honestly, I'm a bit torn here. Having eldritch blast as a true ranged option would be great (you could still theme it as `shots' from the pistol), and at level-05 we would get two blasts each cast (2d10 damage). But for RPing and utility, prestidigitation, mage hand, and friends all seem like better choices. Ultimately, I think I would opt for prestidigitation for its versatility, and the ability to combine it with minor illusion and thaumaturgy to do some creative stuff. Plus, even though EB is very powerful, I think we have to lean into the identify of our character, which is going to be trying to stick within a range of 30ft. Ok and finally, as a drow we also get to learn the darkness spell and cast it for free x1/LR. Now this would have been *really* good if took the devil's sight invocation, since it would give us a way to blind targets and give us advantage on attacks. But with a 15ft radius, enemies can pretty easily move out of the darkness unless we build around trapping them in it. And if we cast it in an area around ourselves and shoot `out' of the darkness, then enemies would have to be w/in 30ft. Plus there's all the complications of nerfing your allies with it. So yeah, we're not going to build around it. In the end, it's still a pretty good (if situational) control spell in combat with good out-of-combat utility. And as a warlock, we're happy to have any free spells we can get our hands on. 
+
+
+
+
+#######
+Level-06: Warlock-04 (Hexblade), Rogue-01, Bard-01
+ - bardic inspiration (4d6) 
+ - skill proficiencies (* indicates expertise): 
+   * warlock (2): intimidation, deception*      
+   * wayfarer (2): insight, stealth*   
+   * keen senses (1): perception 
+   * rogue (1): acrobatics 
+   * bard (1): investigation
+   * languages (4): common, undercommon, elvish, thieves' cant 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light + medium armor; shields 
+   * tools: thieves' tools (wayfarer)
+   * musical instruments: shamisen (japanese guitar)
+ - spellcasting 
+ - cantrips: 
+   * drow (1): dancing lights  
+   * warlock (3): minor illusion, prestidigitation, true-strike 
+   * pact of the tome (3): guidance, thaumaturgy, thorn whip
+   * bard (2): mage hand, message 
+ - spell slots: 2-2_{2} 
+ - spells prepared: warlock (5), bard (4)
+   * lvl-1 (warlock): armor of agathys, tasha's hideous laughter
+   * lvl-1 (drow): faerie fire (free x1/LR)  
+   * lvl-1 (pact of the tome): comprehend languages (R), unseen servant (R) 
+   * lvl-1 (bard): charm person, detect magic (R), disguise self, healing word  
+   * lvl-2 (warlock): hold person, misty step, suggestion  
+   * lvl-2 (drow): darkness (free x1/LR)
+
+NOTE: Ok so we start taking bard levels here. Right off the bat we get to gain another skill proficiency and expertise. Lots of good choices here, but I think I would pickup proficiency in investigation. Not only is investigation a very useful skill out of combat, but it also kind of dovetails with our identity as a `sniper shot', where we would be able to quickly deduce weak points. Ditto for our spy-rogue identity in locating hidden objects/information and generally conducting espionage. I think it's also important to think about how becoming a bard is related to our overall character development. Our warlock side can be focused on righteous vengeance, and our rogue side can be about expertise, espionage, manipulation and deception. And while our bard side will retain a martial focus, I think it will also contain something softer and sadder, something more beautiful and more profound than cold-hearted vengeance. Becoming a bard will play into our burgeoning sense of the power of loss, memory, and the way that we honor and venerate the past. Our artistry will also serve as a vessel for processing our own grief and pain, potentially allowing us to become a better person. Lean into the musical instrument (shamisen) proficiency we gained and incorporate music/singing/story-telling into your RP (be sure to leverage all our RP cantrips to put on some incredible performances). We are a fearsome youkai, true, but underneath our terrifying murderous exterior is something tender and wounded and scared. The light of creation swirls within our darkness. Through our artistry, we can inspire our contemporaries to carry on the memory of those we've lost through their own acts of valor, so that they may live forever. That said, I think ours is a character that still thinks of themselves as an outsider, and prefers to operate in the shadows/through the underground. So we aren't the standard type of `friendly frontman' bard, either. This is why taking proficiency in persuasion or performance doesn't make as much sense. Right so in terms of mechanics/features, being a bard gets us 4d6 bardic inspiration die which we can use with a BA in combat and for general use out of combat. This is one of the main reasons we opted to not go for a dual wielding build, since we wanted to keep our BA free to cast spells and use inspiration. Second, we get 2 new bard cantrips. I think mage hand and message are the best for sneaky-spy type stuff. You can also use your mage hand to help play your shamisen (+ unseen servant on drums for a full magical band). Friends could also be useful, but we'll pick it up later. Finally, we get two lvl-1 bard spell slots (very useful for casting faerie fire) and we get to prepare 4 lvl-1 bard spells. The full list of level-1 spells I want is: charm person, command, detect magic, disguise self, dissonant whispers, feather fall, healing word, identify, and longstrider. We'll get some of these as we continue to gain bard levels, but for now I just chose ones that have out-of-combat utility, plus healing word since it's a non-concentration BA and is handy for reviving fallen allies. So all-in-all, this level gives us a big boost to our out-of-combat utility -- through skill proficiencies, cantrips, and spells -- plus a sizeable boost to our supportive capacity in combat -- through first level spell slots and inspiration -- but doesn't increase our damage at all. Fine. 
+
+
+
+
+#######
+Level-07: Warlock-04 (Hexblade), Rogue-01, Bard-02
+ - expertise
+   * gain expertise in two skills (perception, investigation)
+ - jack of all trades (+1)
+   * add half PB to all non-proficient skills
+ - skill proficiencies (* indicates expertise): 
+   * warlock (2): intimidation, deception*      
+   * wayfarer (2): insight, stealth*   
+   * keen senses (1): perception* 
+   * rogue (1): acrobatics 
+   * bard (1): investigation*
+   * languages (4): common, undercommon, elvish, thieves' cant 
+ - spellcasting 
+ - cantrips: 
+   * drow (1): dancing lights  
+   * warlock (3): minor illusion, prestidigitation, true-strike 
+   * pact of the tome (3): guidance, thaumaturgy, thorn whip
+   * bard (2): mage hand, message 
+ - spell slots: 3-2_{2} 
+ - spells prepared: warlock (5), bard (5)
+   * lvl-1 (warlock): armor of agathys, tasha's hideous laughter
+   * lvl-1 (drow): faerie fire (free x1/LR)  
+   * lvl-1 (pact of the tome): comprehend languages (R), unseen servant (R) 
+   * lvl-1 (bard): charm person, command, detect magic (R), disguise self, healing word  
+   * lvl-2 (warlock): hold person, misty step, suggestion  
+   * lvl-2 (drow): darkness (free x1/LR)
+
+NOTE: Get expertise in investigation and perception. Now we have a +6 to perception (and 120 ft darkvision) and a +5 to investigation despite having a +0 and -1 to WIS and INT checks, respectively. In combination with stealth and deception, this makes us an excellent infiltrator and spy. We also get jack of all trades, which we can stack with guidance to essentially give us proficiency in any skill we aren't already proficient in (+3.5 on average). For example, if we're making a performance or persuasion check, we can cast guidance and use jack of all trades to give ourselves a +7.5 to the roll (on average). Sleight of hand to pickpocket someone? +6.5 with guidance and jack of all trades. Pretty good. Finally, we get to prepare one new bard spell. I think command provides the best in-combat utility, considering we're likely going to be concentrating on a different spell (faerie fire, hold person, darkness, hideous laughter) since it upcasts so well. As always, pick your favorites. 
+
+
+
+
+#######
+Level-08: Warlock-04 (Hexblade), Rogue-01, Bard-03 (College of Valor) 
+ - combat inspiration 
+   * allies can now use inspiration die in two new ways in combat 
+   * defensive: add inspiration die to AC when hit with an attack 
+   * offensive: add inspiration die to damage when you hit with an attack 
+ - martial training 
+   * gain proficiency with martial weapons, medium armor, and shields (already have it) 
+   * can use simple/martial weapon as a spellcasting focus for bard spells (doesn't matter) 
+ - spellcasting 
+ - cantrips: 
+   * drow (1): dancing lights  
+   * warlock (3): minor illusion, prestidigitation, true-strike 
+   * pact of the tome (3): guidance, thaumaturgy, thorn whip
+   * bard (2): mage hand, message 
+ - spell slots: 4-4_{2} 
+ - spells prepared: warlock (5), bard (6)
+   * lvl-1 (warlock): armor of agathys, tasha's hideous laughter
+   * lvl-1 (drow): faerie fire (free x1/LR)  
+   * lvl-1 (pact of the tome): comprehend languages (R), unseen servant (R) 
+   * lvl-1 (bard): charm person, command, detect magic (R), disguise self, healing word  
+   * lvl-2 (warlock): hold person, misty step, suggestion  
+   * lvl-2 (drow): darkness (free x1/LR)
+   * lvl-2 (bard): blindness/deafness
+
+NOTE: Level-03 and we get bard subclass. Going college of valor. Two new features. Combat inspiration makes our inspiration die more useful to our allies in combat. And, if we assume that our allies use all 4d6 inspiration die to deal extra damage, then we can consider this an +14 increase to our total daily damage (around +1 DPR). Martial training, unfortunately, doesn't get us anything -- since we already have proficiency with martial weapons, medium armor, and shields, and we still need a free hand to cast our warlock spells so we're stuck drawing and stowing our hex-pistol when we attack with it. Bummer. At bard-03 we do, however, get 3 more glorious spell slots (one lvl-1 and two lvl-2's). We also get to prepare another bard spell, including up to level-2 spells. For this I think we just take blindness/deafness. There are some other really good lvl-2 spells, like invisibility, mirror image, aid, and detect thoughts but none of them are super impactful, and we still don't have a tone of spell slots. Blindness/deafness is great because it's not concentration, and can generate advantage for us so that we can improve our crit chance and sneak attack. Since we're still primarily concentrating on faerie fire/darkness/hold-person/THL in combat, retaining spells like command to upcast is kind of clutch. Invisibility is great, but we have a lot of ways to infiltrate without it (stealth, disguise self, deception, etc.). Aid is mostly for a melee fighter, and we can cast armor of agathys in a pinch if need THP. And I would like to have phantasmal force and detect thoughts eventually, but I'm not sure what 1st level spell I'd want to give up (detect magic, maybe?). Anyway, for now we just stick with blindness/deafness. 
+
+
+
+
+#######
+Level-09: Warlock-04 (Hexblade), Rogue-01, Bard-04 (College of Valor) 
+ - feat: piercer
+   * ASI: +1 DEX (DEX=18) 
+   * puncture: x1/turn when you hit with an attack that deals piercing dmg, you can reroll the damage die and use the new roll
+   * enhanced critical: when you crit with an attack that deals piercing dmg, add 1 additional dmg die to the roll
+ - proficiency bonus (PB) = +4
+   * luck points: 4
+   * hexblade's curse: +4 damage
+   * expertise bonus: +8
+   * jack of all trades: +2
+ - spellcasting 
+ - cantrips: 
+   * drow (1): dancing lights  
+   * warlock (3): minor illusion, prestidigitation, true-strike 
+   * pact of the tome (3): guidance, thaumaturgy, thorn whip
+   * bard (3): friends, mage hand, message 
+ - spell slots: 4-5_{2} 
+ - spells prepared: warlock (5), bard (7)
+   * lvl-1 (warlock): armor of agathys, tasha's hideous laughter
+   * lvl-1 (drow): faerie fire (free x1/LR)  
+   * lvl-1 (pact of the tome): comprehend languages (R), unseen servant (R) 
+   * lvl-1 (bard): charm person, command, detect magic (R), disguise self, healing word  
+   * lvl-2 (warlock): hold person, misty step, suggestion  
+   * lvl-2 (drow): darkness (free x1/LR)
+   * lvl-2 (bard): blindness/deafness, phantasmal force 
+
+NOTE: Bard-04 and we take the piercer feat. Pretty weird, right? Well lets look at it. First, it bumps our DEX up to +4, meaning we can attack in range and melee with the same effectiveness. Second, it lets us reroll a piercing damage die x1/turn. I'm assuming this can stack with savage attacker, so that (if we wanted to) we could reroll one of the damage die that we roll when we use savage attacker with piercer (so three rolls total). It also definitely applies to the damage we deal with sneak attack and thorn whip. This means if we get a good roll on our pistol damage with savage attacker, we can still use piercer to reroll our sneak attack damage. So we should be able to use the puncture feature almost every time we attack. Rerolling damage dice also obviously yields higher dividends on crits then non-crits, and we crit more than the typical character. Plus we get an additional damage die when we crit, which we could also reroll using puncture if we high-roll on the rest of our damage dice. In terms of the actual math, it's a bit tricky. But basically, we get really good value out of the piercer feat since we'll be able to use the puncture almost every time we hit, and the value of rerolls is boosted on crits. Based on simulations (see R code), our standard true-strike attack against a target cursed with hexblade's curse with sneak attack and savage attacker does about 22.15 damage on a non-crit. With piercer, this goes up to 23.2 damage. Without piercer, our sneak attack crits on cursed targets would do about 36.25 damage. With piercer, they do about 44.6 damage on average. With a crit chance of 0.2 (crit on 19/20, two d20s when rolling at advantage) this means our `average' damage before piercer is about 25.0 and with piercer it's about 27.5, so an increase of 2.5 (10%) or about the equivalent of adding a d4 to our base damage. Now we won't always hit, we don't attack every round of combat, and we aren't always attacking a cursed target, so it's a bit less in terms of actual DPR. But just eyeballing it, taking piercer probably represents a solid +2 boost to our overall DPR, which isn't bad. Plus it's going to get much better once we start making multiple attacks. In general, accounting for everything our overall DPR is probably around 20, which isn't great for tier 2, but we bring a lot of control and a massive amount of out-of-combat utility to the table. In terms of spellcasting, we get an additional bard cantrip. Take friends since we have pretty much everything we want and friends can be useful in a pinch. We also get to prepare another bard spell. And I'm going to say we should take phantasmal force. Now something like invisibility is probably a more meta pick. But I really like the flavor of phantasmal force for our character. As planting haunting visions into the minds of our foes seems like something our youkai/ghost of vengeance character would do. Plus, whatever we pick isn't going to be used all that often and in the right situation phantasmal force can be amazing. Ultimately, this character is supposed to be relatively `advanced' to play, and will require creativity and ingenuity to get the most out of. Phantasmal force also leans in to that. 
+
+
+
+
+
+#######
+Level-10: Warlock-04 (Hexblade), Rogue-01, Bard-05 (College of Valor) 
+ - bardic inspiration (4d8)
+ - font of inspiration 
+   * recover all expended bardic inspiration on short rest 
+   * can restore bardic inspiration uses with spell slots
+ - spellcasting 
+ - cantrips: 
+   * drow (1): dancing lights  
+   * warlock (3): minor illusion, prestidigitation, true-strike 
+   * pact of the tome (3): guidance, thaumaturgy, thorn whip
+   * bard (3): friends, mage hand, message 
+ - spell slots: 4-5_{2}-2 
+ - spells prepared: warlock (5), bard (9)
+   * lvl-1 (warlock): armor of agathys, tasha's hideous laughter
+   * lvl-1 (drow): faerie fire (free x1/LR)  
+   * lvl-1 (pact of the tome): comprehend languages (R), unseen servant (R) 
+   * lvl-1 (bard): charm person, command, detect magic (R), disguise self, healing word  
+   * lvl-2 (warlock): hold person, misty step, suggestion  
+   * lvl-2 (drow): darkness (free x1/LR)
+   * lvl-2 (bard): blindness/deafness, phantasmal force
+   * lvl-3 (bard): bestow curse, clairvoyance
+
+NOTE: We get font of inspiration which means we can recover our inspiration die on a short rest, essentially doubling the pool we have to use per day from 4 to 8. Our bardic inspiration die also level up from d6s to d8s. Together, this represents a substantial boost to our support capabilities, and we do want to be using our BA to dole out inspiration. So that's nice. We also get to prepare two new bard spells (up to 9) and get access to 3rd level bard spells. For these we take bestow curse and clairvoyance. Both are exceptionally thematic for our character. As a concentration spell, the former is a little bit lackluster when we take it here, but can be used to buff our damage against a single target if we have an external source of advantage. Clairvoyance plays in to our identity as a spy, scout, and infiltrator. Level-3 spell slots also means we can upcast spells like armor of agathys, tasha's hideous laughter, charm person, command, hold person, and blindness/deafness to greater effect. 
+
+
+
+
+
+#######
+Level-11: Warlock-04 (Hexblade), Rogue-01, Bard-06 (College of Valor) 
+ - extra attack 
+   * attack twice when you take attack action 
+   * can also replace one attack with a cantrip
+ - cantrip upgrade 
+   * thorn whip (3d6)
+   * true-strike (2d6) 
+ - spellcasting 
+ - cantrips: 
+   * drow (1): dancing lights  
+   * warlock (3): minor illusion, prestidigitation, true-strike 
+   * pact of the tome (3): guidance, thaumaturgy, thorn whip
+   * bard (3): friends, mage hand, message 
+ - spell slots: 4-5_{2}-3 
+ - spells prepared: warlock (5), bard (10)
+   * lvl-1 (warlock): armor of agathys, tasha's hideous laughter
+   * lvl-1 (drow): faerie fire (free x1/LR)  
+   * lvl-1 (pact of the tome): comprehend languages (R), unseen servant (R) 
+   * lvl-1 (bard): charm person, command, detect magic (R), disguise self, healing word, longstrider  
+   * lvl-2 (warlock): hold person, misty step, suggestion  
+   * lvl-2 (drow): darkness (free x1/LR)
+   * lvl-2 (bard): blindness/deafness, phantasmal force
+   * lvl-3 (bard): bestow curse, clairvoyance
+
+NOTE: Ok, level-11 and we go Bard-06. As a valor bard we get extra attack + a cantrip. And our cantrips also upgrade to deal more damage. The investment in thorn whip oh so long ago is finally going to pay off. Now on our turn, we can take the attack action, make the first attack with our hex pistol (procing vex/sneak attack if we have advantage), and then make the second attack with thorn whip. Now you might be scratching your head, wondering: why would we use thorn whip instead of true-strike? Our true-strike pistol attacks deal 1d10+2d6+CHA on hit, while thorn whip (even with agonizing blast) only deals 3d6+CHA on hit, right? While this is true, thorn whip ends up being a DPS gain for a few reasons. The main one is that pistols have the loading property, meaning they can only be fired once per turn unless you have a feat/ability that permits you to make more attacks (like the crossbow expert feat, or an artificer's repeating shot). This means that we can't make a true-strike pistol attack with our first attack and then take a second shot with the pistol using our second attack. In addition, there aren't any other good one handed ranged weapons. Our best bet would be the hand crossbow which only has a d6 damage die, thus significantly reducing the value of our savage attacker and piercer rerolls. We could shift over to a two handed weapon like the longbow, but then we'd have to drop our shield and we also lose the vex mastery, which we want to give ourselves advantage. Thrown weapons also don't work because the ones that deal good damage (the trident, for example) are STR based. Since we can only bond with a single weapon using our hex warrior feature, if we throw that weapon at an enemy, then we're stuck using STR or DEX for subsequent attacks. So we'd have to use either the dagger or the dart, which both have a puny d4 damage die. The second reason is that we can only use savage attacker once per turn. So even if we had a weapon with which we wanted to make two attacks on our turn, we'd only be able to use savage attacker on one of those attacks. Using thorn whip allows us to continue to deal piercing damage with both of our attacks -- meaning both attacks can benefit from piercer's enhanced critical -- while also allowing us to further maximize the combined value of savage attacker + piercer on damage rerolls, since we can use the piercer puncture feature on damage rolls from either attack. With 3d6 piercing damage from thorn whip and another 1d10 +1d6 from the sneak attack pistol shot, there are 5 piercing damage dice we can potential reroll with puncture on our turn. The chances of high rolling all of these dice is extremely low, meaning we'll be able to use our puncture reroll and our savage attacker double-roll every time we hit with an attack. 
+
+
+
+

@@ -1,0 +1,817 @@
+Moniker: Last Voice of the Old Ones
+Classes: Sorcerer-04 (Ancestral), Bard-16 (Valor)
+Species: Gnome (Rock)  
+ - size: small 
+ - speed: 30ft 
+ - darkvision: 60ft 
+ - gnomish cunning: advantage on INT/WIS/CHA saving throws  
+ - gnomish lineage (rock) 
+   * mending, prestidigitation 
+   * clockwork devices: 10m to create each; AC-5, 1HP; produces one effect 
+     of prestidigitation when activated w/BA; duration 8hr; max 3. 
+Sex: Male 
+Background: House Vadalis Heir 
+ - source: eberron - forge of the artificer
+ - ability scores (modified): CON (DEX), WIS, CHA
+ - feat: mark of handling
+ - skills: animal handling, nature 
+ - tools (modified): leatherworker's tools 
+ - languages: common, common sign language, gnomish 
+ - equipment (gold-buy): 50 gp
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15 (+1) = 16 
+ - CON = 14 
+ - INT = 08 
+ - WIS = 10 
+ - CHA = 15 (+2) = 17
+ASI's/Feats: 
+ - lvl-00: mark of handling  
+ - lvl-06: inspiring leader: +1 CHA (CHA=18) 
+ - lvl-09: ASI: +2 CHA (CH=20) 
+ - lvl-12: mounted combatant: +1 DEX (DEX=17)   
+ - lvl-16: medium armor master: +1 DEX (DEX=18) 
+ - lvl-20: epic boon of spell mastery: +1 CHA (CHA=21) 
+Progression Summary: 
+ - lvl-01: sorcerer-01 --> CON save prof., innate sorcery, true-strike, mage armor, shield 
+ - lvl-02: sorcerer-01, bard-01 --> light armor prof., +1 skill prof., +1 musical instrument, bardic inspiration (d6), find-familiar, heroism
+ - lvl-03: sorcerer-02, bard-01 --> jump, witch bolt, font of magic, metamagic (extended, twinned) 
+ - lvl-04: sorcerer-02, bard-02 --> jack of all trades, expertise 
+ - lvl-05: sorcerer-02, bard-03 (valor) --> martial weapon training, combat inspiration, aid, cure wounds   
+ - lvl-06: sorcerer-02, bard-04 (valor) --> inspiring leader: +1 CHA (CHA=18) 
+ - lvl-07: sorcerer-02, bard-05 (valor) --> bardic inspiration (d8), font of inspiration, cacophonic shield, speak w/plants, speak w/dead 
+ - lvl-08: sorcerer-03 (ancestral), bard-05 (valor) --> ancestor's lore, ancestral spells, ancestral visage, magic weapon, dragon's breath, spider climb
+ - lvl-09: sorcerer-04 (ancestral), bard-05 (valor) --> ASI: +2 CHA (CHA=20) 
+ - lvl-10: sorcerer-04 (ancestral), bard-06 (valor) --> extra attack + cantrip
+ - lvl-11: sorcerer-04 (ancestral), bard-07 (valor) --> countercharm 
+ - lvl-12: sorcerer-04 (ancestral), bard-08 (valor) --> mounted combatant: +1 DEX (DEX=17) 
+ - lvl-13: sorcerer-04 (ancestral), bard-09 (valor) --> expertise, lvl-05 spells
+ - lvl-14: sorcerer-04 (ancestral), bard-10 (valor) --> bardic inspiration (d10), magical secrets (barkskin, prayer of healing) 
+ - lvl-15: sorcerer-04 (ancestral), bard-11 (valor) --> lvl-06 spells: heroes' feast + grasping vine
+ - lvl-16: sorcerer-04 (ancestral), bard-12 (valor) --> mage slayer: +1 DEX (DEX=18), dream
+ - lvl-17: sorcerer-04 (ancestral), bard-13 (valor) --> lvl-07 spells: mirage arcane
+ - lvl-18: sorcerer-04 (ancestral), bard-14 (valor) --> battle magic 
+ - lvl-19: sorcerer-04 (ancestral), bard-15 (valor) --> bardic inspiration (d12), lvl-08 spells: telepathy
+ - lvl-20: sorcerer-04 (ancestral), bard-16 (valor) --> epic boon of spell recall: +1 CHA (CHA=21) 
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `sorcerer-bard'
+ - lvl-01: slots = 2; prepared: 2-0; max level: 1-0
+ - lvl-02: slots = 3; prepared: 2-4; max level: 1-1
+ - lvl-03: slots = 4-2; prepared: 4-4; max level: 1-1
+ - lvl-04: slots = 4-3; prepared: 4-5; max level: 1-1
+ - lvl-05: slots = 4-3-2; prepared: 4-6; max level: 1-2
+ - lvl-06: slots = 4-3-3; prepared: 4-7; max level: 1-2
+ - lvl-07: slots = 4-3-3-1; prepared: 4-9; max level: 1-3
+ - lvl-08: slots = 4-3-3-2; prepared: 6-9; max level: 2-3
+ - lvl-09: slots = 4-3-3-3-1; prepared: 7-9; max level: 2-3
+ - lvl-10: slots = 4-3-3-3-2; prepared: 7-10; max level: 2-3
+ - lvl-11: slots = 4-3-3-3-2-1; prepared: 7-11; max level: 2-4
+ - lvl-12: slots = 4-3-3-3-2-1; prepared: 7-12; max level: 2-4
+ - lvl-13: slots = 4-3-3-3-2-1-1; prepared: 7-14; max level: 2-5
+ - lvl-14: slots = 4-3-3-3-2-1-1; prepared: 7-15; max level: 2-5
+ - lvl-15: slots = 4-3-3-3-2-1-1-1; prepared: 7-16; max level: 2-6
+ - lvl-16: slots = 4-3-3-3-2-1-1-1; prepared: 7-16; max level: 2-6
+ - lvl-17: slots = 4-3-3-3-2-1-1-1-1; prepared: 7-17; max level: 2-7
+ - lvl-18: slots = 4-3-3-3-3-1-1-1-1; prepared: 7-17; max level: 2-7
+ - lvl-19: slots = 4-3-3-3-3-2-1-1-1; prepared: 7-18; max level: 2-8
+ - lvl-20: slots = 4-3-3-3-3-2-2-1-1; prepared: 7-18; max level: 2-8
+
+MECHANICAL CONCEPT NOTES
+ - play as small species (gnome) then go mark of handling to get find familiar, use this spell to create a controlled mount (deer = medium size)
+ - mark of handling also gives you speak w/animals and animal friendship on a high-CHA character (rare), 
+   allowing us to use the natural world for out of combat utility/recruiting powerful beast/monstrosity allies  
+ - then go sorcerer to get mage armor and cast it on your mount (deer has DEX=16) to bring it's AC to 16 
+ - then go (valor) bard to get support spells (aid) and combat inspiration to keep mount alive 
+ - valor bard also gets us martial weapon and shield proficiency -- - wield pistol + shield in 
+ - once we get extra attack + cantrip, use one attack to throw a net and restrain, then true-strike 
+ - use rock gnome mending cantrip to repair nets after each battle (don't have to carry around a ton of them) 
+ - use innate sorcery to give yourself advantage on true-strike attacks 
+ - get second level sorcerer spells in order to take magic weapon, boosting reliability of DEX-based 
+   attacks prior to getting extra attack + cantrip 
+ - get dragon's breath via sorcerer and cast it on your mount for extra damage (no action-economy cost), 
+   poison breath doesn't destroy nets  
+ - eventually, once we get magical secrets --> take barkskin and then summon vulture mount (fly speed =50ft)
+ - round out feats with mounted combatant and mage slayer to boost DEX and defense/protection for mount 
+ - use high mobility on mount to kite in and out of danger (note deer doesn't proc opportunity attacks) and deal 
+   damage with spells like cacophonic shield, dragon's breath, etc. 
+ - in general, use highest level slots on buffing/utility/support, true-strike/net attacks with action and cast 
+   strong BA spells to boost damage (spiritual weapon, dragon's breath, grasping vine, etc.) 
+ - overall, we are a super strong support that leverages a mount to get superior mobility and deal extra damage 
+ - by later tiers, we will only do low-to-medium damage, but we will be able to recruit/control and communicate with 
+   powerful allies (awakened beasts/plants, natural fauna, powerful allies we've met in our travels). Part of our 
+   character's power budget is definitely built in to being able to leverage these abilities to provide party support 
+ 
+THEMATIC CONCEPT NOTES: 
+ - you're a `ranger-y' bard, leveraging the valor subclass to bring in the martial element
+ - lean into `cowboy' themes (deer mount = pony; nets = lasso; musical instrument = guitar/banjo; primal magic) 
+ - we are the scion/last heir of a legendary lineage from a age past, carrying on the proud traditions of our ancestors and commemorating them in song 
+ - could play it like our culture was wiped out by some wave of change that occurred recently in the setting (a la, native americans in U.S.) 
+ - I imagine our character has a sort of `shamanistic' vibe, where our `old ways' are steeped in a lost arcana and connection to the land and natural creatures 
+   and we kind of `warg' into animals and plants to gain information and recruit allies 
+ - do to our circumstances - we are a voice for the downtrodden and have an affinity for those who have been cast down/out by the world 
+ - our character is older, and thus physically diminished (weak athletics, perception, etc.) but has accumulated a wealth of experience/expertise
+ - at later levels, we really lean into the `warging' theme, and become a voice for the natural world, and a powerful pseudo-summoner who can call upon 
+   beasts/plants as allies and manipulate natural environments to provide they party with communication/utility/advantage.
+ - pop culture influences: folk/country musician (e.g., johnny cash, blues traveler), spike from cowboy beebop, clint eastwood, dances with wolves, the horse whisperer, 
+                           last of the mohicans, zorro, butch Cassidy/sundance kid, owen grady (chris pratt) from Jurassic world, monster hunter world/wild, bran from GoT,
+                           St. Patrick (driving snakes out of Ireland);   
+ - themes: traditional ecological knowledge, primal connection to land/animals, oral history, practitioner of the `old ways', descendant of a great
+           but defunct society/house, words/songs of creation, ancient/primal arcana, friend of animals, plants, at home in nature, shamanism, aged wisdom/expertise  
+ - traits: tragic, soulful, profound, mysterious, charming, proud/prideful, out-of-touch/old-timey, ignorant of modernity, self-destructive, depressed/depressive 
+           artistic, egocentric/self-absorbed, tough, long-suffering, generous, kind to those in need/friend of the marginalized, interesting, knowledgeable, 
+           introspective/self-aware, honest, earnest, eccentric 
+
+SYNERGISTIC MAGIC ITEMS (* indicates attunement required):
+ - [just a partial/potential list here]
+ - eyes of the eagle (uncommon)
+ - *weapon of warning (uncommon
+ - saddle of the cavalier (uncommon) 
+ - bag of tricks (uncommon) - any would work (gray, rust, tan)  
+ - *instrument of the bards, Mac-Fuirmidh cittern (uncommon)
+ - ring of animal influence (rare) 
+ - *ring of feather falling (rare) -- unnecessary if you have saddle of cavalier 
+ - *arrow catching shield (rare)
+ - tome of leadership and influence (very rare) 
+ - horseshoes of the zephyr (very rare)
+ - horseshoes of speed (rare 
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+#######
+Level-01: Sorcerer-01
+ - feat: mark of handling 
+   * wild intuition: +1d4 to Animal Handling and Nature checks  
+   * primal connection: animal friendship and speak w/animals; x1 free cast/LR
+   * monstrous connection: @ lvl-03, can target monstrosities w/animal friendship and speak w/animals if
+                           the creature's INT <= 3
+   * spells of the mark: Mark of Handling spells are added to that spellcasting spell list
+   * mark of handling spells:
+     1 Command, Find Familiar 
+     2 Beast Sense, Calm Emotions 
+     3 Beacon of Hope, Conjure Animals 
+     4 Aura of Life, Dominate Beast 
+     5 Awaken 
+ - saving throw proficiencies: CON, CHA   
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * sorcerer (2): insight, persuasion     
+   * vidalis heir (2): animal handling, nature    
+   * tools (1): leatherworker's kit (heir)  
+   * languages (3): common, common sign language, gnomish   
+ - weapon/armor proficiencies:  
+   * weapons: simple 
+   * armor: none  
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (heir) + 50gp (sorcerer)
+   * weapons: light crossbow (25gp), dagger (2gp) 
+   * armor: leather armor (10gp) 
+   * tools: leatherworker's tools (5gp), pan flute (harmonica) (12gp) 
+   * foci: arcane.focus::rod (10gp)
+   * gear: explorer's pack (10gp), net x5 (5gp), tent (2gp), traveler's clothes (2gp)  
+           signal whistle (5cp), pole (5cp), case of crossbow bolts x3 (3gp)
+   * trinkets: fragment of a beautiful song (no. 71 on trinket table)  
+   * spare coin: 13gp 
+ - combat equipment:
+   * light crossbow = 1d8 piercing (slow); ammunition (range: 80/320), loading, two-handed 
+   * dagger = 1d4 piercing (nick); finesse, light, thrown (range: 20/60) 
+   * armor: mage-armor
+   * AC: 10 + 3(mage-armor) + 3(DEX) = 16
+ - innate sorcery (x2/LR) 
+   * bonus action to activate 
+   * 1m duration: spell save DC+1, advantage on attack rolls with sorcerer spells 
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (4): friends, message, mind sliver, true strike 
+ - spell slots: 2 
+ - spells prepared: 2 (sorcerer)
+   * lvl-1 (sorcerer): mage armor, shield 
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+
+NOTE: Cast mage armor on yourself. Cast shield x1/LR. If not in combat, use animal friendship for utility. Use true-strike to attack (at range w/crossbow, in melee w/dagger). Use innate sorcery to give yourself advantage on true-strike attacks. Use nets for control. Buy armor/instrument with gold-buy so we can use them when we go bard next level. For other cantrips, take friends to maximize effectiveness of influence. Take message for synergy with speak with animals. Take mind sliver for synergy with extra attack at later levels (mind sliver + net). Use clockwork devices for distraction/utility. Note that deer mount has darkvision (as do we) so we don't need a light-producing spell. Use leatherworker's tools in downtime to start crafting studded leather armor (5 days, 23 gp). If DM allows, also use leatherworker's tools to craft a military saddle (2 days, 10gp)  
+
+
+
+
+#######
+Level-02: Sorcerer-01, Bard-01 
+ - skill/tool proficiencies: 
+   * sorcerer (2): insight, persuasion     
+   * vidalis heir (2): animal handling, nature  
+   * bard (1): survival   
+   * tools (1): leatherworker's kit (heir), pan flute (bard)  
+   * languages (3): common, common sign language, gnomish   
+ - weapon/armor proficiencies:  
+   * weapons: simple 
+   * armor: light armor  
+ - combat equipment:
+   * light crossbow = 1d8 piercing (slow); ammunition (range: 80/320), loading, two-handed 
+   * dagger = 1d4 piercing (nick); finesse, light, thrown (range: 20/60) 
+   * armor: leather armor 
+   * AC: 11 + 3(DEX) = 14
+   * military saddle (20gp) 
+ - bardic inspiration (3d6) 
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (4): friends, message, mind sliver, true strike 
+   * bard (2): blade ward, viscious mockery 
+ - spell slots: 3 
+ - spells prepared: 2 (sorcerer), 4 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): detect magic (R), find familiar (R), healing word, heroism
+
+NOTE: Go bard-01. Pick up light armor + survival proficiency and proficiency with pan flute (reflavor as harmonica). Could take more useful skill but survival fits with cowboy theme and won't be able to stealth with mount companion. Switch into the leather armor you picked up at character creation. Lower AC but we don't have the spell slots to keep casting mage armor on ourselves. Use find familiar to summon a deer (reflavor as a pony). Deer is a CR-0 creature so qualifies for spell. Has speed of 50ft, size is medium (so we, as a small creature, can mount it) has 60ft of darkvision, and has the agile feature - meaning it doesn't provoke opportunity attacks when it moves out of enemies reach. It also has DEX=16 (+3), meaning if we cast mage armor on it, it will have an AC of 16, which is pretty good (better than ours). In addition, with its +2 WIS modifier and proficiency in perception, our deer mount does have a +4 to perception, which is going to be better than our own perception for the entirety of our character's career. So traveling with our mount (who can telepathically communicate with us) will provide us with a small passive boost to this fairly important skill. Now, the deer only has 4 HP, so it is currently very fragile. And if we provoke opportunity attacks while riding it, creatures can still target the deer. But riding the deer essentially gives us a 50ft movespeed, which is very nice. To facilitate our mounted playstyle, we want to get a saddle, and the military saddle gives us advantage on checks to stay mounted. So we'll go for that. If our DM allows it, I would suggest using our leatherworker's tools to craft this for ourselves. Doing so would only take 2 days (16hr) of downtime and 10gp of raw materials. We could also craft a standard saddle in 1 day with 5gp of material. If we can't craft it, then use the gold we saved at character creation to buy one. Alright then for spellcasting, we get two bard cantrips and four bard spells. For the cantrips, go with blade ward and vicious mockery. Using these both at the same time allows us to be pretty defensive if we need to be. Then for spells, we pick up detect magic for extra utility without requiring spell slots, find familiar from the mark of handling spell list to create our mount, healing word and heroism. We take healing word since we want to keep our action open for dealing damage w/true strike but do want a way to heal our mount if it takes damage. Then, we take heroism so we can cast it on our mount giving it +3 THP each turn and immunity to frightened. We also get bardic inspiration, which we can give to our familiar to help it with saving throws (or ability checks). Between inspiration, mage armor, heroism, and healing word, our mount *should* be quite durable for lvl-02 and having 50ft of movement speed should let us kite our enemies very effectively which will increase our own survivability. Lean into the flavor of being a mounted cowboy character here. Oh and one last note on the mount mechanics -- the find familiar spell states that our familiar should have its own initiative in combat, which would make things a lot messier. However, the 2024 PHB rules on controlled mounts state that your mount shares your initiative when you mount it. So we are assuming that because we are treating our familiar as a controlled mount, it will share our initiative in combat and act on our turn (immediately after us). I don't think this is particularly controversial, or even a subjective interpretation of the rules at all. But do check with your DM to make sure this is how it works, because otherwise running the mount familiar will just be a headache. 
+
+
+
+
+#######
+Level-03: Sorcerer-02, Bard-01
+ - sorcery points (SP): 2
+ - font of magic
+   * convert spell slots into sorcery points 
+   * create spell slots with sorcery points 
+ - metamagic 
+   * extended spell (1 SP) = double duration of spells longer than 1m; adv on concentration checks
+   * twin spell (1 SP) = target additional creature 
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (4): friends, message, mind sliver, true strike 
+   * bard (2): blade ward, vicious mockery 
+ - spell slots: 4-2
+ - spells prepared: 4 (sorcerer), 4 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield, witch bolt  
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): detect magic (R), find familiar (R), healing word, heroism
+
+NOTE: Back to sorcerer to pick up key spells and get metamagic/font of magic. For spells, we want to get jump (not on bard spell list) and witch bolt. Jump essentially increases the movement speed of our mount to 70ft and gives us vertical mobility. Really great since range of crossbow is 80ft and rang of witch bolt is 60ft. Witch bolt becomes our best offensive option and deals very good damage at low levels when upcast (2d12 on cast). We can also set up consistent damage by doing witch bolt + BA:bardic-inspiration/innate-sorcery on round-01. Then true-strike + BA:witch bolt on subsequent rounds. Note we also get advantage on the initial attack if we are using innate sorcery. This is best option for tough single target enemies. Reflavor witch bolt as a kind of magic/electric lasso. For metamagic we take extended spell and twinned spell. Both work well with heroism. Extended spell would give us adv on concentration checks to maintain it. Twinned spell would let us target ourselves and our mount with a single cast. We could also use extended spell on mage armor to make sure our mount is protected for the entire adventuring day (16hr). Turning 2sp into an additional lvl-01 spell slot is also not a bad option. Leverage the flexibility for optimal performance. Note we also get the monstrous connection feature from mark of handling here, allowing us to use speak with animals/animal friendship on monstrosities with INT<=3. While this may not seem super impactful, the list of monstrosities that qualify is substantial, and includes things like: ankhegs, axe beaks, basilisks, bulettes, cockatrices/cockatrice regent's, death dogs, flying snakes, griffons, hippogriffs, hydras, owlbears, purple worms, young remorhaz, rocs, rust monsters, stirges, and others. Some of these could be very powerful allies. Being able to talk to/influence them could also save you from very difficult fights or give you access to highly valuable information in many cases. Recruiting and leveraging animal companions for combat and out-of-combat utility will be a signature theme/ability of this character. So definitely lean in to the flavor here and cosplay as Owen Grady (Chris Pratt with the raptors in Jurassic world) whenever you can. Very cool. Also note that animal friendship works well with both extended spell (48 hr duration) and works with twinned spell (multiple beasts). So that's nice. 
+
+
+
+
+#######
+Level-04: Sorcerer-02, Bard-02
+ - expertise
+   * gain expertise in two skills (persuasion, survival)
+ - jack of all trades (+1)
+   * add half PB to all non-proficient skills
+ - skill/tool proficiencies (* indicates expertise): 
+   * sorcerer (2): insight, persuasion*     
+   * vidalis heir (2): animal handling, nature  
+   * bard (1): survival*   
+   * tools (1): leatherworker's kit (heir), pan flute (bard)  
+   * languages (3): common, common sign language, gnomish   
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (4): friends, message, mind sliver, true strike 
+   * bard (2): blade ward, vicious mockery 
+ - spell slots: 4-3
+ - spells prepared: 4 (sorcerer), 5 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield, witch bolt  
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), detect magic (R), find familiar (R), healing word, heroism
+
+NOTE: Back to bard. Get expertise and jack of all trades. For expertise, take persuasion and survival. Now we have a +7 in persuasion and a +4 in survival. With your +1d4 to animal handling and nature from mark of handling, and your proficiency in insight from sorcerer, you'll be pretty good at all `nature-based' skills except perception. I think I would imagine this character as somewhat older -- physically not as robust -- and thus lacking proficiency in things like athletics, acrobatics, perception (old eyes), etc., but with greater mental prowess (gnome cunning helps here, too). It's also nice for jack of all trades to dovetail with our social skills. Like, we'll have high CHA, so even with just jack of all trades, we'll still end up with a +8 to deception, intimidation, performance, eventually. And instead of really maxing out those CHA skills, we get good breadth in some more thematic stuff (animal handling, nature, survival). Plus, we'll get another boost when we take our sorcerer subclass which will further strengthen this aspect of our character. In terms of spellcasting, we get to prepare one new bard spell. It's a tough choice here between comprehend languages, longstrider, and feather fall. Comprehend languages is a ritual which will spare our slots for shield, jump, witch bolt, mage armor, heroism etc. Longstrider works great with twin spell and further boosts our mobility. Feather fall is situational (also sparing spell slots), but would allow us to do some cool acrobatic moves on our mount. For now, I'm going to say take comprehend languages, since it also kind of synergizes with our familiar-based playstyle since we can cast it on ourselves, then use our familiar to scout and overhear stuff. Probably not that common a use case but still. Plus as the likely face of our party, having comprehend languages is important. But we'll definitely keep the other options in mind as we level up. And if other party members have comprehend languages covered, then feel free to make a different pick. In the end, we just have pretty high demands on our spell slots to make our base build work (mage armore, jump, heroism all require slots + healing word if we need it). So taking anything that requires spell slots just seems like we wouldn't get much use out of it.  
+
+
+
+
+#######
+Level-05: Sorcerer-02, Bard-03 (Valor) 
+ - proficiency bonus (PB): +3 
+ - cantrip scaling 
+   * mind sliver = 2d6 
+   * true strike = 1d6 
+   * vicious mockery = 2d6
+ - combat inspiration 
+   * defense = when hit by an attack roll, a creature with bardic inspiration can use their reaction to add it to their AC 
+               potentially causing a miss 
+   * offense = when a creature with bardic inspiration hits with an attack roll, they can expend the inspiration to add 
+               the roll to their damage
+ - martial training 
+   * you gain proficiency w/martial weapons, medium armor, and shields 
+   * you can use a simple or martial weapon as a spellcasting focus for your bad spells 
+ - weapon/armor proficiencies:  
+   * weapons: simple 
+   * armor: light armor  
+ - combat equipment:
+   * hand crossbow = 1d6 piercing (vex); ammunition (range: 30/120), light, loading 
+   * heavy crossbow = 1d10 piercing (push); ammunition (range: 100/400), heavy, loading, two-handed
+   * whip = 1d4 slashing (slow); finesse, reach 
+   * armor: chain shirt + shield
+   * AC: 13 + 2(DEX) + 2(shield) = 17
+   * military saddle  
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (4): friends, message, mind sliver, true strike 
+   * bard (2): blade ward, vicious mockery 
+ - spell slots: 4-3-2
+ - spells prepared: 4 (sorcerer), 6 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield, witch bolt  
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, detect magic (R), find familiar (R), heroism
+   * lvl-2 (bard): aid
+
+NOTE: Ok big level here. Get bard subclass (valor). First thing we get is combat inspiration. Give inspiration die to your mount so they can use `defense' option if they are attacked. Between this and mage armor, our mount can obtain a functional AC of 19.5 when needed, which is really good. Next we get martial training, which let's us move into medium armor, use shields, and use martial weapons. For our combat equipment we now rock a chain shirt + shield, giving us an AC of 17 and we use a hand crossbow to make attacks. If we're in melee we can use a whip (just because it seems thematic) and if we're at long range we can use a heavy crossbow. Eventually, we'll move over to a pistol and musket, but those are really expensive so I won't assume we have access to them at this level. No matter what we use, we want to draw, attack, and then sheathe/stow our weapon whenever we use true-strike. This is because, despite being able to use a martial weapon as a spellcasting focus for our bard spells, we still need a free hand to cast our sorcerer spells. At character lvl-05 we also get cantrip scaling, meaning our hand crossbow true-strike attacks now deal 2d6+CHA (10) on hit. For spellcasting, we get one new bard preparation, access to level-2 bard spells, and two level-3 spell slots. For the preparation, we take aid as a second level spell and use it once each day to increase our mount's (+2 other allies') health by 10. Now our deer mount has 14 HP, making it tanky enough to take a hit or fail a saving throw and not die, especially if we're boosting its health with heroism. In combination mage armor + our combat inspiration, we should be doing enough to keep our mount alive throughout the day. Then, we also want to switch out healing word for cure wounds in our bard preparations. Now that our mount has a bit more health it will be more effective to heal it with cure wounds -- which is a stronger heal and upcasts well -- than it will be to use healing word. Plus, we can also now use our familiar to deliver cure wounds (a touch spell) to allies if need be. In particular, since the deer doesn't provoke opportunity attacks (agile feature), we can dismount and it can run straight across the battle field and deliver cure wounds very effectively. Another nice synergy of this build that makes the mount feel special/powerful. Ok yeah, so overall a pretty defensive level put definitely we feel a lot stronger. And the defensive buffs allow us to feel pretty good about kiting in around the battlefield and getting close enough to enemies so that we can shoot them with our crossbow. Use your high level slots on aid, witch bolt, cure wounds, and heroism (which you can upcast and then augment with extended spell). Witch bolt is your default offensive option, heroism your default defensive one. Keep your first level slots for mage armor, jump, and shield. Provide great utility with skill proficiency and rituals. Damage wise, with witch bolt active we can do 2d6+1d12+CHA = 16.5 dmg each round if we're feeling punchy. Quite low (D-class), but we aren't really building for damage and it's early days here for tier-02. Plus, if we consider that our allies are using some of our combat inspiration to deal damage, then we're also contributing a bit more that way. 
+
+
+
+
+#######
+Level-06: Sorcerer-02, Bard-04 (Valor) 
+ - feat: inspiring leader 
+   * ASI: +1 CHA (CHA=18) 
+   * bolstering performance: when you finish a SR or LR, you can give an inspiring performance (song). Choose 
+     up to 6 allies within 30ft and give them THP equal to char-lvl + CHA
+ - combat equipment:
+   * pistol = 1d10 piercing (vex); ammunition (range: 30/90), loading
+   * heavy crossbow = 1d10 piercing (push); ammunition (range: 100/400), heavy, loading, two-handed
+   * whip = 1d4 slashing (slow); finesse, reach 
+   * armor: chain shirt + shield
+   * AC: 13 + 2(DEX) + 2(shield) = 17
+   * military saddle  
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (4): friends, message, mind sliver, true strike 
+   * bard (3): blade ward, minor illusion, vicious mockery 
+ - spell slots: 4-3-3
+ - spells prepared: 4 (sorcerer), 7 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield, witch bolt  
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, detect magic (R), find familiar (R), longstrider
+   * lvl-2 (bard): aid, locate animals or plants (R) 
+
+NOTE: Alright, lvl-06 and we go bard-04 to pick up a feat/ASI. We go with inspiring leader. This lets us bump our CHA to 18 (finally) and lets us give up to six allies (including our mount) 10 THP after each LR and SR. Assuming 1 SR per day, this means we are giving our mount 20 THP per day, on top of the 10 HP we're giving it by hitting it with lvl-03 aid. So it should start out with 14 base HP + 10 THP twice per day, effectively giving it 34HP. Not terrible but unless we're unlucky/it gets targeted, it should be able to survive most fights. For reference, at character lvl-06 we ourselves have about 42 base HP (though we can/do also boost it with aid/inspiring leader). Then, since we have inspiring leader, we drop heroism and pick up longstrider as a lvl-01 spell. The reasoning here is that heroism is just a bit too situational now that we are generating THP via inspiring leader. That is, it will only be relevant in situations when our mount has already lost the THP we gave it from inspiring leader. And while these situations could very well occur, they probably won't occur very often. Instead, we can pick up longstrider and, with our abundance of higher level spell slots and our ability to use extended spell/twinned spell metamagic we can provide long-lasting buffs to movement speed to our mount and other members of our party. This is probably much more impactful than the situational defensive utility of heroism. Now, in terms of spellcasting, we get one new bard preparation and one new lvl-03 spell slot. For the preparation, and I know this is weird, I'm going to go with locate animals or plants. The rationale here is two-fold. First off, we still want to spare our spell slots (more on that in a sec) and locate animals or plants is a ritual. Second, it allows us to make consistent use of our free casts of animal friendship and speak with animals in conjunction with our high CHA and excellent persuasion. Basically it means we can find animals, and recruit them to help the party very consistently which is a real contribution to overall party utility. It's making the most out of the mark of handling feat, which otherwise is somewhat lackluster. Now, in terms of spellcasting resources, we use one lvl-03 slot to cast aid, then we use font of magic to convert one of our other lvl-03 slots into 3 sorcery points, bringing our total to 5. We use 1 to do extended spell when we cast mage armor on our mount (making it's duration 16hr). Then, we can use the other 4 to either (i) twin spell longstrider @ lvl-02 allowing us to target 3 creatures, (ii) extend spell longstrider (3 casts at lvl-02 would give 2 creatures +10ft movespeed for 6hr), or (iii) extend spell witch bolt (giving us adv on checks to maintain concentration). In terms of spell slots, I would recommend using our last lvl-03 slot to cast witch bolt for burst damage (would deal 4d12 = 26 dmg on hit), using one or two of our lvl-02 slots to cast longstrider either with twinned spell or extended spell depending on our party's size, and using our remaining slots to cast jump, shield, cure wounds, or witch bolt again. And whenever we cast witch bolt, we use extended spell to give ourselves advantage on concentration checks to maintain the spell. Now in terms of DPR, let's assume that we've got enough coin on us at this point to buy ourselves a pistol and that we start using that as our main weapon. On top of the boost to our CHA modifier, this means that our true strike attacks will now deal 1d10+1d6+4 = 13 damage on hit. Not amazing but we'll take it. The boost to our CHA modifier also means we're giving out 1 additional combat inspiration per day, which could be used to increase damage allies deal on hit. But that's pretty marginal. Overall, we're definitely hurting a bit in the damage department. Even in the combat where we use lvl-03 witch bolt (and assuming everything hits), we're only dishing out ~21 DPR, which right at the tip-top of D class for tier-02. But it's ok, this isn't a damage focused build and things are going to get appreciably better soon. Plus, with advantage on true strike attacks from innate sorcery and advantage on CON saves to maintain concentration on witch bolt, at least when we are focused on dishing out damage, we will be fairly consistent. Finally, we also get to learn a new bard cantrip at this level. I went with minor illusion, since we can do cool stuff with it in combination with prestidigitation and our rock gnome tiny clockwork devices. More utility for a character that already has it in spades, but I think it's the best option. Cool, moving on. 
+
+
+
+
+#######
+Level-07: Sorcerer-02, Bard-05 (Valor) 
+ - bardic inspiration (4d8) 
+ - font of inspiration 
+   * recover all expended bardic inspiration on short rest 
+   * can restore bardic inspiration uses with spell slots
+ - combat equipment:
+   * pistol = 1d10 piercing (vex); ammunition (range: 30/90), ammunition, loading
+   * heavy crossbow = 1d10 piercing (push); ammunition (range: 100/400); heavy, loading, two-handed
+   * whip = 1d4 slashing (slow); finesse, reach 
+   * armor: breastplate + shield
+   * AC: 14 + 2(DEX) + 2(shield) = 18
+   * military saddle  
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (4): friends, message, mind sliver, true strike 
+   * bard (3): blade ward, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-1
+ - spells prepared: 4 (sorcerer), 9 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield, witch bolt  
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, detect magic (R), find familiar (R), longstrider
+   * lvl-2 (bard): aid, locate animals or plants (R) 
+   * lvl-3 (bard): cacophonic shield, speak with plants 
+
+NOTE: Another big level here. We go bard-05 and our bardic inspiration dice increase from a d6 to a d8. This means we contribute more damage when our allies use our inspiration for `offensive' combat inspiration, and it means our mount's effective AC increases to 20.5 when it uses the `defensive' option and better protection against failed saving throws. We also get fount of inspiration, which allows us to recover our inspiration die on a SR, meaning we now effectively have 8 uses of inspiration (assuming 1 SR) per day. Fount of inspiration also lets us consume spell slots to restore our uses of bardic inspiration, which is absolutely something we should consider doing, especially given that we can create spell slots with sorcery points. Amazing. In terms of spellcasting resources, we gain one lvl-04 spell slot, two new bard preparations, and access to lvl-03 bard spells. For our prepared spells we're going with cacophonic shield (one of the new bard spell from the heroes of faerun book) and speak with plants. If we're not using heroes of faerun spells, then replace cacophonic shield with conjure animals from the mark of handling spell list. Ok so let's talk about these choices. First up - cacophonic shield. It's a 3rd level evocation spell that's an action to cast, requires concentration, and has duration 10m. When we cast it, we create a 10ft emanation of swirling thunderous energy around ourselves. When enemies enter the emanation or end their turn within it they are forced to make a CON save or take 3d6 (10..5) thunder damage and become deafened (half damage on save). Like other emanation spells enemy creatures can only take this damage a max of once per turn. Critically, when we cast the spell, we can also designate which creatures are unaffected by it (so it doesn't hurt our mount). Cacophonic shield also provides a defensive buff, giving us resistance to thunder damage and imposing disadvantage on ranged attack rolls against us while active. If we upcast it, the damage increases by 1d6 per level. Alright, so there are a few reasons we like this spell -- first off it's cool and thematic for a bard. Second, we really like the defensive buff given that we are going to be trying to leverage our high mobility to keep our enemies at range in combat (making it more likely that they'll have to make ranged attack rolls against us). Third, it synergizes quite well with our high-mobility playstyle in AOE. If there are multiple enemies on the field, we can use our mount's high speed (80ft if we have longstrider and jump active) to tag multiple creatures with the spell's damage and still retreat to safety. This makes the modest damage of the spell on paper more effective in practice for our character. The main competition here is with conjure animals -- which does more/more reliable damage (3d10 slashing on a DEX save and upcasts better), but is limited to 30ft of movement per turn, and provides a worse defensive buff (adv on STR saves while within 10ft of the animal pack). In the end, both spells would function similarly for us, but I like the fact that cacophonic shield better leverages aspects of our character build in which we've already invested significant resources -- namely the high mobility afforded by our signature mount. As we've said multiple times in this guide already, this character is not focused on damage so I think we appreciate these synergies and the better defensive buff provided by cacophonic shield more than the extra damage we would get from conjure animals. Can't say I've ever loved the style/theme of conjure animals either, though I think it would be a good fit on this character. Note, it might even be a good move to try and do a flyby with cacophonic shield on an enemy and try to provoke an opportunity attack just so you can cast shield and give yourself that defensive buff for the duration of the round allowing you to do drive-by's on other enemies and waste their reaction while also dealing damage (though you couldn't do this on the turn you cast it because you can only cast one spell w/a spell slot on your turn). Alright, then for our second preparation, we're gonna go with speak with plants. I know, I know, it's not a great spell and there are definitely more powerful combat options on the bard spell list (slow, hypnotic pattern, etc.). But one of the things we've tried to build this character to do is to provide consistent out of combat utility by leveraging the uncommon combination of being able to communicate/influence wildlife and high CHA and influence skill proficiencies. We already cemented this investment by taking locate animals or plants as a bard preparation last level. Taking speak with plants here just makes this aspect of our character build more useful and reliable. Now we can locate animals or plants, and speak with/influence them to gain information or provide additional support to the party. This won't always be relevant, but when you really think about it, there is usually some form of flora or fauna in almost every DnD setting -- whether that's wild animals, domesticated animals, natural or horticultured vegetation, or something from the relatively lengthy list of monstrosities with which we can communicate (see lvl-03 note above). Taking speak with plants just allows us to continue to provide that extra party utility more reliably, regardless of what setting we happen to be in. Very cool. It also isn't something we'll be needing to cast every adventuring day, which is nice. So then, in terms of our spellcasting resources, we use our 4th level slot to upcast aid and provide our mount +2 other allies 15 additional HP. Between the boost to aid and inspiring leader, our mount will now have 30 HP/THP at the start of the adventuring day, which isn't bad. Next, we should use 1 lvl-01 spell slot to cast mage armor on our mount and use extended spell to give it a 16hr duration. Then, the rest is a bit flexible. If we're just focused on combat, we should use all our lvl-03 slots to cast cacophonic shield and I would consider converting a lvl-02 slot into sorcery points in order to cast cacophonic shield with extended spell each time. Otherwise, we can use the same tactics that we used at previous levels. I guess the only other wrinkle is that if we really needed to, we could convert spell slots into bardic inspiration dice via font of inspiration, for example if our mount is on low HP/getting attacked a lot and needs the AC boost from combat inspiration. Right, let's also assume that we've cobbled together enough coin to buy ourselves some breastplate, brining our AC up to 18.  
+
+
+
+
+#######
+Level-08: Sorcerer-03 (Ancestral), Bard-05 (Valor) 
+ - sorcery points (SP): 3
+ - ancestor's lore 
+   * add CHA to intelligence checks 
+   * gain proficiency in arcana, history, investigation, nature, or religion (choose history) 
+ - visage of the ancestor
+   * choose form your ancestor takes (folk hero from my family's past / animal spirit of the land) 
+   * while innate sorcery is active, this form appears around you granting advantage on any influence action
+ - skill/tool proficiencies (* indicates expertise): 
+   * sorcerer (2): insight, persuasion*, history    
+   * vidalis heir (2): animal handling, nature  
+   * bard (1): survival*   
+   * tools (1): leatherworker's kit (heir), pan flute (bard)  
+   * languages (3): common, common sign language, gnomish   
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (4): friends, message, mind sliver, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (3): blade ward, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-2
+ - spells prepared: 6 (sorcerer), 9 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, detect magic (R), find familiar (R), longstrider
+   * lvl-2 (bard): aid, locate animals or plants (R) 
+   * lvl-2 (sorcerer): dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): cacophonic shield, speak with plants 
+
+NOTE: Another HUGE level here. We are lvl-08 and we go sorcerer-03 to pick up our subclass. And we're going with ancestral sorcery. This gives us a *bunch* of nice new features. First, we get ancestor's lore which allows us to add our CHA to any intelligence check and gain proficiency in one INT-based skill of our choice. I went with history since it fits with the idea that our sorcerer subclass is based in unlocking some connection to our ancestors, and the deep history of our people. I also think history dovetails well with our excellent nature and survival skills, allowing us to be a very functional part of a scouting team. With this in hand, we are now a pretty great skill monkey and truly excel at a few thematic/core skills. For example, we are now a superior naturalist since we add CHA, +1d4, and +PB to all nature checks, giving us a base +9.5 to these checks. Pretty cool, and really on brand for our character. Next, we also get the visage of the ancestor feature which lets us manifest the form of our ancestor (I imagine either a heroic gnomish ancestor from our character's proud but defunct lineage, or an animal spirit of the land with which we share such a strong bond) when we use innate sorcery and grant ourselves advantage on influence checks while it is active. I would say on most sorcerers this isn't a super useful feature, since you want to prioritize using innate sorcery in combat. And our character does too (advantage on true-strike attacks is pretty nice), but we also have a good way to leverage this out of combat. Namely, we can use this to help improve our influence checks when speaking with animals/plants/monstrosities out of combat. We've always been able to charm beasts with animal friendship, but visage of the ancestor lets us extend this to influence checks with non-beasts like plants or monstrosities, too. A nice boost to an ability set that we have significantly invested in on this character. Next up, we get ancestral sorcery bound spells, and we get a *bunch* of them. We get both guidance and resistance as new sorcerer cantrips. The former is obviously great for influence (and other) skill checks and could be used in conjunction with something like speak with plants. And resistance could be useful if we need to give our mount (or ourselves) an additional boost to particular saving throws (and stacks with bardic inspiration). Excellent. For lvl-01 bound spells we get command and protection from evil and good. Command is always a great control option, and works great with twinned spell. PfEG isn't great and we probably won't cast it, but could be a good defensive buff to put on our mount in the right situation, so OK. For lvl-02 bound spells, we get locate object and spiritual weapon. The former is great and fits right in with our tracking/scouting/locating theme that we've already been developing. Not usually a spell that sorcerers can fit in to their limited list of preparations, so it's definitely nice to get it for free. And spiritual weapon is a great damage option for us (I'd imagine it as a whip/lasso, similar to our witch bolt). It's only a BA to cast, deals better damage than cacophonic shield when upcast and deals force damage which is almost never resisted. In fact it is probably now our best damage option if we are fighting in single target. The downside is the weapon can only move 20ft per round, which would limit its effectiveness in AOE/fights against mobile enemies and it does require that we use our BA each round to make attacks with it. This could be problematic since we also want to keep our BA open to do things like cast spells (jump) and hand out bardic inspiration. But in general, I think we get a lot out of both the ancestor's lore and visage of the ancestor features and out of most of the bound spells the subclass provides here. But that's not all, we also get 2 new sorcerer spell preparations and access to lvl-02 sorcerer spells. For these, I'm going to say we drop witch bolt and then pick up dragon's breath, magic weapon, and spider climb. Ok let's start with dragon's breath. The main appeal of this spell is that we can cast it on our mount and then it can use its action each round to deal damage, freeing up both our action and BA on our character's turn. Nice! In terms of damage, it's strictly better than cacophonic shield. It deals 3d6 when cast at lvl-02 and upcasts at 1d6 per spell level (so at lvl-03 would deal 4d6) and forces a DEX rather than CON save. Spiritual weapon will outdamage it when upcast and benefits more from innate sorcery, but they are relatively similar damage-wise at base level. Dragon's breath also allows for some flexible damage typing since we can choose what kind of breath (acid, cold, fire, lightning, or poison) the spell generates. As a default, I would take lightning (homage to our now defunct witch bolt), but this does mean we can exploit vulnerabilities if we happen to encounter them. Dragon's breath doesn't leverage our high mobility as well as cacophonic shield, nor does it provide a defensive buff, but it is better for mobility/AOE than spiritual weapon. And similar to spiritual weapon, it's only a BA to cast (unlike cacophonic shield) so we can get it going on round 1 and still do damage with true strike. Overall between these three spells (cacophonic shield, dragon's breath, spiritual weapon), we have a versatile suite of good damage dealing options. Though we are still far from a powerhouse. Ok next up spider climb. Pretty simple here - it's a premier defensive and mobility option for a mounted character, and it works great with both extended spell and twinned spell. With spider climb + jump + longstrider our mount should be capable of navigating most any non-aquatic terrain, and having high mobility + spider climb is a great way to kite dangerous enemies in combat. With this spell in hand, we may want to consider purchasing an exotic saddle for our mount, or upgrading our existing saddle so that we can stay mounted while riding up vertical surfaces/across ceilings (talk to your DM about how to do this). Ok last up magic weapon. Great way to boost our damage without competing for our concentration with our other good spells. And works great with extended spell. Having the +1 to hit and damage from magic weapon also offsets the fact that multiclassing has delayed us in maxing out our primary ability score (a straight-class build at lvl-08 likely would have a 20), though this is offset a little bit by the advantage from innate sorcery (when we have it). In this sense, magic weapon is also a forward looking pick as we are going to be getting extra attack in a few levels, at which point we will have an incentive to attempt DEX-based attacks when we take the attack action. These attacks will be significantly more effective with magic weapon, given our good-but-not-great DEX modifier (+3). Alright, so then what are we doing with our spellcasting resources? Here's my suggestion. Convert one 4th level spell slot into sorcery points (giving us 7 total). Use the other lvl-04 slot to cast aid (same as previous level). Use 1 lvl-01 slot to cast mage armor on our mount and use 1 SP to extend it w/extended spell. Cast magic weapon once or twice per day lvl-02, using 1 SP each time to do extended spell (2-4hrs of uptime). Alternatively use a second level slot to cast spider climb and do extended spell. Use all your third level slots and one second level slot to cast offensive spells in combat - preferentially dragon's breath. Use extended spell if needed to give yourself advantage on CON saves to maintain concentration. Use your other 3 first level slots for mobility/defense/utility -- jump, shield, longstrider, cure wounds, animal friendship, etc. Augment these lvl-01 spells with twinned spell/extended spell if desired/applicable. In combat, use your action to make true strike attacks, and use your BA to cast spells, activate innate sorcery, and distribute bardic inspiration. Whew, ok, lot's to say there. But I think overall this level represents a significant powerspike in terms of versatility and damage. For example, if we look at what we do if we have lvl-03 dragon's breath active on our mount and magic weapon on our pistol, we would now deal: 1d10+1d6+5+4d6 (28) damage per round. Definitely not great, but much better than our previous benchmark. 
+
+
+
+
+Level-09: Sorcerer-04 (Ancestral), Bard-05 (Valor) 
+ - proficiency bonus (PB): +4
+ - jack of all trades: +2 
+ - ASI: +2 CHA (CHA=20)
+ - sorcery points (SP): 4
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (3): blade ward, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-1
+ - spells prepared: 7 (sorcerer), 9 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, detect magic (R), find familiar (R), longstrider
+   * lvl-2 (bard): aid, locate animals or plants (R) 
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): cacophonic shield, speak with plants 
+
+NOTE: Alright, level-09 and we go sorcerer-04 to pick up an ASI and boost our CHA to 20. Cool that we can pick this up without too much of a delay relative to straight-classed characters. Note this also gives us another bardic inspiration, bringing us up to 10 total per day with font of inspiration (assuming 1 short rest) and more if we want to burn spell slots for them. Really nice. At the same time, we get a boost to our proficiency bonus (+4) and an increase to the jack of all trades bonus we get on non-proficient skills (+2). This is particularly nice since these increases stack with the bonus to INT skills we get from ancestor's lore, the boost to our CHA modifier (from the ASI) for all our influence skills, and the bonuses to skill checks we get from mark of handling. Overall, our skill distribution now looks like this:
+ 
+	Athletics -------> +1	Stealth	---------> +5	 Perception -> +2	History -------> +8	Nature ----> +10.5	Intimidation -> +7
+	Acrobatics ------> +5	Animal Handling -> +6.5	 Survival ---> +8	Investigation -> +6	Religion --> +6		Persuasion ---> +13
+	Sleight of Hand -> +5	Insight	---------> +4	 Arcana -----> +6	Medicine ------> +6	Deception -> +7		Performance --> +7
+
+Pretty impressive - no negative modifiers anywhere, and for 2/3 of the skills in the game we have a +6 or better. Plus we have guidance. At sorc-04 we also get to learn another sorcerer cantrip and I went with shocking grasp, since we can use it if we're stuck in melee and need to disengage. Also fits with our pseudo lighting/radiant theme. Ok then we also get another sorcery point (4 total), another 4th level spell slot, a 5th level spell slot, and one new sorcerer spell preparation. For the preparation, I'm going with beast sense from the mark of handling spell list. This is mostly because this is a ritual spell and we have ample demand on our spell slots/resources at this time. But it also synergizes really well with the other animal communication abilities we have. More specifically, we can locate animals with `locate animals or plants', then speak with them via speak with animals, recruit/charm them with animal friendship and visage of the ancestor, and now use them effectively to scout/gather information via beast sense. Note we can also tag team with our familiar, since nothing about the awareness sharing/telepathy we can do with our familiar interferes with our concentration on spells. So we can send our familiar out in tandem with a beast buddy that we've recruited and alternate between perceiving through both of their senses independently. Multiple POVs for scouting/reconnaissance could be really fun to play with. Since our familiar is a beast, we can also just cast beast sense on it, allowing us to extend the range at which we can perceive through their senses (though we would have to communicate with them beforehand). Anyway, having beast sense is just another tool in this animal companion toolkit that we've been developing, and I think we could make use of it very effectively. The other spell I seriously considered was suggestion, which also could work really well in this same context -- i.e., commanding powerful beast/monstrosity allies to do things we want. Plus it works with extended spell (16hr duration). But I think we really want to preserve our lvl-02 spell slots for other things like magic weapon, spider climb, etc. Plus with our high persuasion and communication abilities, we can hopefully just convince creatures to help us, rather than having to charm them with the spell. However, if we are already using a powerful magic weapon and won't need the magic weapon spell, then I would switch that out and take both beast sense and suggestion here. But I never assume that magic weapons exist when I do my build guides. Ok, so then in terms of spellcasting resources, we use our 5th level slot on aid, boosting our mount's (and two other allies') base HP by 20. Now our mount will have 24 HP + 14 THP from inspiring leader twice per day -- so 52 effective HP total per day. Very reasonable. Then, I think we convert one of our 4th level slots into sorcery points -- giving us 8 total -- and use the other two on offensive spells (ideally upcasting dragon's breath). Then we can use two third level slots on offensive spells (dragon's breath, cacophonic shield, spiritual weapon) leaving us with one third level flex slot. And we can use as many of our second level spell slots as we want on magic weapon + extended spell, potentially giving us near permanent uptime on it (3 casts, 6hrs). Alternatively, we could use those second level slots to cast spider climb, or upcast longstrider, cure wounds, or even jump. Whatever makes sense. Finally, of course, we use one of our first level slots to cast mage armor on our mount (+ extended spell) and we use the others for jump, shield, longstrider, command, or cure wounds. I think we can be pretty flexible with the sorcery points, depending on what's needed. But as a default, imagine that you spend 3 on extended spell for magic weapon, 1 on extended spell for mage armor, 2 on twinned spell for longstrider, and 2 on extended spell for dragon's breath (adv on concentration checks). Do whatever makes sense. In terms of damage, with lvl-04 dragon's breath and magic weapon active our basic combo would deal: 1d10+6d6+6 = 32.5 damage on hit on average with 5d6 being in AOE. And if we were using lvl-04 spiritual weapon on a single target, this could go as high as: 1d10+1d6+3d8+11 = 33.5 damage, but require our BA each round. Very reasonable for this level and quite good for a character as focused on support and utility as we are. 
+
+
+
+
+Level-10: Sorcerer-04 (Ancestral), Bard-06 (Valor) 
+ - extra attack 
+   * you can attack twice instead of once when you take the attack action on your turn 
+   * in addition, you can replace one attack with a cantrip that has a casting time of one action
+ - combat equipment:
+   * pistol = 1d10 piercing (vex); ammunition (range: 30/90), loading
+   * musket = 1d12 piercing (slow); ammunition (range: 40/120), loading, two-handed
+   * sling = 1d4 bludgeoning (slow); ammunition (range: 30/90)
+   * whip = 1d4 slashing (slow); finesse, reach 
+   * net = DC-(8+PB+DEX) save or restrained; range 15ft; Huge or larger creatures auto-succeed
+   * armor: breastplate + shield
+   * AC: 14 + 2(DEX) + 2(shield) = 18
+   * exotic military saddle  
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (3): blade ward, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-2
+ - spells prepared: 7 (sorcerer), 10 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, detect magic (R), find familiar (R), longstrider
+   * lvl-2 (bard): aid, locate animals or plants (R) 
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): cacophonic shield, speak with plants, speak with dead  
+
+NOTE: Ok level-10 and we go bard-06. As a valor bard we get the all important extra attack + cantrip feature. And then we also get 1 new spell preparation and an additional 5th level spell slot. Let's start with extra attack. So, with a loading weapon like a pistol, we can only make 1 attack per turn. So we can't just use our pistol and make multiple attacks. So what do we do? Well first things first, we start using nets much more frequently. Under the new 2024 rules, the way nets work is that, when you take the attack action, you can replace one of your attacks to throw a net at a creature you can see within 15ft. The targeted creature must then succeed on a DEX save (DC=8+PB+DEX, so DC-15 here) or be restrained until they break free. To escape, the target or a creature within 5 feet of it must take an action to make a DC-10 athletics check, freeing the creature on a success or destroy the net (AC 10; 5 HP; immunity to bludgeoning, poison, and psychic damage). This is a great option for us. On our mount we are highly mobile and were already kiting in and out of medium range to make pistol attacks. So we can easily get within 15ft of targets to make net attacks. Then, as long as the creature isn't too big (which they very well could be), we have a decent chance of restraining them, allowing us to provide great control while still dishing out damage with our attacks as normal. Now there are a couple of other cool synergies here. First off, restraining creatures gives us advantage on attack rolls against them and imposes disadvantage on DEX saving throws. So if we can restrain a target by netting them with our first attack, then we can give ourselves advantage on our next true-strike pistol attack. Now, we are already getting advantage on true-strike attacks if we are using innate sorcery, but for those combats when we don't have this active, the net can help. Our mount's dragon-breath attacks also force a DEX save, which the target would have disadvantage on if they're restrained. This is another way we can increase our damage, but there is a wrinkle. Namely, the dragon's breath almost certainly destroy the net if we throw a net on a target and then flame them with dragon breath. Now, that might not be a bad trade. We can always get more nets, and we can even repair the ones we have on us with the mending cantrip (thanks rock gnome!). But since the net is immune to poison damage, and poison *is* one of the damage types we can choose when we cast dragon's breath, if we use the poison breath option then our attack will deal no damage to the net. So our target would have disadvantage on the save and still remain restrained. Awesome! Now, this won't work against enemies who are immune to poison damage, of which there are many. But it's a nice trick to have in our back pocket. If we're fighting Large or smaller enemies that aren't immune to poison, then we can (i) throw a net and restrain an enemy, then (ii) use our second attack to make a true-strike pistol attack at advantage and then (iii) use our mount's action to do poison breath, imposing disadvantage on the save. Very cool. In addition, with extra attack + cantrip, we can also do `mind-sliver + net' if we want to increase the chances of succeeding on restraining the target (if mind sliver works, this would increase the effective DC of our net attack to 17.5). For what it's worth, this mind sliver combo is also more likely to work on beasts and monstrosities that have low INT (the save forced by mind sliver), so it gives us a very effective `wrangle' ability against beasts and such. Very cowboy. Ok, so that's the net option. If we do want to make multiple attacks, then we should use a sling. A sling has the same range as a pistol, and uses the same ammunition type (bullets) but doesn't have the loading property. So we can attack with it multiple times on our turn. Now, the damage die is much smaller (a d4 instead of a d10), but making multiple attacks with a sling will still out-damage a single attack with a pistol -- 1d10 (5.5) vs 2d4+DEX (8), with all other damage sources being the same. Cool. Now, given that this is a pretty small damage increase, and that using nets adds control and can also boost our own damage by giving us advantage and imposing disadvantage on DEX saves, I would say that we should priortize the `net + true-strike' combo whenever applicable. Again, this isn't really a build focused on damage. But the sling should now be our go to option when we're fighting Huge or larger creatures. Then, the last thing in terms of combat equipment is that, here at lvl-10, I'm going to assume that we have managed to purchase a musket for our `big-damage' ranged weapon (honestly we could have easily gotten one sooner). So now we carry a pistol, a rifle (musket), a whip, a sling, and nets. All while riding a horse (deer). Can't get much more cowboy than that! Awesome! Also, in case we haven't already, let's assume that we've managed to craft an exotic military saddle that not only gives us advantage on checks/saves to remain mounted, but also lets us ride our mount on vertical surfaces/upside down when we have spider climb. Ok, now on to spellcasting! At bard-06 we also get one new bard spell preparation and one new 5th level spell slot. For the preparation, I'm going to take speak with dead. This is so we can access the very cool and flavorful but not-often-used synergy between speak with dead and speak with animals -- speaking with dead animals! More specifically, if we ritually cast speak with animals and then immediately cast speak with dead, we can converse with a dead animal. With our very high persuasion, this could be a really cool way to do reconnaissance in areas where animals have been killed. Note that since our speak with animals also applies to a range of monstrosities, we could also talk to them. It's probably not the most powerful thing we can do here, but it is a very cool niche ability that really only works on this character. Plus, we still have a lot of demands on our spell slots, so picking up something like speak with dead that is very cool but that we won't need to use all the time is a good idea. In terms of spellcasting resources, we spend one 5th level slot on aid, use the other to give ourselves a +2 magic weapon for 2hr with extended spell (either the pistol or the sling, but the spell is more effective on the sling since we'll make multiple attacks per round). Then use 1-2 lvl-02 slots to give ourselves a +1 magic weapon for another 2-4 hrs per day. We, as always, use one lvl-01 slot on mage armor + extended spell. And we use all three lvl-04 slots on upcasting dragon's breath. Convert 1-2 lvl-03 slots into sorcery points (giving ourselves 7-10 SP per day) and use those to buff our utility spells and boost our concentration checks. Then use our lvl-01 and lvl-02 slots on healing, defense, mobility, utility, etc. Really in terms of combat, nothing in our basic formula has changed. The only new thing is the fact that we will have a +2 magic weapon for some portion of the day and that we are now using extra attack + cantrip to augment our damage and deliver control via restraining with nets. Very fun, very cool play style. I would say in terms of major mechanics/features of the character, the build is more or less `complete' at this level. But there's still a lot of cool stuff left, so let's keep going! 
+
+
+
+
+Level-11: Sorcerer-04 (Ancestral), Bard-07 (Valor) 
+ - cantrip scaling: 
+   * mind sliver (3d6) 
+   * shocking grasp (3d8) 
+   * true strike (2d6) 
+   * vicious mockery (3d6) 
+ - countercharm 
+   * when creature w/in 30ft fails save against charmed/frightened, use reaction to give them reroll with advantage
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (3): blade ward, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: 7 (sorcerer), 11 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, detect magic (R), find familiar (R), longstrider
+   * lvl-2 (bard): aid, locate animals or plants (R) 
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): speak with plants, speak with dead  
+   * lvl-4 (bard): dominate beast, freedom of movement
+
+NOTE: Right, so level 11 and we go bard-07. We get cantrip scaling, which is a nice boost to our base damage. Now our true-strike pistol attacks deal 1d10+2d6+6 = 18.5 dmg on hit (assuming +1 magic weapon). Not bad. We also get countercharm as a base class bard feature. This is really nice for us since we can use this feature to help our mount avoid the charmed/frightened condition. You can even let them roll and fail, then use countercharm to reroll with advantage and have them use their bardic inspiration to add that role to the save. This would give them a very good chance of succeeding. Note, countercharm is less valuable to use on ourselves since we already have advantage on mental saves due to gnome cunning, but having a timely reroll is still very useful. Ok then in terms of spellcasting, we get a new 6th level spell slot, one new bard spell preparation, and access to 4th level bard spells. For the preparations, here's what I'm going to do - drop cacophonic shield and pick up freedom of movement and dominate beast (from mark of handling list) as 4th level spells. So let's talk about these choices. First there's freedom of movement, and this is almost an auto-include for a mounted character like ours. When we cast it on our mount it ignores difficult terrain, can't be paralyzed or restrained, and can auto-end grapples by expending 5ft of movement (effectively nullifying that condition as well). Works well with extended spell (boost it to a 2hr duration) and twinned spell (target yourself as well as your mount). And it doesn't require concentration. In combination with countercharm, having freedom of movement just enables us to continue to pursue our `kiting' combat style in a much larger variety of situations. Awesome. Then there's dominate beast, and this one is a bit more about the flavor and its situational utility on our character, versus it's pure strength/optimality. At base level, dominate beast lets us target a beast w/in range and force a WIS saving throw, if they fail then we can command the beast telepathically (no action required, unless we're commanding them to take a reaction) for a duration of 1m, and they repeat the save if they take any damage. And it does require our concentration. There are a number of ways this synergizes with our character's particular build. First, we can locate beasts that are suitable targets for the spell using locate animals and plants. Second, we can speak with these beasts using speak with animals and potentially persuade them to `let' us dominate them (creatures can always choose to willingly fail saving throws). Third, we if we are able to stay within range (100ft) we can send our familiar out in tandem with a beast we've dominated using our familiar to perceive our surroundings and commanding our beast to take actions. Kind of like a better version of beast sense where we can now direct the beast to take specific actions. We'll be even better at this in a few levels when we get 5th level spells. The last reason this is a nice spell for us is because we can already upcast it, and upcasting it increases its duration significantly. Specifically, if we upcast it at 5th level, we can increase the duration to 10m, which we could then double to 20m with extended spell. And if we upcast it at 6th level, we can increase the duration to 1hr and double this to 2hr with extended spell. At 7th level, the duration is 8hr which we can double to 16hr! With access to the right beasts (which we are uniquely well-equipped to track/find/befriend) this essentially becomes a super powerful summon spell that we can also leverage for out of combat utility. It's also not a spell typically available to bards, though you could get it via magical secrets. In the end, I think the tier-03 and tier-04 power curve of this character is driven by the continued evolution of our `warg'-like abilities, and our ability to make use of powerful animal companions as allies in combat and for out of combat utility. Lean in to the fun flavor of being the ultimate animal whisperer, who uses their ancestral power and knowledge of the words of creation to connect with and access the power of the natural world around them. There are, of course, lots of other good options here. Some honorable mentions I think would also be good fits for this character include: charm monster, dimension door, fount of moonlight, hallucinatory terrain, locate creature, and polymorph. As always, pick your favorites. In terms of spellcasting resources here at this level, I would say the default should be to use your 6th level slot to cast aid on your mount +2 other allies, granting them +25HP. In combination with inspiring leader, this would mean your mount would have 29HP and 32THP, for an effective total of 61HP per day. For comparison, a lvl-11 beast-master ranger's beast companion would have 60HP (but also would have 11d8 hit dice). So pretty comparable, and recall that our mount will likely have significantly higher AC than would a ranger's beast companion if we consider the boost from combat inspiration, and we have a lot more spell slots that we can use to heal it. Now, if you think there's a chance you'll run into a powerful beast that you could potentially target with lvl-06 dominate beast, then I might consider saving the lvl-06 slot and just casting aid at 5th level. But let's be honest, that situation is very uncommon. And in a lot of cases where dominate beast will be relevant, casting it at 5th level will do just fine for now. Ok, so then if we're strictly focusing on damage, then we would want to use both our 5th level slots to upcast magic weapon (with extended spell), giving ourselves 4hr of uptime with a +2 weapon. Then use our 4th level slots and one third level slot for casting dragon's breath/spiritual weapon, and convert 1 third level slot into sorcery points (giving us 7 total). With 7 sorcery points, we can (i) use extended spell on mage armor, and magic weapon (x2), and (ii) use extended spell in every combat when we cast dragon's breath or spiritual weapon to give ourselves advantage on CON saves to maintain concentration. If we wanted, we could convert another spell slot (either 3rd or 2nd level) into more sorcery points so that we can use twinned spell or extended spell on buffs for our mount/the party (i.e., longstrider, jump, spider climb, animal friendship, etc.), but we could also just keep all our remaining spell slots to use in casting our utility/defensive/mobility spells. Anyway, in general this build is quite flexible in terms of how you could use resources throughout the day, but this is one strategy that I think would work relatively well. 
+
+
+
+
+Level-12: Sorcerer-04 (Ancestral), Bard-08 (Valor) 
+ - feat: mounted combatant
+   * ASI: +1 DEX (DEX=17) 
+   * mounted attack: you have adv on attacks against creatures w/5ft that are smaller than your mount 
+   * leap aside: mount takes no dmg on successful DEX save, half on fail 
+   * veer: when attack hits mount, you can cause it to hit you instead 
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (3): blade ward, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: 7 (sorcerer), 12 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, detect magic (R), find familiar (R), longstrider
+   * lvl-2 (bard): aid, locate animals or plants (R) 
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): speak with plants, speak with dead  
+   * lvl-4 (bard): dominate beast, freedom of movement, locate creature 
+
+NOTE: Alright, level-12 and we go bard-08 and pick up the mounted combatant feat. We will likely never use the mounted attack feature, since we prefer to attack from range and our mount is only medium sized, and we already gain advantage if we're using innate sorcery or attacking a creature restrained by one of our nets. But in the very niche case where we're in melee with small creatures, it could be useful. Whatever. The main reason we want/need this feat is for the defensive boost it gives to our mount. Of course, we have invested a lot in keeping our mount upright through our use of aid, combat inspiration, and inspiring leader, but mounted combatant makes it that much easier to ensure our mount stays up and, perhaps more importantly, means that we don't *have* to keep allocating our highest level spell slots to boosting our mount's HP with aid moving forward. So what does it do? Well, first off as a half-feat, mounted combatant let's us boost our DEX up to 17. This doesn't do anything here, but it will allow us to increase our modifier with another half feat in a few levels. Second, we get the leap aside feature, which makes it so our mount has the equivalent of the evasion feature (no damage on successful DEX save, half on fail). This is great, since it's direct damage reduction for our mount *and* it means it's more likely that our mount can preserve it's combat inspiration to use to boost its AC when it gets attacked. Our deer mount also has a pretty decent DEX save (+3), so this feature is actually more useful than it would be for other familiars. Finally, we also get the veer feature, which gives us the option to become the target of an attack that hits our mount (no action required). We won't want to use this all the time. It's not like our character is super tanky. But this is a nice option that would allow us to tank a hit for our mount if it has low HP and we don't. Zooming out, the mounted combatant feat is the last piece of the puzzle for our over-arching strategy for creating and preserving a mount for our character. Between aid, inspiring leader, mage armor, combat inspiration, and mounted combatant, I think we will be doing enough such that we can continue to play a mounted character even as we move through tier-03 and into tier-04. Right, so then at bard-08 we also get one new spell preparation (no change in spell slots). And for this preparation I went with locate creature. It's just nice to have the `full set' of locate spells on this character (animals and plants, object, and now creature). We have a `ranger-y' aesthetic to our build and we're very good at tracking and finding things. So locate creature seems like a natural fit. It also works well with extended spell. Furthermore, one frequent downside of this spell is that a creature with higher movespeed than you can quickly get outside the spell's 1000ft range. This is less of a concern for us, as we will have 50-60ft of movement speed (so 100-120ft per round) while mounted. So it will be more difficult for creatures trying to escape us to simply outrun us when we cast the spell. Anyway, it's not something I would imagine we need to use all the time, but it's a nice spell to have in our back pocket and it's super flavorful for this character. Again, honorable mentions include: charm monster, dimension door, fount of moonlight, hallucinatory terrain, and polymorph. Since we didn't gain any new spell slots, none of our spell resource management changes here at this level. Except for that we might want to preserve our 4th level slots a bit more in order to be able to cast freedom of movement and locate creature, versus just using them to upcast dragon's breath/spiritual weapon. As always, leverage the flexibility for optimal effect. Ok, moving on.
+
+
+
+
+Level-13: Sorcerer-04 (Ancestral), Bard-09 (Valor) 
+ - proficiency bonus (PB): +5
+ - expertise
+   * gain expertise in two skills (insight, animal handling)
+ - skill/tool proficiencies (* indicates expertise): 
+   * sorcerer (2): insight*, persuasion*, history    
+   * vidalis heir (2): animal handling*, nature  
+   * bard (1): survival*   
+   * tools (1): leatherworker's kit (heir), pan flute (bard)  
+   * languages (3): common, common sign language, gnomish   
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (3): blade ward, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-2-1-1
+ - spells prepared: 7 (sorcerer), 14 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, detect magic (R), find familiar (R), longstrider
+   * lvl-2 (bard): aid, locate animals or plants (R) 
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): speak with plants, speak with dead  
+   * lvl-4 (bard): dominate beast, freedom of movement, locate creature 
+   * lvl-5 (bard): awaken, rary's telepathic bond (R)
+
+NOTE: Alright, lvl-13 and we go bard-09. We get a proficiency bonus increase and expertise in two more skills. I chose animal handling and insight. With this addition, our skill distribution now looks like this:
+ 
+	Athletics -------> +1	Stealth	---------> +5	  Perception -> +2	History -------> +9	Nature ----> +11.5	Intimidation -> +7
+	Acrobatics ------> +5	Animal Handling -> +12.5  Survival ---> +10	Investigation -> +6	Religion --> +6		Persuasion ---> +15
+	Sleight of Hand -> +5	Insight	---------> +10	  Arcana -----> +6	Medicine ------> +6	Deception -> +7		Performance --> +7
+
+Leading the way with persuasion, but then our next best skills are all the ones we want for the flavor of this character: animal handling, nature, survival, insight, and history. And still pretty-to-very good at just about everything. Very cool. Right, then we also get a 7th level spell slot, two new bard spell preparations, and access to 5th level bard spells. For our preparations, I'm going with awaken and rary's telepathic bond. Let's start with rary's telepathic bond. First off, it's just a really good utility spell for party communication, and utility is kind of our forte. It's also a ritual, allowing us to continue allocating high-level spell slots to aid and our offensive/combat spells (magic weapon, dragon's breath, etc.). Subject to your DM's approval, we can also use it effectively in tandem with beast sense to scout with our familiar. Our familiar is a beast, so beast sense lets us perceive through our familiar's senses at unlimited range. Telepathic bond lets us communicate telepathically over any distance with creatures who know a language. Well, our familiar can communicate telepathically with us when we are w/in 100ft. Per the rules around telepathy, this does mean it qualifies for `being able to communicate in a language' and thus is a valid target for the telepathic bond spell. Both spells are rituals, so with enough time, we can cast both and then send our mount out to scout without having to be nearby. Very cool. Critically, the telepathic bond spell also works very well with our other new preparation, awaken. So let's talk about awaken. This is a touch spell, with an 8h casting time and a costly material component (agate worth 1000gp, consumed by the spell). What it does is turn a beast with INT<=3 or a plant into a sentient, mobile being with INT=10 and the capacity to communicate in a language we know. When we finish the spell, the being is charmed by us for a period of 30 days, after which it decides how it feels about us. With this in hand, we can convert plants/beasts that we find/know -- including any powerful beasts we've encountered throughout our career -- into permanent allies with whom we can communicate via other spells, and who can serve as autonomous and independent allies. Here's just one scenario I can think of: arrive in a new city/town, cast locate animals/plants and find a crow, raven, cat, rat, or some other common beast that is present throughout the area, cast speak w/animals and persuade the beast to let you awaken it. Then cast awaken on the beast (e.g., throughout the night/before resting) and when you finish the spell cast rary's telepathic bond and use extended spell (2hr duration). Now ask your new beast ally to notify the rest of their species/kind to keep tabs on your enemies movements and to report back to you periodically. If necessary, use dominate beast to force them to help you. Or tell the awakened ally to gather all of their kin, then use speak with animals/animal friendship to recruit a whole pack of animal summons to help you fight. Here's a different scenario: there's a location you want to keep tabs on or protect but you have to go somewhere else. Awaken a tree, plant, or beast near the area and ask it to keep watch over the area. Then cast rary's telepathic bond on it right before you leave. Now, as long as you're on the same plane of existence, you have an ally that can alert you if something happens at the location of interest (and tell you what's happening) and also take actions to defend it. Awaken will also work really well in this way with the dream spell, which we will pick up eventually. In general, the awaken spell gives us a way to create new allies in new places, or in places where no humanoid allies exist. Given the costly component, we can't do this all the time. But with this spell in hand, we should constantly be assessing and evaluating/re-evaluating where to place these special new allies. Thematically, I think this spell is just super cool. Our character's connection to the land/spirits of the natural world is so strong that we can now bring new life into plants and beasts. You might even think of the awaken spell as `calling ancestral spirits' back from the beyond to inhabit the bodies of primal beings. Very very cool. Ok, now let's talk about spellcasting resources. As we mentioned in our last level note, I think at this point with all the investments we've made in our mount's durability we should *not* use our highest level spell slot to cast aid. So we still use our 6th level slot on aid. And then what do we do with our 7th? Well, when we cast dominate beast at level-7+ the duration increases from 1hr to 8hrs, meaning if we use extended spell we can dominate a beast for a full 16hr. Now, since this does require concentration, this would mean forgoing using our other concentration spells including dragon's breath, spider climb, locate object/creature, beast sense, etc. But if there is a  powerful and suitable beast target (and again, we are uniquely well-equipped to locate such creatures) this can be a great way to essentially add an incredible ally to the party for the duration of the adventuring day. If it's unlikely that we'll encounter such a target, then we could also just use our 7th level spell on aid, and then use our 6th level slot on magic weapon (giving us a +3), leaving open at least one 5th level slot for awaken, and then push the remaining changes through. No real changes to our combat tactics. 
+
+
+
+
+Level-14: Sorcerer-04 (Ancestral), Bard-10 (Valor) 
+ - bardic inspiration (d10)
+ - magical secrets 
+   * whenever you gain a bard level and the number of spells you can prepare increases, you can choose the new spell from 
+     the bard, cleric, druid, or wizard spell list. 
+   * you can also do this when you level up and replace spells you know with other spells that you can cast  
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (4): blade ward, light, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-2-1-1
+ - spells prepared: 7 (sorcerer), 15 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R) cure wounds, find familiar (R), longstrider
+   * lvl-2 (bard): aid, barkskin, locate animals or plants (R), prayer of healing
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): speak with plants, speak with dead  
+   * lvl-4 (bard): dominate beast, freedom of movement, locate creature 
+   * lvl-5 (bard): awaken, rary's telepathic bond (R)
+
+NOTE: Ok, lvl-14 and we go bard-10 to get magical secrets and increase our bardic inspiration die (up to a d10). For magical secrets, there are *a lot* of very powerful options, but we're actually going to go with two 2nd-level spells - barkskin and prayer of healing. Since we only get one additional bard preparation here, we drop detect magic as a first level spell. Hopefully at this level someone else can cover us on this if we really need it. Plus, we mostly speak with animals anyways. So why these spells? Well, with font of inspiration in hand, prayer of healing allows us to recover our inspiration dice whenever we cast it (in addition to providing healing for our allies and mount). This is critical since we use our inspiration dice to keep our mount safe and to augment damage dealt by our allies. Assuming 1 SR per day, with prayer of healing we effectively have 15 inspiration dice, enough to use in nearly every round of combat (if we wanted to). Even if only half (7) of those go towards increasing damage, that would be the equivalent of contributing an additional ~2.5 DPR over 16 rounds of combat per day. Not bad. Ok and then what about barkskin? Well, the reason we want barkskin is because with it in hand we can summon a flying mount. Specifically, we can use find familiar to conjure a vulture (reskin/flavor however you want -- maybe a giant crow?) which is a medium-sized beast with a walking speed of 10ft and a fly speed of 50ft. However, unlike the deer, the vulture only has DEX=10, so mage armor would only bring its AC up to 13, which isn't quite good enough. Barkskin, however, would give our vulture mount an AC of 17 for 1hr, and up to 2hr with extended spell. With the AC boost from our defensive combat inspiration which it will now (hopefully) always have access to, this means our mount will have an effective AC of 22.5. Plus, recall that with beast sense and rary's telepathic bond we can use our vulture mount to scout far ahead of us and perceive through their senses the whole time. A true warg if there ever was one. Very useful. Now, there are a few downsides to the vulture. Namely, it doesn't have darkvision, its WIS and DEX saves (and perception) are worse than the deer, and doesn't have the agile feature (which prevents it from triggering opportunity attacks). It also can't really benefit from the longstrider spell, since that only increases its walking speed, not it's flying speed. All that said, with how we've built this character, if we use the vulture mount we will effectively be giving ourselves a permanent flying speed of 50ft for the entire adventuring day. And RAW we can still cast jump to boost our vulture's speed by an additional 20ft (up to 70ft) when needed even if we're flying. That's pretty awesome. By comparison, at lvl-14 a draconic sorcerer gets their `dragon wings' subclass feature, which gives them 60ft fly speed as a BA for 1hr per day (recover on LR or w/3 SP). And that's the entire subclass feature! We're getting a better version of that with magical secrets here, which is a feature which we will continue to benefit from at future levels. Furthermore, a lot of the downsides of the vulture (relative to the deer) are somewhat mitigated by the fact that it's a flying creature. For example, flying makes it much less likely that we will provoke opportunity attacks. And it also means that we have a better chance of ending our turn somewhere where it is difficult (or less desirable) to target us with spells/magical effects that force saving throws. In addition, at bard-10 we get an additional cantrip so we can take light and give ourselves a zero-cost means of lighting the way for our vulture buddy. So that lines up really well. And finally, it's also worth noting that AOE spells that deal damage in cones -- like dragon's breath -- are more effective on flying creatures. This is because of how cones work in 5e. Specifically, the rules on cone AOEs in the 2024 PHB state that a 15ft cone spell produces a cone that is 15ft wide 15ft from its point of origin. This means that if we attack from directly overhead of an enemy, the footprint of the spell on the ground will be a circle with a 15ft diameter, which is a significantly greater surface area than the cone if we cast it on the ground. Bigger AOE means we'll be able to catch more enemies and deal more damage. All-in-all, it's just a very powerful combination. For these reasons, I think barkskin and prayer of healing do more for us than any other singular spell or set of spells that we could get with magical secrets.  They are also both quite thematic, and allow us to play into our character's core combat identity. Plus, like I said, we'll be able to get more out of magical secrets as we continue to take bard levels. Ok then, so in terms of spellcasting resources, we now want to use most if not all of our second level slots on barkskin + prayer of healing, but we don't need to use a first level slot on mage armor (we still could, I suppose), so we get more casts of jump/shield/longstrider/cure wounds. This means we use 5th/4th level slots on dragon's breath, our 3rd level slots on magic weapon, our 6th level slot on aid, and our 7th level slot open for flex casting (if we use it on aid, then we can use our 6th level slot on magic weapon). With lots of flexibility built in if we want to cast utility/defensive spells like locate object, locate creature, speak with plants, speak with dead, freedom of movement, awaken, dominate beast, etc. Moving on. 
+
+
+
+
+Level-15: Sorcerer-04 (Ancestral), Bard-11 (Valor)  
+ - spellcasting 
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (4): blade ward, light, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-2-1-1-1
+ - spells prepared: 7 (sorcerer), 16 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, find familiar (R)
+   * lvl-2 (bard): aid, barkskin, locate animals or plants (R), prayer of healing
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): speak with plants, speak with dead  
+   * lvl-4 (bard): dominate beast, freedom of movement, grasping vine, locate creature 
+   * lvl-5 (bard): awaken, rary's telepathic bond (R)
+   * lvl-6 (bard): heroes' feast
+
+NOTE: Right, level-15 and we go bard-11. Pretty simple level here. We get an 8th level spell slot, one new bard spell preparation, and access to 6th level bard spells. For the preparations, I picked up grasping vine as a lvl-04 spell and heroes' feast as a lvl-06 spell. To make room, I dropped longstrider as a lvl-01 spell since we don't really need/want to cast it on our mount anymore (assuming we're flying). We could also drop comprehend languages and keep longstrider if someone else in the party can deal with communication. But as the party face and with our high modifiers in INT-based skills like history, religion, etc., it might still be worth it for us to be able to read/communicate in other languages when we need to. Now, regarding our two picks. Heroes' feast is pretty much an auto-include for us, as it boosts ours and our mounts HP by 2d10, can stack with aid, and gives us both immunity to frightened and poisoned. If we're going for max durability, we could do heroes' feast and cast aid at 8th level in order to give our mount +46HP in addition to the 40THP we are doling out via inspiring leader each day, and the healing we'll be giving it with prayer of healing. Pretty good. Even if we only use a 5th level slot on aid + heroes' feast, our will have an effective HP/THP pool of 76 with a bit of healing. More than enough to survive most encounters unless it's really being heavily targeted. Ok and then for grasping vine, I think it's just such a good control option we can't ignore it. It's only a BA to cast, meaning we can do it and still make attacks, it upcasts quite well, and it works with twinned spell. For max effect, we could even cast it at level 8 and use twinned spell to target *6* Huge or smaller creatures (if they happened to be w/in 30ft of each other), damaging, grappling them and giving them disadvantage on attacks. Could be a great way to deal with pesky mobs and severely cut down your enemies' aggregate action economy. Moreover, it's just a really nice and thematic combination of damage and battlefield control to balance out the `pure' damage options we have with spiritual weapon and dragon's breath. Plus it dovetails super well with our character and combat identity. Even if we're just using it at base level, we can deal damage and grapple one enemy (two if we use twinned spell), then do extra attack + cantrip with a net to damage and restrain another. Pretty sweet. And, with our high mobility, flying mount, and ranged attacks, we should be able to reliably place the vine in the most strategic location and still make attacks against vulnerable targets with our pistol/sling/nets. Overall, I think for our character, this spell just provides really good value and control for the action economy, so we pick it up here. In terms of spellcasting resources, not a whole lot changes. Honestly, without a great use for our 8th level slot, I would consider just turning it into sorcery points (giving us 12 total) so we can twin/extend all the spells we want to throughout the day. Then keep your 7th level slot open for dominate beast, and if you don't use that, upcast aid or an offensive spell. Use your 6th level slot on heroes feast or magic weapon, a 5th level slot on aid, and your other 4th/5th level slots on dragon's breath/grasping vine/awaken. Use your other 4th/3rd level slots on magic weapon or utility spells. And use your 2nd level slots on barkskin and prayer of healing. Use your first level slots on shield, jump, cure wounds, etc. In the end, it's always challenging to flesh out the end of a spell list with so many powerful options on offer. But I really like how this character's spellcasting abilities have shaped up, and the fact that we are leveraging key spells from across so many different spell lists. Just as a good bard should. Moving on.  
+
+
+
+
+Level-16: Sorcerer-04 (Ancestral), Bard-12 (Valor)  
+ - feat: mage slayer
+   * ASI: +1 DEX (DEX=18) 
+   * concentration breaker: when you damage enemies they have disadv. on CON saves to maintain concentration 
+   * guarded mind: when you fail a INT/WIS/CHA saving throw you can succeed instead (x1/SR) 
+ - spellcasting
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (4): blade ward, light, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-2-1-1-1
+ - spells prepared: 7 (sorcerer), 16 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, find familiar (R)
+   * lvl-2 (bard): aid, barkskin, locate animals or plants (R), prayer of healing
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): speak with plants  
+   * lvl-4 (bard): dominate beast, freedom of movement, grasping vine, locate creature 
+   * lvl-5 (bard): awaken, dream, rary's telepathic bond (R)
+   * lvl-6 (bard): heroes' feast
+
+NOTE: Level-16 and we go bard-12. We take the mage slayer feat and boost our DEX to 18. This increases the DC of our net attacks and our chance to hit/damage when we're using our extra attack to make a weapon attack. Of course it also boosts our initiative, and all our DEX-based abilities. The concentration breaker feature gives us additional control capabilities in combat, and the guarded mind feature helps us make our saves. We've been relying on gnome cunning to help protect our mental saves for our entire career. But the fact of the matter is, we have a +0 and a -1 to our WIS and INT saves, so even with advantage we aren't strong there. Guarded mind helps us with this and, of course, since we also can cast prayer of healing, we will get three rather than two uses of this per day. Very nice. The other consideration here was medium armor master, which would have given us a +1 to our base AC (boosting it up to 19). But honestly, at this level, if we haven't been able to at least get some +1 armor and a +1 shield then shame on us. Likely we'll have more than that. And that's all the feat would do for us, whereas mage slayer is giving us both control and defensive benefits and the defensive benefits it's giving are more valuable. So yeah, we go with mage slayer. Then, in terms of spellcasting, we don't get any new spell slots or new preparations, but we can still replace our bard spells. And I'm going to suggest that we drop speak with dead so that we can take the dream spell. Dream is an awesome an underutilized spell, and this character is very well set up to make great use of it. So what does it do? Basically, the spell lets you touch a creature and turn them into a dream messenger who delivers a dream message to another creature you know of on the same plane of existence the next time they fall asleep. It only has a casting time of a minute, but once you finish the spell the creature you touch is put into a trance during which they are incapacitated and have a speed of 0 until the target of the spell falls asleep, thus allowing the messenger to enter their dreams (or until they end the trance, which they can do willingly at any time). If the target doesn't fall asleep within 8hrs of the initial cast, the spell ends with no effect. The spell also has no effect on targets who do not sleep. While in the dream, the messenger can converse with the target and can shape the dream around them including visuals, sounds, landscapes etc. The messenger can even make the dream terrifying, forcing the target to make a WIS save or take 3d6 psychic damage and not gain the benefits of rest upon waking. Critically, regardless of what type of dream it is, the target remembers the dream perfectly upon waking. What makes this spell so cool is that it is a great way to deliver extremely detailed communications anywhere within a plane. Need to share an exact image of an magical object, right down to the exact shape of all the individaul glyphs inscribed on it? Well dream can do that. Want to share a detailed description of what happened during a battle with an ally on the other side of the world? Dream can do that. Dream is particularly useful for our character because, at this point, I will assume that we have created a small harem of awakened creatures that can serve as dream messengers for us, thus negating the inconvenience of having to incapacitate yourself or an active party member to deliver the message. I mean technically, any willing creature, awakened or not, could serve as a dream messenger for us. And since they can shape the dream as they please, they could just share a mental image of us delivering a message to the target. Furthermore, since dream isn't concentration, we could even use dominate beast to force a creature to convey a dream message to our exact specifications (to the best of it's ability). Now, I think the spelld does work best if we use animal friends that have been awakened as messengers, so they can talk and have high enough intelligence to convey whatever dream message we want accurately. But if we had to, we could even just use our familiar as the dream messenger. The point is it's very flexible. And it works very well with the animal companion recruitment abilities that we've been developing. It also fits seamlessly into our overall character theme. We can now fully warg into (awakened) beasts with beast sense and rary's telepathic bond, and we can send them around the world to visit our allies in their dreams and share communications. Super cool. You could even use telepathic bond on the dream messenger so that they are able to communicate with you as soon as they deliver the message to the target (if it occurs w/in 2hr, anyway). There's also no limit on the number of dream messengers we can send. So if we really wanted to mess with someone and used all our high-level spell slots, we could send up to 5 dream messengers to a single target and try to terrify them each time, potentially dealing up to 15d6 (52.5) damage to them when they wake up and negating their rest. Even more once we get more 5+ level spell slots. Overall, it's just a super fun, flavorful, and mechanically powerful spell for us to pick up here. So in order to make room for it we're going to drop speak with dead. The whole speak with dead animals thing is cool, but definitely pretty situational, and we are happy to trade that out for the utility that dream provides us. Getting dream here will also allow us to get pretty much all the spells that we really want before we finish out our career (only 2 left to learn!). So that's nice. Great, moving on! 
+
+
+
+
+Level-17: Sorcerer-04 (Ancestral), Bard-13 (Valor)  
+ - proficiency bonus (PB): +6 
+ - jack of all trades: +3 
+ - spellcasting
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (4): blade ward, light, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-2-1-1-1-1
+ - spells prepared: 7 (sorcerer), 17 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, find familiar (R)
+   * lvl-2 (bard): aid, barkskin, locate animals or plants (R), prayer of healing
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): speak with plants  
+   * lvl-4 (bard): dominate beast, freedom of movement, grasping vine, locate creature 
+   * lvl-5 (bard): awaken, dream, rary's telepathic bond (R)
+   * lvl-6 (bard): heroes' feast
+   * lvl-7 (bard): mirage arcane
+
+NOTE: Alright, tier-04 here we go. Lvl-17 and we go bard-13. We get a PB increase which also increases jack of all trades up to +3. With this addition, our skill distribution now looks like this:
+ 
+	Athletics -------> +2	Stealth	---------> +7	  Perception -> +3	History -------> +11	Nature ----> +13.5	Intimidation -> +8
+	Acrobatics ------> +7	Animal Handling -> +14.5  Survival ---> +12	Investigation -> +7	Religion --> +7		Persuasion ---> +17
+	Sleight of Hand -> +7	Insight	---------> +12	  Arcana -----> +7	Medicine ------> +7	Deception -> +8		Performance --> +8
+
+Amazing. Other than that, we get an additional bard spell preparation, access to 7th level spells, and a 9th level spell slot. For our new preparation, I'm going to suggest we take mirage arcane. This one is as much about the flavor and fun, as it is about the functionality. So what does it do? Basically it allows us to create illusory terrain in a 1 mile area. The spell has a casting time of 10m and duration of 10 days. Specifically, when we finish casting it, we can make terrain in an area up to 1 mile square look, sound, smell, and even feel like some other sort of terrain. For example, we could make an open road resemble a swamp or crevasse. We could make a pond seem like a grassy meadow, or a steep precipice seem like a gentle slope. We can also use the spell to alter the appearance of structures or add them to a landscape where none are present. We can even turn clear ground into difficult terrain. As with many other illusion spells, creativity is the foremost constraint and the power depends on what your DM allows. The only thing it can't do is disguise, conceal, or create creatures. That said, the illusion we create can contain audible, visual, tactile, and olfactory elements and creatures can *interact* with the illusion. So you can drown your enemies in illusory water, burn them with illusory lava, or create illusory paths for allies to invade an enemy's mountain fortress. It's just a very versatile tool to have in our toolbox. Now, creatures with Truesight (which will include many of our enemies at this level) can see through the illusion, but even they can still interact with it. The other downside is that the illusion can be quite easily dispelled. So we have to keep that in mind. Ok so let's just get the obvious point out of the way. This is an *incredibly* thematic spell for our character. Already we have a deep connection to the land and animals, and a suite of mental/communication abilities that verge on the illusory. For example, we can conjure nurturing abundance with heroes' feast, impart sentience/intelligence into rudimentary life forms with awaken, and communicate telepathically and psychically -- including using animals as emissaries -- using dream, beast sense, and telepathic bond. Mirage arcane seems like a natural fit into this set of spellcasting abilities -- allowing us to manifest some part of the landscapes of the old country or some aspect of the old one's ancestral homeland of myths, dreams, and legends. Very cool. Mechanically, there are a number of reasons to like mirage arcane. First off, with a range of sight, one constraint player's often encounter when trying to use this spell in practice is they are limited in the area that they can actually see. Well, we have a flying mount so we can just fly up wherever we are and get a sufficient vantage to affect the relevant areas. Second, because creatures within it can interact with the illusion, we can create terrain that allows/favors the animal/plant/beast allies that we've recruited throughout our career. For example, we could create a series of waterways that allow a cadre of allies with a swim speed to access a otherwise land-locked location. Or we could create a system of caves beneath a location to setup an ambush by creatures with a burrow speed. With our abundance of higher level spell slots, we can even cast this spell multiple times, allowing us to transform multiple square miles of terrain in order to accomplish our goals. In general, the spell is definitely most useful for settings where conflict/challenges take place over a large scale. It's not really a spell that's super relevant for a single dungeon-crawl style encounter with just you/your party members and some bad guys. It's about accessing resources/facilitating interactions at a larger scale and about leveraging the environment to provide advantages for allies (and disadvantages for enemies) at the scale of armies and landscapes. In short, probably the type of challenges that you will be encountering in tier-04 DnD play. Now, there are definitely a bunch of other good options. For this character, I would also consider taking spells like: power word fortify (for a bunch of extra THP), find the path (ultimate tracker), and teleport/plane-shift (for mobility/utility) or even hallow (not quite as thematic, tongues sub-option could be very useful). But for the reasons I've stated above, I think we want mirage arcane. Right, so then in terms of spellcasting resources...[HAVE TO FINISH THIS OUT. PROBABLY JUST USE 9TH LEVEL SLOT TO UPCAST AID AND THEN CASCADE RESOURCE ALLOCATION DOWN FROM THERE]. 
+
+
+
+
+Level-18: Sorcerer-04 (Ancestral), Bard-14 (Valor)  
+ - battle magic
+   * when you cast a spell that has a casting time of an action, you can make a weapon attack as a BA. 
+ - spellcasting
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (4): blade ward, light, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-3-1-1-1-1
+ - spells prepared: 7 (sorcerer), 17 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): comprehend languages (R), cure wounds, find familiar (R)
+   * lvl-2 (bard): aid, barkskin, locate animals or plants (R), prayer of healing
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): speak with plants  
+   * lvl-4 (bard): dominate beast, freedom of movement, grasping vine, locate creature 
+   * lvl-5 (bard): awaken, dream, rary's telepathic bond (R)
+   * lvl-6 (bard): heroes' feast
+   * lvl-7 (bard): mirage arcane
+
+NOTE: Lvl-18 and we go bard-14. We get the battle magic subclass feature from valor bard, which let's us make a weapon attack when we cast a spell with a casting time of an action using the magic action. Unfortunately, this isn't very impactful for us. We've built this character to maximize the utility of using our BA for spellcasting in combat -- with spells like spiritual weapon, dragon's breath, grasping vine, magic weapon, jump, etc. That said, this will come in handy in a few cases. For example, it will make casting spells like command, cure wounds, spider climb, and freedom of movement in combat a bit easier/more appealing, since we won't have to sacrifice as much damage to do so. But since the weapon attack granted by battle magic isn't taking the attack action, we can't replace the attack with a cantrip or even replace the attack with a net throw. So it's really just making a simple weapon attack. A bit of extra damage when we need to use our action for something else, but not great. Definitely more oriented towards bards who might be throwing out control spells with their action more regularly. Ok then the only other thing we get at this level is another 5th level spell slot. Great, use it to cast awaken/dream or upcast your damaging spells. We could also use the opportunity of leveling up to switch out another bard spell, but I think we actually want to keep our spell list as it is. The remaining spells that we really want are 8th level anyways, so we'll have to wait until next level to get them. 
+
+
+
+
+Level-19: Sorcerer-04 (Ancestral), Bard-15 (Valor)  
+ - bardic inspiration (d12)
+ - spellcasting
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (4): blade ward, light, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-3-2-1-1-1
+ - spells prepared: 7 (sorcerer), 18 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): cure wounds, find familiar (R)
+   * lvl-2 (bard): aid, barkskin, locate animals or plants (R), prayer of healing
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): speak with plants  
+   * lvl-4 (bard): dominate beast, freedom of movement, grasping vine, locate creature 
+   * lvl-5 (bard): awaken, dream, rary's telepathic bond (R)
+   * lvl-6 (bard): heroes' feast
+   * lvl-7 (bard): mirage arcane
+   * lvl-8 (bard): animal shapes, telepathy 
+
+NOTE: Drop comprehend languages and take animal shapes/telepathy spell. Use animal shapes to convert your awakened plant/beast allies and all their kin into an army of elephants, hippos, giant eagles, etc. Then use telepathic bond to connect to the army's `generals' (your awakened companions) and command the army into battle. Use mirage arcane to get them to where they need to be and give them advantageous terrain/surroundings. Telepathy lets you serve as the communication hub with key allies in other locations on the same plane of existence. Amazing for managing activity in multiple locations/on multiple fronts. Works well with awakened allies or powerful beasts that we've managed to befriend/recruit throughout our career. Also works amazing in conjunction with dream. Bardic inspiration also increases to a d12, bringing effective AC of our mount up to 23.5. Spell list complete. 
+
+
+
+
+Level-20: Sorcerer-04 (Ancestral), Bard-16 (Valor)  
+ - feat: epic boon of spell recall 
+   * ASI: +1 CHA (CHA=21) 
+   * free casting: whenever you cast a spell w/a level 1-4 spell slot, roll a d4, if the number is the same as the level of the spell, you don't 
+     expend the slot 
+ - spellcasting
+ - cantrips: 
+   * gnomish lineage (rock) (2): mending, prestidigitation
+   * sorcerer (5): friends, message, mind sliver, shocking grasp, true strike 
+   * ancestral (2): guidance, resistance
+   * bard (4): blade ward, light, minor illusion, vicious mockery 
+ - spell slots: 4-3-3-3-3-2-2-1-1
+ - spells prepared: 7 (sorcerer), 18 (bard) 
+   * lvl-1 (sorcerer): jump, mage armor, shield  
+   * lvl-1 (ancestral): command, protection from evil and good
+   * lvl-1 (mark of handling): animal friendship (free x1/LR), speak w/animals (R) (free x1/LR) 
+   * lvl-1 (bard): cure wounds, find familiar (R)
+   * lvl-2 (bard): aid, barkskin, locate animals or plants (R), prayer of healing
+   * lvl-2 (sorcerer): beast sense (R), dragon's breath, magic weapon, spider climb
+   * lvl-2 (ancestral): locate object, spiritual weapon 
+   * lvl-3 (bard): speak with plants  
+   * lvl-4 (bard): dominate beast, freedom of movement, grasping vine, locate creature 
+   * lvl-5 (bard): awaken, dream, rary's telepathic bond (R)
+   * lvl-6 (bard): heroes' feast
+   * lvl-7 (bard): mirage arcane
+   * lvl-8 (bard): animal shapes, telepathy 
+
+NOTE: Lvl-20 and we go bard-16. Take epic boon of spell recall since we have a lot of (utility) spells that we cast at low levels. Now whenever we cast shield, jump, command, cure wounds, animal friendship, barkskin, prayer of healing, spider climb, magic weapon (if @ lvl-02), speak with plants, locate object, freedom of movement, locate creature, dominate beast (if @ lvl-04), grasping vine, or even if we're upcasting dragon's breath/spiritual weapon there's a chance we'll get our spell slot back. Since we are definitely going to be using some of the spells every day regardless -- ex. we're going to cast barkskin at least once or twice per day, and we're definitely casting prayer of healing once per day -- we'll get good value out of this feat. All in all, I would expect to get between 1-4 spell slots back each day. In addition, with font of magic we can convert unused spell slots into sorcery points if we want/need to, meaning we can used twinned spell and extended spell more frequently. So you could also think of this feat as giving us extra sorcery points each day. All in all, it's just making us better at stuff we're already doing, and relaxing the constraints we might face between casting utility spells and doing damage/providing maximum support. Other considerations: epic boon of combat prowess (auto-hit w/true strike) and epic boon of fate (protect mount's saving throws), epic boon of skill (proficiency in everything, gain expertise in perception). Otherwise, spell list at this level doesn't change.  
+
+
+
+ 
+#####################################################################################################
+EXTRA NOTES 
+
+Treantmonk Damage Classes by Tier 
+----------------------------------------				
+        Tier 01	 Tier 02  Tier 03  Tier 04 
+LVL     01-04    05-10    11-16    17-20
+----------------------------------------
+A	13-15	 37-43	  50-57	   70-78
+B	10-12	 29-36	  42-49	   60-69
+C	07-09	 22-28	  34-41	   50-59
+D	04-06	 15-21	  26-33	   35-49
+

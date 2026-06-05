@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# R tooling (prior art should never bring these in)
+.Rproj.user/
+.Rhistory
+.RData
+.Rapp.history
+*.Rproj
+
+# Obsidian vault config
+.obsidian/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# scratch / temp
+_temp/
+*.tmp

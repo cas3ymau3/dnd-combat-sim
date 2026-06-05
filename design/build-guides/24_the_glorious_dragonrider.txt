@@ -1,0 +1,542 @@
+Moniker: The Glorious Dragon Rider 
+Classes: Warlock-1, Sorcerer-4 (Draconic), Paladin-15 (Glory)  
+Species: Human 
+ - size: medium 
+ - speed: 30ft 
+ - resourceful: gain heroic inspiration whenever you finish a LR
+ - skillful = gain proficiency in 1 skill (perception)
+ - versatile = gain a 1st-level feat of your choice (alert)
+Sex: Female 
+Background: acolyte
+ - ability scores: INT, WIS, CHA 
+ - feat: magic-initiate (cleric)
+ - skill proficiencies: insight, religion
+ - tool proficiency: calligrapher's supplies 
+ - languages: common, common sign language, draconic
+ - equipment: 50 gp
+Point-Buy Stats: 
+ - STR = 13
+ - DEX = 13
+ - CON = 14
+ - INT = 8
+ - WIS = 9 (+1) = 10
+ - CHA = 15 (+2) = 17
+ASI's/Feats
+ - lvl-00: alert
+ - lvl-00: magic-initiate (cleric)
+ - lvl-04: war-caster (CHA=18)
+ - lvl-06: fighting-style: dueling 
+ - lvl-08: mounted-combatant (DEX=14)
+ - lvl-13: great-weapon master (STR=14)
+ - lvl-17: ASI: +2 CHA, CHA=20  
+PROGRESSION SUMMARY
+ - lvl-01: sorcerer-01 -------------------------------------------- innate sorcery 
+ - lvl-02: sorcerer-02 -------------------------------------------- font of magic, metamagic 
+ - lvl-03: sorcerer-03 (draconic) --------------------------------- CHA-based AC, dragon's breath 
+ - lvl-04: sorcerer-04 (draconic) --------------------------------- war-caster (CHA=18)
+ - lvl-05: sorcerer-04 (draconic), paladin-01 --------------------- martial weapon/shield proficiency 
+ - lvl-06: sorcerer-04 (draconic), paladin-02 --------------------- fighting style: dueling
+ - lvl-07: sorcerer-04 (draconic), paladin-03 (glory) ------------- paladin subclass
+ - lvl-08: sorcerer-04 (draconic), paladin-04 (glory) ------------- mounted combatant (DEX=14) 
+ - lvl-09: sorcerer-04 (draconic), paladin-05 (glory) ------------- faithful steed
+ - lvl-10: sorcerer-04 (draconic), paladin-05 (glory), warlock-01 - pact of blade 
+ - lvl-11: sorcerer-04 (draconic), paladin-06 (glory), warlock-01 - aura of protection
+ - lvl-12: sorcerer-04 (draconic), paladin-07 (glory), warlock-01 - aura of alacrity
+ - lvl-13: sorcerer-04 (draconic), paladin-08 (glory), warlock-01 - great weapon master (STR=14) 
+ - lvl-14: sorcerer-04 (draconic), paladin-09 (glory), warlock-01 - abjure foes, 5th-lvl slot
+ - lvl-15: sorcerer-04 (draconic), paladin-10 (glory), warlock-01 - aura of courage
+ - lvl-16: sorcerer-04 (draconic), paladin-11 (glory), warlock-01 - radiant strikes
+ - lvl-17: sorcerer-04 (draconic), paladin-12 (glory), warlock-01 - ASI: +2 CHA, CHA=20
+ - lvl-18: sorcerer-04 (draconic), paladin-13 (glory), warlock-01 - 6th-lvl slot
+ - lvl-19: sorcerer-04 (draconic), paladin-14 (glory), warlock-01 - dead level
+ - lvl-20: sorcerer-04 (draconic), paladin-15 (glory), warlock-01 - glorious defense 
+
+CONCEPT NOTES: 
+ - CHA-based weapon attacks with pact of the blade 
+ - go sorcerer to get access to `dragon's breath spell' 
+ - go paladin to get faithful steed (flavor as a celestial drake) 
+ - cast dragon's breath on your mount, giving them a powerful CHA-based attack each turn 
+ - build defensive utility to protect the mount, and use weapon attacks + smites to increase damage 
+ - use lance + shield while mounted and stack `dueling + GWM' feats (+2 + PB dmg on hit) 
+
+THEMATIC CONCEPT NOTES: 
+ - tbd 
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+#######
+Level-01: Sorcerer-01
+ - feat: alert
+   * initiative proficiency = +PB to initiative rolls 
+   * initiative swap = swap places with a willing ally when you roll initiative 
+ - feat: magic-initiate (cleric) 
+   * cantrips (2): guidance, thaumaturgy 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR) 
+ - saving throw proficiencies: CON, CHA  
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * sorcerer (2): intimidation, persuasion    
+   * acolyte (2): insight, religion
+   * skillful (human) (1): perception 
+   * languages (3): common, common sign language, draconic 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons
+   * armor: none
+   * tools: calligrapher's supplies (acolyte)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (background) + 50gp (sorcerer)
+   * weapons: none
+   * tools: calligrapher's supplies (10gp)
+   * gear:  arcane focus, staff (5gp),
+            scholar's pack (40gp), scroll case (1gp)
+            robe (1gp), fine clothes (15gp), perfume (5gp)
+            rope (1gp), tent (2gp),      
+   * trinkets: dragons talon strung on a necklace (no.28 on trinket table)
+   * spare coin: 20gp
+ - combat equipment:
+   * weapon: staff (quarterstaff) 
+     + quarterstaff = 1d6 bludgeoning (topple); versatile (1d8)
+   * armor: none
+   * unarmored AC: 10+1(DEX)=11, 13+1(DEX)=14 with mage armor
+ - innate sorcery (x2/LR) 
+   * bonus action to activate 
+   * 1m duration: spell save DC+1, advantage on attack rolls with sorcerer spells 
+ - spellcasting 
+ - cantrips: 
+   * sorcerer (4): friends, light, sorcerous burst, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy
+ - spell slots: 2 
+ - spells prepared: 2 (sorcerer)
+   * lvl-1 (sorcerer): mage armor, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+ 
+NOTE: Stay at range. Stay alive. Use sorcerous burst for damage. Use mage armor, shield, and sanctuary for defense. If you get stuck in melee, use true strike with quarterstaff. 
+
+
+#######
+Level-02: Sorcerer-02
+ - sorcery points (SP): 2
+ - font of magic
+   * convert spell slots into sorcery points 
+   * create spell slots with sorcery points 
+ - metamagic 
+   * heightened spell (2 SP) 
+   * twin spell (1 SP) 
+  - cantrips: 
+   * sorcerer (4): friends, light, sorcerous burst, true-strike
+   * magic-initiate (2): guidance, thaumaturgy
+ - spell slots: 3 
+ - spells prepared: 4 (sorcerer)
+   * lvl-1 (sorcerer): color spray, jump, mage armor, shield
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+
+NOTE: Can heighten spell friends/sanctuary; can twin spell jump. Take jump to boost mobility. Take color spray as a thematic control spell. We can pick up detect magic as a paladin spell. Same basic tactics as level-01. 
+
+#######
+Level-03: Sorcerer-03 (Draconic) 
+ - draconic resilience:
+   * HP +3
+   * unarmored AC = 10+1(DEX)+3(CHA) = 14
+ - sorcery points (SP): 3
+ - cantrips: 
+   * sorcerer (4): friends, light, sorcerous burst, true-strike
+   * magic-initiate (2): guidance, thaumaturgy
+ - spell slots: 4-2 
+ - spells prepared: 6 (sorcerer)
+   * lvl-1 (sorcerer): color spray, jump, shield   
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-2 (sorcerer): arcane vigor, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+ 
+NOTE: Drop mage armor now that you have CHA-based AC. Take 2nd level spells that will synergize with mount. We'll stop taking sorc levels at 4, so that will be the last chance to change our spell list. We will get enhance ability and magic weapon as oath of glory spells. Invisibility is good since we can twin spell and cast it on our mount. Suggestion is powerful and will give us some out of combat utility. Don't need spider climb since our mount will be able to fly as soon as we get it. Web is great control spell but not thematic. We'll take enlarge/reduce (to cast on our mount) next level. Hold person and magic weapon are both trading damage for damage. For hold person, we would have to sacrifice concentrating on dragon's breath. For magic weapon, it's giving up spell slots that we can (eventually) use for smites. Mirror image would also be quite good, but it's a lot to invest in defensive utility and means spending more time casting spells before doing damage. Plus as a defensive spell arcane vigor will also heal our mount. For now, probably just stay at range and attack with cantrips/chromatic orb. Use dragon's breath for additional damage if appropriate. 
+
+
+#######
+Level-04: Sorcerer-04 (Draconic) 
+ - feat: war caster (+1 CHA, CHA=18) 
+   * advantage on CON saves to maintain concentration 
+   * reactive spell: can cast spell as AoO 
+   * can perform somatic components even with weapon/shields in hand(s) 
+ - draconic resilience:
+   * HP +4
+   * unarmored AC = 10+1(DEX)+4(CHA) = 15
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy
+ - spell slots: 4-3 
+ - spells prepared: 7 (sorcerer)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion  
+   * lvl-2 (draconic): alter self, dragon's breath
+
+NOTE: New cantrip. Mind sliver/message are probably more useful. Blade ward is thematic. It's also a zero-cost default that we can use to make us more durable in melee. New spell -- take enlarge/reduce so that we can make our mount Huge, giving us advantage even on Large creatures. It also means our mount can have increased utility taking up space/carrying allies. No change in tactics at this level. Can't make great use of war caster yet. Will next level. 
+
+
+#######
+Level-05: Sorcerer-04 (Draconic), Paladin-01 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons 
+   * armor: light + medium armor, shields 
+   * tools: calligrapher's supplies (acolyte)
+ - weapon masteries (2): battle axe, longsword 
+ - combat equipment:
+   * weapon: battle axe / longsword 
+     + battle axe = 1d8 slashing (topple); versatile (1d10)
+     + longsword = 1d8 slashing (sap); versatile (1d10)
+   * armor: shield
+   * unarmored AC = 10+1(DEX)+4(CHA)+2(shield) = 17
+ - lay on hands (5) 
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike
+   * magic-initiate (2): guidance, thaumaturgy
+ - spell slots: 4-3-2 
+ - spells prepared: 7 (sorcerer), paladin (2)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): heroism, thunderous smite
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+
+NOTE: Wade into melee starting at this level. Paladin spells: compelled duel + sanctuary is a good but situational combo. Heroism can be twinned and can protect your mount from fear, but we'll get it with the subclass in a few levels. Divine favor would add unconditional damage, but contribute to Bonus Action bloat (smite, dragon's breath, sanctuary, arcane vigor). Bless and shield of faith could further buff saves/AC. But SoF is also a BA, and is a bit redundant given we took blade ward. Bless also will work with twin spell. Given our low HP, I'd say take heroism for now to get a bit of regen. Then switch out for bless when we get our subclass. Cure wounds would also be good, but somewhat redundant with arcane vigor, and we're not a true healer. If you want, get a riding horse and lance and start playing as a mounted fighter. If you do, cast sanctuary on it to protect it in combat. Or cast dragon's breath on it to get more offensive.
+
+
+#######
+Level-06: Sorcerer-04 (Draconic), Paladin-02 
+ - fighting-style: dueling 
+   * + 2 to damage rolls with melee weapons if you're not dual wielding
+ - paladin's smite 
+   * have divine smite prepared and can cast for free x1/LR
+ - lay on hands (10) 
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike
+   * magic-initiate (2): guidance, thaumaturgy
+ - spell slots: 4-3-2 
+ - spells prepared: 7 (sorcerer), paladin (3)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): bless, heroism, thunderous smite
+   * lvl-1 (paladin's smite): diving smite (free x1/LR)
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+
+NOTE: Get dueling fighting style + divine smite. Upcasting dragons breath will still be our best damage option (4d6 > 3d8). But we can cast smite for free x1/day so we should def do that. In terms of our new spell, take bless to boost reliability and saving throws when needed. Works well with twinned spell. 
+
+
+#######
+Level-07: Sorcerer-04 (Draconic), Paladin-03 (Glory) 
+ - oath of glory 
+ - channel divinity (x2/LR, recover 1 on SR) 
+   * divine sense = detect celestial/fiends/undead for 10m 
+   * inspiring smite = distribute 2d8+Paladin-lvl THP to allies w/in 30ft on divine smite
+   * peerless athlete = BA; 1hr duration; adv on athletics + acrobatics, long/high jumps +10ft
+ - lay on hands (15) 
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike
+   * magic-initiate (2): guidance, thaumaturgy
+ - spell slots: 4-3-3 
+ - spells prepared: 7 (sorcerer), paladin (4)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): bless, cure wounds, detect magic, thunderous smite   
+   * lvl-1 (paladin's smite): diving smite (free x1/LR)
+   * lvl-1 (glory): guiding bolt, heroism
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+
+NOTE: We get heroism as a subclass bound spell. So switch that out for cure wounds. Then take detect magic as a 4th prepared paladin spell (consistent with `detection' theme of divine sense, nice to have a ritual). Use CD inspiring smite for increased durability. Use peerless athlete to lean into transition from brainy acolyte to physical specimen. 
+
+
+#######
+Level-08: Sorcerer-04 (Draconic), Paladin-04 (Glory) 
+ - feat: mounted combatant (+1 DEX, DEX=14)
+ - unarmored AC = 10+2(DEX)+4(CHA)+2(shield) = 18
+ - lay on hands (20) 
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike
+   * magic-initiate (2): guidance, thaumaturgy
+ - spell slots: 4-3-3 
+ - spells prepared: 7 (sorcerer), paladin (5)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): bless, cure wounds, detect magic, shield of faith, thunderous smite     
+   * lvl-1 (paladin's smite): diving smite (free x1/LR)
+   * lvl-1 (glory): guiding bolt, heroism 
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+
+NOTE: Take mounted combatant. Boost DEX to increase AC. Otherwise, get 1 extra paladin spell. Take shield of faith or something else. We'll switch it out next level anyway. 
+
+
+#######
+Level-09: Sorcerer-04 (Draconic), Paladin-05 (Glory) 
+ - extra attack 
+ - faithful steed
+ - lay on hands (25) 
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike
+   * magic-initiate (2): guidance, thaumaturgy
+ - spell slots: 4-3-3-1
+ - spells prepared: 7 (sorcerer), paladin (6)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): bless, cure wounds, detect magic, thunderous smite 
+   * lvl-1 (paladin's smite): diving smite (free x1/LR)
+   * lvl-1 (glory): guiding bolt, heroism
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+   * lvl-2 (paladin): aid, warding bond
+   * lvl-2 (glory): enhance ability, magic weapon
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+
+NOTE: Build is technically `complete' here. Cast find steed at lvl-4 to get a flying mount (dragon). Cast dragon's breath at level-3 on mount to give it 4d6 breath attack. Then use true strike with lance + smite. Boost your own/mount's survivability with aid, warding bond, inspiring smite, arcane vigor, cure wounds, heroism, and sanctuary. Increase mount's utility with invisibility, enhance ability, enlarge/reduce, jump. You can also upcast magic weapon at lvl-3 to give yourself a +2 lance. Can't use extra attack yet, still have to true-strike. Use thunderous smite to push enemies back on hit, then direct mount to use dragon's breath. 
+
+
+#######
+Level-10: Sorcerer-04 (Draconic), Paladin-05 (Glory), Warlock-01
+ - invocations (1) 
+   * pact of the blade 
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy
+   * warlock (2): eldritch blast, prestidigitation
+ - spell slots: 4_{1}-3-3-1
+ - spells prepared: 7 (sorcerer), paladin (6), warlock (2)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): bless, cure wounds, detect magic, thunderous smite 
+   * lvl-1 (paladin's smite): diving smite (free x1/LR)
+   * lvl-1 (glory): guiding bolt, heroism
+   * lvl-1 (warlock): armor of agathys, feather fall
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+   * lvl-2 (paladin): aid, warding bond
+   * lvl-2 (glory): enhance ability, magic weapon
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+
+NOTE: Get pact of the blade so you can make lance attacks with CHA. Take eldritch blast for a better ranged option. Take armor of agathys to give you additional tankiness in melee (+ thorns). Plus, if enemies target your mount you can make them target you and take the thorns damage. Then take feather fall in case you fall off the flying mount in a bad situation. Pact magic spell slot is nice for getting sorcery points, or casting twin-able spells on you and your mount. Mechanically, use thunderous smite on second hit with lance, since it pushes them back and thus auto-disengages you. 
+
+
+#######
+Level-11: Sorcerer-04 (Draconic), Paladin-06 (Glory), Warlock-01
+ - lay on hands (30)
+ - aura of protection
+   * add CHA mod to all allies w/in 10ft
+
+NOTE: Now you and your mount get a +4 to all saves, super nice. No changes in spellcasting (which is fine). 
+
+
+#######
+Level-12: Sorcerer-04 (Draconic), Paladin-07 (Glory), Warlock-01
+ - aura of alacrity 
+   * your speed increases by 10ft 
+   * whenever an ally enters your aura or starts turn there, they get speed +10
+ - lay on hands (35)
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy
+   * warlock (2): eldritch blast, prestidigitation
+ - spell slots: 4_{1}-3-3-2
+ - spells prepared: 7 (sorcerer), paladin (7), warlock (2)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): bless, cure wounds, detect magic, thunderous smite 
+   * lvl-1 (paladin's smite): diving smite (free x1/LR)
+   * lvl-1 (glory): guiding bolt, heroism
+   * lvl-1 (warlock): armor of agathys, feather fall
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+   * lvl-2 (paladin): aid, warding bond, prayer of healing 
+   * lvl-2 (glory): enhance ability, magic weapon
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+
+Note: aura of alacrity will apply to your mount, giving you a fly speed of 70ft with the option to use its action to dash. We get another 4th level slot, meaning we can upcast dragon's breath to give our mount more damage (5d6). We could also use the slot to upcast aid to increase durability of us/our mount. Take prayer of healing with our new paladin spell. It gives us benefits of a short rest on cast (regenerates our pact magic slot) and auto-heals our mount. Zone of truth would be an honorable mention. 
+
+
+#######
+Level-13: Sorcerer-04 (Draconic), Paladin-08 (Glory), Warlock-01
+ - feat: great weapon master (+1 STR, STR=14) 
+   * +PB damage when you hit with a heavy weapon during attack action 
+   * hew: when you crit or kill with a melee weapon, you can make one extra attack as a BA 
+ - lay on hands (40)
+
+NOTE: Assume you have magic weapon cast at level-3, giving you a +2 lance. Then with GWM, magic weapon, dueling fighting style, and pact of the blade, each lance attack will do 1d10 + 4(CHA) + 2(dueling) + 2(magic-weapon) + 5(PB) = 18.5 damage on hit. You get two of these per turn (at advantage if you're mounted). Throw in a lvl-3 divine smite (4d8) and have your mount use lvl-4 dragon's breath (5d6). This would make our total burst damage = 37 (lance attacks) + 18 (smite) + 17.5 (dragon's breath) = 72.5 dmg. This is very very good. And we have a lot of mobility, defensive utility, healing, and a decent amount of out-of-combat utility. Obviously, we could have also taken an ASI to increase our CHA to 20 here. This would have improved all our spell casting and saving throws, but the damage we would sacrifice is just too much. With GWM we are a total powerhouse. 
+
+
+#######
+Level-14: Sorcerer-04 (Draconic), Paladin-09 (Glory), Warlock-01
+ - channel divinity (x2/LR, recover 1 on SR) 
+   * divine sense = detect celestial/fiends/undead for 10m 
+   * inspiring smite = distribute 2d8+Paladin-lvl THP to allies w/in 30ft on divine smite
+   * peerless athlete = BA; 1hr duration; adv on athletics + acrobatics, long/high jumps +10ft
+   * abjure foes = use CD to frighten/slow up to CHA characters (on WIS save) for 1m
+ - lay on hands (45)
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy
+   * warlock (2): eldritch blast, prestidigitation
+ - spell slots: 4_{1}-3-3-3-1
+ - spells prepared: 7 (sorcerer), paladin (9), warlock (2)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): bless, cure wounds, detect magic, thunderous smite 
+   * lvl-1 (paladin's smite): diving smite (free x1/LR)
+   * lvl-1 (glory): guiding bolt, heroism
+   * lvl-1 (warlock): armor of agathys, feather fall
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+   * lvl-2 (paladin): aid, warding bond, prayer of healing 
+   * lvl-2 (glory): enhance ability, magic weapon
+   * lvl-2 (faithful steed): find steed (free x1/LR)
+   * lvl-3 (paladin): blinding smite, dispel magic 
+   * lvl-3 (glory): haste, protection from energy
+
+NOTE: Probably best to use 5th level slot to upcast find steed (+10HP, higher AC). Assuming you don't have to cast it every day, you can use the 5th-level to upcast aid, magic weapon, armor of agathys, dragon's breath, or divine smite. With haste on your mount, it will have a base 140ft of movement speed, and gets a hasted action. So you can move, dash, hasted-action::dash to move 420ft per round. You can also the hasted action to disengage, meaning you can move (140ft), attack (otherworldly slam), then disengage with haste up. Casting haste on yourself is also a pretty good option, since it would give you another lance attack (at advantage), which is basically as good as dragons' breath. Protection from energy for more defensive utility. Blinding smite is auto-blind on hit (very good). Dispel magic upcasts well. 
+
+
+#######
+Level-15: Sorcerer-04 (Draconic), Paladin-10 (Glory), Warlock-01
+ - aura of courage 
+   * allies immune to fear within your aura 
+ - lay on hands (50)
+
+
+#######
+Level-16: Sorcerer-04 (Draconic), Paladin-11 (Glory), Warlock-01
+ - radiant strikes 
+   * attacks with a melee weapon/unarmed strike do extra 1d8 radiant
+ - channel divinity (x3/LR, recover 1 on SR) 
+   * divine sense = detect celestial/fiends/undead for 10m 
+   * inspiring smite = distribute 2d8+Paladin-lvl THP to allies w/in 30ft on divine smite
+   * peerless athlete = BA; 1hr duration; adv on athletics + acrobatics, long/high jumps +10ft
+   * abjure foes = use CD to frighten/slow up to CHA characters (on WIS save) for 1m
+ - lay on hands (55)
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy
+   * warlock (2): eldritch blast, prestidigitation
+ - spell slots: 4_{1}-3-3-3-2
+ - spells prepared: 7 (sorcerer), paladin (10), warlock (2)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): bless, cure wounds, detect magic, thunderous smite 
+   * lvl-1 (paladin's smite): diving smite (free x1/LR)
+   * lvl-1 (glory): guiding bolt, heroism
+   * lvl-1 (warlock): armor of agathys, feather fall
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+   * lvl-2 (paladin): aid, warding bond, prayer of healing 
+   * lvl-2 (glory): enhance ability, magic weapon
+   * lvl-2 (faithful steed): find steed (free x1/LR)
+   * lvl-3 (paladin): blinding smite, dispel magic, revivify 
+   * lvl-3 (glory): haste, protection from energy
+
+NOTE: Extra use of CD. New lvl-3 paladin spell -- take revivify (no better options). Radiant strikes makes haste your best option for single target damage, outpacing dragon's breath. But only very slightly, and the dragon's breath combo is both more reliable in terms of damage, and can deal damage in AOE. For the calcs, your max damage combo would be: action::attack-attack + hasted-action::attack + BA:divine-smite(lvl-5). Assuming lvl-5 magic weapon and haste are up, this would do:
+	16.5(lance) + 9(magic weapon) + 6(dueling) + 15(GWM) + 
+        13.5(radiant-strikes) + 12(CHA) + 27(divine-smite) = 99 dmg
+By contrast, the dragon's breath combo is: action::attack-attack + BA:divine-smite(lvl-5) + dragon's-breath(lvl-5). Which would do: 
+	11(lance) + 6(magic weapon) + 4(dueling) + 10(GWM) + 9(radiant-strikes) + 
+        8(CHA) + 27(divine-smite) + 21(dragons-breath) = 96 dmg 
+
+
+#######
+Level-17: Sorcerer-04 (Draconic), Paladin-12 (Glory), Warlock-01
+ - feat: ASI: +2 CHA (CHA=20)
+ - unarmored AC = 10+2(DEX+5(CHA)+2(shield)=19
+ - lay on hands (60)
+
+NOTE: Finally cap CHA. Increases spell DC, attack bonus, aura of protection boost to saves, AC. Proficiency bonus also increases. No changes to spellcasting. No new abilities. For single target damage, haste now does even better than dragon's breath. Your max damage haste combo would do 
+	16.5(lance) + 9(magic weapon) + 6(dueling) + 18(GWM) + 
+        13.5(radiant-strikes) + 15(CHA) + 27(divine-smite) = 105 dmg
+And your dragon's breath combo would do: 
+	11(lance) + 6(magic weapon) + 4(dueling) + 12(GWM) + 9(radiant-strikes) + 
+        10(CHA) + 27(divine-smite) + 21(dragons-breath) = 100 dmg
+
+
+#######
+Level-18: Sorcerer-04 (Draconic), Paladin-13 (Glory), Warlock-01
+ - lay on hands (65)
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy
+   * warlock (2): eldritch blast, prestidigitation
+ - spell slots: 4_{1}-3-3-3-2-1
+ - spells prepared: 7 (sorcerer), paladin (11), warlock (2)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): bless, cure wounds, detect magic, thunderous smite 
+   * lvl-1 (paladin's smite): diving smite (free x1/LR)
+   * lvl-1 (glory): guiding bolt, heroism
+   * lvl-1 (warlock): armor of agathys, feather fall
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+   * lvl-2 (paladin): aid, warding bond, prayer of healing 
+   * lvl-2 (glory): enhance ability, magic weapon
+   * lvl-2 (faithful steed): find steed (free x1/LR)
+   * lvl-3 (paladin): dispel magic, revivify 
+   * lvl-3 (glory): haste, protection from energy
+   * lvl-4 (paladin): staggering smite, banishment
+   * lvl-4 (glory): compulsion, freedom of movement
+
+NOTE: Level-6 spell slot. Freedom of movement can be twinned (on you and mount). Drop blinding smite for staggering smite. You already have color spray if you really need to blind someone and it's a better control smite option. For your other lvl-4 paladin spell, I'd take banishment. You have CHA=20 so it will be hard to save against. Death ward could be another good option to cast on your mount. But you're mount will already be super tanky with aid, armor of agathys, inspiring smite, warding bond, etc. Like, if you cast find steed at lvl-6 your mount will have 65HP to start. Then you cast aid at level-4 to give it 15 more HP, bringing it up to 80. Inspiring smite would give it another 21THP, up to 101. Warding bond gives you resistance to all damage, effectively doubling this to 202HP. Plus you can heal it and it can't be targeted by attack rolls if you're riding it. So, yeah, probably doesn't need death ward. Compulsion is very situational, but could be used to group enemies up to help proc AOE damage or to keep weak enemies at bay while you pick off single targets. Having a level-6 spell slot would boost your damage combos by another d8 (4.5), bringing the haste combo up to 109.5 and the dragon's breath combo up to 104.5. 
+
+
+#######
+Level-19: Sorcerer-04 (Draconic), Paladin-14 (Glory), Warlock-01
+ - lay on hands (70)
+ - restoring touch 
+   * can use 5 points of lay on hands to remove blinded, charmed, deafened,
+     frightened, paralyzed, stunned
+
+NOTE: Dead level, get restoring touch, which is nice. But otherwise nothing new. 
+
+
+#######
+Level-20: Sorcerer-04 (Draconic), Paladin-15 (Glory), Warlock-01
+ - lay on hands (75)
+ - glorious defense
+   * when you or another creature w/in 10ft is hit by an attack 
+   * take reaction to give +CHA to AC, if the attack misses, then 
+   * you can make a weapon attack (CHA x/LR) 
+ - cantrips: 
+   * sorcerer (5): blade ward, friends, light, sorcerous burst, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy
+   * warlock (2): eldritch blast, prestidigitation
+ - spell slots: 4_{1}-3-3-3-2-1
+ - spells prepared: 7 (sorcerer), paladin (12), warlock (2)
+   * lvl-1 (sorcerer): color spray, jump, shield 
+   * lvl-1 (magic-initiate): sanctuary (free x1/LR)
+   * lvl-1 (draconic): chromatic orb, command
+   * lvl-1 (paladin): bless, cure wounds, detect magic, thunderous smite 
+   * lvl-1 (paladin's smite): diving smite (free x1/LR)
+   * lvl-1 (glory): guiding bolt, heroism
+   * lvl-1 (warlock): armor of agathys, feather fall
+   * lvl-2 (sorcerer): arcane vigor, enlarge/reduce, invisibility, suggestion 
+   * lvl-2 (draconic): alter self, dragon's breath
+   * lvl-2 (paladin): aid, warding bond, prayer of healing, zone of truth 
+   * lvl-2 (glory): enhance ability, magic weapon
+   * lvl-2 (faithful steed): find steed (free x1/LR)
+   * lvl-3 (paladin): dispel magic, revivify 
+   * lvl-3 (glory): haste, protection from energy
+   * lvl-4 (paladin): staggering smite, banishment
+   * lvl-4 (glory): compulsion, freedom of movement
+
+NOTE: Glorious defense is effectively a better version of the shield spell (offensive upside, no resource cost). Get 1 additional paladin spell. Could take death ward as a 4th lvl spell, but I'd rather save 4th level slots. Instead, I'd say take a control/out-of-combat utility spell. Compelled duel could be good. So could locate creature or remove curse could also be good. I think I'd take zone of truth because we have proficiency in persuasion and intimidation and our save DC is very high. Anyway, we're really here for the glorious defense ability, which allows us to do even more damage outside of our turn. No new spell slots or anything, which is too bad. Worth sticking with paladin, though, in case you decide to go beyond level 20, in which case you could get a epic boon feat and new spell slot at level-21. Assuming you can proc glorious defense, then you get an additional GWM-dueling-magic-weapon-radiant-strikes lance attack per round, increasing your damage by 5.5+4.5+5+6+2 = 23 dmg per round. So your max damage combo would do 132.5 damage. Dragon's breath combo slightly less. Overall amazing build, very thematic and I like that you don't have to multiclass overly much. Note that going sorc-5 to finish off could also be good. It wouldn't get you any more spell slots, but you would get sorcerous restoration, which would let you recover 2 sorcery points on a short rest, which you can also proc when you cast prayer of healing. But meh, I think glorious defense is much better. 
+
+
+AMAZING BUILD - DEF WOULD PLAY THIS CHARACTER
+

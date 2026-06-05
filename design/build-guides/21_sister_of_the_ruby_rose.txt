@@ -1,0 +1,751 @@
+Moniker: Sister of the Ruby Rose
+Classes: Barbarian (Zealot) - 12, Cleric (War) - 4, Fighter (Battle Master) - 4 
+Species: Human 
+ - size: medium 
+ - speed: 30ft 
+ - resourceful: gain heroic inspiration whenever you finish a LR
+ - skillful = gain proficiency in 1 skill (performance)
+ - versatile = gain a 1st-level feat of your choice (musician)
+Sex: Female 
+Background: Sunite temple guard (sister of the ruby rose) 
+ - modified version of `farmer' background
+ - ability scores: STR, CON, WIS 
+ - feat: tough 
+ - skill proficiencies: religion, perception
+ - tool proficiency: painter's supplies 
+ - languages: common, common sign language, celestial
+ - equipment: 50 gp
+Point-Buy Stats: 
+ - STR = 15 (+2) = 17
+ - DEX = 14
+ - CON = 13 (+1) = 14
+ - INT = 8 
+ - WIS = 13
+ - CHA = 9
+ASI's/Feats
+ - lvl-0: tough
+ - lvl-0: musician
+ - lvl-4: dual wielder (+1 STR) 
+ - lvl-10: resilient (+1 WIS) 
+ - lvl-13: ASI: +2 STR
+ - lvl-17: defensive duelist (+1 DEX) 
+ - lvl-20: resilient (+1 DEX) / epic boon of fortitude / epic boon of irresistible offense 
+PROGRESSION SUMMARY 
+ - lvl-1: barbarian-1 
+ - lvl-2: barbarian-2
+ - lvl-3: barbarian-3 (zealot) 
+ - lvl-4: barbarian-4 (zealot)
+ - lvl-5: barbarian-5 (zealot) 
+ - lvl-6: barbarian-5 (zealot), fighter-1
+ - lvl-7: barbarian-5 (zealot), fighter-1, cleric-1 
+ - lvl-8: barbarian-5 (zealot), fighter-1, cleric-2 
+ - lvl-9: barbarian-5 (zealot), fighter-1, cleric-3 (war domain)
+ - lvl-10: barbarian-5 (zealot), fighter-1, cleric-4 (war domain) 
+ - lvl-11: barbarian-6 (zealot), fighter-1, cleric-4 (war domain) 
+ - lvl-12: barbarian-7 (zealot), fighter-1, cleric-4 (war domain) 
+ - lvl-13: barbarian-8 (zealot), fighter-1, cleric-4 (war domain) 
+ - lvl-14: barbarian-9 (zealot), fighter-1, cleric-4 (war domain) 
+ - lvl-15: barbarian-10 (zealot), fighter-1, cleric-4 (war domain) 
+ - lvl-16: barbarian-11 (zealot), fighter-1, cleric-4 (war domain) 
+ - lvl-17: barbarian-12 (zealot), fighter-1, cleric-4 (war domain) 
+ - lvl-18: barbarian-12 (zealot), fighter-2, cleric-4 (war domain) 
+ - lvl-19: barbarian-12 (zealot), fighter-3 (battle-master), cleric-4 (war domain) 
+ - lvl-20: barbarian-12 (zealot), fighter-4 (battle-master), cleric-4 (war domain)
+ 
+CONCEPT NOTES: The core concept of this build is to leverage some powerful interactions between updated spells (namely: divine favor, magic weapon) and feats (dual wielder, defensive duelist) to build a sustained DPR character that primarily uses thrown weapons. By the time it's fully developed, this character will get to stack a crazy number of flat bonuses to weapon attacks with thrown weapons. And this will be their main source of damage. They will also have great durability, survivability, and surprisingly high AC. Thematically, this character is going to be a religious warrior. I thought it would be fun to RP them as a devotee of the Faerunian god Sune, the goddess of love and beauty. They are a character who becomes overwhelmed/possessed by their holy passion (rage) and becomes the harbinger of love's awesome destructive power. They are the warrior who brings meaning to the phrase 'love conquers all', and are motivated above all else to protect lovely and beautiful things. Even if sometimes they `protect' a bit too hard, and end up breaking something. Similar to their deity, ours is a character who is preoccupied with (their own) physical beauty, and only learns (over time/through adventuring) to understand the deeper/more nuanced nature of beauty and love. I think you could play this character as a bit unhinged. Perhaps they have an exuberance or enthusiasm that comes across as a bit crazed/hysterical. Or perhaps they are just lonely and desperate to find the love they worship in their own life (which they might struggle to do). Whatever the case, with CHA=9, our character will struggle to embody the grace and gentility of their patron goddess. Perhaps they even fail comedically/tragically in trying to appear couth. I think this is a good foil for RP. Thematically, this character will have elements of fire, light (radiance), and religiosity. Alignment wise, I think chaotic good is probably the best fit. 
+
+ADDENDUM (NOTE TO SELF): We might consider the piercer feat for this character. We will basically be dealing exclusively piercing damage for our entire career. However, it will be less impactful for us because most of our attacks will be with daggers/javelins. The piercer feat let's you reroll damage die once per turn, which matters more for weapons with larger damage die. It also gives you an improved critical with piercing damage attacks, but again this would be better if we had weapons on large damage die. As it is, the hardest hitting weapon we'll ever be using is still only on a d8 (the trident). It's not a great feat to begin with, and it's less useful for us than other piercing weapon users, so that's why we've opted not to take it. 
+
+ADDENDUM (NOTE TO SELF): We might want to main light hammers (instead of daggers) and integrate the crusher feat. Light hammers are also thrown and have the nick property, but they deal bludgeoning damage, which means we could get a 5ft push when we hit. This might also enable a combo where, if you start in melee with a creature, you could hit it with a hammer (melee attack), push it back 5ft (effectively disengaging) and then make ranged attacks on it with the rest of your turn. Though, for this to work you would have to hit with the light hammer, then sheath it in order to free up a hand to make thrown weapon attacks with *different* light/nick weapons. So you'd have to use your object interaction to stow your weapon on one turn, then use it to draw a weapon used to make a melee attack the next turn. So you couldn't do this 2 turns in a row. Perhaps more importantly, the light hammers also wouldn't let us take defensive duelist, so there's a tradeoff. But worth mentioning in a note here. 
+
+ADDENDUM (NOTE TO SELF): We allude to being able to eventually not wear armor in the notes below. This isn't the case. We finish our career with CON=14 and DEX=16, which would give us an unarmored AC of 15. We can get AC-16 with medium armor (breastplate). So we'll pretty much be wearing that the entire time. Anyway, not a huge mistake, but one worth mentioning since I haven't fixed it in the text below. 
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+
+#######
+Level-1: Barbarian-1 
+ - feat: tough
+   * HP max increases by 2, and by 2 additional HP each level hereafter
+ - feat: musician
+   * instrument training = gain tool proficiency with 1 musical instrument (viol)
+   * inspiring song = as you finish a SR or LR, you play a song and give 
+                      heroic inspiration to up to PB allies who can hear you
+ - saving throw proficiencies: STR, CON 
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * barbarian (2): athletics, intimidation    
+   * sunite temple guard (2): religion, perception
+   * skillful (human) (1): performance
+   * languages (3): common, common sign language, celestial
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, martial weapons
+   * armor: light/medium armor, shields
+   * tools: painter's supplies (sunite temple guard), viol (musician)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (background) + 75gp (barbarian)
+   * weapons: 20 javelins (10gp), 1 trident (5gp)
+   * armor: chain shirt (50gp), shield (10gp)
+   * tools: painter's supplies (10gp), viol (30gp)
+   * gear: explorer's pack (10gp)
+   * spare coin: 0gp
+ - combat equipment:
+   * weapon: trident 
+     + javelin = 1d6 piercing (slow); thrown (range 30/120)
+     + trident = 1d8 piercing (topple); thrown (range 20/60), versatile (1d10) 
+   * armor: chain shirt + shield; AC = 13+DEX(2)+shield(2) = 17
+ - rage
+   * 2 uses (recover 1 on SR, all on LR) 
+   * damage bonus: +2
+ - weapon mastery (2): trident (topple), javelin (slow)
+
+NOTE: We go human for our species and take performance and musician as our skill/feat. This plays into our character's background as a devotee of the goddess of love/beauty. With 9 CHA, we are far from a master artisan. But as a faithful follower of Sune, we have dedicated ourselves to trying to produce beautiful things -- and for us this means music (musician) and painting (painter's supplies), which we get from our background. Speaking of our background -- I went with a custom one: sunite temple guard. FWIW, the ability scores and feat are based off the `farmer' background in the new 2024 PHB, and went with a +2 in STR and a +1 in CON. But I changed the skills out to reflect our experience as a follower of Sune (religion) and guard of her temple (perception). The feat from our background is tough, which is meant to reflect that, while we may aspire to be a paragon of beauty, we are currently a humble, rough-and-tumble guard. 
+
+Mechanically, our species and background give us a few nice things. First we get the tough feat, which adds 2 to our max HP and will add 40 to our HP maximum over the course of our career. Pretty nice for a frontline fighter. Note that getting 2 additional HP each level is the equivalent of having an additional +4 CON. That's a big boost, and barbarian's value CON more than most other classes. Plus, we won't be increasing our CON at all during the course of our character progression, so it's nice to give it a boost with the feat. Second we get the musician feat and the resourceful human species feature. Musician let's us dish out a number of heroic inspirations equal to our PB each time we finish a rest. And resourceful gives us 1 heroic inspiration each time we finish a LR. Heroic inspiration is really powerful. It's lets you reroll any d20 test *with advantage* after you roll the d20. So our allies will love having us around. Plus, inspiration is very on brand for our ruby-rose warrior. 
+
+In terms of class abilities, at barbarian-1 we get proficiency in two barbarian skills. I went with athletics and intimidation. The former is nice to have since we'll be boosting STR. The latter is nice because it gives us a way to thrive in social interactions (and with the updated 2024 barbarians primal knowledge feature, we'll actually be good at it). Intimidation also kind of makes sense for our slightly off-the-wall character. We also get rage (of course). The wording of rage has been reworked in 2024, and the changes are very relevant to our character. More specifically, the conditions for adding rage damage now state that you can add the rage bonus 'when you make an attack with a weapon using STR or an unarmed strike'. Basically, they took out the condition that the attack had to be a melee attack, in essence freeing up the possibility of thrown weapon barbarian builds. This is what we're going for. 
+
+At barbarian-1 we also get two weapon masteries. We're going to go for a thrown weapon build, so start out with javelins (slow) and tridents (topple). Here at level-1, it will be better for us to just use the trident in melee and try to knock enemies prone with topple instead of actually throwing anything. But, as every barbarian player knows, it's always nice to have a bit of range on hand. Finally, barbarian-1 gets us proficiency with medium armor and shields, so suit up with chain mail and grab a shield. We're a temple guard, so it makes sense for us to have this equipment. 
+
+
+
+#######
+Level-2: Barbarian-2 
+ - danger sense = advantage on DEX saving throws
+ - reckless attack = give yourself adv on STR-based attack rolls till start of 
+                     next turn; enemies have adv. on you during that time
+
+NOTE: Level-2 and we go barb-2. We get danger sense for advantage on DEX saves (as long as we're not incapacitated), which is nice since we don't have amazing DEX. We also get reckless attack, which is very good. No other bells and whistles here. Moving on. 
+
+
+
+#######
+Level-3: Barbarian-3 (Zealot) 
+ - subclass: path of the zealot 
+   * divine fury = extra 1d5 + 1 radiant/necrotic damage to first creature you 
+                   hit with a weapon each turn
+   * warrior of the gods = add 1d12 to HP healed by spell or magic item CON times
+                           per day; revive spells cast on you don't require 
+                           material components
+ - primal knowledge
+   * while raging, whenever you make an ability check for: 
+     acrobatics, intimidation, perception, stealth, or survival
+     you can use STR instead of the normal ability modifier. 
+ - rage
+   * 3 uses (recover 1 on SR, all on LR) 
+   * damage bonus: +2 
+
+NOTE: Alright, we're level-3 and we go barbarian-3. We get an extra use of rage (up to 3) which is nice, and we also get the base class feature primal knowledge, which lets us use our STR instead of other ability scores when we make `barbarian skill' checks if we're raging. This is a new feature and 2024, and a really nice boost to the barbarian's somewhat-lacking out-of-combat utility. For example, with our proficiency in intimidation, primal knowledge means we can have a +5 to intimidation when we need it (and this will be +6 next level, and +7 at level-5). Ok but the big treat at level-3 is that we get our barbarian subclass and, surprise-surprise, we're going with Path of the Zealot. At level-3, zealot barbarians get two features. 
+
+First, we get the `divine fury' ability, which allows us to add 1d6 + half our barbarian level, rounded down (so only 1 right now) radiant damage to the first creature we hit with a weapon each turn while raging. This is the first of many similar features we're going to be acquiring on this character that provide automatic flat damage increases on hit. For now, we still aren't blowing anyone away. When we hit with our trident while raging we will do 1d8 + 1d6 + 6 = 14 damage. But this is going to get better, I promise. Plus with the damage resistances from rage, a 17 AC, and 6 extra HP from tough (on top of our normal barbarian d12 goodness), we will be very tanky. So even if we're not dishing out the damage just yet, we will be fine mucking it up in melee. 
+
+The second zealot feature we get here is `warrior of the gods' -- which has been reworked in the 2024 PHB. This feature now states that, CON-mod times per day, when we are healed by a spell or magic item (e.g., a potion of healing) we can add a d12 to the healing roll. In addition, spells cast on us that have the purpose of `restoring us to life', such as raise dead, or revivify, don't require the caster to use material components. This is a bit more of a niche feature, especially at this level. With our inherent tankiness, it's unlikely that we're going to die. But when we get to higher levels, I think this will be nice to have in our back pocket. If anything, I think what this feature does is encourage a high-risk style of play in combat where you just charge in and wreak havoc without a second-thought for your own potential demise. I actually love this, and think it plays super well with our character's unhinged, slightly crazed identity. So, nice feature even if we don't get a ton of use out of it right now. 
+
+Alright, that's it for level-3, moving on. 
+
+
+
+#######
+Level-4: Barbarian-4 (Zealot) 
+ - feat: dual wielder (STR=18) 
+ - weapon masteries (3) = handaxes (vex), daggers (nick), javelins (slow)
+ - divine fury: 1d6 + 2
+ - combat equipment:
+   * weapon: handaxes + daggers + javelins (all thrown)  
+     + handaxe = 1d6 slashing (vex); light, thrown (range 20/60)
+     + dagger = 1d4 piercing (nick); finesse, light, thrown (range 20/60) 
+     + javelin = 1d6 piercing (slow); thrown (range 30/120) 
+   * armor: chain shirt + shield; AC = 13+DEX(2)+shield(2) = 17
+
+NOTE: Ok, we're level-4 and we go barbarian-4 to get our first ASI/feat. Perhaps surprisingly, we're going to take the `dual-wielder' feat here. `What?' you ask. Weren't we just moshing around with a shield and trident last level? Yes, and we're actually going to keep the shield. Let me explain. So, in the 2024 PHB there have been some changes to the rules around thrown weapons. More specifically, the `Thrown' property of weapons now reads: 
+
+If a weapon has the Thrown property, you can throw the weapon to make a ranged attack, and you can draw that weapon as part of the attack. If the weapon is a melee weapon, you must use the same ability modifier for that attack roll and damage roll that you would use for a melee attack with the weapon.
+
+The key change is in the first sentence. In 2014, when you wanted to throw a weapon (absent any other feats/features) you technically had to use an object interaction to draw the weapon and then use your attack action to throw it. This was super annoying, and really hampered characters with extra attack since it prevented them from being able to throw multiple weapons with the attack action. So annoying that a lot of DM's just ruled that you can draw the weapon as part of the attack, and WoTC later released the `thrown weapon' fighting style in Tasha's, which allows you to do the same thing. Well in the new 2024 rules, it's officially baked right into the Thrown weapon property. So you no longer need a fighting style or to use an object interaction to draw a thrown weapon you're attacking with. Wonderful. The other part of the Thrown property is the same as in 2014, where you have to use the same ability for a thrown attack that you would for a melee attack. For us, we're going to be using STR for all our attacks, so no problems there. 
+
+Ok, so now let's take a look at the Dual-Wielder feat: 
+
+Dual Wielder
+ - Prerequisites: Level 4+, STR or DEX >= 13
+ - ASI: STR or DEX + 1 
+ - Enhanced Dual Wielding: When you take the attack action on your turn and 
+   attack with a weapon that has the Light property, you can make one extra 
+   attack as a Bonus Action later on the same turn with a different weapon. 
+   This weapon must be a melee weapon that lacks the two-handed property. You
+   don't add your ability modifier to the extra attack's damage unless that 
+   modifier is negative. 
+ - Quick Draw: You can draw or stow two weapons that lack the two-handed 
+   property when you would normally be able to draw or stow only one. 
+
+Right, so right off the bat, we use the ability score increase feature of dual-wielder to bump our STR to 18. This gives us more damage, better chance to hit, and better skill checks with primal knowledge. Great. The key part of the feat is the second component `Enhanced Dual-Wielding'. Per the text above, the dual-wielder feat essentially lets you make a Bonus Action attack with a non-Light weapon if you have already made an attack with a Light weapon using the Attack action on your turn. Critically, this feat doesn't say *anything* about actually having to *hold* two weapons in your hands at the same time in order to activate this extra attack. And with the new changes to thrown weapons -- where you can draw and throw as part of an attack -- my interpretation is that if you have dual wielder you can make an attack with a Light weapon, then draw and throw a non-Light melee weapon as an extra Bonus Action attack. Ok, so now if our character makes an attack with a Light weapon using the Attack action on our turn, then we can throw a javelin/trident (both non-light melee weapons) later as a Bonus Action. 
+
+But we're not done. Because in addition to making an extra Bonus Action attack with Dual-Wielder, we're also going to cheat out another attack by leveraging the interaction between the Light weapon property and Nick mastery property. So first, let's take a look at those. Starting with Light, the Light weapon property reads: 
+
+Light: 
+When you take the Attack action on your turn and attack with a Light weapon, you can make one extra attack as a Bonus Action later on the same turn. That extra attack must be made with a different Light weapon, and you don't add your ability modifier to the extra attack's damage, unless that modifier is negative.
+
+Ok so this basically says that if you attack with a Light weapon (using the Attack action, on your turn) then you can make an extra Bonus Action attack with a different Light weapon. Again, note that it doesn't say anything about actually *holding* the weapons in your hands. So this should work with thrown weapons in the same way that the dual-wielder BA attack does. Well that's nice, but we don't need access to a BA attack, right? Don't we already get one from the dual wielder feat? And wouldn't we rather make a BA attack with our non-Light javelin/trident, than with another Light weapon? The answer is Yes. But we're not actually going to have to make that choice. To elaborate, we fist need to take a look at the Nick weapon mastery property. This reads: 
+
+Nick: 
+When you make the extra attack of the Light property, you can make it as part of the Attack action, instead of as a Bonus Action. You can still make this extra attack only once per turn.
+
+Ok, so putting this together. If we take the Attack action on our turn and attack with a weapon that has Light property and Nick weapon mastery property, then we can make another attack with a different Light weapon as part of that action. This basically frees up our Bonus Action again, allowing us to make a third attack with the extra BA attack granted by dual-wielder. Then finally, because Thrown weapons can be drawn and thrown as part of the action used to attack with them, we can actually attack with 3 different weapons on our turn -- using Light, Thrown weapons with the Nick property to make the Light weapon attacks and using a javelin/trident to make the BA attack from dual-wielder -- without *ever* actually holding two different weapons in our hands. This means, RAW, we can do this combo while still holding a shield! Awesome! Ok, so the only weapons with the Thrown, Light, and Nick properties are (i) daggers and (ii) light hammers. I have always hated the thematics of light hammers (I mean, who throws a hammer?), so we're going with daggers. Daggers also have the Finesse property, obviously, but Finesse just gives you the option to use DEX for attack and damage rolls. It doesn't require it. So we're going to be throwing our daggers with STR. The other thrown weapons we like are the handaxe and javelin, which are both on d6 damage die. So we adjust our weapon masteries to be: daggers, handaxes, and javelins. Even though they do the most damage (1d8 when thrown) we drop tridents for now because it's too expensive to be throwing *two* different weapon types (handaxes and tridents) that cost 5 gp each at this level. But don't worry, we'll pick them back up
+
+Whew, ok, so with all this explanation out of the way, taking the dual-wielder feat here allows us to do the following basic attack combo while continuing to hold a shield: 
+
+(1) Take the Attack action and draw and throw a handaxe
+(2) Draw and throw a dagger as part of the Attack action (using Light + Nick)
+(3) Draw and throw a javelin as a Bonus Action (using Dual-Wielder)
+
+Now, we don't get to add our STR mod to the second or third attack, but the second one will be at advantage if our handaxe hits (because of vex) and we do get to add our Rage bonus to all three attacks, as they are all attacks made using STR. In combination with the boost to our STR mod that we get from dual-wielder, this feat represents a *massive* increase to our base DPR. Oh and as a bonus, by getting to barbarian-4, the extra damage we do from our divine fury zealot feature increases (to 1d6 + 2).
+
+Since actually having enough weapons to throw (i.e., ammunition) can be quite costly, especially at early levels, I'm going to assume that we start out by doing the above combo with handaxes (5gp), daggers (2gp) and javelins (2sp). So then, on a standard turn, we do: 1d4 (dagger) + 3d6 (handaxe + javelin + divine fury) + 4 (STR) + 6 (rage) + 2 (divine fury) = 25 damage! At level-4! Without even having extra-attack! This is sooo good. And the cherry on top is that we still get to be an AC-17 barbarian with resistance to bludgeoning, piercing, and slashing damage while doing it. Plus, I almost forgot, that when we hit with our javelins we also slow our enemies by 15ft. This will make it even harder for them to deal damage to us, as we can effectively kite them. Hell...effing..yeah. And it's only going to get better from here. 
+
+Perhaps the only downside of this strategy, is that it requires making ranged attacks. If we get stuck in melee, then all our ranged/thrown attacks would be at disadvantage. But we could always just go reckless to cancel that out. Or, since we're so tanky, we could probably just take AoOs to disengage and back out to range. Either way, I think it's probably worth it to do one or the other. If for some reason we wanted to make melee attacks, I think the best version would be to stow the shield and actually dual-wield a handaxe and dagger, as you could still get 3 attacks per turn this way. 
+
+Ok, well that might be the single longest level note I've ever written. But this is basic attack combo is the one that we're going to be using for the rest of our career. So it's important to our character. And making it work depends on a close reading of the new rules. So I wanted to put that all down here to make it clear. 
+
+Right, so on to level-5! Finally (haha)! 
+
+
+
+#######
+Level-5: Barbarian-5 (Zealot) 
+ - proficiency bonus (PB): +3
+   * musician feat = heroic inspiration to 3 allies per rest
+ - extra attack
+ - fast movement (speed=40ft) 
+
+NOTE: Alright, well let's keep it short and sweet this time, yeah? We're level-5 and we go barbarian-5. We get a proficiency bonus increase, and we get the fast movement and extra attack base class features, and that's it. Notably, we can still benefit from fast movement while wearing medium armor and carrying a shield. So that's nice. For us, extra attack means throwing another javelin with our attack action to which we get to add both our STR mod and rage bonus. So a +9.5 to our DPR. Now our basic round of attacks is: Attack: handaxe (light, vex) + dagger (light, nick) + javelin (slow) + BA: javelin (dual-wielder). With rage active, this will do 34.5 damage per round. Really good for this level. Alright, moving on. 
+
+
+
+#######
+Level-6: Barbarian-5 (Zealot), Fighter-1 
+ - second wind (2 uses; recover 1 on SR, all on LR) 
+   * BA heal = 1d10 + fighter-level (1) 
+ - feat: fighting-style: thrown weapon fighting (ThWF) 
+ - combat equipment:
+   * weapon: handaxes + daggers + javelins (all thrown)  
+     + handaxe = 1d6 slashing (vex); light, thrown (range 20/60)
+     + dagger = 1d4 piercing (nick); finesse, light, thrown (range 20/60) 
+     + javelin = 1d6 piercing (slow); thrown (range 30/120) 
+   * armor: breastplate + shield; AC = 14+DEX(2)+shield(2) = 18
+
+NOTE: Ok we're level-6 and we're going to take a 1-level dip into fighter. The main reason (if it wasn't obvious) is to pick up a fighting style. And we are going to take (surprise-surprise) thrown weapon fighting (ThWF). So what does ThWF do? The new version in the 2024 PHB reads: 
+
+Thrown Weapon Fighting: 
+When you hit with a ranged attack using a Thrown weapon, you gain a +2 to the damage roll. 
+
+Well, we make 4 thrown weapon attacks per round, so getting this fighting-style equates to a flat +8 to our DPR, which is now 42.5. Amazing!
+
+Fighter-1 also gets us second-wind, which we can use for a quick BA heal (though note, it doesn't synergize with our warrior of the gods feature since it isn't a spell or magic item), and 3 weapon masteries. However, we already have 3 weapon masteries from barbarian, and my assumption is, similar to other features like extra-attack, that the way it works if you get weapon mastery from multiple classes is that you just take the `best' version of it. So it's not like it stacks and now we have 6 weapon masteries. So this feature is entirely redundant. Oh well. 
+
+Lastly, I'm going to assume that here at level-6, we've acquired enough gold (despite having to buy handaxes and daggers all the time) to purchase ourselves a breastplate. This increases our AC to a very formidable AC-18. Right, that's it for level-6. Onward! 
+
+
+
+#######
+Level-7: Barbarian-5 (Zealot), Fighter-1, Cleric-1 
+ - divine order
+   * thaumaturge = +1 cleric cantrip; +WIS to religion checks 
+ - cantrips: 
+   * cleric (3): light, guidance, resistance 
+   * thaumaturge (1): spare the dying
+ - spell slots: 2 
+ - spells prepared: 4 (cleric)
+   * lvl-1 (cleric): cure wounds, detect magic, detect evil and good, sanctuary 
+
+NOTE: Ok we're level-7 and we're going cleric-1. Narrative-wise, I think this multiclass emerges pretty smoothly from our character's background/progression thus far. I would probably say that, as a result for our acts of service and veneration as a zealot, our character's connection with Sune has deepened and she has rewarded us with new gifts in the form of magical abilities. This could also be part of our character's narrative arc, where we begin to become more sophisticated and nuanced in our understanding of the true nature of love/beauty, and Sune herself. 
+
+Mechanically, at cleric-1, we get spellcasting and we get to choose our divine order. For the divine order, I think there's a good argument to make for going with `protector' in order to get heavy armor training. Switching into heavy armor would probably get us a +1 to our AC for the majority of our remaining career. But I don't actually think that's worth it. I think sticking in medium armor for now and, eventually (at level 17) ditching armor entirely, feels more `barbarian-y'. Plus wearing heavy armor would negate our fast movement class feature, and while we don't need to be in melee with enemies like most barbarians, we don't actually have a lot of other mobility abilities (and won't). So keeping fast movement feels important. For all those reasons, I'm going for the `thaumaturge' divine order, which gives us an extra cleric cantrip, and lets us add our WIS modifier (only +1) to religion checks. With our pre-existing proficiency in religion, this means we'll have a +3 in this skill. Not great, obviously, but not terrible either. And this newfound religious insight also clearly reflects our character's growth and deepening faith. 
+
+In terms of spells, we can't cast spells or concentrate on them while we're raging, and we also have relatively low WIS (13). So we want to focus on out-of-combat utility and non-concentration abilities. 
+
+Given this, for cantrips I went with: light, guidance, resistance, and spare the dying. Light is great since we don't have darkvision. It's non-concentration, and lasts for up to an hour so we can likely have it precast well before combat. Guidance has been reworked in the 2024 PHB, and is now cast as a reaction in response to a failed ability check and lets you/a creature within 10ft add a d4 to the roll. So we won't be able to use this while raging, but it will still be very good out of combat. In addition, our primal knowledge feature can still help us with ability checks that we do make while raging. Resistance is also cast as a reaction, in response to a failed saving throw, and also lets you add a d4 to the roll. This will be less useful for us, since we won't be able to do it while raging. But there will be times in combat when we aren't raging, as well as saving throws in non-combat situations. Plus it dovetails nicely with our human resilience feature, which gives us heroic advantage that can also be used to buff saving throws. Both guidance and resistance also now have a 10ft range (in 2014 they were touch), so we can more easily use them on our allies. Buffing allies is also thematically consistent with our musician feat. In aiding our allies, we seek to preserve/promote that which is elegant and beautiful, and abjure effects which would harm our most beautiful party. You can see how to spin it, here. Finally, for our last cantrip I took spare the dying. Resisting death is a core part of the barbarian, and the zealot in particular. Plus, spare the dying was also reworked for 2024, and now gets cantrip-scaling on its range. When we take it here at level-7, it already has a 30ft range and this will increase up to 120 by level 17. Again, we won't be able to cast this while we're raging, but if we need to drop rage to stabilize an ally, we can.   
+
+For leveled spells, we get to prepare 4 spells. Cure wounds is great for us since we can use it to proc our warrior of the gods feature. In combination with second wind, this gives us a pretty decent burst heal. Specifically, a level 1 cure wounds + second wind + warrior of the gods would heal us for 2d8 + 1d10 + 1d12 + 2 = 23 hp. Not bad! We also take detect magic since it's very useful and we can cast it as a ritual. Detect good and evil is a decent and thematic out-of-combat option. And sanctuary is potentially useful if we're fighting with a dedicated healer/buffer or NPC. It's only a BA to cast and doesn't require concentration, so we can cast it and then go into a rage. It won't be terribly effective due to our low WIS, but there aren't a lot of good options (like honestly, here I am considering taking `detect poison and disease' just because it's a ritual). Plus it's on theme with our identity as a warrior that abjures the enemies of evil and beauty. 
+
+Finally, as a somewhat silly aside. Proficiency with painter's supplies allows us to create our own holy symbol for use in casting cleric spells. So who says tool proficiencies are useless?...
+
+Ok, whew! That's it for level-7. Moving on. 
+
+
+
+#######
+Level-8: Barbarian-5 (Zealot), Fighter-1, Cleric-2 
+ - channel divinity (2 uses; recover 1 on SR, all on LR)
+   * divine spark = 1d8+WIS healing or radiant damage (CON save) 
+   * turn undead = WIS save, 30ft, or undead frightened + incapacitated for 1m
+ - cantrips: 
+   * cleric (3): light, guidance, resistance 
+   * thaumaturge (1): spare the dying
+ - spell slots: 3 
+ - spells prepared: 5 (cleric)
+   * lvl-1 (cleric): cure wounds, detect magic, detect evil and good, sanctuary  
+                     bless 
+
+NOTE: Ok level-8. Kind of a dead level for us. We get channel divinity (CD) as a cleric base class feature. With it we can turn undead, though somewhat ineffectively with our low WIS score. So do that if/when it's appropriate. We can also use the `divine spark' feature that is new to the 2024 PHB. Divine spark lets us expend a use of our CD as a Magic action to either (i) force an enemy to make a CON save or take 1d8+WIS radiant/necrotic damage (half on save) or (ii) heal a target within 30ft for 1d8+WIS. I don't think we'll ever want to use the damage option of divine spark, but the healing is kind of interesting. The wording on the barbarian rage feature says that we can't maintain concentration and we can't cast spells. It doesn't say we can't take the Magic action, and CD is not a spell. Nor does it require concentration. So RAW, I think this means that divine spark is a magical heal that we can use even while we're raging. Now we only get 2 uses of it, but they do come back on a SR. I would think of this kind of like a budget version of healing word that our barbarian-cleric character can use even while raging. So that's kind of nice. Other than channel divinity, we get another 1st-level spell slot and another prepared spell. There really aren't a lot of great options. I just chose bless since it's very strong, and maybe we're in a situation where we're out of rages or we don't want to be a frontliner. Don't get too attached, we'll be switching it out next level. Ok, that's it for level-8. Moving on! 
+
+
+
+#######
+Level-9: Barbarian-5 (Zealot), Fighter-1, Cleric-3 (War Domain)  
+ - proficiency bonus (PB): +4
+   * musician feat = heroic inspiration to 4 allies per rest
+ - subclass: war domain 
+   * war priest = can use mastery property of 1 weapon with which you're proficient; 
+                  BA weapon attack WIS times per SR
+   * guided strike (see below)
+ - weapon masteries (4) = handaxes (vex), daggers (nick), javelins (slow), tridents (topple)
+ - channel divinity (2 uses; recover 1 on SR, all on LR)
+   * divine spark = 1d8+WIS healing or radiant damage (CON save) 
+   * turn undead = WIS save, 30ft, or undead frightened + incapacitated for 1m
+   * guided strike = when you/someone w/in 30ft misses with an attack, use reaction 
+                     to expend CD and add +10 to the roll
+ - cantrips: 
+   * cleric (3): light, guidance, resistance 
+   * thaumaturge (1): spare the dying
+ - spell slots: 4-2 
+ - spells prepared: 6 (cleric)
+   * lvl-1 (cleric): cure wounds, detect magic
+   * lvl-1 (war domain): divine favor, shield of faith 
+   * lvl-2 (cleric): warding bond, borrowed knowledge, enhance ability, augury
+   * lvl-2 (war domain): magic weapon, spiritual weapon
+
+NOTE: Alright, we are level-9, and we go cleric-3. We get a proficiency bonus increase and we get to choose our cleric subclass. We're going to go with War Domain. First off, let's start with the narrative/thematic aspects. At first pass, going war domain might seem a bit tricky, since we have been RPing a character pledged to the goddess of love, life, and beauty up till now. But I don't actually think it requires that much to make this work. To see this, let's take a look at the description of the war domain in the new 2024 PHB: 
+
+War Domain: 
+War has many manifestations. It can make heroes of ordinary people. It can be desperate and horrific, with acts of cruelty and cowardice eclipsing instances of excellence and courage. Clerics who tap into the magic of the War Domain excel in battle, inspiring others to fight the good fight or offering acts of violence as prayers. Gods of the War Domain watch over warriors and reward them for their great deeds. They include champions of honor and chivalry as well as gods of destruction and pillage. Other war gods take a more neutral stance, promoting war in all its manifestations and supporting warriors in any circumstance
+
+So I see a few easy ways to tie this in. First, I think we can see Sune in the excellence, courage, and heroism aspects of war. It's a phenomenon that can bring the very best, and most beautiful, parts of the human spirit to the fore. The knight in shining armor is, after all, beautiful to behold. Heroism is both beautiful and inspirational. I think we can also see the essence of Lady Firehair in the notions of honor and chivalry that are part of glorious combat. I would also RP our character's relationship with Sune as part of the goddess's attempt to *expand* her domain, and to take dominion over the acts of war that are perpetrated in the name of love. In combining love, beauty, and war, I think at this level our character finally embodies the idea that `love conquers all'. We might also resonate with the idea that 'love is a battlefield' or 'love is war', and that loving something/someone and being in love is a fight. We must fight to earn the affections of those we love, and we must fight to protect those that we love and love us. Beauty and love have started at least as many wars as ideas or politics ever have. And even though Sune's own essence is gentle, charming, and alluring -- the Princess of Passion is not a softie. Hers is a domain of strength. Hers is a power that dominates and conquers. And in this aspect of her divinity, our character is her holy warrior. We could also tie the mixing of love and war to our character's personal growth. More specifically, for our career up until this point, we have strived and perhaps struggled to be charming and beautiful in the ways traditionally associated with Sune. But perhaps, as we've grown wiser and as our faith has deepened, we've come to realize the beauty in being true to ourselves. We are a barbarian. Part of our identity and our strength is tied to destruction and war. And rather than trying to deny/change this, we instead learn to recognize the beauty inherent in it, and learn how to make offerings of martial prowess and conquest in the name of love. However you want to make the connection, I think that narratively, we are going to say that our war domain powers continue to emanate from our faith and devotion to Sune, rather than coming from some other war god. 
+
+I think it's also worth saying something here about why we did the whole 'goddess of love' thing in the first place. I mean, if we knew we were going to go zealot barb/war cleric, why not just worship some god of war and destruction? Totally fair. I would even agree that going with a war god patron might even be a more thematically consistent way to build this character. But, in my opinion, it's also just super boring! Barbarian who worships war god? Snooze! It just feels soo vanilla, in my opinion. It also doesn't give our character reasons to do interesting non-combat things, like painting, playing music, or struggling to be charming and understand the nature of love/beauty. In the end, I think the dissonance between our love goddess patron and our warlike barbarian nature makes the character more interesting. DnD is a game about storytelling, and your experience playing is tied to the story of your character. So you want it to be an interesting one! Anyway, that's why we're here. Rant over. 
+
+Mechanically, we get a number of new features from going war domain. First, we get the `war priest' ability, which gives us mastery over one kind of simple/martial weapon that we are proficient with, and lets us make a weapon attack as a BA WIS times per short/long rest. The way I read this, it means we get one extra weapon mastery, in addition to those we already have from barbarian/fighter. This is because it's a different feature. Unlike when we took fighter, and we simply got the `weapon mastery' again, this time it's an entirely different feature. So I think it should stack. If you don't like this interpretation, then just stick with 3 masteries. It's not essential for build. But, based on my interpretation, we get another weapon mastery (up to 4) which I used the to pick up trident mastery again. In terms of the BA attack ability -- it's actually better than the BA attack we get from the dual-wielder feat, because we would get to add our STR modifier to the damage. So we should use this whenever we have it available, then fall back to using the BA attacks granted by dual-wielder when we run out. Since we will never have very high WIS, this is only ever be 1-2 attacks per short rest, but hey, we'll take the extra damage if we can get it. 
+
+In addition to war priest, we also get a new channel divinity option: guided strike. This ability lets us expend a use of CD as a reaction to add +10 to an attack roll that misses made by us or a creature within 30ft of us. Obviously a great ability for ensuring that you land important hits. Consistent with our secondary identity as a support character, I imagine we would mostly use this to help allies land big spells/abilities, rather than using it on ourselves. We do our damage by making lots of attacks on our turn, but no one attack is particularly important. So yeah, get brownie points by using this on your friends. It's a nice ability, but ultimately not what we're here for. 
+
+What we're really here for is spells. In particular, when we take the war domain, we get a number of domain spells that we always have prepared. These domain spells are: divine favor, shield of faith, spiritual weapon, and magic weapon. Spiritual weapon now requires concentration, and uses our spell attack modifier to hit, so it's really not good for us. Shield of faith is also a combat ability that requires concentration so we will likely never use it. Magic weapon is an interesting one. The new version of magic weapon in the 2024 PHB is no longer concentration. So what the spell does is you touch a non-magical weapon and it becomes a +1 magic weapon for an hour (if you upcast it you can make it a +2, +3 etc). Normally, this would be great. But with our thrown weapon fighting style, we don't actually use the same weapon to make attacks very often. And, if we managed to get our hands on some sort of returning weapon, it would likely already be a magic weapon. However, in the off chance that you manage to craft/come across some kind of non-magical returning weapon, then magic weapon would be awesome. The main bound spell we're excited about, however, is divine favor, which was also updated in the 2024 PHB. The updated details of divine favor are as follows: 
+
+Divine Favor 
+ - level-1 transmutation (paladin) 
+ - casting time: Bonus Action 
+ - range: self 
+ - components: V,S
+ - duration: 1 minute 
+ - description: until the spell ends, your attacks with weapons deal an 
+                extra 1d4 radiant damage on hit. 
+
+The key change in this new version of the spell is that it's no longer concentration. So we can cast it on turn-1, then rage on turn-2 and get an additional d4 radiant + rage bonus on all our weapon attacks. When we look at our basic attack combo, this is 4 attacks per turn. So this adds a 4d4 (10) dmg to our sustained DPR. Note: I'm also going to assume that here at level 9, we've accrued enough gold that we can afford to buy enough handaxes and tridents to main them as thrown weapons. This means that our most damaging basic attack combo will be: handaxe (light, vex) + dagger (light, nick) + trident (extra attack) + BA:trident (dual-wielder). If we have divine favor and rage active when we do this, our basic attack combo will now do: 1d4 (dagger) + 2d6 (handaxe + divine-fury) + 2d8 (tridents) + 8 (STR) + 8 (rage) + 10 (divine favor) + 2 (divine-fury) + 8 (ThWF) = 54.5 damage. Very good for level 9. Obviously, we now need two turns to set up, but in most combat scenarios this is going to be well worth it. 
+
+Ok, so at this point you might also be wondering -- hey Casey, this is a paladin spell, right? So why not just switch out CHA for WIS in terms of ability scores and go paladin-1 to get this spell. The main reason is spell slots -- as half casters, paladins are stuck on 2 spell slots until level-3 and only get to 4-2 by level-5. For this character, we want to be able to cast divine favor on ourselves in every combat, and we'd struggle to do that with paladin. Plus, we don't actually get much else out of paladin. I mean, we're raging so we can't cast any smite spells. We don't really want to wear heavy armor. And we don't really want to go far enough into paladin to get auras and high-level spell slots. Plus, if we went for CHA, we'd have to dump WIS, making our character very vulnerable to WIS saves. CHA saves are much less common. For all these reasons, it's actually better for us to get to divine favor through war cleric, even though a number of the other features we get with the subclass aren't super impactful. 
+
+Ok, last but not least, in taking cleric-3 we also get new spell slots (4-2) and we can prepare 6 cleric spells of level-2 or lower. For my default kit, my recommendation is to drop bless, detect evil and good, and sanctuary as level-1 spells, and pick up warding bond, borrowed knowledge, enhance ability, and augury as level-2 spells. Here's the logic. We basically only want to use our level-1 spell slots for casting divine favor and (if we have to) cure wounds. Bless, detect good and evil, and sanctuary either require concentration or are combat spells that depend on our WIS modifier. So we drop those, and keep detect magic as a level-1 spell because we can cast it as a ritual. Then, for level-2 spells, borrowed knowledge and enhance ability are great for out-of-combat scenarios. We could even cast both on ourselves to give ourselves proficiency in a skill and then advantage on checks using that skill. So even with an 8 INT, we could have a +8.5 to an INT-based check, if we had both of these up. Pretty cool. And thematically, I think this makes sense for our character who borrows from her deity's grace, elegance, and beauty to become skillful in ways that they normally struggle to be. Or rather, her deity's favor can provide her with skill when it is needed, even if they are skills she doesn't normally possess. As a tanky barbarian, warding bond is a fantastic spell for us. It's not concentration, lasts an hour, and let's us give a +1 to AC and saves to an ally while also tanking half the damage they take. This significantly augments our role as a support character (musician feat, guidance/resistance, guided strike, warding bond). Finally, we take the augury spell. Mostly because we can cast it as a ritual. Secondarily because it leans further into the theme of our character being guided/augmented by divine favor. It's also a decent out-of-combat utility spell to have, especially on a barbarian.
+
+Ok, wow. Second essay of a level note of this build. I sure hope this is all helpful to someone someday. For now, let's sally forth! 
+
+
+
+#######
+Level-10: Barbarian-5 (Zealot), Fighter-1, Cleric-4 (War Domain) 
+ - feat: resilient (WIS=14) 
+ - saving throw proficiencies: STR, CON, WIS
+ - cantrips: 
+   * cleric (4): light, guidance, resistance, thaumaturgy 
+   * thaumaturge (1): spare the dying
+ - spell slots: 4-3 
+ - spells prepared: 7 (cleric)
+   * lvl-1 (cleric): cure wounds, detect magic
+   * lvl-1 (war domain): divine favor, shield of faith 
+   * lvl-2 (cleric): warding bond, borrowed knowledge, enhance ability, augury
+                     prayer of healing
+   * lvl-2 (war domain): magic weapon, spiritual weapon
+
+NOTE: Alright, we are level-10 and we go cleric-4. We get another ASI/feat and we're going to take resilient (WIS) to boost our WIS score to 14 and give us proficiency in WIS saving throws. I know it's not the sexiest option and there are other things we really want (looking at you ASI +2 STR), but at level-10 when you start entering the mid/late game, having protection on saving throws starts to be really important. And a lot of the nastiest control/condition effects in the game come on WIS saves. Now with resilient, we'll have a +6 to our WIS save, which is pretty good. We also get another use of our war priest bonus action attack (up to 2) per short/long rest. Nice. I think this feat also feels like an appropriate culmination of our time with the cleric class. We'll be moving on after this level, but it makes sense that we gain wisdom and mental resilience from our time with cleric. Furthermore, when it comes to damage, we are still doing really well at this level, and we're about to get additional damage bonuses when we go back to barbarian. So we feel good about taking a defensive feat here. 
+
+At cleric-4 we also get another cantrip -- I went with thaumaturgy because it feels thematic and it has some inherent synergy with performance/intimidation tactics (we are proficient in both). But pick your favorites. We also get to prepare another spell of level-2 or lower. I chose prayer of healing. It's an out-of-combat heal of 2d8 + WIS for up to 6 creatures. We aren't ever going to be a full on healer (this spell will only heal for 11hp, on avg), but we do have an affinity for divine recovery with our warrior of the gods feature (which works with this spell), and it is always nice when the party's damage dealers can help heal out of combat. In combat situations, we don't really have anything to do with our second level slots except to cast warding bond, and we already have a lot of out-of-combat utility spells with borrowed knowledge, enhance ability, and augury. So getting a nice AOE heal feels good. Plus, with a casting time of 10m, we will never be able to cast it in combat, so it won't interfere/conflict with our rage. The only other honorable mention I'll nominate here is calm emotions. But like I said, we have a lot of out-of-combat stuff already. 
+
+Ok, that's it for level-10. Let's continue. 
+
+
+
+#######
+Level-11: Barbarian-6 (Zealot), Fighter-1, Cleric-4 (War Domain) 
+ - cantrip scaling
+   * spare the dying, range = 60ft
+ - fanatical focus 
+   * once per active rage, if you fail a saving throw, you can re-roll it 
+     and you must use the new roll. 
+ - divine fury: 1d6 + 3
+ - rage
+   * 4 uses (recover 1 on SR, all on LR) 
+   * damage bonus: +2 
+
+NOTE: Alright, level-11 and we're going back to barbarian. Narratively, I don't think this involves any big change for our character. Perhaps, as we dip back into barbarity, we can lean into the self-recognition story arc a bit more. That is, as we've become more learned and wise, so too have we realized the power of our wild passions, and our progression over the next several levels represents us growing in our ability to harness and augment this wild power. Or, alternatively, that our new enlightened perspective has earned us further rewards of divine power from Sune. Mechanically, at barbarian-6 we get the `fanatical focus' feature from the zealot subclass. This feature lets us reroll a saving throw that we fail one time per active rage. This is super nice, and gives us even greater protection on saves. I would definitely use this if we have to make an important INT or CHA save, but would even consider using it on DEX saves. We have danger sense to give us advantage on those, but some super high damage abilities (e.g., a dragon's breath) depend on DEX saves and we only have a +2, so it's nice to have this in our back pocket to help in those situations. I suppose we could also burn additional rages within a combat to recover this feature, though I would only do that if it seemed really important. Plus don't forget, we do have a heroic advantage from our human resilience species feature that we can use on saving throws, and we can cast resistance on ourselves if we aren't raging. But again, nice to have options. At barbarian-6 we also get another use of rage (4 per day) and our divine fury feature adds another 1 point of damage to our basic attack combo, bringing it to 59.5 per round. Still pretty good, but we're definitely looking forward to some of the damage features we'll be getting in the near future. Oh yeah, and we also get a cantrip scaling upgrade, increasing the range on our spare the dying cantrip to 60ft. Woohoo!
+
+Ok, and that's it for level-11. Let's soldier on. 
+
+
+
+#######
+Level-12: Barbarian-7 (Zealot), Fighter-1, Cleric-4 (War Domain) 
+ - feral instinct = advantage on initiative rolls
+ - instinctive pounce = move half speed when you activate rage
+
+NOTE: At level-12, we go barbarian-7. We only get a couple of new features here. We get barbarian base-class features feral instinct and instinctive pounce. The former gives us advantage on initiative rolls, and the latter gives lets us move up to half our speed when we use a Bonus Action to enter a rage. Both are nice, but I think we especially appreciate instinctive pounce, as we are somewhat lacking in mobility enhancement options (though making ranged attacks obviously helps). And, yeah, that's it for level-12. Kind of a slow level here, too. But I think we still like where we are, progression-wise. 
+
+
+
+#######
+Level-13: Barbarian-8 (Zealot), Fighter-1, Cleric-4 (War Domain) 
+ - proficiency bonus (PB): +5
+   * musician feat = heroic inspiration to 5 allies per rest
+ - ASI: STR=20 
+ - divine fury: 1d6 + 4
+
+NOTE: Ok we're level 13 and we go barbarian-8. We get a proficiency bonus increase and we take a simple +2 boost to our STR with an ASI. We also get an increase to our divine fury damage too. While not terribly exciting, boosting STR here is important since we add our STR modifier to 2 attacks per round when we're do our basic attack combo (3 if we use the war priest bonus attack). So together with the divine fury increase, boosting our STR here increases our overall DPR by +3. Boosting our STR mod also helps with any skill checks we make with our primal knowledge feature, synergizing with the PB increase we also get at this level. With these damage bonuses factored in, our basic round of attacks would now do 57.5 damage, on average. Pretty good but not amazing. We're hanging in there, but definitely starting to fall off a bit. Not to worry, help is coming. Let's keep going!
+
+
+#######
+Level-14: Barbarian-9 (Zealot), Fighter-1, Cleric-4 (War Domain) 
+ - brutal strike 
+   * forgo advantage to do extra 1d10 damage on STR-based attack and add one 
+     additional effect: 
+   * forceful blow = push target 15 feet away from you, then move up to half 
+                     your speed towards them w/o provoking AoOs (if you want)
+   * hamstring blow = reduce target's speed by 15ft until the start of your 
+                      next turn. 
+ - rage
+   * 4 uses (recover 1 on SR, all on LR) 
+   * damage bonus: +3 
+
+NOTE: Alright, level-14. Big level here. We go barbarian-9 and we get two improvements from the base class. First our rage damage bonus increases to +3. Since this applies to all four attacks that we make on our turn with our standard combo, this represents a +4 increase to our base DPR. We also get the new (in the 2024 PHB) brutal strike feature. With brutal strike, we can forgo the advantage we gain from using Reckless Attack on one of our attacks per turn in order to gain a benefit if we hit with the attack. This benefit is that we do an additional d10 of damage, and we get to add a rider effect -- either forceful blow or hamstring blow. Assuming we successfully land a brutal strike each turn, this represents a +5.5 to our overall DPR, bringing the grand total for our basic attack combo up to 67 damage (72 w/war priest). Back in the very good category, for sure.  
+
+In addition, both the forceful blow and hamstring blow effects of brutal strike can be pretty devastating. For example, if we use our javelins and make a hamstring strike, we can reduce an enemy's speed by 25ft. For creatures with 30ft of movement, this may even prevent them from being able to close the gap with us if we're at least 10ft away. We can also use our trident with hamstring blow to reduce speed and knock an enemy prone with a single attack from range. This would be a great way to slow down enemies who are trying to escape, or pin down enemies stuck in melee with allies. Forceful blow is obviously great for knocking enemies into environmental hazards, and being able to do this with ranged attacks is even more powerful. Forceful blow also serves as a useful tool for kiting enemies with ranged attacks. For example, if we're stuck in melee with an enemy, we can make a melee attack with our first attack and use forceful blow to knock them back 15ft, allowing us to make the rest of our attacks at range without disadvantage. 
+
+Note, however, that this `disengage tech' is a little tricky due to the nature of the light/nick extra attacks. Specifically, we would have to make a melee attack with a handaxe, then stow it to free up our hand (our other one is holding a shield) in order to enable us to make thrown weapon attacks with a *different* light weapon (which is required by light/nick). The problem with this is that, if we start our turn holding a handaxe in our hand and do this combo, we end without one in our hand. Meaning we'd have to use our object interaction at the start of our next turn to draw a handaxe again in order to make a melee attack with it. So basically, we couldn't do the disengage tech two turns in a row. Unless your DM rules that the dual-wielder feat ability to draw/stow two weapons when you would normally be able to draw/stow one means that we can stow a weapon, then make thrown weapon attacks with different weapons, then draw again at the end of our turn. Maybe, but probably not. So, yeah, it's a little messy. Basically I would think of it like: you should only use the disengage tech if you have to, but shouldn't depend on it as part of our basic attack combo. 
+
+All in all, the control options from brutal strike are definitely useful and fun, but our build isn't centered around using them. What we like most about this level is the boost to our rage damage, and the extra d10 that we get from brutal strike. And while we get this extra damage a full five levels later than straight-class barbarians, we got a lot of extra damage out of multiclassing, so we feel pretty good about it. On to level-15! 
+
+
+
+#######
+Level-15: Barbarian-10 (Zealot), Fighter-1, Cleric-4 (War Domain) 
+ - zealous presence
+   * as a BA give up to 10 creatures w/in 60ft advantage on attack rolls and 
+     saving throws until the start of your next turn. Once per LR, can be 
+     restored by burning a rage. 
+ - divine fury: 1d6 + 5
+ - weapon masteries (5) = handaxe (vex), daggers (nick), javelins (slow), tridents (topple), 
+                          spears (sap)
+
+NOTE: Ok at level-15 we go barbarian-10. We get a boost to our divine fury damage (now up to 1d6+5) meaning our DPR increases slightly to 68 (73 with war priest). But that's the only direct boost to our damage we get at this level. We do, however, get a very powerful support ability in the level-10 zealot feature `zealous presence'. Zealous presence is a bonus action ability that we can do once per long rest and when we activate it we grant advantage on attack rolls and saving throws to up to 10 creatures within 60ft of us until the start of our next turn. We can also reactivate this ability once we've already used it by expending a rage. This is a very strong buff, giving both an offensive and defensive boost to the whole party for a round. And while it has very limited in uses, the ability to reactivate it by burning a rage, which is new in the 2024 PHB, is definitely great. Especially at high levels, many combats can be over in just a few rounds. So there could be situations where you're going all out and it makes sense to burn rages to continue to re-up this buff round after round. In addition, I think we really like this ability because it adds to our already substantial suite of support capabilities, which includes: (i) giving our allies heroic inspiration with the musician feat (5 creatures), (ii) giving them buffs on ability checks with guidance/enhance ability, (iii) giving them bonuses to attack rolls with guided strike and zealous presence, (iv) giving them boosts to saving throws with resistance, warding bond, and zealous presence, and (v) giving them healing/damage reduction with warding bond, cure wounds and prayer of healing. Pretty awesome for a barbarian focused primarily on dishing out damage. It's funny, we've definitely ended cosplaying as a paladin by multiclassing with barbarian and cleric with this character. But I think the barbarian core is more fun, and allows for more flexibility than paladin does. Finally, at barbarian-10 we also get another weapon mastery option (up to 4 from barb, +1 from war cleric). There's not a super impactful weapon we need to pick up here. I went with the spear because it's another thrown weapon and it has the sap property (which imposes disadvantages on a target's next attack roll when you hit them). The main motivation for this pick is just to add breadth and diversity to the set of control options we have through weapon mastery. If there's something else that you would prefer (a cleave weapon, for example) then go for it. Otherwise, we move on! 
+
+
+
+#######
+Level-16: Barbarian-11 (Zealot), Fighter-1, Cleric-4 (War Domain) 
+ - relentless rage 
+
+NOTE: Alright, level-16 and we go barbarian-11. Pretty dead level for us, honestly. The only thing we get is the `relentless rage' base class feature. But this is a great feature, and one that I think is especially thematic for a zealot barbarian. With this feature, if we drop to 0 hit points while rage is active we can make a DC-10 CON save, and, if we succeed, we instead go back to having twice our barbarian level in HP (so 22). Each time we use the feature, the DC of the associated save increases by 5, and it resets to 10 on a rest (short or long). So this is pretty nice. 22 HP isn't very much for level 16, but it will feel more like 44 given our damage resistances while we're raging. It's also nice that we just get to do it, and that using the ability doesn't require any resources (though, obviously, it becomes harder to proc the more you use it). Finally, this feature seems really on point for a zealot barbarian -- a subclass which historically has been known mostly for the `rage beyond death' feature they get at level-14. We aren't actually going to go that far in barbarian for this build (and the new 2024 version of rage beyond death is cool, but not that great). But thematically, relentless rage fills the same niche. Our passion and devotion to Sune is so great that we can endure otherwise mortal blows, and defy death in order to smite her enemies. Mechanically, this feature obviously gives us some additional durability. We might actually get more use out of it than most barbarians since I'm assuming that we'll be casting warding bond on someone before/during combat at least once (possibly twice) per day. Between the tough feat and our inherent barbarian tankiness, we should still be ok most of the time, but it's always nice to have an additional safety net around the 0hp mark where things can get spicy quick. So yeah, we like relentless rage, even though it doesn't change a lot for us mechanically. Lean into the thematics and let's move on. 
+
+
+#######
+Level-17: Barbarian-12 (Zealot), Fighter-1, Cleric-4 (War Domain) 
+ - proficiency bonus (PB): +6
+   * musician feat = heroic inspiration to 5 allies per rest
+ - feat: defensive duelist (DEX=15)
+ - cantrip scaling
+   * spare the dying, range = 120ft
+ - divine fury: 1d6 + 6
+ - rage
+   * 5 uses (recover 1 on SR, all on LR) 
+   * damage bonus: +3
+
+NOTE: Ok level-17 and we go barbarian-12. We get a boost to our divine fury damage, brining the damage from our basic attack combo up to 69 (74 with war priest). Great. We also get a cantrip improvement, increasing the range on spare the dying up to 120 ft. Hopefully we don't ever have to use this, but it's definitely soooo much more useful to have with this kind of range, as compared to when it was solely a touch spell. Next, we also get another use of rage (up to 5 per day). Excellent, more rages means we can feel better about using them for out-of-combat ability checks with primal knowledge, or to restore uses of our fanatical focus and zealous presence features. 
+
+But most importantly, at barbarian-12 we get another feat/ASI and we're going to take the defensive duelist feat. This might seem confusing, but there's actually a cool interaction/exploit that we can leverage here. So let me explain. To start with, here's the wording of the defensive duelist feat, which was updated in the 2024 PHB: 
+
+Defensive Duelist 
+ - Prerequisites: DEX >= 13
+ - ASI: DEX +1 
+ - Parry: If you're holding a Finesse weapon and another creature hits you with a 
+          melee attack, you can take a Reaction to add your Proficiency Bonus to 
+          your Armor Class, potentially causing the attack to miss you. You gain 
+          this bonus to your AC against melee attacks until the start of your next turn. 
+
+So ok first off we boost our DEX to 15. Doesn't change our modifier so no impact there. But the most important part is the `Parry' ability, which would give us a +6 to our AC against melee attacks if we can proc it. Importantly, this feat was also updated in the 2024 PHB so now the bonus to AC lasts until the start of your next turn, rather than just for the attack that procs it. This is super good, and it means that defensive duelist will give us a bigger boost to AC than would the shield spell (widely acknowledged as one of the most powerful defensive abilities in the game) *and* it doesn't require spell slots or any other limited resource, other than your reaction. The downside, of course, is that it only works against melee attacks. Still super good. 
+
+Ok but how do we take advantage of it? Well, up until this point, we have used one hand to hold a shield, and have started and ended our turn with our other hand empty, since we just draw and immediately throw weapons when we make attacks. Well, now we just want to start/end our turn holding a dagger. Since a dagger is a Finesse weapon, if we're holding it at the end of our turn, then we can use it when attacked to proc the `Parry' ability of the defensive duelist feat. Now, here is where things get a bit tricky, since technically, the extra attack granted by the Nick property has to come after an initial attack made with a Light weapon (it's the `off-hand' attack of the Light property). So we want to throw our handaxe first, but we want to start our turn holding a dagger. With only 1 free hand this is a bit challenging. 
+
+Now, if your DM is kind, they will rule that in taking the dual-wielder feat, we gain the ability to draw/stow two weapons with our object interaction on a turn. In this case, then we start our turn holding a dagger, stow it, make thrown weapon attacks starting with a handaxe, then draw a second dagger at the end of our turn. Problem solved. 
+
+If our DM is stricter, they might say: no dual-wielder just means you can draw/stow two weapons, rather than one, when you use your object interaction to draw/stow a weapon. So it doesn't allow you to stow a dagger at the beginning of your turn, then draw one at the end of your turn. In this case, we will just have to switch from throwing handaxes and daggers to just throwing daggers. This way we can just throw the dagger that we already have in hand at the beginning of our turn, then use our object interaction to draw a dagger to hold at the end of our turn. This would result in a 1 point reduction in our overall DPR. Alternatively, we could drop our shield, which would give us another free hand so that we can always be holding a dagger and still draw and throw a handaxe to start our attacks on each turn. This would result in a -2 to our base AC (down to 16). Personally, I think if I have to make a sacrifice, then I would take the minimal damage loss associated with switching over to exclusively throwing daggers (and ditching handaxes). 
+
+However you end up working it out, I think it certainly still worth it to have an on-demand +6 to our AC against melee attacks when we need it. We've been sitting on AC-18 for a while now (absent any boosts you might be getting from magic items, of course). This is ok, but not great for level-17. And we really want to be able to cast warding bond on our friends in order to tank damage for them. Defensive duelist is really going to help us out. With the Parry ability activated, we'll have an AC of 24 against melee attacks, which will significantly reduce the amount of damage we take. Plus, other than making opportunity attacks and using our channel-divinity: guided-strike ability, we really don't have any great uses for our reaction (if we're not raging, then guidance/resistanct are also on the table). So we should feel pretty comfotable using Parry whenever we need it. 
+
+
+
+#######
+Level-18: Barbarian-12 (Zealot), Fighter-2, Cleric-4 (War Domain) 
+ - action surge (x1/long rest) 
+ - second wind (2 uses; recover 1 on SR, all on LR) 
+   * BA heal = 1d10 + fighter-level (2) 
+   * tactical mind = expend SW to add d10 to failed ability check 
+
+NOTE: Alright, on the home stretch here. We're level 18 and we're gonna go back to fighter for the rest of the way. Going fighter-2 here gets us a few nice things. First we get the new `tactical mind' feature, which let's us expend uses of our second wind to add a d10 to a failed ability check (SW not expended if you still fail). This fits nicely into the skill-jockey part of our character, and gives us another way to boost key ability checks. Notably, since this isn't a spell, we can stack it on top of our primal knowledge feature that we use while raging. So that's nice. And, of course at fighter-2 we get action surge. Now, we only get one use per day, but using action surge will be super good for our character because of all the flat damage bonuses we have baked into our attacks. When we use action surge to take the Attack action again (which we should always do, barring extenuating circumstances), then we get to do the full: handaxe (light, vex) + dagger (light, nick) + trident (extra attack) combo again. This means we get to add our rage bonus and thrown weapon fighting bonus another 3 times, our STR modifier another 2 times, on top of the actual weapon damage. Yikes. Assuming we're still doing 69 damage with our basic attack combo, when we action surge we will be able to do an additional 35.5 damage with the additional attack. So 105.5 damage total. I mean, sure there are nova damage builds out there that do wayy more than this, but for a sustained DPR character, it's nice to have a kickass nova move in your back pocket. And getting over the century mark feels good. Ok, well that's all for level-18. Moving on. 
+
+
+
+#######
+Level-19: Barbarian-12 (Zealot), Fighter-3 (Battle-Master), Cleric-4 (War Domain) 
+ - second wind (2 uses; recover 1 on SR, all on LR) 
+   * BA heal = 1d10 + fighter-level (3) 
+   * tactical mind = expend SW to add d10 to failed ability check 
+ - subclass: battle-master  
+ - student of war
+   * + proficiency in 1 type of artisan's tools (weaver's tools)
+   * + proficiency in 1 fighter skill (insight) 
+ - skill proficiencies: 
+   * barbarian (2): athletics, intimidation    
+   * sunite temple guard (2): religion, perception
+   * skillful (human) (1): performance
+   * battle master (1): insight
+   * languages (3): common, common sign language, celestial
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, martial weapons
+   * armor: light/medium armor, shields
+   * tools: painter's supplies (sunite temple guard), viol (musician), 
+            weaver's tools (battle-master)
+ - battle-master maneuvers: 3
+   * commanding presence = add SD to intimidation, performance, or persuasion check 
+   * tactical assessment = add SD to history, investigation, or insight check 
+   * goading attack = add SD to damage, WIS save or disadvantage on attacks against others
+ - superiority die: 4d8
+
+NOTE: Ok, level-19 and we go fighter-3. We get our fighter subclass and we're going with battle-master. I think thematically, there are a number of ways to rationalize this choice. But I would probably say that, as we've embraced the unbridled strength of our barbarian side and the insightful religiosity of our cleric side, so too have we come to embody the kind of cultured warrior that epitomizes the ideals of our patron goddess. Battle master fits this concept to a tee. The other thing I would say is, this character has always been a kind of blending of opposites -- the rage and violence of barbarian, woven in with the healing, support, and artistry we acquired from cleric and other sources. Battle-master feels kind of like the blend of these two personas. In this way it feels like a perfect capstone subclass to take at the end of this character's progression. There also just aren't a lot of other fighter subclasses that make any sense for us. The only other one that I think is really worth a thought is the Champion subclass. Going champion would give us an improved critical ability (crit on 19 or 20), proficiency in athletics (we already have it), and an extra 5ft on our running long jump (woohoo). You might think the improved critical is really good, since we make a lot of attacks each turn. But we do half of those attacks with weapons that are on a d6 or d4 damage die. So critting on one of those would really only minimally increase our damage. In the end, the d8 superiority die that we're going to be able to add to our attacks  with battle-master maneuvers will actually give us more damage. So, yeah, battle-master it is. 
+
+In terms of features, we get two things from battle-master. First, we get the `student of war feature' which lets us pick one new skill proficiency and proficiency with one new type of artisan's tool. For the skill, I went with insight. I like insight since it means we have proficiency with two WIS skills (perception, insight) to balance our two CHA skills (intimidation, performance), and it feels like the kind of skill that we would develop as a result of the narrative progression that our character has followed. Sort of like -- as we've come to better understand ourselves, so too have we become more adept at reading others.  
+
+For the artisan's tools, I actually went with weaver's tools. It's all flavor at this point, so pick your favorites, but I wanted weavers tools so that our character could make their own  fly outfits. Plus, for some reason, when I think of this character's artistic side, I imagine them in a room draped in expensive fabrics, adorned with fine paintings, and filled with the beautiful sounds of their strumming on the viol. So weaver's tools lends something to this vision. 
+
+Finally, we of course get to pick 3 battle-master maneuvers, and we get 4d8 superiority die that we can use to fuel these maneuvers. There are a lot of interesting combat oriented options. Pushing attack could be really good to combine with forceful blow (from brutal strikes) to get a 30ft push. Disarming strike is really good if you are fighting enemies using weapons. But we haven't really been a battlefield controller throughout our career. That hasn't been a part of our identity. Instead, I chose: commanding presence, tactical assessment, and goading attack. The first two are pretty much strictly for use out of combat. Commanding presence lets us add a superiority die when we make a intimidation, performance, or perception check. And tactical assessment lets us do the same for insight checks, history checks, and investigation checks. What our character is getting from this subclass is a degree of refinement and sophistication. It's the grace and elegance that she has so long desired to embody as a devotee of Sune. Plus, with the addition of these maneuvers, it's actually very surprising how much of a skill jockey our character can be, and as a barbarian no less! 
+
+For example, take a skill that you would normally expect a barbarian to suck at, like investigation. And FWIW, at a baseline, with 8 INT, our character does suck at investigation. That said, with borrowed knowledge we can give ourselves proficiency in any skill, so let's give ourselves proficiency in investigation. That get's us to +4. Next, we use enhance ability to give ourselves Fox's Cunning, which gives us advantage on INT checks. Well, advantage on a d20 roll maths out to be a +4.5 on average. Ok, so we're up to +8.5. Now let's assume that we can add our tactical mind fighter ability to the roll. That's another d10, so +5.5 more, bringing us to +14. Next, let's use our tactical assessment battle-master ability to add another d8. That get's us to +18.5. And for the cherry on top, let's assume we use our reaction to give ourselves guidance, which gives us another d4 (2.5). That means that we can get a +21 on avg to an investigation roll as a freaking barbarian! I just love this. We can also stack skill buffs with our primal knowledge barbarian ability (though we can't combine enhance ability or guidance with primal knowledge since we can't concentrate while raging). Take intimidation, for example. We are already proficient, so we start at +4. If we're raging, primal knowledge let's us use STR instead of CHA, so we go up to +11. Now tack on tactical mind (5.5) and commanding presence (4.5) and we are getting a +21 to our intimidation checks. Interestingly, I think the skill we can max the most is actually insight. We start with a +8, can use enhance ability to get us up to +12.5, then tactical mind (+5.5), tactical assessment (+4.5) and guidance (+2.5), which would take us to +25. I mean these are some wild numbers. Now obviously, we have to use a lot of resources to boost ourselves up this much. But you tend to know in game when you're making high impact skill checks, and there aren't usually too many of them. So I think it's really awesome that our character can fill in this role. 
+
+As a final aside. For religion, we start at +6 (we're proficient and thaumaturge let's us add WIS to our religion checks). Enhance ability gets us to +10.5 and tactical mind + guidance gets us up to +18.5. Take that clerics! And for performance, we start at +4, can add 4.5 for eagle's splendor (enhance ability), 5.5 for tactical mind, 4.5 for commanding presence, and +2.5 for guidance, bringing us to +21. Take that, bards! Anyway, I think there's just a bunch of fun synergies across all our different multiclassed skills/abilities. And it makes this character sound so much fun to play. So that's why we're going with those two battlemaster maneuvers. 
+
+But of course, we can't just take out-of-combat stuff. And, in terms of the combat utility options, I think that goading attack is our best option. First, because we can use it with ranged attacks. Second, because we can kind of flavor it like a charm effect. Like our lovely presence and radiant attacks are so awe-inspiring that our enemies can't focus on anyone but us. Third, because we are a tank and want to encourage enemies to try and hit us so we can use our defensive duelist parry ability. Third, because it is probably a better and more general support option than any other available battle-master maneuver (e.g., bait and switch, disarming attack). And lastly because it adds more unconditional damage to our attacks without requiring any sort of action economy (i.e., it just `happens'). 
+
+In terms of damage, first let's assume that we already have rage and divine favor active. Then basically we have 5 variants of our main attack combo. The first one is the one we've been looking at all along, where we throw a handaxe, dagger, and then two tridents (one with a bonus action from the dual wielder feat). In this combo we only add our STR to two attacks, since we don't add it to the extra attack from Light/Nick, or the extra bonus action attack granted by dual wielder. Here's the calc for this basic sequence:   
+
+Basic Combo (no limited resources expended): 
+ - attack(1):handaxe_{brutal-strike} + attack(1):dagger(light, nick) +
+   attack(2):trident + BA: trident(dual-wielder)
+ - damage: 1d6 (handaxe) + 1d10 (brutal-strike) + 1d4 (dagger) + 2d8 (trident x2) + 
+           1d6+6 (divine-fury) + 10 (STRx2) + 12 (ragex4) + 10 (divine-favor x4) + 
+           8 (thrown-weapon fighting x4) 
+           = 70 damage
+
+Then, the second variant is if we use our War Priest ability to make our BA trident attack. When we do this, we get to add our STR modifier to our BA attack. This obviously ups the avg damage to 75. The third variant is if we also use a superiority die to do a goading attack, then we get to another d8, bringing the damage total to 79.5. The next two variants involve using Action Surge to do extra attacks. The first of these (4th variant, if you're counting along with me) is where we use War Priest, Goading Attack, and Action-Surge. Since we only have 1 BA per turn, and we can only make the extra attack granted by the Light/Nick interaction once per turn, when we action surge we actually maximize damage by just throwing two additional tridents. The damage calc for this combination looks like this:
+
+Action-Surge Combo (use War Priest, 1 superiority die for goading attack)
+ - attack(1):handaxe_{brutal-strike} + attack(1):dagger(light, nick) +
+   attack(2):trident + action-surge + attack(3):trident + attack(4):trident + 
+   BA: trident(war-priest)_{goading-attack}
+ - damage: 1d6 (handaxe) + 1d10 (brutal-strike) + 1d4 (dagger) + 4d8 (trident x2) + 
+           1d6+6 (divine-fury) + 25 (STRx5) + 18 (ragex6) +  15 (divine-favor x6) + 
+           12 (thrown-weapon fighting x6) + 1d8 (goading-attack)
+           = 113.5 damage
+
+Finally, since we aren't restricted in the number of times we can use battle-master maneuvers on a turn, if we wanted to empty the clip and just do as much damage as possible on a single turn, then we could add goading attacks to 4 of the attacks we make in this combo. This would obviously add an additional 3d8 damage to the combo above. So our maximum damage combo would do 127 damage, on average, if everything hits. Overall, we end up in the `good' to `very good' range for both sustained DPR and nova damage, all while having some great secondary tanking and support abilities, as well as the ability to do some crazy things with skill checks outside of combat. So yeah, I think we're super happy with how this character has shaped up. 
+
+ 
+
+#######
+Level-20: Barbarian-12 (Zealot), Fighter-4 (Battle-Master), Cleric-4 (War Domain) 
+ - second wind (3 uses; recover 1 on SR, all on LR) 
+   * BA heal = 1d10 + fighter-level (4) 
+   * tactical mind = expend SW to add d10 to failed ability check 
+ - feat: resilient (DEX=16) 
+ - saving throw proficiencies: STR, CON, WIS, DEX
+
+NOTE: Alright, level-20 and we go fighter-4. We get another (3rd) use of second wind. Great. We also technically get another (4th) weapon mastery from the fighter class. But we already have 4 from barbarian so that doesn't do anything for us. Obviously, the main draw of going fighter 4 here is the ASI/feat. There are a couple appealing options. First we have the generalist level-20 epic boons that we qualify for: (i) epic boon of fortitude, and (ii) epic boon of skill proficiency. The former would give us an additional 40hp, and the latter would give us proficiency in all skills. Both are on-brand for our character, but also somewhat redundant, I think. We could also take medium armor master to boost our DEX and make our baseline AC equal to 19. But again, this is kind of redundant -- since I think we've done a lot for our AC with the defensive duelist feat. 
+
+Instead, I think the best way to boost our tankiness is to take the resilient feat again, and this time boost our DEX (to 16) and give ourselves proficiency in 
+DEX saves. DEX saves are very common, and are often associated with some of the hardest hitting abilities/spells in the game (e.g., a dragon's breath weapon). Honestly, not having higher DEX or proficiency in DEX saves has probably been our biggest vulnerability up until this point. We've been trying to cover for it with danger sense, fanatical focus, zealous presence, heroic inspiration, and the resistance cantrip. But even with all that, taking resilient (DEX) here boosts our DEX save from a measly +2 to a +9. In combination with our other abilities, this just adds a ton to our overall durability. It also means that here at level-20 we have proficiency in all the most important saves in the game (STR, DEX, CON, WIS), which feels nice.  
+
+
+Alright, and that's it for the build. Another pretty great one in the books! I would love to play this character!
+
+
+
+
+
+
+
+
+
+##################################################################################################################
+EXTRA NOTES
+
+Classes: Barbarian (Zealot) - 12 / Fighter (Champion) - 4 / Cleric (War) - 4
+
+Patron: Sune
+ - Names: Lady Firehair, The Princess of Passion, Goddess of Beauty and Love
+ - Domains: Life, Light
+
+
+Background: Farmer 
+ - ability scores: STR, CON, WIS 
+ - Feat: Tough 
+ - Skill proficiencies: animal handling and nature 
+ - Tool proficiency: carpenter's tools 
+ - Equipment: 50 gp
+
+ASI/Feats: 
+ - Dual Wielder (STR+1) 
+ - Defensive Duelist (DEX+1) 
+ - ASI: STR+2
+ - Resilient (+1 WIS)  
+ - ASI: INT+1, CON+1
+
+
+PROGRESSION OVERVIEW 
+ - lvl-1: barbarian-1 
+ - lvl-2: barbarian-2
+ - lvl-3: barbarian-3 (zealot, primal knowledge) 
+ - lvl-4: barbarian-4 (dual wielder, STR=18) 
+ - lvl-5: barbarian-5 (extra attack, fast movement) 
+ - lvl-6: barbarian-5, fighter-1 (second wind, thrown weapon fighting) 
+ - lvl-7: barbarian-5, fighter-1, cleric-1 
+ - lvl-8: barbarian-5, fighter-1, cleric-2 
+ - lvl-9: barbarian-5, fighter-1, cleric-3 (war domain: divine favor, magic weapon)
+ - lvl-10: barbarian-5, fighter-1, cleric-4 (defensive duelist, DEX=14)
+ - lvl-11: barbarian-6, fighter-1, cleric-4 (4 rages per day, fanatical focus) 
+ - lvl-12: barbarian-7, fighter-1, cleric-4 (feral instinct, instinctive pounce) 
+ - lvl-13: barbarian-8, fighter-1, cleric-4 (STR=20) 
+ - lvl-14: barbarian-9, fighter-1, cleric-4 (brutal strikes, rage bonus +3) 
+ - lvl-15: barbarian-10, fighter-1, cleric-4 (zealous presence) 
+ - lvl-16: barbarian-11, fighter-1, cleric-4 (relentless rage) 
+ - lvl-17: barbarian-12, fighter-1, cleric-4 (resilient, WIS=14) 
+ - lvl-18: barbarian-12, fighter-2, cleric-4 (action surge, tactical mind) 
+ - lvl-19: barbarian-12, fighter-3, cleric-4 (champion, improved critical, remarkable athlete) 
+ - lvl-20: barbarian-12, fighter-4, cleric-4 (epic boon of recovery, CON=16)
+
+
+Dual Wielder
+ Prereq: STR or DEX >= 13
+ ASI: STR or DEX + 1 
+ Enhanced Dual Wielding: When you take the attack action on your turn and attack with a weapon that has the 
+ Light property, you can make one extra attack as a Bonus Action later on the same turn with a different weapon. 
+ This weapon must be a melee weapon that lacks the two-handed property. You don't add your ability modifier to 
+ the extra attack's damage unless that modifier is negative. 
+ Quick Draw: You can draw or stow two weapons that lack the two-handed property when you would normally be able 
+ to draw or stow only one 
+ NOTE: This works with a light hammer (light, thrown, nick) and a handaxe (light, thrown, vex), and dagger (finesse, light, thrown, nick)
+
+Light 
+ When you take the Attack action on your turn and attack with a light weapon, you can make one extra attack as 
+ a Bonus Action later on the same turn. That extra attack must be made with a different Light weapon, and you 
+ don't add your ability modifier to the extra attack's damage, unless that modifier is negative. 
+
+Nick
+ When you make the extra attack of the Light property, you can make it as part of the Attack action, 
+ instead of as a Bonus Action. You can still make this extra attack only once per turn. 
+
+Thrown
+ If a weapon has the Thrown property, you can throw the weapon to make a ranged attack, and you 
+ can draw that weapon as part of the attack. If the weapon is a melee weapon, you must use the same 
+ ability modifier for that attack roll and damage roll that you would use for a melee attack with the
+ weapon. 
+
+Thrown Weapon Fighting 
+ You can draw a weapon that has the thrown property as part of the attack you make with the weapon. 
+ In addition, when you hit with a ranged attack using a thrown weapon, you gain a +2 to the damage roll
+
+Ok so say you have dual wielder and thrown weapon fighting: 
+ - take the Attack action
+ - draw and throw a dagger
+   * dagger has the Light property so you get to make the extra attack 
+   * dagger has the Nick property, so you get to make the extra attack as part of your Attack action 
+ - draw and throw a different dagger
+   * thrown weapon fighting lets you draw as part of the attack you make with the weapon 
+   * it's a `different weapon' than the one you used to make the initial attack, and it 
+     also has the Light property, so it satisfies Light
+ - Bonus Action: draw and throw a trident/javelin 
+   * dual wielder lets you make an attack with a non-light, non-two-handed melee weapon as a Bonus Action 
+   * thrown weapon fighting lets you draw as part of the attack action 
+   
+NOTE: So this let's you do 3 attacks with thrown weapons with only 1 attack. You would be able to do 4 if you had extra attack. Thrown weapon fighting would add +2 damage to each attack. If you're a barbarian and you're raging, you would add your rage bonus to each of these attacks as well. If you have cast divine favor on yourself beforehand, this would be an additional d4 on each weapon attack (so: STR(5) + rage(3) + ThWF(2) + DF(2.5) = 12.5 on each attack),  
+
+NOTE: Since thrown-weapon fighting lets you draw and attack simultaneously, you don't need to have weapons in your hands to do this. So you can hold a shield, or an arcane focus and still do this combo. 
+
+Defensive Duelist 
+ Prereq: DEX >= 13
+ ASI: DEX +1 
+ Parry: If you're holding a Finesse weapon and another creature hits you with a melee attack, you can take a 
+ Reaction to add your Proficiency Bonus to your Armor Class, potentially causing the attack to miss you. You 
+ gain this bonus to your AC against melee attacks until the start of your next run. 
+
+NOTE: This doesn't say anything about not wielding a different weapon or shield in your other hand. So you if you start/end your turn with a dagger in your hand, then you'll have this optional bonus to AC. 
+
+Multiclass into paladin to get divine favor -- updated version of this spell doesn't require concentration, so you can cast it, then rage and deal another d4 damage with all your weapon attacks. 
+
+Divine Favor 
+ - level-1 transmutation (paladin) 
+ - casting time: Bonus Action 
+ - range: self 
+ - components: V,S
+ - duration: 1 minute 
+ - description: until the spell ends, your attacks with weapons deal an extra 1d4 radiant 
+   damage on hit. 
+
+
+
+ALTERNATIVE BACKGROUNDS 
+Background: Guide 
+ - ability scores: DEX, CON, WIS 
+ - feat: magic initiate (druid) 
+ - skill proficiencies: stealth, survival 
+ - tool proficiency: cartographer's tools 
+ - equipment: 50 gp
+
+Background: Hermit 
+ - ability scores: CON, WIS, CHA 
+ - feat: healer 
+ - skill proficiencies: medicine, religion 
+ - tool proficiency: herbalism kit 
+ - equipment: 50 gp
+
+Background: Noble 
+ - ability scores: STR, INT, CHA 
+ - feat: skilled 
+ - skill proficiencies: history, persuasion
+ - tool proficiency: gaming set 
+ - equipment: 50 gp
+
+Background: Sailor 
+ - ability scores: STR, DEX, WIS 
+ - feat: tavern brawler 
+ - skill proficiencies: acrobatics, perception 
+ - tool proficiency: navigator's tools 
+ - equipment: 50 gp
+
+Background: Soldier
+ - ability scores: STR, DEX, CON 
+ - feat: savage attacker 
+ - skill proficiencies: athletics, intimidation 
+ - tool proficiency: gaming set 
+ - equipment: 50 gp 
+
+
+
+ 
+
+
+ 

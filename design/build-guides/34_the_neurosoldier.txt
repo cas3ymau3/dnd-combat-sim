@@ -1,0 +1,623 @@
+Moniker: The Neurosoldier 
+Classes: Artificer-04 (Armorer), Rogue-04 (Arcane Trickster), Psion-12 (Metamorph) 
+Species: Dwarf 
+ - size: medium 
+ - speed: 30ft 
+ - darkvision: 120ft 
+ - dwarven resilience: resistance to poison dmg; adv on saves to prevent/end poisoned condition 
+ - dwarven toughness: +1 HP each time you gain a level 
+ - stonecunning: BA tremorsense 60ft (10m dur); PB x/LR (only works on stone)  
+Sex: Male 
+Background: Guard 
+ - ability scores: STR, INT, WIS 
+ - feat: alert 
+ - skills: athletics, perception 
+ - tools: gaming set (dragonchess) 
+ - languages: common, common sign language, dwarvish
+ - equipment (gold buy): 50gp
+Point-Buy Stats 
+ - STR = 14 (+1) = 15 
+ - DEX = 14 
+ - CON = 12 
+ - INT = 15 (+2) = 17 
+ - WIS = 08 
+ - CHA = 08
+ASI's/Feats: 
+ - lvl-00: alert
+ - lvl-05: war-caster: +1 INT (INT=18)
+ - lvl-10: ASI: +2 INT (INT=20)
+ - lvl-14: shield master: +1 STR (STR=16) 
+ - lvl-16: sharpshooter: +1 DEX (DEX=15) 
+ - lvl-20: resilient (DEX): +1 DEX (DEX=16) 
+Progression Summary
+ - lvl-01: artificer-01 --> CON save proficiency, med-armor/shields 
+ - lvl-02: artificer-01, rogue-01 --> expertise, sneak attack, thieves' cant, weapon mastery
+ - lvl-03: artificer-02, rogue-01 --> replicate magic item (+1 shield, manifold tool) 
+ - lvl-04: artificer-03 (armorer), rogue-01 --> heavy armor; infiltrator (lightning launcher)  
+ - lvl-05: artificer-04 (armorer), rogue-01 --> fey-touched: +1 INT (INT=18), hex, misty-step (free x1/LR)
+ - lvl-06: artificer-04 (armorer), rogue-02 --> cunning action 
+ - lvl-07: artificer-04 (armorer), rogue-02, psion-01 --> psionic power (4d6), subtle telekinesis 
+ - lvl-08: artificer-04 (armorer), rogue-02, psion-02 --> psionic modes, psionic disciplines (2): precognition, backlash 
+ - lvl-09: artificer-04 (armorer), rogue-02, psion-03 (metamorph) --> metamorph spells (1,2), organic weapons, extend limbs 
+ - lvl-10: artificer-04 (armorer), rogue-02, psion-04 (metamorph) --> ASI: +2 INT (INT=20) 
+ - lvl-11: artificer-04 (armorer), rogue-02, psion-05 (metamorph) --> metamorph spells (3), psionic restoration, psionic power (6d8)
+ - lvl-12: artificer-04 (armorer), rogue-02, psion-06 (metamorph) --> extra attack, quickened healing 
+ - lvl-13: artificer-04 (armorer), rogue-02, psion-07 (metamorph) --> metamorph spells (4); psionic surge 
+ - lvl-14: artificer-04 (armorer), rogue-02, psion-08 (metamorph) --> shield master: +1 STR (STR=16) 
+ - lvl-15: artificer-04 (armorer), rogue-03 (trickster), psion-08 (metamorph) --> steady aim, spellcasting, mage-hand legerdemain
+ - lvl-16: artificer-04 (armorer), rogue-04 (trickster), psion-08 (metamorph) --> sharpshooter: +1 DEX (DEX=15) 
+ - lvl-17: artificer-04 (armorer), rogue-04 (trickster), psion-09 (metamorph) --> metamorph spells (5); psionic power (8d8)
+ - lvl-18: artificer-04 (armorer), rogue-04 (trickster), psion-10 (metamorph) --> mutable form, psionic disciplines (4): precog, backlash, bio, aim
+ - lvl-19: artificer-04 (armorer), rogue-04 (trickster), psion-11 (metamorph) --> lvl-06 spells, psionic power (8d10) 
+ - lvl-20: artificer-04 (armorer), rogue-04 (trickster), psion-12 (metamorph) --> resilient (DEX): +1 DEX (DEX=16)
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `artificer-psion-rogue'
+ - lvl-01: slots = 2; prepared: 2-0-0; max level: 1-0-0 
+ - lvl-02: slots = 2; prepared: 2-0-0; max level: 1-0-0 
+ - lvl-03: slots = 2; prepared: 3-0-0; max level: 1-0-0
+ - lvl-04: slots = 3; prepared: 4-0-0; max level: 1-0-0
+ - lvl-05: slots = 3; prepared: 5-0-0; max level: 1-0-0 
+ - lvl-06: slots = 3; prepared: 5-0-0; max level: 1-0-0 
+ - lvl-07: slots = 4-2; prepared: 5-4-0; max level: 1-1-0
+ - lvl-08: slots = 4-3; prepared: 5-5-0; max level: 1-1-0
+ - lvl-09: slots = 4-3-2; prepared: 5-6-0; max level: 1-2-0
+ - lvl-10: slots = 4-3-3; prepared: 5-7-0; max level: 1-2-0
+ - lvl-11: slots = 4-3-3-1; prepared: 5-9-0; max level: 1-3-0
+ - lvl-12: slots = 4-3-3-2; prepared: 5-10-0; max level: 1-3-0 
+ - lvl-13: slots = 4-3-3-3-1; prepared: 5-11-0; max level: 1-4-0
+ - lvl-14: slots = 4-3-3-3-2; prepared: 5-12-0; max level: 1-4-0
+ - lvl-15: slots = 4-3-3-3-2-1; prepared: 5-12-3; max level: 1-4-1
+ - lvl-16: slots = 4-3-3-3-2-1; prepared: 5-12-4; max level: 1-4-1
+ - lvl-17: slots = 4-3-3-3-2-1-1; prepared: 5-14-4; max level: 1-5-1
+ - lvl-18: slots = 4-3-3-3-2-1-1; prepared: 5-15-4; max level: 1-5-1
+ - lvl-19: slots = 4-3-3-3-2-1-1-1; prepared: 5-16-4; max level: 1-6-1
+ - lvl-20: slots = 4-3-3-3-2-1-1-1; prepared: 5-16-4; max level: 1-6-1
+
+MECHANICAL CONCEPT NOTES
+ - use armorer and metamorph subclass to use multiple weapons during attacks on your turn, while still carrying a shield 
+ - build weapon damage scaling with sneak attack, hex, and extra damage from lightning launcher/viscera launcher 
+ - initially use faerie fire to gain advantage, then use cunning-action::hide or weave in attacks with a quarterstaff (topple) 
+   where we leverage an early rogue level for weapon mastery 
+ - gain extra damage on BA through psionic-discipline::swift-precognition, which lets you cast true-strike as a BA (1 die) 
+ - eventually get extra attack + cantrip through metamorph, allowing for multiple attack combos that generate advantage 
+ - once you get shield master, use flesh-maul to impose disadv. on STR/CON saves, then shield master to knock prone
+   granting adv on next melee attack (procing sneak attack) 
+ - once you get sharpshooter, you can do: attack(1):flesh-maul + shield-bash + attack(2)::true-strike::lightning-launcher
+   leaving your BA and concentration free to deal extra damage or gain extra utility (e.g., through fly/greater invisibility, etc.) 
+ - in general, use class features/swift precognition for damage in combat and take spells that add to defenses/utility 
+ - use psionic-mode (defense) to boost defenses against weak WIS save 
+ - once you are psion-10 and get the mutable form feature, you can use all the different versions of that (situationally) including 
+   the stony epidermis variant
+ - dump CON in point buy, and rely on proficiency and (eventually) stony epidermis for CON save; notably the build isn't super dependent 
+   on a critical concentration spell, so this feels ok. Going dwarf makes the associated hit to our total HP less severe (we gain HP as 
+   if we had CON=14).
+ - build defense by getting into heavy armor as an armorer, and using magic item plans to make a +1 shield; kiting in/out of combat 
+   with cunning actions, and eventually get haste/mutable form which you can use to give yourself an additional +2/+4 to AC 
+ - also use psionic backlash to avoid taking hits, and going metamorph gives us access to good healing abilities (BA cure wounds, aura of vitality, etc.)
+ - in the endgame, when we get arcane trickster, we can combine fog-cloud with dwarven tremorsense to fight enemies while they're blinded 
+   (just a fun little gimmick); going trickster also gives us access to the shield spell, which can help spare our psionic dice for more 
+   swift precognition attacks 
+ - we finish out with resilient DEX for its synergy with shield master, giving us a slightly worse version of evasion (consumes reaction), 
+   which makes us feel more `rogue-like'; could also do an epic boon. 
+
+THEMATIC CONCEPT NOTES: 
+ - ghost in the shell + neon genesis evangelion + smoke/predator from mortal combat + cyberpunk 2077
+ - have one `weapon arm' and one `shield arm' on your armorer suit, where the weapon arm 
+   transforms into a bunch of different things (manifold tool, organic weapons, lightning launcher, quarterstaff, rapier) 
+ - have organic weapons deal psychic dmg so your primarily dealing psychic and lightning dmg with weapon attacks 
+ - the psionic abilities come through an emergent symbiosis with the armor, which has a sentient and organic nature, as well 
+   as being an inorganic object; play this like evangelion/ghost in the shell, where `suiting up' into the armor eventually 
+   involves a mental/psionic linkage 
+ - you are a scientist/artisan who becomes a bionic assassin and a mechanically enhanced android super soldier 
+ - a tragic event in your past has driven you into solitude, where you focus on your work and become a part of some 
+   new advanced initiative that is organized through one of the institutions in the game world. 
+ - alignment wise, I think you can do whatever, but I would lean towards lawful-neutral or even lawful-evil 
+ - you could also go more lawful good if you leaned into the ghost in the shell (police/crime fighting) angle, also a la 
+   minority report; where you use psionic enhancements to thwart evildoers 
+ - aesthetics: shadow/darkness, smoke, necrotic, psychic, stealth, mental inhibition, arcano-technological enhancement of physical body 
+ - themes: groundbreaking/transgressive ingenuity, forbidden technology/profane arcana, ghost in the machine (sentient tech)
+ - traits: reckless, brilliant, aloof, cold/uncaring, decisive, inquisitive, unflappable, determined, bereaved, lonely, depressed 
+
+SYNERGISTIC MAGIC ITEMS: 
+ - common:
+ - uncommon: 
+ - rare: 
+ - very rare: 
+ - legendary: 
+ - artifact: 
+   
+MAX LEVEL MAGIC ITEMS
+- lvl-20 (~6 items, max 1 legendary/artifact)   
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+#######
+Level-01: Artificer-01
+ - feat: alert 
+   * initiative proficiency: add proficiency bonus to initiative 
+   * initiative swap: non-incapacitated ally can switch places in initiative order with you    
+ - saving throw proficiencies: CON, INT    
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * artificer (2): arcana, investigation     
+   * guard (2): athletics, perception 
+   * tools (4): gaming set (dragonchess), thieves' tools, tinker's tools, smith's tools   
+   * languages (3): common, common sign language, dwarvish  
+ - weapon/armor proficiencies:  
+   * weapons: simple weapons
+   * armor: light/medium armor + shields  
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (guard) + 150gp (artificer)
+   * weapons: rapier (25gp), hand-crossbow (75gp), case of crossbow bolts x3 (3gp)
+   * armor: chain shirt (50gp), shield (10gp) 
+   * tools: smith's tools (20gp) 
+   * foci: arcane-focus::staff (5gp)
+   * gear: explorer's pack (10gp), traveler's clothes (2gp)
+   * spare coin: 0 gp
+ - combat equipment:
+   * weapon: staff (quarterstaff) = 1d6 bludgeoning; versatile (1d8)
+   * armor: chain-shirt  
+   * AC: 13 + 2(DEX) = 15
+ - tinker's magic  
+   * while holding tinker's tools, can create item from list using magic action (xINT/LR) 
+   * item lasts until you finish a LR
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, true-strike 
+   * tinker's magic (1): mending 
+ - spell slots: 2 
+ - spells prepared: artificer (2)
+   * lvl-1 (artificer): faerie fire, false life  
+
+NOTE: Pick up rapier and hand-crossbow with starting equipment (even aren't proficient with them right now) and forgo tinker's tools (since they cost 50gp, and we get manifold tool soon). This means we can't use tinker's magic, but whatever, it's level-01. We also can't use our shield yet, since we need a free hand to hold our smith's tools to cast any of our artificer spells (including true-strike). So we hold our smith's tools in one hand, then cast true-strike, draw our staff as part of the attack, then use our object interaction (free action) to stow our staff again at the end of our turn. For cantrips, we take guidance and true-strike. For spells, we take faerie fire and false life. In combat, we cast faerie fire on turn 1, then wade into melee (maybe with some extra HP from false life) and make true-strike attacks at advantage. Alert feat as an origin feat means that even with DEX=14, we should start off early in combat, which makes faerie fire more useful to our allies. For skills, arcana and investigation from artificer seem the best, along with smith's tools. We could have taken sleight of hand, which would have allowed us to be a bit more rogueish starting at lvl-02, but in general I think arcana is more thematic for our character. If we really need to pick a lock, we will be ok at it (and we have guidance), but that's not our main thing. For the tools, smith's tools are the most thematic for us, and we can use them to try and pry open doors if we have to, as well. Our STR isn't bad, so along with our proficiency, we'll be decent when we use them. 
+
+
+
+#######
+Level-02: Artificer-01, Rogue-01  
+ - skill/tool proficiencies (* indicates expertise): 
+   * artificer (2): arcana, investigation     
+   * guard (2): athletics, perception* 
+   * rogue (1): stealth*
+   * tools (4): gaming set (dragonchess), thieves' tools, tinker's tools, smith's tools   
+   * languages (3): common, common sign language, dwarvish, thieves' cant  
+ - weapon/armor proficiencies:  
+   * weapons: simple weapons, martial weapons w/light property
+   * armor: light/medium armor + shields  
+ - combat equipment:
+   * weapon (ranged): hand-crossbow = 1d6 piercing (vex); ammunition (range 30/120), loading, light
+   * weapon (melee): rapier = 1d8 piercing (vex); finesse 
+   * armor: chain-shirt  
+   * AC: 13 + 2(DEX) = 15
+ - sneak attack (1d6) 
+ - weapon masteries (2): 
+   * hand-crossbow = 1d6 piercing (vex); ammunition (range 30/120), loading, light
+   * rapier = 1d8 piercing (vex); finesse 
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, true-strike 
+   * tinker's magic (1): mending 
+ - spell slots: 2 
+ - spells prepared: artificer (2)
+   * lvl-1 (artificer): faerie fire, false life 
+
+NOTE: Go rogue to pick up stealth proficiency, and then expertise in stealth and perception. Alternatively, you could go with expertise in arcana/investigation instead of perception if you have other good lookouts in your party. But given the rogues' tendency to venture out on their own when scouting, I think that having expertise in perception is more valuable (particularly for a lone wolf character). Plus even without expertise, with our high INT we'll have very nice bonuses to arcana/investigation checks. Rogue also gives us proficiency with martial weapons with the light or finesse properties, which includes the hand crossbow and rapier. So now we can use these two weapons as our go to for ranged/melee combat, respectively. We also get two weapon masteries and for now we'll use them on the hand crossbow and rapier, which gives us another way to generate advantage when we attack (in addition to faerie fire). Given our low-ish HP and AC, I think our go-to strategy in combat should now be to hang back and make true-strike ranged attacks with our hand crossbow. We can still use faerie fire on turn-01 if we have the slots available, but we can also generate advantage through the vex mastery property. Both of these should allow us to gain an additional 1d6 sneak attack damage on most of our attacks, bringing our damage up to 2d6+INT (10) on hit. Not bad. If we end up stuck in melee, we can do the same thing with our rapier and do a bit more damage (11). 
+
+
+
+
+#######
+Level-03: Artificer-02, Rogue-01 
+ - replicate magic item 
+   * plans known (4): +1 weapon, +1 shield, manifold tool, wand of secrets 
+   * magic items (2): +1 weapon, manifold tool 
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, true-strike 
+   * tinker's magic (1): mending 
+ - spell slots: 2 
+ - spells prepared: artificer (3)
+   * lvl-1 (artificer): detect magic (R), faerie fire, false life 
+
+NOTE: Ok so we go artificer-02 and we get replicate magic item. For plans we go with +1 weapon, +1 shield, manifold tool and wand of secrets. Note, that making things with replicate magic item requires Tinker's Tools. So ideally we can find some tinker's tools to borrow. Alternatively we can sell our smith's tools to try and buy a set of Tinker's tools (50gp) and then immediately resell them. Hopefully your DM doesn't make this too hard. Anyway, for our first magic item we're going to make a manifold tool and attune to it. The manifold tool can serve as any artisan tool we want (including Tinker's tools, Thieves' tools, and Smith's tools). And we are automatically proficient with any tools we create with it. This brings our tinker's magic feature online, and greatly enhances our out of combat utility if we make smart use of all the different artisan's tools in the game (ex. using mason's tools to chisel a hole through a stone wall, using cobbler's tools to give ourselves advantage on acrobatics checks, using glassblower's tools to discern what a glass container contained, using woodcarvers tools to craft bolts for our hand crossbow, etc.). Then for our second magic item, we'll want to make ourselves a +1 hand crossbow with the +1 weapon plan. This gives us a small boost to our damage in our default ranged playstyle. For our other magic item plans, we take +1 shield and wand of secrets. We will start using the shield next level, and the wand of secrets -- which can be used to identify traps/secret doors -- can be good if we know we are on a pure scouting mission/won't be getting into combat. But in general it's pretty situational. If there's something better for another member of your party (e.g, goggles of night for someone lacking darkvision) then take that plan instead. At artificer-02 we also get one new spell preparation. For this, just take detect magic since it's a ritual and it's useful. We still only have 2 spell slots and we'd prefer to use those casting faerie fire and false life. 
+
+
+
+
+#######
+Level-04: Artificer-03 (Armorer), Rogue-01 
+ - skill/tool proficiencies (* indicates expertise): 
+   * artificer (2): arcana, investigation     
+   * guard (2): athletics, perception* 
+   * rogue (1): stealth*
+   * tools (5): gaming set (dragonchess), thieves' tools, tinker's tools, smith's tools, calligrapher's supplies  
+   * languages (3): common, common sign language, dwarvish, thieves' cant  
+ - weapon/armor proficiencies:  
+   * weapons: simple weapons, martial weapons w/light property
+   * armor: light/medium/heavy armor + shields  
+ - combat equipment:
+   * weapon (ranged): lightning launcher = 1d6 lightning; thrown (range 90/300) 
+   * armor: chain-mail + shield(+1)
+   * AC: 16 + 3(shield) = 19
+ - arcane armor: 
+   * as a magic action, transform a suit of armor you're wearing into arcane armor 
+   * no STR requirement: if the armor normally has a STR requirement, it lacks this for you 
+   * quick don/doff: you can don/doff the armor with the utilize action
+   * second skin: armor covers whole body, can't be removed against will, retractable helmet, serves as prosthetic limbs
+   * spellcasting focus: you can use the armor as a spellcasting focus for your artificer spells 
+ - armor model (infiltrator) 
+   * lightning launcher = simple ranged weapon; 1d6+INT lightning on hit; thrown (range 90/300)
+   * lightning jolt = x1/turn when you hit w/lightning launcher, deal extra 1d6 lightning dmg 
+   * powered steps = speed increases by 5ft 
+   * dampening field = adv on DEX (stealth) checks (cancels heavy armor disadv)
+ - replicate magic item 
+   * plans known (4): +1 weapon, +1 shield, manifold tool, wand of secrets 
+   * magic items (2): +1 shield, manifold tool
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, true-strike 
+   * tinker's magic (1): mending 
+ - spell slots: 3 
+ - spells prepared: artificer (4)
+   * lvl-1 (artificer): detect magic (R), faerie fire, false life, jump 
+   * lvl-1 (armorer): magic missile, thunderwave
+
+NOTE: Ok we go artificer-03 and we get our subclass: the armorer. First off we gain proficiency with another set of artisan's tools. I took calligrapher's supplies so that we can make spell scrolls but since we're currently using the manifold tool, this really doesn't matter. We also gain proficiency with heavy armor which allows us to move into chain mail. FWIW, with smith's tools we can craft a suit of chain mail on our own over 4 days and with 32.5gp of raw materials. Or we can just sell stuff in order to raise 75gp and buy it somewhere (if it's available). Either way, chain mail gives us a base AC of 16 which we will boost up to 19 with a +1 shield. Huuge boost to our survivability, very nice. Next we get the arcane armor feature, which essentially allows us to transform our new chain mail into special armor with additional feature (quick don/doff, no STR requirement, second-skin). All of these are nice/cool, but the one we really care about is that it lets us use the armor as a spellcasting focus for our artificer spells. So we no longer need to hold smith's tools a fee hand to cast artificer spells. Amazing. For our armor model, we're going to go with infiltrator. This gives us a few nice perks, including an extra 5ft of movement speed, and heavy armor that doesn't impose disadvantage on our stealth checks (so for use, we'll have a straight roll with expertise in stealth). But the main reason we love the infiltrator is because it gives us the lightning launcher weapon. Right, so the reason we really like the lightning launcher is because -- unlike many other weapons that are granted as part of a subclass (such as the soul knife's psychic blades or, yes, even the metamorph's organic weapons) -- we can use it with true-strike. So I am pretty confidents this works with RAW, but it does require a careful reading. So let's talk about it. First off, the launcher is built into our armor so it doesn't occupy a free hand (even though when I imagine it I imagine shooting lighting from our fist with something like a mega-man blaster). This means we can hold a shield in one hand and still have a hand free for the somatic components of true-strike. Second, the material component of true-strike is specified as 'a weapon with which you have proficiency and which is worth at least 1CP'. Ok so we're definitely proficient with the lightning launcher, so check on that box. Next, in the armorer subclass text the weapon is specifically described as being part of our armor, and our armor definitely has value of more than 1CP. So I would argue that the lightning launcher fulfills all the requirements for true-strike. As far as I can tell, the armor weapons are unique in this way, as many of the `weapons' that are granted as part of a species/subclass don't have a gold value (e.g., soul-knife psychic blades, metamorph organic weapons). So it's nice that we can take advantage of that here. Now a persnickety DM might say that the armor has value but the armor is only a weapon to you and not anyone else and so it doesn't qualify for the material component of the spell. So definitely check first. But I in my view it's a very reasonable argument and a pertinent one since, as Colby of the D4 channel has pointed out in a recent video, these built in weapons often kind of suck since they have no inherent scaling built in. Being able to use the lightning-launcher (or any other armorer weapon) with true-strike remedies that problem. Ok so given all that, we can now (i) wear heavy armor, (ii) carry a shield, and (iii) make true-strike attacks with our lightning-launcher. Of course, here at level-04 the only thing true-strike does is let us change the damage type of the launcher to radiant (if we want) since we can use INT for our lightning-launcher attacks by default and true-strike doesn't confer any extra damage until we get cantrip scaling. But that's going to change next level. In addition, sine the lightning launcher is a ranged weapon, it also qualifies for sneak attack if/when we attack with advantage. Adding in the lightning jolt ability, this means we can deal 3d6 + INT (13.5) dmg if we manage to sneak attack with the launcher, which is exactly the same damage a lvl-04 rogue would do using a hand crossbow. Nice. Alright, moving on. Since we're going to use the lightning launcher for our attacks, we drop our +1 crossbow (sell it if you need the money for chain mail) and switch our magic items to a +1 shield and the manifold tool. Finally, going armorer also gets us one new spell preparation and a few bound spells. For the bound spells we get magic missile and thunderwave. Neither is particularly great, but can be good in certain situations. And, hey, we'll take free spells whatever they are. For our preparation we're going to take the jump spell. We still probably want to save our slots for faerie fire and false life. But jump is a great option for additional mobility, and it's only a BA to cast. Awesome. 
+
+
+
+
+#######
+Level-05: Artificer-04 (Armorer), Rogue-01 
+ - proficiency bonus (PB): +3 
+ - cantrip scaling
+   * true-strike: 1d6
+ - fey-touched 
+   * ASI: +1 INT (INT=18) 
+   * fey-magic: hex, misty step (free x1/LR) 
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, true-strike 
+   * tinker's magic (1): mending 
+ - spell slots: 3 
+ - spells prepared: artificer (5)
+   * lvl-1 (artificer): detect magic (R), faerie fire, false life, feather fall, jump 
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (fey-touched): hex (free x1/LR) 
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+
+NOTE: Alright, level-05 and we go artificer-04. We get a proficiency bonus increase and get cantrip scaling on our true-strikes. We also get to take a feat and we go with fey-touched. Now I don't love the thematic consistency here, so I would probably re-flavor this somehow, but mechanically we need this specific feat for this build. So we take fey-touched and we bump our INT to 18, increasing our chance to hit and damage. We also get misty step for free x1/LR (nice) and then we take hex, which we can also cast for free x1/LR. And at this point, we should make hex our go-to concentration spell. Now, this means no more faerie fire, which means no built in source of advantage allowing us to proc sneak attack. But there's no save against hex, and it's the same damage as sneak attack on hit. And starting next level we will be able to gain advantage and get both. Hex also lets us get into our damage faster, since it's only a BA to cast. Right now, we can cast hex then true-strike with our lightning launcher to deal 4d6+INT (18) dmg, exactly the same as a lvl-05 rogue. But we have AC-19, spellcasting, and a lot of utility through our manifold tool. So that's pretty cool. In addition, with 4 uses of hex (3 slots, 1 free cast) we should be able to cast hex at the start of each combat. Obviously, the downside is that we have to protect our concentration, and can only deal extra damage to hexed targets. But I like that we've been able to scale damage while building strong defensive capabilities through artificer levels. Finally, we also get another spell preparation, and I took feather fall. Hopefully we don't have to cast it. But it's very thematic and quite useful for escapability. 
+
+
+
+
+#######
+Level-06: Artificer-04 (Armorer), Rogue-02 
+ - cunning action 
+   * you can dash, disengage, or hide as a BA  
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, true-strike 
+   * tinker's magic (1): mending 
+ - spell slots: 3 
+ - spells prepared: artificer (5)
+   * lvl-1 (artificer): detect magic (R), faerie fire, false life, feather fall, jump 
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (fey-touched): hex (free x1/LR) 
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+
+NOTE: Ok lvl-06 and we go rogue-02 to get cunning action. This means we can hide as a BA on our turn. If we hide successfully, we gain the invisible condition which gives us advantage on our next attack, allowing us to proc sneak attack. So our new attack strategy is to cast hex and true-strike on turn 1 (dealing 4d6 + INT dmg), and then on subsequent turns we `hide + move' or `move + hide' and true-strike with advantage/sneak attack. If we hit with sneak attack and hex, we would do 5d6+INT dmg (21.5) which is ahead of rogues at this level. Hex also has another synergy here, since when we hex a target we choose an ability type to debuff. If we give the target of our hex disadvantage on WIS checks, then they will also have disadvantage on perception checks to see us after we hide. With our infiltrator armor model and stealth expertise we have a +8 to stealth checks meaning we should be able to hide very effectively. 
+
+
+
+
+#######
+Level-07: Artificer-04 (Armorer), Rogue-02, Psion-01 
+ - psionic spellcasting 
+   * when you cast a psion spell, it doesn't require verbal or material components (unless costly/consumed)
+ - psionic power (4d6 psionic dice) 
+   * telekinetic propel: BA; STR save or push/pull target creature PE die x10 ft; range 30ft
+   * telepathic connection: telepathy w/in 5ft; expend die to expand range to PE die x 10 for psion-lvl min
+ - combat equipment:
+   * weapon (ranged): lightning launcher = 1d6 lightning; thrown (range 90/300) 
+   * armor: splint armor + shield(+1)
+   * AC: 17 + 3(shield) = 20
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, shocking grasp
+   * tinker's magic (1): mending 
+   * psion (2): mind sliver, true-strike
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-2 
+ - spells prepared: artificer (5), psion (4)
+   * lvl-1 (psion): comprehend languages (R), feather fall, jump, tenser's floating disk (R) 
+   * lvl-1 (artificer): detect magic (R), disguise self, faerie fire, false life, identify (R)
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (fey-touched): hex (free x1/LR) 
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+
+NOTE: Lvl-07 and we start taking psion levels. At psion-01 we get 4d6 psionic energy die that we can use to do telekinetic propel or telepathic connection. Neither is super impactful, but propel gives us a control option in combat and telepathic connection boosts our out-of-combat utility. It can be particularly good in stealth situations, which we are suited to. We also get psionic spellcasting. For cantrips, we pick up mind sliver and true-strike as psion cantrips and switch out true-strike as an artificer cantrip for something else (we can change 1 artificer cantrip on a LR). I opted for shocking grasp because it's thematic, but pick your favorites. We want to have true-strike as a psion spell so that we can use it with extra attack later on. We also really want to have mind-sliver, since we'll be able to use it in combos at later levels to debuff enemy saving throws. Next, we also get 4 new psion spell preparations. Here we're also going to leverage the fact that we can change our artificer spell list on a LR. Specifically, we're going take feather fall and jump as psion spells in order to pick up disguise self and identify as artificer spells. The reasoning here is that we're eventually going to get a psionic discipline (biofeedback) that allows us to gain THP when we use necromancy/transmutation psion spells. Feather fall and jump are both transmutation spells. Then, for the new artificer spells, disguise self synergizes with our stealth/infiltration abilities and identify is a thematic and useful ritual. Then for our other psion spells, we pick up comprehend languages and tenser's floating disk. The reasoning here is that both rituals and increase our out of utility. We're still going to be using most of our spell slots (and our concentration) to cast hex, so rituals and out of combat utility spells are the name of the game here. We also get two lvl-02 spell slots, which we can use to upcast false life, magic missile, thunderwave, or to cast misty step more times. Overall, no direct increases to our damage at this level, but we do get some nice boosts to our spellcasting flexibility and utility. Finally, assume that we've been able to buy/craft splint mail (10 days + 100gp to craft, or 200gp to buy), boosting our base AC to 20. 
+
+
+
+
+#######
+Level-08: Artificer-04 (Armorer), Rogue-02, Psion-02 
+ - psionic disciplines (2) 
+   * swift precognition = when you cast an abjuration/divination psion spell w/a casting time of 1 action, you can expend 
+                          psionic dice equal to 1+ the spells level to cast it as a bonus action 
+   * psionic backlash = when hit with attack roll, use rxn and expend 1 die and roll 2 to reduce attack roll by rolled total; 
+                        additionally, enemy makes WIS save or takes psychic dmg equal to rolled total
+ - psionic modes (x2/LR)
+   * BA to activate 
+   * attack mode = bypass psychic resistance; can expend psionic die to reroll INT-mod spell dmg
+   * defense mode = resistance to psychic dmg; can expend psionic die and add to mental save (INT/WIS/CHA) on failure
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, shocking grasp
+   * tinker's magic (1): mending 
+   * psion (2): mind sliver, true-strike
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-3 
+ - spells prepared: artificer (5), psion (5)
+   * lvl-1 (psion): comprehend languages (R), feather fall, jump, longstrider, tenser's floating disk (R) 
+   * lvl-1 (artificer): detect magic (R), disguise self, faerie fire, false life, identify (R)
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (fey-touched): hex (free x1/LR) 
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+
+NOTE: Alright interesting level here. We go psion-02 and gain two psionic disciplines and the psionic modes ability. The main draw here is the disciplines. First off we get swift precognition, which allows us to expend 1 psionic energy die to cast true-strike (a psion divination spell) as a bonus action. Now we can only do this 4-5 times per day, but even if we just do an extra non-sneak attack non-lightning-jolt true-strike lightning-launcher attack (2d6+INT) once per combat we're boosting our overall DPR by 3 (assuming four 4-round combats per day). Pretty good. In addition, if we happen to have an external source of advantage (e.g., from an ally) then we can use swift precognition to proc sneak attack 2x per round. Specifically, we use our BA to true-strike on our turn, then ready-action::true-strike for some inevitable trigger (like the start of our ally's next turn) and get another instance of sneak attack. Obviously pretty cool if we can get this to work, but for now we can't auto-generate the conditions to do this. In general, more attacks just means that we can more reliably land our sneak attack and lightning-jolt abilities, which also increases our damage. Nice. Having the ability to make attacks as a BA will also open up some new combos for us at later levels (but more on that later). The next discipline we're going to take is psionic backlash, which allows us to expend psionic energy die when we are hit with an attack roll to reduce the attack roll by two rolls of our psi dice and potentially deal psychic damage to our attacker. This ability is particularly good for us since we have naturally high AC (20). With an average reduction of to the triggering attack roll of 7 (2d6), pionic backlash will (on average) allow us to negate hits even on attack rolls of 27. This means we can be *very* hard to hit when we need to be, which is great given our low HP pool and reliance on hex as a concentration spell. Now, we'd prefer to spend our psionic die on swift precognition, but even using psionic backlash also increases our damage. In terms of alternatives, we also really like the biokinesis discipline, which would give us THP when we cast our psion transmutation spells. But we still don't have enough spell slots to be spamming these abilities right now, and we can already give ourselves THP with false life. So we'll defer picking this up until we get psion-10. Next up, we also get psionic modes. Now activating our psionic mode requires a BA which is a bit difficult for us since we want to use our BA to hide, cast hex, and use swift precognition. As a result, we probably won't rely on psionic modes very much. That said, I think our default when we do use it should be the defensive mode, since it gives us the option to boost our mental saving throws with our psionic energy dice. We are particularly vulnerable to WIS saves (WIS=08, no proficiency), so if we happen to be in fights were enemies are targeting WIS saves (e.g., with fear, charm, etc.), this could be very impactful. Finally, we get an additional lvl-02 spell slot and another psion spell preparation. Take longstrider, since it's thematic, a transmutation spell, and we can benefit from extra movement speed to get into/out of hiding more effectively. Still here, I think we want to preserve our spell slots for hex, false life and misty step with a few left over for situational stuff if needed. So we don't want to take something that we really want to use all the time. Longstrider fits nicely in that `situationally useful' category. 
+
+
+
+
+#######
+Level-09: Artificer-04 (Armorer), Rogue-02, Psion-03 (Metamorph) 
+ - proficiency bonus (PB): +4
+ - organic weapons 
+   * when you take attack action or make an AoO, you can convert your free hand into 1 of 3 weapons; your hand immediately returns 
+     to normal after the weapon misses or hits; you can use INT for attack/dmg rolls and you can have weapons deal psychic dmg or 
+     its normal dmg type  
+   * bone blade (simple melee, finesse) = 1d8 piercing; you have adv if non-incapacitated ally is w/in 5ft when you make the attack 
+   * flesh maul (simple melee) = 1d10 bludgeoning; on hit enemy has disadv. on next STR/CON save before end of your next turn 
+   * viscera launcher (simple ranged 30/90) = 1d6 acid + 1d6 acid on hit (x1/turn)
+ - extend limbs 
+   * BA + psionic energy die to activate 
+   * gain: reach +5ft, speed +5ft, can give touch spells a range of 10ft
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, shocking grasp
+   * tinker's magic (1): mending 
+   * psion (2): mind sliver, true-strike
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-3-2
+ - spells prepared: artificer (5), psion (6)
+   * lvl-1 (psion): comprehend languages (R), feather fall, jump, tenser's floating disk (R) 
+   * lvl-1 (metamorph): cure wounds, inflict wounds 
+   * lvl-1 (artificer): detect magic (R), disguise self, faerie fire, false life, identify (R)
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (fey-touched): hex (free x1/LR) 
+   * lvl-2 (psion): invisibility, mirror image 
+   * lvl-2 (metamorph): alter self, lesser restoration
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+
+NOTE: Ok we go psion-03 and pick up our subclass: the metamorph. As described above, thematically you want to integrate this with our armorer identity by having the character's armor become a sort of sentient machine that we are connected to through our psionic abilities. We become an android/symbiotic organic machine and learn to enhance the capabilities of our enhanced armor through developing a mental link with the technology. Mechanically we get a number of things from our subclass. First, and perhaps most straightforward, we get some bound spells. For lvl-01 spells we get cure wounds and inflict wounds. We probably won't want to use inflict wounds, but cure wounds is excellent. Prior to this level we didn't have any healing. Cure wounds is a very strong healing spell and upcasts very well, which is especially relevant since at this level we also get two lvl-03 spell slots. For our lvl-02 bound spells we get alter self and lesser restoration. Both are situational but nice to have, and are spells that are typically difficult to fit into a limited list of spell preparations. Given that we have disguise self, I would probably only use alter self if I really needed a swim/climb speed for some reason. But that's a nice option to have, and dovetails well with the notion that we are enhancing our arcane armor in order to give it more and more capabilities. Lesser restoration is also just a nice insurance policy to have on hand, especially since being poisoned would negate our ability to deal sneak attack damage. Ok, the next thing we get is a new spell preparation and access to lvl-02 psion spells. Here I'm recommending that we drop longstrider in order to pick up invisibility and mirror image as lvl-02 spells. Invisibility is a great out-of-combat option and works well with our stealth/infiltration identity. And for mirror image, I wouldn't use it often but man with this up and psionic backlash in our back pocket we can become *super* hard to hit. Especially now that mirror image requires that enemies meet or exceed your AC (20) with the attack roll before you even roll to see if the image is destroyed. Alright, next up we get the `extend limbs' feature. This requires a bonus action and psionic energy die to activate, so we probably won't do it often. But when we do we would gain 5ft of additional reach, 5ft of extra speed, and the ability to cast touch spells at a range of 10ft. None of those are particularly useful for our character right now, so I would definitely save my psionic dice for swift precognition, psionic backlash, and defense mode. Ok next up is the organic weapons feature, which let's us flexibly turn our free hand into one of three different weapons when we take the attack action or make an attack of opportunity. Thematically, I would definitely just flavor this as having the `attacking arm' of our arcane armor gain new `transformations', like a go-go-gadget arm. Also, just note that the way the feature is written we can only use the organic weapons `when we take the attack action', which precludes using it for the second attack of extra attack (hopefully this will change). Furthermore, since our organic weapons don't have a gold value, we can't use them with true-strike. Bummer on both counts but we can work around this. Ok so we can make use of each of these weapons. At a baseline, we can use the flesh-maul as a melee option if we happen to be stuck in melee and don't want to cast shocking grasp (it will do slightly more dmg -- 1d10+INT (9.5) vs 2d8 (9) on hit). We can also use either the flesh-maul or the bone-blade as melee weapons when we make an attack of opportunity. The bone blade is particularly good here if there's an ally adjacent when an enemy leaves our reach on their turn we can proc a sneak attack with our reaction, increasing our damage even further. And the flesh maul is nice for AoOs if we have allies that target STR or CON saves (e.g., grapples, topple weapons). We can also use the organic weapons in concert with our swift precognition discipline in order to make multiple attacks on our turn and give us more flexibility in how we deal our extra damage. For example, if we cast faerie fire on a target on turn 1, we could then do: attack::viscera-launcher + BA::true-strike::lightning-launcher in order to deal 6d6+2INT (29) dmg. Or, if there's an ally adjacent to an enemy creature we could do: BA::true-strike::lightning-launcher + move into melee + attack::bone-blade, where we can leverage the features of the bone blade to deliver our sneak attack damage even without hiding. If this enemy is also the one we have hexed then this combo would deal: 6d6+1d8+2INT (33.5) dmg on average, if everything hits. Pretty good. For max possible damage, if we happen to have an external source of advantage on an enemy that we have hexed, then we could do BA::true-strike::lightning-launcher + ready-action::true-strike::lightning-launcher in order to get sneak attack on both lightning launcher attacks. If everything hit, this would deal 10d6+2INT (45) dmg. There's probably other combinations I'm not thinking of here, and again we won't be able to do these combos very often (max once per combat), but even so using the organic weapons in concert with swift precognition equates to a nice boost to our overall DPR, and gives a bit more flexibility in terms of how we deliver our damage. It's also worth noting that this is true in terms of damage type. As a default, I would probably make all my organic weapons deal pyshcic damage and flavor them as `psionic weapons' that extend from our arcane armor. But it's worth nothing that, with the organic weapons and the lightning-launcher/true-strike we have the option to deal psychic, bludgeoning, piercing, acid, lightning, and radiant weapon damage, without even actually holding a weapon in our hand. This means we should be able to circumvent most if not all enemy resistances that we encounter, and gives us a better chance of being able to exploit vulnerabilities if they arise. Pretty cool. Oh right, and at character lvl-09 we also get a proficiency bonus increase, making us even better at stealthing (+10) in combat (enemy has disadvantage if we hex(WIS) them). Ok long note. Moving on.  
+
+
+
+
+#######
+Level-10: Artificer-04 (Armorer), Rogue-02, Psion-04 (Metamorph) 
+ - ASI: +2 INT (INT=20) 
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, shocking grasp
+   * tinker's magic (1): mending 
+   * psion (2): mind sliver, true-strike
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-3-3
+ - spells prepared: artificer (5), psion (7)
+   * lvl-1 (psion): comprehend languages (R), feather fall, jump, tenser's floating disk (R) 
+   * lvl-1 (metamorph): cure wounds, inflict wounds 
+   * lvl-1 (artificer): detect magic (R), disguise self, faerie fire, false life, identify (R)
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (fey-touched): hex (free x1/LR) 
+   * lvl-2 (psion): blindness/deafness, invisibility, mirror image 
+   * lvl-2 (metamorph): alter self, lesser restoration
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+
+NOTE: Alright, lvl-10 and we go psion-04 to get an ASI and bump our intelligence to 20, representing an nice boost to our overall damage and chances to hit. We get an additional 3rd level spell slot and one new psion spell preparation. For the preparation I'm going to take blindness/deafness. This is good because: (i) it's non-concentration so we can use it in concert with hex/faerie fire, (ii) attacks on blinded creatures have advantage, meaning we can sneak attack without needing to hide, (iii) targets of the spell have to make a CON-save, which we can potentially nerf by hitting with our flesh maul (ex, if we get them with a reaction attack before our turn), and (iv) the spell upcasts well, allowing us to hit multiple targets. This potentially gives us more viable targets to sneak attack. We can also do a powerful one time set-up turn where we cast blindness/deafness and then use our free-cast of hex to blind and hex a target in one turn. This would potentially allow us to unload our most powerful attack combo on turn-2 where we do: ready-action::true-strike::lightning-launcher_{sneak-attack, hex) + BA::true-strike::lightning-launcher_{swift precognition, sneak-attack, hex} which would do: 10d6 + 2INT (45) dmg if both attacks hit. This is more damage as a lvl-06 fireball (which full caster couldn't even do at lvl-10 since they only have 5th level slots). Or, as another point of comparison, a hasted great-sword fighter with great-weapon master is doing 6d6+15(STR)+12(GWM) = 48 dmg with their basic string of attacks (admittedly probably even more if they have a magic weapon). Anyway, we're not going for any kind of DPR record here, but taking blindness/deafness does give us another option for dishing out a bit more damage while we're still en route to getting extra attack.  
+
+
+
+
+#######
+Level-11: Artificer-04 (Armorer), Rogue-02, Psion-05 (Metamorph) 
+ - proficiency bonus (PB): +4
+ - cantrip scaling: 
+   * shocking grasp (3d8) 
+   * mind sliver (3d6) 
+   * true-strike (2d6) 
+ - psionic power (6d8 psionic dice) 
+ - psionic restoration (x1/LR)
+   * regain 1/2 psionic energy dice after short rest  
+ - combat equipment:
+   * weapon (ranged): lightning launcher = 1d6 lightning; thrown (range 90/300) 
+   * armor: full plate + shield(+1)
+   * AC: 18 + 3(shield) = 21
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): guidance, shocking grasp
+   * tinker's magic (1): mending 
+   * psion (2): mind sliver, true-strike
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-3-3-1
+ - spells prepared: artificer (5), psion (9)
+   * lvl-1 (psion): comprehend languages (R), feather fall, jump, tenser's floating disk (R) 
+   * lvl-1 (metamorph): cure wounds, inflict wounds 
+   * lvl-1 (artificer): detect magic (R), disguise self, faerie fire, false life, identify (R)
+   * lvl-1 (armorer): magic missile, thunderwave
+   * lvl-1 (fey-touched): hex (free x1/LR) 
+   * lvl-2 (psion): blindness/deafness, invisibility, mirror image 
+   * lvl-2 (metamorph): alter self, lesser restoration
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-3 (psion): fly, telekinetic crush 
+   * lvl-3 (metamorph): aura of vitality, haste
+
+NOTE: Alright, lvl-11 and we go psion-05. Bunch of nice features here. First up, our pool of psionic dice increases from 4d6 to 6d8 *and* we get the psionic restoration feature, which allows us to recover 1/2 our psionic dice after a short rest. So effectively we have a pool of 10d8 psionic dice (3 extra from psionic restoration and 1 from the short rest itself). This dramatically increases the number of times that we can use swift precognition to make BA true-strike attacks and therefore significantly increases our damage. We also get a proficiency bonus increase *and* cantrip scaling, which increases our damage even further. Now our basic lightning-launcher true-strike does 6d6+INT (26) dmg. And our true-strike::lightning-launcher + move + bone-blade combo (against a hexed enemy adjacent to an ally) deals 8d6+2INT = 38 dmg. Next, we get two new spell preparations, metamorph bound spells, and access to 3rd level psion spells. Starting with the preparations, we're going to take fly and telekinetic crush. Fly is not only super thematic, but also doubles as a second awesome concentration option for our character. Now yes, we would lose some damage by not concentrating on hex, but flying could make us super hard to hit, or allow us to attack enemies we otherwise wouldn't be able to reach. As a ranged attacker, fly is also nice since we can just sit at 90ft above the battlefield and zap our enemies. So yeah, we like fly. As for telekinetic crush -- we like this spell for its thematics (super on brand for our psychic mech-soldier type character) -- but also because it gives us a non-concentration AOE damage option which is something we don't currently have. In addition, telekinetic crush potentially knocks enemies prone giving us another potential source of advantage to facilitate sneak attacks. Honorable mentions here include: bestow curse, clairvoyance, intellect fortress and nondetection. Bestow curse is especially worth calling out, since we're going to want it eventually (once we have 5th level spell slots) so that we can stack it with hex to deal an extra 2d8 dmg on every hit. Moving on to the bound spells -- we get aura of vitality and haste. Aura of vitality is cool, but definitely circumstantial. That said, it's nice that the metamorph subclass gives us some built in healing which we would otherwise lack. Then there is haste, which as always is somewhat complicated. The TLDR is that we probably want to make haste our go-to concentration spell for this level, but we'll switch back to hex/faerie fire/fly once we get extra attack next level. But here in the moment, I think haste is our best option. Why? Well when we cast haste we get double movement speed (nice), a +2 to our AC (23 total, nice), advantage on DEX saves (very nice), and we get a hasted action each turn, which we can use to attack, dash, disengage, hide, or utilize. Basically, this enables another set of two-attack combos where we don't have to expend psionic dice to do swift precognition, and opens up a new set of two-turn combos where we use our hasted action to ready an attack with our lightning-launcher/organic weapons on someone else's turn. For example, as a baseline no-resource vanilla damage combo, with haste we can now do: BA::hide + action::true-strike::lightning-launcher + hasted-action::attack::viscera-launcher, which would deal 7d6+2INT (34.5) dmg on hit. If there's an ally adjacent to an enemy you could do: true-strike::lightning-launcher + approach + hasted-action::bone-blade + BA::disengage in order to kite in, deal damage (5d6+1d8+2INT or ~32), and retreat back to safety. Alternatively, if you are starting a turn hidden, you could do: true-strike::lightning-launcher + BA::hide + hasted-action::ready-action::attack::viscera-launcher in order to get two sneak attacks (8d6+2INT or 38dmg). Or if you have an ally adjacent you could do: BA::swift-precognition::lightning-launcher + approach + action::attack::bone-blade + hasted-action::ready-action::attack::bone-blade to get double sneak attacks. If all attacks hit, this combo would deal 4d6 + 2*(1d8+1d6) + 3INT or 45 dmg. You could also just empty the clip without any advantage and do: true-strike::lightning-launcher + hasted-action::attack::viscera-launcher + BA::swift-precognition::true-strike::lightning launcher. This would deal 9d6+3INT (46.5) dmg on average, if all attacks hit. Not bad. Anyways, as per usual. I'm sure there's a number of combos that I'm not thinking of here. But you get the idea. Relative to hex, haste not only boosts our damage ceiling by a little bit, but it also gives us a lot more flexibility in terms of how we get this damage out, all while providing some nice defensive buffs. The downside, of course, is that if we are hit and lose concentration on haste then we will spend a turn being stunned. But with AC=23, psionic backlash, and a CON save of +5, we should be decently safe using the spell. Right and I think we also have to mention the weapon combos, too. So while holding a shield, we cannot cast true-strike since we don't have a free hand for the somatic components. But if we were to drop our shield we could, for example, use a quarterstaff or a rapier to make true-strike attacks. The bonus here is that these weapons also have mastery properties that could come in handy (topple, vex). For example, w/o a shield we could use a quarterstaff to topple a creature, giving us advantage on our next melee attack for sneak attack. Again, lots of combos to think of here. I would probably just stay with our shielded playstyle since it does good damage and we don't have a lot of HP. But worth mentioning the options here. Ok that's all for the moment, moving on. 
+
+
+
+
+
+
+
+
+#################################################################################################
+PRELIMINARY NOTES 
+
+Psion-12 (metamorph) + Artificer-04 (armorer) + Rogue-4 (arcane trickster) 
+
+CONCEPT 
+ - `dual wield' organic weapons and armorer weapon (lightning launcher) while holding a shield
+ - attack with flesh maul (psychic dmg)
+ - this is making a melee weapon attack as part of the attack action, and so triggers the shield master feat
+ - the flesh maul also gives disadvantage on the next STR or CON save the target makes, which includes the STR save against prone 
+   for shield master 
+ - so you reliably knock them prone, giving you have advantage on attacks w/in 5ft 
+ - then, sharpshooter negates the disadvantage of using a ranged weapon in melee, meaning you would have advantage 
+   on the attack
+ - this means your lightning launcher attack would meet the criteria for sneak attack
+ - with metamorph extra attack + cantrip, you can make your second attack using true-strike 
+ - the lightning launcher is a weapon w/which you are proficient, and it is part of your armor, which has a value of 1+ CP so it meets 
+   the criteria for the material component of true-strike  
+ - so you would do 1d10 (flesh maul) + 2d6 (lightning launcher) + 3d6 (true-strike) + 2d6 (sneak) + 2INT(10) on hit = 1d10+7d6+2INT
+   and you still have your BA -- which you could use to true-strike lightning launcher again with the swift precognition discipline (1 psionic die) 
+   this would add another 4d6+INT dmg (19); if you have a spell like hex up, this would add 3d6 to this combo, bringing the total to:
+   1d10 + 14d6 + 3INT(15) = 69.5 dmg 
+ - alternatively, if you're at range, you can steady aim then do lighting launcher + viscera launcher with the same hand, doing 9d6 + 2INT(10) = 41.5 dmg    
+   (viscera launcher does psychic dmg) 
+ - and you get to wear heavy armor, have a +1 shield, and be nearly a full-caster 
+ - go arcane trickster at the end of your career to get shield
+ - concentrate on faerie fire initially to generate advantage for sneak attack 
+
+Background: Guard 
+ - ability scores: STR, INT, WIS 
+ - feat: alert 
+ - skills: athletics, perception 
+ - tools: gaming set 
+ - equipment (gold buy): 50gp 
+
+Species: Dwarf 
+ - size: medium 
+ - speed: 30ft 
+ - darkvision: 120ft 
+ - dwarven resilience: resistance to poison dmg; adv on saves to prevent/end poisoned condition 
+ - dwarven toughness: +1 HP each time you gain a level 
+ - stonecunning: BA tremorsense 60ft (10m dur); PB x/LR (only works on stone) 
+
+feats: 
+ - fey-touched: +1 INT (INT=18), hex, misty-step
+ - ASI: +2 INT (INT=20)
+ - shield master: +1 STR (STR=16) 
+ - sharpshooter: +1 DEX (DEX=15) 
+ - resilient (DEX): +1 DEX (DEX=16) // epic boon of the night spirit 
+
+Point-Buy Stats 
+ - STR = 14 (+1) = 15 
+ - DEX = 14 
+ - CON = 12 
+ - INT = 15 (+2) = 17 
+ - WIS = 08 
+ - CHA = 08
+
+Artificer spells: 
+ - cantrips (2): guidance, true-strike (then switch true-strike for shocking grasp) 
+ - tinker's magic (1): mending 
+ - lvl-01 (5): detect magic (R), faerie fire, false life, feather fall, jump
+               (switch out feather fall and jump for disguise self, and identify when you get psion levels -- so you can take biokinesis)
+               (switch out disguise self for sanctuary/something else when you get arcane trickster) 
+ - lvl-01 (armorer): magic missile, thunderwave 
+ - magic item plans (4): manifold tool, shield +1, wand of magic detection, wand of secrets 
+ - magic items (2): manifold tool, shield +1 
+
+Rogue spells 
+ - cantrips (3): blade ward, message, minor illusion 
+ - spells (4): disguise self, fog cloud, shield, silent image
+
+Psion spells 
+ - cantrips (3): mind sliver, true-strike, prestidigitation 
+ - subtle telekinesis (1): mage hand 
+ - total spells (16) 
+ - lvl-01: comprehend languages (R), feather fall, jump, longstrider, tenser's floating disc (R) 
+ - lvl-01 (metamorph): cure wounds, inflict wounds 
+ - lvl-02: blindness/deafness, heat metal, invisibility, locate object, mirror image, see invisibility
+ - lvl-02 (metamorph): alter self, lesser restoration 
+ - lvl-03: bestow curse, clairvoyance, fly, intellect fortress, nondetection, telekinetic crush, summon astral entity 
+ - lvl-03 (metamorph): aura of vitality, haste 
+ - lvl-04: arcane eye, banishment, dimension door, freedom of movement, greater invisibility, locate creature 
+ - lvl-04 (metamorph): polymorph, stoneskin 
+ - lvl-05: hold monste, mislead, synaptic static, teleportation circle 
+ - lvl-05 (metamorph): contagion, mass cure wounds 
+ - lvl-06: blade barrier, disintegrate, eyebite, find the path, true seeing 
+
+
+Progression Summary
+ - lvl-01: artificer-01 --> CON save proficiency, med-armor/shields 
+ - lvl-02: artificer-01, rogue-01 --> expertise, sneak attack, thieves' cant 
+ - lvl-03: artificer-02, rogue-01 --> replicate magic item (+1 shield, manifold tool) 
+ - lvl-04: artificer-03 (armorer), rogue-01 --> heavy armor (infiltrator) 
+ - lvl-05: artificer-04 (armorer), rogue-01 --> fey-touched: +1 INT (INT=18), hex, misty-step 
+ - lvl-06: artificer-04 (armorer), rogue-02 --> cunning action 
+ - lvl-07: artificer-04 (armorer), rogue-02, psion-01 --> psionic power (4d6), subtle telekinesis 
+ - lvl-08: artificer-04 (armorer), rogue-02, psion-02 --> psionic modes, psionic disciplines (2): precognition, backlash 
+ - lvl-09: artificer-04 (armorer), rogue-02, psion-03 (metamorph) --> metamorph spells (1,2), organic weapons, extend limbs 
+ - lvl-10: artificer-04 (armorer), rogue-02, psion-04 (metamorph) --> ASI: +2 INT (INT=20) 
+ - lvl-11: artificer-04 (armorer), rogue-02, psion-05 (metamorph) --> metamorph spells (3), psionic restoration, psionic power (6d8)
+ - lvl-12: artificer-04 (armorer), rogue-02, psion-06 (metamorph) --> extra attack, quickened healing 
+ - lvl-13: artificer-04 (armorer), rogue-02, psion-07 (metamorph) --> metamorph spells (4); psionic surge 
+ - lvl-14: artificer-04 (armorer), rogue-02, psion-08 (metamorph) --> shield master: +1 STR (STR=16) 
+ - lvl-15: artificer-04 (armorer), rogue-03 (trickster), psion-08 (metamorph) --> steady aim, spellcasting, mage-hand legerdemain
+ - lvl-16: artificer-04 (armorer), rogue-04 (trickster), psion-08 (metamorph) --> sharpshooter: +1 DEX (DEX=15) 
+ - lvl-17: artificer-04 (armorer), rogue-04 (trickster), psion-09 (metamorph) --> metamorph spells (5); psionic power (8d8)
+ - lvl-18: artificer-04 (armorer), rogue-04 (trickster), psion-10 (metamorph) --> mutable form, psionic disciplines (4): precog, backlash, bio, aim
+ - lvl-19: artificer-04 (armorer), rogue-04 (trickster), psion-11 (metamorph) --> lvl-06 spells, psionic power (8d10) 
+ - lvl-20: artificer-04 (armorer), rogue-04 (trickster), psion-12 (metamorph) --> resilient (DEX): +1 DEX (DEX=16)
+
+
+Offensive Stratagem Breakpoints 
+ (1) Using faerie-fire for adv, ranged true-strike sneak attacks 
+ - lvl-01 to lvl-05 --> concentrate on faerie fire for adv, true-strike with ranged weapon (lightning launcher) 
+ (2) BA hide for adv, hex + ranged true-strike sneak attacks 
+ - lvl-06 to lvl-07 --> concentrate on hex, use BA to hide for adv., true-strike w/lightning launcher 
+ (3) Add in swift precognition BA true-strike attacks
+ - lvl-08 to lvl-08 --> concentrate on faerie fire, true-strike w/lightning launcher + BA:true-strike w/lightning launcher (precog) 
+ (4) Add in combos using organic weapons + BA swift precognition weapon attacks 
+ - lvl-09 to lvl-10 --> ranged (1): concentrate on hex, use BA to hide for adv. + true-strike with lightning launcher
+                        ranged (2): concentrate on faerie fire; attack w/viscera launcher + BA:true-strike w/lightning-launcher (precog)
+                        melee (ally adjacent): concentrate on hex; BA:true-strike::lightning-launcher (precog) + attack w/bone blade 
+                        melee (no ally): concentrate on faerie fire: BA:true-strike::lightning-launcher (precog) + attack w/bone blade  
+ (5) Use haste for extra action economy before we get extra attack 
+ - lvl-11 to lvl-11 --> concentrate on haste
+                        ranged: BA:hide + action::true-strike::lightning-launcher + hasted-action::attack::viscera-launcher 
+                        melee (no ally): true-strike::quarterstaff + hasted-action::bone-blade + BA:disengage 
+                        melee (ally adjacent): true-strike::lightning-launcher + approach + hasted-action::bone-blade + BA:disengage
+                        external advantage: action::true-strike::lightning-launcher + hasted-action::attack::viscera-launcher + 
+                                            BA::true-strike::lightning-launcher (precog) 
+ (6) Extra attack prior to having shield master 
+ - lvl-12 to lvl-12 --> concentrate on hex/fly/greater invis.
+                        ranged: BA:hide + attack(1)::viscera-launcher + attack(2)::true-strike::lightning-launcher
+                        melee (no ally): attack(1)::flesh-maul + attack(2)::true-strike::quarterstaff + BA:disengage/BA:true-strike::melee-finesse weapon 
+                        melee (ally adjacent): attack(1)::bone-blade + attack(2)::true-strike::melee-weapon + BA::true-strike::melee-weapon (precog) 
+ - also gain access to greater invisibility which would give you advantage on all attacks, allowing you to just do double launcher 
+ (7) Extra attack with shield master but no sharpshooter 
+ - lvl-14 to lvl-14 --> concentrate on hex/fly 
+                        melee: attack(1)::flesh-maul + shield bash + attack(2)::true-strike::melee weapon + BA: disengage/BA:true-strike::melee (precog)  
+ (8) Ranged combos with steady aim  
+ - lvl-15 to lvl-15 --> concentrate on hex/fly
+                        ranged: BA:steady aim + attack(1):viscera-launcher + attack(2)::true-strike::lightning-launcher  
+ (9) Extra attack with shield master and sharpshooter                                    
+ - lvl-16 to lvl-20 --> concentrate on hex/fly 
+                        melee: attack(1)::flesh-maul + shield bash + attack(2)true-strike::lightning-launcher + BA:true-strike::melee(precog) 

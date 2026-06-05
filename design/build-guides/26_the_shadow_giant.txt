@@ -1,0 +1,601 @@
+Moniker: The Shadow Giant
+Classes: Fighter-12 (Eldritch Knight), Rogue-08 (Arcane Trickster) 
+Species: Goliath 
+ - size: medium 
+ - speed: 35ft 
+ - giant ancestry: hill's tumble  
+   * on hit w/attack roll, make Large or smaller creature prone (PBx/LR)
+ - large form: 
+   * starting at lvl-5 
+   * BA to activate, duration 10m 
+   * change size to Large, speed +10ft, adv on STR checks 
+ - powerful build: adv on checks to end grappled condition
+Sex: Female 
+Background: criminal 
+ - slightly modified version of the `criminal' background from 2024 PHB (lucky instead of alert)
+ - ability scores: CON, INT, CHA
+ - feat: lucky
+ - skill proficiencies: stealth, sleight of hand
+ - tool proficiency: thieves' tools  
+ - languages: common, common sign language, giant 
+ - equipment: 50 gp
+Point-Buy Stats 
+ - STR = 8
+ - DEX = 14 
+ - CON = 15 (+1) = 16
+ - INT = 15 (+2) = 17
+ - WIS = 10
+ - CHA = 8
+ASI's/Feats
+ - lvl-00: lucky
+ - lvl-01: fighting-style::blind fighting
+ - lvl-04: poisoner (+1 INT, INT=18) 
+ - lvl-06: shadow-touched (+1 INT, INT=19)
+ - lvl-08: ASI: +1 INT, +1 DEX (INT=20, DEX=15)
+ - lvl-13: defensive duelist (+1 DEX, DEX=16)
+ - lvl-17: speedy/charger/med armor master/resilient (+1 DEX, DEX=17)
+ - lvl-20: epic boon of combat prowess (+1 DEX, DEX=18)
+PROGRESSION SUMMARY
+ - lvl-01: fighter-01 --------------------- weapon mastery, fighting-style (blind fighting)
+ - lvl-02: fighter-02 --------------------- action surge
+ - lvl-03: fighter-03 (EK) ---------------- true strike, jump/longstrider
+ - lvl-04: fighter-04 (EK) ---------------- poisoner (+1 INT, INT=18)
+ - lvl-05: fighter-05 (EK) ---------------- extra attack 
+ - lvl-06: fighter-06 (EK) ---------------- shadow-touched (wrathful smite), (+1 INT, INT=19)
+ - lvl-07: fighter-07 (EK) ---------------- war magic, lvl-2 spells (alter-self, blindness/deafness) 
+ - lvl-08: fighter-08 (EK) ---------------- ASI: +1 INT, +1 DEX (INT=20, DEX=15)
+ - lvl-09: fighter-09 (EK) ---------------- tactical master (push), indomitable
+ - lvl-10: fighter-09 (EK), rogue-01 ------ sneak attack
+ - lvl-11: fighter-09 (EK), rogue-02 ------ cunning action, expertise
+ - lvl-12: fighter-09 (EK), rogue-03 (AT) - spellcasting, steady aim, sneak attack 2d6
+ - lvl-13: fighter-09 (EK), rogue-04 (AT) - defensive duelist (+1 DEX, DEX=16)
+ - lvl-14: fighter-09 (EK), rogue-05 (AT) - cunning-strike, uncanny dodge, sneak attack 3d6
+ - lvl-15: fighter-09 (EK), rogue-06 (AT) - expertise
+ - lvl-16: fighter-09 (EK), rogue-07 (AT) - evasion, reliable talent, sneak attack 4d6
+ - lvl-17: fighter-09 (EK), rogue-08 (AT) - speedy (+1 DEX, DEX=17)
+ - lvl-18: fighter-10 (EK), rogue-08 (AT) - eldritch strike 
+ - lvl-19: fighter-11 (EK), rogue-08 (AT) - two extra attacks 
+ - lvl-20: fighter-12 (EK), rogue-08 (AT) - epic boon of combat prowess (+1 DEX, DEX=18)
+ 
+
+CONCEPT NOTES:
+ - Kiting playstyle where you do INT-based melee attacks and proc sneak attack and use smite
+ - Precast/concentrate on alter self
+ - Run up to enemy, take the attack action
+ - make an unarmed strike(s) with your first/second attack and BA smite
+ - if you don't have a source of advantage, use goliath hill's tumble ability to knock prone
+ - then true-strike (with adv) with a rapier for your second/third attack (push, sneak attack)
+ - if you don't have a source of advantage, use luck point on the rapier attack 
+ - when you run out of smites, you can use poisoner with BA
+ - push mastery will auto-disengage if you hit with the rapier
+ - if you don't hit, defensive duelist/speedy/poisoned/frightened will keep you safe as you 
+   run out of melee. 
+ - With base speed (35ft) you can start/end your turn 15ft away from a creature and still 
+   do all your damage. With large form, this goes up to 20ft. With longstrider this goes up 
+   to 25ft. You could take speedy to boost this up to 30ft (and make enemies have disadv. on OAs)
+   You could also take epic boon of speed to make kiting even more reliable. Instead, I opt 
+   for charger and epic boon of combat prowess for more damage and reliability. 
+ - At level-20, you're a 7th level caster (4 levels from EK, 3 from AT), meaning you would 
+   have spell slots: 4-3-3-1, and you could cast 2nd level spells only. With a duration of 1hr,
+   7 slots available for casting alter self should be enough to get you through any adventuring
+   day. This gives you a couple high-level smites per day, and a number of low-level smites 
+   (plus you have poisoner for non-spell based BA damage). 
+
+THEMATIC CONCEPT NOTES:
+ - almost like a `golem' from WoT
+ - dark/shadowfell aesthetic on a lithe, snake-like/poison themed goliath 
+ - snake-like is a good theme -- fast and lethal, poisonous, but built on strong goliath frame
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+#######
+Level-01: Fighter-01 
+ - feat: lucky
+   * luck points: # of luck points equal to PB; spend them to impose advantage or disadvantage
+   * advantage: when roll a d20 test, use a luck point to roll it with advantage 
+   * disadvantage: when a creature rolls a d20 test, use a luck point to impose disadvantage
+ - feat: fighting-style (blind fighting) 
+   * blindsight with range of 10ft 
+ - saving throw proficiencies: STR, CON  
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * fighter (2): athletics, acrobatics     
+   * criminal (2): stealth, sleight of hand
+   * languages (3): common, common sign language, giant
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light + med + heavy armor + shields
+   * tools: thieves' tools (criminal)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (background) + 155gp (fighter)
+   * weapons: heavy crossbow (50gp), rapier (25gp), daggers x2 (4gp), case of crossbow bolts x5 (5gp)
+   * armor: chain shirt (50gp)
+   * tools: thieves' tools (25gp)
+   * gear:  arcane focus, orb (20gp), explorer's pack (10gp), traveler's clothes (2gp)
+   * spare coin: 14gp
+ - combat equipment:
+   * preferred weapon: heavy crossbow
+     + heavy crossbow = 1d10 piercing (push); ammunition (range  100/400), heavy, loading, two-handed 
+   * secondary weapons
+     + rapier = 1d8 piercing (vex); finesse
+     + dagger = 1d4 piercing (nick); finesse light, thrown (range 20/60)
+   * armor: chain shirt 
+   * AC: 13+2(DEX)=15
+ - weapon masteries (3): 
+   * heavy crossbows (push) 
+   * rapiers (vex) 
+   * daggers (nick) 
+ - second wind (x2/LR, recover 1 on SR) 
+   * BA to heal 1d10+fighter-lvl(1)
+ 
+NOTE: Stay at range. You're using DEX for attacks so you won't be that accurate (but only -1 relative to potential max at this level, so not that bad). You have pretty good AC and HP, so you won't die. Dual wield daggers in melee if you have to in order to maximize the early-game value of the nick property. Use luck points for more precision. Use hill's tumble for some degree of control. Use blindsight to facilitate stealthing/infiltration. Other option (obviously) is the defensive fighting style for a permanent +1 to AC. But I think blind-fighting will be more fun and is more thematic. 
+
+
+#######
+Level-02: Fighter-02 
+ - action-surge (x1)
+   * recovers on SR/LR 
+ - second wind (x2/LR, recover 1 on SR) 
+   * BA to heal 1d10+fighter-lvl(1)
+   * tactical mind: +1d10 to failed ability check 
+ 
+NOTE: Use action surge to make additional attacks or to hide (in order to gain advantage). Use tactical mind strategically. You'll be very good at INT-based ability checks (e.g., investigation) when you have to be. Continue to stay at range. 
+
+
+#######
+Level-03: Fighter-03 (Eldritch Knight) 
+ - war bond
+   * bond during SR 
+   * up to 2 bonded weapons 
+   * can't be disarmed of bonded weapon 
+   * can summon bonded weapon as BA
+ - weapon masteries (3): 
+   * heavy crossbows (push) 
+   * rapiers (vex) 
+   * warhammer (push)
+ - combat equipment:
+   * preferred weapons: warhammer / heavy crossbow
+     + warhammer = 1d8 bludgeoning (push); versatile (1d10)
+     + heavy crossbow = 1d10 piercing (push); ammunition (range  100/400), heavy, loading, two-handed 
+   * secondary weapons
+     + rapier = 1d8 piercing (vex); finesse
+   * armor: chain shirt 
+   * AC: 13+2(DEX)=15
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (2): light, true-strike
+ - spell slots: 2 
+ - spells prepared: eldritch knight (3)
+   * lvl-1 (eldritch knight): fog cloud, jump, tasha's hideous laughter
+
+NOTE: Switch weapon masteries. Create war bond with heavy crossbow and warhammer. Both have push mastery and warhammer and give us a d10 damage die. Switch to using true-strike (now attack with INT). Take light as your other cantrip, since you lack darkvision and you can use your crossbow to deal damage at range (don't need ranged cantrip). With your high INT, consider buying/crafting clever contraptions to direct the light spell subtly. Choose the light color to match your theme (maybe green/purple). Same with the radiant flash when you use true-strike. For leveled spells, take jump and cast for additional mobility (if needed) and then fog cloud and tasha's hideous laughter (THL) for control. With blind-fighting, fog cloud becomes a great spell. We can drop it on ourselves and an enemy in melee and gain advantage on our attacks while imposing disadvantage on theirs. With push mastery on the warhammer, we effectively disengage from enemies with normal reach, leaving them blind inside the cloud. We can also use push + hill's tumble to push them back inside the cloud / knock them prone inside it. Basically the fog cloud spell already facilitates a kiting melee play style, even here at level-3 which is core to this character's identity. It's also an impactful spell, which is important because we have very few spell slots. THL is a great control spell, upcasts well, and we have a high spell DC. So it's another good pick. 
+
+#######
+Level-04: Fighter-04 (Eldritch Knight) 
+ - feat: poisoner (+1 INT, INT=18) 
+   * gain proficiency with poisoner's kit
+   * poison damage ignores resistance 
+   * with kit + 1hr, you can create PB does of poison
+   * apply poison as a BA, lasts 1m or until deal damage
+   * on hit, DC=8+PB+INT (14) CON save or 2d8 poison damage + poisoned
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light + med + heavy armor + shields
+   * tools: thieves' tools (criminal), poisoner's kit (poisoner)
+ - second wind (x3/LR, recover 1 on SR) 
+   * BA to heal 1d10+fighter-lvl(1)
+   * tactical mind: +1d10 to failed ability check 
+ - weapon masteries (4): 
+   * heavy crossbows (push) 
+   * longbows (slow)
+   * rapiers (vex) 
+   * warhammer (push)
+ - combat equipment:
+   * preferred weapons: warhammer / heavy crossbow
+     + warhammer = 1d8 bludgeoning (push); versatile (1d10)
+     + heavy crossbow = 1d10 piercing (push); ammunition (range  100/400), heavy, loading, two-handed 
+   * secondary weapons
+     + rapier = 1d8 piercing (vex); finesse
+     + longbow = 1d8 piercing (slow); ammunition (range 150/600); heavy, two-handed
+   * armor: chain shirt 
+   * AC: 13+2(DEX)=15
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (2): light, true-strike
+ - spell slots: 3 
+ - spells prepared: eldritch knight (4) 
+   * lvl-1 (eldritch knight): fog cloud, jump, shield, tasha's hideous laughter 
+
+NOTE: Get poisoner feat. Boost INT to 18. Start making poison doses in down time so that you always have them on hand. Basic attack pattern = BA::poison(ammunition) + action::true-strike(heavy-crossbow/warhammer). On hit this will do 1d10(5.5) + INT(4) + 2d8(9) = 18.5dmg if the poison works. Plus it poisons the opponent. Pretty good for low levels. For new EK spell, take shield. We're going to be relying heavily on a concentration spell (alter self) for a lot of our damage moving forward, so having shield to help prevent us from getting hit is important. Longstrider is the other one we want pretty badly, since having high speed will help our kiting playstyle. But we already have jump, which gives us 20ft additional movement within a combat if we really need it, and at level 5 we also get our goliath large form, which also boosts our speed 10ft (as a BA to activate). So while precasting longstrider is the best option for increasing our speed, we have other options built in. We also just don't have that many spell slots, so precasting longstrider feels like a luxury we can't afford. For all those reasons, we take shield here. Next, we get an additional weapon mastery. Take longbows, which lack the loading property, so that we have both melee and ranged weapons with which we can make multiple DEX based attacks should we want to. 
+
+#######
+Level-05: Fighter-05 (Eldritch Knight) 
+ - Large form (goliath): 
+   * BA to activate, duration 10m 
+   * change size to Large, speed +10ft, adv on STR checks
+ - Proficiency Bonus (PB) = +3 
+   * hill's tumble (x3/LR) 
+   * luck points (x3/LR) 
+   * poisoner (x3 doses crafted/1hr); DC=15
+   * cantrip improvement: true-strike(1d6)
+- combat equipment:
+   * preferred weapons: warhammer / heavy crossbow
+     + warhammer = 1d8 bludgeoning (push); versatile (1d10)
+     + heavy crossbow = 1d10 piercing (push); ammunition (range  100/400), heavy, loading, two-handed 
+   * secondary weapons
+     + rapier = 1d8 piercing (vex); finesse
+     + longbow = 1d8 piercing (slow); ammunition (range 150/600); heavy, two-handed
+   * armor: breastplate 
+   * AC: 14+2(DEX)=16
+ - extra attack  
+ - second wind (x3/LR, recover 1 on SR) 
+   * BA to heal 1d10+fighter-lvl(5)
+   * tactical mind: +1d10 to failed ability check
+   * tactical shift: move up to half speed w/o provoking OAs
+
+NOTE: PB increase gives us more uses of hill's tumble and lucky. Tactical shift makes us more mobile. We get extra attack, but we won't actually use it. With true-strike and our heavy crossbow, we do 1d10+1d6+INT = 13 damage with a +4 to hit (using INT). If we use a longbow and make multiple attacks we would do 2d8+2DEX = 13 damage with only a +2 to hit (using DEX). Assume we also scrap together 400 gold to buy ourselves a breastplate and boost our AC to 16. 
+
+
+#######
+Level-06: Fighter-06 (Eldritch Knight) 
+ - feat: shadow-touched (+1 INT, INT=19) 
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (2): light, true-strike
+ - spell slots: 3 
+ - spells prepared: eldritch knight (4) 
+   * lvl-1 (eldritch knight): fog cloud, jump, shield, tasha's hideous laughter 
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-2 (shadow-touched): invisibility (free x1/LR) 
+
+NOTE: Take shadow-touched. Very thematic for our `spooky goliath' character. With the feat we want to take wrathful smite as our lvl-1 (necromancy) spell. But we probably won't use it much beyond the free cast until next level. Basically, wrathful smite gives us a BA option to deal damage and inflict frightened if we attack with a melee weapon/unarmed strike. But it does less damage than our poisoner feat (though without a save), and we only have 3 spell slots. The feat does allow us to cast it for free x1 per LR, so we should use it with our warhammer in situations where fear could be particularly impactful, or if we've run out of poison doses. Invisibility is great, and dovetails well with our stealth proficiency and overall shadow-giant theme. 
+
+
+#######
+Level-07: Fighter-07 (Eldritch Knight) 
+ - war magic 
+   * when you take attack action, replace one attack with a wizard cantrip
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (2): light, true-strike
+ - spell slots: 4-2 
+ - spells prepared: eldritch knight (5) 
+   * lvl-1 (eldritch knight): fog cloud, jump, shield, tasha's hideous laughter
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-2 (eldritch knight): alter-self 
+   * lvl-2 (shadow-touched): invisibility (free x1/LR) 
+
+NOTE: We get war magic and we officially switch over to preferring melee combat with our warhammer. We get second-level wizard spells and we take alter self, which gives us INT based unarmed strikes while we concentrate on it. Use it to grow scary claws/fangs and further enhance our spooky shadow giant theme. Our new best option in combat is to have alter-self cast on ourselves (ideally precast) then to rush into melee and make an unarmed strike then true-strike with the warhammer. You can use your BA to poison the warhammer or cast wrathful smite (on either attack). With poisoner, we would do: 1d10(hammer)+1d6(true-strike)+1d6(unarmed)+2d8(poisoner)+2INT = 5.5+7+9+8 = 29.5 damage. Pretty good for sustained DPR. You can use hill's tumble on the initial unarmed strike or use a luck point on the warhammer attack to gain advantage. You want to do this because hitting with the warhammer lets you push your target, auto-disengaging them from you and enabling the kiting playstyle. Note that we can't use fog cloud and alter self, since they both require concentration. But we can still use fog cloud if we run out of level-2 spell slots, or as an escape/control option. Use both your second level slots for alter self, or if really necessary, to upcast THL/fog cloud. Use wrathful smite and/or poisoner to impose situationally preferred control effects (poisoned/frightened). For max single instance damage, assume we took turn 1 to cast alter-self and BA:poison(warhammer). Then on our second turn we could do: action:attack(1):unarmed-strike + attack(2):true-strike:warhammer(poisoned) + BA:wrathful-smite(lvl-2). This would do: 1d6(UAS) + 1d10(warhamer) + 1d6(TS) + 2d8(poisoner) + 2d6(wrathful-smite) + 2INT = 4d6(14) + 2d8(9) + 1d10(5.5) + 8 = 36.5 dmg and would potentially inflict poisoned and frightened. Pretty nasty for a nova move. 
+
+
+#######
+Level-08: Fighter-08 (Eldritch Knight) 
+ - feat: ASI: +1 INT, +1 DEX (INT=20, DEX=15)
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (2): light, true-strike
+ - spell slots: 4-2 
+ - spells prepared: eldritch knight (6) 
+   * lvl-1 (eldritch knight): fog cloud, jump, shield, tasha's hideous laughter
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-2 (eldritch knight): alter-self, blindness/deafness
+   * lvl-2 (shadow-touched): invisibility (free x1/LR) 
+
+NOTE: Take ASI to boost INT and DEX. INT now capped which is super nice. Basic damage combo with alter-self + poisoner now does 31.5 damage (DC=16) and a lvl-1 wrathful smite combo would do 26 damage. For reference, a base fighter with STR=20 making GWM attacks with a greatsword would do 30 damage per round. Our damage is a bit more conditional (need to have alter-self up and target needs to fail saves) but we have a good bit more control options and more interesting skill set. We get one additional spell. Take blindness/deafness. We are going to take rogue-levels soon and blindness makes all attacks against you have advantage. The spell is also not concentration, so it will be a good way to set up sneak attacks. It's also just a good debuff in general and dovetails with our shadow theme/fog-cloud abilities. 
+
+#######
+Level-09: Fighter-09 (Eldritch Knight) 
+ - Proficiency Bonus (PB) = +4 
+   * hill's tumble (x4/LR) 
+   * luck points (x4/LR) 
+   * poisoner (x4 doses crafted/1hr); DC=17
+ - indomitable (x1/LR) 
+   * if you fail a saving throw, you can reroll it with +fighter-level
+ - tactical master 
+   * when you attack w/a weapon whose mastery property you can use 
+     you can replace it with push/sap/slow
+
+NOTE: Indomitable is great, especially with our WIS=10. We may also need to use it on an important DEX save every now and then, since we still only have a +2 there. Main reason we're here is to get tactical master, though (again) we won't need it this level. Tactical master will allow us to make push attacks with a rapier. This will enable us to keep our kiting attack pattern while also integrating sneak attacks once we get rogue levels. 
+
+#######
+Level-10: Fighter-09 (Eldritch Knight), Rogue-01 
+ - skill proficiencies (* indicates expertise): 
+   * fighter (2): athletics, acrobatics     
+   * criminal (2): stealth*, sleight of hand
+   * rogue (1): investigation*
+   * languages (5): common, common sign language, giant, 
+                    thieves' cant, dwarvish
+ - sneak attack (1d6) 
+ - weapon masteries (6): 
+   * heavy crossbows (push) 
+   * longbows (slow)
+   * pistols (vex) 
+   * rapiers (vex)  
+   * scimitars (nick)
+   * warhammers (push) 
+ - combat equipment:
+   * preferred weapon: rapier
+     + rapier = 1d8 piercing (vex); finesse
+   * secondary weapons
+     + scimitar = 1d6 slashing (nick); finesse, light 
+     + warhammer = 1d8 bludgeoning (push); versatile (1d10)
+     + heavy crossbow = 1d10 piercing (push); ammunition (range  100/400), heavy, loading, two-handed 
+     + longbow = 1d8 piercing (slow); ammunition (range 150/600); heavy, two-handed
+     + pistol = 1d10 piercing (vex); ammunition (range 30/90); loading
+   * armor: breastplate 
+   * AC: 14+2(DEX)=16
+
+NOTE: Start taking rogue levels. We get a rogue skill (take investigation) and expertise. For expertise take it in stealth and investigation. With INT=20 and expertise, we'll have +13 to investigation checks. We already have proficiency with thieves' tools. But we do also get to learn thieves' cant and an additional language (take dwarvish). We get two additional weapon masteries, bringing our total to 6. This doesn't really matter at all, but for the sake of it take scimitars and pistols. Next we get sneak attack. To proc sneak attack, we're going to switch our main weapon over to the rapier (which is a finesse weapon). With tactical master, we can use push mastery on rapier attacks, allowing us to auto-disengage. To gain advantage, we have a variety of options. We can (i) knock enemies prone with hill's tumble with our initial unarmed strike during our basic attack pattern, (ii) use a luck point to give ourselves advantage, (iii) blind a target with blindness/deafness or fog cloud. We can obviously also use traditional sources of advantage like invisibility (hidden) and flanking, whenever they are available. With 4 uses of hill's tumble and 4 luck points, we can auto-generate advantage without any help 8 times per long rest. So we should be able to proc sneak attack reliably. Of course, if we don't have any way to get sneak attack, then using the warhammer instead of the rapier will do a bit more damage. In terms of damage, integrating sneak attack into our basic attack combo increases its damage by 2.5 per round. Not great, but this will increase. 
+
+
+#######
+Level-11: Fighter-09 (Eldritch Knight), Rogue-02 
+ - cantrip upgrade: true-strike (2d6)
+ - cunning action 
+   * dash, disengage, or hide as a BA 
+
+NOTE: Pretty dead level here. Cunning action gives us more flexibility in terms of our setups, especially over multiple rounds. For example, we could cast alter-self, then move and BA:hide on turn 1 in order to give ourselves advantage on our next round's attack.  We could also use the BA:disengage if we aren't able to hit with any of our attacks on our turn, allowing us to still kite effectively. Obviously BA:dash would let us get into/out of melee if we need extra movement for some reason. So, yeah, cunning action gives additional functionality that enables/facilitates our core combat mechanics in a wider/more diverse array of situations. We get a slight bump to our damage because our cantrips level up at level 11, so true-strike does an additional 2d6 instead of 1d6 radiant on hit. But no changes to spellcasting/control abilities or skill proficiencies. So yeah, not an amazing level. 
+
+  
+#######
+Level-12: Fighter-09 (Eldritch Knight), Rogue-03 (Arcane Trickster)  
+ - sneak attack (2d6)
+ - steady aim 
+   * can give yourself advantage as BA if you set speed to 0
+ - mage hand legerdemain 
+   * can cast mage hand as a BA, make it invisible, and use it for
+     sleight of hand checks  
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (2): light, true-strike
+   * arcane trickster (3): mage hand, poison spray, prestidigitation
+ - spell slots: 4-3 
+ - spells prepared: eldritch knight (6), arcane trickster (3) 
+   * lvl-1 (eldritch knight): fog cloud, jump, shield, tasha's hideous laughter
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-1 (arcane trickster): color spray, feather fall, longstrider
+   * lvl-2 (eldritch knight): alter-self, blindness/deafness
+   * lvl-2 (shadow-touched): invisibility (free x1/LR) 
+
+NOTE: Sneak attack upgrade (2d6), steady aim, and rogue subclass. Use steady aim if you aren't kiting and don't have/don't want to use any BA damage resources. Or if you're sniping from range. For the subclass, going arcane trickster gets us cantrips, mage hand legerdemain, and additional spellcasting. We also get another 2nd level spell slot, which is huge. Continue to use these slots for casting alter self. For cantrips: take prestidigitation and poison spray. At level-11, poison spray does 3d12 (19.5) damage at 30ft range and enemies can't resist our poison damage b/c of the poisoner feat. That's not bad for a zero-cost move that requires zero setup. And with prestidigitation, we can snuff out light sources and plunge enemies into darkness, leveraging our blindfighting ability. In terms of leveled spells, we take longstrider to give us the option to pre-cast and boost our speed (dovetails w/BA dash). Then we take feather fall for additional defensive utility and color spray. Color spray is just another non-concentration way to inflict blindness (in addition to blindness/deafness). The blindness only lasts one round, but you can potentially get a number of creatures in AOE. And it's only a level-1 spell. We could also think of taking rituals like detect magic, identify, etc. But we haven't had access to those our entire career, and it feels kind of weird to take them now at level 12. And hopefully we have other party members who are full casters. In terms of a damage check, our basic attack combo with poisoner now does: 
+ 	1d6(unarmed)+1d8(rapier)+2d6(true-strike)+2d8(poisoner)+2d6(sneak-attack)+2INT = 5d6+3d8+10 = 41 damage and poisons
+And the lvl-1 wrathful smite combo does: 
+ 	1d6(unarmed)+1d6(wrathful-smite)+1d8(rapier)+2d6(true-strike)+2d6(sneak-attack)+2INT = 6d6+1d8+10 = 35.5 damage and fears
+And our max damage combo with both poison and smite does: 
+	1d6(unarmed)+2d6(wrathful-smite)+1d8(rapier)+2d8(poison)+2d6(true-strike)+2d6(sneak-attack)+2INT = 7d6+2d8+10 = 48 damage
+And both poisons and frightens. Decent damage with good control for this level. 
+
+
+#######
+Level-13: Fighter-09 (Eldritch Knight), Rogue-04 (Arcane Trickster)  
+ - Proficiency Bonus (PB) = +5 
+   * hill's tumble (x5/LR) 
+   * luck points (x5/LR) 
+   * poisoner (x5 doses crafted/1hr); DC=18
+ - feat: defensive duelist (+1 DEX, DEX=16) 
+   * while holding finesse weapon, if hit w/melee attack use reaction 
+     to add PB to AC (lasts until start of next turn) 
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (2): light, true-strike
+   * arcane trickster (3): mage hand, poison spray, prestidigitation
+ - spell slots: 4-3-2 
+ - spells prepared: eldritch knight (6), arcane trickster (4) 
+   * lvl-1 (eldritch knight): fog cloud, jump, shield, tasha's hideous laughter
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-1 (arcane trickster): color spray, feather fall, longstrider, sleep
+   * lvl-2 (eldritch knight): alter-self, blindness/deafness
+   * lvl-2 (shadow-touched): invisibility (free x1/LR)
+
+NOTE: PB increase = more sources of advantage for sneak attack. Get defensive duelist feat and boost DEX. The parry feature of this feat is equivalent to shield spell (+5 to AC) for melee attacks. Use this to save spell slots for smites/longstrider/control spells. We can also use this if we fail to hit with our push rapier attack and just take an OA and then use our reaction to parry. Makes us more durable in kiting playstyle. Next, we get one additional AT spell, and two level-3 spell slots. Use this to upcast blindness/deafness, wrathful smite, THL, or invisibility. We get an additional level-1 wizard spell. Find familiar would probably be mechanically the strongest, but it isn't really thematic for this character. Sleep is potentially very strong on a single dangerous target, and can also be used for stealth/infiltration out of combat. It also makes good use of our high INT/spell DC. So we take that (don't get too attached, we switch it out in a few levels). 
+
+
+#######
+Level-14: Fighter-09 (Eldritch Knight), Rogue-05 (Arcane Trickster)  
+ - sneak attack (3d6) 
+ - uncanny dodge 
+   * use reaction to 1/2 damage from attack roll + attacker you can see
+ - cunning strike 
+   * poison (1d6): DC-16 CON save or poisoned for 1m (repeat at end of turn)
+   * trip (1d6): DC-16 DEX save or prone (Large or smaller)
+   * withdraw (1d6): immediately after attack, move up to 1/2 speed w/o provoking OAs
+
+NOTE: Sneak attack damage improves and we get uncanny dodge and cunning strike. Cunning strike primarily offers additional flexibility and control. You could use the poison option in conjunction with poisoner feat to make a target make *two* CON saves or be poisoned (DC-18, DC-16). Or you could use the withdraw option if you're attacking a Huge enemy / creature with reach attacks or need the extra movement to get back to safety. Either way, nice to have the flexibility. Trip could also be useful to make an enemy have to stand up and use half move speed. Obviously it's a bit redundant with our hill's tumble ability. But even though the DC is lower, trip is also nice because it gives us an option to target DEX saves. This means we have control options to target WIS (wrathful smite/THL/sleep), DEX (trip), and CON (poisoner/poison/blindness-deafness) saves. Uncanny dodge is great for ranged attack rolls when you don't want to (or can't) cast shield. Or when melee attacks would hit you even despite defensive duelist. More abilities to protect your concentration on alter self. As a general go-to, I would probably just take the damage and not use cunning strikes. But the flexibility/additional control is nice. Especially with poison + poisoner, since that can be a really strong debuff. 
+
+
+#######
+Level-15: Fighter-09 (Eldritch Knight), Rogue-06 (Arcane Trickster)  
+ - skill proficiencies (* indicates expertise): 
+   * fighter (2): athletics*, acrobatics*     
+   * criminal (2): stealth*, sleight of hand
+   * rogue (1): investigation*
+   * languages (5): common, common sign language, giant, 
+                    thieves' cant, dwarvish
+
+NOTE: Pretty dead level here. We get expertise, but no other changes. I'd take expertise in athletics and acrobatics. With expertise in athletics when we're in our Large form we would have advantage and +9, so +13.5 on avg. So we will be able to manage amazing feats of strength despite only having STR=8. For acrobatics, we'll have a +13. So yeah, taking this set of skills as expertise leans into our character as someone with astounding physical prowess. Yet because of our high INT, we'll also get to be very clever. 
+
+
+#######
+Level-16: Fighter-09 (Eldritch Knight), Rogue-07 (Arcane Trickster) 
+ - evasion 
+   * no damage when you would take 1/2 on DEX save, 1/2 if you fail
+ - reliable talent
+   * always roll 10+ with skills/tools with which we are proficient
+ - sneak attack (4d6)
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (2): light, true-strike
+   * arcane trickster (3): mage hand, poison spray, prestidigitation
+ - spell slots: 4-3-3 
+ - spells prepared: eldritch knight (6), arcane trickster (5) 
+   * lvl-1 (eldritch knight): fog cloud, jump, shield, tasha's hideous laughter
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-1 (arcane trickster): color spray, feather fall, longstrider
+   * lvl-2 (eldritch knight): alter-self, blindness/deafness
+   * lvl-2 (arcane trickster): arcane vigor, web
+   * lvl-2 (shadow-touched): invisibility (free x1/LR)
+
+NOTE: Lvl-7 rogue. Get evasion, reliable talent and sneak attack increases to 4d6. Evasion is amazing defensive buff. Reliable talent allows us to lean on our skills more consistently without fear of failure. We get 1 new level-3 spell slot + access to level-2 wizard spells as an AT. Darkvision is pretty thematic, but between light and blind-fighting, I think we have it covered. I like arcane vigor to give us some additional burst healing if/when we need it. And the web spell is perhaps the strongest AOE control spell in the game. Lean in to the spider-y part of your shadow-giant theme to make sense of this one. 
+
+
+#######
+Level-17: Fighter-09 (Eldritch Knight), Rogue-08 (Arcane Trickster) 
+ - feat: speedy (+1 DEX, DEX=17)
+   * speed increases by 10ft 
+   * dash over difficult terrain
+   * OAs have disadvantage 
+ - Proficiency Bonus (PB) = +6 
+   * hill's tumble (x6/LR) 
+   * luck points (x6/LR) 
+   * poisoner (x6 doses crafted/1hr); DC=19
+ - cantrip upgrade: true-strike (3d6)
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (2): light, true-strike
+   * arcane trickster (3): mage hand, poison spray, prestidigitation
+ - spell slots: 4-3-3 
+ - spells prepared: eldritch knight (6), arcane trickster (6) 
+   * lvl-1 (eldritch knight): fog cloud, jump, shield, tasha's hideous laughter
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-1 (arcane trickster): color spray, feather fall, longstrider
+   * lvl-2 (eldritch knight): alter-self, blindness/deafness
+   * lvl-2 (arcane trickster): arcane vigor, web, hold person
+   * lvl-2 (shadow-touched): invisibility (free x1/LR)
+
+NOTE: Ok classic late-build conundrum - what feat to take here? The options are speedy, charger, medium armor master, and resilient (DEX). Charger would give you more damage and a little more utility. Med. armor master and resilient are defensive (and resilient is probably better). But I think speedy is the most consistent with the identify of this character. It boosts our base movement speed to 45 and we can further boost this with longstrider (+10), jump (+20) and Large form (+10) for a max of up to 85ft. Having more speed enables this character to swoop in, attack and deal damage/control effects, and then effectively disengage and retreat to safety. I like the idea of using our additional mobility to stay out of danger, versus just having better defensive stats. Charger is perhaps more interesting. It gives us an extra 1d8 in damage per round, and it allows us to push without using push mastery. This means we could use the vex mastery on our rapier as a source of advantage, limiting our dependence on hill's tumble/luck points. But at this level, we have 12 luck points/use's of hill's tumble per day, and we can of course still use spells/traditional sources of advantage. I think another reason that I like speedy is that it means we can be more discerning in choosing our targets, potentially opting in to having OAs taken on us in order to get to an important target. Moving on, we also get a PB increase, cantrip upgrade, and we get to learn another wizard spell. I'm taking hold person here. It's less general purpose than web, but upcasts well and the potential damage increase on auto-crits is pretty huge (notably, we can load smite and sneak attack into a single true-strike attack, all of which would be doubled). This gives us a pretty lethal combo. Of note, paralyzed creatures also auto-fail DEX saves, so we can auto-prone with our trip cunning strike if we want. For a quick damage check, our basic attack combo with poisoner now does: 
+ 	1d6(unarmed)+1d8(rapier)+3d6(true-strike)+2d8(poisoner)+4d6(sneak-attack)+2INT = 8d6+3d8+10 = 51.5 damage and poisons
+And the lvl-1 wrathful smite combo does: 
+ 	1d6(unarmed)+1d6(wrathful-smite)+1d8(rapier)+3d6(true-strike)+4d6(sneak-attack)+2INT = 9d6+1d8+10 = 46 damage and fears
+And our max damage combo with both poison and smite does: 
+	1d6(unarmed)+1d8(rapier)+3d6(wrathful-smite)+2d8(poison)+3d6(true-strike)+4d6(sneak-attack)+2INT = 11d6+3d8+10 = 62 damage
+And both poisons and frightens. Decent damage with good control for this level. And if we managed to get someone with hold person on turn-1, then got them with poisoner and a lvl-3 smite on turn-2 we would do: 
+        2d6(unarmed)+2d8(rapier)+6d6(wrathful-smite)+2d8(poison)+6d6(true-strike)+8d6(sneak-attack)+2INT = 4d8+20d6 = 95 damage
+
+
+#######
+Level-18: Fighter-10 (Eldritch Knight), Rogue-08 (Arcane Trickster)
+ - second wind (x4/LR, recover 1 on SR) 
+   * BA to heal 1d10+fighter-lvl(10)
+   * tactical mind: +1d10 to failed ability check
+   * tactical shift: move up to half speed w/o provoking OAs
+  - weapon masteries (7): 
+   * heavy crossbows (push) 
+   * longbows (slow)
+   * pistols (vex) 
+   * rapiers (vex)  
+   * scimitars (nick)
+   * warhammers (push) 
+   * daggers (nick)
+ - eldritch strike 
+   * when you hit a creature with an attack using a weapon, it has disadvantage 
+     on the next saving throw it makes against a spell you cast before then end 
+     of your next turn. 
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (3): light, true-strike, message
+   * arcane trickster (3): mage hand, poison spray, prestidigitation
+ - spell slots: 4-3-3-1 
+ - spells prepared: eldritch knight (7), arcane trickster (6) 
+   * lvl-1 (eldritch knight): fog cloud, jump, shield, tasha's hideous laughter
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-1 (arcane trickster): color spray, feather fall, longstrider
+   * lvl-2 (eldritch knight): alter-self, blindness/deafness, spider climb
+   * lvl-2 (arcane trickster): arcane vigor, web, hold person
+   * lvl-2 (shadow-touched): invisibility (free x1/LR)
+
+NOTE: +1 use of second wind and another (useless) weapon mastery. Get the eldritch strike feature from EK. We also get to learn an another wizard cantrip (take message) and another level-2 wizard spell. For the spell, darkvision is thematic, but not that useful and we have limited slots. Darkness could be good, but we already have fog cloud and, again, we want to save lvl-2 slots for castings of alter-self. Mirror image is good. Not concentration, nice defensive buff. But we really want to save those lvl-2 slots, so we'd really only consider casting it if we were in a sticky/especially dangerous situation *and* we had an extra turn to setup. Knock is also very situational, but when it's good it's clutch, and does play into our identity as a rogue. In the end, I think spider climb is probably the best choice, as it gives you an additional way to leverage mobility to stay safe/avoid danger. Obviously, it requires concentration, but I could see it being worth it. And it's very thematic. So there you go. We get a 4th level spell slot. Probably best used to upcast control spells. But of course, we can use it to deal max damage and upcast wrathful smite. We also get the EK level 10 feature eldritch strike. Notably, this works quite well with wrathful smite, as we can cast the spell immediately after hitting with a weapon attack. So for anything that is potentially susceptible to fear, this is a really nice boon. It could also help you set up castings of blindness/deafness/hold person/web, etc. 
+
+
+#######
+Level-19: Fighter-11 (Eldritch Knight), Rogue-08 (Arcane Trickster)
+ - extra attack (x2) 
+ - spellcasting 
+ - cantrips: 
+   * eldritch knight (3): light, true-strike, message
+   * arcane trickster (3): mage hand, poison spray, prestidigitation
+ - spell slots: 4-3-3-1 
+ - spells prepared: eldritch knight (8), arcane trickster (6) 
+   * lvl-1 (eldritch knight): fog cloud, jump, shield, tasha's hideous laughter
+   * lvl-1 (shadow-touched): wrathful smite (free x1/LR)
+   * lvl-1 (arcane trickster): color spray, feather fall, longstrider
+   * lvl-2 (eldritch knight): alter-self, blindness/deafness, mirror image, spider climb
+   * lvl-2 (arcane trickster): arcane vigor, web, hold person
+   * lvl-2 (shadow-touched): invisibility (free x1/LR)
+
+NOTE: Two extra attacks + another level-2 wizard spell. Worth noting that at this point, if we have a good magical weapon we will probably do better just using DEX to make the non true-strike attacks on our turn, freeing up our concentration. This will definitely be true when we boost DEX to 18 next level, but even with just a +3, if we have a +2 weapon then it's the same as our unarmed strikes with alter self, plus we get weapon masteries and other magic weapon effects, etc. But yeah, assuming we stick to our core gameplay, getting two extra attacks means another unarmed strike on our turn, boosting all our damage combos by a whopping 1d6+INT (8.5). Not nothing for sure, but we get less out of this than other fighters do (again, unless we opt to drop alter self and make more weapon attacks). For our new spell, pick your favorites. I opted for mirror image. It seems thematic and could be useful in a really tough fight. 
+
+
+#######
+Level-20: Fighter-12 (Eldritch Knight), Rogue-08 (Arcane Trickster)
+ - feat: epic boon of combat prowess (+1 DEX, DEX=18) 
+   * when you miss with an attack roll, you can hit instead (x1/turn) 
+
+NOTE: No changes to spellcasting. Truly a bummer that we weren't able to crack 3rd level spells (we really would have liked haste). But it is what it is. Epic boon of combat prowess is the best offensive choice for us. It means that we will never miss with our sneak attack each turn, assuming we can still generate advantage. Boosting our DEX to 18 further frees us from alter-self, since now with even just a +1 weapon, we would have the same chance to hit as with our altered unarmed strikes, and we would do more damage. So I think we can officially put alter self on the shelf (haha), unless we need it for out of combat utility. This means we can now focus our concentration on debufs like blindness deafness/web/hold-person, and we can use our second level spells for defense/utility (arcane vigor, mirror image, spider climb) without worry that it will handicap our combat effectiveness. Super nice. All-in-all, this is a pretty fun character. A creative build that doesn't use traditional scaling, but manages to keep pace (for the most part) with martial damage dealers. In the end we do a bit less damage, but we get to do damage while still implementing a lot of great debuffing and control. Finally, I think the combat identity of this character is really cohesive, and leans in to the kiting play style consistently throughout their career while still maintaining a decent power curve. Anyway, fun one. 9/10 would play. For a final damage check, assuming we have a +1 rapier, our basic attack combo with poisoner now does: 
+ 	3d8(rapier)+3d6(true-strike)+2d8(poisoner)+4d6(sneak-attack)+3INT = 7d6+5d8+15 = 62 damage and poisons
+And the lvl-1 wrathful smite combo does: 
+ 	3d8(rapier)+1d6(wrathful-smite)+3d6(true-strike)+4d6(sneak-attack)+3INT = 8d6+3d8+15 = 56.5 damage and fears
+And our max damage combo with both poison and smite does: 
+	3d8(rapier)+4d6(wrathful-smite)+2d8(poison)+3d6(true-strike)+4d6(sneak-attack)+2INT = 11d6+5d8+10 = 76 damage
+And both poisons and frightens. Decent damage with good control for this level. And if we managed to get someone with hold person on turn-1, then got them with poisoner and a lvl-4 smite on turn-2 we would do: 
+        6d8(rapier)+8d6(wrathful-smite)+2d8(poison)+6d6(true-strike)+8d6(sneak-attack)+3INT = 8d8+22d6+15 = 128 damage
+Then action surge for even more damage. 
+
+
+
+END
+
+
+
+#####################################################################################
+EXTRA NOTES
+
+In terms of damage, your max damage combo at level 20 would be: 
+ - attack(1)::unarmed-strike + BA:wrathful-smite(lvl-4) + 
+ - attack(2)::unarmed-strike + 
+ - attack(3)::true-strike(rapier)_{push,sneak-attack}
+
+Assuming you use 4th-level wrathful smite (4d6), then this would do: 
+ 1d6 + 5(INT) + 4d6(WS) + 
+ 1d6 + 5(INT) + 
+ 1d8 + 5(INT) + 3d6(TS) + 4d6(sneak-attack) = 13d6+1d8+15 = 65dmg
+
+And if you just use poisoner to do 2d8 (on a failed CON save) you would do: 
+9d6+3d8+15 = 60dmg
+
+Not amazing, but pretty sustainable, and you'll be able to dish out a bunch of good control effects, too (blind, poisoned, prone, frightened) while playing a fun/defensive playstyle. You'll also have pretty decent out of combat utility. 
+
+
+Species: Goliath (Hill Giant)
+ - extra speed (35ft)
+ - ability to prone (no save) PBx/LR
+
+Sources of advantage for sneak attack 
+ - prone (hill giant ancestry) - PBx/LR
+ - luck points (PBx/LR)
+ - blinded (blindness/deafness) 
+ - flanking (allies w/in 5ft) 
+ - steady aim (if not kiting)
+
+Sources of (pseudo) disengage / protection while kiting: 
+ - tactical master (push mastery) 
+ - cunning strike (withdraw) - also let's you move up to half movespeed. 
+ - action surge (use to disengage)
+ - poisoner (poisoned gives disadvantage on OAs) 
+ - wrathful smite (frightened gives disadvantage on OAs)
+ - speedy (disadvantage on OAs) 
+ 
+
+At lvl-20, you would have base speed of: 35 + 10 (speedy) + 30 (epic boon of speed) = 75ft
+If you've cast longstrider, then you'll have another 10ft = 85ft. If you're in your giant form, you get another 10ft (for 95ft).  
+
+spells: 
+ * cantrips (EK): true-strike, mind-sliver / poison spray
+ * cantrips (AT): mage hand, message, minor illusion
+ * lvl-1 (EK): jump, tasha's hideous laughter, detect magic / longstrider
+ * lvl-2 (EK): alter-self / blindness/deafness / darkvision
+ * lvl-1 (AT): feather fall, identify, shield / sleep (x)
+ * lvl-2 (AT): arcane vigor, web / hold person
+ * lvl-1 (ST): wrathful smite (free x1/LR)
+ * lvl-2 (ST): invisibility (free x1/LR)

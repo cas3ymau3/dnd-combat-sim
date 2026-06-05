@@ -1,0 +1,977 @@
+Moniker: The Reanimating Bloodshot 
+Classes: Blood.Hunter-08 (Profane.Soul:Undying), Artificer-04 (Reanimator), Fighter-08 (Arcane.Archer)
+Species: Rock Gnome  
+ - size: small
+ - speed: 30ft 
+ - darkvision: 60ft 
+ - gnome cunning = adv on INT/WIS/CHA saves
+ - gnomish lineage (rock): mending, prestidigitation, clockwork devices  
+Sex: Male 
+Background: Criminal  
+ - ability scores: DEX, CON, INT  
+ - feat: atmokinesis 
+ - skills: sleight of hand, stealth  
+ - tools: thieves' tools  
+ - languages: common, common sign language, gnomish 
+ - equipment (gold buy): 50gp
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15 (+1) = 16
+ - CON = 14 
+ - INT = 15 (+2) = 17 
+ - WIS = 08 
+ - CHA = 08
+ASI's/Feats: 
+ - lvl-00: atmokinesis
+ - lvl-06: poisoner: +1 INT (INT=18)
+ - lvl-08: ASI: +2 INT (INT=20)
+ - lvl-12: ASI: +2 DEX (DEX=18) 
+ - lvl-14: mage slayer: +1 DEX (DEX=19) 
+ - lvl-16: sharpshooter: +1 DEX (DEX=20)
+ - lvl-20: epic boon of fate: +1 WIS (WIS=11)  
+Progression Summary
+ - lvl-01: blood.hunter-01 --> hunter's bane, blood maledict (fallen puppet), DEX save prof., weapon mastery
+ - lvl-02: blood.hunter-02 --> crimson rite (storm), archery 
+ - lvl-03: blood.hunter-02, artificer-01 --> tinker's magic, spellcasting 
+ - lvl-04: blood.hunter-02, artificer-02 --> replicate magic item: repeating shot, +1 shield
+ - lvl-05: blood.hunter-02, artificer-03 (reanimator) --> jolt to life, reanimated companion 
+ - lvl-06: blood.hunter-02, artificer-04 (reanimator) --> poisoner: +1 INT (INT=18)
+ - lvl-07: blood.hunter-03 (profane.soul:undying), artificer-04 (reanimator) --> rite focus, pact magic 
+ - lvl-08: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator) --> ASI: +2 INT (INT=20) 
+ - lvl-09: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-01 --> second-wind, defensive 
+ - lvl-10: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-02 --> action surge, tactical mind 
+ - lvl-11: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-03 (arcane.archer) --> arcane shot (bursting, piercing)
+ - lvl-12: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-04 (arcane.archer) --> ASI: +2 DEX (DEX=18)  
+ - lvl-13: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-05 (arcane.archer) --> extra attack, tactical shift 
+ - lvl-14: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-06 (arcane.archer) --> mage slayer: +1 DEX (DEX=19)  
+ - lvl-15: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-07 (arcane.archer) --> curving shot, ever ready shot 
+ - lvl-16: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-08 (arcane.archer) --> sharpshooter: +1 DEX (DEX=20) 
+ - lvl-17: blood.hunter-05 (profane.soul:undying), artificer-04 (reanimator), fighter-08 (arcane.archer) --> hemocraft die (1d6) 
+ - lvl-18: blood.hunter-06 (profane.soul:undying), artificer-04 (reanimator), fighter-08 (arcane.archer) --> brand of castigation, +1 blood curse 
+ - lvl-19: blood.hunter-07 (profane.soul:undying), artificer-04 (reanimator), fighter-08 (arcane.archer) --> mystic frenzy, silence, +1 rite (flame) 
+ - lvl-20: blood.hunter-08 (profane.soul:undying), artificer-04 (reanimator), fighter-08 (arcane.archer) --> epic boon of fate: +1 WIS (WIS=11)
+
+MECHANICAL CONCEPT NOTES
+ - start out as a true-strike blood hunter wielding a pistol; assume we get weapon masteries from blood.hunter 
+ - leverage archery fighting style, vex mastery, and repeating shot (+1) for high chance to hit even as we delay boosting INT
+ - true-strike + crimson rite offsets damage from not getting extra attack and delaying INT increases 
+ - once you get reanimated companion, use dreadful swipe as primary bonus action for damage 
+ - you can use atmokinesis (shocking grasp, convert pistol shots to lightning dmg) in order to keep it alive 
+ - you can also use true-strike to shoot it and trigger death burst 
+ - take poisoner for BA dmg when companion isn't around; don't need war caster since we won't be concentrating on anything important 
+   and we won't ever need to cast spells (other than true strike) in combat. For true strike, the pistol is our spellcasting focus + the 
+   material component for the spell, so we can still cast it while using a shield 
+ - profane soul gives us pact magic slots that we can use to resummon our reanimated companion (should use all slots on this); w/3 lvl-01 
+   slots (one of which recovers on a SR), we can create up to 5 reanimated companions per day. This should be enough for all combats + 
+   some wiggle room. 
+ - boost defense through +1 shield, defensive fighting style (fighter), and healing from rite focus of undying patron
+ - we go rock gnome for a few reasons - first we want adv on mental saves since our WIS and CHA are bad; second rock gnome clockwork tools 
+   synergize with the oil/flammable materials we can create with alchemists tools, which we get from blood.hunter. We can also use igniter + 
+   oil to blow up our reanimated companion, making for some great trap potential 
+ - eventually we go arcane archer to get bursting shot and piercing shot; bursting shot lets us dmg our reanimated companion, potentially 
+   triggering death burst, while still making true-strike attacks against our main target. Piercing shot lets us shoot our companion and 
+   our primary target through full cover. atmokinesis let's us heal our companion while still dealing dmg to our primary target if we want 
+ - shocking grasp, dread swipe and tactical shift all give us a way to disengage if we get stuck in melee 
+ - conceptually, at early levels the reanimated companion is durable enough to be effective in combat, at later levels we just want to send 
+   him in and then blow him up to deal AOE damage
+ - post lvl-11, when we get extra attack, we move towards building DEX in order to gain damage by making multiple attacks per turn
+ - we take mage slayer to further boost our mental save resilience, and sharpshooter to increase our effective range out to 90ft 
+ - we finish out profane soul in order to get some more spellcasting, mystic frenzy (which we could use to do true-strike + pistol attack) 
+   and epic boon of fate for more saving throw bonuses at lvl-20  
+
+THEMATIC CONCEPT NOTES: 
+ - we are a blood.hunter with a lich-like patron who controls undead to do their bidding, so we do the same and create an undead minion
+   which we use send in and mercilessly destroy to smite our enemies 
+ - just as we are a monster to fight monsters, so too do we control the undead to fight our enemies 
+ - spooky necromancer/blood.hunter/dark-magic arcane archer
+ - we would be a total social pariah, an outcast among outcasts and a definitely a creepy dude 
+ - make reanimated companion a creepy tim-burton like creature -- addam's family `thing', squigg, undead doggo, undead rat-thing (skaven) 
+   make it something you don't mind blowing up  
+ - make undead companion look like a squigg, so that it actually looks kind of like a grenade that blows up
+ - think of `spawn' meets `robin-hood' as a potential thematic reference 
+
+SYNERGISTIC MAGIC ITEMS: 
+ - common:
+ - uncommon: 
+ - rare: 
+ - very rare: 
+ - legendary: 
+ - artifact: 
+   
+MAX LEVEL MAGIC ITEMS
+- lvl-20 (~6 items, max 1 legendary/artifact)   
+
+
+DAMAGE PROFILE 
+
+LVL	DPR	%CHG	% baseline	Blade-Pact Baseline	Rogue Base Dagger Thrower	Berserker Greatsword	Treantmonk Damage Classes by Tier 				
+lvl-01	5.4	-	0.85		6.3			8.2				8.8				Tier 01	Tier 02	Tier 03	Tier 04 
+lvl-02	7.7	43.8	0.90		8.6			9.2				11.3			A	13-15	37-43	50-57	70-78
+lvl-03	7.7	0.0	0.90		8.6			13.9				17.9			B	10-12	29-36	42-49	60-69
+lvl-04	10.3	33.5	1.12		9.2			14.8				21.4			C	07-09	22-28	34-41	50-59
+T1 avg	7.8	-	0.95		8.2			11.5				14.9			D	04-06	15-21	26-33	35-49
+lvl-05	19.0	84.3	0.90		21.1			18.4				38						
+lvl-06	22.3	17.4	1.05		21.1			18.4				38.7						
+lvl-07	21.7	-2.5	1.00		21.8			22.1				38.7						
+lvl-08	24.4	12.2	1.06		23			22.9				41.1						
+lvl-09	25.7	5.5	0.95		26.9			26.6				48.2						
+lvl-10	26.8	4.3	1.00		26.9			26.6				55.3						
+T2 avg 	23.3	-	0.99		23.5			22.5				43.3						
+lvl-11	33.9	26.5	1.10		30.9			30.3				55.3						
+lvl-12	34.0	0.5	0.88		38.5			30.3				55.3						
+lvl-13	41.2	21.0	1.07		38.5			33.9				57						
+lvl-14	41.1	-0.3	1.07		38.5			33.9				57						
+lvl-15	40.1	-2.4	1.04		38.5			37.6				57						
+lvl-16	42.5	6.2	1.10		38.5			37.6				62.9						
+T3 avg	38.8	-	1.04		37.2			33.9				57.4						
+lvl-17	46.4	9.0	0.83		55.9			41.3				66.4						
+lvl-18	51.5	11.1	0.92		55.9			41.3				66.4						
+lvl-19	56.8	10.3	0.91		62.3			48.3				70.8						
+lvl-20	57.3	0.9	0.92		62.3			48.3				80.3						
+T4 avg	53.0	-	0.90		59.1			44.8				71.0						
+
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+#######
+Level-01: Blood.Hunter-01
+ - feat: atmokinesis 
+   * lightning jolt = once per turn, when you deal B/P/S or psychic dmg, you can turn it to lightning dmg 
+   * psionic talent = shocking grasp, fog-cloud (lvl-00), gust of wind (lvl-03), free x1/LR   
+                      when you cast these spells, no verbal or material components required  
+ - saving throw proficiencies: DEX, INT    
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * blood.hunter (2): acrobatics, arcana, investigation     
+   * criminal (2): sleight of hand, stealth  
+   * tools (2): alchemist's supplies, thieves' tools    
+   * languages (3): common, common sign language, gnomish   
+ - weapon/armor proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light/medium armor + shields  
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (criminal) + 150gp (blood hunter)
+   * weapons: hand crossbow (75gp), shortsword (10gp), case of crossbow bolts x3 (3gp)
+   * armor: leather armor (10gp), shield (10gp) 
+   * tools: alchemist's supplies (50gp), thieves' tools (25gp) 
+   * foci: none  
+   * gear: explorer's pack (10gp), traveler's clothes (2gp)
+   * spare coin: 5gp
+ - combat equipment:
+   * weapon: hand crossbow = 1d6 piercing (vex); ammunition (range 30/120; bolt), light, loading
+   * armor: leather armor + shield 
+   * AC: 11 + 3(DEX) + 2(shield) = 16
+ - weapon masteries (2) 
+   * shortswords (vex)
+   * hand crossbows (vex)
+ - hunter's bane 
+   * advantage on survival checks to track fey, fiends, or undead
+   * advantage on INT checks to recall information about such creatures 
+   * hemocraft modifier = INT; DC = 8+PB+INT (13)
+   * hemocraft die (1d4)
+ - blood maledict (x1/SR)
+   * blood curse of the fallen puppet = when creature w/in 30ft you can see drops to 0 HP, use reaction to allow 
+     creature to make one weapon attack against target you choose w/in range; amplify = first cause the creature 
+     to move up to half its speed and give it bonus to the attack roll equal to hemocraft modifier (INT) 
+ - spellcasting 
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+ - spell slots: 0 
+ - spells prepared: 0
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR)   
+
+NOTE: Start out blood.hunter-01 in order to get DEX save proficiency and weapon proficiency/masteries. Wield hand crossbow (draw and stow each attack) and shield. Use shocking grasp to get out of melee. Use shortsword for opportunity attacks. Lots of nice skill proficiencies (thieves' tools + sleight of hand, stealth, investigation, arcana), plus hunter's bane. If you have downtime, craft oil/acid/alchemist's fire with alchemist's supplies. Note that we can ignite substances/objects with the clockwork devices that we make with our gnomish lineage feature. Take blood curse of the fallen puppet for future synergy with reanimated companion, use it here if/when appropriate to give yourself spooky thematics. Use fog-cloud for shutting down ranged enemies, hiding, or covering your retreat. For DPR we get: 
+  (attacking w/advantage): (0.75)*(0.8775)*(6.5) = 4.3 dmg
+  (attacking w/o advantage): (0.25)*(0.65)*(6.5) = 1.06 dmg
+  (total): 5.36 DPR 
+
+
+
+
+
+#######
+Level-02: Blood.Hunter-02
+ - crimson rite (1d4)
+   * BA to activate; take 1 hemocraft die necrotic dmg; lasts until short/long rest
+   * rite of the storm = extra rite damage is lightning dmg 
+ - feat: fighting-style::archery 
+   * +2 bonus to attack rolls with ranged weapons 
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+ - spell slots: 0 
+ - spells prepared: 0
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR)   
+
+NOTE: Go blood.hunter-02 to get crimson rite. We take rite of the storm for future synergy with our reanimated companion. Activate this right after each short rest so that we don't have to waste a BA in combat activating it (though at this level, we don't really have anything to do with our BA). We get our fighting style and we go with archery. This means we have a base +7 to hit with our crossbow. So against an AC-14 target, we would have a 70% chance to hit. The crossbow also has vex mastery, meaning we'll have advantage on shots after our first hit. When attacking with advantage we have a 91% chance to hit. Assuming we attack with advantage around 75% of the time, our basic attack DPR maths out to: 
+  (attacking w/advantage): (0.75)*(0.91)*(9) 
+  (attacking w/o advantage): (0.25)*(0.7)*(9) 
+  (total): 7.71 DPR 
+which isn't great, but it's also not terrible. Plus we get a tiny bit more DPR from using blood curse of the fallen puppet twice per day.  
+
+
+
+
+#######
+Level-03: Blood.Hunter-02, Artificer-01 
+ - skill/tool proficiencies: 
+   * artificer (1): perception
+   * blood.hunter (2): acrobatics, arcana, investigation     
+   * criminal (2): sleight of hand, stealth  
+   * tools (3): alchemist's supplies, thieves' tools, tinker's tools    
+   * languages (3): common, common sign language, gnomish   
+ - combat equipment:
+   * weapon: hand crossbow = 1d6 piercing (vex); ammunition (range 30/120; bolt), light, loading
+   * armor: studded leather armor + shield 
+   * AC: 12 + 3(DEX) + 2(shield) = 17
+ - tinker's magic  
+   * while holding tinker's tools, can create item from list using magic action (xINT/LR) 
+   * item lasts until you finish a LR
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+   * artificer (2): guidance, true strike 
+ - spell slots: 2 
+ - spells prepared: artificer (2)
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR) 
+   * lvl-01 (artificer): detect magic (R), jump 
+   * lvl-02 (atmokinesis): gust of wind (free x1/LR)   
+
+NOTE: Alright, lvl-03 and we start taking artificer levels. We get tinker's magic, which is a nice ribbon feature. With a +3 INT, we can create 3 items each day. Obviously, we should use this when appropriate to create whatever item we happen to need. But as a default, I think creating two flasks of oil, and caltrops would be nice. Notably, we can use the oil in combination with our fire starter clockwork devices to set fires remotely. Multiclassing into artificer also gives us a new skill proficiency (we take perception) and proficiency with tinker's tools. Tinker's tools can be used to craft other useful items such as locks, manacles, and hunter's traps. With our crafting ability, high DEX, sleight of hand/thieves' tools proficiency, and proficiency in key skills like arcana, investigation, and perception we can fully serve as the party's rogue, even without any rogue levels. We will certainly be a useful party member, even if we aren't doing a ton in combat. Character lvl-03 also gets of gust of wind through our atmokinesis feat. Use this for control when appropriate or maybe to spread fire created by your oil + fire-starters. Whatever, it's not a great spell. Next up, we get artificer spellcasting. Take guidance and true-strike as cantrips. Use guidance to further enhance our skill-check abilities. True-strike doesn't do anything for us right now (we have a +3 in DEX and INT), but we can use it if we want to change the damage of our crossbow to radiant (so now we can choose between radiant, lighting, and piercing). In terms of spells, take detect magic and jump and use your spell slots to cast jump for extra mobility in a few combats. Though note that you'll need to have a free hand to hold artisan's (thieves') tools to cast the spell because of tools required. Finally, assume that we've cobbled together enough gold (45gp) to buy ourselves some studded leather armor, which boosts our AC by 1 up to 17. No change in DPR
+
+
+
+
+#######
+Level-04: Blood.Hunter-02, Artificer-02 
+ - replicate magic item 
+   * plans known (4): repeating shot, +1 shield, manifold tool, bag of holding 
+   * magic items (2): repeating shot, +1 shield 
+ - weapon masteries (2) 
+   * shortswords (vex)
+   * pistols (vex)
+ - combat equipment:
+   * weapon: pistol+1 = 1d10+1 piercing (vex); ammunition (range 30/90; bolt), loading
+   * armor: studded leather armor + shield+1 
+   * AC: 12 + 3(DEX) + 3(shield+1) = 18
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+   * artificer (2): guidance, true strike 
+ - spell slots: 2 
+ - spells prepared: artificer (3)
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR) 
+   * lvl-01 (artificer): detect magic (R), identify (R), jump 
+   * lvl-02 (atmokinesis): gust of wind (free x1/LR)   
+
+NOTE: Go artificer-02 to get replicate magic item. Use this to create a repeating shot (+1 pistol) and a +1 shield. For our other two plans, we take the manifold tool and bag of holding for utility. The +1 pistol represents a significant boost to our damage, as it's a larger damage die, has a flat damage boost, and maintains our chance to hit. The +1 shield gives us an AC of 18, making us very durable for this level. In addition, replicate magic item lets us use a weapon that we create with the feature as a spellcasting focus for our artificer spells. So now we can cast spells while holding pistol and shield. Though it is probably still a good idea to draw + shoot then holster each turn in order to keep a hand free for using items. Since we are now using a pistol (instead of the hand crossbow), we change our weapon masteries so that we still have the vex mastery. With a +8 to hit we have a 70% chance to hit an AC-15 target (see monster AC and saves table) and 91% chance with advantage. Again assuming we attack with advantage 75% of the time and have 100% uptime on crimson rite, our DPR now calcs at: 
+  (attacking w/advantage): (0.75)*(0.91)*(12) 
+  (attacking w/o advantage): (0.25)*(0.7)*(12) 
+  (total): 10.29 DPR 
+With a little boost from blood curse of the fallen puppet.
+
+
+
+
+#######
+Level-05: Blood.Hunter-02, Artificer-03 (Reanimator) 
+ - proficiency bonus (PB): +3 
+ - cantrip scaling: 
+   * shocking grasp: 2d8 
+   * true strike: 1d6 
+   * spare the dying: 30ft
+ - jolt to life 
+   * can modify spare the dying INT times per LR 
+   * when you cast it, target is restored to 1 HP and creatures w/in 10ft radius 
+     have to make DEX save or take 1d4+artificer-lvl lighting dmg
+ - reanimated companion 
+   * create using artisan's tools + magic action (manifests w/in 5ft of you) 
+   * lasts until LR or you take a magic action to dismiss it (triggering death burst) 
+   * acts on your turn, moves/reactions on its own; BA to do anything other than dodge 
+   * small undead, neutral
+   * AC = 10+INT (13); HP = 4+4*artificer-lvl (16)
+   * speed = 30ft; blindsight: 60ft
+   * death burst = explodes when it dies; 10ft emanation; spell DC DEX save or 2d6 necrotic dmg
+   * lightning absorption = heals when it takes lighting dmg (equal to dmg taken) 
+   * dreaful swipe (action): 1d4+2+INT, spell attack mod to hit (+6), on hit target can't take reactions 
+     until next turn
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+   * artificer (2): guidance, true strike 
+   * reanimator (1): spare the dying
+ - spell slots: 2 
+ - spells prepared: artificer (4)
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR) 
+   * lvl-01 (artificer): detect magic (R), feather fall, identify (R), jump 
+   * lvl-01 (reanimator): false life, witch bolt
+   * lvl-02 (atmokinesis): gust of wind (free x1/LR)   
+
+NOTE: Alright, big level. We artificer-03 and take our subclass -- the reanimator -- plus we get a proficiency bonus and cantrip scaling increase. Ok, let's just start with the PB and cantrip scaling. With a +3 PB, we now have a +9 to hit with our pistol (+3 INT, +3 PB, +2 archery, +1 repeating shot), meaning we have a base 75% chance to hit, and a 93.75% chance to hit with advantage. So our chance to hit increases. We also get to add true strike damage (+3.5) on hit. So now our DPR if we just focused on true-strike attacks would be: 
+  (attacking w/advantage): (0.75)*(0.9375)*(15.5) 
+  (attacking w/o advantage): (0.25)*(0.75)*(15.5) 
+  (total): 13.80 dmg 
+Next let's talk about the reanimated companion. The first obvious point is that the reanimated companion gives us a way to deal damage with our BA. Assuming we are able to use our BA to attack with the companion 75% of the time (with a 60% chance to hit), this adds:  
+  (dreadful swipe): (0.75)*(0.6)*(7.5) = 3.375 dmg 
+The companion also deals damage when it dies. Assuming we use all our spell slots to summon reanimated companions each adventuring day, we will get 3 death bursts. At lvl-05, monsters have an average DEX save of +2. Our spell DC is 14. So there's a 55% chance they fail. On failure, enemies take 2d6 necrotic damage. Ideally, we are always hitting multiple targets with this. But let's assume we get 1.5 enemies in the radius on average. Given these assumptions, over 16 combat rounds, the companion's death burst feature adds: 
+  (death burst): 3*1.5*(0.55)*(7)/16 = 1.08 dmg 
+In addition, we now have a concrete use for our blood curse of the fallen puppet. Namely, we should use it after our reanimated companion dies to give immediately allow it to attack (using dreadful swipe). Assuming we do this twice per day (1/8 of combat rounds), and that we amplify it each time (which gives our dead companion an additional +INT to the attack, bringing the total to +9 to hit) we get an additional: 
+  (fallen puppet): (1/8)*(0.75)*(7.5) = 0.70 dmg 
+Considering all these different damage sources, our overall DPR comes to: 
+  (total): 18.96 DPR 
+So that's a 84% increase in damage relative to lvl-04, and is pretty decent damage for the start of tier-02. By comparison, a fighter with STR=18 (65% chance to hit) and the great weapon master feat would be doing: 2*(0.65)*(13.5) = 17.55 DPR, though they would get more from their subclass and the BA hew attack they get on a crit. Still, not to shabby. 
+
+Ok now lets talk about the other build synergies with the reanimated companion. First off, we have the atmokinesis feat. This gives us shocking grasp, which we can use out of combat to heal our companion with zero resources. We can also use our action to shoot our companion and use the lightning jolt feature of the atmokinesis feat to convert our piercing damage to lightning damage. Doing this would heal the companion for an average of 12hp. Next, we can cast fog cloud, then use our BA to command our companion to attack an enemy within the cloud. Because the companion has blindsight, they will have advantage on the attack roll and blinded enemies will have disadvantage on attacks against them. There is also synergy with gust of wind. Namely we can get the wind blowing behind our companion, potentially pushing them 15ft further towards our intended target, while simultaneously keeping enemies at bay (halves speed against wind). Neither of these spell synergies is hugely impactful, and I probably wouldn't sacrifice making attacks to cast them, but situationally they could be the right answer for boosting the damage/durability of our companion (especially if we can pre-cast). Next up, we have our item synergies. In particular, our reanimated companion can carry our fire starter clockwork devices and activate them with its bonus action (without interfering with its ability to attack). Set up cool traps with this, where you throw/pour oil and then ignite it with the companion, potentially triggering its death burst. The companion can also do things like place hunting traps, drop caltrops, or use manacles. All of these would require that we use our BA to command the companion to take the utilize action. Finally, hitting enemies with dreadful swipe negates enemies abilities to take reactions, which could be especially helpful for us if we want to disengage from a melee attacker. 
+
+Whew, ok now the next reanimator feature we get is jolt to life. Ideally we aren't using our action on our turn to cast a healing cantrip, but obviously situations arise where allies are downed. This feature not only means we get a resource-free 1HP restoration 3x/day, but also makes it so that when we are reviving allies in combat, we still are dealing a bit of damage. It's also super nice that this comes online right when we get cantrip scaling, so that we can do it from up to 30ft away. Finally, we get new spells. From our reanimator subclass we get false life and witch bolt. Truthfully, I probably wouldn't ever use either of these. Mainly because we want to use all of our spell slots to resummon our reanimated companion. In a pinch, however, or at the end of the adventuring day/in a situation where we don't have our reanimated companion they are both potentially useful. In particular, if for some reason I couldn't have my reanimated companion, then I would use witch bolt as my primary concentration spell in order to continue to deal damage with my BA. Finally, for our new spell preparation from the base class, I just took the feather fall spell. Hopefully we won't ever have to use it, but it's good in a pinch and especially helpful for us since we can cast it to prevent our reanimated companion from taking fall damage and exploding when near us/allies. 
+
+
+
+
+#######
+Level-06: Blood.Hunter-02, Artificer-04 (Reanimator) 
+ - feat: poisoner 
+   * ASI: +1 INT (INT=18) 
+   * potent poison: when you deal poison dmg, it ignores resistance to poison 
+   * brew poison: proficiency with poisoner's kit using 50gp materials + 1hr crafting time, 
+                  can craft PB doses of poison; BA to apply to weapon/ammunition; 
+                  on hit, CON save or 2d8 poison dmg and poisoned for 1 turn
+ - skill/tool proficiencies: 
+   * artificer (1): perception
+   * blood.hunter (2): acrobatics, arcana, investigation     
+   * criminal (2): sleight of hand, stealth  
+   * tools (4): alchemist's supplies, poisoner's kit, thieves' tools, tinker's tools    
+   * languages (3): common, common sign language, gnomish
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+   * artificer (2): guidance, true strike 
+   * reanimator (1): spare the dying
+ - spell slots: 2 
+ - spells prepared: artificer (5)
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR) 
+   * lvl-01 (artificer): alarm (R), detect magic (R), feather fall, identify (R), jump 
+   * lvl-01 (reanimator): false life, witch bolt
+   * lvl-02 (atmokinesis): gust of wind (free x1/LR)   
+
+NOTE: Right, lvl-06 and we go artificer-04 to get our first feat. We take poisoner. As a half feat, this lets us boost our INT to 18. This boosts our chance to hit and damage, and increases our spell DC which makes companion's death burst deal damage more reliably. It also enhances all of our INT-based skills/tool abilities. It also gives us proficiency with the poisoner's kit the ability to bypass poison resistance, and the brew poison ability. Brew poison is the big one, as it allows us to spend time and money crafting poison doses that we can apply to ammunition in order to deal more damage and impose the poisoned condition in combat. The rationale here is to give us another way to get damage from our BA in the event that our reanimated companion is killed or out of range. This will potentially be more relevant as we progress further in our career, as by the time we get to high levels, our reanimated companions 20HP health pool will be very small and it will be more likely that it is killed and we need an alternative use for our BA. Assuming we start mass brewing poison doses during our downtime after we take this feat, we should have ample doses to use whenever appropriate. In terms of our DPR calculation, I'm going to assume that we use a number of poison doses equal to our proficiency bonus, up to a maximum of 4 turns per day (i.e., when we aren't using dreadful swipe). The obvious alternative feat to take here at this level is war caster, but it's important to point out that it wouldn't be that good. War caster gives three things: (i) a boost to concentration checks, (ii) spells as AoOs, and (iii) spellcasting while holding weapons/shields. We basically benefit from none of these. We don't have an important concentration spell we rely on (and most often won't be concentrating on anything), we are a ranged attacker and don't want to be in melee (where we might make spell attacks as AoOs), and the only spell that we really need to be able to cast in combat is true strike, which we can already cast without warcaster (the weapon is our spell focus (for tools required) and the material component for the spell, and you can perform somatic components with the same hand you use for the material component). So yeah, we're going to go with poisoner. Thematically, I also think poisoner also fits right in with this character's macabre and intellectual blood.hunter/artificer vibe and their `special shot' combat identity. Finally, at artificer-04 we also get one more artificer spell preparation. For this, surprise-surprise, I'm going with alarm since it's the best ritual we don't already have prepared. In terms of DPR, the boost to our INT plus poisoner adds: 
+ (attacking w/advantage): (0.75)*(0.96)*(16.5) = 11.88 dmg
+ (attacking w/o advantage): (0.25)*(0.80)*(16.5)  = 3.30 dmg
+ (dreadful swipe): (0.75)*(0.65)*(8.5) = 4.14 dmg
+ (poisoner): (3/16)*(0.55)*(9)*((0.75)*(0.96)+(0.25)*(0.80)) = 0.85 dmg
+ (death burst): 3*1.5*(0.60)*(7)/16 = 1.18 dmg
+ (fallen puppet): (1/8)*(0.85)*(8.5) = 0.90 dmg 
+ (total): 22.25 DPR 
+
+ 
+
+  
+#######
+Level-07: Blood.Hunter-03 (Profane.Soul::Undying), Artificer-04 (Reanimator) 
+ - rite focus (undying) 
+   * when you reduce a hostile creature to 0 hit points, regain HP equal to 1 roll of hemocraft die 
+   * can use weapon as spellcasting focus for warlock spells when crimson rite is active 
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+   * artificer (2): guidance, true strike 
+   * reanimator (1): spare the dying
+   * warlock (2): blade ward, eldritch blast
+ - spell slots: 3_{1} 
+ - spells prepared: artificer (5), warlock (2)
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR) 
+   * lvl-01 (artificer): alarm (R), detect magic (R), feather fall, identify (R), jump 
+   * lvl-01 (reanimator): false life, witch bolt
+   * lvl-01 (warlock): comprehend languages (R), unseen servant (R)
+   * lvl-02 (atmokinesis): gust of wind (free x1/LR)   
+
+NOTE: Alright, lvl-07 and we go blood.hunter-03 to get our subclass. We're going with profane soul and we choose the undying patron. The main reason for taking this subclass is because it gives us a pact magic spell slot that we can use to summon our reanimated companion another 2x per LR (1 pact slot that recovers on a SR). The other benefits are secondary. We choose the undying patron because it's thematically consistent, and because the rite focus gives us baseline healing (which we otherwise lack in our kit). For pact magic, we get two cantrips and two warlock spell preparations. For the cantrips, we take blade ward and eldritch blast. The former is a great defensive option if we have a setup turn since we have high AC and we don't have any other demands on our concentration. And eldritch blast is great for a couple of reasons. First it's a great option when we want to attack things beyond our pistols 30/90 ft range (the spell has a range of 120ft). Second, it has the added benefit that we can use the multiple different beams to `detonate' our reanimated companion if we need to. That is, use one beam to hit the companion (dealing damage and exploding it) and then use the other beam to shoot an enemy target. This also foreshadows what we're going to be doing with arcane archer at later levels. It's also very cool that, with the profane soul rite focus feature, we can use our crimson-rite infused pistol to `shoot' eldritch blasts. Just feels perfect for this character. Now for our new spell preparations, I think we take comprehend languages and unseen servant as warlock spells. The idea is that we aren't going to be using our spell slots to cast spells (instead saving them to summon our companion), so we just want as many useful rituals as we can get our hands on. Comprehend languages leans into our `big-brain' and scout/reconnaissance character aspects. And unseen servant works really well with our clockwork devices, and in conjunction with our reanimated companion for creating distractions and setting up and triggering traps. For example, tell your unseen servant to `ride' your reanimated companion and carry a fire-starter device. Then have your reanimated companion walk up to an unsuspecting target, douse the area around it (or just itself) in oil (which you can easily craft), then use your BA to command the unseens servant to ignite the oil and blow everyone up. Cool. There are lots of other good interactions like this. So have fun with this particular interaction. In terms of DPR, getting another pact magic slot means we can summon/detonate a reanimated companion in all 4 (up to 5) combats per day. However, at lvl-07 the average monster AC increases to 16 and their CON saves increase to +4, so our resulting DPR declines just slightly, to: 
+ (attacking w/advantage): (0.75)*(0.9375)*(16.5) = 11.60 dmg
+ (attacking w/o advantage): (0.25)*(0.75)*(16.5)  = 3.09 dmg
+ (dreadful swipe): (0.75)*(0.60)*(8.5) = 3.83 dmg
+ (poisoner): (3/16)*(0.5)*(9)*((0.75)*(0.9375)+(0.25)*(0.75)) = 0.75 dmg
+ (death burst): 4*1.5*(0.60)*(7)/16 = 1.58 dmg
+ (fallen puppet): (1/8)*(0.80)*(8.5) = 0.85 dmg 
+ (total): 21.70 DPR
+
+
+
+
+#######
+Level-08: Blood.Hunter-04 (Profane.Soul::Undying), Artificer-04 (Reanimator) 
+ - ASI: +2 INT (INT=20)  
+
+NOTE: Alright, very straight-forward level here. We're lvl-08 and we go blood.hunter-04 in order to get an ASI. We boost our INT to 20, which boosts our chance to hit, damage, and spell DC (boosting death burst and poisoner dmg). Nothing else changes. Upping our INT changes our DPR to: 
+ (attacking w/advantage): (0.75)*(0.96)*(17.5) = 12.60 dmg
+ (attacking w/o advantage): (0.25)*(0.80)*(17.5)  = 3.5 dmg
+ (dreadful swipe): (0.75)*(0.65)*(9.5) = 4.63 dmg
+ (poisoner): (3/16)*(0.55)*(9)*((0.75)*(0.96)+(0.25)*(0.80)) = 0.85 dmg
+ (death burst): 4*1.5*(0.65)*(7)/16 = 1.71 dmg
+ (fallen puppet): (1/8)*(0.90)*(9.5) = 1.06 dmg 
+ (total): 24.35 DPR
+
+
+
+
+#######
+Level-09: Blood.Hunter-04 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-01 
+ - proficiency bonus (PB): +4  
+ - feat: fighting-style:: defense 
+   * +1 to AC while wearing light/medium/heavy armor
+ - second wind (x2/LR, recover 1 on SR)
+   * BA to heal 1d10 + fighter-level 
+ - combat equipment:
+   * weapon: pistol+1 = 1d10+1 piercing (vex); ammunition (range 30/90; bolt), loading
+   * armor: breastplate + shield+1 
+   * AC: 14 + 2(DEX) + 3(shield+1) + 1(defensive) = 20
+ - weapon masteries (5) 
+   * shortswords (vex)
+   * pistols (vex)
+   * rapiers (vex) 
+   * daggers (nick) 
+   * muskets (slow)
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+   * artificer (2): guidance, true strike 
+   * reanimator (1): spare the dying
+   * warlock (2): blade ward, eldritch blast
+ - spell slots: 3_{1} 
+ - spells prepared: artificer (5), warlock (2)
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR) 
+   * lvl-01 (artificer): alarm (R), detect magic (R), feather fall, identify (R), jump 
+   * lvl-01 (reanimator): false life, witch bolt
+   * lvl-01 (warlock): comprehend languages (R), unseen servant (R)
+   * lvl-02 (atmokinesis): gust of wind (free x1/LR)   
+
+NOTE: Level-09 and we go fighter-01. We also get a proficiency bonus increase (up to +4). Fighter-01 gets us two nice defensive features. First, we take the defense fighting style, which gives us a +1 to our AC. Second, we get second wind, which we can use ~3x per LR to recover HP (this stacks on top of our rite focus healing). We also get 3 additional weapon masteries, which I used to get rapier, dagger, and musket mastery, but we probably won't ever use these. Having a bunch of weapon masteries does give us the flexibility to use a badass magic item if one happens to drop in our lap. I think it's also safe to assume that by lvl-09 we have managed to acquire 400gp with which to buy ourselves some breastplate. Between the defense fighting-style and getting breastplate, which brings our AC up to 20. Consider that we also can concentrate on blade ward whenever we need (which imposes a -1d4 on enemy attack rolls). Between our high armor and the healing we get from rite-focus and second wind, we are pretty tanky. Our only offensive boost at this level comes from our proficiency bonus increase, which not only increases our chance to hit and spell DC, but also means that we can create 4 doses of poison with 1hr downtime each adventuring day, which is the max number we would use given our assumptions about how we're allocating our BA in combat. Also note that the effect of our increased spell DC on our poisoner damage is offset by the fact that the average monster's CON save increases to +5 at lvl-09. Therefore, with a +4 PB, our DPR increases to: 
+ (attacking w/advantage): (0.75)*(0.9775)*(17.5) = 12.83 dmg
+ (attacking w/o advantage): (0.25)*(0.85)*(17.5)  = 3.72 dmg
+ (dreadful swipe): (0.75)*(0.70)*(9.5) = 4.99 dmg
+ (poisoner): (4/16)*(0.55)*(9)*((0.75)*(0.9775)+(0.25)*(0.85)) = 1.17 dmg
+ (death burst): 4*1.5*(0.70)*(7)/16 = 1.84 dmg
+ (fallen puppet): (1/8)*(0.95)*(9.5) = 1.13 dmg 
+ (total): 25.68 DPR
+We're definitely lagging a little bit in the DPR department, but we just got a huge defensive boost and we continue to provide excellent utility. Plus we'll be getting some nice offensive boosts over the next several levels.  
+
+
+
+
+#######
+Level-10: Blood.Hunter-04 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-02 
+ - action surge (x1/SR)
+ - second wind (x2/LR, recover 1 on SR)
+   * BA to heal 1d10 + fighter-level 
+   * tactical mind = expend use on failed ability check to add 1d10 to the roll
+ 
+NOTE: Alright, level-10 and we go fighter-02. We get action surge, which we should use twice per day to make an extra (DEX-based) attack with our pistol. With vex mastery, and since we'll most likely action surge right after we've made our attack (using true-strike) on our turn let's assume for simplicity that we make the action surge attack with advantage 80% of the time. Then, with archery, our repeating shot, and a +3 DEX, we'll have a +10 to hit, which for AC-16 enemies means we would have a 75% chance to hit, and 93.75% chance to hit with advantage. On hit, this extra attack would deal 1d10+1(repeating.shot)+2.5(rite)+3(DEX) = 12 dmg. Given these assumptions, and accounting for the fact that at level 10 monsters' average DEX save increases to +3 and their average CON save increases to +6, using action surge 2x per day -- i.e., during 1/8 of 16 total combat rounds (four 4-round combats) -- increases our total DPR to: 
+ (attacking w/advantage): (0.75)*(0.9775)*(17.5) = 12.83 dmg
+ (attacking w/o advantage): (0.25)*(0.85)*(17.5)  = 3.72 dmg
+ (dreadful swipe): (0.75)*(0.70)*(9.5) = 4.99 dmg
+ (poisoner): (4/16)*(0.5)*(9)*((0.75)*(0.9775)+(0.25)*(0.85)) = 1.06 dmg
+ (death burst): 4*1.5*(0.65)*(7)/16 = 1.71 dmg
+ (fallen puppet): (1/8)*(0.95)*(9.5) = 1.13 dmg 
+ (action surge): (1/8)*[(0.8)*(0.9375)*(12) + (0.2)*(0.75)*(12)] = 1.35 dmg
+ (total): 26.79 DPR 
+Not a crazy boost to our DPR, and this build certainly plateau's a bit in tier-02. But I do appreciate that we are still managing to increase our damage meaningfully throughout tier-02 while pulling off a pretty complex multiclass. That isn't always the case. Fighter-02 also gets us tactical mind, which allows us to expend a use of second wind to give ourselves a +1d10 (+5.5) to an ability check. Notably, we can stack this with guidance to give ourselves a +7.5 when needed. This is really nice given our excellent set of skill proficiencies. For example, with proficiency in sleight of hand, thieves' tools, a +3 DEX, guidance and tactical mind, we could roll at advantage with +14.5 to pick a lock or disarm a trap. Who needs a rogue, am I right?
+
+
+
+
+#######
+Level-11: Blood.Hunter-04 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-03 (Arcane.Archer) 
+  - cantrip scaling: 
+   * shocking grasp: 3d8 
+   * true strike: 2d6 
+   * spare the dying: 60ft
+   * eldritch blast: 3d10 (3 beams)
+ - skill/tool proficiencies: 
+   * artificer (1): perception
+   * blood.hunter (2): acrobatics, arcana, investigation     
+   * criminal (2): sleight of hand, stealth  
+   * arcane.archer (2): nature, survival
+   * tools (4): alchemist's supplies, poisoner's kit, thieves' tools, tinker's tools    
+   * languages (3): common, common sign language, gnomish  
+ - arcane shot (xINT/SR) 
+   * use once per turn when you make attack w/ranged weapon w/ammunition property 
+   * decide to use after you hit 
+   * arcane shot die = 1d6 (DC = 8+PB+INT)
+   * bursting shot = immediately after you deal dmg, each creature (incl. target) in 10ft emanation takes 2d force dmg
+   * piercing shot = no attack roll; instead ammunition projects in 30x1ft line; all enemies in line make DEX save or 
+                     take weapon dmg plus 2d piercing dmg or half on save; line ignores all cover and can pass thru objects
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+   * artificer (2): guidance, true strike 
+   * reanimator (1): spare the dying
+   * warlock (2): blade ward, eldritch blast
+   * arcane.archer (1): druidcraft
+ - spell slots: 3_{1} 
+ - spells prepared: artificer (5), warlock (2)
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR) 
+   * lvl-01 (artificer): alarm(R), detect magic (R), feather fall, identify (R), jump 
+   * lvl-01 (reanimator): false life, witch bolt
+   * lvl-01 (warlock): comprehend languages (R), unseen servant (R)
+   * lvl-02 (atmokinesis): gust of wind (free x1/LR)   
+
+NOTE: Ok, this is another big one. Lvl-11 and we go fighter-03 and take the arcane archer subclass. First up with this, we get the arcane archer lore feature, which gives us the druidcraft cantrip, plus proficiency in nature and another skill (since we already had arcana). I went with survival, but take your pick (insight and deception both seem appealing). It's worth noting that the sheer number of proficiencies we're getting through multiclassing continue to make us `rogue-like' and boost the overall utility that we bring to the party. Right but the big thing we get from the arcane archer subclass is arcane shot. We get to pick two arcane shots (we take bursting shot and piercing shot) and we can use our arcane shot INT times per short rest, so for us that means 10x per adventuring day. We take bursting shot because we can use the AOE force damage it deals to damage and `detonate' our reanimated companion, triggering its death burst damage with even more precision. Piercing shot is also great for triggering death burst, since we can shoot through our companion, damaging while also hitting a target on the other side. This can also be done through a wall/any sort of total cover, which adds to the potential for trap setting with the reanimated companion. Piercing shot also has the additional synergy of dealing exclusively piercing damage, which means we can use our lighting jolt atmokinesis feature to have the shot damage an enemy while healing our reanimated companion. Pretty cool. It also has the same base range as our pistol (30ft) so we don't have to do anything weird to adjust for the range. Oh yeah, and both options increase our ability to deal multi-target damage (either in a line with piercing shot, or an AOE with bursting shot). In general, the idea behind taking these arcane shot options (and indeed, this whole build) is to deal extra damage while also providing ways to strategically damage/heal our reanimated companion. Since using arcane shots doesn't have any action cost, and only applies after we've hit a target (or just when we attack in the case of piercing shot), we can still use our BA to do dreadful strike/poisoner and get out all of our normal damage. Now, to calc how much getting arcane shot boosts our DPR, I'm going to make the simplifying assumption that we use bursting shot every time (since there is no save against the extra damage). This will tend to overestimate the damage gain since enemies would have the opportunity to save against piercing shot (and we should use this when appropriate). To offset this, I'm only going to assume that we hit multiple targets with our arcane shot 10% of the time (this feels conservative to me). We're probably also being conservative in not adjusting the assumption we make about hitting multiple enemies with death burst, as having arcane shot makes it far more reliably to land death burst in strategically beneficial areas. Of course, there's probably a more sophisticated way to do this, but I think it's a reasonably fair approach. For our the calculation, also note that average monster AC increases to 17 here at lvl-11, and we get an additional d6 with our pistol shots from true-strike scaling. Given this, our updated DPR is: 
+ (attacking w/advantage): (0.75)*(0.96)*(21) = 15.12 dmg
+ (attacking w/o advantage): (0.25)*(0.80)*(21)  = 4.2 dmg
+ (dreadful swipe): (0.75)*(0.65)*(9.5) = 4.63 dmg
+ (death burst): 4*1.5*(0.65)*(7)/16 = 1.71 dmg
+ (poisoner): (4/16)*(0.5)*(9)*((0.75)*(0.96)+(0.25)*(0.80)) = 1.04 dmg
+ (fallen puppet): (1/8)*(0.90)*(9.5) = 1.07 dmg 
+ (action surge): (1/8)*[(0.8)*(0.91)*(12) + (0.2)*(0.70)*(12)] = 1.30 dmg
+ (arcane shot): (1.1)*(10)*(7)/16 = 4.81
+ (total): 33.88 DPR 
+This represents a 27% increase in our damage relatively to lvl-10, and puts us squarely in mid-tier in terms of DPR for lvl-11. All while maintaining a super consistent character identity and playstyle. Especially considering that we're only making one weapon attack per turn, I think we've done a great job of finding ways to continue to scale our damage as we make multiple significant multiclass dips. For comparison, a true-strike assassin rogue with INT=20 would deal: (0.8775)*(36.5 + 11/4) = 34.4 DPR. So yeah, we're hitting basically exactly that, but we get a bunch of utility/spells/AC/HP along the way. Nice! 
+
+
+
+
+#######
+Level-12: Blood.Hunter-04 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-04 (Arcane.Archer) 
+ - ASI: +2 DEX (DEX=18)
+ - combat equipment:
+   * weapon: pistol+1 = 1d10+1 piercing (vex); ammunition (range 30/90; bolt), light, loading
+   * armor: studded leather + shield+1 
+   * AC: 12 + 4(DEX) + 3(shield+1) + 1(defensive) = 20
+ - second wind (x3/LR, recover 1 on SR)
+   * BA to heal 1d10 + fighter-level 
+   * tactical mind = expend use on failed ability check to add 1d10 to the roll
+ - weapon masteries (6) 
+   * shortswords (vex)
+   * pistols (vex)
+   * rapiers (vex) 
+   * daggers (nick) 
+   * muskets (slow)
+   * longbows (slow)
+
+NOTE: Right so a bit more straightforward here. We are lvl-12 and we go fighter-04. We take an ASI and boost our DEX to 18. This basically does nothing for us at this level, but it's going to make a world of difference next level when we get extra attack. For now, it means the extra attacks we make when we action surge are more likely to hit and deal more damage. And it also means that we have the same AC if we wear studded leather versus wearing breastplate. Since it feels more natural to me to imagine this character in studded leather, let's assume we sell our breastplate and move back into studded leather. With no changes in monster AC or DEX/CON saves from lvl-11 to lvl-12, our updated DPR calcs to: 
+ (attacking w/advantage): (0.75)*(0.96)*(21) = 15.12 dmg
+ (attacking w/o advantage): (0.25)*(0.80)*(21)  = 4.2 dmg
+ (dreadful swipe): (0.75)*(0.65)*(9.5) = 4.63 dmg
+ (poisoner): (4/16)*(0.5)*(9)*((0.75)*(0.96)+(0.25)*(0.80)) = 1.04 dmg
+ (death burst): 4*1.5*(0.65)*(7)/16 = 1.71 dmg
+ (fallen puppet): (1/8)*(0.90)*(9.5) = 1.07 dmg 
+ (action surge): (1/8)*[(0.8)*(0.9375)*(13) + (0.2)*(0.75)*(13)] = 1.46 dmg
+ (arcane shot): (1.1)*(10)*(7)/16 = 4.81
+ (total): 34.04 DPR 
+So basically no change, but we're still moving upward. At fighter-04 we also get another use of second wind per long rest, which boosts our durability a bit more. And finally we get another weapon mastery. There isn't anything we need, so I just took longbows in case we want to fire at something beyond 120ft (longbow range is 150ft). And that's it. Moving on! 
+
+
+
+
+#######
+Level-13: Blood.Hunter-04 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-05 (Arcane.Archer) 
+ - proficiency bonus (PB): +5
+ - extra attack
+ - second wind (x3/LR, recover 1 on SR)
+   * BA to heal 1d10 + fighter-level 
+   * tactical mind = expend use on failed ability check to add 1d10 to the roll
+   * tactical shift = when you use second wind to heal, you can move 1/2 speed w/o provoking AoOs.
+
+NOTE: Alright, another important level for us here. We go fighter-05 to *finally* get extra attack. We also get a proficiency bonus increase (up to +5), and the timing couldn't be better. With extra attack, we want to shift away from true strike and towards making multiple DEX-based attacks with our pistol on our turn (which we can do thanks to repeating shot). We lose a bit of damage/accuracy because we only have DEX=18 (vs. making INT based attacks w/true-strike), but this is offset by the PB increase and we still end up doing significantly more damage -- especially because of the extra attacks we get when we action surge. Before we do the DPR calculation, we also note that at fighter-05 we pick up tactical shift, which let's us reposition when we use our second wind. This is particularly good for us, since we can use it to heal and disengage from melee enemies, and stacks alongside shocking grasp and dreadful swipe as ways that we can disengage from melee without taking an attack of opportunity. It also gives us another way to use our BA in combat if our companion isn't available to do dreadful swipe. It's also worth noting that, even though it's optimal to make multiple DEX-based attacks instead of using true-strike, we *can* still use true-strike to increase our chance to hit if it's more important to hit than deal maximum damage. So some nice flexibility there. Ok, so now for the damage calculation. Basically everything is the same, except we are going to assume that in making multiple attacks per round with a vex weapon, that the proportion of attacks we make with advantage increases from 75% to 85%. That and average enemy CON saves increase to +7 at this level. Otherwise, the calculation is as follows: 
+ (attacking w/advantage): 2*(0.85)*(0.96)*(13) = 21.22 dmg
+ (attacking w/o advantage): 2*(0.15)*(0.80)*(13)  = 3.12 dmg
+ (dreadful swipe): (0.75)*(0.7)*(9.5) = 4.99 dmg
+ (poisoner): (4/16)*(0.5)*(9)*((0.75)*(0.96)+(0.25)*(0.80)) = 1.04 dmg
+ (death burst): 4*1.5*(0.7)*(7)/16 = 1.84 dmg
+ (fallen puppet): (1/8)*(0.95)*(9.5) = 1.13 dmg 
+ (action surge): (1/4)*[(0.85)*(0.96)*(13) + (0.15)*(0.8)*(13)] = 3.04 dmg
+ (arcane shot): (1.1)*(10)*(7)/16 = 4.81
+ (total): 41.19 DPR 
+Which represents a 21% increase in damage relative to lvl-12. This isn't record-breaking by any means, but it is, I think, in the upper tier of ranged damage builds. It's certainly better than a longbow ranger using hunter's mark, and way more fun/interesting to play. As a point of comparison, Treantmonk's `Rorek' ranger-rogue build was getting 46.7 DPR at this level. But that character provided less utility to the party than this one (in terms of skills, revives, tools/crafting, cantrips, and ritual spells) and was also arguably less durable. While Rorek is attacking from 150ft away (and avoiding damage that way) and had evasion, he only had an AC of 16, and had very minimal built in healing. We are sitting at an AC of 20, have more HP and hit dice, have multiple sources of passive healing (rite-focus, second wind), and divert attacks from allies towards the reanimated companion. So all in all, I think these two builds are approximately equal in terms of overall power level here at lvl-13. Given that Chris makes pretty good builds, I feel pretty good about this comparison. 
+
+
+
+
+
+
+#######
+Level-14: Blood.Hunter-04 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-06 (Arcane.Archer) 
+ - feat: mage-slayer 
+   * ASI: +1 DEX (DEX=19) 
+   * concentration breaker: when you dmg a creature that's concentration, it has disadv. on the save
+   * guarded mind: auto-succeed on a mental save after failing (x1/SR) 
+ 
+NOTE: Pretty simple level here. We go fighter-06 and take mage slayer. If we were just focusing on damage, the play would certainly be to take an ASI and boost DEX to 20. But we're getting towards the end game and there's bound to be some pretty nasty mental saving throws coming our way (WIS saves, in particular). For a long time, we've been relying on our gnome cunning feature (which grants advantage on mental saves) to help pull us through these. However, with only a 10 in Wisdom we're likely starting to struggle in this department. Therefore, in order to shore up our defenses we go with mage slayer. This also feels thematic. Blood hunter is a mental fortitude class and concentration breaker feels appropriate for a gishy type character that leverages magical abilities but doesn't really use spells (also seems thematically consistent with the type of debuffing we do via poisoner). Plus now we are really a defensive bulwark -- we have high AC and can concentrate on blade ward as needed; we have built in healing through our rite-focus and second-wind, and we have really good buffs to our saving throws (proficiency in DEX/INT, gnome cunning + guarded mind for INT/WIS/CHA saves). However, because monster DEX saves increase to +4 on average at lvl-14, this does mean that our DPR will drop just a tiny bit for the first time since lvl-07. I think it's a worthwhile tradeoff, but again if what you care about is damage, then just take a +2 in DEX here. In terms of DPR, we drop to: 
+ (attacking w/advantage): 2*(0.85)*(0.96)*(13) = 21.22 dmg
+ (attacking w/o advantage): 2*(0.15)*(0.80)*(13)  = 3.12 dmg
+ (dreadful swipe): (0.75)*(0.7)*(9.5) = 4.99 dmg
+ (poisoner): (4/16)*(0.5)*(9)*((0.75)*(0.96)+(0.25)*(0.80)) = 1.04 dmg
+ (death burst): 4*1.5*(0.65)*(7)/16 = 1.71 dmg
+ (fallen puppet): (1/8)*(0.95)*(9.5) = 1.13 dmg 
+ (action surge): (1/4)*[(0.85)*(0.96)*(13) + (0.15)*(0.8)*(13)] = 3.04 dmg
+ (arcane shot): (1.1)*(10)*(7)/16 = 4.81
+ (total): 41.06 DPR 
+So a very marginal decrease.
+
+
+
+
+
+#######
+Level-15: Blood.Hunter-04 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-07 (Arcane.Archer) 
+ - curving shot 
+   * when you miss w/an attack roll, expend BA to make another attack against a diff creature w/in 
+     your weapon's long range 
+ - ever ready shot
+   * when you roll initiative and have no uses of arcane shot, you gain one expended use
+
+NOTE: Alright, lvl-15 and we go fighter-07. We get two new subclass features: curving shot and ever ready shot. The former let's us use our BA to make an additional attack against a different target if we miss with one of our initial attack rolls. This will only be useful if we are fighting without our reanimated companion (or if our companion is out of range of potential targets) *and* we don't want to use our BA on poisoner (ex., enemy is immune to poison or has evidently high CON save) and we miss with our attack. In this very rare situation, it provides another way to deal damage with our BA. Given how marginal this damage boos is likely to be, I'm just going to assume it doesn't increase our damage at all. It is also worth noting, that if we're in the situation where we want to hit an enemy with bursting shot in order to trigger our companion's death burst but we miss with the attack roll, we could use this feature to target our companion with the strike, and still get the bursting shot AOE and death burst damage out on our intended target. So it gives us a bit more consistency/flexibility too. Ever ready shot also, in theory, represents a small damage boost as it could allow us to get out additional arcane shots per day. But most likely we are spreading out our shots so that we have a few to use in each combat, in which case this wouldn't make a difference. I suppose you could `empty the clip' in one of your early/first combats, then limp through the next one with only one use of arcane shot from ever-ready shot before recharging them on a rest. Anyway, I think it's reasonable (and perhaps generous) to assume that ever-ready shot gives us 1/2 of an additional arcane shot per day. Overall, accounting for 0.5 additional arcane shots per day from ever ready shot and the fact that average monster AC increases to 18 at here at lvl-15, our new DPR calcs to: 
+ (attacking w/advantage): 2*(0.85)*(0.9375)*(13) = 20.72 dmg
+ (attacking w/o advantage): 2*(0.15)*(0.75)*(13)  = 2.93 dmg
+ (dreadful swipe): (0.75)*(0.65)*(9.5) = 4.63 dmg
+ (poisoner): (4/16)*(0.45)*(9)*((0.75)*(0.9375)+(0.25)*(0.75)) = 1.00 dmg
+ (death burst): 4*1.5*(0.65)*(7)/16 = 1.71 dmg
+ (fallen puppet): (1/8)*(0.90)*(9.5) = 1.07 dmg 
+ (action surge): (1/4)*[(0.85)*(0.9375)*(13) + (0.15)*(0.75)*(13)] = 2.96 dmg
+ (arcane shot): (1.1)*(10.5)*(7)/16 = 5.05
+ (total): 40.06 DPR 
+So we've gone down again (2 levels in a row), but have basically plateaued at 40 DPR for the past 3 levels. Not great, but we're are getting more consistency, so there's that. Stay the course.  
+
+
+
+
+#######
+Level-16: Blood.Hunter-04 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-08 (Arcane.Archer) 
+ - feat: sharp-shooter 
+   * ASI: +1 DEX (DEX=20) 
+   * bypass cover: ranged attacks ignore half and three-quarters cover 
+   * firing in melee: no longer have disadv. firing at enemy w/in 5ft
+   * long shots: no penalty for shooting at long range 
+ - combat equipment:
+   * weapon: pistol+1 = 1d10+1 piercing (vex); ammunition (range 30/90; bolt), light, loading
+   * armor: studded leather + shield+1 
+   * AC: 12 + 5(DEX) + 3(shield+1) + 1(defensive) = 21
+
+NOTE: Ok, last level of doldrums here. We go fighter-08 and pick up sharpshooter. This caps our DEX at 20, which increases our damage all around as well as boosting our AC (up to 21). So that's very nice. Sharpshooter also gives us the bypass cover, firing in melee, and long shots features that in practice would all contribute to increasing our damage (by removing various penalties to our attack rolls), but we haven't really been accounting for those along the way in our DPR calculations. So for us, on paper, it doesn't do anything. Perhaps the most meaningful contribution sharpshooter makes is that it lets us back up to 90 ft range from our enemies. This is great because it means we can stay away from enemy attacks, but it also means we can be further away from our reanimated companion and still within range to detonate/heal it. So, overall, this level is very similar to the previous levels. No meaningful gain in DPR, but meaningful increases to the flexibility and consistency with which we are able to deliver our damage. For our new DPR calc, we account for the increase in DEX to +5 and, unfortunately, the fact that average enemy DEX and CON saves both increase by one at this level (+5 and +8, respectively).
+ (attacking w/advantage): 2*(0.85)*(0.96)*(14) = 20.72 dmg
+ (attacking w/o advantage): 2*(0.15)*(0.80)*(14) = 2.93 dmg
+ (dreadful swipe): (0.75)*(0.65)*(9.5) = 4.63 dmg
+ (poisoner): (4/16)*(0.45)*(9)*((0.75)*(0.96)+(0.25)*(0.80)) = 0.93 dmg
+ (death burst): 4*1.5*(0.60)*(7)/16 = 1.58 dmg
+ (fallen puppet): (1/8)*(0.90)*(9.5) = 1.07 dmg 
+ (action surge): (1/4)*[(0.85)*(0.96)*(13) + (0.15)*(0.80)*(14)] = 3.07 dmg
+ (arcane shot): (1.1)*(10.5)*(7)/16 = 5.05
+ (total): 42.54 DPR 
+
+
+
+
+#######
+Level-17: Blood.Hunter-05 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-08 (Arcane.Archer) 
+ - proficiency bonus (PB): +6
+ - cantrip scaling: 
+   * shocking grasp: 4d8 
+   * true strike: 3d6 
+   * spare the dying: 120ft
+   * eldritch blast: 4d10 (4 beams)
+ - crimson rite (1d6)
+   * BA to activate; take 1 hemocraft die necrotic dmg; lasts until short/long rest
+   * rite of the storm = extra rite damage is lightning dmg
+ - hunter's bane 
+   * advantage on survival checks to track fey, fiends, or undead
+   * advantage on INT checks to recall information about such creatures 
+   * hemocraft modifier = INT; DC = 8+PB+INT (19)
+   * hemocraft die (1d6)
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+   * artificer (2): guidance, true strike 
+   * reanimator (1): spare the dying
+   * warlock (2): blade ward, eldritch blast
+   * arcane.archer (1): druidcraft
+ - spell slots: 3_{1} 
+ - spells prepared: artificer (5), warlock (3)
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR) 
+   * lvl-01 (artificer): alarm(R), detect magic (R), feather fall, identify (R), jump 
+   * lvl-01 (reanimator): false life, witch bolt
+   * lvl-01 (warlock): comprehend languages (R), hex, unseen servant (R)
+   * lvl-02 (atmokinesis): gust of wind (free x1/LR)   
+
+NOTE: Ok, nice little power spike here. Lvl-17 and we go blood.hunter-05. We get extra attack (which we already have) and our crimson rite damage goes from a d4 to a d6. We also get a proficiency bonus increase, and one additional warlock spell preparation. No changes to monster saves or AC at this level, so all the increased accuracy and damage goes through to our bottom line DPR. 
+ (attacking w/advantage): 2*(0.85)*(0.9775)*(15) = 20.72 dmg
+ (attacking w/o advantage): 2*(0.15)*(0.85)*(15) = 2.93 dmg
+ (dreadful swipe): (0.75)*(0.70)*(9.5) = 4.63 dmg
+ (poisoner): (4/16)*(0.50)*(9)*((0.75)*(0.9775)+(0.25)*(0.85)) = 0.93 dmg
+ (death burst): 4*1.5*(0.65)*(7)/16 = 1.58 dmg
+ (fallen puppet): (1/8)*(0.95)*(9.5) = 1.13 dmg 
+ (action surge): (1/4)*[(0.85)*(0.9775)*(15) + (0.15)*(0.85)*(15)] = 3.07 dmg
+ (arcane shot): (1.1)*(10.5)*(7)/16 = 5.05
+ (total): 46.35 DPR 
+For our new spell preparation, take hex. We won't use it here at this level, but we're going to get a few more spell slots from profane soul before we finish out, and we can use those to boost our damage further. 
+
+
+
+
+#######
+Level-18: Blood.Hunter-06 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-08 (Arcane.Archer) 
+ - blood maledict (x2/SR)
+   * blood curse of the fallen puppet = when creature w/in 30ft you can see drops to 0 HP, use reaction to allow 
+     creature to make one weapon attack against target you choose w/in range; amplify = first cause the creature 
+     to move up to half its speed and give it bonus to the attack roll equal to hemocraft modifier (INT) 
+   * blood curse of the marked = BA to curse; for duration of turn roll 1 extra hemocraft die when determining crimson rite dmg
+ - brand of castigation (x1/SR) 
+   * when you dmg a creature with a crimson-rite weapon, apply brand (no action required) 
+   * while branded, you always know direction to the creature (as long as on same plane) 
+   * whenever branded creature damages you or a creature you can see w/in 5ft of you, it takes INT psychic dmg
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+   * artificer (2): guidance, true strike 
+   * reanimator (1): spare the dying
+   * warlock (2): blade ward, eldritch blast
+   * arcane.archer (1): druidcraft
+ - spell slots: 4_{2} 
+ - spells prepared: artificer (5), warlock (3)
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR) 
+   * lvl-01 (artificer): alarm(R), detect magic (R), feather fall, identify (R), jump 
+   * lvl-01 (reanimator): false life, witch bolt
+   * lvl-01 (warlock): comprehend languages (R), hex, unseen servant (R)
+   * lvl-02 (atmokinesis): gust of wind (free x1/LR)   
+
+NOTE: Ok, home stretch. Lvl-18 and we go blood.hunter-06 to pick up brand of castigation, another pact magic spell slot, and (most importantly) an improvement to our blood maledict feature. Specifically, we can learn a new blood curse and we can use our blood maledict 2x per short rest, so 4x per adventuring day (assuming 1 SR). This is nice for us since it means that we can theoretically use our blood curse of the fallen puppet in every combat/every time we summon a reanimated companion. The new blood curse is also really good. We take blood curse of the marked which we can use to double up crimson rite damage for one turn. We can use this on turns we action surge in order to get up to 4d6 (14) extra crimson rite damage (4 attacks, 1 extra die per attack). However, this turns out to be lest overall DPR than amplifying blood curse of the fallen puppet each time our reanimated companion dies, since the damage from the fallen puppet attack is very reliable with the extra chance to hit, and doesn't require that we sacrifice BA dreadful strikes to use our blood curse (consuming our reaction instead). This is nice since this has been our main gimmick throughout our career, so it's cool that we can continue to use even here in tier-04. The new pact magic slot also opens up new possibilities. Now we have 2 lvl-01 slots from artificer, and 2 pact magic slots (which recover on a SR), so functionally 6 lvl-01 spell slots per day. We need 3 to summon our reanimated companion 4 times (one for each combat, + we get one free cast/LR). This means we have 3 slots that we can spend on things like false life, jump, feather fall, and hex. Regarding hex, it's a damage gain to use our BA to cast hex on our first turn each combat (sacrificing dreadful swipe), assuming we can maintain decent uptime. We can do this 3/4 combats per day. And we should definitely do this if we don't have our reanimated companion available or can't get it in range. Hex is also just a better damage option than poisoner because monsters' high CON saves make it quite unlikely that poisoner will succeed. Not to say we can't use poisoner anymore, just that we should prioritize getting hex active before we think to use our BA on poisoner. In general, at this point, we should never be lacking for a good use of our BA (both damage and utility/mobility/healing). Brand of castigation also increases our damage, though as a ranged character we will probably take fewer direct hits from our enemies than a melee fighter would. Ok so what happens to our estimated DPR here? For our BA damage, let's assume that we spend our BA on the first round of 3/4 combats per day casting hex, and that we maintain 75% uptime on hex during each combat. So this amounts to 9/16 combat rounds per day (56.25% of rounds) with hex active. Let's also assume that we prioritize using action surge while hex is active, and manage to do this 75% of the time. Casting hex does mean we use our BA to use dreadful swipe/poisoner less frequently. Here I'll just assume that we use dreadful swipe on 66% of turns (instead of 75%), and that we only use poisoner 2 times per LR (12.5% of combat rounds) insead of 4 times. Next, we assume that we expend all our uses of blood maledict to do blood curse of the fallen puppet. Then, let's also assume that we use our brand of castigation 2x per LR and get hit by attacks from branded creatures (or have allies proc it) once or twice (avg 1.5 times) in each of the combats in which we use it. Finally, monster AC increases to 19 and monster CON saves increase to +9. Taking these changes into account, we come out at: 
+ (attacking w/advantage): 2*(0.85)*(0.96)*(15) = 24.48 dmg
+ (attacking w/o advantage): 2*(0.15)*(0.80)*(15) = 3.60 dmg
+ (dreadful swipe): (0.66)*(0.65)*(9.5) = 4.08 dmg
+ (poisoner): (0.125)*(0.45)*(9)*((0.85)*(0.96)+(0.15)*(0.80)) = 0.47 dmg
+ (death burst): 4*1.5*(0.65)*(7)/16 = 1.71 dmg
+ (fallen puppet): (1/4)*(0.90)*(9.5) = 2.14 dmg 
+ (action surge): (1/4)*((0.85)*(0.96)*(15) + (0.15)*(0.80)*(15)) = 3.51 dmg
+ (arcane shot): (1.1)*(10.5)*(7)/16 = 5.05 dmg
+ (hex): (0.5625)*(4.5)*(2)*((0.85)*(0.96) + (0.15)*(0.80)) = 4.74 dmg
+ (action surge / hex): (0.75)*(1/4)*((0.85)*(0.96)*(4.5) + (0.15)*(0.80)*(4.5)) = 0.79 dmg 
+ (brand of castigation): (2*1.5*5)/16 = 0.94 dmg
+ (total): 51.50 DPR 
+
+
+
+
+#######
+Level-19: Blood.Hunter-07 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-08 (Arcane.Archer) 
+ - crimson rite (1d6)
+   * BA to activate; take 1 hemocraft die necrotic dmg; lasts until short/long rest
+   * rite of the storm = extra rite damage is lightning dmg
+   * rite of the flame = extra rite damage is fire dmg 
+ - mystic frenzy 
+   * when you cast a cantrip, you can use your BA to make a weapon attack 
+ - cantrips: 
+   * rock gnome (2): mending, prestidigitation
+   * psionic talent (1): shocking grasp 
+   * artificer (2): guidance, true strike 
+   * reanimator (1): spare the dying
+   * warlock (2): blade ward, eldritch blast
+   * arcane.archer (1): druidcraft
+ - spell slots: 2-2_{2} 
+ - spells prepared: artificer (5), warlock (4)
+   * lvl-01 (atmokinesis): fog cloud (free x1/LR) 
+   * lvl-01 (artificer): alarm(R), detect magic (R), feather fall, identify (R), jump 
+   * lvl-01 (reanimator): false life, witch bolt
+   * lvl-01 (warlock): comprehend languages (R), hex, unseen servant (R)
+   * lvl-02 (warlock): misty step, silence (R)
+   * lvl-02 (atmokinesis): gust of wind (free x1/LR)   
+
+NOTE: Lvl-19 and we go blood.hunter-07, we learn another crimson rite -- take rite of the flame so we can blow flammable stuff up more easily -- and we get the mystic frenzy ability. This lets us use a BA to make a weapon attack after casting a cantrip with our action. This enables us to do a `true-strike + pistol-shot' combo on our turn. Doing this gains us the 3d6 extra damage from using true strike plus the extra damage we gain from making a crimson.rite pistol shot with our BA instead of using dreadful swipe or poisoner. This also takes pressure off us to keep our reanimated companion alive long enough to make dreadful strikes (it only has 20HP). So we don't have to feel bad about just sending him in and blowing him up right away each combat. Notably, since we still end up making two attacks per turn, we don't actually lose any hex damage from making this change. Given this, our new DPR calcs to: 
+ (true-strike w/advantage): (0.85)*(0.96)*(25.5) = 20.81
+ (true-strike w/o advantage): (0.15)*(0.80)*(25.5) = 3.06
+ (BA attack w/advantage): (0.85)*(0.96)*(15) = 12.24 dmg
+ (BA attack w/o advantage): (0.15)*(0.80)*(15) = 1.80 dmg
+ (death burst): 4*1.5*(0.65)*(7)/16 = 1.71 dmg
+ (fallen puppet): (1/4)*(0.90)*(9.5) = 2.14 dmg 
+ (action surge): (1/4)*((0.85)*(0.96)*(15) + (0.15)*(0.80)*(15)) = 3.51 dmg
+ (arcane shot): (1.1)*(10.5)*(7)/16 = 5.05 dmg
+ (hex): (0.5625)*(4.5)*(2)*((0.85)*(0.96) + (0.15)*(0.80)) = 4.74 dmg
+ (action surge / hex): (0.75)*(1/4)*((0.85)*(0.96)*(4.5) + (0.15)*(0.80)*(4.5)) = 0.79 dmg 
+ (brand of castigation): (2*1.5*5)/16 = 0.94 dmg
+ (total): 56.79 DPR 
+Next, our pact magic spell slots upgrade to lvl-02, and we get to learn a new warlock spell. Unfortunately, this actually has very minimal impact. We still want to use our spell slots to summon our reanimated companion and cast hex, neither of which scales with spell level. Bummer. For the new spell, I opted for misty step since we don't have (and never had) any mobility enhancements. I wouldn't want to cast it, having a teleport option to get out of a grapple or other sticky situation could be useful. Spider climb and mirror image could also be good options, but we just don't really want to spend spell slots on casting them. So yeah, take misty step for emergencies only. Finally, we also get to learn silence from our profane.soul:undying patron. This is potentially a handy spell to handicap spell casters (part of our identity) and we can cast it as a ritual. 
+
+
+
+
+#######
+Level-20: Blood.Hunter-08 (Profane.Soul::Undying), Artificer-04 (Reanimator), Fighter-08 (Arcane.Archer) 
+ - feat: epic boon of fate 
+   * ASI: +1 WIS (WIS=11) 
+   * improve fate: when you or another creature you can see w/in 60f fails a d20 test, you can roll 2d4 
+     and apply it to the roll as a bonus or penalty. Can use this benefit x1/initiative or SR. 
+
+NOTE: Alright, we finish up lvl-20 as blood.hunter-08. We get the epic boon of fate and boost our WIS to 11 (choose whatever you want, we can't increase any of our modifiers). Improve fate is a great ability, as we can use it both offensively and defensively. Defensively, I would use this on key saving throws. Offensively, we can use this to land key attacks or, and this is most likely, use it to make sure enemies take the damage from our reanimated companion's death burst and offset the fact that at lvl-20, the average monster DEX save increases to +6. If we do this, we increase the chance of failure from 60% (DC-19 w/+6) to 85% (DC-19 w/only +1, since -2d4 is -5 on avg). Assuming we use improve fate to do this each combat, our updated DPR is:  
+ (true-strike w/advantage): (0.85)*(0.96)*(25.5) = 20.81
+ (true-strike w/o advantage): (0.15)*(0.80)*(25.5) = 3.06
+ (BA attack w/advantage): (0.85)*(0.96)*(15) = 12.24 dmg
+ (BA attack w/o advantage): (0.15)*(0.80)*(15) = 1.80 dmg
+ (death burst): 4*1.5*(0.85)*(7)/16 = 2.23 dmg
+ (fallen puppet): (1/4)*(0.90)*(9.5) = 2.14 dmg 
+ (action surge): (1/4)*((0.85)*(0.96)*(15) + (0.15)*(0.80)*(15)) = 3.51 dmg
+ (arcane shot): (1.1)*(10.5)*(7)/16 = 5.05 dmg
+ (hex): (0.5625)*(4.5)*(2)*((0.85)*(0.96) + (0.15)*(0.80)) = 4.74 dmg
+ (action surge / hex): (0.75)*(1/4)*((0.85)*(0.96)*(4.5) + (0.15)*(0.80)*(4.5)) = 0.79 dmg 
+ (brand of castigation): (2*1.5*5)/16 = 0.94 dmg
+ (total): 57.31 DPR 
+
+Right so final thoughts on this build. Damage wise, we basically keep pace with the Treantmonk blade-pact greatsword warlock at every level. Similar to this baseline build, we are in the `C' class of damage in every tier (tier-01, tier-02, tier-03, and tier-04). In fact, across all 20 levels, our average DPR is 98% of the baseline, so almost exactly the same. But we actually do a bit better in tier-03 (104% of baseline) where many campaigns see the most play. Mechanically, we get to do a bunch of fun/cool stuff by managing having our little grenade reanimated companion and having a lot of interesting cantrips/abilities to play with. And we have a very very cohesive and thematic character identity through all 20 levels. We also get sizeable jumps in damage right at the tier breakpoints (+84% at lvl-05, +26% at lvl-11, and +9% at lvl-17) which should make our progression seem compatible with most adventures. We also maintain this damage profile while playing a ranged character (though only at 30ft for much of our career), with very high AC and lots of HP (certainly relative to other ranged builds) and pretty excellent defensive features (gnome cunning, mage slayer, built in healing through rite focus and second wind, damage redirection to summons, boon of fate) and a bit of control (fog-cloud, gust of wind, poisoner). Plus we get to add a bunch of utility through a great set of skill and tool proficiencies, item crafting, summons, zero-cost revives (jolt to life), and ritual spell casting. In addition, this build is cool because it relies on a bunch of different sources of damage, and the flexibility with which we can dish out damage increases as we progress (for example, in the multiple options we end up having for dealing damage with our BA). So we don't end up just having one thing that we do and if that doesn't work we're screwed. This flexibility also includes the fact that we have good ways to deal both multi- and single-target damage, which is also really valuable. It's also one of the few builds I've ever done that starts out as a true-strike build, moves into making multiple attacks with extra attack, and then moves *back* to true strike to round things out when we get mystic frenzy (and where that transition actually smoothly increases DPR). All-in-all, pretty neat idea. Glad that it worked out to be so fun, flexible, and thematically consistent while being competitive damage wise at every level. Can't really ask for much more. 10/10 would play.  
+
+
+###################################################################################################################
+EXTRA NOTES 
+
+arcane.archer-03
+ - arcane shot (bursting shot, piercing shot) 
+ - fighting-style
+reanimator-03 
+ - repeating shot 
+ - goggles of night 
+profane.soul
+ - blood curse of the fallen puppet 
+ - crimson rite 
+ - fighting-style 
+ - spell slots 
+ 
+
+Species: Rock Gnome 
+ - size: small 
+ - speed: 30ft 
+ - darkvision (60ft)
+ - gnome cunning = adv on INT/WIS/CHA saves
+ - gnomish lineage (rock): mending, prestidigitation, clockwork devices
+
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15 (+1) = 16
+ - CON = 14 
+ - INT = 15 (+2) = 17 
+ - WIS = 10
+ - CHA = 08
+
+Progression: 
+ - lvl-01: blood.hunter-01 --> hunter's bane, blood maledict (fallen puppet), DEX save prof., weapon mastery
+ - lvl-02: blood.hunter-02 --> crimson rite (storm), archery 
+ - lvl-03: blood.hunter-02, artificer-01 --> tinker's magic, spellcasting 
+ - lvl-04: blood.hunter-02, artificer-02 --> replicate magic item: repeating shot, +1 shield
+ - lvl-05: blood.hunter-02, artificer-03 (reanimator) --> jolt to life, reanimated companion 
+ - lvl-06: blood.hunter-02, artificer-04 (reanimator) --> ritual caster: +1 INT (INT=18)
+ - lvl-07: blood.hunter-03 (profane.soul:undying), artificer-04 (reanimator) --> rite focus, pact magic 
+ - lvl-08: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator) --> ASI: +2 INT (INT=20) 
+ - lvl-09: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-01 --> second-wind, defensive 
+ - lvl-10: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-02 --> action surge, tactical mind 
+ - lvl-11: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-03 (arcane.archer) --> arcane shot (bursting, piercing)
+ - lvl-12: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-04 (arcane.archer) --> ASI: +2 DEX (DEX=18)  
+ - lvl-13: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-05 (arcane.archer) --> extra attack, tactical shift 
+ - lvl-14: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-06 (arcane.archer) --> mage slayer: +1 DEX (DEX=19)  
+ - lvl-15: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-07 (arcane.archer) --> curving shot, ever ready shot 
+ - lvl-16: blood.hunter-04 (profane.soul:undying), artificer-04 (reanimator), fighter-08 (arcane.archer) --> sharpshooter: +1 DEX (DEX=20) 
+ - lvl-17: blood.hunter-05 (profane.soul:undying), artificer-04 (reanimator), fighter-08 (arcane.archer) --> hemocraft die (1d6) 
+ - lvl-18: blood.hunter-06 (profane.soul:undying), artificer-04 (reanimator), fighter-08 (arcane.archer) --> brand of castigation, +1 blood curse 
+ - lvl-19: blood.hunter-07 (profane.soul:undying), artificer-04 (reanimator), fighter-08 (arcane.archer) --> mystic frenzy, silence, +1 rite (flame) 
+ - lvl-20: blood.hunter-08 (profane.soul:undying), artificer-04 (reanimator), fighter-08 (arcane.archer) --> epic boon of fate: +1 WIS (WIS=11)
+
+
+Feats 
+ - lvl-00: atmokinesis
+ - lvl-06: ritual caster: +1 INT (INT=18)
+ - lvl-08: ASI: +2 INT (INT=20)
+ - lvl-12: ASI: +2 DEX (DEX=18) 
+ - lvl-14: mage slayer: +1 DEX (DEX=19) 
+ - lvl-16: sharpshooter: +1 DEX (DEX=20)
+ - lvl-20: epic boon of fate: +1 WIS (WIS=11) 
+
+
+Mechanical Concept 
+ - start out as a true-strike blood hunter wielding a pistol; assume we get weapon masteries from blood.hunter 
+ - leverage archery fighting style, vex mastery, and repeating shot (+1) for high chance to hit even as we delay boosting INT
+ - true-strike + crimson rite offsets damage from not getting extra attack and delaying INT increases 
+ - once you get reanimated companion, use dreadful swipe as primary bonus action for damage 
+ - you can use atmokinesis (shocking grasp, convert pistol shots to lightning dmg) in order to keep it alive 
+ - you can also use true-strike to shoot it and trigger death burst 
+ - take ritual caster in order to get utility spells; don't need war caster since we won't be concentrating on anything important 
+   and we won't ever need to cast spells (other than true strike) in combat. For true strike, the pistol is our spellcasting focus + the 
+   material component for the spell, so we can still cast it while using a shield 
+ - profane soul gives us pact magic slots that we can use to resummon our reanimated companion (should use all slots on this); w/3 lvl-01 
+   slots (one of which recovers on a SR), we can create up to 5 reanimated companions per day. This should be enough for all combats + 
+   some wiggle room. 
+ - boost defense through +1 shield, defensive fighting style (fighter), and healing from rite focus of undying patron
+ - we go rock gnome for a few reasons - first we want adv on mental saves since our WIS and CHA are bad; second rock gnome clockwork tools 
+   synergize with the oil/flammable materials we can create with alchemists tools, which we get from blood.hunter. We can also use igniter + 
+   oil to blow up our reanimated companion, making for some great trap potential 
+ - eventually we go arcane archer to get bursting shot and piercing shot; bursting shot lets us dmg our reanimated companion, potentially 
+   triggering death burst, while still making true-strike attacks against our main target. Piercing shot lets us shoot our companion and 
+   our primary target through full cover (use a sight-through-familiar to do this fully remotely). atmokinesis let's us heal our companion 
+   while still dealing dmg to our primary target if we want 
+ - dread swipe and tactical shift both give us a way to disengage, if we get stuck in melee 
+ - conceptually, at early levels the reanimated companion is durable enough to be effective in combat, at later levels we just want to send 
+   him in and then blow him up to deal AOE damage
+ - post lvl-11, when we get extra attack, we move towards building DEX in order to gain damage by making multiple attacks per turn
+ - we take mage slayer to further boost our mental save resilience, and sharpshooter to increase our effective range out to 90ft 
+ - we finish out profane soul in order to get some more spellcasting, mystic frenzy (which we could use to do true-strike + pistol attack) 
+   and epic boon of fate for more saving throw bonuses at lvl-20 
+
+Thematic Concept 
+ - we are a blood.hunter with a lich-like patron who controls undead to do their bidding, so we do the same and create an undead minion
+   which we use send in and mercilessly destroy to smite our enemies 
+ - just as we are a monster to fight monsters, so too do we control the undead to fight our enemies 
+ - spooky necromancer/blood.hunter/dark-magic arcane archer
+ - we would be a total social pariah, an outcast among outcasts and a definitely a creepy dude 
+ - make reanimated companion a creepy tim-burton like creature -- addam's family `thing', undead doggo, undead rat-thing (skaven) 
+   make it something you don't mind blowing up 
+
+
+At lvl-20: 
+ - move reanimated companion over towards group of enemies (no action required) 
+ - true-strike w/pistol deals: 1d10+3d6(TS)+1d6(rite)+5(INT) = 24.5 dmg 
+ - then use busting shot to deal an additional: 2d6 (7) force dmg 
+ - assume AOE kills our reanimated companion, whose death burst deals another 2d6 (7) necrotic dmg 
+ - use our reaction to do blood curse of the fallen puppet, allowing our companion to dreadful strike for: 1d4+7 (9.5) dmg
+ - then using mystic frenzy, we make another pistol attack with our BA, which deals: 1d10 + 1d6(rite) + 5(DEX) (14) dmg
+ - for a total of: 62 dmg 
+
+At lvl-20 (Alternatively) 
+ - move reanimated companion over towards group of enemies (no action required)
+ - BA: command companion to dreadful strike: 1d4 + 7 (9.5) dmg
+ - attack w/pistol: 1d10 + 1d6(rite) + 5(DEX) (14) dmg
+ - bursting shot: 2d6 (7) dmg
+ - death burst: 2d6 (7) dmg 
+ - blood curse of fallen puppet: 1d4+7 (9.5) dmg
+ - second attack: 1d10 + 1d6(rite) + 5(DEX) (14) dmg
+ - total = 28 (pistol attacks) + 14 (bursts) + 19 (swipes) = 61 dmg 
+
+Background: Criminal 
+ - feat: atmokinesis
+ - skills: sleight of hand, stealth 
+ - tools: thieves' tools 
+ - gold buy: 50gp
+     
+Skills/Tools  
+ - criminal 
+   * skills: sleight of hand, stealth 
+   * tools: thieves' tools
+ - blood.hunter-01: 
+   * skills: acrobatics, arcana, investigation 
+   * tools: alchemists supplies --> craft oil, acid, alchemist's fire 
+ - artificer-01 
+   * skills: perception 
+   * tools: tinker's tools --> craft flask, lock, manacles, hunter's trap 
+ - arcane.archer-03 
+   * skills: nature, survival  
+
+Cantrips: 
+ - rock gnome (2): mending, prestidigitation 
+ - atmokinesis (1): shocking grasp 
+ - artificer (2): guidance, true-strike 
+ - reanimator (1): spare the dying 
+ - profane.soul (2): blade ward, eldritch blast 
+ - arcane.archer (1): druidcraft
+
+Spells 
+ - atmokinesis (2): fog cloud, gust of wind (lvl-03) 
+ - artificer (5): detect magic, disguise self, feather fall, identify, jump --> switch out identify for cure wounds at lvl-13
+ - reanimator (2): false life, witch bolt 
+ - ritual caster: find familiar, tenser's floating disk, unseen servant (lvl-06), identify (lvl-13), alarm (lvl-17)
+ - profane.soul: detect magic, comprehend langauges (lvl-07), speak with animals (lvl-17), misty step, silence (lvl-19)   
+
+

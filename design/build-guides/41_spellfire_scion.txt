@@ -1,0 +1,1236 @@
+Moniker: The Starfire Scion  
+Classes: Monk-08 (Sun-Soul), Druid-12 (Circle of Stars)
+Species: Human 
+ - size: medium 
+ - speed: 30ft 
+ - resourceful: gain Heroic Inspiration when you finish a LR
+ - skillful: +1 skill proficiency (perception) 
+ - versatile: gain an origin feat of your choice (spellfire spark) 
+Sex: Female 
+Background: House Jorasco Heir 
+ - source: eberron - forge of the artificer
+ - ability scores: DEX, CON, WIS
+ - feat: mark of healing
+ - skills: medicine and stealth
+ - tools: herbalism kit
+ - languages: common, common sign language, celestial
+ - equipment (gold buy): 50 GP
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15 (+1) = 16
+ - CON = 14
+ - INT = 10 
+ - WIS = 15 (+2) = 17 
+ - CHA = 08
+ASI's/Feats: 
+ - lvl-00: mark of healing 
+ - lvl-00: spellfire spark 
+ - lvl-05: spellfire adept: +1 WIS (WIS=18)
+ - lvl-08: elemental adept (fire): +1 WIS (WIS=19)  
+ - lvl-12: resilient (WIS): +1 WIS (WIS=20)  
+ - lvl-16: ASI: +2 DEX (DEX=18)
+ - lvl-20: ASI: +2 DEX (DEX=20)
+Progression Summary: 
+ - lvl-01: monk-01 --> unarmored defense, martial arts (1d6), STR/DEX save proficiency, spellfire spark (x2)
+ - lvl-02: monk-01, druid-01 --> druidic, primal order::magician, spellcasting 
+ - lvl-03: monk-01, druid-02 --> wild shape (giant venomous snake): AC=17, bite + unarmed-strike 
+ - lvl-04: monk-01, druid-03 (stars) --> star map, starry form, lvl-02 spells (flame blade, prayer of healing)
+ - lvl-05: monk-01, druid-04 (stars) --> spellfire-adept: +1 WIS (WIS=18); spellfire spark (x3)
+ - lvl-06: monk-02, druid-04 (stars) --> monk's focus, uncanny metabolism, unarmored movement (10ft)
+ - lvl-07: monk-03 (sun-soul), druid-04 (stars) --> radiant sun-bolt, deflect attacks 
+ - lvl-08: monk-04 (sun-soul), druid-04 (stars) --> elemental adept (fire): +1 WIS (WIS=19)
+ - lvl-09: monk-05 (sun-soul), druid-04 (stars) --> extra attack, martial arts (1d8), spellfire spark (x4)
+ - lvl-10: monk-06 (sun-soul), druid-04 (stars) --> empowered strikes, searing arc strike, unarmored movement (15ft)
+ - lvl-11: monk-07 (sun-soul), druid-04 (stars) --> evasion 
+ - lvl-12: monk-08 (sun-soul), druid-04 (stars) --> resilient (WIS): +1 WIS (WIS=20) 
+ - lvl-13: monk-08 (sun-soul), druid-05 (stars) --> wild resurgence, lvl-03 spells (aura of vitality, elemental weapon); spellfire spark (x5)
+ - lvl-14: monk-08 (sun-soul), druid-06 (stars) --> cosmic omen
+ - lvl-15: monk-08 (sun-soul), druid-07 (stars) --> primal strikes, lvl-04 spells (fount of moonlight, fire shield) 
+ - lvl-16: monk-08 (sun-soul), druid-08 (stars) --> ASI: +2 DEX (DEX=18) 
+ - lvl-17: monk-08 (sun-soul), druid-09 (stars) --> lvl-05 spells (greater restoration, mass cure wounds), spellfire spark (x6)
+ - lvl-18: monk-08 (sun-soul), druid-10 (stars) --> twinkling constellations
+ - lvl-19: monk-08 (sun-soul), druid-11 (stars) --> lvl-06 spells (sunbeam)
+ - lvl-20: monk-08 (sun-soul), druid-12 (stars) --> ASI: +2 DEX (DEX=20) 
+Spellcasting Summary: 
+ - lvl-01: slots = 0; prepared: 0; max level: 0
+ - lvl-02: slots = 2; prepared: 4; max level: 1
+ - lvl-03: slots = 3; prepared: 5; max level: 1
+ - lvl-04: slots = 4-2; prepared: 6; max level: 2
+ - lvl-05: slots = 4-3; prepared: 7; max level: 2
+ - lvl-06: slots = 4-3; prepared: 7; max level: 2
+ - lvl-07: slots = 4-3; prepared: 7; max level: 2
+ - lvl-08: slots = 4-3; prepared: 7; max level: 2
+ - lvl-09: slots = 4-3; prepared: 7; max level: 2
+ - lvl-10: slots = 4-3; prepared: 7; max level: 2
+ - lvl-11: slots = 4-3; prepared: 7; max level: 2
+ - lvl-12: slots = 4-3; prepared: 7; max level: 2
+ - lvl-13: slots = 4-3-2; prepared: 9; max level: 3
+ - lvl-14: slots = 4-3-3; prepared: 10; max level: 3
+ - lvl-15: slots = 4-3-3-1; prepared: 11; max level: 4
+ - lvl-16: slots = 4-3-3-2; prepared: 12; max level: 4
+ - lvl-17: slots = 4-3-3-3-1; prepared: 14; max level: 5
+ - lvl-18: slots = 4-3-3-3-2; prepared: 15; max level: 5
+ - lvl-19: slots = 4-3-3-3-2-1; prepared: 16; max level: 6
+ - lvl-20: slots = 4-3-3-3-2-1; prepared: 16; max level: 6
+
+MECHANICAL CONCEPT NOTES
+ - overall motivation: make a WIS-first gish character that isn't purely reliant on shillelagh. Not fair that INT/CHA based caster classes have 
+   so many options for building martial characters that put mental stats first. Here we do it with a druid-monk multiclass and we get to make 
+   one of the worst-ever subclasses (sun-soul monk) shine! 
+ - in general we're a WIS-based `blaster' monk/druid that leverages bound-spells and class features to deal radiant/fire spell damage
+ - we start monk-01 for unarmored defense, DEX/STR save proficiency (since we'll be in melee) and so that we can benefit from the herbalism tools 
+   proficiency via our background (druids get it by default) 
+ - we then go druid-04 (stars) and take spellfire adept to enable WIS-based combat via several features: 
+   + druid-01 gives cantrips to enable WIS-based attacks (including shillelagh which we'll use once we get extra attack) 
+   + druid-02 gives us wild-shape, which we can use to turn into a giant venomous snake (DEX=18) and augment our monk BA:unarmed strike (only at druid-02) 
+   + druid-03 (stars) gives us xWIS free guiding bolts per day, which we can use to deliver damage via searing spellfire while sparing our spell 
+     slots for healing via cure wounds (to offset the lack of hit dice) 
+   + druid-03 (stars) also gives us lvl-02 spells, including flame blade, which we can use to increase our damage in a melee focused playstyle 
+   + druid-03 (stars) gives us starry-form (dragon) which we can use to help maintain concentration on flame blade and starry-form (archer) 
+     which we can use to give ourselves a WIS-based BA spell attack 
+ - spellfire spark gives us sacred-flame as a default WIS-based ranged cantrip, it also let's us do sacred-flame xPB/day as a BA; we leverage 
+   this to deal damage with our BA and provide more opportunities for delivering searing spellfire from spellfire adept 
+ - critically, we get prayer of healing (PoH) via our spells of the mark when we get lvl-02 spells
+ - PoH providing the benefits of a short rest means it: 
+   + restores our monk focus points (fp) --> so between a short rest, uncanny metabolism, and PoH we can fully recharge fp x3 per day 
+   + gives us an extra use of wild shape --> so between a short rest and PoH we can use wild shape 4x per day (once each combat) 
+ - next, we take monk levels all the way to monk-08
+   + monk-02 gives us monk's focus/unarmored movement for general utility/mobility/defense (we won't use FoB for damage) and 
+             uncanny metabolism for fp restoration and extra healing  
+   + monk-03 gives us radiant sun-bolt which we won't use (unless we can't cast spells), as well as deflect attacks for extra defense 
+   + monk-04 gives us elemental adept, which will boost damage from our flame blade (and eventually from our burning hands attacks),
+             note between this and spellfire adept we bypass resistance to both fire and radiant damage  
+   + monk-05 gives us extra attack, allowing us to leverage shillelagh for a damage boost when we attack 
+   + monk-06 gives us searing arc strike which represents a significant boost to our BA damage (upcast burning hands) 
+   + monk-07 gives us evasion 
+   + monk-08 gives us the resilient feat, which we use to cap our WIS. Monk-08 also means we can upcast burning hands at lvl-03 (5d6) with our BA 
+ - In general, as we take these monk levels: 
+   + from monk-02 to monk-04 we keep our base playstyle and rely on flame-blade + archer + WIS-based cantrips with damage increases only coming 
+     from elemental adept (slim) 
+   + at monk-05 we stop using flame blade, switch over to extra attack with shillelagh, and use our extra fp to do stunning strikes 
+   + at monk-06 we stop using stunning strike, and start using searing arc strike for a nice damage boost 
+   + at monk-08, between spellfire spark and searing arc strike, we can use WIS-based attacks for our action/BA every round 
+ - once we stop needing starry-form in combat, we can start using chalice form out of combat with PoH/cure wounds for extra healing 
+ - after we get to monk-08, we go back to druid all the way to druid-12
+   + this is because we don't get anything good from continuing with sun-soul, and base-class monk features push us towards DEX/unarmed strikes 
+   + going further into druid let's us get better/higher level spells spells we like as we go further in druid at each level include: 
+     * lvl-03: sylune's viper, aura of vitality (synergizes w/chalice) 
+     * lvl-04: fire shield, fount of moonlight, grasping vine, stoneskin, wall of fire 
+     * lvl-05: antilife shell, alustriel's mooncloak, mass cure wounds 
+     * lvl-06: elminster's effulgent spheres, sunbeam, reincarnate
+   + druid-06 gets us cosmic omen, which we will always have a good use for, since we are both making attack rolls (w/shillelagh/guiding bolt) 
+     and forcing saving throws (via burning hands) in every combat 
+   + druid-07 gets us primal strikes which is a nice flat boost to our melee damage
+   + druid-08 gets us an ASI we use to boost our DEX to 18 (increasing our AC, save, and attack mod w/radiant sun-bolt) 
+   + druid-10 gets us twinkling constellations which makes using starry form in combat relevant again 
+ - we finish out druid-12 and take another ASI to cap our DEX at 20, which makes our WIS- and DEX-based attack modes fully equivalent 
+
+THEMATIC CONCEPT NOTES: 
+ - pop-culture analogs: starfire from teen titans, super saiyans from DBZ meets, lunar soul + spellfire sorcerer, eleven from stranger things, okarun from dandadan
+ - This character is like the primal magic equivalent of a planter, solar, or empyrean. Our power is of the heavens -- literally, as in the sun, moon, and stars -- 
+   versus being from the upper planes.
+ - Think of this character as a sorcerer in a monk/druid body. Our magic comes from a reservoir of `spellfire' within us, that we use to smite our foes, heal our allies 
+   and fuel our overall martial prowess
+ - This power is inherently connected to the cosmic/astral entities of the material plane (sun, moon, stars) and we manifest different aspects of their power; we are a star child
+   (a la starfire from teen titans)
+ - I imagine that this character was always recognized for their special connection to the weave; perhaps they were trained in privileged isolation, separated from normal 
+   society in order to cultivate their remarkable gift (a la eleven from stranger things).
+ - Our druidic/scholarly side comes from the book-learning, religious training, and inherent connection we have to the weave and the cosmic forces that shape the material plane. 
+ - Our physical prowess derives from the strengthening effects of our spellfire spirit on our physical form. 
+ - I think you could even imagine the `spellfire soul' this character harbors within them as a separate entity. A borderline personality disorder even. Our baseline orientation 
+   is to be gentle, caring, and seek to preserve and foster life. But when we are pressed into dangerous situations or overcome by stress/fear/emotion, we manifest the 
+   harmful aspects of our power, transform, and use them to wreak havoc and destruction. As we progress in our journey, we gain more and more control over these different aspects 
+   of our power, and learn to harness them according to our will and true inner motivations 
+ - themes (TBD): the weave, radiance, fire, astral/cosmic entities (sun/moon/stars), primal spirituality, incarnate magic, power from the spirit/body, cosmic order/harmony, cherish life
+ - traits (TBD): awkward, introverted, gentle, timid, naive, kind, honest, dutiful/devoted, protective, perceptive/observant, intuitive, caring, beautiful, slow but terrible anger
+
+SYNERGISTIC MAGIC ITEMS: 
+ - common:
+ - uncommon: 
+   * eyes of the eagle = lenses; grant adv. on perception checks relying on sight
+   * boots of striding and springing = permanent jump spell
+   * cloak of protection = +2 unarmored AC
+   * driftglobe = light/daylight spell 
+   * gloves of climbing and swimming = gain climb/swim speed equal to speed; +5 to athletics checks 
+   * weapon of warning = adv on initiative rolls
+   * nature's mantle = focus for druid spells; can hide as BA if lightly obscured
+   * pearl of power = recover 1 <= lvl-3 spell slot x1/LR
+   * winged boots = fly speed 
+   * luckstone = +1 to ability checks and saves (CON) 
+ - rare: 
+   * bracers of defense = +2 unarmored AC
+   * cloak of displacement = permanent blur spell until hit 
+   * mantle of spell resistance = adv on saving throws against spells 
+   * wings of flying 
+ - very rare: 
+   * ioun stone of agility/fortitude/insight
+   * necklace of prayer beads = spell charges 
+   * robe of stars 
+   * staff of fire 
+   * staff of healing
+   * staff of striking
+   * tome of understanding = +2 WIS 
+   * manual of quickness of action = +2 DEX 
+ - legendary: 
+ - artifact: 
+ - varies 
+   * enspelled staff = stores a spell, reverts to non-magical quarterstaff 
+   
+MAX LEVEL MAGIC ITEMS
+- lvl-20 (~6 items, max 1 legendary/artifact)
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+#######
+Level-01: Monk-01
+ - feat: mark of healing 
+   * medical intuition: +1d4 to Medicine and Herbalism Kit checks 
+   * healing touch: @ lvl-01 cure wounds always prepared, free x1/LR, choose INT/WIS/CHA
+                    @ lvl-03 lesser restoration always prepared, free x1/LR, choose INT/WIS/CHA 
+   * spells of the mark: Mark of Healing spells are added to that spellcasting spell list
+   * mark of healing spells:
+     1		  False Life, Healing Word
+     2		  Arcane Vigor, Prayer of Healing
+     3		  Aura of Vitality, Mass Healing Word
+     4		  Aura of Life, Aura of Purity
+     5		  Greater Restoration
+ - feat: spellfire spark 
+   * magic absorption: reduce incoming dmg from spells/magical effects by 1d4 x1/turn
+   * spellfire flame: know sacred flame cantrip (WIS), and can cast as a BA xPB/LR 
+ - saving throw proficiencies: STR, DEX   
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * monk (2): insight, acrobatics     
+   * jorasco heir (2): medicine, stealth   
+   * human (1): perception
+   * tools (2): herbalism kit (heir), cartographer's tools (monk) 
+   * languages (3): common, common sign language, celestial  
+ - weapon/armor proficiencies:  
+   * weapons: simple + martial weapons w/light property 
+   * armor: none  
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (heir) + 50gp (monk)
+   * weapons: none
+   * armor: none
+   * tools: herbalism kit (5gp), cartographer's tools (15gp)
+   * foci: druidic.focus::wooden.staff (5gp)
+   * gear: explorer's pack (10gp), healer's kit x2 (10gp)
+           traveler's clothes (2gp), potion of healing (50gp)  
+   * spare coin: 3gp
+ - unarmored defense 
+   * base AC = 10 + DEX(3) + WIS(3) = 16 
+ - martial arts (1d6): 
+   * while not wearing armor or holding shield, gain following: 
+   * BA unarmed strike = can make an unarmed strike as a BA 
+   * dexterous attacks = can use DEX for unarmed strikes, attacks w/monk weapons and shove/grapple DC 
+   * martial arts die (1d6) = use martial arts die in place of damage die for unarmed strikes/monk weapons 
+ - combat equipment:
+   * quarterstaff = 1d6 bludgeoning (topple); versatile (1d8)  
+   * armor: none
+   * unarmored AC: 10 + 3(DEX) + 3(WIS) = 16
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+ - spell slots: 0
+ - spells prepared: 0
+   * lvl-1 (mark of healing): cure wounds (free x1/LR) 
+    
+NOTE: Lvl-01 and we start out monk-01. We do this for a couple of reasons. First, we prefer the saving throw proficiencies we get with monk (STR/DEX) to those we get with druid (WIS/INT). This is because we're going to be (mostly) a melee fighter, and so we quite like STR save proficiency (especially with our low STR score). In addition, we won't be boosting DEX until much later levels, so getting DEX proficiency now helps a lot. Getting STR/DEX at character creation also means we can take the resilient feat to boost our WIS and gain WIS save proficiency later on. Going monk first also means we can get an extra tool proficiency. We can get herbalism kit proficiency from our background and cartographer's tools from monk. If we started druid, we would get herbalism kit proficiency from both the base class and our background, which is a bit inefficient. We can use the herbalism kit to craft healing potions and additional healer's kits (given time and money) and we can use the cartographer's tools to make maps that can help us navigate as we explore (actually quite handy). Between our healer's kits, our free cast of cure wounds from mark of healing, and the potion of healing we picked up at character creation via gold buy, we will be an effective healer even without spell slots. And between this healing and the damage reduction we get from spellfire spark we will be pretty resilient. Finally, going monk first also gets us a better set of starting skill proficiencies. Between class, background, and species we will have proficiency in: acrobatics, insight, medicine (+1d4 from mark of healing), perception, and stealth. Plus, with our high WIS + maps from cartographer's tools we can also do pretty well with survival. Very nice. In terms of combat, at this level we are just a basic monk wielding a quarterstaff. However, spellfire spark does give us the additional versatility of using sacred-flame for range. Damage-wise, we do: 
+1d8 + 1d6 + 2DEX(3) = 14 
+
+
+
+
+#######
+Level-02: Monk-01, Druid-01
+ - primal order: magician 
+   * +1 druid cantrip 
+   * +WIS to Arcana and Nature checks 
+ - skill/tool proficiencies: 
+   * monk (2): insight, acrobatics     
+   * jorasco heir (2): medicine, stealth   
+   * human (1): perception
+   * tools (2): herbalism kit (heir), cartographer's tools (monk) 
+   * languages (4): common, common sign language, celestial, druidic  
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (2): guidance, produce flame 
+   * magician (1): resistance
+ - spell slots: 2
+ - spells prepared: 4
+   * lvl-1 (druid): detect magic (R), false life, jump, protection from evil and good 
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR) 
+    
+NOTE: Ok lvl-02 and we go druid-01. For our primal order we go with magician to get an extra cantrip and a boost to our arcana and nature checks. For our cantrips, we take guidance for utility, produce flame for a source of light (we are human and lack darkvision), and resistance for additional damage reduction (can stack w/magic absorption from spellfire spark). We'll switch out guidance for shillelagh when we get our subclass in a few levels (which grants us guidance as an auto-preparation). As a lvl-01 druid, we also get the druidic feature which gives us the ability to speak, read, and write in druidic and gives us the speak with animals spell. Neither is super useful, but bonus utility is always appreciated. Next, we get spellcasting, hooray! We get 2 lvl-01 spell slots and can prepare 4 spells. Now, once we hit lvl-05, we'll want to preserve most of our lvl-01 spell slots to use for healing via cure wounds (since we'll be expending our hit dice to deal damage via searing spellfire). So we don't want to get attached to anything that we will have to stop using at later levels. We also want to stay within (as best possible) our `radiant starfire being' kind of theme. With this in mind, for preparations I went with detect magic, false life, jump, and protection from good and evil. Detect magic is great general utility. False life is from our mark of healing list and provides us with additional durability if/when we need it. False life also feels like it dovetails with the theme/idea that spellfire fortifies our body, and I like the idea of using false life in conjunction with magic resistance and the resistance cantrip to tank magic damage. It also works with the idea that, at baseline, we are a gentle soul and our magic is primarily focused on restoring and preserving life. Jump is a great mobility spell, and will be our only mobility option for the next several levels. It also fits just fine with the `magically-enhanced body' kind of idea and feels very monk-like to boot. Finally, protection from evil and good is more about the thematic consistency than the mechanical utility. It's not a spell that I would expect to cast very often (or at all, ideally), but it does fit with our identity as a protector, guardian, and preserver of life. Furthermore, I think if we cast it on ourself we can view it as spellfire bolstering our spirit and mental fortitude. But like I said, we're going to want to use most lvl-01 slots on cure wounds soon, at which point all of these spells will become more like background options. So don't get too attached. And of course, as a druid, we can change our spells out at each LR, so if there's something else that seems more useful, prepare that. In terms of damage, nothing has changed since lvl-01. But our spellcasting has made us significantly more durable and increased our capacity as a healer.  
+
+
+
+
+#######
+Level-03: Monk-01, Druid-02
+ - wild shape (x2/LR, +1 on SR) 
+   * 4 known forms (<= CR=1/4)
+     + giant venomous snake = medium, swim/move speed 40ft, blindsight (10ft), +4 DEX, bite
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + elk = large, 50ft, darkvision (60ft), +3 STR, ram
+ - wild companion = find familiar (fey) w/o material components using slot or wildshape 
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (2): guidance, produce flame 
+   * magician (1): resistance
+ - spell slots: 3
+ - spells prepared: 5
+   * lvl-1 (druid): detect magic (R), false life, healing word, jump, protection from evil and good 
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR) 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+
+NOTE: Ok lvl-03 and we go druid-02. We get wildshape, wild companion, an additional lvl-01 spell slot, and one new spell preparation. First, on wildshape. We know 4 forms. I like fox for the burrow speed, keen hearing, and darkvision (we already have good stealth). I like the cat for the climb speed and the ability to be innocuous in human/urban settings. I like the elk for it's large size (can serve as a mount) and it's high STR score. And then the giant venomous snake is our default combat option. The reason we like the giant venomous snake is because it is the only CR 1/4 creature that has a +4 to DEX, which is currently greater than the +3 we have in human form. Since we retain class features when we wild-shape, but use the physical statistics of our beast form, this means that if we can still use our monk's martial art's to make unarmed strikes in wild-shape, gaining a +1 to hit and damage via the venomous snake's high DEX. Now, we will literally *only* do this here at lvl-03, so if I wanted to prioritize the character's thematic consistency, I would probably just use my wild-shapes to summon wild companions and scout/give myself advantage on some attacks. But if we're min-maxing for damage (and we are), the venomous snake is definitely the way to go. Not only does being a venomous snake boost our speed up to 40ft, but it also gives us a bite attack that deals 1d4+4 piercing plus 1d8 poison (11) damage on hit and we can still make an unarmed strike (e.g., with our snake tail) as a BA for an additional 1d6+4 (7.5) damage. This means while we are in snake form our DPR potential for a single round goes up to 18.5 (from 14) and we have a greater chance to hit. This equates to a nice bump in DPR while wild-shaped. Because we also still benefit from our monk's unarmored defense feature while wild-shaped, the boost to our DEX while in snake form also gives us a +1 to our AC (up to 17). Super nice. With 2 uses of wild-shape per day, plus one recharged from a short rest, we can do this in 3 combats per day. Ideally we can precast wild shape before combat so we don't have to burn our BA transforming on turn-01, but at druid-02 we can only remain wild-shaped for 1hr, so this might be tricky. We also can't cast spells while wild-shaped, so if we want to do any healing then we should stay in human form. When not wild-shaped, we should just go back to our standard monk tactics -- i.e., attack::quarterstaff + BA::unarmed-strike in melee and magic::sacred.flame + BA::sacred.flame_{spellfire.spark} in range -- or using actions/BA's to heal as needed. Like I said, I think if I we're playing this character, I might just skip using wild-shape in combat at this level and make the most out of wild companion. However, for the sake of our DPR calculation, I'm going to assume that we are using wild-shape to turn into a venomous snake in 3 out of 4 daily combats, and make standard melee monk attacks in the final combat. Ok moving on. For our new spell preparation, I went with healing word. If we do happen to be in combat and aren't wild-shaped, then we might like to have a ranged BA heal to help keep our allies up in the fight. Healing word does that. Longstrider is the other spell I'm particularly drawn to here, but with only 3 spell slots I think leaning into our identity as a healer makes more sense. Finally, we also get to learn lesser restoration and cast it once for free per LR via our mark of healing origin feat. With our current spell slots, we can only cast it once (and we won't always need to do that) but it's some nice bonus utility and helps to cement our healer identity. Alright, somewhat strange level here, but one that does push our power-curve upwards to a very nice place for tier-01, damage wise. Very nice. 
+
+
+
+
+#######
+Level-04: Monk-01, Druid-03 (Circle of Stars) 
+ - star map 
+   * crystal sphere (jewel) with little suspended stars that move/morph into constellations 
+   * while holding star map, you have guidance and guiding bolt prepared and can cast g-bolt for free xWIS/LR  
+ - starry form  
+   * alternate use of wild-shape (3 forms)
+   * archer = gain BA ranged spell attack (1d8 + WIS) 
+   * chalice = when you restore HP w/a spell slot, give additional 1d8+WIS HP (range 30ft) 
+   * dragon = treat 9 or lower as 10 when making INT/WIS check or CON save to maintain concentration
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (2): produce flame, spare the dying 
+   * magician (1): resistance
+   * star map (1): guidance
+ - spell slots: 4-2
+ - spells prepared: 6
+   * lvl-1 (druid): detect magic (R), false life, jump, longstrider  
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR)
+   * lvl-1 (circle of stars): guiding bolt (free xWIS/LR) 
+   * lvl-2 (druid): flame-blade, prayer of healing 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+
+NOTE: Alright, lvl-04. We go druid-03 to pick up our subclass and we're going with the circle of stars. Obviously this fits our character theme/identity, since its more or less built around this subclass. But I think the way that we play it is that we've `unlocked' some aspect of our astral power -- a connection between our inner spellfire and the burning motes of light arrayed in the night sky. A connection which we can harness to channel some of that astral power in order to work magic in the world around us. Anyway, mechanically we get several nice things from going circle of stars. First, we get the star map feature, which gives us a tiny object (I like crystal sphere swirling with light) that we can use as a spellcasting focus and which, while we're holding it, grants us some spellcasting benefits. First, we get the guidance cantrip, which means that we can switch out guidance as a druid cantrip for something else. We take spare the dying to fit with our healer theme, knowing that we will get another druid cantrip next level (via base class scaling) with which we can pick up shillelagh. Second, we get to cast guiding bolt w/o expending a spell slot WIS times per day (so 3 right now). Now, historically, this feature hasn't been super strong because, while guiding bolt is a strong lvl-01 spell and good at low levels when we get it, it quickly becomes obsolete if you're playing a full spellcaster. What's nice about this build is that we aren't going to be going full caster. In fact, for most of our career we will only have access to lvl-01 and lvl-02 spells. But we still want to cast spells in order to leverage our high WIS even while we take monk levels. In addition, we're going to take the spellfire adept feat which allows us to add additional damage to spells we cast that deal radiant damage, and guiding bolt is a perfect delivery mechanism for that. Awesome. As a star druid we also get the starry form feature, which gives us an alternate way to use our wild shape. In particular, we get to learn 3 starry forms -- the archer which gives us a WIS-based BA ranged spell attack, the chalice which gives us extra healing, and the dragon which boosts our INT/WIS-based ability checks and saving throws to maintain concentration. Another nice thing about this build is that we will end up using *all three* of these different forms throughout our career. So we really maximize the value of both our base class and subclass features in druid. Very cool. Ok and then the last thing that we need to mention before we talk about combat is spellcasting. At druid-03 we get one new spell preparation and access to second level spells. For lvl-01 preparations, I dropped protection from evil and good and healing word and picked up longstrider. Then, for lvl-02 spells, we grab flame blade, and prayer of healing from the mark of healing spell list. Ok so starting with our lvl-02 choices -- prayer of healing is going to be a critical spell for us. In fact, its presence on the mark of healing spell list is the *main* reason that we wanted that origin feat so badly. This is because, we are going to start taking more monk levels soon, and we're going to be able to use prayer of healing to recharge our focus points, which will eventually enable us to make powerful WIS-based attacks via our monk subclass features. It also helps us out with actual healing, which we will want since we're going to be sacrificing our hit dice to deal damage via the fueled spellfire feature of the spellfire adept feat (next level). Finally, prayer of healing also recharges one use of wild-shape, meaning that with a single short rest + prayer of healing, we can wild shape 4x per day, i.e. in every combat. Awesome. Next, flame blade is also key for us since it will give us a way to make melee attacks using WIS across multiple rounds of combat with just a single spell slot (of which we will have few). Plus, we can augment the efficiency of flame blade further by using wild-shape to assume starry-form (dragon) to help us maintain concentration. Hitting with the flame blade deals 3d6+WIS (13.5) fire damage on hit, which is a significant upgrade over the damage we can deal with our venomous snake bite or our standard monk quarterstaff attack. Now it's important to note that flame blade deals fire damage, which is very commonly resisted. We will eventually take a feat to help offset this, but I definitely would hesitate to play this character a campaign setting where there are a lot of demon/devil monsters. Or talk to your DM about whether you could alter the damage type to radiant on casting. In general, you can see that between flame blade, the free-casts of guiding bolt we get from star map, and the BA casts of sacred-flame we get from spellfire spark, we are building the means to deliver good damage using WIS while we take monk levels. Right, so given these two key lvl-02 spells, I think it makes sense to drop healing word and protection from evil and good as lvl-01 preparations. For PfEG, it's mostly that we have something better to concentrate on (flame blade), and for healing word I think it's that with the addition of spare the dying and prayer of healing we are somewhat saturated on healing spells. Losing the ability to BA heal in combat is unfortunate, but I think we'll be ok using cure wounds/healer's kits, etc. especially if we use our spell slots to buff our movement speed via jump/longstrider. Ok, so then in terms of our combat mechanics. We burn one lvl-02 spell slot each day to cast prayer of healing. Then we use our second lvl-02 slot to cast flame-blade in a single combat. In this combat, we cast flame blade with our BA on turn-01, then attack. Then on turn-02 we use our BA to activate dragon-form to help us with concentration and attack. And on turns-03 and 04 we attack with the flame blade and make an unarmed strike. In the other 3 combats, we open up on turn-01 by casting guiding bolt and using our BA to activate archer-form, then we do sacred-flame + BA:archer on subsequent turns. We could also cast guiding bolt on turn-01 then use our BA to wild-shape into a giant venomous snake and make bite + BA:unarmed-strike attacks on subsequent turns. This would deal more damage (~1 DPR) than using archer form, but I think we prefer the extra defensive utility we gain from fighting at range, the versatility we gain from still being able to cast spells, and the thematic consistency of using wild shape for starry form, versus the extra damage from transforming into a beast. But hey, if the situation calls for it, it's still not a bad option. Overall, we lose a tiny bit of DPR here, but we are still in a very good place for tier-01, and we're going to get a very large boost next level using the same tactics. So it's good to just lock it in here and move on. 
+
+Back of the envelope DPR potential calculation: 
+
+In combat 1 we do: 
+ - turn-01: BA::flame.blade + magic::flame.blade --> 3d6+WIS (13.5) 
+ - turn-02: BA::starry.form_{dragon} + magic::flame.blade --> 3d6+WIS (13.5)
+ - turn-03: BA::unarmed.strike + magic::flame.blade --> 4d6+WIS+DEX (20)
+ - turn-03: BA::unarmed.strike + magic::flame.blade --> 4d6+WIS+DEX (20)
+ - avg: 16.75
+
+In combats 2-4 we do: 
+ - turn-01: magic::guiding.bolt + BA::starry.form_{archer} --> 4d6+1d8+WIS (21.5)
+ - turn-02: magic::sacred.flame + BA::archer --> 2d8 + WIS (12) 
+ - turn-03: magic::sacred.flame + BA::archer --> 2d8 + WIS (12)
+ - turn-02: magic::sacred.flame + BA::archer --> 2d8 + WIS (12)
+ - avg: 14.375 
+
+Overall avg: 14.97
+
+
+
+
+#######
+Level-05: Monk-01, Druid-04 (Circle of Stars) 
+ - proficiency bonus (PB): +3 
+ - cantrip scaling: 
+   * produce flame (2d8) 
+   * sacred flame (2d8) - cast as BA x3/LR
+   * shillelagh (1d10)
+   * spare the dying (30ft)
+ - feat: spellfire adept 
+   * ASI: +1 WIS (WIS=18) 
+   * fueled spellfire: x1/turn, when a spell you cast deals radiant damage, you can expend up to
+     2 Hit Dice and add the total to one damage roll of the spell 
+   * searing spellfire: when you make a damage roll that deals radiant damage, it ignores
+     resistance 
+ - unarmored defense 
+   * base AC = 10 + DEX(3) + WIS(4) = 17
+ - wild shape (x2/LR, +1 on SR) 
+   * 6 known forms (<= CR=1/2)
+     + giant venomous snake = medium, swim/move speed 40ft, blindsight (10ft), +4 DEX, bite
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + warhorse = large, 60ft, +4 STR, hooves
+     + panther = medium, 50 speed/40 climb, darkvision (60ft), +7 stealth, nimble escape 
+     + giant seahorse = large, 5 speed/40 swim, water breathing, bubble dash 
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (3): produce flame, shillelagh, spare the dying 
+   * magician (1): resistance
+   * star map (1): guidance
+ - spell slots: 4-3
+ - spells prepared: 7
+   * lvl-1 (druid): detect magic (R), false life, jump, longstrider  
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR)
+   * lvl-1 (circle of stars): guiding bolt (free xWIS/LR) 
+   * lvl-2 (druid): augury (R), flame-blade, prayer of healing 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+
+NOTE: Alright, huge level for us here to kick off tier-02. Lvl-05 and we go druid-04 to pick up a feat/ASI. We take the new `spellfire adept' feat from the Heroes of Faerun book. The prerequisites for this feat are lvl 4+, spellfire spark or the spellcasting/pact magic feature. We satisfy all three (hooray). The feat does three things for us, all of which we like. First, as a half feat it lets us bump our WIS by one up to 18, increasing our modifier to +4. In combination with the boost to our proficiency bonus here at lvl-05 (now +3) this equates to a significant boost to our chance to hit/damage. It also means we can now cast guiding bolt for free 4 times per LR, enough to cast it once in every combat, and it boosts our unarmored AC to 17 (nice!). Second, the `searing spellfire' feature of the spellfire adept feat means that our radiant damage now ignores resistance. While radiant resistance isn't very common, we will be dealing a lot of radiant damage with this build, so it's definitely a nice pick up. Third, and most importantly, we get the `fueled spellfire' feature, which states that when a spell we cast deals radiant damage, we can expend up to 2 of our unexpended hit dice and add those to one damage roll of the spell. This is awesome, and a key lynchpin of this build. It's basically like a smite effect that we can use when we deal radiant spell damage, at the expense of our hit dice. With this feat, we can now add extra damage when we hit with both guiding bolt and sacred flame. One of the core concepts of this build is that we're going to use *all* our hit dice to do this (5 here at lvl-05). This is going to help prop up our damage scaling while we continue to invest in WIS and power through monk levels. To offset the lost healing, we should now prioritize using our first level slots to cast cure wounds on ourselves. Conveniently, we get 1 free cast of cure wounds via mark of healing, meaning we can cast cure wounds 5x per day if we need. This is more than twice the healing that we would get from using hit dice (cure wounds is 2d8+WIS, a hit die is 1d8+CON), and we're also still going to be using one of our second level slots to cast prayer of healing. So we should be fine in terms of healing, and if we were really in a bad place we could also use chalice form to give ourselves an additional healing boost. The fact that star druid gives us empowered healing and multiple free-casts of guiding bolt -- which gives us a way to deliver damage via fueled spellfire and spares our spell slots for casts of cure wounds -- synergizes so well with the spellfire adept feat, and is one of the key mechanical foundations of this build. Ok but that's not all. At lvl-05 we also get cantrip scaling, meaning our damaging cantrips (produce flame, sacred flame) now deal 2d8 (9) on hit, which out damages our monk BA unarmed strike (6.5). Especially since we just bumped our WIS to a +4, this means that we now very much want to use the BA casts of sacred flame that we get from spellfire spark to maximize our damage. So between that, our frequent use of guiding bolt, and our use of the archer starry form, I think we are going to feel like a full on spellfire blaster, which is just super awesome. Sacred flame is also actually very clutch because, unlike ranged cantrips, we can cast it in melee while using flame blade without suffering any kind of penalty. Overall, it feels great that from now on, we're going to get full value out of the spellfire spark feat. Cantrip scaling is also an important reason why we want to pick up shillelagh with our new druid cantrip here. While we won't use it yet, as we move forward in this build we will rely on shillelagh to help boost our damage with melee attacks, and it's super nice that we can pick it up here before we start going monk. Spare the dying also becomes significantly more useful at this level, allowing us to stabilize from range if we want (and give our healer's kits to other party members if we haven't already). In terms of other changes to spellcasting, we get one new lvl-02 spell slot and one new preparation. The new spell slot is clutch, since it means we can use flame blade one additional combat per day (2 combats total) which represents a meaningful boost to our DPR. Then, given that -- between flame blade and prayer of healing -- all of our second level slots are spoken for and that we want to keep our lvl-01 slots free to cast cure wounds, I took augury as our new spell preparation. It's a super handy spell and gives us a way to provide some out of combat utility. It's a ritual, and it's super thematic for our subclass. Nuff said. Ok, so then in terms of combat tactics, in two combats per day we go into our `melee mode' and use flame-blade + BA:sacred.flame_{spellfire.spark}/unarmed-strike and in the other two combats per day we go into our `ranged mode' and use sacred/produce flame + BA:starry-form_{archer}. Schematically, it looks like this: 
+ 
+`melee mode' (x2 combats/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(2)} + BA:starry-form(dragon) --> 4d6+2d8 (23)
+ - turn-02: BA:flame-blade + magic-action:flame-blade --> 3d6+WIS (14.5)
+ - turn-03: BA:sacred-flame_{spellfire-spark} + magic-action:flame-blade --> 2d8+3d6+WIS (23.5) 
+ - turn-04a: BA:sacred-flame_{spellfire-spark} + magic-action:flame-blade --> 2d8+3d6+WIS (23.5) 
+ - turn-04b: BA:unarmed-strike + magic-action:flame-blade --> 4d6+WIS+DEX (21) 
+ - note: use cantrip + unarmed-strike if you lose concentration on flame blade 
+ - note: with x3 uses of spellfire spark, use twice in one combat (turn-04a) and BA:unarmed-strike (turn-04b) in the other
+ - avg: 20.81
+
+`ranged mode' (x2 combats/day)
+ - turn 01a: guiding-bolt_{fueled-spellfire(1)} + BA:starry-form(archer) --> 4d6+1d8+1d8+WIS (27)
+ - turn 01b: guiding-bolt + BA:starry-form(archer) --> 4d6+1d8+WIS (22.5)
+ - turn-02: BA:archer + magic-action:sacred-flame --> 3d8+WIS (17.5)
+ - turn-03: BA:archer + magic-action:sacred-flame --> 3d8+WIS (17.5)
+ - turn-04: BA:archer + magic-action:sacred-flame --> 3d8+WIS (17.5) 
+ - note: use 5th hit die on fueled-spellfire in one of two `ranged' combats/day
+ - avg: 19.31
+
+Overall avg: 20.06
+
+Oh whoops. I also forgot to mention that we also get to learn 2 new wild shape forms here at druid-04, and the max CR of our beast forms can now be up to 1/2. We aren't using beast forms in combat (and won't moving forward), but could, in theory, use them out of combat for utility purposes. Given this, it's worth considering/updating our known forms. First, I think we switch out elk for warhorse as our land mount option (it's faster and stronger, but does lack darkvision). Then, we pick up panther to have a fast/stealthy form with a climb speed for infiltration potential. And finally, we take giant seahorse for a purely aquatic form that is very fast and can also serve as a mount. The other consideration here was octopus for a stealthy aquatic form. But whatever, none of this is very important. Also note that in most situations where we need a swim speed, we might prefer to use giant venomous snake since it's amphibious, has blindsight, and can still move/breathe on land. Anyway, moving on. 
+
+
+
+
+#######
+Level-06: Monk-02, Druid-04 (Circle of Stars) 
+ - unarmored movement (+10ft)
+   * movement speed increases by 10ft (40ft) while not wearing armor/shield
+ - uncanny metabolism 
+   * on initiative roll: recover all fp and md(1d6) + monk-level(2) HP (x1/LR) 
+ - monk's focus (2 fp) 
+   * flurry of blows (1fp): make two unarmed strikes as a BA 
+   * step of the wind: dash as a BA, disengage + dash as BA (1fp) 
+   * patient defense: disengage as BA, disengage + dodge as BA (1fp) 
+
+NOTE: Alright, so here's the pivot point. From now until lvl-12 we're going to take monk levels. Here at lvl-06 we go monk-02. Doing this gives us unarmored movement (40ft), uncanny metabolism, and the monk's focus feature. Starting with unarmored movement, it's flat bonus to our speed and that's great. A little more than half of our time in combat we are a melee-focused character and so having extra speed will help us deliver our damage more reliably. Uncanny metabolism is an important part of this build for a couple of reasons. First, it gives us another source of healing that scales with our monk level. By the time we finish taking monk levels (8 @ lvl-12), it will heal for the equivalent of a lvl-01 cure wounds spell. This helps offset the healing we lose from continuing to use all our hit dice for fueled spellfire and means we might have more lvl-01 spell slots available for casting spells like false life, jump, or longstrider. Second, uncanny metabolism restores all our expended focus points. If we maximize the value of uncanny metabolism and prayer of healing (and assuming 1 short rest), we can fully recharge our focus points 3 times per day. In other words, we can recharge fully after combats 1, 2, and 3 each day so that we start every combat with full focus points (if we use them all in each combat). This will be critical for us as we move forward, allowing us to spend focus points at a much higher rate than other monks would be able to. Here at monk-02, we get 2 focus points. In terms of damage, the best use of these is to do flurry of blows once in each combat. This is because, even with a +3 DEX, flurry of blows (13) out-damages our BA archer-form attack (8.5) and cantrip damage (9). So for our DPR calculation, we will assume that we alter our combat tactics to incorporate one use flurry of blows in each combat. Now, of course it's also worth mentioning that, situationally, it may be worth it to use focus points on step of the wind or patient defense. Step of the wind in particular could be useful when we're in `ranged mode' as a means of disengaging and dashing to get out of melee. So do that when called for. But given that we can cast sacred-flame in melee, it's not that unreasonable to assume that we can use flurry of blows quite consistently. More generally, having the option to dash or disengage as a BA via monk's focus also just provides our character with additional utility both in and out of combat. In terms of our combat tactics, this is how we should ideally play it now: 
+
+`melee mode' (x2/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(2)} + BA:starry-form(dragon) --> 4d6+2d8 (23)
+ - turn-02: BA:flame-blade + magic-action:flame-blade --> 3d6+WIS (14.5)
+ - turn-03: BA:sacred-flame_{spellfire-spark} + magic-action:flame-blade --> 2d8+3d6+WIS (23.5) 
+ - turn-04: BA:flurry-of-blows + magic-action:flame-blade --> 2d6+3d6+WIS+2DEX (27.5) 
+ - note: use cantrip + unarmed-strike if you lose concentration on flame blade 
+ - avg: 22.13
+
+`ranged mode' (x2/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(1)} + BA:starry-form(archer) --> 4d6+1d8+1d8+WIS (27)
+ - turn-02: BA:archer + magic-action:sacred-flame --> 3d8+WIS (17.5)
+ - turn-03a: BA:sacred-flame_{spellfire-spark} + magic-action:sacred-flame --> 4d8 (18) 
+ - turn-03b: BA:archer + magic-action:sacred-flame --> 3d8+WIS (17.5) 
+ - turn-04: BA:flurry-of-blows + magic-action:sacred-flame -->  2d6+2DEX+2d8 (22)
+ - note: on turn-03 alternate using BA:sacred-flame vs archer attack (turn-03a vs. 03b) in order to use spellfire spark x3/LR
+ - avg: 21.06
+
+Overall avg: 21.60
+
+
+
+
+#######
+Level-07: Monk-03 (Sun Soul), Druid-04 (Circle of Stars) 
+ - deflect attacks 
+   * when attack roll dealing B/P/S dmg hits you, use rxn to reduce dmg by 1d10 + DEX(3) + monk-lvl(3) 
+   * if you reduce dmg to zero, can expend 1 fp to redirect attack
+ - radiant sun bolt: 
+   * you gain a new attack option that you can use with the Attack action. This special attack is a ranged spell attack 
+     with a range of 30 feet. You are proficient with it, and you add your Dexterity modifier to its attack and damage 
+     rolls. Its damage is radiant, and its damage die is a d6. This die changes as you gain monk levels, as shown in the 
+     Martial Arts column of the Monk table.
+   * When you take the Attack action on your turn and use this special attack as part of it, you can spend 1 fp point to 
+     make the special attack twice as a bonus action.
+   * When you gain the Extra Attack feature, this special attack can be used for any of the attacks you make as part of the Attack action.
+ - monk's focus (3 fp) 
+   * flurry of blows (1fp): make two unarmed strikes as a BA 
+   * step of the wind: dash as a BA, disengage + dash as BA (1fp) 
+   * patient defense: disengage as BA, disengage + dodge as BA (1fp) 
+   * radiant sun-bolt x2 (1fp): if you Attack and use radiant sun-bolt, make 2 sun-bolt attacks as BA
+
+NOTE: Alright, lvl-07 and we go monk-03. We get deflect attacks, and we get our monk subclass -- the sun soul. Now this is a *trash* subclass, and the reality is that we will not want to use the signature subclass feature (radiant sun bolt) until at least lvl-20. It's just a really harsh design. Radiant sun-bolt is a spell attack, and so can't benefit from any of the many feats that augment attacks or unarmed strikes. But it also uses our DEX modifier for attack and damage and thus penalizes investing in a mental ability like WIS as a primary stat. Brutal. Now this build is still using the version of the subclass that was originally published in XtGE, and maybe it will be updated to be good in the future. But for now, it's straight garbage. We don't even get the minor benefit of having a ranged attack option since we already have ranged cantrips that significantly out damage radiant sun-bolt. But it's ok, because what we have done is built a better version of the sun-soul via our combination of (origin) feats and druid (sub)class features. And eventually, the investment in sun-soul will pay off when we get access to the lvl-06 subclass feature. Plus, in terms of thematic consistency, you couldn't really ask for anything better. I mean, the description of the sun soul as published in XtGE is as follows: [Warriors] of the Sun Soul learn to channel their own life energy into searing bolts of light. They teach that meditation can unlock the ability to unleash the indomitable light shed by the soul of every living creature. This just fits so perfectly into what our character already does, both in and out of combat that I think we almost feel good about not getting any meaningful subclass features at this level (almost...). Narratively, I would definitely flavor our subclass progression as `gaining' access to power via another astral body -- in this case the sun. I guess the only case in which radiant sun-bolt would actually matter is if we were somehow caught in a situation where we couldn't cast spells and still needed to make ranged attacks. Other than that -- it's really just all flavor. In terms of actual mechanical benefits, we do get deflect attacks here at monk-03 and this is a great defensive feature that scales with our monk level. And since damage reduction provides comparable functionality to healing, we're especially happy to have this feature so that we can continue to use fueled spellfire to increase our damage. Moreover, with 3fp per combat, we could potentially spend 1fp per combat to redirect a ranged attack with our reaction if applicable, since we don't have enough fp to do flurry of blows twice per combat. However, with our relatively low (for a monk) DEX and our low monk level, it's unlikely that we'll be able to reduce incoming damage to zero with deflect attacks (the trigger condition for the redirection). So I won't assume this for the DPR simulation. But whatever, if it comes up, it'll be a nice/fun way to deal a bit of extra damage (2d6+DEX) with our reaction. And it's not a feature that I really ever see being used a lot in monk builds. So that's kind of neat. Of course, we could also use our extra 1fp per combat to do step of the wind or patient defense when appropriate. In terms of actual damage increases, the only thing we get here is one additional hit die to use with fueled spellfire, giving us an additional 1d8 damage across all combat rounds per day (+0.28 DPR). No changes at all to combat tactics. 
+
+Overall avg DPR potential: 21.88
+
+
+
+
+#######
+Level-08: Monk-04 (Sun Soul), Druid-04 (Circle of Stars) 
+ - feat: elemental adept 
+   * ASI: +1 WIS (WIS=19) 
+   * energy mastery (fire): 
+     + spells you cast ignore resistance to fire damage
+     + when you roll damage for a spell you cast that deals fire damage, treat any 1 on a damage die as a 2
+ - slow fall 
+   * can take a rxn to reduce any falling dmg by 5x monk-lvl 
+ - monk's focus (4 fp) 
+    
+NOTE: Alright, lvl-08 and we go monk-04. We get the slow fall base class feature -- which is another source of damage reduction and so helps us continue to burn hit dice for damage with fueled spellfire. And we also get to take an ASI/feat. Now if we're just looking at damage in a spreadsheet, I think the smart thing here would be to just boost our WIS to 20 with an ASI. But here's the thing: we're relying quite heavily on flame blade for damage, and we're going to be leaning into fire damage even more heavily in a few levels when we get our lvl-06 monk subclass feature. With the prevalence of fire resistance in the monster manual, it's fairly likely that we'll be encountering fire-resistant enemies relatively often. And since we don't have a ton of versatility in how we deal damage, this would be a big problem for us. Plus, as we pointed out in our lvl-01 note, by going monk at character creation we missed out on proficiency in WIS saving throws. Taking another half feat here gives us the option to cap our WIS using the resilient feat later on. For these reasons, I'm going to say that we should take the elemental adept feat here, and choose fire mastery. This lets us boost our WIS by +1 to 19 and gives us the energy mastery feature -- allowing us to bypass fire resistance when we deal fire damage with spells, and giving us some very small damage high-grading (replace 1's with 2's on damage rolls). In general, I think bypassing fire resistance is the most important feature here, but it's worth noting that the damage high-grading is/will be more impactful the more damage dice you are rolling. Even here at this level, we're rolling 3d6 whenever we hit with our flame blade. This increases the base damage of a flame blade damage die from 3.5 to 3.67, meaning it increases the damage from our flame blade attacks from 14.5 to 15. Not a lot, but not trivial either given that we actually rely quite heavily on flame blade to deal damage. And this feat will become even more important in a few levels. I think it's also nice that between the searing spellfire feature of our spellfire adept feat, and the energy mastery feature of the elemental adept feat, we now bypass resistance to both radiant and fire damage. Not only does this cover the majority of damage that we'll be doing, but it also means that our various `spellfire' abilities are now all equally as effective against most enemies (unless they have immunity). In general I like how this simplifies and makes more consistent/straightforward the way we would play this build. Ok, then in terms of combat tactics -- we get another hit die to spend on fueled spellfire and we get another focus point, bringing our total up to 4. This means we can do flurry of blows twice in each combat per day. Even with only +3 DEX, using flurry of blows out damages using our BA to do sacred flame via spellfire spark and the damage from our archer form BA attack. Because we want to use flurry of blows on multiple turns each combat, and we still can make WIS-based BA attacks with spellfire spark, we end up not needing to use starry-form to go into `ranged' archer mode anymore. Now, spellfire spark isn't a perfect substitute, since we can only do it 3 times per LR (and we need to replace 4 BA archer attacks), so in one combat per day we will be stuck using our BA to make a plain old unarmed strike. But in return, we can now use our starry-form out of combat to go into chalice form and significantly increase our healing. For example, when we use chalice, we can cast cure wounds on ourselves to heal 3d8+2WIS (21.5 HP) or to heal multiple creatures simultaneously with one cast of cure wounds. And we can do this potentially multiple times in one use of starry form (10m duration). We can also use it before we cast prayer of healing to boost the recovery from that spell up to 3d8 (13.5) HP. In general, using chalice when we heal out of combat is just another way that we can compensate for the fact that we're spending all our hit dice on fueled spellfire. And it reinforces the super cool aspect of this build that we can make effective use of all the different starry forms. Right, so then given this change our new combat tactics look something like: 
+
+`mode 1' (x2/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(2)} + BA:starry-form(dragon) --> 4d6+2d8 (23)
+ - turn-02: BA:flame-blade + magic-action:flame-blade --> 3d6+WIS (15)
+ - turn-03: BA:flurry-of-blows + magic-action:flame-blade --> 2d6+3d6+WIS+2DEX (28)  
+ - turn-04: BA:flurry-of-blows + magic-action:flame-blade --> 2d6+3d6+WIS+2DEX (28) 
+ - avg: 23.5 
+
+`mode 2' (x2/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(2)} + BA:sacred-flame_{spellfire-spark} --> 4d6+4d8 (32)
+ - turn-02a: BA:sacred-flame_{spellfire-spark} + magic-action:sacred-flame --> 4d8 (18)
+ - turn-02b: BA:unarmed-strike + magic-action:sacred-flame -> 1d6+2d8+DEX (15.5)
+ - turn-03: BA:flurry-of-blows + magic-action:sacred-flame -> 2d6+2d8+2DEX (22)
+ - turn-04: BA:flurry-of-blows + magic-action:sacred-flame -> 2d6+2d8+2DEX (22)
+ - note: on turn-02 alternate using BA:sacred-flame vs unarmed strike (turn-02a vs. 02b) in order to use spellfire spark x3/LR
+ - avg: 23.19
+
+Overall avg: 23.35
+
+
+
+
+#######
+Level-09: Monk-05 (Sun Soul), Druid-04 (Circle of Stars)
+ - proficiency bonus (PB): +4 
+ - martial arts die (1d8)
+ - extra attack 
+ - monk's focus (5 fp) 
+   * flurry of blows (1fp): make two unarmed strikes as a BA 
+   * step of the wind: dash as a BA, disengage + dash as BA (1fp) 
+   * patient defense: disengage as BA, disengage + dodge as BA (1fp) 
+   * radiant sun-bolt x2 (1fp): if you Attack and use radiant sun-bolt, make 2 sun-bolt attacks as BA
+   * stunning strike (1fp) 
+     + x1/turn when you hit a creature with a monk-weapon or unarmed strike, expend 1fp 
+       to force CON save. On fail: stunned until start of your next turn. On save: 1/2 
+       speed and next attack roll against creature has advantage
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (3): produce flame, shillelagh, spare the dying 
+   * magician (1): resistance
+   * star map (1): guidance
+ - spell slots: 4-3
+ - spells prepared: 7
+   * lvl-1 (druid): detect magic (R), false life, jump, longstrider  
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR)
+   * lvl-1 (circle of stars): guiding bolt (free xWIS/LR) 
+   * lvl-2 (druid): augury (R), darkvision, prayer of healing 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+
+    
+NOTE: Ok nice level for damage here. Lvl-09 and we go monk-05. We get a few nice things. First, our proficiency bonus increases to +4, meaning a higher chance to hit with attacks and a nice even four uses of spellfire spark per day, allowing us to cast sacred-flame as a BA on one round of each combat. Next, we get extra attack and our monk martial arts die increases to a d8. With extra attack in hand, shillelagh is now definitively the best way for us to deal damage and is significantly better than flame blade. And the boost to our martial arts die makes using flurry of blows the best way to deal damage with our BA (even though we still only have +3 DEX). Because extra attack and flurry of blows are so strong, and because we have an abundance of good options for using our BA, here at this level we no longer need to use starry form in combat at all. So we are free to maximize our healing effectiveness via chalice or even use dragon form for empowered skill checks out of combat. FWIW, I think this is the *only* level where, absent guiding bolt and spellfire spark, this character will play like a 'standard' monk in combat. And, of course, if we are in a situation where ranged attacks are required, then by all means drop into archer form and spam sacred flame + BA:archer. But for min-maxed damage potential, shillelagh + flurry of blows is the way to go. Right, so we also get stunning strike at monk-05 and with 5 fp to use in each battle we can weave in 1 stunning strike attack in each combat. This is kind of just a bonus, and we won't do it much beyond this level. In general, I'm not a huge fan of stunning strike (even the updated 2024 version). I just think stunned condition kind of takes the fun out of the game a bit. But it's nice to have an opportunity to use this feature for a bit here. Right, so then in terms of combat tactics, things have simplified quite a bit for us. We open up with guiding bolt_{fueled spellfire} + BA:shillelagh in each combat. Then, in each subsequent round we make two attacks with our quarterstaff using the attack action and use our BA to either do sacred-flame or flurry of blows. In one round per combat, we can attempt a stunning strike when we hit with our quarterstaff or unarmed strikes. And in one combat per day, we can tack on an additional d8 via fueled spellfire if we hit with sacred-flame. Schematically, our combat tactics look as follows: 
+
+`mode 1' (x4/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(2)} + BA:shillelagh --> 4d6+2d8 (23)
+ - turn-02a: attack(x2):quarterstaff_{stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 2d10+3d8+2WIS (32.5)
+ - turn-02b: attack(x2):quarterstaff_{stunning-strike} + BA:sacred-flame_{spellfire-spark} --> 2d10+2d8+2WIS (28)
+ - turn-03: BA:flurry-of-blows + attack(x2):quarterstaff --> 2d8+2d10+2DEX+2WIS (34)  
+ - turn-04: BA:flurry-of-blows + attack(x2):quarterstaff --> 2d6+3d6+WIS+2DEX (34) 
+ - note: with 9 hit dice, use fueled-spellfire when you hit with sacred flame (turn-02a) in 1 combat per day
+ - avg: 30.03
+
+Nice boost to put us into a reasonable place damage wise as we round out tier-02. Oh yeah, and as an added bonus, since we're no longer using our second level slots to cast flame blade, switch out that preparation for darkvision and cast that on yourself x1/LR (8hr duration). Then you also have an additional second level slot for upcasting cure wounds, false life, jump, longstrider, etc. Pretty nice. 
+
+
+
+
+#######
+Level-10: Monk-06 (Sun Soul), Druid-04 (Circle of Stars)
+ - empowered strikes 
+   * can choose to have unarmed strikes deal force dmg on hit
+ - unarmored movement (+15ft)
+   * movement speed increases by 15ft (45ft) while not wearing armor/shield
+ - searing arc strike 
+   * immediately after you take the attack action on your turn, you can spend 2 fp points to cast burning hands as a BA
+   * you can spend additional fp points to upcast the spell; max fp you can spend (in total) = 1/2 monk-lvl
+ - monk's focus (6 fp) 
+   * flurry of blows (1fp): make two unarmed strikes as a BA 
+   * step of the wind: dash as a BA, disengage + dash as BA (1fp) 
+   * patient defense: disengage as BA, disengage + dodge as BA (1fp) 
+   * radiant sun-bolt x2 (1fp): if you Attack and use radiant sun-bolt, make 2 sun-bolt attacks as BA
+   * stunning strike (1fp) 
+     + x1/turn when you hit a creature with a monk-weapon or unarmed strike, expend 1fp 
+       to force CON save. On fail: stunned until start of your next turn. On save: 1/2 
+       speed and next attack roll against creature has advantage
+   * searing arc strike (2+ fp): cast burning hands as BA after taking attack action
+    
+NOTE: Alright, lvl-10 and we go monk-06. This is a big one for us. To get the boring stuff out of the way, at monk-06 we get the empowered strikes feature which lets us deal force damage when we hit with our unarmed strikes. This is a nice since force dmg is very reliable and gives us a default to fall back on if we're in a situation where radiant/fire damage aren't effective. But unfortunately, starting at this level, we're going to be moving away from flurry of blows, so it's kind of a moot point. Whatever. We also get a boost to our unarmored movement, bringing our movement speed up to 45ft. Very nice. Now for the fun stuff. At monk-06 we get our second sun soul subclass feature: searing arc strike. This feature lets us expend focus points to cast the burning hands spell as a bonus action after we take the attack action on our turn. And it gives us the ability to expend more focus points to upcast the spell if we want. Now, historically, like everything else in the sun soul subclass, this feature was g-a-r-b-a-g-e. As a lvl-01 spell, burning hands does 3d6 (10.5) fire damage, already less than what a DEX-based monk would deal with flurry of blows in single target. So, ok, you are trading a little damage to get some AOE potential, right? But no, it's also twice as expensive as flurry of blows. So under the 2014 rules, where monk's lacked the uncanny metabolism feature, you'd only be able to do searing arc strike like 3-4 times per LR, versus using flurry of blows like 6-8 times. And the save for searing arc strike is based on your WIS which conflicted with the sun soul's desire to build DEX in order to maximize the effectiveness of radiant sun bolt. So yeah, it was just a bad feature. However, for this build, searing arc strike is just what the doctor ordered. Given the changes to the monk base class (uncanny metabolism, in particular) and given that we have prayer of healing to recharge our focus points, we can use this feature to upcast burning hands at lvl-02 (4d6) twice in *each combat* (so x8 per day). And because we have built WIS as our primary stat, and because enemies still take 1/2 damage on save from burning hands, this damage is quite reliable. Furthermore, because the feature specifically states that we are casting the burning hands spell, this means that the resistance-bypassing and damage high-grading that we get from our elemental adept feature will apply. All-in-all, searing arc strike gives us a new WIS-based BA option that deals significantly more damage, potentially to multiple targets, than flurry of blows. To be specific, using searing arc strike to upcast burning hands at lvl-02 will deal an average of 11.73 dmg to an enemy with a +3 to their DEX save. By contrast, against an AC-16 opponent, flurry of blows will only deal about 10.8 dmg on average (accounting for hit/crit chance). Now, obviously flurry of blows only costs 1fp, whereas upcasting searing arc strike in this manner costs 3fp. But the fact of the matter is, because we regenerate our focus points between each combat we *want* ways to spend more fp to push up our damage ceiling. The only way to do that with flurry of blows is to start using it every single round, which we don't want to do since we want to be able to continue using spellfire spark to cast sacred-flame as a BA and deliver damage via fueled spellfire. So searing arc strike is perfect since it let's us concentrate our damage in a few big rounds and free up our action economy. Plus let's not gloss over the fact that actually using this feature is really f**king cool. I mean, we're hurling guiding bolts, calling down gouts of spellfire (sacred flame), and now channeling billowing waves of burning spellfire from our hands in each round of combat. Just very cool theater of the mind. And it's also cool to make a build that uses the sun soul subclass features (at least one of them!) in a way that doesn't suck. Ok, so what does this mean for combat tactics? Well, as noted above, the play is going to be for us to using searing arc strike to cast burning hands as a BA in two rounds of each combat. So on turn-01 we do guiding-bolt_{fueled-spellfire} + BA:shillelagh. Then on subsequent turns we attack with our quarterstaff and either us spellfire-spark to do sacred flame (tacking on fueled spellfire half the time) or use searing arc strike to do burning hands. Schematically, this looks like: 
+
+`mode 1' (x4/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(2)} + BA:shillelagh --> 4d6+2d8 (23)
+ - turn-02a: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 2d10+3d8+2WIS (32.5)
+ - turn-02b: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark} --> 2d10+2d8+2WIS (28)
+ - turn-03: attack(x2):quarterstaff + BA:burning-hands(l2) --> 2d10+4d6+2WIS (33.67)  
+ - turn-04: attack(x2):quarterstaff + BA:burning-hands(l2) --> 2d10+4d6+2WIS (33.67)
+ - note: with 10 hit dice, use fueled-spellfire when you hit with sacred flame (turn-02a) in 2 combats per day
+ - avg: 30.15
+
+Now, we had to stop using stunning strike, so we lost a bit of control. But in return, we gained significant AOE potential via burning hands. Of course, we'll also have to manage the AOE so that we don't target allies, but with our high movement speed this shouldn't be too hard. It's also really nice that we are now officially using WIS for *all* of our attacks/spells in every round of combat. Especially since it will become increasingly unviable to rely on DEX as we push into later levels. Finally, it's worth noting that, since we aren't reliant on it for combat, we can continue to expend all our uses of starry form (or wild shape) out of combat to boost our healing and party utility. Very nice. In general, I would say the build is `complete' at this level in terms of it's basic playstyle. Moving forward, we'll build out more damage by capping our stats and (eventually) by incorporating the use of higher level druid spells. All of that will result in a pretty nice power curve that maintains a slightly higher-than-average DPR. But here in tier-02, we end up in B-tier, which is fine. 
+
+
+ 
+
+#######
+Level-11: Monk-07 (Sun Soul), Druid-04 (Circle of Stars)
+ - cantrip scaling: 
+   * produce flame (3d8) 
+   * sacred flame (3d8) - cast as BA x4/LR
+   * shillelagh (1d12)
+   * spare the dying (60ft)
+ - evasion
+   * if subjected to an effect that forces you to make a DEX save to take 1/2 dmg 
+     you take no dmg on a success and half dmg on a failure
+ - monk's focus (7 fp) 
+      
+NOTE: Ok, next up lvl-11 and we go monk-07. We get evasion as a base class feature which is excellent. As we've mentioned before, damage reduction is comparable to healing and we like having as much healing/damage reduction as possible since we're spending all our hit dice on fueled spellfire. Starting monk to get proficiency in DEX saves also makes evasion more valuable. The other big thing we get here at lvl-11 is cantrip scaling. Now we do 3d8 base with our sacred-flame cantrip (and 4d8 if we boost it with fueled spellfire) and 1d12 when we hit with our shillelagh. Also worth noting that 4d8 we now do when we cast sacred flame and add 1d8 of fueled spellfire is strictly more damage (~18) than what we would deal if we were to use our BA to do flurry of blows (~15). Plus it's ranged and ignores cover. Just kind of nice to see that we aren't missing out on any damage by spending all our fp on searing arc strike. In terms of combat tactics, nothing changes here. The only difference from lvl-10 is that now we can add 1d8 to our turn-02 sacred-flame damage with fueled spellfire in 3 out of 4 combats per day, and we also have 1 extra focus point we can use to do stunning strike once per combat. So we get back a bit of additional control. Note that stunned enemies auto-fail DEX saves, so we can use stunning strike to help setup our burning hands or sacred-flame attacks. Also note, we can't spend this extra fp to upcast burning hands to lvl-03 because we can still only spend 1/2 our monk-lvl focus points, rounded down per cast. In general, cantrip scaling + more fueled-spellfire contributes to a nice boost to our damage. Finally, note that it *is* still worth it to cast guiding bolt -- versus attack with our quarterstaff -- on turn-01 (23 vs 21 dmg). Plus doing so generates advantage for us/our allies. Schematically we have: 
+
+`mode 1' (x4/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(2)} + BA:shillelagh --> 4d6+2d8 (23)
+ - turn-02a: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 2d12+4d8+2WIS (39)
+ - turn-02b: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark} --> 2d12+3d8+2WIS (34.5)
+ - turn-03: attack(x2):quarterstaff_{stunning-strike} + BA:burning-hands(l2) --> 2d12+4d6+2WIS (35.67)  
+ - turn-04: attack(x2):quarterstaff + BA:burning-hands(l2) --> 2d12+4d6+2WIS (35.67)
+ - note: with 11 hit dice, use fueled-spellfire when you hit with sacred flame (turn-02a) in 3 combats per day
+ - avg: 33.05
+
+Back down to class D, but it's our first level of tier-03. And we saw a nice boost to damage relative to lvl-10. 
+
+
+
+
+#######
+Level-12: Monk-08 (Sun Soul), Druid-04 (Circle of Stars)
+ - feat: resilient (WIS) 
+   * ASI: +1 WIS (WIS=20) 
+   * gain proficiency in WIS saving throws 
+ - unarmored defense 
+   * base AC = 10 + DEX(3) + WIS(5) = 18
+ - monk's focus (8 fp) 
+      
+NOTE: Pretty straightforward level here. Lvl-12 and we finish out with monk levels by going monk-08. For our ASI/feat we take the resilient feat to boost our WIS to 20 and to gain proficiency in WIS saving throws (boosting our save bonus to +9). Note that boosting WIS here also bumps our unarmored AC to 18. Alternatively, inspiring leader is another good half-feat option that we could take. This would boost our supportive capabilities by allowing us to dole out considerable THP to ourselves and our allies after every rest. And honestly, if that seems like a bigger need for the party as a whole, I would say just go ahead and do that. But personally, I think WIS save proficiency will be more impactful (especially here at higher levels) and feels consistent with the idea that our spellfire soul provides us with mental, not just physical, fortitude. In addition, while we have never been a pure healer, we *have* done a good job of building in damage reduction -- via magic absorbtion, resistance, deflect attacks, slow fall, evasion -- and healing capacity -- via mark of healing, starry-form (chalice) + cure wounds, uncanny metabolism, and our consistent use of prayer of healing -- throughout our character's progression. Furthermore, once we switch back to taking druid levels (next level) we will have even more spell slots to use on healing if we need. So yeah, I think resilient is the play here. In terms of combat tactics, we get an additional hit die that we should spend to do fueled-spellfire(1) every time we hit with sacred flame on turn-02. We also get an additional focus point, and because we are monk-08 we can spend up to 4 focus points to upcast burning hands at lvl-03 to deal 5d6 dmg with searing arc strike. Doing this means we'll go back to not using stunning strike. Otherwise, everything is exactly the same. Though, it is worth noting that with the increase to our WIS modifier, it is now exactly equivalent (in terms of damage) to use our action to attack versus cast guiding bolt + fueled-spellfire on turn-01. Obviously, guiding bolt provides advantage to the next attacker, and we've been using it our entire career, so I'm inclined to stick with it. On the other hand, if we're in melee, or if we want to actually save some of our hit dice to use on healing, just attacking with our quarterstaff on turn-01 is no longer a DPR loss. So a bit of additional versatility. Nice. All in all, we see a nice boost to damage from the increase to our WIS modifier, the upcasting of burning hands, and the additional use of fueled-spellfire. Schematically: 
+
+`mode 1' (x4/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(2)} + BA:shillelagh --> 4d6+2d8 (23)
+ - turn-02: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 2d12+4d8+2WIS (41)
+ - turn-03: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+5d6+2WIS (41.33)  
+ - turn-04: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+5d6+2WIS (41.33)
+ - avg: 36.67
+
+Alright, so back into class C for tier-03 damage. Feels good. And more generally -- whew! We did it! We actually created went all the way through to monk-08 with a WIS-first hybrid melee/blaster build without absolutely sucking at any point along the way. Moreover, even as we've gone along we have been true gish pretty much the whole time, relying (more or less) equally on various combinations of martial and spellcasting features from across both our component classes (druid, monk). We've also managed to avoid being `pulled' too strongly towards the playstyle of either base class and having our multiclass start to feel more cosmetic than optimal. Plus our characters' theme, identity, and playstyle is just super badass. Really, really nice. I'm super happy with where we've gotten to thus far, even if we aren't going to be setting any records for overall DPR.  
+
+
+
+
+#######
+Level-13: Monk-08 (Sun Soul), Druid-05 (Circle of Stars)
+ - proficiency bonus (PB): +5 
+ - wild resurgence 
+   * x1/turn you can expend a spell slot to give yourself a use of wild shape if none left 
+   * x1/LR you can expend a use of wild shape to give yourself a lvl-01 spell slot 
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (3): produce flame, shillelagh, spare the dying 
+   * magician (1): resistance
+   * star map (1): guidance
+ - spell slots: 4-3-2
+ - spells prepared: 9
+   * lvl-1 (druid): detect magic (R), false life, jump, longstrider  
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR)
+   * lvl-1 (circle of stars): guiding bolt (free xWIS/LR) 
+   * lvl-2 (druid): augury (R), darkvision, prayer of healing 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+   * lvl-3 (druid): aura of vitality, elemental weapon 
+     
+NOTE: Alright, cool, Lvl-13 and we're going back to druid. We get a proficiency bonus increase and we get another hit die to use with fueled spellfire, both of which increase our damage a little bit. The PB increase also means we can use spellfire spark 5x per day, but this isn't integral to our optimal combat strategy. We also get a couple of key things from going druid-05. First off we get the wild resurgence base class feature. This lets us burn spell slots to give ourselves uses of wild shape (probably won't ever do this) or burn a wild shape use to give ourselves a lvl-01 spell slot (might do this). Right now, we probably won't use this feature at all. Though I suppose if we are all topped up on healing and don't need chalice, then an extra 1st level spell slot per day would be nice. That said, we will certainly get more out of this starting next level when we get an additional use of wild shape per long rest. Next at druid-05 we get two new spell preparations as well as access to lvl-03 druid spells. There are two spells that I think we really like here. The first is aura of vitality. Aura of vitality is a 1m concentration spell that lets us heal 2d6 hit points to a creature when we cast it and at the start of every turn while it's active. That means it can heal for 20d6 (70) HP over it's full duration. If we are in chalice form when we cast it, we can get another 1d8+5 (9.5) HP on cast, too, for a total of 79.5 HP. It is a bit unfortunate that we can't get the bonus chalice healing on every round of aura of vitality (that would be really broken), but it's still a great spell. And we want/need it in order to continue to use our hit dice to deal damage with fueled spellfire. Of course, this healing is on top of what we already do with our 5 casts of cure wounds, 4 of which can benefit from chalice (14d8+45 = 108 HP), our daily cast of prayer of healing (9 HP), and our HP recovery through uncanny metabolism (12.5 HP). With ~87 HP at this level, we should be able to full heal ourselves and provide decent healing to the rest of the party as long as we don't die in combat. And if things go well, I would expect that we can start using some of our first level spell slots to cast other spells like false life, jump, and longstrider. The next spell I think we want to take is elemental weapon. Elemental weapon is a 1hr duration concentration spell that we can cast on a non-magical weapon. While active, it gives the weapon a +1 to hit and a +1d4 elemental (acid, cold, fire, lightning, thunder) damage on hit. Since this it is a `spell we cast', when we choose the fire infusion I would argue that elemental weapon also satisfies the conditions for our elemental adept feat. This means the additional fire damage bypasses resistance and the additional damage rider goes from 2.5 dmg on hit, on average, up to 2.75 damage on hit, on average (10% increase). Now, it's also totally reasonable to argue that the spell does not deal any damage on its own, but rather makes our weapon deal more damage (i.e., it's the weapon, not the spell that delivers the damage). In this case, elemental adept would not apply. It's not a huge difference, but I think there's a pretty reasonable case to be made that it should apply, perhaps even more for this character than others that use the spell. And elemental adept is not an overpowered feat at baseline by any means. But definitely double check with your DM. For our DPR simulation, I will assume the damage high-grading from elemental adept does apply to the extra damage from elemental weapon. Now, with only a 1hr duration, we certainly won't be able to have elemental weapon active all the time. More likely we'll have it for 1 (or at most 2) combat(s) per day. For our DPR simulation, I assume 1 combat per day. But with elemental weapon and shillelagh active, a pair of quarterstaff attacks deals more damage than our standard `guiding-bolt_{fueled-spellfire(2)}' turn-01 opener. So we will end up attacking with the quarterstaff twice in every round of combat, meaning that elemental weapon will increase our DPR in that combat by more than 5.5 (since it also increases our chance to hit), which equates to a ~1.38 increase to our daily average DPR. That's pretty good. The main reason elemental weapon works so well for us is because it doesn't eat into our action economy in combat at all. Other spells that require a BA or a magic action to cast in combat all require sacrificing some of the damage we are already dealing using our current combat tactics (e.g, conjure animals). Elemental weapon simply adds on top of our normal damage, making it our best option. I also think that it fits super well with this build/character's themes. That is, at earlier levels, we relied on flame blade. Now we are using elemental weapon and channeling starfire into our quarterstaff to turn it into a kind-of light-saber staff thing. Awesome! This feels very much on brand with the identity of this build in a way that some of the other powerful lvl-03 druid spells don't (e.g, summon fey). Some other spells that I would consider honorable mentions include: the new `sylune's viper' spell from the heroes of faerun book. This would give us some additional THP generation and the ability to stun targets (if they can be poisoned). It's a really great spell, but using it would mean sacrificing significant damage in combat (since we'd have to use a magic action to deploy the viper instead of taking the attack action) and with our low(ish) AC and melee focused playstyle, it seems fairly likely that we would lose the THP granted by the spell pretty quickly. Plus at this level, it's also likely that our enemies will be immune to the poisoned condition. It's also definitely not as thematically consistent as elemental weapon. But if we know we're going to be in a ranged situation where control is more important than damage, I would still consider preparing it. The other honorable mention is mass healing word, which we can access via our spells of the mark feature. Taking this would be more about having a `break glass in case of emergency' healing option to use if the whole party is on life support in combat. It's a great spell, and we might prepare it once we get additional spell slots later on. But since we already picked up aura of vitality for out-of-combat healing, and we aren't getting a lot of other damage boosting features here at this level, I think it would be a bit redundant. Plus, as we've said many times before, our character is not a full-on healer, and we are clearly invested in continuing to be an impactful damage dealer. In this light, elemental weapon feels like a more impactful choice than another healing spell. All that said, as always with spell selection, pick your favorites and consider what might be situationally optimal given the scenarios you're likely to be facing. Now then, in terms of combat tactics, the only thing that changes is that in the combat when we have elemental weapon active we attack instead of using guiding bolt on turn-01. Then, in order to continue using all our hit dice for fueled-spellfire, we start tacking on 2d8 hit dice when we hit with sacred flame on turn-02 in 3 out of 4 daily combats (including the one with magic weapon). Schematically, it looks like this: 
+
+`elemental weapon active' (x1/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff --> 2d12+2WIS+5.5 (28.5)
+ - turn-02: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+5d8+2WIS+5.5 (51)
+ - turn-03: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+5d6+2WIS+5.5 (46.83)  
+ - turn-04: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+5d6+2WIS (46.83)
+ - avg: 43.29
+
+`no elemental weapon' (x3/day)
+ - turn 01a: guiding-bolt_{fueled-spellfire(2)} + BA:shillelagh --> 4d6+2d8 (23)
+ - turn-02a: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+5d8+2WIS (45.5)
+ - turn-02b: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 2d12+4d8+2WIS (41)
+ - turn-03: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+5d6+2WIS (41.33)  
+ - turn-04: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+5d6+2WIS (41.33)
+ - note: with 13 hit dice, we use 2 dice on fueled spellfire (turn-02a) in 2/3 non-EW combats, and 1 die on fueled spellfire x1/day (turn-02b)
+ - avg: 37.42
+
+Overall avg: 38.89
+
+
+ 
+
+#######
+Level-14: Monk-08 (Sun Soul), Druid-06 (Circle of Stars)
+ - wild shape (x3/LR, +1 on SR) 
+ - cosmic omen (xWIS/LR) 
+   * After LR, roll special die and gain special rxn that varies depending on whether roll was even/odd
+   * weal (even) = when creature you can see w/in 30ft is about to make a d20 roll, use rxn to add 1d6 to the roll
+   * woe (odd) = when creature you can see w/in30ft is about to make a d20 roll, use rxn to subtract 1d6 from roll 
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (3): produce flame, shillelagh, spare the dying 
+   * magician (1): resistance
+   * star map (1): guidance
+ - spell slots: 4-3-3
+ - spells prepared: 10
+   * lvl-1 (druid): detect magic (R), false life, jump, longstrider  
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR)
+   * lvl-1 (circle of stars): guiding bolt (free xWIS/LR) 
+   * lvl-2 (druid): augury (R), darkvision, prayer of healing 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+   * lvl-3 (druid): aura of vitality, elemental weapon, revivify  
+     
+NOTE: Ok, pretty straightforward level here. We go druid-06 and we get three things. First, we get an additional use of wild shape per LR. Given that we're currently using all of our wild shapes out of combat for utility and/or healing, and that we already get an additional wild shape (relative to normal druids) since we're casting Prayer of Healing each day -- I would probably opt to just turn this additional usage into a lvl-01 spell slot so that I can cast false life, jump, or longstrider once per day. The second thing we get at druid-06 is our next subclass feature: cosmic omen. This feature gives us a special reaction that we can use 5 (WIS) times per day when an ally or enemy we can see within 30ft is about to make a d20 roll. The special reaction depends on a die roll -- weal if we roll even (which adds a 1d6 bonus to the roll) or woe if we rolled odd (which imposes a 1d6 penalty on the roll). Since we can use this feature on ourself, the nice thing about our build is that we have multiple built-in ways to use this regardless of whether we roll even or odd. For example, we could use the weal option to boost any of our attack rolls with guiding bolt -- ensuring that we land the hit so we can deliver fueled spellfire. We could also use the boost to make sure we hit with our quarterstaff when elemental weapon is active. Or, probably the best option, to boost our CON save when we make a save to maintain concentration on elemental weapon. And for woe, we are currently using spellfire spark to cast sacred flame, which forces a DEX saving throw, in every combat. We are also forcing DEX saves when we use searing arc strike to cast burning hands. We could use woe to impose a penalty on enemy saves in any of these situations. So yeah, basically this feature turns out to be a reaction that is guaranteed to be useful xWIS times per day. The only obvious downside is that we have to use it when the target is *about* to make the d20 test -- so we can't wait to use it only when it would change a failure to a success or vice-versa. But that's ok. Overall it just means the damage we deal is more reliable (which equates to a small increase in our DPR) and gives us a bit more protection on saving throws. Excellent. It's also obviously very thematic and fits perfectly with the idea that our spellfire abilities derive from the astral powers that determine the cosmic order of the material plane, and that our inherent connection to this cosmic order provides us with uncanny physical precision/accuracy and mental fortitude. Ok, then the last thing we get at this level is additional spellcasting, specifically we get one additional 3rd level spell slot and one new spell preparation. For the preparation, I went with revivify. This is because ideally we are using the new spell slot to cast elemental weapon one additional time per day. Or, if things are going poorly, we can use it to cast aura of vitality another time for more healing. So we don't really want another spell that competes for the slot. And having revivify on a half-caster character at high levels is always nice, since it frees up your party's casters to prepare other more useful things which they will have the capacity to cast. Revivify is also super appropriate for our light/healing themed character, who can now channel spellfire into others to restore them to life. Very cool! Ok, so in terms of combat tactics, we assume that we have elemental weapon active for 2 combats per day. In both of these combats, we use our action to attack each round and use our BA on round one to activate shillelagh. In one of these combats, we use our BA to do sacred flame with fueled-spellfire in two rounds, use our BA to do burning hands (lvl-03) in one round, and use the residual focus points to apply stunning strike to one of our attacks each round. This not only means we contribute more control to the fight, but stunning an enemy also means they auto-fail DEX saves and so increases the damage we do with both of our BA attacks (sacred flame and burning hands). In the other elemental weapon combat, use our BA to do sacred flame + fueled-spellfire in only one round, and do burning hands in the other two rounds. The reason for this split is because we can only use spellfire spark to do BA:sacred-flame x5 times per day. In the non-elemental weapon combats, we revert to using guiding bolt with fueled spellfire on turn-01, sacred flame with fueled spellfire on turn-02, and burning hands on turns-03 and 04. Schematically, these tactics are as follows:  
+
+`elemental weapon active, max spellfire' (x1/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff_{stunning-strike} --> 2d12+2WIS+5.5 (28.5)
+ - turn-02: attack(x2):quarterstaff_{stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+5d8+2WIS+5.5 (51)
+ - turn-03: attack(x2):quarterstaff_{stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+5d8+2WIS+5.5 (51)  
+ - turn-04: attack(x2):quarterstaff_{stunning-strike} + BA:burning-hands(l3) --> 2d12+5d6+2WIS (46.83)
+ - avg: 44.33 
+
+`elemental weapon active, max burning hands' (x1/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff --> 2d12+2WIS+5.5 (28.5)
+ - turn-02: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+5d8+2WIS+5.5 (51)
+ - turn-03: attack(x2):quarterstaff + BA:burning-hands(l3) -->  2d12+5d6+2WIS (46.83)  
+ - turn-04: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+5d6+2WIS (46.83)
+ - avg: 43.29
+
+`no elemental weapon' (x2/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(2)} + BA:shillelagh --> 4d6+2d8 (23)
+ - turn-02: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+5d8+2WIS (45.5)
+ - turn-03: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+5d6+2WIS (41.33)  
+ - turn-04: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+5d6+2WIS (41.33)
+ - avg: 37.79
+
+Overall avg: 40.8
+
+
+
+
+#######
+Level-15: Monk-08 (Sun Soul), Druid-07 (Circle of Stars)
+ - elemental fury 
+   * primal strike: x1/turn when you hit a creature with an attack roll using a weapon/beast form
+     attack, add 1d8 cold/fire/lightning/thunder (choose on hit)  
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (3): produce flame, shillelagh, spare the dying 
+   * magician (1): resistance
+   * star map (1): guidance
+ - spell slots: 4-3-3-1
+ - spells prepared: 11
+   * lvl-1 (druid): detect magic (R), false life, jump, longstrider  
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR)
+   * lvl-1 (circle of stars): guiding bolt (free xWIS/LR) 
+   * lvl-2 (druid): augury (R), darkvision, prayer of healing 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+   * lvl-3 (druid): aura of vitality, elemental weapon, revivify 
+   * lvl-4 (druid): fount of moonlight   
+     
+NOTE: Ok here we go, lvl-15 and we go druid-07. We get an additional hit die for fueled spellfire, a new spell preparation, access to 4th level druid spells, and we get the elemental fury feature. For elemental fury, we take the primal strike option which means we can add 1d8 elemental damage once per turn when we hit with a weapon. Since we're going to be hitting with a weapon almost every turn, this is represents a nice boost to our overall DPR. For thematic consistency, I would opt for this extra damage to be fire damage. But it's worth noting that the extra damage from primal strike is not affected by our elemental adept feat -- so no damage high-grading, and if an enemy is resistant to fire damage, then we should choose a different damage type (maybe lighting/thunder?). Ok then for our new spell, I'm going to recommend that we go with fount of moonlight (FoM). Now this is perhaps a bit surprising. You're probably all screaming at me `conjure minor elementals is better! 2d8 on hit instead of just 2d6! Plus it upcasts and it would benefit from elemental adept!'. And yes, you are correct. And under certain assumptions, or in certain situations, conjure minor elementals (CME) would definitely do more damage than fount of moonlight. But there's a couple of things to consider. First, I'm always a bit hesitant to just fall into the boring, if very tried-and-true, tropes of optimized DnD combat. Like, yes, we all know CME is good, and there a million other builds that leverage it to much greater effectiveness than this one. So on it's face, I just *like* making more out of a less-utilized spell like FoM. Second, and this is perhaps the insightful bit that you might not have thought of at the top -- because it deals radiant damage, I would argue that fount of moonlight can act as a delivery vehicle for our fueled-spellfire procs, which CME doesn't. Now this depends a bit on the interpretation of the wording for fueled spellfire. Specifically, the feature says: "once per turn, when a spell you cast deals Radiant damage, you can expend up to two Hit Point Dice, roll them, and add the total rolled to one damage roll of the spell." Well FoM is a spell we cast that deals radiant damage, so we're good there. The crux is whether we think that the `once per turn' clause applies to the `you can expend up to two Hit Point Dice...' part. Or whether the feature restricts you to adding extra damage to only one instance of damage per cast, even if a spell lasts multiple rounds. Honestly, I could see your DM going either way, but here's why I think you should be allowed to add fueled spellfire to continuing effects like those from fount of moonlight -- because this isn't free damage! You have to expend your hit point dice, which is a major part of your daily healing resources to do it. So unless you've built a character (like we have) that plans to use a lot of *other* resources to heal themselves throughout the day, then you're going to be in trouble if you just burn through all your hit dice with one spell. Anyway, definitely check with your DM on this, but I think it works just fine. Especially since it's not like this combination is going to be overpowered for us here. In fact, as we've pointed out, if all we cared about was pure damage potential, then CME would likely be better. Plus we're already playing a notoriously shitty subclass (the sun-soul), so just let me have this! Haha ok, assuming we can do it, adding fueled spellfire to the damage we deal with fount of moonlight each turn makes the spell more appealing than CME, in my opinion, for several reasons. First, it means we have more opportunities to deliver fueled spellfire. At previous levels/in some combats, if we missed with our BA:sacred-flame then that was it. We only had that one opportunity to deal radiant spell damage and so if the enemy made their save then we just missed out. Now, we are going to be dealing radiant spell damage with every successful attack we make while FoM is active. So a much more reliable way to deliver fueled-spellfire damage. More instances of radiant spell damage also means we can use fueled-spellfire more often, ensuring that we can continue to expend all of our hit dice to deal damage. This is super important for our continued damage scaling. Without this spell, it becomes increasingly difficult over the next 5 levels to actually have enough turns/instances of radiant spell damage to use all of our hit dice. Second, being able to deliver fueled-spellfire via FoM means we can redistribute our BA uses of sacred-flame from spellfire spark to other combats. Since this is (and will continue to be) our highest-damage BA option, shifting these to combats when we're using elemental weapon gives us a more even damage profile across combats throughout the day. It also means we can start to phase out using guiding bolt, which we've gotten *a lot* of value out of, but is definitely starting to lag behind in terms of damage here at lvl-15. Third, FoM obviously allows us to provide a bit more control and defensive utility with the special reaction that it enables. CME provides a very small bit of control by virtue of it creating difficult terrain within 15ft the emanation, but with FoM we can impose a more debilitating condition (blinded) at a much greater range (60ft). Unlike a lot of builds that make use of this spell, we also have WIS as our primary stat, so the save against the blinding reaction will be a tough one for enemies to make. Now, we probably still want to be careful about burning our reaction to do this, since we also want to keep it available to use cosmic omen/deflect attacks. But having multiple good limited-use reactions is a good problem to have. Finally, I think that FoM is just a more thematically appropriate spell for this character than CME. Like, yes, we have always done a lot of fire damage with this character and that is how we would continue to deal damage with CME. But we could also, in theory, use CME to have this character deal *acid* damage on each hit. And that would be weird. In general, CME just has a bit more of an `arcane elementalist' flavor than seems appropriate for this character, which has been strictly tied to fire/radiant damage all the way since day one. Plus, let's not ignore that having a moon-themed spell on a character who's whole schtick is that they derive power from cosmic/astral entities is right on point. In fact, between our *sun*-soul monk abilities, our *star*-druid abilities, and the fount of *moon*light spell -- we now have all the most prominent astral entities covered. A true being of sun, moon, and stars. That feels like a really great way to tie up this character's narrative progression as we head towards tier-04 -- versus establishing some new/stronger connection to the elemental planes via CME. Obviously everything can be re-flavored, and I'm not saying you couldn't make CME work, but it's not as good. Ok, then just to tie up this discussion, in addition to CME there are a few other honorable mentions for 4th level spells we could also consider preparing. These, in my opinion, are: fire shield, grasping vine, polymorph, stoneskin, wall of fire. All of these are pretty good spells. But none of them have the damage potential of FoM or CME. That said, as always, pick your favorites and choose whatever best fits the situation you're in. Whew, ok. So then what about combat tactics? Well, assume that we spend turn-01 during the combat we use FoM to cast the spell and use our BA to activate starry-form(dragon) to protect our concentration. FWIW, I don't like assuming we can pre-cast stuff before combat, but obviously we can get even more damage out of the FoM spell if we do make this kind of assumption. On subsequent turns during our FoM combat, we attack with our quarterstaff, using fueled-spellfire each time. And for our BAs, on turn-02 we activate shillelagh and on turns-03/04 we use burning hands. Of note, if we happen to be fighting an enemy that is easy to hit, then using our BA to do flurry-of-blows instead of burning hands will do more damage while FoM is active. But given that we still only have a +3 to our DEX, for the average monster at this level, which has AC-18 but a DEX save of only +4, burning hands is still better. Then, since we aren't using spellfire spark to cast sacred flame as a BA in our FoM combat, we now do so twice in each of our elemental weapon combats, using fueled-spellfire as needed to expend all 15 of our hit dice. Then, in our only `no concentration spell' combat of the day, we revert back to our standard guiding-bolt opener rotation. Schematically, our daily combats now look like: 
+
+`no concentration spell' (x1/day)
+ - turn 01: guiding-bolt_{fueled-spellfire(2)} + BA:shillelagh --> 4d6+2d8 (23)
+ - turn-02: attack(x2):quarterstaff_{primal-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+6d8+2WIS (50)
+ - turn-03: attack(x2):quarterstaff_{primal-strike} + BA:burning-hands(l3) --> 2d12+1d8+5d6+2WIS (45.83)  
+ - turn-04: attack(x2):quarterstaff_{primal-strike} + BA:burning-hands(l3) --> 2d12+1d8+5d6+2WIS (45.83)
+ - avg: 41.17
+ 
+`elemental weapon active' (x2/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,stunning-strike} --> 2d12+1d8+2d4+2WIS (33)
+ - turn-02: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+1d8+2d4+2WIS+5d8 (55.5)
+ - turn-03a: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 2d12+1d8+2d4+2WIS+4d8 (51)
+ - turn-03b: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark} --> 2d12+1d8+2d4+2WIS+3d8 (46.5)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:burning-hands(l3) --> 2d12+1d8+2d4+2WIS+5d6 (51.33)
+ - note: with 15 hit dice, we use 1 hit die for fueled spellfire on turn-03(a) in one elemental weapon combat, and zero in the other combat (turn-03b) 
+ - avg: 47.15
+
+`fount of moonlight active' (x1/day)
+ - turn-01: BA:starry-form(dragon) + magic-action:fount-of-moonlight --> 0 
+ - turn 02: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,fueled-spellfire(2)} --> 2d12+3d8+4d6+2WIS (50.5)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,fueled-spellfire(2)} + BA:burning-hands(l3) --> 2d12+3d8+4d6+2WIS+5d6 (68.83)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,fueled-spellfire(2)} + BA:burning-hands(l3) --> 2d12+3d8+4d6+2WIS+5d6 (68.83)
+ - note: if fighting easy to hit enemy, use BA:flurry-of-blows on turns 03 and 04 to maximize damage
+ - avg: 47.04
+
+Overall avg: 45.63
+
+So yeah, overall between FoM and primal strikes, we see a very nice increase to our overall DPR, pushing us up into class B for tier-03 damage. Very good. Also worth noting that we can use a magic weapon during our FoM combat (not true for our elemental weapon combats, since the spell can only target a non-magical weapon). This would also significantly increase our damage during the FoM combat if we have access to an even decent magical quarterstaff. 
+
+
+
+
+#######
+Level-16: Monk-08 (Sun Soul), Druid-08 (Circle of Stars)
+ - ASI: +2 DEX (DEX=18) 
+ - unarmored defense 
+   * base AC = 10 + DEX(4) + WIS(5) = 19
+ - wild shape (x3/LR, +1 on SR) 
+   * 8 known forms (<= CR=1)
+     + flying snake = tiny, 30 speed, 60 fly, 30 swim, blindsight 10ft, flyby
+     + fox = tiny, 30 speed/5 burrow, darkvision (60ft), keen hearing, +3 DEX 
+     + cat = tiny, 40 speed/30 climb, keen smell
+     + owl = tiny, 5 speed/60 fly, 120ft darkvision, flyby, +5 stealth
+     + warhorse = large, 60ft, +4 STR, hooves
+     + tiger = large, speed/climb 40ft, darkvision (60ft), +7 stealth, nimble escape 
+     + giant seahorse = large, 5 speed/40 swim, water breathing, bubble dash 
+     + giant eagle = large, 10 speed/80 fly, necrotic/radiant resistance  
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (3): produce flame, shillelagh, spare the dying 
+   * magician (1): resistance
+   * star map (1): guidance
+ - spell slots: 4-3-3-2
+ - spells prepared: 12
+   * lvl-1 (druid): detect magic (R), false life, jump, longstrider  
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR)
+   * lvl-1 (circle of stars): guiding bolt (free xWIS/LR) 
+   * lvl-2 (druid): darkvision, enhance ability, prayer of healing 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+   * lvl-3 (druid): aura of vitality, elemental weapon, revivify 
+   * lvl-4 (druid): fount of moonlight, divination (R)    
+     
+NOTE: Ok lvl-16 and we go druid-08. We take an ASI to bump our DEX to 18, which increases our unarmored AC to 19 and boosts our DEX save, initiative, and stealth/acrobatics checks, etc. As an aside/preview, we're going to go all the way to druid-12 at lvl-20 in order to cap DEX at 20 so that we can (finally) make use of our first sun-soul subclass feature (ha!). But that's for later. At druid-08 we also get to learn another two wild shape forms, the max CR of the forms we can use goes up to 1, and we can now choose forms with a fly speed. For new forms, we pick up giant eagle so that we have a large, super-fast flying form that can serve as a mount. We also pick up the owl form since it's tiny, unobtrusive, can fly, has flyby, an has 120ft darkvision. Good for scouting. Then, since we now have DEX=18, there's no longer a strong reason to hang on to the giant venomous snake. So we switch that out for the flying snake, which is tiny, can swim and fly, has flyby, and has blindsight (only 10ft). And finally, we switch out panther for tiger. While a little slower, the tiger is large, mountable, and retains the climb speed and nimble escape ability. FWIW, now that we're using our wild shape to assume starry-form (dragon) when we use fount of moonlight in combat, and because we still want to save wild shapes in order to do chalice + healing out of combat, we probably won't ever use these new forms. Plus, by lvl-16 it's almost guaranteed that our party has other/better ways of flying/scouting that what we can provide with beast forms. Ok, moving on. For spellcasting, we get one additional preparation and one additional fourth level spell slot. For the new preparation, I'm going to suggest that we take divination as a fourth level spell, and that we then switch out augury for enhance ability as a second level spell. Divination is basically a better version of augury, and as a ritual it doesn't compete for our fourth level slots, which we will want to use exclusively on fount of moonlight. Then, I think enhance ability is a nice pickup because it gives us a bit more out-of-combat utility and support capacity. With cosmic omen, starry-form(dragon), guidance, and enhance ability we could really crush important skill checks when we need to. Most likely, we'll just use our second level slots to upcast cure wounds while in chalice form to heal ourselves for 5d8+2WIS (32.5) HP. So this is really just about gaining some additional spellcasting versatility. Other spells I thought about subbing in for augury include: aid, pass without trace, and locate object. In the end, I just like the thematic fit of enhance ability more than any of these, i.e., channeling spellfire to enhance our physical/mental abilities. As always, pick your favorites. In terms of combat tactics, we are going to use fount of moonlight in two combats per day, and elemental weapon in the other two combats per day. In the elemental weapon combats, we use spellfire spark to do sacred flame in 2 out of the 3 rounds we aren't using our BA to cast shillelagh, and use burning hands in the other round. This leaves us with one unused charge of spellfire spark, which we can/should use in one of our fount-of-moonlight combats if we are able to precast FoM. Schematically, our new combat tactics look like this: 
+
+`elemental weapon' (x2/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,stunning-strike} --> 2d12+1d8+2d4+2WIS (33)
+ - turn-02: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 2d12+1d8+2d4+2WIS+4d8 (51)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 2d12+1d8+2d4+2WIS+4d8 (51)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:burning-hands(l3) --> 2d12+1d8+2d4+2WIS+5d6 (51.33) 
+ - avg: 46.58
+
+`fount of moonlight' (x2/day)
+ - turn-01: BA:starry-form(dragon) + magic-action:fount-of-moonlight --> 0 
+ - turn 02: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,fueled-spellfire(2)} --> 2d12+3d8+4d6+2WIS (50.5)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,fueled-spellfire(2)} + BA:burning-hands(l3) --> 2d12+3d8+4d6+2WIS+5d6 (68.83)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,fueled-spellfire(2)} + BA:burning-hands(l3) --> 2d12+3d8+4d6+2WIS+5d6 (68.83)
+ - note: if fighting easy to hit enemy, use BA:flurry-of-blows on turns 03 and 04 to maximize damage
+ - note: if you are able to precast fount-of-moonlight + BA:starry-form(dragon), then incorporate one additional use of spellfire spark
+ - avg: 47.04
+
+Overall avg: 46.81
+
+Very nice. I think it's also worth mentioning that if we are fighting an enemy that we can hit easily, then using flurry-of-blows instead of burning hands in our FoM combats will definitely increase our overall damage. Since we've just increased our DEX to 18, this is now more feasible than it was at previous levels. Pretty cool that we've also managed to build a true druid-monk multiclass that's a pure even split in terms of level investment. 
+
+
+
+
+#######
+Level-17: Monk-08 (Sun Soul), Druid-09 (Circle of Stars)
+ - proficiency bonus (PB): +6
+ - cantrip scaling: 
+   * produce flame (4d8) 
+   * sacred flame (4d8) - cast as BA x6/LR
+   * shillelagh (2d6)
+   * spare the dying (120ft)
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (3): produce flame, shillelagh, spare the dying 
+   * magician (1): resistance
+   * star map (1): guidance
+ - spell slots: 4-3-3-3-1
+ - spells prepared: 14
+   * lvl-1 (druid): detect magic (R), jump, longstrider  
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR)
+   * lvl-1 (circle of stars): guiding bolt (free xWIS/LR) 
+   * lvl-2 (druid): darkvision, enhance ability, prayer of healing 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+   * lvl-3 (druid): aura of vitality, elemental weapon, revivify 
+   * lvl-4 (druid): fire shield, fount of moonlight, divination (R)   
+   * lvl-5 (druid): greater restoration, mass cure wounds  
+     
+NOTE: Right, so lvl-17 and we go druid-09. We get a proficiency bonus increase (which also gives us an additional use of spellfire spark), cantrip scaling, and new spellcasting resources. Cantrip scaling increases the damage we deal with our shillelagh hits (by a little bit), as well with all our BA sacred flame attacks. In fact, at 4d8, sacred flame now does nearly as much damage (on a failed save) as our searing arc strike burning hands. As we'll see when we get to the combat tactics, this is nice since it gives us the option to make much more prolific use of stunning strike without sacrificing damage. And now with 6 uses of spellfire spark per day, we can do BA:sacred flame twice in each of our elemental weapon combats each day (and once per combat in each of our FoM combats). Cool. With regard to spellcasting, we get 2 new spell preparations, access to 5th level spells, and an additional fourth and fifth level spell slot. For our preparations, here's what I would suggest. Drop false life as a lvl-1 spell. It only provides a paltry amount of THP and we're better off using our lvl-1 slots to cast cure wounds when in chalice mode for bonus healing. Then, pick up fire shield as a 4th level spell. Since we're still only going to be using FoM twice per day, we can use our new 4th lvl slot to cast fire shield once per day. This would have to be in a situation where we can pre-cast before combat. But while active, fire shield will give us cold resistance and make it so that enemies take 2d8 fire damage each time they hit us. This damage will qualify for our elemental adept feat, so it will bypass fire resistance and benefit from some very minor damage high grading. In addition to being super thematic, and just friggin cool to have fire shield and FoM active at the same time, the reason we like fire shield is because it's non-concentration and doesn't interfere at all with our action economy. It's just bonus damage that we deal to enemies on their turn. Now, you might wonder why we don't move to using all our 4th lvl slots to cast FoM in 3 of our 4 daily combats. The main reason is that we want to use spellfire spark with fueled-spellfire, since it's now our best way to deal damage with our BA. While we're using FoM, we already using fueled spellfire on the radiant damage we deal with our quarterstaff attacks. So it kind of nerfs the potential of our spellfire spark attacks. So instead we go with fire shield. Then, we also start preparing greater restoration off the mark of healing spell list, and mass cure wounds (from druid). The reason for taking these two healing/curative spells is as follows -- if things are going well during the day and we want to be more offensive/damage-oriented, we want to use our 5th lvl slot to upcast elemental weapon (giving us a +2 to hit, and an additional d4 fire damage on hit). If things are going poorly and it looks like there's a TPK incoming, we can use the slot to do mass cure wounds. And since there's a lot of competition for our 5th level slot, greater restoration is a great situational pickup that will be very impactful when it's called for, but you won't need to cast it every day. Plus, I think these two spells really round out our healing spell list so that we have all the most important healing spells at (almost) every level for which we have slots: cure wounds, prayer of healing, lesser restoration, aura of vitality, revivify, greater restoration, mass cure wounds. This kind of cements our identity as a secondary healer, even as we've continued to build damage. Plus it continues to lean in to our light/radiant theme. The other honorable mention for lvl-05 spells here is antilife shell. It's a druid exclusive, and we could use it and then use our monk radiant sun-bolt ability to attack enemies through the shell. I think this is a super cool defensively oriented option, but it's not something that we will want to/depend on using regularly. And it really only works if we're fighting melee attackers that have neither spell attacks, ranged attacks, or reach. Unlikely at this level. Ok so now for combat tactics. Ideally, we use our 5th level slot to upcast elemental weapon for one combat per day. And ideally, we can also activate starry-form (dragon) before we roll initiative to protect our concentration on the upcast version of the spell. In one other combat, we just use elemental weapon cast at its base level (lvl-03). In each of these two combats, we use spellfire spark to do BA:sacred-flame twice (with fueled-spellfire), and use our other non-shillelagh BA to do burning hands. In the other two combats, we use fount of moonlight and use our damage-dealing BA's to do sacred-flame once and burning hands once. One cool thing about this new resource distribution is that we can now, in every combat, use stunning strike once every round in which we make attacks. This means we're contributing a lot more consistent control, generating advantage for ourselves/our allies, and potentially forcing auto-fails on DEX saves against our BA attacks. I should also note that, assuming the standard action economy in our FoM combats, we aren't able to use all of our focus points (we have 1 extra). This means that if we are able to pre-cast FoM + BA:starry-form(dragon), we can use the newly free'd up BA to do flurry-of-blows which could significantly boost our damage output. Finally, as mentioned above, we assume that we're able to pre-cast fire shield prior to one combat per day. Schematically, our combat tactics now look like: 
+
+`elemental weapon (l3)' (x1/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,stunning-strike} --> 4d6+1d8+2d4+2WIS (34)
+ - turn-02: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 4d6+1d8+2d4+2WIS+5d8 (56.5)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 4d6+1d8+2d4+2WIS+5d8 (56.5)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:burning-hands(l3) --> 4d6+1d8+2d4+2WIS+5d6 (52.33)
+ - avg: 49.83
+
+`elemental weapon (l5)' (x1/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,stunning-strike} --> 4d6+1d8+4d4+2WIS (39.5)
+ - turn-02: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 4d6+1d8+4d4+2WIS+5d8 (62)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 4d6+1d8+4d4+2WIS+6d8 (66.5)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:burning-hands(l3) --> 4d6+1d8+4d4+2WIS+5d6 (57.83)
+ - note: w/17 hit dice, use fueled-spellfire(2) on one BA:sacred-flame in this combat
+ - avg: 56.46
+
+`fount of moonlight' (x2/day)
+ - turn-01: BA:starry-form(dragon) + magic-action:fount-of-moonlight --> 0 
+ - turn 02: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,stunning-strike,fueled-spellfire(2)} --> 4d6+3d8+4d6+2WIS (51.5)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,stunning-strike,fueled-spellfire(2)} + BA:sacred-flame_{spellfire-spark} --> 4d6+3d8+4d6+2WIS+4d8 (69.5)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,stunning-strike,fueled-spellfire(2)} + BA:burning-hands(l3) --> 4d6+3d8+4d6+2WIS+5d6 (69.83)
+ - note: if fighting easy to hit enemy, use BA:flurry-of-blows on turns 03 and 04 to maximize damage.
+ - note: if you can pre-cast FoM, then use flurry-of-blows with BA on `freed-up' turn. 
+ - avg: 47.7
+
+Overall avg: 50.43, plus some additional dmg from fire shield (say +1), so 51.43. Plus even higher damage if we're able to pre-cast FoM. Not bad. Right around C-class for tier-04. But lot's of control and we still have room to grow. 
+
+
+
+
+
+#######
+Level-18: Monk-08 (Sun Soul), Druid-10 (Circle of Stars)
+ - twinkling constellations 
+   * starry form improves and you can switch which constellation you're in at the start of each turn
+   * BA attack of archer deals 2d8+WIS 
+   * chalice bonus heal = 2d8+WIS 
+   * while in dragon-form, gain fly speed of 20ft and hover
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (4): produce flame, shillelagh, spare the dying, starry wisp 
+   * magician (1): resistance
+   * star map (1): guidance
+ - spell slots: 4-3-3-3-2
+ - spells prepared: 15
+   * lvl-1 (druid): detect magic (R), jump, longstrider  
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR)
+   * lvl-1 (circle of stars): guiding bolt (free xWIS/LR) 
+   * lvl-2 (druid): darkvision, enhance ability, prayer of healing 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+   * lvl-3 (druid): aura of vitality, elemental weapon, revivify 
+   * lvl-4 (druid): fire shield, fount of moonlight, divination (R)   
+   * lvl-5 (druid): alustriel's mooncloak, greater restoration, mass cure wounds   
+     
+NOTE: Alright alright alright. Lvl-18 and we go druid-10. We get our third druid subclass feature -- twinkling constellations -- as well as another hit die for use with fueled-spellfire, an additional cantrip, one more 5th level spell slot and another spell preparation. For the cantrip, just to get it out of the way, I took starry wisp. It's a pity we weren't able to have this up until this point. It's super thematic. It can be useful against enemies that want to turn invisible. Done. For twinkling constellations, by far the most important thing here is the boost to our chalice heal. With an extra 2d8+WIS each time we cast a healing spell with a spell slot, we get a *bunch* of extra healing per day. Recall that we can cast cure wounds up to 5x per day (of which 4 casts can benefit from chalice) and we also have a at least 1 second level slot available for upcast cure wounds. With our improved chalice form, each time we cast cure wounds at lvl-01, we heal for more HP than if we had cast it at lvl-02 (since we will add our WIS modifier twice). So four casts of lvl-01 cure wounds in chalice form would heal for 16d8+8WIS (152) HP. If we use our `flex' lvl-02 slot to cast it again, that would heal for another 6d8+2WIS (37) HP. And then we also get our free cast of cure wounds (which can't benefit from chalice) for another 2d8+wIS (14) HP. We could also tack on the chalice bonus when we use aura of vitality out of combat, making that spell now heal for 20d6+2d8+WIS (84) HP. And, of course, we still also get the healing from casting prayer of healing (2d8=9) and from using uncanny metabolism (1d8+8=12.5). If we really need it, we can also use one of our 5th level slots to cast mass cure wounds, which would heal up to 6 creatures (including ourselves) for 5d8+WIS (27.5) HP. So yeah, definitely a very capable healer at this stage. Though we are somewhat limited in that we really prefer to do the majority of our healing out of combat, if we can. The other benefit of twinkling constellations that matters is the improvement to our dragon form since we will benefit from this in combat. And while a 20ft fly speed isn't amazing. We can combine this with the jump spell if we need to have some pretty functional aerial mobility. Plus it is very `super-saiyan' of us to now hover off the ground when we initiate starry-form and cast fount of moonlight (sometimes with fire shield also active). Very badass. Unfortunately, the boost to the archer form damage is just a bit too little too late, since we have stronger options for our BA and because we really like having dragon active for the bonus to our concentration checks. Furthermore, because we do strongly prefer to be in dragon form while concentrating on a spell in combat (which is all the time now), we don't really value the ability to switch forms that much. That said, if we are in a situation where we want to heal in combat, it is nice that we can now just switch over to chalice form at the start of our turn before we cast a healing spell, get the bonus healing, and then switch back to dragon form at the start of our next turn. Hopefully not something we're doing often, but we appreciate the versatility. Next, in terms of spellcasting, ideally we use our new 5th level slot to upcast elemental weapon in one additional combat per day. Given this, our new preparation is ideally something that we don't have/want to use all the time. There are basically three spells that I think are in contention for being our `default' preparation, but in general, I would say this is more of a flex slot that should be used to pick up any situational spell that's on our list that could be handy in any given situation. But because I like to have a defined default to fall back on, let's talk about the contenders. First -- and this is what I think we should choose by default -- we have the new 5th level abjuration spell from the heroes of faerun book: Alustriel's Mooncloak. This is a 1m duration, concentration spell that's an action to cast and which, while active, provides you and allies within a 20ft emanation half cover (+2 AC, adv on DEX saves), plus resistance to cold, lightning, and radiant damage. The spell can also be terminated as a reaction to either auto-succeed on a save against grappled, restrained, or frightened, or to provide a 4d10 heal (which we could augment with chalice). Honestly the main reason I like this spell so much is because it's just so damn on point thematically -- moonlight, radiance, healing. I think it's also a good defensive option to balance out fount of moonlight as an offensive option. Mechanically, both spells also operate similarly -- providing a persistent benefit and granting a special reaction. You could easily flavor both of the spells as just being different ways to use/apply our character's inner/radiating spellfire. In terms of utility, alustriel's mooncloak is solid but not amazing. Half cover is definitely pretty good, and could really help in situations where boosting AC/DEX saves is important (dragon's breath/tail attacks anyone?). Since we have evasion, we benefit from succeeding on DEX saves more than most characters. Multiple resistances in one spell is also great if we're fighting things that deal those damage type, but none of the damage types is super common and we already have access to cold resistance via fire shield. That said, resistance to radiant damage is hard to come by, and does feel thematically appropriate for our character, and lightning resistance against an enemy caster with chain lighting could be super clutch. Next -- and I think this is what makes this spell pull ahead as a default for me --  with the ability to switch to chalice at the start of our turn, the heal it can provide is pretty beefy (4d10+2d8+2WIS = 41 HP). Finally, as a melee character, having a `get out of jail free card' against conditions that restrict movement (like frightened, restrained, and grappled) is pretty nice. The real downside of this spell is the limited duration -- which means we'll have to use our action on turn-01 to cast it -- and the fact that it requires our concentration, meaning we will sacrifice all the damage we could be doing with elemental weapon/fount of moonlight. It's also kind of a bummer that activating its bonus effect ends the spell. In the end, it's a weird spell that provides a lot of different things, but the different things it does are unlikely to all come in to play in any single combat. However, because of its thematic fit, the variety of benefits it provides, and the synergies those benefits have with our character's build, I think it should be our default. Ok whew, so what about the other contenders? Well next up and probably my second choice is scrying. We've consistently had a bit of a divination aspect to our characters spellcasting/abilities (with augury, divination, cosmic omen, etc.). So scrying doesn't seem out of place. And it also feels like it could be very easily woven into our overall cosmic order/astral themes -- like `the sun, moon, and stars see all' kind of thing. It also adds a valuable dimension of out of combat utility to our spell list, and with our high WIS we're pretty likely to be able to make the spell stick. We just have to know that using it means we're downgrading our damage potential in a future combat (if we think we're still going to be in a full four fights per day). And finally, commune with nature is the third spell I would have on my short-list. This is really just nice since it's a ritual. It's not super thematic and only really useful in combination with other spells or if you are in survival situations. But we do have a kind of cartographer/survivalist bent to our tool/skill proficiencies so this isn't totally off base. In general, we've tried to avoid going to far down the `nature druid' path with this build, and commune with nature definitely seems to push us in that direction. But as a ritual that we could (potentially) use multiple times per day to help gather information and navigate the party, it's still worth considering. Ok, and then just to finish off this super long ramble -- I think wall of fire as an alterative 4th level control spell could be good, and antilife shell has some interesting uses in combination with our radiant sun-bolt and starry-form(archer) abilities if we're fighting melee-only non-magic using enemies. Anyway, as always, pick your favorites. Ok, moving on to combat tactics. Fortunately, things are quite simple. In the idea world we use both our 5th level spell slots to upcast elemental weapon, then in the other two combats we use FoM. Everything is exactly the same as it was at lvl-17, except that we incorporate 1 additional hit dice into fueled spellfire. Schematically, we have: 
+
+`elemental weapon (l5)' (x2/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,stunning-strike} --> 4d6+1d8+4d4+2WIS (39.5)
+ - turn-02: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 4d6+1d8+4d4+2WIS+5d8 (62)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 4d6+1d8+4d4+2WIS+6d8 (66.5)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:burning-hands(l3) --> 4d6+1d8+4d4+2WIS+5d6 (57.83)
+ - avg: 56.46
+
+`fount of moonlight' (x2/day)
+ - turn-01: BA:starry-form(dragon) + magic-action:fount-of-moonlight --> 0 
+ - turn 02: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,stunning-strike,fueled-spellfire(2)} --> 4d6+3d8+4d6+2WIS (51.5)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,stunning-strike,fueled-spellfire(2)} + BA:sacred-flame_{spellfire-spark} --> 4d6+3d8+4d6+2WIS+4d8 (69.5)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,stunning-strike,fueled-spellfire(2)} + BA:burning-hands(l3) --> 4d6+3d8+4d6+2WIS+5d6 (69.83)
+ - note: if fighting easy to hit enemy, use BA:flurry-of-blows on turns 03 and 04 to maximize damage.
+ - note: if you can pre-cast FoM, then use flurry-of-blows with BA on `freed-up' turn. 
+ - avg: 47.7
+
+Overall avg: 52.08, plus ~1 from fire shield, so 53.08, plus significantly more if we're able to pre-cast FoM.
+
+
+
+
+#######
+Level-19: Monk-08 (Sun Soul), Druid-11 (Circle of Stars)
+ - spellcasting 
+ - cantrips:
+   * spellfire spark (1): sacred flame (as BA xPB/LR)  
+   * druid (4): produce flame, shillelagh, spare the dying, starry wisp 
+   * magician (1): resistance
+   * star map (1): guidance
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: 16
+   * lvl-1 (druid): detect magic (R), jump, longstrider  
+   * lvl-1 (druidic): speak with animals (R) 
+   * lvl-1 (mark of healing): cure wounds (free x1/LR)
+   * lvl-1 (circle of stars): guiding bolt (free xWIS/LR) 
+   * lvl-2 (druid): darkvision, enhance ability, prayer of healing 
+   * lvl-2 (mark of healing): lesser restoration (free x1/LR)
+   * lvl-3 (druid): aura of vitality, elemental weapon, revivify 
+   * lvl-4 (druid): fire shield, fount of moonlight, divination (R)   
+   * lvl-5 (druid): alustriel's mooncloak, greater restoration, mass cure wounds   
+   * lvl-6 (druid): sunbeam 
+     
+NOTE: Ok, home stretch here. We are level-19 and we go druid-11. We get one new spell preparation and access to 6th level spells, and that's it. This will also be the last change to our spellcasting in our character's career. One really nice thing about this build is that there's a great, thematic, and mechanically advantageous spell that we really want here -- and that's sunbeam. Sunbeam is a 1m duration, action to cast concentration spell that, when you cast it and as a magic action while active, allows you to launch a 5x60ft line of radiant energy which forces creatures within the line to make a CON save or take 6d8 radiant damage and become blinded until the start of our next turn, with half damage on save. For the duration of the spell, a mote of light floats above us emitting bright light out to 30ft and dim light 30ft beyond that and this light is sunlight. I mean, right off the bat, I can't think of a more thematically appropriate capstone spell/ability for this character. Amazing. Mechanically, this spell is awesome for several reasons. First, in the same vein as fount of moonlight, it works as a way to deliver damage via fueled spellfire. This means the 6d8 base damage of the spell is more like 8d8 for our character, assuming we're using 2 hit dice each round to boost our damage. Furthermore, because it still deals half damage on save, it means that as long as we can effectively get a target in the AOE, we can *always* add the additional 2d8 from fueled-spellfire. So our fueled-spellfire damage is no longer dependent on successful attack rolls or failed saving throws. And the damage from fueled spellfire is not halved on the successful save. So even though we're targeting CON, we're still going to deal good damage (5d8=22.5) when enemies save. Awesome. The spell also still inflicts the blinded condition, just like we were doing with fount of moonlight. So we don't even lose that aspect of our control capabilities. Next, we can use the sunbeam to deal damage on the turn we cast it, meaning we can always deal damage on turn-01, which is a strict improvement over fount of moonlight. And finally, the spell has pretty good AOE. Meaning it's likely that we can get multiple targets in the sunbeam each round (also have to avoid friendly fire, which could be a bit tricky), which greatly improves our overall damage output. Especially since the additional damage we add with fueled-spellfire would apply to all targets caught in the beam. Super sweet. Now, the one thing we have to be cognizant of is that, since using sunbeam means we're taking the magic action on our turn each round, we can no longer use burning hands as a BA. This is because the text of searing arc strike explicitly states that we can only use burning hands as a BA if we've taken the attack action on our turn (stupid garbage sun-soul features). That means that when we use sunbeam, we're going to want to use spellfire spark to do BA:sacred-flame on all of our turns after turn-01, when we activate dragon form with our BA. This is fine, but it does mean that we have to shift around our various limited resources a bit (see our updated combat tactics). It also means that we won't need any focus points during this sunbeam combat, so if you really wanted to stop casting prayer of healing once per day, we could (maybe instead do one additional cast of cure wounds at lvl-02). But this will change next level, so no need to shift things around if you'd prefer to just keep with the same tried and true strategy regarding healing. However, trading up fount of moonlight for sunbeam *does* mean that we will have an additional 4th level spell slot that we can use each day. If we're prioritizing damage, then I would use this to precast fire shield on ourselves before one additional combat per day (so it's active in 2/4 daily combats). Excellent. In terms of combat tactics, things are pretty much the same as they were at level 18, except that we switch out fount of moonlight for sunbeam in one of our daily combats, and then reallocate BA resources/focus points a bit in order to maximize our damage output and the efficiency with which we use our limited resources. Schematically, our tactics now look like: 
+
+`sunbeam' (x1/day)
+ - turn-01: BA:starry-form(dragon) + magic-action:sunbeam_{fueled-spellfire(2)} --> 8d8 (36) 
+ - turn 02: magic-action:sunbeam_{fueled-spellfire(2)} + BA:sacred-flame_{spellfire-spark} --> 12d8 (54)
+ - turn 03: magic-action:sunbeam_{fueled-spellfire(2)} + BA:sacred-flame_{spellfire-spark} --> 12d8 (54)
+ - turn 03: magic-action:sunbeam_{fueled-spellfire(2)} + BA:sacred-flame_{spellfire-spark} --> 12d8 (54)
+ - avg: 49.5
+
+`elemental weapon (l5), v1' (x1/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff_{primal-strike} --> 4d6+1d8+4d4+2WIS (39.5)
+ - turn-02: attack(x2):quarterstaff_{primal-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 4d6+1d8+4d4+2WIS+6d8 (66.5)
+ - turn-03: attack(x2):quarterstaff_{primal-strike} + BA:burning-hands(l3) --> 4d6+1d8+4d4+2WIS+5d6 (57.83)
+ - turn-04: attack(x2):quarterstaff_{primal-strike} + BA:burning-hands(l3) --> 4d6+1d8+4d4+2WIS+5d6 (57.83)
+ - avg: 55.42
+
+`elemental weapon (l5), v2' (x1/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,stunning-strike} --> 4d6+1d8+4d4+2WIS (39.5)
+ - turn-02: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 4d6+1d8+4d4+2WIS+6d8 (66.5)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 4d6+1d8+4d4+2WIS+5d8 (62)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:burning-hands(l3) --> 4d6+1d8+4d4+2WIS+5d6 (57.83)
+ - avg: 56.46
+
+`fount of moonlight' (x1/day)
+ - turn-01: BA:starry-form(dragon) + magic-action:fount-of-moonlight --> 0 
+ - turn 02: BA:shillelagh + attack(x2):quarterstaff_{primal-strike,fueled-spellfire(2)} --> 4d6+3d8+4d6+2WIS (51.5)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,fueled-spellfire(2)} + BA:burning-hands(l3) --> 4d6+3d8+4d6+2WIS+5d6 (69.83)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,fueled-spellfire(2)} + BA:burning-hands(l3) --> 4d6+3d8+4d6+2WIS+5d6 (69.83)
+ - note: if fighting easy to hit enemy, use BA:flurry-of-blows on turns 03 and 04 to maximize damage.
+ - note: if you can pre-cast FoM, then use flurry-of-blows with BA on `freed-up' turn reduce upcast of burning hands on one subsequent turn 
+ - avg: 47.8
+
+Overall avg: 52.30, plus ~2 from fire shield (x2 per day) = 54.30. Pretty good. And practical damage potential is significantly higher due to AOE of sunbeam/potential to precast FoM. 
+
+
+ 
+
+#######
+Level-20: Monk-08 (Sun Soul), Druid-12 (Circle of Stars)
+ - ASI: +2 DEX (DEX=20) 
+ - unarmored defense 
+   * base AC = 10 + DEX(5) + WIS(5) = 20
+     
+NOTE: Haha, wow. Looks like such a simple level, but there's more than meets the eye here, I promise. Lvl-20 and we go druid-12 to pick up an ASI/feat. My honest recommendation here is to pick up an ASI and bump our DEX to 20. And I say this despite knowing that we could take an epic boon feat instead. And, depending on how you look at it, some of the epic boons would probably be more mechanically powerful. Boon of dimensional travel would let us zip around teleporting every round. Boon of fate would give us additional protection on saving throws to maintain concentration. Boon of recovery would give us a pool of dice to use for healing in lieu of our own hit dice, allowing us to focus our healing on our allies. All totally good options, and I actually really like the idea of boon of recovery and think it would be very appropriate for this character. But here's the thing -- our entire career we have been a monk that has suffered from the fact that we have chosen to build WIS as our primary stat. Now, I think we've done a good job managing this and leveraging spells and abilities that allow us to deal damage using WIS, even while pursuing a martial playstyle. But it hasn't been easy. Boosting DEX to 20 means that we can now take advantage of some of the cool parts of our monk kit that we haven't been able to use much thus far. Right off the bat, for example, we no longer need shillelagh. Now, we lose a bit of damage from the damage die downgrading from 2d6 (7) to 1d8 (4.5). But freeing up a BA in nearly every combat with which to deal damage is much more impactful. And of course, if we have time, we can just precast shillelagh to retain he higher weapon damage. That said, we're also no longer locked to a club our quarterstaff at this point. We could use a scimitar, a dagger, or any other simple/light-martial weapon that is available to us. With the (likely) availability of strong magic weapons at this level, this could also represent a meaningful damage boost for us. Note, however, that we can only apply elemental weapon to a non-magical weapon. So we'd probably want to retain a quarterstaff for that. In general, I make no assumptions about magic weapons when I do my builds, but do try to acknowledge that having the flexibility to use them is a bonus. This character hasn't had much flexibility to use magic weapons up until this point, but boosting DEX to 20 instead of taking a different half feat/epic boon does provide this. Boosting DEX to 20 also increases our armor class to 20. While this isn't massive, it is important as a martial character that wants to concentrate on spells to have as high an AC as possible. And while I would hope that we've been able to acquire some magic items that increase our AC by now (e.g., bracers of defense, cloak/ring of protection, etc.), AC boosting items are harder to come by for a character that doesn't want to wear armor or carry a shield. So the boost to unarmored AC is actually quite meaningful. Finally, with DEX=20, we can now make efficient use of flurry-of-blows to make 4 attacks per turn every turn during combat and significantly boost the damage we deal with fount of moonlight. This allows us to shift BA resources across combats in a way that not only significantly increases our overall damage output, but also allows us to use stunning strike in almost every round of combat. Now, you might think that we surely will want to switch out FoM for CME now that we can make so many attacks but we actually don't. This is because we still rely on FoM as a delivery mechanism for fueled spellfire. In conclusion, boosting DEX to 20 actually does *a lot* for us. It (i) boosts our AC, (ii) frees up our BAs to deal more damage, (iii) enables magic weapons in some combats, (iv) strengthens FoM damage, and (v) allows for significantly greater use of stunning-strike. All in all, I think these improvements are worth more than we would get out of any single epic boon. If your DM is nice, they'll also let you apply your primal strike damage (1d8) to unarmed strikes you make with flurry-of-blows while in starry form. This will help boost damage in combat 1 (though probably not RAW). Then, our new combat tactics at this level look as follows: 
+
+`sunbeam' (x1/day)
+ - turn-01: BA:starry-form(dragon) + magic-action:sunbeam_{fueled-spellfire(2)} --> 8d8 (36) 
+ - turn 02: magic-action:sunbeam_{fueled-spellfire(2)} + BA:flurry-of-blows_{stunning-strike} --> 10d8+2DEX (55)
+ - turn 03: magic-action:sunbeam_{fueled-spellfire(2)} + BA:flurry-of-blows_{stunning-strike} --> 10d8+2DEX (55)
+ - turn 03: magic-action:sunbeam_{fueled-spellfire(2)} + BA:flurry-of-blows_{stunning-strike} --> 10d8+2DEX (55)
+ - avg: 50.25 (54.75 if primal strikes applies to FoB)
+
+`fount of moonlight' (x1/day)
+ - turn-01: BA:starry-form(dragon) + magic-action:fount-of-moonlight --> 0 
+ - turn 02: attack(x2):quarterstaff_{primal-strike,stunning-strike,fueled-spellfire(2)} + BA:flurry-of-blows --> 4d8+3d8+8d6+4DEX (79.5)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,stunning-strike,fueled-spellfire(2)} + BA:flurry-of-blows  --> 4d8+3d8+8d6+4DEX (79.5)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,stunning-strike,fueled-spellfire(2)} + BA:flurry-of-blows  --> 4d8+3d8+8d6+4DEX (79.5)
+ - note: precast shillelagh if possible
+ - avg: 59.63
+
+`elemental weapon (l5)' (x2/day)
+ - turn 01: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark} --> 3d8+4d4+2DEX+4d8 (52.5)
+ - turn-02: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 3d8+4d4+2DEX+6d8 (61.5)
+ - turn-03: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(1)} --> 3d8+4d4+2DEX+5d8 (57)
+ - turn-04: attack(x2):quarterstaff_{primal-strike,stunning-strike} + BA:burning-hands(l3) --> 3d8+4d4+2DEX+5d6 (52.83)
+ - note: precast shillelagh if possible 
+ - avg: 55.96
+
+Overall avg: 55.45, plus ~2 from fire shield = 57.45 (58.58 if primal strikes on FoB applies). More if we account for AOE. More if we can precast shillelagh/FoM. In total, this puts us right up near the bottom of class B for damage in tier-04. And that's great. I could not be happier with how this build has turned out. We managed to navigate a really challenging multiclass, make great use of almost all the subclass features from both our subclasses (one of which is a real stinker on its own), and stayed very consistent with our character's thematics, playstyle, and identity at every level. We've also really captured the essence of a `blaster' druid while also being a true `gish' who relies pretty evenly on spells and weapon attacks/unarmed strikes to deal damage. I mean just look at our lvl-20 combat tactics: we're both casting spells and making attacks on almost *every turn*. Pretty remarkable. And we've managed to leverage some really interesting synergies and mechanics to deal good damage in an interesting and unique way, without falling into the tired tropes of optimized DnD combat. Maybe the only thing I wish this build had was a bit more muscle to protect our concentration since we do rely pretty significantly on keeping spells up to deal damage. But can't have it all, and maybe this is something that we can try to improve upon using magic items or other aspects/mechanics present in our campaign setting. 
+
+
+
+
+
+#####################################################################################################
+EXTRA NOTES 
+
+Treantmonk Damage Classes by Tier 
+----------------------------------------				
+        Tier 01	 Tier 02  Tier 03  Tier 04 
+LVL     01-04    05-10    11-16    17-20
+----------------------------------------
+A	13-15	 37-43	  50-57	   70-78
+B	10-12	 29-36	  42-49	   60-69
+C	07-09	 22-28	  34-41	   50-59
+D	04-06	 15-21	  26-33	   35-49
+
+
+CONCEPTS: 
+ - go druid-monk multiclass (stars, sun soul) 
+ - use mark of healing to get prayer of healing
+ - use prayer of healing to recharge focus points x3 per LR (1 short rest, uncanny metabolism, prayer of healing)  
+ - prayer of healing also gives you an additional wild shape per LR, which gives you 4 starry forms per LR (1 per combat)
+ - once you get searing arc strike, use fp to make empowered BA burning hands attacks with WIS 
+ - use spellfire spark + spellfire adept + star druid free guiding bolts to do smites using hit dice 
+ - use druid lvl-01 slots + mark of healing free cast to cast cure wounds for healing 
+ - ideally, we never use radiant sun-bolt or flurry of blows, and we only make WIS-based attacks 
+ - at high-levels, we stop using starry-form in combat (to save BA economy) and instead use chalice out of 
+   combat to empower healing 
+ - can leverage false life to extend sylune's viper 
+ - leverage shillelagh + spellfire-adept/spark for consistent modest damage scaling 
+ - finish out druid and start weaving in higher level spells
+   + lvl-04: fire shield, fount of moonlight, grasping vine, stoneskin, wall of fire 
+   + lvl-05: antilife shell, alustriel's mooncloak, mass cure wounds 
+   + lvl-06: elminster's effulgent spheres, sunbeam, reincarnate
+ - not worth it to go beyond monk-08, as lvl-11 sun-soul feature really sucks and lvl-10 monk pushes 
+   for FoB playstyle 
+
+Progression Summary 
+ - lvl-01: monk-01 --> unarmored defense, martial arts (1d6), STR/DEX save proficiency, spellfire spark (x2)
+ - lvl-02: monk-01, druid-01 --> shillelagh, magician 
+ - lvl-03: monk-01, druid-02 --> wild shape (giant venomous snake): AC=17, bite + unarmed-strike 
+ - lvl-04: monk-01, druid-03 (stars) --> prayer of healing, dragon + flame-blade (x2/day), archer (x2/day)
+ - lvl-05: monk-01, druid-04 (stars) --> spellfire-adept: +1 WIS (WIS=18); spellfire spark (x3)
+ - lvl-06: monk-02, druid-04 (stars) --> monk's focus, uncanny metabolism, fast movement 
+ - lvl-07: monk-03 (sun-soul), druid-04 (stars) --> radiant sun-bolt, deflect attacks 
+ - lvl-08: monk-04 (sun-soul), druid-04 (stars) --> elemental adept (fire): +1 WIS (WIS=19)
+ - lvl-09: monk-05 (sun-soul), druid-04 (stars) --> extra attack, stunning strike, martial arts (1d8), spellfire spark (x4)
+ - lvl-10: monk-06 (sun-soul), druid-04 (stars) --> empowered strikes, searing arc strike 
+ - lvl-11: monk-07 (sun-soul), druid-04 (stars) --> evasion 
+ - lvl-12: monk-08 (sun-soul), druid-04 (stars) --> resilient (WIS): +1 WIS (WIS=20) 
+ - lvl-13: monk-08 (sun-soul), druid-05 (stars) --> wild resurgence, lvl-03 spells: sylune's viper, aura of vitality; spellfire spark (x5)
+ - lvl-14: monk-08 (sun-soul), druid-06 (stars) --> cosmic omen
+ - lvl-15: monk-08 (sun-soul), druid-07 (stars) --> primal strikes, lvl-04 druid spells: grasping vine, fount of moonlight, wall of fire 
+ - lvl-16: monk-08 (sun-soul), druid-08 (stars) --> ASI: +2 DEX (DEX=18) 
+ - lvl-17: monk-08 (sun-soul), druid-09 (stars) --> lvl-05 spells: antilife shell, alustriel's mooncloak, mass cure wounds, spellfire spark (x6)
+ - lvl-18: monk-08 (sun-soul), druid-10 (stars) --> twinkling constellations
+ - lvl-19: monk-08 (sun-soul), druid-11 (stars) --> lvl-06 spells: elminster's effulgent spheres, sunbeam, reincarnate
+ - lvl-20: monk-08 (sun-soul), druid-12 (stars) --> ASI: +2 DEX (DEX=20) 
+
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15 (+1) = 16 
+ - CON = 14 
+ - WIS = 15 (+2) = 17
+ - INT = 10 
+ - CHA = 08 
+
+Background: House Jorasco Heir 
+ * Source: Eberron - Forge of the Artificer
+ * Ability Scores: Dexterity, Constitution, Wisdom
+ * Feat: Mark of Healing
+ * Skill Proficiencies: Medicine and Stealth
+ * Tool Proficiency: Herbalism Kit
+ * Equipment: Choose A or B: (A) Herbalism Kit, Fine Clothes, Healer’s Kit, 25 GP; or (B) 50 GP
+ 
+Feats: 
+ - Mark of Healing (Origin Feat, Forge of the Artificer) 
+   * Source: Eberron - Forge of the Artificer
+   * Dragonmark Feat (Prerequisite: Eberron Campaign, Can’t have another Dragonmark Feat)
+   * Medical Intuition: +1d4 to Medicine and Herbalism Kit checks 
+   * Healing Touch: @ lvl-01 cure wounds always prepared, free x1/LR, choose INT/WIS/CHA
+                    @ lvl-03 lesser restoration always prepared, free x1/LR, choose INT/WIS/CHA 
+   * Spells of the Mark: If you have spellcasting/pact magic, Mark of Healing spells are added to that feature's spell list
+   * Mark of Healing Spells
+     Spell Level  Spells
+     1		  False Life, Healing Word
+     2		  Arcane Vigor, Prayer of Healing
+     3		  Aura of Vitality, Mass Healing Word
+     4		  Aura of Life, Aura of Purity
+     5		  Greater Restoration
+ - Spellfire Spark (Origin Feat, Heroes of Faerun) 
+   * magic absorption: x1/turn when you take dmg from a spell or magical effect, you can reduce 
+     the damage taken by 1d4 (can't use if incapacitated) 
+   * spellfire flame: you learn the sacred flame cantrip (choose INT/WIS/CHA). You can cast this 
+     cantrip as a BA xPB/LR.  
+ - Spellfire Adept (heroes of faerun book) 
+   * prereq: lvl 4+, spellfire spark or spellcasting/pact magic feature 
+   * ASI: +1 INT/WIS/CHA 
+   * fueled spellfire: x1/turn, when a spell you cast deals radiant damage, you can expend up to
+     2 Hit Dice and add the total to one damage roll of the spell 
+   * Searing spellfire: when you make a damage roll that deals radiant damage, it ignores
+     resistance 
+ - Elemental Adept 
+   * ASI: +1 INT/WIS/CHA 
+   * Energy Mastery (Fire): 
+     + Spells you cast ignore Resistance to damage of the chosen type.
+     + When you roll damage for a spell you cast that deals damage of that type, you can treat any 1 on a damage die as a 2.
+
+Level-05 combat mechanics 
+x2/day
+ - turn 01: guiding-bolt_{fueled-spellfire} + BA:starry-form(dragon) --> 4d6+2d8 (23)
+ - turn-02: BA:flame-blade + magic-action:flame-blade --> 3d6+WIS (14.5)
+ - turn-03: BA:sacred-flame_{spellfire-spark} + magic-action:flame-blade --> 2d8+3d6+WIS (23.5) 
+ - turn-04: BA:sacred-flame_{spellfire-spark}/BA:unarmed-strike + magic-action:flame-blade --> 2d8+3d6+WIS (23.5) 
+ - note: use cantrip + unarmed-strike if you lose concentration on flame blade 
+ - note: with x3 uses of spellfire spark in one combat you'll have to just make a BA:unarmed-strike on turn-04
+x2/day
+ - turn 01: guiding-bolt_{fueled-spellfire} + BA:starry-form(archer) --> 4d6+2d8+1d8+WIS (27.5)
+ - turn-02: BA:archer + magic-action:starry-wisp --> 3d8+WIS (18.5)
+ - turn-03: BA:archer + magic-action:starry-wisp --> 3d8+WIS (18.5)  
+ - turn-04: BA:archer + magic-action:starry-wisp --> 3d8+WIS (18.5) 
+
+
+Level-12 combat mechanics 
+x4/day
+ - turn 01: guiding-bolt_{fueled-spellfire} + BA:shillelagh --> 4d6+2d8 (23)
+ - turn-02: attack(x2) + BA:burning-hands(l3) --> 2d10+2WIS+5d6 (37.33); 4 ki points 
+ - turn-02: attack(x2) + BA:burning-hands(l3) --> 2d10+2WIS+5d6 (37.33); 4 ki points 
+ - turn-03: BA:sacred-flame_{spellfire-spark} + attack(x2) --> 2d8+2d10+2WIS (28) 
+ - note: if you can pre-cast shillelagh, do BA:jump on turn-01 (or use sacred-flame again at lvl-13+)
+ - note: use wild-shape to go starry-form (dragon) out of combat and then give empowered healing to party
+
+
+LEVEL-04
+archer
+4d6 + 1d8 + WIS -- > 21.5
+3*(1d8 + 1d8 + WIS) --> 36
+Total = 57.5
+
+snake 
+4d6 --> 14
+3*(1d4+1d6+1d8+2WIS) --> 3*(16.5) --> 49.5
+Total = 63.5
+
+
+`elemental weapon active, max spellfire' (x1/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff_{stunning-strike} --> 2d12+2WIS+5.5 (28.5)
+ - turn-02: attack(x2):quarterstaff_{stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+5d8+2WIS+5.5 (51)
+ - turn-03: attack(x2):quarterstaff_{stunning-strike} + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+5d8+2WIS+5.5 (51)  
+ - turn-04: attack(x2):quarterstaff_{stunning-strike} + BA:burning-hands(l3) --> 2d12+5d6+2WIS (46.83)
+ - avg: 44.33 
+
+`elemental weapon active, max burning hands' (x1/day)
+ - turn 01: BA:shillelagh + attack(x2):quarterstaff --> 2d12+2WIS+5.5 (28.5)
+ - turn-02: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+5d8+2WIS+5.5 (51)
+ - turn-03: attack(x2):quarterstaff + BA:burning-hands(l3) -->  2d12+5d6+2WIS (46.83)  
+ - turn-04: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+5d6+2WIS (46.83)
+ - avg: 43.29
+
+`conjure minor elementals active' (x1/day)
+ - pre-cast: magic-acion:conjure.minor.elementals(fire) + BA:starry-form(dragon) + BA:shillelagh
+ - turn 01: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+2WIS+18.5+5d8 (64)
+ - turn 02: attack(x2):quarterstaff + BA:sacred-flame_{spellfire-spark,fueled-spellfire(2)} --> 2d12+2WIS+18.5+5d8 (64)
+ - turn 03: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+2WIS+18.5+5d6 (59.833)
+ - turn 04: attack(x2):quarterstaff + BA:burning-hands(l3) --> 2d12+2WIS+18.5+5d6 (59.833)
+ - avg: 61.92
+
+`conjure minor elementals active' (x1/day)
+ - turn 01: BA:starry-form(dragon) + magic-action:conjure.minor.elementals(fire) --> 0
+ - turn-02: BA:shillelagh + attack(x2):quarterstaff_{stunning-strike} --> 2d12+2WIS+18.5 (41.5)
+ - turn-03: attack(x2):quarterstaff_{stunning-strike} + BA:flurry.of.blows --> 2d12+2d8+2WIS+2DEX+37 (75)
+ - turn-04: attack(x2):quarterstaff_{stunning-strike} + BA:flurry.of.blows  --> 2d12+2d8+2WIS+2DEX+37 (75)
+ - avg: 47.88
+
+`conjure minor elementals active' (x1/day)
+ - turn 01: magic-action:conjure.minor.elementals(fire) + BA:starry-form(archer) --> 1d8+9.25+WIS (18.75)
+ - turn-02: BA:shillelagh + attack(x2):quarterstaff_{stunning-strike} --> 2d12+2WIS+18.5 (41.5)
+ - turn-03: attack(x2):quarterstaff_{stunning-strike} + BA:archer --> 2d12+1d8+3WIS+27.75 (60.25)
+ - turn-04: attack(x2):quarterstaff_{stunning-strike} + BA:archer  --> 2d12+1d8+3WIS+27.75 (60.25)
+ - avg: 45.19
+
+
+
+
+
+
+
+
+

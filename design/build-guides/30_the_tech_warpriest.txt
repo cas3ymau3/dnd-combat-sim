@@ -1,0 +1,677 @@
+Moniker: The Tech War Priest  
+Classes: Artificer-12 (Artillerist), Cleric-08 (War Domain)    
+Species: Elf (High) 
+ - size: medium 
+ - speed: 30ft 
+ - darkvision: 60ft 
+ - elven lineage (high): wizard cantrip (true-strike), detect magic (lvl-03), misty step (lvl-05)
+ - fey ancestry: advantage on saves against charmed
+ - keen senses: proficiency in insight
+ - trance: long rest in 4h; don't sleep 
+Sex: Female 
+Background: Guide
+ - ability scores: DEX, CON, WIS 
+ - feat: magic-initiate (druid) --> shillelagh, starry wisp, faerie fire 
+ - skill proficiencies: stealth, survival  
+ - tool proficiency: cartographer's tools   
+ - languages: common, elvish, celestial
+ - equipment: 
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 12 
+ - CON = 13(+1) = 14
+ - INT = 15
+ - WIS = 15(+2) = 17 
+ - CHA = 08
+ASI's/Feats:
+ - lvl-00: magic-initiate (druid)
+ - lvl-06: war-caster: +1 INT (INT=16)
+ - lvl-08: resilient (WIS): +1 WIS (WIS=18)  
+ - lvl-12: ASI: +2 WIS (WIS=20)  
+ - lvl-16: ASI: +2 INT (INT=18) 
+ - lvl-20: ASI: +2 INT (INT=20)
+Progression Summary  
+ - lvl-01: artificer-01 --> magical tinkering, CON save proficiency, spellcasting 
+ - lvl-02: artificer-01, cleric-01 --> divine order (protector), spellcasting
+ - lvl-03: artificer-02, cleric-01 --> replicate magic item  
+ - lvl-04: artificer-02, cleric-02 --> channel divinity 
+ - lvl-05: artificer-02, cleric-03 (war) --> bound spells (SoF), guided-strike/war priest, lvl-2 spells (prayer of healing) 
+ - lvl-06: artificer-02, cleric-04 (war) --> war-caster: +1 INT (INT=16)  
+ - lvl-07: artificer-03 (artillerist), cleric-04 (war) --> eldritch cannon (protector), bound spells (shield) 
+ - lvl-08: artificer-04 (artillerist), cleric-04 (war) --> resilient (WIS): +1 WIS (WIS=18)  
+ - lvl-09: artificer-05 (artillerist), cleric-04 (war) --> arcane firearm, lvl-2 spells (homunculous servant)
+ - lvl-10: artificer-06 (artillerist), cleric-04 (war) --> magic item tinker (enspelled weapon, +1 armor)
+ - lvl-11: artificer-07 (artillerist), cleric-04 (war) --> flash of genius 
+ - lvl-12: artificer-08 (artillerist), cleric-04 (war) --> ASI: +2 WIS, WIS=20
+ - lvl-13: artificer-08 (artillerist), cleric-05 (war) --> sear undead 
+ - lvl-14: artificer-08 (artillerist), cleric-06 (war) --> war god's blessing 
+ - lvl-15: artificer-08 (artillerist), cleric-07 (war) --> blessed strikes 
+ - lvl-16: artificer-08 (artillerist), cleric-08 (war) --> ASI: +2 INT (INT=18) 
+ - lvl-17: artificer-09 (artillerist), cleric-08 (war) --> explosive cannon (2d8) 
+ - lvl-18: artificer-10 (artillerist), cleric-08 (war) --> magic item adept (uncommon, wondrous items)
+ - lvl-19: artificer-11 (artillerist), cleric-08 (war) --> spell storing item 
+ - lvl-20: artificer-12 (artillerist), cleric-08 (war) --> ASI: +2 INT (INT=20) 
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `artificer-cleric'
+ - lvl-01: slots = 2; prepared: 2-0; max level: 1-0
+ - lvl-02: slots = 3; prepared: 2-4; max level: 1-1
+ - lvl-03: slots = 3; prepared: 3-4; max level: 1-1
+ - lvl-04: slots = 4-2; prepared: 3-5; max level: 1-1  
+ - lvl-05: slots = 4-3; prepared: 3-6; max level: 1-2 
+ - lvl-06: slots = 4-3-2; prepared: 3-7; max level: 1-2 
+ - lvl-07: slots = 4-3-3; prepared: 4-7; max level: 1-2
+ - lvl-08: slots = 4-3-3; prepared: 5-7; max level: 1-2
+ - lvl-09: slots = 4-3-3-1; prepared: 6-7; max level: 2-2
+ - lvl-10: slots = 4-3-3-1; prepared: 6-7; max level: 2-2
+ - lvl-11: slots = 4-3-3-2; prepared: 7-7; max level: 2-2
+ - lvl-12: slots = 4-3-3-2; prepared: 7-7; max level: 2-2
+ - lvl-13: slots = 4-3-3-3-1; prepared: 7-9; max level: 2-3
+ - lvl-14: slots = 4-3-3-3-2; prepared: 7-10; max level: 2-3
+ - lvl-15: slots = 4-3-3-3-2-1; prepared: 7-11; max level: 2-4
+ - lvl-16: slots = 4-3-3-3-2-1; prepared: 7-12; max level: 2-4
+ - lvl-17: slots = 4-3-3-3-2-1-1; prepared: 9-12; max level: 3-4
+ - lvl-18: slots = 4-3-3-3-2-1-1; prepared: 9-12; max level: 3-4
+ - lvl-19: slots = 4-3-3-3-2-1-1; prepared: 10-12; max level: 3-4
+ - lvl-20: slots = 4-3-3-3-2-1-1; prepared: 10-12; max level: 3-4
+
+CONCEPT NOTES
+ - go war cleric to get war priest BA attack 
+ - go artillerist for BA THP (protector cannon) and arcane firearm 
+ - scale damage with cantrip scaling (shillelagh + true-strike) + class/subclass features + key spells 
+ - wield arcane firearm + enspelled martial weapon (draw and sheath) to make multiple attacks w/WIS
+ - build WIS then INT, eventually maxing both in order to make the most of both spell lists 
+ - maybe borrow one spell (spirit shroud) from non PHB material in order to scale overall damage 
+
+THEMATIC CONCEPT NOTES: 
+ - think `tech priest of mars mechanicum' from Warhammer 40K meets `boba fett' from star wars
+ - mix in a little samus aran from metrioid
+ - almost cult-like religiosity combined with an enthusiasm for invention/technological innovation
+ - worship the `machine god of war' and use divine techno-arcano magic to smite foes 
+ - think of the staff/shillelagh we use as a `blunderbuss' type weapon similar to the force-gun Tom cruise uses in minority report
+ - persona = highly intelligent, intuitive, and also a little bit crazy (creepy/crazy priest)  
+ - radiant/fire/force/thunder (holy explosions) theme, along with magically enhanced combat abilities 
+ - character-wise you're a healer/abjurer, and an arcane blaster/hunter 
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+#######
+Level-01: Artificer-01
+ - feat: magic-initiate (druid) 
+   * cantrips: shillelagh, starry wisp  
+   * lvl-1 spell: faerie fire 
+ - saving throw proficiencies: CON, INT   
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * artificer (2): arcana, perception     
+   * guide (2): stealth, survival  
+   * keen senses (1): insight 
+   * languages (3): common, elvish, celestial 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons
+   * armor: light/med armor, shields 
+   * tools: cartographer's tools (guide), 
+            thieves' tools, tinker's tools, woodcarver's tools (artificer)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (guide) + 150gp (artificer)
+   * weapons: light crossbow (25gp), case of crossbow bots x3 (3gp), quarterstaff (2sp)
+   * armor: chain shirt (50gp)
+   * tools: cartographer's tools (15gp), thieves' tools (25gp), tinker's tools (50gp), woodcarver's tools (1gp) 
+   * foci: holy-symbol::amulet (1gp) 
+   * gear: explorer's pack (10gp), traveler's clothes (2gp), robe (1gp)
+   * spare coin: 16.8gp
+ - combat equipment:
+   * preferred weapon: light crossbow
+     + light crossbow = 1d8 piercing (slow); ammunition (range 80/320), loading, two-handed  
+   * alternative weapon: quarterstaff 
+     + quaterstaff = 1d6 bludgeoning (topple); versatile (1d8)
+   * armor: chain shirt 
+   * AC: 13 + 1(DEX) = 14
+ - magical tinkering 
+   * create item from list using magic action (xINT/LR) 
+   * item vanishes after 1hr
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp
+   * artificer (2): guidance, message
+ - spell slots: 2 
+ - spells prepared: artificer (2)
+   * lvl-1 (magic-initiate): faerie fire (free x1/LR)
+   * lvl-1 (artificer): detect magic (R), false life  
+    
+NOTE: True strike from range w/crossbow. If caught in melee, use shillelagh on quarterstaff and true-strike with that. Use spell slots on faerie fire to give yourself advantage. Use magical tinkering for additional utility. Use woodcarver's tools as spellcasting focus for artificer spells (dovetails w/artillerist theme). 
+
+
+
+#######
+Level-02: Artificer-01, Cleric-01 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons 
+   * armor: light/med/heavy armor, shields 
+   * tools: cartographer's tools (guide), 
+            thieves' tools, tinker's tools, woodcarver's tools (artificer)
+ - divine order::protector
+   * gain training with martial weapons and heavy armor  
+ - combat equipment:
+   * preferred weapon: musket
+     + musket = 1d12 piercing (slow); ammunition (range 40/120), loading, two-handed  
+   * alternative weapon: quarterstaff (shillelagh)
+     + shillelagh = 1d8 force (topple); versatile (1d8)
+   * armor: chain shirt 
+   * AC: 13 + 1(DEX) = 14
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (3): guidance, mending, spare the dying   
+ - spell slots: 3 
+ - spells prepared: artificer (2), cleric (4)
+   * lvl-1 (magic-initiate): healing word (free x1/LR) 
+   * lvl-1 (artificer): detect magic (R), false life  
+   * lvl-1 (cleric): bless, cure wounds, guiding bolt, shield of faith  
+
+NOTE: Drop guidance as an artificer cantrip and pick up dancing lights. Get guidance, mending, and spare the dying as cleric cantrips. Change MI:druid spell to healing word since concentrating on cleric spells is better than concentrating on faerie fire. For cleric spells get bless/guiding bolt as offensive options (concentration/non-concentration) and shield of faith/cure wounds as defensive options (concentration/non-concentration). Assume your DM allows you to have crafted a musket using your tinker's tools (this would cost 250gp and take 50 days, so would have to have happened before adventure, but it's an important part of our character). If not, just stick with light crossbow and wait till next level when we can make them with replicate magic item. Take divine order::protector to get martial weapon proficiency. Start using musket at range as preferred weapon and shillelagh in melee as needed.
+
+
+
+#######
+Level-03: Artificer-02, Cleric-01 
+ - replicate magic item: 
+   * plans (4): bag of holding, clockwork amulet, ruby of the war mage, +1 weapon
+   * items (2): ruby of the war mage, +1 weapon // bag of holding, clockwork amulet 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (3): guidance, mending, spare the dying   
+ - spell slots: 3 
+ - spells prepared: artificer (3), cleric (4)
+   * lvl-1 (magic-initiate): healing word (free x1/LR) 
+   * lvl-1 (high-elf): detect magic (R, free x1/LR) 
+   * lvl-1 (artificer): false life, identify (R), jump 
+   * lvl-1 (cleric): bless, cure wounds, guiding bolt, shield of faith  
+
+NOTE: Make a +1 musket and insert a ruby of the war mage in it. Now you can use that to cast all your cleric/elf spells. Note you still need to hold woodcarver's tools to cast artificer spells. Get clockwork amulet to help land true-strike musket hits and lean into the `hunter of aberrations/xenos' tech-priest vibe. Create a bag of holding for party utility. We get detect magic as a high elf, so switch it out for identify as an artificer spell (fits our tech priest theme). For our new prepared artificer spell, take jump for some extra mobility and mech-suit flavor. Prioritize using spell slots on bless, shield of faith, and guiding bolt. Use free healing word and false life/cure wounds defensively as needed. Once you have made each magic item for which you have a plan (2 days), start making a bunch of +1 darts or extra rubies to drain for spell slots later on (store darts in a little belt/bandolier). 
+
+
+
+#######
+Level-04: Artificer-02, Cleric-02 
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark 
+     + magic action; (i) heal 1d8 + WIS or (ii) deal 1d8+WIS radiant/necrotic on CON save
+   * turn undead 
+     + magic action; undead WIS save or frightened/incapacitated and run away
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (3): guidance, mending, spare the dying   
+ - spell slots: 4-2 
+ - spells prepared: artificer (3), cleric (5)
+   * lvl-1 (magic-initiate): healing word (free x1/LR) 
+   * lvl-1 (high-elf): detect magic (R, free x1/LR) 
+   * lvl-1 (artificer): false life, identify (R), jump 
+   * lvl-1 (cleric): bless, command, cure wounds, guiding bolt, shield of faith  
+
+NOTE: Get channel divinity and use it exclusively for healing. Get one new cleric spell. Take command for some good control. Note it upcasts well and isn't concentration. Upcast guiding bolt for burst damage. Obviously flavor guiding bolts as being shot from the musket. Upcast false life for tankiness. 
+
+
+
+#######
+Level-05: Artificer-02, Cleric-03 (War Domain)  
+ - proficiency bonus (PB): +3 
+ - cantrip upgrade: 
+   * shillelagh (1d10), starry wisp (2d8), spare the dying (30ft), true-strike (+1d6)
+ - combat equipment:
+   * preferred weapon: quarterstaff (shillelagh)
+     + shillelagh = 1d10 force (topple); versatile (1d10)
+   * alternative weapons:
+     + musket = 1d12 piercing (slow); ammunition (range 40/120), loading, two-handed  
+     + pistol = 1d10 piercing (vex); ammunition (range 30/90), loading
+   * armor: scale mail (disadv. on stealth) 
+   * AC: 14 + 1(DEX) = 15
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark 
+     + magic action; (i) heal 1d8 + WIS or (ii) deal 1d8+WIS radiant/necrotic on CON save
+   * turn undead 
+     + magic action; undead WIS save or frightened/incapacitated and run away
+   * guided-strike 
+     + when you or ally w/in 30ft miss w/attack roll, use CD to give +10
+ - war priest 
+   * make BA weapon attack WISx(1)/SR
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (3): guidance, mending, spare the dying   
+ - spell slots: 4-3 
+ - spells prepared: artificer (3), cleric (6)
+   * lvl-1 (magic-initiate): healing word (free x1/LR) 
+   * lvl-1 (high-elf): detect magic (R, free x1/LR) 
+   * lvl-1 (artificer): false life, identify (R), jump 
+   * lvl-1 (cleric): bless, command, cure wounds, detect evil and good (R)   
+   * lvl-1 (war domain): guiding bolt, shield of faith
+   * lvl-2 (high-elf): misty-step (free x1/LR) 
+   * lvl-2 (cleric): aid, prayer of healing  
+   * lvl-2 (war domain): magic weapon, spiritual weapon
+   
+
+NOTE: Get cleric subclass. Guiding bolt and shield of faith both bound spells (sweet). Take aid and prayer of healing as second level spells and use second level slots to cast them x1/day. Note prayer of healing gives us the `benefits of a short rest', which includes refueling our war priest ability. So now, assuming we cast prayer of healing and take 1 actual short rest per adventuring day, we have 9 uses of war priest per day, which is pretty good. Given that we have war priest and that our shillelagh cantrip has leveled up, we will preferentially want to fight in melee, so make a +1 quarterstaff, slot it with your ruby of the war mage and get in there. Flavor this as a short-range blunderbuss weapon (w/shillelagh it deals force damage, so that's ok). Since we'll be holding our shillelagh in one hand, and it loses it's magic if we let go of it, it becomes hard to use the musket. So make a +1 pistol instead and then use that to make true-strike ranged attacks if necessary. Note that, while we can use the ruby-quarterstaff as our spellcasting focus for our cleric spells (and I assume our high-elf and magic-initiate spells), we still have to hold our woodcarver's tools to cast our artificer spells. So if we're holding our shillelagh and woodcarver's tools, then we won't have a free hand for somatic components. False life and jump both require somatic components, so we have to cast them before casting shillelagh -- or we have to stow it, cast the spell, and then recast shillelagh. Super annoying, but it is what it is. For the same reason, we want to draw and then stow our pistol whenever we use it to make an attack, so that we have a free hand to use for somatic components with our cleric/high-elf/magic-initiate spells. 
+
+Next, assume that we've scraped together enough funds to get ourselves some scale mail, boosting our base AC to 15 in exchange for disadvantage on stealth (we are proficient, so we'll be ok; we aren't a stealth focused character). Since we'll be in melee now, we want better armor, and I would put a premium on using our concentration for shield of faith (which would bring us up to AC-17) when appropriate. Our basic combo is now: action::true-strike::shillelagh + BA::war-priest::shillelagh, which does 2d10 + 1d6 + 2 + 2WIS = 22.5 dmg. Because we get guiding bolt and SoF as bound spells, we also have room to prepare one additional cleric spell. I took detect evil and good (R) for additional utility and to help save spell slots. It's on brand with our `hunter/tracker' theme. Note, we don't really get a lot out of our second level bound spells (magic-weapon, spiritual weapon) since we already have a +1 weapon and we want to use war priest to make BA attacks. Bummer but whatever. Eventually we will make use of magic weapon to give ourselves a +2/+3 arcane firearm. Finally, we also get misty step (w/a free cast x1/LR) from being a high elf. Extra mobility especially nice now that we're mucking it up in melee.
+
+
+
+#######
+Level-06: Artificer-02, Cleric-04 (War Domain)  
+ - feat: war caster 
+   * ASI: +1 INT (INT=16) 
+   * advantage on CON saves to maintain concentration 
+   * reactive spell: cast spell as OA 
+   * somatic components: can perform somatic components with weapon/shield in one/both hands 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (4): guidance, mending, spare the dying, word of radiance     
+ - spell slots: 4-3-2 
+ - spells prepared: artificer (3), cleric (7)
+   * lvl-1 (magic-initiate): healing word (free x1/LR) 
+   * lvl-1 (high-elf): detect magic (R, free x1/LR)
+   * lvl-1 (artificer): false life, identify (R), jump 
+   * lvl-1 (cleric): bless, command, cure wounds, detect evil and good (R)   
+   * lvl-1 (war domain): guiding bolt, shield of faith 
+   * lvl-2 (high-elf): misty step (free x1/LR)
+   * lvl-2 (cleric): aid, augury (R), prayer of healing  
+   * lvl-2 (war domain): magic weapon, spiritual weapon
+
+NOTE: Weird level/feat. We want to bump our WIS with the resilient feat (and we will later), but we need to take war caster in order to be able to perform somatic components of spells with weapons in hand. Now we can hold our shillelagh in one hand and our woodcarver's tools in the other hand and cast both cleric and artificer spells freely. The advantage on concentration checks and reactive spell abilities are also nice now that we're in melee. We get one additional cleric cantrip. I took word of radiance for some weak AOE dmg (we currently have none). Thaumaturgy and light might also be useful options. We also get one additional cleric spell. Take augury for some additional ritual out-of-combat utility. Finally we get 2 level 3 spell slots. Use 1 to upcast aid and give everyone in the party +15 HP (very nice). Use the other for a high-level guiding bolt or false life (+15 THP). Alternatively, if you know you're going to be in a tough fight, cast magic weapon at level-3 and make a +2 quarterstaff/blunderbuss to use with shillelagh. Same tactics as previous level. Damage check: with a +2 shillelagh-ed quarterstaff, our basic attack combo now does: 2d10 + 1d6 + 4 + 2WIS = 24.5 dmg. Decent. 
+
+
+
+####### 
+Level-07: Artificer-03 (Artillerist), Cleric-04 (War Domain)  
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons 
+   * armor: light/med/heavy armor, shields 
+   * tools: cartographer's tools (guide), 
+            thieves' tools, tinker's tools, woodcarver's tools (artificer)
+            smith's tools (artillerist)
+ - replicate magic item: 
+   * plans (4): clockwork amulet, ruby of the war mage, sending stones, +1 weapon
+   * items (2): sending stones, +1 weapon (dart) 
+ - right tool for the job 
+   * can now create artisan tools with magical tinkering
+ - tool proficiency 
+   * you gain proficiency with woodcarver's tools 
+   * if you already have this proficiency, gain proficiency with one other artisan tools (smith's tools) 
+   * when you craft a magic wand, crafting time is halved
+ - eldritch cannon (x1/LR; spell slot to use again)
+   * use magic action w/woodcarver's or smith's tools to create 1 eldritch cannon w/in 5ft of you
+   * cannon is a small or tiny object that disappears after 1h or after it reaches 0 HP 
+   * AC = 18, HP = 5x artificer lvl; immune to poison/psychic
+   * BA to activate cannon; 3 different models: flamethrower, force ballista, protector 
+     + flamethrower = DEX save ; 2d8 fire in 15ft cone or half on save
+     + force ballista = ranged spell attack (120ft); 2d8 force and 5ft push on hit
+     + protector = grants itself and all allies w/in 10ft 1d8 + INT THP
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (4): guidance, mending, spare the dying, word of radiance     
+ - spell slots: 4-3-3 
+ - spells prepared: artificer (4), cleric (7)
+   * lvl-1 (magic-initiate): cure wounds (free x1/LR) 
+   * lvl-1 (high-elf): detect magic (R, free x1/LR) 
+   * lvl-1 (artificer): false life, feather fall, identify (R), jump 
+   * lvl-1 (artillerist): shield, thunderwave
+   * lvl-1 (cleric): bless, command, detect evil and good (R), healing word   
+   * lvl-1 (war domain): guiding bolt, shield of faith
+   * lvl-2 (high-elf): misty step (free x1/LR)
+   * lvl-2 (cleric): aid, augury (R), prayer of healing  
+   * lvl-2 (war domain): magic weapon, spiritual weapon
+
+NOTE: We take our artificer subclass and go artillerist. We get a new tool proficiency (smith's tools), so now we can craft armor and melee weapons, along with other things (woohoo). I would probably do this to make stuff that I can sell to make money. We also get the right tool or the job feature, so we can create artisan's tools as needed. Next, we get some bound spells: thunderwave and shield. Thanks to the warcaster feat, we can cast these while holding our shillelagh in combat even though both require somatic components. Note that we can stack shield with shield of faith to give ourselves a +7 to our AC (bringing it to 22). We also get the eldritch cannon feature. We can use whichever we model we want for now (same attack bonus as our shillelagh/true-strike). Moving forward, we're going to prefer the `protector' and `flamethrower' models (since they're viable in melee), so if we're going for thematic consistency pick one of those two. As a cleric/support, the protector model seems most appropriate to me, but I'd use the flamethrower when I need AOE/damage. The downside of the flamethrower is that it will use our (lower) INT spell DC to hit. So yeah, the protector is probably the best bet. 
+
+What we want to do is create a tiny cannon and then carry it around on our person in order to give it/myself/my allies THP with our BA. The wording on the tiny eldritch cannon from Tasha's says that a tiny cannon *can* be held in one hand and doesn't occupy it's space. But that doesn't mean you *have* to hold it in one hand in order to carry it. So I'm going to assume that we can construct the cannon so that it can be worn -- like a backpack, or a hat, or a watch -- allowing us to carry it and still have a free hand. This is necessary because we still currently need to hold woodcarver's tools in order to cast artificer spells, and our other hand is full with our shillelagh. From everything I've read, this is pretty consistent with how people play the artillerist (and makes a lot of sense -- I mean you construct the cannon, so you should be able to make it wear-able). However, if your DM is stricter, then I think at this level, we probably want to create a cannon with legs/wheels so that it can attempt to follow us around in combat. This is quite clunky, but we will solve the issue in the near future. Finally, we get a new artificer spell. Take feather fall for situational utility/defensive option. Either way I think the protector model fits best with our tech priest vibe. Use it to further boost our survivability in melee. Oh shoot, yeah, and because we take another artificer level, we can switch out one of our magic item plans. Switch out bag of holding for sending stones, and start making those for party utility. 
+
+
+
+####### 
+Level-08: Artificer-04 (Artillerist), Cleric-04 (War Domain)  
+ - combat equipment:
+   * preferred weapon: quarterstaff (shillelagh)
+     + shillelagh = 1d10 force (topple); versatile (1d10)
+   * alternative weapons:
+     + musket = 1d12 piercing (slow); ammunition (range 40/120), loading, two-handed  
+     + pistol = 1d10 piercing (vex); ammunition (range 30/90), loading
+   * armor: breastplate 
+   * AC: 14 + 1(DEX) = 15
+ - feat: resilient (WIS) 
+   * ASI: +1 WIS (WIS=18) 
+   * gain proficiency in WIS saving throws 
+ - saving throw proficiencies: CON, INT, WIS    
+ - replicate magic item: 
+   * plans (4): bead of nourishment, ruby of the war mage, sending stones, +1 weapon
+   * items (2): bead of nourishment, sending stones   
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (4): guidance, mending, spare the dying, word of radiance     
+ - spell slots: 4-3-3 
+ - spells prepared: artificer (5), cleric (7)
+   * lvl-1 (magic-initiate): cure wounds (free x1/LR) 
+   * lvl-1 (high-elf): detect magic (R, free x1/LR) 
+   * lvl-1 (artificer): false life, feather fall, identify (R), jump, longstrider
+   * lvl-1 (artillerist): shield, thunderwave
+   * lvl-1 (cleric): bless, command, detect evil and good (R), healing word   
+   * lvl-1 (war domain): guiding bolt, shield of faith
+   * lvl-2 (high-elf): misty step (free x1/LR)
+   * lvl-2 (cleric): aid, augury (R), prayer of healing 
+   * lvl-2 (war domain): magic weapon, spiritual weapon
+
+NOTE: Finally boost our WIS with resilient feat. Gives us better chance to hit and damage, as well as 3 more war priest BA attacks per day (12 total). Also gain proficiency in WIS saving throws. Super nice that in this build we can take this as both an offensive and defensive feat. Assume we can afford a breastplate armor so we have base AC-15 and no disadvantage. Switch out clockwork amulet for bead of nourishment in magic item plan and start making those (along with more sending stones). Use the beads for fun/flavor and start not eating food (the tech priest is a machine). We get one additional artificer spell. Take longstrider since we can upcast it to boost our allies movement speed if we want. Nothing else super useful. Same tactics as previous level. 
+
+
+
+####### 
+Level-09: Artificer-05 (Artillerist), Cleric-04 (War Domain)  
+ - proficiency bonus (PB): +4 
+ - combat equipment:
+   * weapon: +1 staff (shillelagh)
+     + shillelagh(+1) = 1d10+1 force (topple); versatile (1d10+1)
+   * armor: breastplate + shield(+1) 
+   * AC: 14 + 1(DEX) + 3(shield+1) = 18
+ - arcane firearm 
+   * when you finish a LR, you can carve sigils into a rod, staff, or wand, turning it into an arcane firearm
+   * you can use arcane firearm as a focus for artificer spells
+   * when you cast an artificer spell through it that deals damage, add +1d8 to the roll (x1/turn)
+ - replicate magic item: 
+   * plans (4): bead of nourishment, ruby of the war mage, sending stones, +1 shield
+   * items (2): +1 shield, sending stones // bead of nourishment, sending stones   
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (4): guidance, mending, spare the dying, word of radiance     
+ - spell slots: 4-3-3-1
+ - spells prepared: artificer (6), cleric (7)
+   * lvl-1 (magic-initiate): cure wounds (free x1/LR) 
+   * lvl-1 (high-elf): detect magic (R, free x1/LR) 
+   * lvl-1 (artificer): false life, feather fall, identify (R), jump
+   * lvl-1 (artillerist): shield, thunderwave
+   * lvl-1 (cleric): bless, command, detect evil and good (R), healing word   
+   * lvl-1 (war domain): guiding bolt, shield of faith
+   * lvl-2 (high-elf): misty step (free x1/LR)
+   * lvl-2 (cleric): aid, augury (R), prayer of healing  
+   * lvl-2 (war domain): magic weapon, spiritual weapon
+   * lvl-2 (artificer): homunculus servant (R), lesser restoration
+   * lvl-2 (artillerist): scorching ray, shatter 
+
+NOTE: Ok big level here because of arcane firearm. Get a staff and convert it to an arcane firearm. As noted in the entry for `arcane focus - staff' in the new 2024 PHB, a staff is also considered a quarterstaff, which makes it a viable target for shillelagh, ruby of the war mage, and magic weapon. This means we can use the arcane firearm as a shillelagh, as well as a focus for both our cleric and artificer spells. This definitively gives us a free hand so we switch out +1 weapon for +1 shield in our magic item plans, and begin using a +1 shield. This boosts our base AC to 18, which makes us much less reliant on shield/shield of faith for durability (though we can still use them for extra protection as needed). This helps us conserve spell slots, and alleviates BA bloat, and allows us to get into our damaging/supportive abilities (war-priest/eldritch cannon) more quickly during combat. Since we have warcaster, we can still perform somatic components with weapons/shields in hand, and since we can carry our tiny eldritch cannon on our person we don't need a free hand to carry it. Though, if our DM rules that we can't carry the cannon on our person, then we can still have our homunculus servant carry it (see below), which may be the best option in many situations anyway. Carrying a shield does mean that we will no longer be able to use our +1 pistol, so we resign ourselves to using our spells (guiding bolt/starry wisp) for ranged attacks. In general this is fine, but with arcane firearm, we would have been able to make true-strike attacks with an `offhand' +1 pistol to deal extra damage if we had a free hand. In general, I think the permanent boost to AC is well worth the tradeoff since we're trying to be in melee anyway. The downside of having to use a staff is that we can't create +1 staffs using replicate magic item (bummer). But assume that leading up to this level, we've spent the time/money (10 days, 200 GP) to craft ourselves a +1 staff. Alternatively, if we've found a cool magical staff that doubles as at least a +1 quarterstaff, use that. 
+
+Next let's talk about the extra damage. Arcane firearm let's us do an additional 1d8 when we hit with an artificer spell we cast through it. This will work without issue for scorching ray, shatter (which we pick up as artillerist bound spells), and thunderwave, though note these all use INT for the spell attack/DC. It will also apply to our true-strike shillelagh attacks as well, but the wording on arcane firearm introduces a potential wrinkle. Specifically arcane firearm says it only applies to artificer spells. I think an even moderately generous DM would rule that the true-strike spell we get from being a high-elf is considered an `artificer spell' (bolstered by the fact that we took lvl-01 in artificer and the spell is on the artificer spell list). This would mean we can both (i) use our WIS for the attack and damage rolls and (ii) get the damage bonus from arcane firearm. That's how I would rule it anyway. That said, I could see a stricter DM ruling that you need to have it as a cantrip granted through the artificer class itself. Luckily, we can change one artificer cantrip on a LR, so if that's the case then switch out dancing lights or message for true-strike (INT) as an artificer spell. Either way you slice it, we can now do `supercharged' true-strike blunderbuss attacks that do: 1d10 + 2d6 + 1d8 + spell.mod on hit. If we have a generous DM, then we get to use WIS, which would bring the total for a true-strike hit to 21 damage. For a stricter DM, we need to use INT and take true-strike as an artificer cantrip and the damage would only be 20. I'm going to assume the former. Of course, even in the conservative case, we could still make true-strike attacks using WIS and just forgo the extra damage from arcane firearm.
+
+I think our default configuration should be to use the protector cannon, then choose between using our BA to activate the cannon or making war priest attacks with our blunderbuss (shillelagh/arcane-firearm). I think there's maybe a case for using the flamethrower cannon if we need to ignite things/do damage in AOE. But it's worth noting that the 2d8 (9) from the flamethrower does less damage than our war priest attack with our bluderbuss (1d10+WIS=9.5), though it doesn't have limited uses. Obviously if we're in a situation where we need range, we could cast guiding bolt/starry-wisp and use our BA on the force ballista. Even with the protector, I think we want to keep the false life spell, so that we can give ourselves some THP at the start of the day, then prioritize getting damage out with our war priest attacks, and use the protector BA in order to support allies/once our false life runs out. Note that cure wounds + BA:protector is also a really strong burst heal, especially if cure wounds is upcast.  
+
+In addition to the artillerist bound spells, we also get a 4th level slot, 1 additional preparable artificer spell, and access to level-2 artificer spells. In terms of spells, I opt for dropping longstrider as a 1st level artificer spell and picking up homunculus servant and spider climb as second level spells. I think homunculus servant is pretty much an auto-include here. First off it's a ritual, which we love since we have limited spell slots. Second, it's basically a better version of find-familiar which is already one of the strongest spells in the game. Third, it can attack -- at melee and range (30ft) -- for 1d6+spell-lvl force dmg without any demands on our action economy. This is also going to synergize really well with some cleric abilities (crusader's mantle) that we're going to get down the road and use in our max damage combos. Fourth, it can carry our (tiny) eldritch cannon and deliver touch spells at range (incl. cure wounds and jump). This gives us great ability to provide healing all across the battlefield. Fifth, it uses our INT for its attack rolls, so pretty good even at this level and eventually we are going to max it. So yeah, very good spell for us. I would flavor the servant as a cool little droid that we deploy from our mech-ed out armor (a la star wars/boba fett). This also dovetails super well with our overall theme. For our second new spell, I'm going to opt for lesser restoration. It's a BA touch spell, so we can use our homunculus servant to deliver it. It's not concentration, so doesn't compete with shield of faith/bless. And it's nice to continue to build some `cleric-y' abilities even while were taking artificer levels (bonus, we'll be able to switch out for it as a cleric spell once we take more cleric levels). Honorable mentions include: spider climb, blur, invisibility, and arcane vigor, and web. For spider climb, between misty step and jump we have decent mobility, and we still have ranged attack capabilities even if we can't get in melee. Blur is a bit redundant with SoF (and more expensive). Invisibility is great, but we do already have stealth proficiency. Arcane vigor is more healing when we have a bunch already. And web is an amazing control spell, but isn't super thematic and we aren't focused on control. We can also pick some of these up as we continue to take artificer levels. 
+
+Ok finishing up with a damage check. Assume we have cast magic weapon (lvl-3) on our arcane firearm and have used our fourth level slot to cast homunculus servant. Then we do: action::true-strike_{arcane-firearm} + BA::war-priest_{arcane-firearm} + homunculus-servant::force-strike. This would do: (1d10 + 2d6 + 1d8 + 2 + WIS) + (1d10 + 2 + WIS) + (1d6 + 4) = 2d10 + 3d6 + 1d8 + 4 + 2WIS(8) = 11 + 10.5 + 4.5 + 4 + 8 = 38 damage. Really good for a character with as much support/healing utility as we have. Ok well sorry for the novel here at this level, but it's a critical/build-defining one, so I think it's worth explaining in detail. Moving on. 
+
+
+
+####### 
+Level-10: Artificer-06 (Artillerist), Cleric-04 (War Domain)  
+ - combat equipment:
+   * weapon: +1 staff (shillelagh)
+     + shillelagh(+1) = 1d10+1 force (topple); versatile (1d10+1)
+   * armor: enspelled armor (breastplate) + sentinel shield 
+   * AC: 14 + 1(DEX) + 2(shield) = 17 
+ - magic item tinker 
+   * drain magic item = BA to convert magic item to spell slots (common=1, uncommon=2); x1/LR 
+   * expanded replication = can access lvl-06 magic item plan list 
+ - replicate magic item: 
+   * plans (5): bead of nourishment, enspelled armor (breastplate::shield), sending stones, sentinel shield, +1 shield
+   * items (3): enspelled armor, sending stones, sentinel shield // bead of nourishment, sending stones   
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (4): guidance, mending, spare the dying, word of radiance     
+ - spell slots: 4-3-3-1
+ - spells prepared: artificer (6), cleric (7)
+   * lvl-1 (magic-initiate): cure wounds (free x1/LR) 
+   * lvl-1 (high-elf): detect magic (R, free x1/LR) 
+   * lvl-1 (artificer): false life, feather fall, identify (R), jump
+   * lvl-1 (artillerist): shield (free x6/LR), thunderwave
+   * lvl-1 (cleric): bless, command, detect evil and good (R), healing word   
+   * lvl-1 (war domain): guiding bolt, shield of faith
+   * lvl-2 (high-elf): misty step (free x1/LR)
+   * lvl-2 (cleric): aid, augury (R), prayer of healing  
+   * lvl-2 (war domain): magic weapon, spiritual weapon
+   * lvl-2 (artificer): homunculus servant (R), lesser restoration
+   * lvl-2 (artillerist): scorching ray, shatter 
+
+NOTE: Artificer-06 means we get magic item tinker, and access to the level-06 magic item plans. Switch out ruby of the war mage (assume we have a few spare ones) and take two new plans: enspelled armor and sentinel shield. Enspelled armor let's us make armor containing 6 charges of a cantrip or level-1 spell from the abjuration or illusion school. For what it's worth, there's no indication as of yet that you have to pick spells that you know/are on the artificer spell list. So in theory enspelled armor/weapons can contain any spell from the appropriate schools, but we're not actually going to take advantage of that. Instead we're going to craft ourselves breastplate enspelled with the shield spell. The logic here is pretty simple, if we have a base AC of 17 and have shield up for even 7 out of 16 combat rounds in the typical adventuring day (so we have an AC of 22 for those rounds), then our average daily AC is 19.185, which is higher than what we would get if we made ourselves +1 armor and carried a +1 shield (AC-19). Plus shield allows us to bump our AC only when we're being attacked, which is more efficient than having a higher base AC on turns where we aren't being attacked. For all those reasons, it's actually a better defensive option to spam shield than to invest a magic item plan in +1 armor. Now, this does consume our reaction (which we could use to make war-caster true strike attacks) but in general I think it's a worthwhile trade. The other thing to note about enspelled armor is that it reverts back to non-magical breastplate once we expend the last charge. That isn't really an issue since we can create new enspelled armor after each LR, but it does mean we have to use a magic item creation slot to do that each day. The armor does recover 1d6 charges each day, too, so if you only use a few charges then it could recover on its own. 
+
+For our second new magic item plan, we're going to take the sentinel shield, which is a magic shield that gives us advantage on initiative rolls and perception checks. We've had a +1 to initiative our entire career, so the advantage is super welcome. And with our high WIS and proficiency in perception, advantage on perception checks would mean we have an average bonus of +12.5 to perception checks. This is quite good. So the sentinel shield both bolsters one of our weaknesses (initiative) and deepens one of our strengths (perception) making it a really good choice. Alternatively, we could keep using our old +1 shield to have a base AC of 18 as well as the enspelled armor. But I think the skill bonuses from the sentinel shield are more valuable. 
+
+No other changes to our abilities or spellcasting. So onward to level 11. 
+
+
+
+####### 
+Level-11: Artificer-07 (Artillerist), Cleric-04 (War Domain)  
+ - cantrip upgrade: 
+   * shillelagh (1d12), starry wisp (3d8), spare the dying (60ft), true-strike (+2d6), word of radiance (3d6)
+ - flash of genius 
+   * on failed ability check/saving throw, use reaction to add +INT to roll (xINT/LR); range 30ft
+ - replicate magic item: 
+   * plans (5): bead of nourishment, enspelled armor (shield), sending stones, sentinel shield, cloak of elvenkind
+   * items (3): cloak of elvenkind, enspelled armor, sending stones  // bead of nourishment, enspelled armor, sending stones
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (4): guidance, mending, spare the dying, word of radiance     
+ - spell slots: 4-3-3-2
+ - spells prepared: artificer (7), cleric (7)
+   * lvl-1 (magic-initiate): cure wounds (free x1/LR) 
+   * lvl-1 (high-elf): detect magic (R, free x1/LR) 
+   * lvl-1 (artificer): false life, feather fall, identify (R), jump
+   * lvl-1 (artillerist): shield (free x6/LR), thunderwave
+   * lvl-1 (cleric): bless, command, detect evil and good (R), healing word   
+   * lvl-1 (war domain): guiding bolt, shield of faith
+   * lvl-2 (high-elf): misty step (free x1/LR)
+   * lvl-2 (cleric): aid, augury (R), prayer of healing  
+   * lvl-2 (war domain): magic weapon, spiritual weapon
+   * lvl-2 (artificer): blur, homunculus servant (R), lesser restoration
+   * lvl-2 (artillerist): scorching ray, shatter 
+
+NOTE: If you haven't acquired any external magic items that require attunement, then switch out +1 shield for cloak of elvenkind in our magic item plans. Now our 3 attunement items are: (i) ruby of the war mage, (ii) enspelled armor and (iii) cloak of elvenkind. If you already have another good magic item that requires attunement, then make boots of elvenkind instead. The cloak gives us advantage on stealth checks and gives disadvantage on perception checks to perceive us while wearing it. The boots just give us advantage on stealth checks. Either one is a nice boost to our stealthing capabilities, which were already formidable, and play in to our overall identity of using magic items to enhance our DEX-based combat abilities (initiative, stealth). We get another artificer spell. I was torn between invisibility and blur. Ultimately I went with blur because we don't have a concentration spell that we really want to focus on. If anything, it's either bless or shield of faith, and blur is a strict improvement over the +2 AC from shield of faith as a defensive option. Oh yeah, and we also get flash of genius, giving us a +3 to saving throws 3x/LR. Note this can be combined with bless to give us a +5.5 to saves, which is pretty awesome. Finally, our cantrips level up here. This brings the damage from our basic war-priest attack combo up to 40. 
+
+
+
+####### 
+Level-12: Artificer-08 (Artillerist), Cleric-04 (War Domain)  
+ - feat: ASI: +2 WIS (WIS=20)
+ - replicate magic item: 
+   * plans (5): bead of nourishment, boots of elvenkind, enspelled armor (shield), sending stones, cloak of elvenkind
+   * items (3): boots of elvenkind, enspelled armor, sending stones // bead of nourishment, enspelled armor, sending stones   
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike (WIS) 
+   * magic-initiate (2): shillelagh, starry wisp 
+   * artificer (2): dancing lights, message 
+   * cleric (4): guidance, mending, spare the dying, word of radiance     
+ - spell slots: 4-3-3-2
+ - spells prepared: artificer (7), cleric (7)
+   * lvl-1 (magic-initiate): cure wounds (free x1/LR) 
+   * lvl-1 (high-elf): detect magic (R, free x1/LR) 
+   * lvl-1 (artificer): false life, feather fall, identify (R), jump
+   * lvl-1 (artillerist): shield (free x6/LR), thunderwave
+   * lvl-1 (cleric): bless, command, detect evil and good (R), healing word   
+   * lvl-1 (war domain): guiding bolt, shield of faith
+   * lvl-2 (high-elf): misty step (free x1/LR)
+   * lvl-2 (cleric): aid, augury (R), prayer of healing  
+   * lvl-2 (war domain): magic weapon, spiritual weapon
+   * lvl-2 (artificer): blur, homunculus servant (R), lesser restoration
+   * lvl-2 (artillerist): scorching ray, shatter 
+
+NOTE: Finally cap WIS at 20, increasing our damage, chance to hit, and number of war priest uses (up to 15/day). Our basic attack combo now does (2d12+2+10(WIS)+1d8(AF)+2d6(TS)+1d6+4(EC) = 13+12+4.5+7+3.5+4 = 44 damage. Not bad. Switch out sentinel shield for boots of elvenkind in our magic item plans. The reason is so that we can switch from the cloak to the boots of elvenkind if/when get new and better magic items that require attunement (the boots don't require attunement). Other than that no changes to spellcasting or any other abilities.  
+
+
+
+
+
+
+KEY CRAFTABLE: Staff of Striking = +3 staff; 10 charges that each deal +1d6 force damage on hit (can use up to 3 per expenditure)
+KEY CRAFTABLE: Amulet of the devout = +1 to spell attack rolls and saves, +1 use of channel divinity per day
+ 
+
+
+#####################################################################################
+EXTRA NOTES 
+
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 12 
+ - CON = 14
+ - INT = 14(+1) = 15
+ - WIS = 15(+2) = 17 
+ - CHA = 08
+
+Progression 
+ - lvl-00: high-elf (WIS) --> true-strike
+ - lvl-00: MI:druid (WIS) --> shillelagh, starry wisp, faerie fire   
+ - lvl-01: artificer-01 --> CON save proficiency 
+ - lvl-02: artificer-02 --> replicate magic item: bag of holding, ruby of the war mage, sending stones, weapon(+1)   
+ - lvl-03: artificer-02, cleric-01 --> divine order (protector=martial-weapons), spellcasting (SoF)
+ - lvl-04: artificer-02, cleric-02 --> channel divinity 
+ - lvl-05: artificer-02, cleric-03 (war) --> bound spells, guided-strike/war priest, lvl-2 spells (prayer of healing) 
+ - lvl-06: artificer-02, cleric-04 (war) --> resilient (WIS): +1 WIS (WIS=18) 
+ - lvl-07: artificer-03 (artillerist), cleric-04 (war) --> eldritch cannon (protector); switch MI:wizard spell
+ - lvl-08: artificer-04 (artillerist), cleric-04 (war) --> ASI: +2 WIS, WIS=20 
+ - lvl-09: artificer-05 (artillerist), cleric-04 (war) --> arcane firearm
+ - lvl-10: artificer-06 (artillerist), cleric-04 (war) --> magic item tinker (enspelled weapon:divine-favor, +1 armor)
+ - lvl-11: artificer-07 (artillerist), cleric-04 (war) --> flash of genius 
+ - lvl-12: artificer-08 (artillerist), cleric-04 (war) --> war-caster: +1 INT (INT=16) 
+ - lvl-13: artificer-08 (artillerist), cleric-05 (war) --> sear undead 
+ - lvl-14: artificer-08 (artillerist), cleric-06 (war) --> war god's blessing (non-concentration SoF) 
+ - lvl-15: artificer-08 (artillerist), cleric-07 (war) --> blessed strikes 
+ - lvl-16: artificer-08 (artillerist), cleric-08 (war) --> ASI: +2 INT (INT=18) 
+ - lvl-17: artificer-09 (artillerist), cleric-08 (war) --> explosive cannon (2d8) 
+ - lvl-18: artificer-10 (artillerist), cleric-08 (war) --> magic item adept (cloak of protection, periapt of WC, pearl of PWR)
+ - lvl-19: artificer-11 (artillerist), cleric-08 (war) --> spell storing item 
+ - lvl-20: artificer-12 (artillerist), cleric-08 (war) --> ASI: +2 INT (INT=20) 
+
+at lvl-20 
+ - concentrate on haste 
+ - divine favor is active, +3 magic staff w/shillelagh
+ - action:true-strike(arcane-firearm,blessed-strikes) + hasted-action:attack(staff) + BA:war-priest 
+ - 3*(2d6+3(weap)+INT(5)) + 3d6(TS) + 1d8(firearm) + 1d8(blessed) + 3d4(divine favor) 
+   = 5d6 + 21 + 4d8 + 2d4 = 21 + 21 + 18 + 5 = 65
+
+Use enspelled weapon to cast shillelagh on arcane-firearm-staff (blunderbuss), and use arcane firearm to cast true strike on attacks with the enspelled weapon (providing bonus damage) 
+
+LVL-10 NOTE: Artificer-06 means we get magic item tinker, and access to the level-06 magic item plans. Switch out ruby of the war mage (assume we have a few spare ones) and take two new plans. If we don't have magic armor already, then take +1 armor and make yourself a +1 breastplate, boosting your base AC to 16 (18 w/SoF). If you do have magic armor then make either boots/cloak of elvenkind depending on how many magic items you currently have that require attunement. Here I assume we take +1 armor as a magic plan, and use our 3 attunement slots on: (i) a magic staff (our arcane firearm), (ii) ruby of the war mage, and (iii) an enspelled weapon. 
+
+For the second new plan, take enspelled weapon and make an enspelled pistol that contains the spell divine smite. Note: currently there is no requirement that the spell you put in an enspelled weapon be a spell that you know or one that is on the artificer spell list. It just has to be in the divination, conjuration, transmutation, necromancy, or evocation schools. Divine smite is evocation. With 6 charges of divine smite + 12 uses (w/prayer of healing) of war priest per day, we should be able to deal damage with our BA every turn that we want to (4 combats per day at 4 rounds per combat = 16 turns, we have 18 BA uses). I guess I would think of the enspelled weapon as a kind of `reserve' of BA damage that provides additional damage, and (importantly) additional flexibility. If you think you have a good chance of hitting (esp. w/guided strike, bless, etc.) then war priest attacks will do more damage than divine smite. Conversely, if an enemy is hard to hit, then loading damage on a successful hit with divine smite makes more sense. Alternatively, there may be situations where you have run out of war priest usages (maybe you weren't able to short rest between fights). However, especially given that we want to cast shillelagh and shield of faith in most combats, and want to use our protector to give ourselves THP (all bonus actions), we are running into some BA bloat by taking this spell. If we are able to use all 6 charges each day then enspelled weapon (divine smite) is adding a sizeable 12d8(54) damage to our daily damage output (3.375 DPR). But we would probably be sacrificing uses of war priest to do this, and we still have set up/healing turns for shillelagh/SoF/protector so it's actually less than this. That said, I think the flexibility is important. Taking divine smite on our enspelled weapon means we can do damage more reliably and consistently, and that often just as important as the total amount of damage you deal. Plus divine smite is obviously very thematic for our character. In a similar vein, making the enspelled weapon a pistol means we can do the same tech as above, where we make true-strike ranged attacks (assuming we have a free hand), using our arcane firearm as a focus to get extra damage. This is also just kind of a fun balance/synergy -- where we use our staff to true-strike with our pistol, and our pistol to divine smite with our staff. 
+
+Three other notes on this. First, enspelled weapon requires that we have the weapon in hand when we expend a charge. So we can only do this if we are able to carry our eldritch cannon and still be able to use a free hand to hold the weapon while we cast a spell (recall, our other hand is occupied with our shillelagh). Note, I think this is pretty reasonable, as we're just saying that we need to be able to let go of the eldritch cannon long-enough to take hold of the enspelled weapon (not even draw it) and expend the charge. So even if the cannon is just `attached' to us in some very loose way, then we can drop/stow it to cast the enspelled weapon spell, then use our object interaction on a subsequent turn to pick it up again. However, if your DM is a stickler, things could get tricky. To use the enspelled weapon you would have to (i) drop the cannon using a free action, (ii) use your object interaction to draw the weapon to cast the spell. Then on your next turn you would have to use an action + object interaction to (i) stow the enspelled weapon and (ii) pick up the cannon. Lame. One workaround here is if your homunculus servant is next to you and able to hold the eldritch cannon. Since `passing an object' to another creature is also a free action that doesn't consume one's object interaction, you could pass the cannon to your homunculus servant, use your object interaction to draw your enspelled weapon and cast the spell. Then on your next turn, you could use your object interaction to stow your enspelled weapon and have your homunculus servant pass the cannon back to you on its turn. Of course, this requires assuming that your homunculus servant can carry your eldritch cannon, which your DM might not allow (but is also very reasonable). All this is to say, unless your DM is going to be *very* strict about how specifically you are allowed to handle the tiny eldritch cannon, then you should be able to use the enspelled weapon while still carrying the cannon around as before.  
+
+The second note is about another spell that is in prime consideration for enspelled weapon -- divine favor (transmutation). With 6 charges, we would easily be able to cast divine favor in each combat of the adventuring day, but it's just more challenging to setup and requires that we maximize our war priest feature every single day to get good value out of it. More specifically, with 16 rounds of combat per adventuring day we have 16 uses of a BA in combat. Even if we're effectively precasting, assume 2-4 of those will have to be dedicated to casting divine favor. Probably 2-4 more will have to be used to cast shillelagh/SoF. And then if we want to use our protector a few times, that's probably another 2-4 BAs. So we will really only have between 10 and 4 opportunities to do BA war priest attacks. This means we have 20-26 opportunities to attack (16 actions, 4-10 BA war priests). Even if we assume we are able to hit with 75% of those attacks (optimistic given we might not even be in range) we're looking at 15-20 instances of divine favor damage. This is already less damage than what we get from divine smite, and means our damage is significantly back-loaded in each combat. For all these reasons, I think divine smite is a better option for enspelled weapon at this level. Note, however, that this will change before end-game. Finally, my assumption regarding the `enspelled weapon' magic item plan is that it has to be spell specific. That is, you are specifically choosing `enspelled weapon - divine smite' and can't flexibly choose a different cantrip/1st-level spell each time you make an enspelled weapon. But the artificer UA isn't perfectly clear on that. If you are able to choose the spell each time you make the weapon, and you can choose any spell you want, then I would also make some weapons enspelled with divine favor and carry those around. 
+
+Final note on this level. The other feature of magic item tinker is that we can drain 1 magic item to recover a spell slot each day. Sending stones are uncommon magic items and thus allow us to recover a lvl-2 spell slot. Thus I would be sure to make some sending stones each day for the sole purpose of draining them after I cast prayer of healing. This gives us a bit more flexibility to use our second level slots to upcast other good spells (guiding bolt, command, cure wounds, bless, jump, aid, etc.). If we only need a first level slot, then drain some of those magic darts/beads of nourishment that we've been creating up to this point. Ok whew, another essay here. But mechanically this is quite a complicated character, so worth explaining the details. 
+
+ 
+
+
+
+
+
+Alchemist Monk Build 
+ - wraps of unarmed power: wondrous item, +1 (uncommon), +2 (rare), non-attunement 
+ - bracers of defense: wondrous item (rare), attunement (+2 to AC) 
+ - gloves of missile snaring: wondrous item (uncommon), attunement 
+ - bracers of archery: wondrous item (rare), attunement
+ - cloak of displacement: wondrous item (rare), attunement
+ - cloak of protection: wondrous item (uncommon), attunement (+1 to AC and saves)
+ - ring of protection: ring, rare (+1 to AC and saving throws)
+ - ring of spell storing: ring, rare (can store 5 wrathful smites) 
+ - cube of force: wondrous item (rare): attunement
+ - potion of pugilism: each unarmed strike deals an additional 1d6 force damage on hit
+ - oil of slipperiness: uncommon potion, gain effects of freedom of movement for 8h
+ - enspelled weapon: weapon (uncommon) --> could use to cast: true-strike (divination)
+                                                              shillelagh (transmutation) 
+                                                              divine smite (evocation)
+                                                              hunter's mark (divination) 
+                                                              divine favor (transmutation) 
+ - shadow-touched: invisibility + wrathful smite --> wrathful smite deals necrotic, meaning it procs `alchemical savant' alchemist
+                   feature.
+ - ring of jumping: ring (uncommon); can cast jump on self, attunement 
+ - ring of feather falling: ring (rare); fall 60ft per round and take no fall damage, attunement
+ - boots of speed: wondrous item (rare); BA to double speed and impose disadv on OAs (10m usage per LR) 
+ - boots of striding and springing: wondrous item (uncommon); jump 30ft spending only 10ft of movement, attunement
+ - wand of paralysis (rare): create paralyzing ray as magic action (7 charges); requires attunement
+ - ioun stone of protection: wondrous item (rare): +1 to AC, requires attunement
+ - ioun stone of reserve: wondrous item (rare) add up to 4 levels of spells to it and cast them w/out spell slots 
+ - pearl of power: wondrous item (uncommon); recover one spell slot of lvl 3 or lower, requires attunement
+ - periapt of wound closure: wondrous item (uncommon); requires attunement; whenever you roll hit die to regain HP, double it
+
+
+Feats: 
+ - species: orc
+ - origin feat: tough 
+ - shadow-touched: +1 INT; invisibility + wrathful smite 
+ - poisoner: +1 INT/DEX; potent poison, brew poison
+ - resilient (WIS): +1 WIS, gain WIS saving throw proficiency
+
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 12 (+2) = 14
+ - CON = 14
+ - INT = 15 (+1) = 16
+ - WIS = 14 
+ - CHA = 08
+
+Progression: 
+ - lvl-01: artificer-01 --> unarmored defense, martial arts
+ - lvl-02: artificer-02 --> replicate magic item 
+ - lvl-03: artificer-03 (alchemist)
+ - lvl-04: artificer-04 (alchemist) --> shadow-touched: +1 INT (INT=17); invisibility + wrathful smite 
+ - lvl-05: artificer-05 (alchemist) --> alter-self 
+ - lvl-06: artificer-06 (alchemist) --> magic item tinker (enspelled weapon) 
+ - lvl-07: artificer-07 (alchemist) --> flash of genius 
+ - lvl-08: artificer-08 (alchemist) --> war-caster: +1 INT (INT=18)
+ - lvl-09: artificer-09 (alchemist) --> restorative reagents 
+ - lvl-10: artificer-10 (alchemist) --> magic item adept (wraps of unarmed power, cloak of protection), haste
+ - lvl-11: artificer-11 (alchemist) --> spell storing item 
+ - lvl-12: artificer-12 (alchemist) --> ASI: +2 INT (INT=20)
+ - lvl-13: artificer-13 (alchemist)
+ - lvl-14: artificer-14 (alchemist) --> magic item savant (bracers of defense, ioun stone of protection, ring of protection)
+ - lvl-15: artificer-15 (alchemist) --> chemical mastery (potion of pugilism) 
+ - lvl-16: artificer-15 (alchemist), monk-01 --> martial arts, unarmored defense 
+ - lvl-17: artificer-15 (alchemist), monk-02 --> monk's focus, unarmored movement, uncanny metabolism 
+ - lvl-18: artificer-15 (alchemist), monk-03 (mercy) --> deflect missiles 
+ - lvl-19: artificer-15 (alchemist), monk-04 (mercy) --> epic boon of fortitude (+1 WIS), slow fall  
+ - lvl-20: artificer-15 (alchemist), monk-05 (mercy) --> extra attack, stunning strike
+
+
+turn-01: action:alter-self + BA:potion of pugilism 
+turn-02: attack.1:unarmed_{hand-of-harm) + attack.2:unarmed + BA:FoB.1:unarmed + BA:FoB.2:unarmed
+         (1d6+INT+1d8+WIS+1d6+2)          (1d6+INT+1d6+2)    (1d6+INT+1d6+2)    (1d6+INT+1d6+2)
+         = 8d6 + 1d8 + 4INT(5) + WIS(2) + 8 = 62.5

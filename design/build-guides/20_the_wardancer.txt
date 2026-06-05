@@ -1,0 +1,616 @@
+Moniker: Wardancer 
+Classes: Monk-1, Bard-13 (Dance), Fighter-6 (Battle-Master) 
+Species: Wood Elf
+ - size: medium
+ - speed 35ft 
+ - darkvision (60ft) 
+ - fey ancestry = adv. on saves against charmed 
+ - keen senses = proficiency in perception 
+ - trance
+Background: Traveling Performer 
+ - feat: tavern brawler
+ - skill proficiencies: acrobatics, performance 
+ - tool proficiencies: calligrapher's tools 
+ - languages: common, elvish, sylvan
+Point-Buy Stats 
+ - STR = 8 
+ - DEX = 15 (+1) = 16
+ - CON = 14 
+ - WIS = 12 (+1) = 13
+ - INT = 8 
+ - CHA = 14 (+1) = 15
+ASI's/Feats
+ - lvl-0: tavern brawler
+ - lvl-5: fey-touched (+1 CHA, misty-step, hex) 
+ - lvl-9: grappler (+1 DEX)
+ - lvl-13: charger (+1 DEX)
+ - lvl-15: ASI: DEX+2 
+ - lvl-19: ASI: CHA+2 
+PROGRESSION SUMMARY 
+ - lvl-1: monk-1 
+ - lvl-2: monk-1, bard-1
+ - lvl-3: monk-1, bard-2 
+ - lvl-4: monk-1, bard-3 (dance)
+ - lvl-5: monk-1, bard-4 (dance)
+ - lvl-6: monk-1, bard-5 (dance)
+ - lvl-7: monk-1, bard-6 (dance) 
+ - lvl-8: monk-1, bard-7 (dance) 
+ - lvl-9: monk-1, bard-8 (dance) 
+ - lvl-10: monk-1, bard-8 (dance), fighter-1 
+ - lvl-11: monk-1, bard-8 (dance), fighter-2
+ - lvl-12: monk-1, bard-8 (dance), fighter-3 (battle-master)
+ - lvl-13: monk-1, bard-8 (dance), fighter-4 (battle-master) 
+ - lvl-14: monk-1, bard-8 (dance), fighter-5 (battle-master) 
+ - lvl-15: monk-1, bard-8 (dance), fighter-6 (battle-master) 
+ - lvl-16: monk-1, bard-9 (dance), fighter-6 (battle-master) 
+ - lvl-17: monk-1, bard-10 (dance), fighter-6 (battle-master) 
+ - lvl-18: monk-1, bard-11 (dance), fighter-6 (battle-master) 
+ - lvl-19: monk-1, bard-12 (dance), fighter-6 (battle-master) 
+ - lvl-20: monk-1, bard-13 (dance), fighter-6 (battle-master)
+
+
+CONCEPT NOTES: The main idea behind this build is to be an amazing martial battlefield controller, and a gish that fights primarily with unarmed strikes. Taking a 1-level monk dip will get us a reliable BA unarmed strike, and the ability to make grapple and shove attempts using DEX. Dance bard will give us the ability to make unarmed strikes as reactions, and to reposition our allies. And also the ability to cast spells. Going battlemaster will give us access to weapon masteries (push), as well as battlemaster maneuvers (disarm, push). By the time we're level 9, we'll be able to do a pretty nasty combo where we disarm a creature, grapple it, and then drag it away from it's weapon, rendering it pretty useless. The tavern brawler, grappler, and charger feats will all add to this type of playstyle, while the fey-touched feat will give us some extra mobility and
+increase our ability to grapple/control key targets. 
+
+BACKGROUND NOTES: 
+ - more than meets the eye: delicate little dancer-girl on the surface; tough as nails fighter underneath 
+ - a bit of a lush: our character fancies a drink. our fighting style is almost drunken-master-esque,
+                    bobbing and weaving with dancer's grace
+ - a bit of a tease: charming, manipulating and deceiving those who underestimate us
+ - unrestrained: fast, free-flowing movement to accompany an itinerant lifestyle. Move uninhibited, like the wind.
+
+ADDENDA (NOTES TO SELF): 
+We have `cloud of daggers' as our key 2nd-level spell. While more situational, I think hold person would potentially be better, as paralyzed creatures automatically fail STR and DEX saves. Two of our key Battle Master maneuvers (pushing attack, disarming attack) are STR saves, so paralyzing opponents first would guarantee some key combos. Of course, you also get critical hits on melee attacks against paralyzed enemies, which would help our damage. Only downside is that the save would rely on our spell casting mod (CHA) which will be low until very late level. So in that sense, CoD, which doesn't require a save, is better. 
+
+It looks like grappling has switched from a contested athletics check to a straight saving throw in 2024 PHB. But it also seems like athletics might be what you/enemies use to try and escape a grapple. Below we go with proficiency and expertise in athletics to promote grappling, but if we don't have to do that then choose another skill. We also take fey-touched in order to get hex. But we might not really need hex as much (or want that feat at all) if imposing disadvantage on STR-checks doesn't help us with our grapple. 
+
+Grappler + spike growth is a broken combination. It also synergizes with our push control abilities. We can get spike growth starting at bard-10 with magical secrets. So potentially consider getting this and switching out cloud of daggers. They're both thematically consistent. But with it's larger AOE and better damage scaling, I think it is a superior option to cloud of daggers in most situations.   
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+Level-1: Monk-1 
+ - feat: tavern brawler
+   * enhanced unarmed strike = 1d4+STR on hit w/unarmed strike
+   * damage rerolls = reroll 1's on damage from unarmed strikes; use new roll
+   * shove = can shove 5ft as part of attack action w/unarmed strike on your turn (x1/turn)
+   * furniture as weapons = medium furniture = greatclub, small furniture = club
+ - saving throw proficiencies: STR, DEX 
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * monk (2): stealth, athletics   
+   * elf (1): perception 
+   * traveling performer (2): acrobatics, performance
+   * languages (3): common, elvish, sylvan
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, martial weapons w/light property
+   * armor: none
+   * tools: calligrapher's tools (traveling performer), cartographer's tools (monk) 
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (background) + 65gp (monk)
+   * weapons: shortbow (25gp)
+   * tools: calligrapher's tools (10gp), cartographer's tools (15gp), pan flute (12gp)
+   * gear: explorer's pack (10gp), quiver (20 arrows, 1gp)
+   * spare coin: 41.8 gp
+ - combat equipment:
+   * weapon: none
+     + greatclub = 1d8 bludgeoning (push); simple, two-handed (monk weapon)
+     + shortbow = 1d6 piercing (vex); ammunition (range 80/320); two-handed, simple  
+   * armor: none
+ - martial arts 
+   * BA unarmed strike 
+   * dexterous attacks = DEX instead of STR for unarmed strikes + monk weapons +
+                        grapples/shoves
+   * martial arts die: 1d6
+ - unarmored defense 
+   * unarmored AC = 10 + 3(DEX) + 1(WIS) = 14
+ - cantrips: 
+   * wood elf (1): druidcraft 
+ 
+NOTE: Ok level-1 and we're going to start out monk-1. But first a few notes on character creation. We're going with wood elf for our species to get 35ft of movespeed, and access to the longstrider spell at level-3. Druidcraft and Pass without trace at level-5 are also nice, but we're mostly interested in the first two. As an elf, we also get proficiency in perception, which is great. From our background, we take proficiency with calligrapher's tools so that we can (eventually) craft spell scrolls. We take cartographer's tools so that we can (eventually) craft maps. These proficiencies are both thematically consistent with our background as a traveling performer (e.g, making signs to advertise our show w/calligrapher's tools, making maps as we travel from town to town). In terms of skill proficiencies, our background gives us proficiency in acrobatics (we're a dancer, afterall) and performance (traveling performer). As a monk we choose to be proficient in stealth -- because we have high DEX and stealth is very useful -- and athletics -- since we're eventually going to be doing a lot of grappling (see addendum above). Finally, for equipment, start out with a shortbow (even though we ideally won't be using it) and your artisan's tools. Also get a pan flute for when we eventually take bard levels. 
+
+Ok so why are we starting out monk-1 here? First, the saving throw proficiencies (STR, DEX) are better than what we'd get with Bard, and we really want martial arts. In particular, we really like that martial arts lets us make BA unarmed strikes right off the bat, and that it let's us use DEX instead of STR for grapple and shove checks. We have proficiency in athletics and high DEX, so we're already capable of grappling quite effectively. Martial arts also dovetails really nicely with our background/level-0 feat, which is tavern brawler. 
+
+Tavern brawler does a few really nice things for us. First, it lets us shove a creature (no more than one size larger than us) 5ft when we hit it with an unarmed strike as part of the attack action x1 per turn. This means that we can effectively kite creatures with standard reach by doing: BA:unarmed-strike + attack:unarmed-strike(shove). By pushing enemies away with our last unarmed strike, we move ourselves out of their reach, allowing us to move away from them without provoking AoOs. This 'disengage' combo is particularly important for our character right now at level-1 because our AC is pretty low (14). Next, tavern brawler also let's us reroll 1's when we roll damage for unarmed strikes (have to use new roll). This is an awesome feature for us since the majority of our damage will come from unarmed strikes. Finally, tavern brawler lets us use furniture as club weapons. This is nice because both clubs and greatclubs are monk weapons, so we can use them with DEX and still do BA unarmed strikes. For now, we should stay unarmed so that we can shove with our unarmed strikes. But eventually, the greatclub will be a weapon that we use, so this component of tavern brawler means that we will rarely be far from one of our favorite weapons. 
+
+In terms of combat equipment -- as a monk (and, eventually dance bard) we don't wear armor so no need to deal with that. In terms of weapons, I would get a shortbow with my starting gold. The shortbow isn't a monk weapon, but gives us a good ranged option (range 80/320) that we are proficient with. 
+
+In terms of combat tactics -- it's pretty simple here at level-1. Use you high speed to get into melee. Use the kiting combo to deal damage while staying out of reach of heavy hitters. And use grapples and shoves to try and control enemies where appropriate. Alright, whew! Level-1 out of the way. On to level-2. 
+
+
+
+Level-2: Monk-1, Bard-1 
+ - skill proficiencies: 
+   * monk (2): stealth, athletics   
+   * elf (1): perception 
+   * traveling performer (2): acrobatics, performance
+   * bard (1): deception
+   * languages (3): common, elvish, sylvan
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, martial weapons w/light property
+   * armor: light armor
+   * tools: calligrapher's tools (traveling performer), cartographer's tools (monk)
+            pan flute (bard) 
+ - bardic inspiration: 2d6 
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (2): friends, blade-ward  
+ - spell slots: 2 
+ - spells prepared: 4 (bard)
+   * lvl-1 (bard): cure wounds, silvery barbs, faerie-fire, heroism
+
+NOTE: Ok we're level-2 and we're going bard-1. Multiclassing here gets us: (i) an additional skill proficiency (I took deception), (ii) proficiency with a musical instrument (pan flute), (iii) bardic inspiration and (iv) spellcasting. In general, getting bardic inspiration and spellcasting gives us some new support and combat utility options. We only have two d6's for inspiration right now, but that will change in a few levels. And having inspiration gives us another good use of our BA, if we aren't interested in/able to attack. Bardic inspiration also got some reworks in the 2024 PHB: creatures granted inspiration now have an hour (rather than 10m) to use it, you can roll the inspiration die after you fail a d20 test (rather than before) and you can grant inspiration to creatures who can hear or see you (not just see). 
+
+In terms of spells, for cantrips I took friends and blade ward. Friends has been reworked in 2024. It no longer works automatically, and instead requires the target make a WIS saving throw or be charmed. But it also no longer alerts the target that you (tried to) charm them, or makes them hostile to you afterwards. Overall, I think this is a big positive improvement, as it means we can use friends in social settings without as much fear of blowing everything up. Second, we take blade ward. Blade ward was also reworked for 2024 and is now cast as a reaction to a creature targeting you with a melee attack roll. When you cast it, you force the creature to make the attack with disadvantage. This is a great option for us, with our low AC, and will probably be the best default use of our reaction in combat for now. In terms of level-1 spells, we get to prepare 4 as a level-1 bard. I think cure wounds is a good emergency survivability option, and will help us make it through with our crappy AC. Silvery barbs is another good support use for our reaction. In general, this character will be doing a lot of work on their reaction, so this spell is consistent with the overall playstyle we'll be going for. Faerie-fire is a decent concentration option for now, potentially giving us advantage on all attacks against a creature who fails the save. It's also consistent with our overall fey/elf vibe. And finally, heroism. Heroism gives us CHA THP per turn, so only 2 right now, which isn't great. But it's again, since we're going to be in melee as a bard with AC-14, we need survivability options to get us through. Heroism is good in that role for now. 
+
+
+
+Level-3: Monk-1, Bard-2 
+ - expertise 
+ - jack of all trades 
+ - skill proficiencies (* indicates expertise): 
+   * monk (2): stealth, athletics*   
+   * elf (1): perception 
+   * traveling performer (2): acrobatics, performance
+   * bard (1): deception*
+   * languages (3): common, elvish, sylvan
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (2): friends, blade-ward  
+ - spell slots: 3 
+ - spells prepared: 5 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day)
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, faerie-fire, charm-person
+    
+NOTE: Alright we're level-3 and we go bard-2. We get expertise (now at level 2 in 2024 PHB, sweet) and we take expertise in athletics and deception. Expertise in athletics is important for us, since it will make us very effective at grappling targets (we have a +7 to grapple right now) (SEE ADDENDUM ON NEW GRAPPLING RULES). Perhaps we won't be doing a ton of that here at level-3 with our low AC, but eventually this will be a big part of our battlefield control portfolio. I think deception also dovetails with our tricksy-fey/wood-elf nature and will help us develop into a sneaky infiltrator. We are also becoming a `more than meets the eye' type character, which works well with deception. The more I think about it, since we don't wear armor -- we can totally cosplay as a delicate little thing, a pretty little dancer or some other unobtrusive civilian, and leverage our high deception to infiltrate and catch our enemies off guard. I think this is a good foundation for a character personality -- someone who looks like the delicate artiste on the surface, but is a tough as nails melee fighter underneath. Someone who uses others' tendency to underestimate them to their own advantage. 
+
+At bard-2 also get jack of all trades, which is fantastic and will help us fill in any major skill gaps our part has. And finally, we get one more bard spell. I chose charm person for out-of-combat utility since there aren't a lot of combat options that look really appealing. Maybe earth-tremor to knock prone? I also switched out heroism for healing word. Heroism won't be worth our concentration for much longer and we will soon have better options for survivability. So we take healing word so we can be an effective triage medic, and get ready to switch out for other spells next level. As a level-3 wood elf, we also get to learn the longstrider spell and cast it without a spell slot 1x per day. With longstrider up, our movement speed is 45, which is a pretty nice buff for us and our kiting combat tactics. It only lasts an hour, so it can be a bit tricky to pre-cast effectively, but if you can, make use of the extra movement to get on top of good targets, and kite more effectively. It's probably also worth noting here that with proficiency in calligrapher's tools we can scribe spell scrolls during our downtime. As a first level spell, it would take us 1 day and 25 gold (plus spell components) to scribe a scroll of longstrider. I think if you start doing this now, then eventually we can have a bunch of these so that we don't have to worry about pre-casting it at exactly the right moment. On to level-4! 
+
+
+
+Level-4: Monk-1, Bard-3 (Dance) 
+ - subclass: college of dance 
+ - dazzling footwork 
+   * unarmored defense: AC = 10+3(DEX)+2(CHA) = 15
+   * agile strikes = when you expend BI, make an unarmed strike 
+   * bardic damage = use BI die for attack/damage rolls w/unarmed strikes
+ - inspiring movement 
+   * when enemy ends turn within 5ft of ally you can see w/in 60ft of you
+     you can use your reaction to expend a BI and move up to 1/2 your speed
+     then roll BI and ally gets to move 5 times the number rolled feet. none 
+     of this movement provokes opportunity attacks.
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (2): friends, blade-ward  
+ - spell slots: 4-2 
+ - spells prepared: 6 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-2 (bard): kinetic-jaunt, mirror-image
+
+NOTE: Ok we're level-4 and we go bard-3 to get our subclass. As we've previewed a bit by now, we're going to go with the college of dance. Thematically, I would think of this more like our character is learning to develop a dance-based fighting style (like capoeira) versus doing any sort of traditional dance on the battlefield. We get a number of nice features from dance bard. First we get the `dazzling footwork' feature, which has three components. First, it gives us an improved unarmored AC based on our DEX and CHA, which boosts our AC up to 15 (still not great, but better). Second, it lets us make an unarmed strike whenever we expend a bardic inspiration (BI) die as part of an action, bonus action, or reaction. This means that we no longer have to choose between using our BA to make an unarmed strike or deal out a BI, we can do both. It also means we can make unarmed strikes when we use our other new feature, inspiring movement, with our reaction (more on that in a sec). The third part of dazzling footwork is that it lets us use DEX for attack rolls with our unarmed strikes (as a monk we already do that) and it lets us use the BI die for damage rolls. Right now our BI die and martial arts die are the same (both d6's) but this does mean that we can scale the damage of our unarmed strikes without having to take more levels in monk (whew!). Ok returning to the second new feature we get -- inspiring movement. This is a really cool feature, in my opinion. Inspiring movement says that whenever an enemy ends their turn within 5ft of an ally who is within 60ft of us, we can expend a BI as a reaction and (i) move up to 1/2 our speed, and (ii) the ally can move a number of feet equal to 5 times the roll we get on our BI die. Of course, expending a BI in this way also allows us to proc our the `agile strikes' component of the dazzling footwork feature, so we can also make an unarmed strike. In practice, I think it will be very common for the prerequisites for inspiring movement to be satisfied (usually at least some enemies are within 5ft of one of your allies). So this essentially amounts to a quite reliable way to reposition ourselves, our allies, and make unarmed strikes with our reaction. Very powerful. Right now we can only do this 2x per long rest, but that's going to change soon. Also, note that inspiring movement has some good synergy with grappling. If we are able to grapple a creature on our turn, we can drag it to a favorable location inspiring movement with our reaction on someone else's turn. In combination with our improved AC (15), great athletics (+7) and high speed (45ft if we cast longstrider, 55ft with kinetic jaunt), I think here at level-4 grappling officially becomes a great option for controlling and reposition single targets. Use it to maximum effect. 
+
+At bard-3 we also get another prepared spell (6) and we can prepare two level-2 bard spells. My picks are kinetic jaunt and mirror image. Kinetic jaunt is a really interesting spell that provides uniquely good utility for our character, and is certainly very thematic for a dance bard -- it even says `you move with dancelike steps' in the spell description. So how does it work? Well it's a bonus action to cast and requires concentration (for up to 1m). When we cast it, our speed increases by 10ft (so base 45ft, 55ft with longstrider), our movement doesn't provoke opportunity attacks, and we can move through other creatures space's without imposing any movement penalties. This is going to be great for our lock-down grapple move, as it makes it easier for us to into melee with key targets and/or drag them back to wherever we need them to be once they're grappled. This spell will also become even more useful next level, so just hold on. For our second level-2 spell, I think we should take mirror image. Even though our AC increased, it still isn't great, and mirror image is an awesome non-concentration survivability spell. After it's rework for the 2024 PHB, enemies only get a chance to hit your mirror images *when they hit you with an attack*. So each mirror image is essentially protected by your base AC. With mirror image up and blade ward handy as a reaction, I think we can feel good about getting up close to and grappling even some of the nastier enemy combatants we will encounter. Finally, for level-1 spells, I dropped faerie fire and kept our healing, reaction, and out-of-combat spells. Faerie fire is thematic, but it just won't be worth our concentration at higher levels. By contrast, healing word is pretty much always useful for resurrecting allies, and upcasting cure wounds is (now in 2024) a good burst heal. Silvery barbs is also just very good, and gives us even more options to control with our reaction. 
+
+
+
+Level-5: Monk-1, Bard-4 (Dance) 
+ - proficiency bonus (PB): +3
+ - feat: fey touched (CHA, hex) -- SEE ADDENDUM BELOW
+   * CHA = 16 
+   * learn misty step and hex (free x1/day)
+ - unarmored defense: AC = 10+3(DEX)+3(CHA) = 16
+ - bardic inspiration: 3d6
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (3): friends, blade-ward, message 
+ - spell slots: 4-3
+ - spells prepared: 7 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-1 (fey-touched): hex (free x1/day)
+   * lvl-2 (wood-elf): pass without trace (free x1/day)
+   * lvl-2 (bard): kinetic-jaunt, mirror-image, cloud of daggers   
+   * lvl-2 (fey-touched): misty step (free x1/day)
+
+NOTE: Ok so we're level and we go bard-4. We get our first ASI/feat, and we're going to go with fey touched. As a half-feat, fey touched let's us bump our CHA to 16. This is big for us, as it means we get a +1 to our unarmored AC (which we sorely needed), and an additional use of bardic inspiration. We also get to learn misty step and a 1st-level spell from the enchantment or divination schools (assuming fey touched works the same as it did in Tasha's). Misty step is great for us. It's fey themed, and gives us additional mobility which, as a melee fighter, we really like. For our other fey touched spell, as a melee fighter who will (eventually) make upwards of 4 attacks per round and is interested in grappling, hex is the best option. Hex gives us an extra 1d6 necrotic damage each time we hit a hexed enemy, and it let's us impose disadvantage on STR ability checks, which include grapple checks. It is a bonus action to cast, which makes our BA a bit crowded (currently we can do the following on our BA: unarmed strike, bardic inspiration, hex, healing word, misty step, kinetic jaunt). We'll eventually have better things to concentrate on, but for single target damage against a grapple-able enemy, it will always be a very good option, and it's nice to have good options that don't use high-level spell slots. Plus we get to cast it once per day for free, so that's nice. 
+
+At bard-4 we also get another cantrip -- I took message for infiltration/deception synergy, but pick your favorites -- and we get to prepare another bard spell. Here I took cloud of daggers (CoD). Cloud of daggers is a concentration spell that conjures a 5ft cube of swirling spectral daggers that deal damage (4d4 slashing at lvl-2) to enemies when they enter the cube for the first time on a turn, or if they end their turn there. In general, I think the thematics of this spell are really cool, and perhaps fitting for our character. For example, I might flavor the daggers as swirling, spectral, dark-purple fey-energy spikes -- and have our character `dance' enemies into the cloud in order to damage them. Very cool. There are also a couple of key mechanical features of CoD for our character. First, there is no save against taking damage from the cloud. So even though our CHA won't be amazing moving forward (+3 until very late), we can still cast this spell and it will always do full damage if we can get enemies in it. Second, it upcasts reasonably well, adding another 2d4 damage for each level above 2nd. The last reason we really like cloud of daggers is because of our character's propensity for grappling, but this requires a little bit of explanation. In the new 2024 PHB, the rules around `dangerous area' emanation spells (like CoD) were changed. It used to be that creatures took damage when they entered the area for the first time on a turn, or when they *started* their turn there. This led to a lot of comps with CoD where you would cast it right behind an enemy, then find a way to shove them into it on your turn, so that they would take the damage both on your turn and when they started their turn there. This is no longer the case. Now it seems that enemies take damage whenever they enter the dangerous area on a turn and if they *end* their turn in the area. So this means that if we push someone into our cloud of daggers, they can just move out of it on their turn and avoid taking the damage a second time. Ok, but this spell is still going to be really good for us. Why? Well right now we can still take one turn to go attack and grapple an enemy. Then, once we have them grappled we can cast CoD on them on our next turn. This will proc the damage once when we first summon the cloud, and then they will take the damage again if they can't escape our grapple on their turn. So we can't do it all in one turn, but because we like to grapple, we can still get enemies to take the damage twice each round with a little bit of setup. The utility of CoD is also going to improve when we eventually take fighter levels and we get weapon masteries and action surge. So just hold tight. 
+
+Finally as a level-5 wood elf we also get to learn pass without trace (PWT) and cast it for free once per day. Combined with our proficiency in stealth, this makes us an excellent infiltrator and one who can also help the party. It's a great bound spell to get and deepens our fey/elf-magic theme. Ok that's it for level-5, moving on. 
+
+
+ADDENDUM (NOTE TO SELF): It seems like fey-touched works the same as it did in Tasha's, meaning you can use it to take *any* 1-st level divination or enchantment spell as part of the feat. This includes the updated hunter's mark spell, which can now be upcast in order to deal more damage (2d6 at level-3/4, 3d6 at level 5+). Additionally, if the changes to grappling are what we expect (i.e., they are no longer based on a contested athletics check) then the benefit of taking hex and using it to impose disadvantage on STR checks is significantly less. If these changes do indeed work this way, then switch out hex for hunter's mark. This will give you a better/more scalable single target damage concentration spell. Or take something completely different. 
+
+
+
+Level-6: Monk-1, Bard-5 (Dance) 
+ - font of inspiration
+ - bardic inspiration: 3d8
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (3): friends, blade-ward, message 
+ - spell slots: 4-3-2
+ - spells prepared: 9 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-1 (fey-touched): hex (free x1/day)
+   * lvl-2 (wood-elf): pass without trace (free x1/day)
+   * lvl-2 (bard): kinetic-jaunt, mirror-image, cloud of daggers   
+   * lvl-2 (fey-touched): misty step (free x1/day)
+   * lvl-3 (bard): catnap, fast-friends
+
+NOTE: Alright, level-6 and we go bard-5. This is a biggie for us. First we get the font of inspiration feature, which allows us to recover all uses of our bardic inspiration on a short rest. Second, our bardic inspiration die increases to a d8. This is the damage die we use for all our unarmed strikes, so this represents a nice boost in damage. Third, we get to prepare two new bard spells, and we get access to 3rd-level bard spells. I think catnap is going to be an auto-include for this build. The catnap spell let's us gain the benefits of a short rest in only 10m when we cast the spell. This means that between catnap and short rests (w/font of inspiration), we can probably get 9-12 uses of our bardic inspiration per adventuring day. This makes it sooo much more appealing to hand out inspiration to others, and to use our inspiring movement reaction ability. And of course, the more we use our bardic inspiration, the more times we get to make unarmed strikes (because of agile strikes). In a way, we can think about font of inspiration + catnap a bit like getting a limited version of extra attack, since it means we will reliably be able to do 3 attacks per round (2 on our turn and 1 with our reaction). Obviously it's not exactly the same, but hey, unlike martial types we also get to be a full caster and a skill monkey. 
+
+Font of inspiration + catnap also gives us more opportunities to use our hit dice to heal, which we might need to do quite a bit. Beyond catnap there are a number of other good options for our other new spell. Leomund's tiny hut is great (though a bit nerfed in 2024), as is dispel magic. We could take motivational speech to give ourselves some THP and advantage on WIS saves, but it is unlikely to last very long on our character since we'll be in melee. We could also take enlarge/reduce as a 2nd level spell, so that we can grapple Huge or smaller creatures, but I don't really like the flavor of it. Mass healing word, slow, enemies abound, invisibility, suggestion, borrowed knowledge, spray of cards are all honorable mentions. As always, pick your favorites. I opted for fast-friends. When I think about this character, I imagine them as a lush and a bit of a tease. Someone who might manipulate a stranger or a new acquiantance to get something they want. Fast friends leans into this part of the character's identity, I think. And it feels good to have the consistency of friends, charm person, and fast friends all together as we progress with bard levels. Taking fast friends means we will have consistently good out-of-combat options to work with as a face. 
+
+
+Level-7: Monk-1, Bard-6 (Dance)
+ - leading evasion = evasion that you can share w/someone within 5ft
+ - tandem footwork = expend BI to give +BI roll to CHA creatures initiative
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (3): friends, blade-ward, message 
+ - spell slots: 4-3-3
+ - spells prepared: 10 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-1 (fey-touched): hex (free x1/day)
+   * lvl-2 (wood-elf): pass without trace (free x1/day)
+   * lvl-2 (bard): kinetic-jaunt, mirror-image, cloud of daggers, borrowed knowledge   
+   * lvl-2 (fey-touched): misty step (free x1/day)
+   * lvl-3 (bard): catnap, fast-friends 
+
+NOTE: Ok level-7, and we're sticking with bard and going bard-6. I think there's a good argument that we could start taking fighter levels here instead, in order to get extra attack, weapon masteries, and battle-master maneuvers, but we also really want to get 4th level bard spells and the defensive/support options that we get by going bard-6 are too important to pass up. So here we go. At bard-6 we get two new subclass features: leading evasion and tandem footwork. Leading evasion is basically the same as the evasion that monks and rogues get -- letting you take no damage when you succeed on a DEX save and only half damage when you fail, except that we can also share this ability with allies who make the same save within 5ft of us. I think this is super important for us personally -- we're trying to be a frontliner on a d8 hit die with AC-16 -- and it is a really powerful support ability. Go and stand next to your fighter or paladin friend and see how well they like this feature. We also get the tandem footwork feature which lets us expend a use of our BI to give up to our charisma modifier creatures (so 3) a bonus to their initiative equal to the number we roll on our inspiration die. This is more situational, for sure but there are definitely fights where having the initiative can totally change the game. In thoses situations, this is going to be a clutch ability. So, yeah, I think that, while switching over to fighter here at level-7 would utlimately be better for our character's offensive capabilities, we just aren't tanky enough to forgo leading evasion until late game, and the extra supportive capabilities are super nice. Also, at bard-6 we get to prepare another spell. I went with borrowed knowledge to give us more out-of-combat utility (I love this spell). But obviously pick your favorites. Only, don't get too attached, because we will be switching it out for 4th level spells shortly. Ok, onward! 
+
+
+
+Level-8: Monk-1, Bard-7 (Dance)
+ - countercharm = reroll save against charm/frightened with advantage as reaction
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (3): friends, blade-ward, message 
+ - spell slots: 4-3-3-1
+ - spells prepared: 11 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-1 (fey-touched): hex (free x1/day)
+   * lvl-2 (wood-elf): pass without trace (free x1/day)
+   * lvl-2 (bard): kinetic-jaunt, mirror-image, cloud of daggers   
+   * lvl-2 (fey-touched): misty step (free x1/day)
+   * lvl-3 (bard): catnap, fast-friends 
+   * lvl-4 (bard): fount of moonlight, greater invisibility
+
+NOTE: Right, so level-8 and we go bard-7. First up we get the countercharm base class feature, which was reworked in 2024 and is now super useful. The new countercharm lets us, as a reaction to us/a creature within 30ft of us failing a save against an effect that applies the charmed or frightened condition, reroll the save with advantage. This is obviously a great support option, and our allies will be happy that we have it. But it is also pretty critical for us, personally. Our WIS isn't super high (+1) and we lack proficiency in WIS saves, so as we move into the mid-game where charming and frightening (especially) become more common, we will be very glad to have this. At bard-7 we also get access to 4th level bard spells, and there are two that I think are auto-includes for us. The first is the awesome new fount of moonlight (FoM) spell. So what does this spell do? Well, while we're concentrating on it (up to 10m) FoM (i) wreathes our body in cool light, causing us to emit bright light in a 20ft radius and dim light for an additional 20ft, (ii) gives us resistance to radiant damage, (iii) allows our melee attacks to do an additional 2d6 radiant damage on hit, and (iv) gives us a special use of our reaction where we can try to blind a target in response to taking damage from them. While every part of this spell is potentially useful, we are really excited about parts (iii) and (iv). At level-8, getting an extra 2d6 damage on all of our melee attacks is really powerful. If we're focused on attacking with our action, bonus action and reaction, this would be an extra 6d6 damage per round. Pretty good. The blinding reaction is also really nice for us, since enemies affected by the blinded condition have disadvantage on attacks and attacks against them have advantage. So it boosts both our survivability and the reliability of our attacks. Between countercharm and fount of moonlight, we've also added to the slew of useful things we can do with our reaction (blade-ward, silvery-barbs, inspiring-movement, countercharm, fount-of-moonlight blind). This means that, even if we aren't doing the most damage of anyone in our party, we will always have great things to do with our action, bonus action, and reaction. I think this will make this character really fun to play in combat, since it will feel like you always have something useful you can do. The second auto-include 4th level spell for us, I think, is greater-invisibility. Whereas fount of moonlight will be better for damage, being in melee taking hits means there's a decent chance that our concentration on it will break. Though remember we can use our `disengage' combo (BA:unarmed-strike + attack:unarmed-strike(shove)) to get in and out of melee and kite enemies. But still, FoM is perhaps a bit risky. Greater invisibility is a safer more consistent option. Being invisible still grants us advantage on attack rolls and imposes disadvantage on attack rolls against us (provided the target can't see invisible creatures). So we still get both the offensive and defensive boost there, but we don't get any extra damage. I would say greater invisibility would be best in fights where there are particularly dangerous enemies that can really put the hurt on you, whereas fount of moonlight would be better for clearing out mobs of smaller foes. Anyway, super nice to have both. In terms of other fourth level spells you might consider, here are some honorable mentions: freedom of movement, dimension door, charm monster, polymorph. As always, pick your favorites. 
+
+
+
+Level-9: Monk-1, Bard-8 (Dance)
+ - proficiency bonus (PB): +4
+ - feat: grappler 
+   * DEX = 17 
+   * advantage on attacks against grappled creatures 
+   * fast wrestler = don't spend extra movement to drag grappled enemies 
+                     your size or smaller 
+   * punch and grab = can grapple as part of unarmed strike attack action on our turn
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (3): friends, blade-ward, message 
+ - spell slots: 4-3-3-2
+ - spells prepared: 12 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-1 (fey-touched): hex (free x1/day)
+   * lvl-2 (wood-elf): pass without trace (free x1/day)
+   * lvl-2 (bard): kinetic-jaunt, mirror-image, cloud of daggers   
+   * lvl-2 (fey-touched): misty step (free x1/day)
+   * lvl-3 (bard): catnap, fast-friends 
+   * lvl-4 (bard): fount of moonlight, greater invisibility, freedom of movement
+
+NOTE: At level-9, we go bard-8. We get a proficiency bonus increase and we take the grappler feat. Unfortunately, grappler is a half feat and doesn't boost our DEX mod (still +3), but I think it's still worth it to take it here since it offers a number of great features. First it gives us advantage on attacks against creatures grappled by us. Great, we already like to move around and grapple squishy opponents. This makes it easier for us to beat them into submission once we have them. Plus it offsets not getting a bump to our DEX here. Second, it gives us the `fast wrestler' feature -- which states that we don't suffer any movement penalties when we are dragging a grappled enemy that is our size or smaller. This means we can use our own (very considerable) move speed to drag medium-sized and smaller targets around the battlefield. Third, grappler lets us make a grapple attempt when we make an unarmed strike as part of the attack action on our turn. So now when we make an attack, we can either grapple (grappler) or shove (tavern brawler). This gives us another basic attack combo. Previously we had the `disengage combo' where we did BA:unarmed-strike + action:unarmed-strike(shove). Now we can also do the `grapple combo' where we do action:unarmed-strike(grapple) + BA:unarmed-strike, which allows us to reliably make our second attack with advantage. Of course, we also grapple the enemy, setting us up for cloud of daggers or allowing us to move them to a vulnerable position. Basically the grappler feat gives us a lot more martial control functionality and that's kind of the central identity of our character as a combatant. So even though it doesn't boost our DEX, we like taking this feat here. 
+
+At bard-8 we also get another prepared spell, and I'm going with freedom of movement as a 4th level option. I think `unrestrained, fast and free flowing movement' is also a theme of our character. We have longstrider at level-1, kinetic jaunt at level-2, so it's nice to get another higher level option in this vein. Freedom of movement is also non-concentration so we can cast it and then cast fount of moonlight or greater invisibility or hex or whatever. So what does the spell actually do? Well for 1-hour it grants us (or any other creature we touch) the ability to ignore difficult terrain, prevents our seped from being reduced in any way, and gives us immunity to the paralyzed and restrained condition. This is great if we want to glide through enemy ranks to get on top of a high value target, and helps ward us against enemies who will try to keep us out of melee. It can also be combined with kinetic jaunt and longstrider. If we had all three of these spells up then we would have 55ft of speed and would be able to move freely without provoking opportunity attacks or being hindered by difficult terrain. Super thematic for our character, while also being super useful for the kind of battlefield control role we're trying to pull off. Of course -- I think with the addition of the grappler feat it's also worth considering how badly we want the enlarge/reduce spell, which would allow us to grapple Huge and smaller creaters, and drag Large creatures with no penalty. But ultimately, I think freedom of movement is probably equally as valuable, while being a whole lot more thematic. Plus, if you get in a fight with a Huge creature, you can always just concentrate on fount of moonlight or hex and go to town with attacks and not worry about grappling. We're not a one-trick pony. Alright, on to the next. 
+
+
+
+Level-10: Monk-1, Bard-8 (Dance), Fighter-1 
+ - second wind (2 uses; regain 1 on SR, all on LR)
+   * BA heal 1d10 + fighter level 
+ - fighting style: superior-technique 
+   * disarming strike = add SD to damage, STR save or enemy is disarmed
+   * superiority die: 1d6 
+ - weapon masteries: greatclub (push), quarterstaff (topple), longbow (slow)
+ - combat equipment:
+   * weapon: unarmed or greatclub or quarterstaff or longbow
+     + greatclub = 1d8 bludgeoning (push); simple, two-handed (monk weapon)
+     + quarterstaff = 1d6 bludgeoning (topple); versatile (1d8), simple (monk weapon)
+     + longbow = 1d8 piercing (slow); ammunition (range 150/600); heavy, two-handed  
+   * armor: none
+- weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, martial weapons
+   * armor: light armor, medium armor, shields
+   * tools: calligrapher's tools (traveling performer), cartographer's tools (monk)
+            pan flute (bard)
+
+NOTE: Ok so we're level-10, just at/past the halfway point of our character's career (depending on how far we go). And we're going to step away from bard and start taking fighter levels. Narratively, I think this is part of our character's general progression. We started as a humble dancer, and artist (for the most part) through and through. Through our evolution as a bard/our experience adventuring, we developed a style of dance fighting that leverages the fundamental magic of artistic expression through bodily movement. Now, as we start taking fighter levels, I think we can see our character working to refine this style of dance into a proper martial art -- along with all that entails, such as the integration of weapons into `the dance'. We might even see our character, who's until now been somewhat of a rake, start to develop some focus and discipline. Overall, as far as multiclasses go, I think this is a super synergistic one that dovetails very well with the narrative we've built around this character. So as far as RP'ing goes, have fun with it. 
+
+In terms of the practical benefits, at fighter-1 we get a few key things. First, we get the second-wind ability, which gives us a nice non-spell based healing option. Lord knows we will need it more often than we might like. We also now gain a use of second-wind back on a short-rest, which means we get it back when we catnap. Awesome, more healing. 
+
+Next, we also get to pick a fighting style, and I think we should go with superior technique (from Tasha's). There are a few reasons here. First, our identity is as a battlefield controller, and superior technique gives us a control maneuver to use right away starting at fighter-1. Second, a lot of the other fighting styles depend on weapon use -- archery, thrown weapon fighting, great weapon fighting, etc. We still primarily deal damage through our unarmed strikes, though we will at this level start attacking with a weapon in combat (at least, in some situations). Even the generalist defensive fighting style won't apply to us, since we don't wear armor. Given this, I think superior technique is the best option. When we take it at fighter-1, we get 1d6 superiority die and we get to learn 1 maneuver. There are a lot of great maneuver options, but the one I'm most excited about is disarming strike. This is because disarming strike works super well with our grappler feat and grappling fighting style. More specifically, now we can make an unarmed strike with the attack action on our turn, use the grappler feat to grapple the enemy with this attack, then use disarming strike to do 1d6 extra damage and try to disarm them of their weapon (STR-15 save). If both work, then the enemy is both grappled and disarmed. Drag them away from their weapon and you've essentially neutered their damage output entirely while you have them grappled. Against any grapple-able enemy that wields a weapon (and that's not a small category), this is a super powerful combo. Now, granted we can only do this 1x per short rest, but we do have catnap, so we can get our superiority die back more often than other fighters would be able to. 
+
+In addition to a fighting style, fighter-1 also gets us martial weapon proficiency and 3 weapon masteries. We also get new armor/shield proficiencies, but we won't use them. For us, there are a couple of weapons we are interested in. First off, up to this point, we've been carrying a short bow around to give us a ranged attack option. Well we can upgrade this to a longbow now. Still not a monk weapon, but with an effective range of 150ft, this could definitely be situationally very useful. The other two weapons I'm going for are the greatclub and the quarterstaff. Both are simple weapons, which is nice because it means they count as monk weapons (so we can still do our BA unarmed strike). Both also can be wielded with two-hands to do 1d8 in damage, meaning they are comparable in terms of damage to our unarmed strikes (though unarmed strikes will still be better since we get to reroll 1's as a tavern brawler). The main appeal of using the weapons is their mastery properties. The greatclub has the push property, which means we can push 10ft with a greatclub attack instead of just 5ft with our tavern brawler shove. And the quarterstaff has the topple property, which forces an enemy to make a CON save or be knocked prone. Right now we still only have 1 attack with our attack action per turn, which limits us a bit. But having these weapons essentially increases our combat versatility. Need to push someone into an environmental hazard -- pull out the greatclub (I imagine it as a more graceful kind of weighted dancer's pole thing..) and go to town. Have an enemy grappled? Pull out your quarterstaff and try to knock them prone. Since the grappled condition means the enemy's speed is zero, they can't stand up from prone until they break the grapple. This means they'll be at disadvantage for all attack rolls (and you and your melee friends will all be at advantage). Topple could also be a good option if, for some reason, you aren't able to grapple an enemy. Enemy out of range? Get out the longbow. You get the point. Overall having the right `tool for the job' in terms of battlefield tactics and control is very consistent with this character's evolving combat identity. Plus it's kind of cool that even as we've started dipping into weapons, we're sticking to simple things like hitting our enemies with clubs and quarterstaffs. Ok whew! Lot of new stuff there. On to level-11. 
+
+
+
+Level-11: Monk-1, Bard-8 (Dance), Fighter-2 
+ - action surge (x1/LR)
+ - second wind (2 uses; regain 1 on SR, all on LR)
+   * BA heal 1d10 + fighter level
+   * tactical mind = +1d10 to ability check on fail; not expended if you still fail 
+
+NOTE: Ok we're level 11 and we go fighter-2. We get the new `tactical mind' feature, which lets us expend uses of our second wind to add 1d10 to a failed ability check. Combine this with expertise / jack of all trades and we have some real chops in just about any essential skill check. This is a super nice new non-combat feature for fighters that synergizes well with what we already do well as a bard. Next we get action surge, which we have a number of very good ways to use. First, say we have fount of moonlight up. Action surge would let us land another attack and get an additional +2d6 radiant in on our turn. We could also use action surge to do two attacks with our greatclub an push an enemy 20ft on our turn. Great to have in hand if there are nasty environmental hazards around. Alternatively, attack an enemy with your quarterstaff and knock them prone, then action surge and grapple them with an unarmed strike. Now they can't stand up as long as you have them grappled -- so they're at disadvantage for all attacks and all your friends can have advantage on (melee) attacks against them, too. Or just use action surge to get another shot at a key grapple if we miss with our first attack.
+
+We also have access to a great tech with action surge and cloud of daggers (CoD). More specifically, we can use our action on our turn to (up)cast cloud of daggers on an enemy (procing the damage), then action-surge and use our next attack to punch and grab (grapple) them. This gets them stuck in the CoD in just one turn. If we upcast CoD with a 4th level slot, this would do 8d8 (20) damage to the enemy on our turn, and then another 8d8 (20) if they fail to break the grapple. We also still get to do our base damage with two unarmed-strikes (2d8 + 6 = 15). Pretty neat. Knock them prone on your next turn with the quarterstaff and all of a sudden your target is in a really unfortunate situation. Greater invisibility + action-surge grapple is also a good combo -- immediately putting an enemy in a situation where you have advantage on all your attacks and they are grappled and have disadvantage attacking you. We could even use action-surge with our `disarming-strike + grapple' combo to take another dash action and move an enemy super far away from their dropped weapon. Obviously we only get this 1x per long rest (no catnaps for this one...) but that's ok. Use it wisely to land some clutch combos.  
+
+
+
+Level-12: Monk-1, Bard-8 (Dance), Fighter-3 (Battle Master)  
+ - subclass: battle master 
+ - student of war
+   * + proficiency in 1 type of artisan's tools 
+   * + proficiency in 1 fighter skill 
+ - skill proficiencies (* indicates expertise): 
+   * monk (2): stealth, athletics*   
+   * elf (1): perception 
+   * traveling performer (2): acrobatics, performance
+   * bard (1): deception*
+   * battle master (1): persuasion
+   * languages (3): common, elvish, sylvan
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, martial weapons
+   * armor: light armor, medium armor, shields
+   * tools: calligrapher's tools (traveling performer), cartographer's tools (monk)
+            pan flute (bard), brewer's supplies (battle master) 
+ - battle-master maneuvers: 3 + 1 (superior technique) 
+   * disarming strike = add SD to damage, STR save or enemy is disarmed
+   * lunging attack = BA dash, if you move 10ft before hitting with melee attack
+                      add SD to damage
+   * goading attack = add SD to damage, WIS save or disadvantage on attacks against others
+   * pushing attack = add SD to damage, if target is large or smaller
+                      STR save or pushed 15ft
+ - superiority die: 4d8 + 1d6 (superior technique)  
+   
+NOTE: Ok we're level-12 and we are going with fighter-3. We get our subclass and, surprise surprise, we're going with battle master. Battle master is not only the iconic subclass for a martial control character (which we are), and thematically consistent with our elegant, battle-dance aesthetic, but mechanically it offers us some really great features. Before we get to those, however, we should also note that when we take this subclass at fighter-3 we get the `student of war' feature which lets us gain a fighter skill proficiency and proficiency with a set of artisan's tools. For the skill, I chose persuasion. Maybe as our character is becoming more focused and disciplined, they are also becoming more earnest, and thus more capable of garnering support to the party's cause. In terms of skill distribution, it's nice to have another social interaction proficiency to rely on that doesn't involve lying. For the artisan's tools, I went with brewer's supplies. It doesn't really matter what you choose here. We aren't going to be expert crafters of anything. But brewer's supplies does have some synergy with persuasion, as you become more capable of plying someone with a stiff drink. I also think we could imagine that as our character moves away from being a drunk themselves, they might develop a healthier/more responsible interest in the craft of brewing. Ahh, character growth. Maybe they'll open a tavern of their own one day and can host the adventurers of your next campaign. All fun and flavor here. 
+
+Mechanically, taking the battle master subclass gets us the combat superiority maneuvers that the subclass is famous for. We already had disarming strike from our superior technique fighting style, but now we get to learn 3 new maneuvers. And we get 4d8 more superiority dice to fuel these maneuvers, all of which we recover on a short rest (so yes, with catnap). This means we should really be able to use these quite liberally with this character. Ok so what new maneuvers do we take? I went with lunging attack, goading attack, and pushing attack. Lunging attack is great because it lets us take the dash action as a bonus action and then make a melee attack with extra damage (if we move 10ft). This gives us another way to move around the battlefield in pursuit of grapple targets. Between misty step and lunging attack, we have great BA movement options, and we can also move with our reaction when we do inspiring movement. Lunging attack could be particularly clutch if we want to get the jump on someone and grapple them right from the start of combat. Use tandem footwork to give yourself a boost to initiative, then use lunging attack to get 90ft of movement (assuming we have longstrider) and grapple with punch and grab. Next up goading attack. Goading attack synergizes super well with our `disengage' combo move and with greater invisibility. More specifically, if we have greater invisibility cast, then we can run up, make an unarmed strike on an enemy and do a goading attack (WIS-15 save) while also shoving them 5ft (effectively disengaging). If they fail, the enemy would have disadvantage attacking anyone but us because of goading attack, and would have disadvantage attacking us because we're invisible. We could also do this without greater invisibility by using blade-ward as a reaction to impose disadvantage. So, yeah, goading attack really enhances our kiting fighting style, when we need it. Finally, we like pushing attack because we can stack it with the push from our greatclub. If we do a pushing attack with the greatclub and the enemy fails the (STR-15) save, then they would be pushed a whopping 25ft. Potentially super powerful. Also, recall that with our tavern brawler feat, we can use (large) furniture as a greatclub. So this means if we're getting hit on by some bozo in a tavern we can pick up a chair and effing rock them 25 feet across the bar (so satisfying!). This maneuver will also dovetail with the feat we plan to take next level and will be part of even bigger push combos when we get extra attack. Combining pushing attack with our quarterstaff-topple could also be a good way to slow an enemy down in the event that we can't grapple them. Ok, so that's the case for taking these three maneuvers. 
+
+Some honorable mentions for battlemaster maneuvers include: commanding presence (which lets us add our SD to CHA checks -- we already have good CHA and some social skill proficiencies), rally (which let's us give an ally SD+CHA THP as a BA -- we already have healing word), and riposte (which let's us make an attack as a reaction when an enemy misses us with a melee attack -- we already have inspiring movement). In the end, pick your favorites, but I think the ones I selected above give us the best overall control options. 
+
+
+Level-13: Monk-1, Bard-8 (Dance), Fighter-4 (Battle Master)
+ - proficiency bonus (PB): +5 
+ - second wind (3 uses; regain 1 on SR, all on LR)
+   * BA heal 1d10 + fighter level
+   * tactical mind = +1d10 to ability check on fail; not expended if you still fail
+ - weapon masteries: greatclub (push), quarterstaff (topple), spear (sap), longbow (slow) 
+ - feat: charger 
+   * DEX = 18 
+   * improved dash = speed increased 10ft when you take the dash action
+   * charge attack = if you move 10ft in a straight line, then hit with an attack
+                     as part of the attack action on your turn, you can either
+                     (i) add 1d8 to the attack's damage roll or (ii) push the target
+                     10ft provided it's no more than 1 size larger than you
+ - unarmored defense: AC = 10+4(DEX)+3(CHA) = 17
+ 
+NOTE: Ok cool, level-13, and we go fighter-4. This is one of my favorite levels for this build. At fighter-4 we get an ASI/feat and we choose the charger feat. Charger is a half feat, so we can bump our DEX to 18, giving us a +4. We also get an increase to our proficiency bonus at level 13, so this means our chances to hit, damage, and all our key maneuver/grapple DCs get a nice bump. Boosting our DEX also boosts our unarmored AC up to 17, which is lovely. Charger also does two other things for us. First it gives us an improved dash, so when we take the dash action we get an extra 10ft of movement for that action. This is not only generally useful, but I would also rule that it applies to the bonus action dashes we take when we use our lunging attack battlemaster maneuver. So now, when we do a lunging attack we have 80ft of movement (35 speed, 45 speed on dash) and 100 if we have longstrider up. Especially if we are concentrating on kinetic jaunt (which would add another 20ft), then this should be enough to dance across the whole battlefield and get to whatever target we want. Next, charger also gives us a special `charge attack' ability. The charge attack says that if we move more than 10ft in a straight line before hitting an enemy with an attack as part of the attack action on our turn, then we can either add an extra d8 in damage to the attack, or we can push the target 10ft. Both of these options are nice for us, and with our high speed and mobility, we should be able to set up charge attacks quite easily. If we're going for full damage and we have FoM up, then we can do 4d8 + 4d6 + 8 = 40 damage  with our basic round of attacks (not too shabby). And if we're going for the biggest push, we can use our greatclub, pushing attack, and charge attack to push an enemy 35ft. Hehe, super sweet. Have fun with that one. Overall I think this is a great feat for our character. Between tavern brawler, grappler, and charger -- we have developed this kick-ass identity as a fighter, and have so many great ways to control the battlefield with martial prowess, while still being able to provide great support to our allies with spells and abilities, and contribute positively to out-of-combat stealth/infiltration and social interactions. 
+
+Beyond the charger feat, at fighter-4 we also get an additional weapon mastery (4 total) and another use of our second wind feature per day. The second wind is great, more healing and ability check bonuses for us. For the additional weapon mastery, I would take the spear. It's another versatile, stick-like / polearm-ish weapon that fits with our overall weapon aesthetic. It also has the sap property, which can be situationally good if we want to impose disadvantage on an enemy and don't have another way to do it (invisibility, prone, blind, etc.). Spears can also be thrown, which could be nice in some situations. Probably also good to have one non-bludgeoning weapon to use in melee in case you fight an enemy that is resistant. Honestly, there aren't a ton of other good options that are monk weapons or provide some utility we don't already have access to. So, yeah, I think spears are the best fit. Ok that's all for level 13. Moving on! 
+
+
+
+Level-14: Monk-1, Bard-8 (Dance), Fighter-5 (Battle Master)
+ - extra attack
+ - tactical shift = move half your speed w/o provoking opporunity attacks 
+                    when you use second-wind as a BA
+
+NOTE: Alright, level-14 and we go fighter-5. This is kind of a capstone level for this character, mostly because we get extra attack, which is just so huge for us. From a base damage standpoint, with extra attack in hand, we are able to do 3 attacks on our turn and 4 per round (if we use our reaction to attack with inspiring movement, which we can reliably). This is on par or better than most straight martial classes (fighters, monks, barbarians). But really, as has always been the case for this character, the control features are what we really excel at. More specifically, for the past 4 levels, we've had to choose between making an unarmed strike (and grappling/shoving) or attacking with a weapon (and pushing/toppling) with our attack action. Now we can do both. This is great for us because, due to our feats an class/subclass features, we have built in control options on both our unarmed-strikes and weapon attacks, which we can now stack. There are really too many combinations to go into, but below are a few that jump out. In addition to extra attack, we also get the new 2024 tactical shift fighter feature. This lets us move up to half our speed when we use our BA to heal with second-wind. This means we now have misty-step, lunging attack, and tactical shift as options to move with our BA. And, of course, we have a reliable way to move with our reaction, too (inspiring movement). So we should be able to position ourselves wherever we need to be. Ok, well with extra attack in hand, we should be able to be a true menace around the battlefield and should have good control options for most situations. It really feels like, at this level, we've perfected our novel style of dance fighting. On to level-15! 
+
+"big push" 
+ - movement (10ft) + attack(1):greatclub(charging-attack, push, pushing-attack) + 
+   BA:dash(lunging-attack) + attack(2):unarmed-strike(shove, lunging attack)
+ - with this move, we set up a 35ft push with our greatclub, then use lunging attacck 
+   to get a BA-dash and follow up with another unarmed strike + push, getting us to 40ft 
+   of forced movement total. 
+ - note, you could also action surge after this to get another greatclub pushing attack 
+   for an additional 25ft push (65ft total) [charger feat = only 1x per turn]. 
+
+"disarm + grapple"
+ - movement (10ft) + attack(1):unarmed-strike(grapple, lunging attack) + 
+   attack(2):quarterstaff(topple, disarming strike) + BA:dash(lunging attack) + movement
+ - attack(1):unarmed-strike(grapple) + attack(2):quarterstaff(topple, disarming strike) +
+   BA:second-wind(tactical-shift) + movement
+ - in this combo, we grapple our enemy, disarm them, knock them prone, then drag them 2x our 
+   movement away from their weapon. 
+ - in the second variant, we only drag them 1.5 times our movement from the weapon, but we 
+   also also healing ourselves for 1d10+5.
+ - note if you really felt confident, you could use could cast cloud of daggers, then action-surge 
+   and use this combo and have the enemy end the turn grappled, prone, and disarmed in the CoD. 
+
+"disarm + push" 
+ - BA:unarmed-strike + 
+   attack(1):unarmed-strike(shove, disarming strike) + movement(back up 5ft) + 
+   attack(2):greatclub(charging-attack, push, pushing-attack)
+ - with this combo you first disarm a target and disengage from them with shove, 
+   then set up a charging push attack to knock them far away from their weapon
+ - good alternative to `disarm + grapple' if you can't grapple, or if you don't 
+   want to leave the area
+ 
+"goad + disengage"
+ - BA:unarmed-strike + attack(1):spear(sap, goading attack) + 
+   attack(2):unarmed-strike(shove) + movement 
+ - BA:unarmed-strike + attack(1):unarmed-strike(goading attack) + 
+   attack(2):greatclub(push, pushing attack) + movement
+ - attack(1):unarmed-strike(goading attack) + attack(2):spear(sap, pushing-attack) + 
+   BA:misty-step + movement
+ - with this combo we kite in, impose disadvantage on attacks against any of our allies,
+   then disengage and move away
+ - the first and third variants also impose disadvantage on the next attack against us (sap), 
+   and the second and third variants would work on an enemy with a 10+ft attack range. 
+
+"nova moon 1-2 punch" 
+ - magic-action:fount-of-moonlight + action-surge + 
+   BA:dash(lunging-attack) + movement + 
+   attack(1):unarmed-strike(lunging-attack, charging-attack) + 
+   attack(2):unarmed-strike(shove, pushing-attack)  
+ - this one is mostly just for flavor, Start glowing then run 80ft and hit a 
+   target for 3d8+2d6+4 (24.5) damage with the first punch, then follow it up 
+   with another 2d8+2d6+4 (20) damage and push 20ft. 
+
+
+
+Level-15: Monk-1, Bard-8 (Dance), Fighter-6 (Battle Master)
+ - ASI: DEX=20
+ - unarmored defense: AC = 10+5(DEX)+3(CHA) = 18
+ 
+NOTE: Alright, level-15 and we are going fighter-6. We *finally* get to cap our DEX with an ASI. This is pretty essential for us, since it improves our attack, damage, and save DC for all our important things (now all saves we impose will be DC-18), and bumps our AC up another point (to 18). But yeah, in terms of playstyle, nothing different here. 
+
+
+
+Level-16: Monk-1, Bard-9 (Dance), Fighter-6 (Battle Master)
+ - expertise 
+ - skill proficiencies (* indicates expertise): 
+   * monk (2): stealth*, athletics*   
+   * elf (1): perception 
+   * traveling performer (2): acrobatics, performance
+   * bard (1): deception*
+   * battle master (1): persuasion*
+   * languages (3): common, elvish, sylvan
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (3): friends, blade-ward, message 
+ - spell slots: 4-3-3-3-1
+ - spells prepared: 14 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-1 (fey-touched): hex (free x1/day)
+   * lvl-2 (wood-elf): pass without trace (free x1/day)
+   * lvl-2 (bard): kinetic-jaunt, mirror-image, cloud of daggers   
+   * lvl-2 (fey-touched): misty step (free x1/day)
+   * lvl-3 (bard): catnap, fast-friends 
+   * lvl-4 (bard): fount of moonlight, greater invisibility, freedom of movement
+   * lvl-5 (bard): yolande's regal presence, mislead
+
+NOTE: Ok so at level-16, I'm gonna say we go back to taking bard levels and go bard-9. It's not an easy choice, since continuing with fighter would get us another ASI in just a few levels, which we really want to bump or CHA. But there just isn't a lot else we really want from fighter, and we're on the cusp of getting some really powerful things from bard. So, bard it is. Narratively, I would say that now that we've `perfected' the martial aspect of our dance-fighting style, we're going to turn back to the magical artisitic essence that has always sustained our character. I think this could still be viewed as part of a natural character progression. We've become more disciplined, and mastered the physical art of our dance, making it a deadly form of combat. Now, with a refined and much-matured spirit, we reengage with the foundational magic essence of the multiverse to augment our deadly dance even more. A beautiful dance of life and death, which bolsters and inspires our allies, and wreaks chaos and destruction among our enemies. 
+
+Ok so, mechanically, at bard-9, we get another round of expertise. I took stealth and persuasion for their out of combat utility, but pick your favorites. We also get a 5th level spell slot, and get to learn two new bard spells. For these I picked (i) mislead and (ii) yolande's regal presence (YRP), which is a new spell added to the 2024 PHB. In terms of rationale, I think mislead dovetails nicely with our newfound expertise in stealth, as well as with our trickster identity and deceptive nature. Mechanically, mislead lets you create an illusory double of yourself that you can see/hear through while you yourself become invisible. Critically, there is no range restriction on the duplicate. It doesn't even say you need to be on the same plane of existence. So you can really send it anywhere. Practically, this gives us the ability to basically send ourselves to scout out a risky situation without actually being there, or to be in two places at once. Obviously, it also has some great uses as a form of deception to help with infiltration and/or misdirection. All of this can be very handy, especially at high level. Looking at the other options available to bards at this level, I feel like it is the best. Plus we haven't augmented our out-of-combat spellcasting since we took fast-friends forever ago. 
+
+But I think the other spell -- Yolande's Regal Presence (YRP) -- is an even more exciting. So what does this spell do? Well, it's a 5th-level concentration spell that lasts up to 1m. While we're concentrating on it, we surround ourself with `unearthly majesty' in a 10ft emanation around us. Whenever the emanation enters the space of a creature we can see and whenever a creature you can see enters the emanation or ends its turn there, you can force that creature to make a WIS saving throw. On a failed save, the target takes 4d6 psychic damage and has the prone condition and you can push it up to 10ft away. On a successful save, the target takes half as much damage only. Target creatures can only be affected by the spell once per turn. Ok so why is this spell so good for us. First off, there is nothing in the spell about the size of the affected target. So this gives us a way to push and prone creatures of any size. Second, while we're concentrating on YRP, we have *four* different ways that we can impose control effects on enemies: (i) our unarmed strikes (grapple, shove), (ii) via our weapon masteries (push, sap, topple), (iii) via our battlemaster maneuvers (push, disarm, goad) and, now (iv) via YRP. This leads to some truly nutty combinations. For example, with YRP active we can do the `big push' combo above and push an enemy up to *50ft* on our turn, and *75ft* if we use our action surge. With YRP, we can also do our `disarm + grapple' combo without using any weapons, which improves our damage (and will even more next level). It also just adds consistent (if minor) damage to any creature we have grappled. Or note that with YRP, we can move a grappled creature over to a hazard and simply push them into it without having to use any attacks or resources. The third, and perhaps main reason why we love YRP is because we can tag multiple enemies with it on our turn with our speed and mobility, and then tag them with it again when we move on our reaction with inspiring movement. It won't do as much pure damage as fount of moonlight, but in terms of control spells for a martial character like ours, it's pretty tops. Fourth, the spell acts as a pseudo defensive option -- kind of like sanctuary. If a creature without reach wants to attack you, they have to enter the emanation, and if they fail the save they can be pushed 10ft back and knocked prone. Depending on how much movement they have, this might leave them unable to get up and attack us again with their remaining movement. Finally, it is just so damn thematic and cool, flavor-wise for our dance-fighting batte master bard. It seems to really capture the spirit of `beautiful deadly dance' that we've been building towards all along. So I love taking this spell here. 
+
+As an aside - I think it's worth a short note here on why we didn't take this level/these spell earlier in our career. Mostly it's about developing a consistent identity and then being able to fill a combat role reliably. If we had gone bard-9 at level-10, then we'd have only been able to cast YRP/mislead one time per long rest, and without it, we'd be stuck with only the shove/grapple options on our singular unarmed strike. Plus we would lack the additional mobility that we get from fighter features like tactical shift and lunging attack. So YRP would have been harder to use. Finally, if we took YRP at level-10, we would be such a long ways from improving the spell save DC. When we take it here at level-16, sure the DC isn't great (DC-16), but it's not bad, and it's also going to improve next level with our proficiency bonus and then again at level-19 when we bump our CHA. So it will feel like it's becoming more reliable while we're using it. I think that will be a more satisfying gameplay experience than having a one-time use spell that doesn't often work well for a long time while we're leveling up in fighter, even if it would potentially allow us to do crazy combos earlier in our career. So that's the thinking there. 
+
+Ok, on to level-17 
+
+
+
+Level-17: Monk-1, Bard-10 (Dance), Fighter-6 (Battle Master) 
+ - proficiency bonus (PB): +6
+ - magical secrets 
+ - bardic inspiration: 3d10 
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (4): friends, blade-ward, message, prestidigitation 
+ - spell slots: 4-3-3-3-2
+ - spells prepared: 15 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-1 (fey-touched): hex (free x1/day)
+   * lvl-2 (wood-elf): pass without trace (free x1/day)
+   * lvl-2 (bard): mirror-image, cloud of daggers   
+   * lvl-2 (fey-touched): misty step (free x1/day)
+   * lvl-3 (bard): catnap, fast-friends, ashardalon's stride, blink  
+   * lvl-4 (bard): fount of moonlight, greater invisibility, freedom of movement
+   * lvl-5 (bard): yolande's regal presence, mislead
+
+NOTE: At level-17 we go bard-10. We get a few nice things here. First, we get a proficiency bonus increase. Sweet. Second, our bardic inspiration die increases to a d10. Since we use our BI die for all our unarmed strikes, this means we get a nice boost to our damage. So do all our other bard abilities (inspired movement, tandem footwork, inspiration). Awesome. Third, we get another bard cantrip. I chose prestidigitation for fun and flavor. But if you want something more practical, maybe go with mage hand. Or maybe take the new starry wisp cantrip to give yourself another ranged option? It's level-17, so there isn't a cantrip that's going to change the game for us at this poing. Pick your favorites. Finally, we also get the level-10 bard base-class feature magical secrets, which lets us choose from the wizard, druid, or cleric spell list whenever we add to our list of prepared spells from now on. Super cool. This spell selection versatility is obviously part of the core identity of bards as spellcasters. We're getting to it super late, but hey, we're happy to be here. 
+
+In terms of the spell we select, I'm actually going to say we should go for the level-3 wizard spell from fizban's -- ashardalon's stride. `Whaat?' you ask. We'll let's take a look at what ashardalon's stride does. Ok so it's a 3rd-level spell. It's a bonus action to cast, and requires concentration (for up to 1m). While we're concentrating on it, billowing flames wreath our feet granting us explosive speed. For the duration, our speed increases by 20ft, plus another 5ft per spell level above 3rd, our movement doesn't provoke opportunity attacks, and whenever we move within 5ft of a creature or object that isn't being worn or carried, it takes 1d6 fire damage (plus another 1d6 for each level above 3rd). Basically, the mechanics of the spell are very similar to yolande's regal presence, except rather than zooming around knocking people prone and pushing them -- we get extra movement speed and zoom around and do fire damage. Now, similar to YRP, the damage from this spell won't be great. Even if we upcast it with our 5th level spell slot, it will still only do 3d6 damage (less than YRP). But the damage from this spell is unconditional, meaning there's no way to save against it. And casting it at level 5 would increase our base movement speed by 30ft (so up to 65, or 75 if we had longstrider up). That's huge. With our charger feat, we could have up to 85ft of movement with our dash. Basically, this spell as an unconditional improvement over kinetic-jaunt, which has lost a bit of it's appeal as we've leveled up. Ashardalon's stride gives us more movement than kinetic jaunt, also makes it so we don't provoke AoOs, and does damage. 
+
+And by making kinetic-jaunt redundant, I think getting ashardalon's stride frees us up to substitute it for another spell. My choice is blink. And this is definitely one of those situations where I'm choosing something as much because it fits with the character's identity/aesthetic as because it's the most powerful option. Let's start with the positives. First and foremost, blink is non-concentration. This means we can cast it in combination with all our other juicy concentration spells -- blink + ashardalon's stride? Sure. Blink + fount of moonlight? Yes. Blink + mirror image + greater invisibility? Oh yeah, we can do that too. This last one is just such a crazy set of defensive buffs to have on a melee character that's capable of dealing damage with weapons/unarmed strikes and can disengage with shoves/pushes/pushing attacks. In addition, probably the best feature of blink is that it will help prevent us from taking damage and knocking out our big concentration spells. We only have a +2 CON and we don't have proficiency in CON saves, so this is a big vulnerability for us. That said, while we're on the Ethereal plane, we can't affect creatures on whatever plane we blinked out of, so this won't be a good option if we're trying to keep someone grappled, or surf around and hit people with yolande's regal presence/ashardalon's stride on our reaction. I also like taking a 3rd level spell for balance here. In terms of prepared spells by level, we will now have: 6-4-4-3-2 spells prepared (including bound spells). And with blink we have good defensive options across spell levels (cantrip: blade-ward, lvl-1: cure-wounds/healing word, lvl-2: mirror image, lvl-3: blink, lvl-4: greater invisibility). So that's pretty nice. Finally, blink is thematically consistent with our characters style and identity. For the most part we are a `corporeal' caster -- meaning that the majority of our abilities emanate from us, or enhance our inherent physical state or how we appear to others. The only real exceptions to this are our healing spells, hex, and cloud of daggers (and the latter two lean into a fey theme that we have going). Blink joins other spells in our arsenal like pass without trace, mirror image, misty step, greater invisibility, and mislead that involve obfuscating/obscuring our physical self. So I like blink a lot for this thematic consistency.
+
+But there are clearly more powerful options that we could take here. One of the main opportunity costs of getting blink here is that we could have opted for a mobility option that would give us a fly speed -- ex. the fly spell (or even spider climb). While I think these would both be good picks, we've spent our entire career with our two-feet planted firmly on the ground so hopefully our party has developed ways to deal with flying enemies by now, or we have magic items that can help shore us up in that department. Plus both of those spells are concentration and we would struggle to maintain them in melee. We could also have taken the broken `conjure minor elementals' spell to use instead of fount of moonlight. This would give us a bunch more damage in melee. But, despite being a wood elf and having a few fey-themed abilities, I don't think of our character as an elementalist or summoner. Fount of moonlight and Yolande's Regal Presence also form a thematic pair that feels coherent. Conjure minor elementals would be going in a bit of a different direction. Shield, mass cure wounds, mass healing word, greater restoration, spike growth, fire shield, counterspell, dispel magic, revivify, teleportation circle. All of these would potentially more useful to us/the party as a whole than blink. But like I said, I'm choosing something that seems strong but also something that feels right for the character here. Not just what would be mechanically the most powerful option. That's just how I prefer to have my characters built. Do something different if you prefer. 
+
+
+
+Level-18: Monk-1, Bard-11 (Dance), Fighter-6 (Battle Master) 
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (4): friends, blade-ward, message, prestidigitation 
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: 16 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-1 (fey-touched): hex (free x1/day)
+   * lvl-2 (wood-elf): pass without trace (free x1/day)
+   * lvl-2 (bard): mirror-image, spike growth   
+   * lvl-2 (fey-touched): misty step (free x1/day)
+   * lvl-3 (bard): catnap, fast-friends, ashardalon's stride, blink
+   * lvl-4 (bard): fount of moonlight, greater invisibility, freedom of movement
+   * lvl-5 (bard): yolande's regal presence, mislead 
+   * lvl-6 (bard): blade barrier
+   
+NOTE: Alright, so at level-18, we go bard-11, and we get another prepared spell, a 6th level spell slot, and we get access to 6th level spells. For our new spell, we take the 6th level cleric spell blade barrier. Blade barrier is basically a suped-up version of our cloud of daggers spell. Instead of a puny 5ft cube of whirling fey-magic blades, now we can summon a straight wall up to 100ft long and 20ft high, or a ringed wall 60ft in diameter of the things. It's still concentration, but now it can last up to 10m, instead of only 1m. The wall also provides us with 3/4 cover when we're behind it (so a +5 to AC and DEX saves). And similar to cloud of daggers, the wall does damage to creatures when they enter it for the first time on their turn or end their turn there. This means we can use it with our grapple combo in the same way that we used CoD previously (i.e. grapple someone and hold them in the wall). Also, since it's so much bigger, we can also use our all of our pushing abilities to slam enemies into/through it, making them take damage. Unfortunately, at 6d10 (33) slashing, the blade barrier doesn't do great damage, and enemies do get to make a DEX save to take half. For comparison, a level 6 cloud of daggers does 12d4 (30) damage and there's no save. But obviously we're getting a bunch of AOE and additional control/defensive utility from blade barrier. We also use the opportunity presented by gaining a level to switch out one of our old spells for a new one from a different spell list. In particular, we're going to switch out cloud of daggers for the spike growth spell. There are a couple of reasons for this. First, the two spells are thematically similar. We can think of the spike growth we create as being comprised of the same kind of dark fey-energy spikes that we used to have swirling about in our cloud of daggers. So this consistency is nice. Second, they're both second-level spells. So we retain balance across spell levels. The main advantage of spike growth over cloud of daggers is that it's much more effective in AOE, and we can get much more damage out of it while not having to upcast. So, as a quick recap, the spke growth spell transforms a 20ft radius area centered on a point you choose into difficult terrain covered by spikes/thorns (or, in our case, sharp fey-energy daggers). When creatures move through the area, they take 2d4 piercing damage for each 5ft they travel with no save. The difficult terrain is nice on it's own as a control option. But it's also important to note that forced movement isn't reduce by difficult terrain. This means that we can do our `big push' combo and push a creature all the way across the spke growth area (40ft), causing them to take 16d4 (40) damage. Similarly, we could take a grappled creature, and surf around the perimeter of the spike growth, dragging them through it. With longstrider up and a bonus action dash (if we make a lunging attack, for example) we could drag a grappled target 100ft though the spike growth (remember, we don't suffer movement penalties from dragging creatures with fast-wrestler from the grappler feat). This would deal a whopping 40d4 (100) damage in addition to what we do with our attacks! Personally, I don't really love this kind of `cheese grater' build in general. But this is level 18, so we're happy to have some kind of broken damage options at this stage of the late game. Plus, it's not coming out of nowhere. We had cloud of daggers for our whole career and we're doing something similar with the grapple + hold in CoD combo. This is just an improved version of it. So I don't mind benefitting from this exploit when it emerges from the way we've already built the character. Ok so that's it for level-18. Onward. 
+
+
+
+Level-19: Monk-1, Bard-12 (Dance), Fighter-6 (Battle Master) 
+ - ASI: CHA =18
+ - unarmored defense: AC = 10+5(DEX)+4(CHA) = 19
+ - bardic inspiration: 4d10
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (4): friends, blade-ward, message, prestidigitation 
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: 16 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-1 (fey-touched): hex (free x1/day)
+   * lvl-2 (wood-elf): pass without trace (free x1/day)
+   * lvl-2 (bard): mirror-image, spike growth   
+   * lvl-2 (fey-touched): misty step (free x1/day)
+   * lvl-3 (bard): catnap, ashardalon's stride, blink
+   * lvl-4 (bard): fount of moonlight, greater invisibility, freedom of movement
+   * lvl-5 (bard): yolande's regal presence, mislead, steel wind strike
+   * lvl-6 (bard): blade barrier
+
+NOTE: Alright, we are level-19 and we go bard-12. We get an ASI/feat and we're *finally* going to bump our CHA (our CHA mod increase was at level 5, haha). Of course, this increases the DC for our bard spells up to DC-18. Given this, even though we don't get any more prepared spells at this level (bummer), we are going to switch out one of our old spells. More specifically, we're going to switch out fast-friends as a 3rd level spell for steel wind strike as a 5th level spell. I actually don't love giving up fast friends, but we do have expertise in deception and persuasion and we still have charm person, so I suppose it's alright. At this point, we're maybe leaning more into our combat prowess a bit more anyway. And steel wind strike is a great spell that we can feel much better about using now that our spell attack modifier is a little higher. Specifically, steel wind strike lets you brandish a weapon (our greatclub or quarterstaff would suffice) then disappear and make shadow-clone like attacks against up to 5 enemies in range (30ft). Each target we hit with a melee spell attack takes 6d10 force damage, and then we can teleport to within 5ft of an enemy we attacked. Very nice instantaneous AOE spell. Doesn't require concentration so we can do this and still keep up whatever mobility/control/damage spell we're concentrating on. Super thematic for our illusory/dance-fighter type character. It didn't really seem worth it when we were stuck on 16 CHA, but now that we have a +4, I think it is a great option. 
+
+Improtantly, improving our CHA also increases our unarmored AC to 19 (love it) and gives us more bardic inspiration. Now we have 4d10s to use per short rest (or catnap). This is, of course, quite useful. We we're probably doing ok before with catnap and font of inspiration in terms uses of bardic inspiration per day. But increasing our CHA to 18 here means -- assuming we get a 1-2 short rests and cast catnap per day -- that we will have anywhere from 12-16 uses of our bardic inspiration per day. So assuming a standard 3 encounters per adventuring day, we would be able to use all 4 of our inspiration die in each encounter. Great. Ok, that's it for level-19. On to the final stop! 
+
+
+
+Level-20: Monk-1, Bard-13 (Dance), Fighter-6 (Battle Master) 
+ - cantrips: 
+   * wood elf (1): druidcraft
+   * bard (4): friends, blade-ward, message, prestidigitation 
+ - spell slots: 4-3-3-3-2-1-1
+ - spells prepared: 17 (bard)
+   * lvl-1 (wood elf): longstrider (free x1/day) 
+   * lvl-1 (bard): cure wounds, healing word, silvery barbs, charm-person
+   * lvl-1 (fey-touched): hex (free x1/day)
+   * lvl-2 (wood-elf): pass without trace (free x1/day)
+   * lvl-2 (bard): mirror-image, spike growth   
+   * lvl-2 (fey-touched): misty step (free x1/day)
+   * lvl-3 (bard): catnap, ashardalon's stride, blink
+   * lvl-4 (bard): fount of moonlight, greater invisibility, freedom of movement
+   * lvl-5 (bard): yolande's regal presence, mislead, steel wind strike
+   * lvl-6 (bard): blade barrier
+   * lvl-7 (bard): simulacrum 
+
+NOTE: Finishing off with level-20, and I think we go bard-13. Nothing changes for us, except that we get to prepare 1 additional spell, and we get access to a 7th level spell slot. Obviously, there are a number of very powerful options that we could go with, but I'm going to say that we should take simulacrum. Now, simulacrum has been nerfed in the 2024 PHB -- most notably they made it so that your simulacrum can no longer take short or long rests. But..., I don't think this means that the simulacrum can't be targeted by the catnap spell. Ok so basically, what simulacrum does is give us a duplicate of ourselves -- or some other beast or creature, but I'm assuming we cast it on ourselves whenever we can -- that has half our hit points, but all of our same spells and abilities (minus the 7th level slot we used to cast it). The reason I like this spell is because it is the sort of spiritual evolution of mislead, which we already had in our kit. It also has very awesome uses in and out of combat. For combat use specifically, it essentially doubles our uses of all our key bardic inspiration and battlemaster maneuvers. And it means that if we bring our simulacrum with us in combat, we can have two very powerful battlefield controllers and melee strikers wreaking havoc. I mean, think of some of the combinations -- two creatures with YRP/ashardalon's stride and inspiring movement, two melee attackers with greater invisibility, mirror image, and blink up, two creatures capable of grappling and dragging. One of you can concentrate on spike growth while another can concentrate on YRP and zoom around and knock creatures into the spiked area. You can both cast mislead to create two illusory doubles for truly nutty out-of-combat deception shenanigans. It's level 20, so there's bound to be a lot of really crazy stuff happening. And there's just so many good uses of this spell, many of which are particularly strong given the nature of our character. Some alternative 7th-level magical serets options include that I think might be interesting/good include: divine word, regenerate, crown of stars, and teleport.
+
+Alright. So that's it, I think. Build complete. While maybe not the strongest character in terms of straight damage, I think this would be a fantastically fun character to play. We get a really nice blend of damage, control, and support/utility functionality all while inhabiting this very unique identity of martial-bard. In terms of progression, there's so much fun stuff you can do, really at every level, with new options coming online relatively consistently that should make you feel like your character is steadily becoming more powerful. Plus the powers/power synergies that you develop are all super coherent thematically and easy to tie to a compelling narrative arc. So I think this character would be a blast to RP.
+
+
+BUILD COMPLETE! 

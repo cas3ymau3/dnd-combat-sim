@@ -1,0 +1,572 @@
+Moniker: The Depth Guardian
+Classes: Warlock-06 (Primordial), Barbarian-14 (Ancestral Guardian) 
+Species: Goliath (Frost)   
+ - size: medium 
+ - speed: 35ft  
+ - giant ancestry, frost's chill (xPB/LR)): +1d6 cold + 10ft slow on hit/dmg w/attack roll
+ - large form (x1/LR, @lvl-05): BA to activate, 10m duration, increase size to Large, +10ft speed, adv on STR checks
+ - powerful build: adv. on checks to end grappled condition; count as 1 size larger for carrying capacity 
+Sex: Female 
+Background: Noble 
+ - source: 2024 PHB
+ - ability scores: STR, INT, CHA
+ - feat: skilled 
+ - skills: history, persuasion 
+ - tools: gaming set (playing cards)  
+ - languages: common, giant, primordial (aquan) 
+ - equipment (gold-buy): 50 gp
+Point-Buy Stats 
+ - STR = 15 (+2) = 17 
+ - DEX = 14 
+ - CON = 12 
+ - INT = 08 
+ - WIS = 08 
+ - CHA = 14 (+1) = 15
+ASI's/Feats: 
+ - lvl-00: skilled (athletics, insight, stealth) 
+ - lvl-03: tough, alert (via lessons of the first ones) 
+ - lvl-06: slasher: +1 STR (STR=18)
+ - lvl-09: cold caster: +1 CHA (CHA=16) 
+ - lvl-10: lucky (via lessons of the first ones) 
+ - lvl-14: ASI: +2 STR (STR=20) 
+ - lvl-18: ASI: +2 CHA (CHA=18)  
+Progression Summary: 
+ - lvl-01: warlock-01 -----------------------------------------> WIS/CHA save + deception/intimidation proficiency, armor of shadows, pact magic (armor of agathys)
+ - lvl-02: warlock-01, barbarian-01 ---------------------------> martial weapon/shield proficiency, weapon masteries(2), rage (2, +2) 
+ - lvl-03: warlock-02, barbarian-01 ---------------------------> magical cunning, lessons of the first ones (x2): tough, alert
+ - lvl-04: warlock-02, barbarian-02 ---------------------------> danger sense, reckless attack
+ - lvl-05: warlock-02, barbarian-03 (ancestral) ---------------> primal knowledge, spiritual protectors, rage (3, +2), large form
+ - lvl-06: warlock-02, barbarian-04 (ancestral) ---------------> slasher: +1 STR (STR=18), weapon masteries (3)
+ - lvl-07: warlock-02, barbarian-05 (ancestral) ---------------> extra attack, fast movement 
+ - lvl-08: warlock-03 (primordial), barbarian-05 (ancestral) --> elemental node (1d6), elemental spells (darkvision, alter self, ice knife)  
+ - lvl-09: warlock-04 (primordial), barbarian-05 (ancestral) --> cold caster: +1 CHA (CHA=16) 
+ - lvl-10: warlock-05 (primordial), barbarian-05 (ancestral) --> gift of the depths, lessons of the first ones: lucky 
+ - lvl-11: warlock-06 (primordial), barbarian-05 (ancestral) --> elemental haven, elemental spells (water walk), elemental node (2d6)
+ - lvl-12: warlock-06 (primordial), barbarian-06 (ancestral) --> spirit shield 
+ - lvl-13: warlock-06 (primordial), barbarian-07 (ancestral) --> feral instinct, instinctive pounce 
+ - lvl-14: warlock-06 (primordial), barbarian-08 (ancestral) --> ASI: +2 STR (STR=20) 
+ - lvl-15: warlock-06 (primordial), barbarian-09 (ancestral) --> brutal strike (hamstring blow), rage (4, +3)
+ - lvl-16: warlock-06 (primordial), barbarian-10 (ancestral) --> consult the spirits (augury/clairvoyance), weapon masteries (4) 
+ - lvl-17: warlock-06 (primordial), barbarian-11 (ancestral) --> relentless rage 
+ - lvl-18: warlock-06 (primordial), barbarian-12 (ancestral) --> ASI: +2 CHA (CHA=18), rage (5, +3) 
+ - lvl-19: warlock-06 (primordial), barbarian-13 (ancestral) --> improved brutal strike (staggering blow)
+ - lvl-20: warlock-06 (primordial), barbarian-14 (ancestral) --> vengeful spirits 
+Spellcasting Summary: 
+ - NOTE: all slots are pact magic slots (recover on short rest) 
+ - lvl-01: slots = 1; prepared: 2; max level: 1
+ - lvl-02: slots = 1; prepared: 2; max level: 1
+ - lvl-03: slots = 2; prepared: 3; max level: 1
+ - lvl-04: slots = 2; prepared: 3; max level: 1
+ - lvl-05: slots = 2; prepared: 3; max level: 1
+ - lvl-06: slots = 2; prepared: 3; max level: 1
+ - lvl-07: slots = 2; prepared: 3; max level: 1
+ - lvl-08: slots = 0-2; prepared: 4; max level: 2
+ - lvl-09: slots = 0-2; prepared: 5; max level: 2
+ - lvl-10: slots = 0-2; prepared: 6; max level: 2
+ - lvl-11: slots = 0-0-2; prepared: 7; max level: 3
+ - lvl-12: slots = 0-0-2; prepared: 7; max level: 3
+ - lvl-13: slots = 0-0-2; prepared: 7; max level: 3
+ - lvl-14: slots = 0-0-2; prepared: 7; max level: 3
+ - lvl-15: slots = 0-0-2; prepared: 7; max level: 3
+ - lvl-16: slots = 0-0-2; prepared: 7; max level: 3
+ - lvl-17: slots = 0-0-2; prepared: 7; max level: 3
+ - lvl-18: slots = 0-0-2; prepared: 7; max level: 3
+ - lvl-19: slots = 0-0-2; prepared: 7; max level: 3
+ - lvl-20: slots = 0-0-2; prepared: 7; max level: 3
+
+MECHANICAL CONCEPT NOTES
+ - Primordial warlock signature feature (elemental node) gives you a way to use pact magic slots while raging for extra damage
+ - Core concept is to use weapon mastery (topple), feats (slasher, cold caster), and species/class features (frost's chill, brutal strike) to slow 
+   enemies, trapping them in/near elemental node and keeping them aggro'd on us 
+ - Ancestral barbarian gives you spiritual protectors feature, enabling extra cold damage on weapon attacks; combine this with the cold-caster feat, 
+   which reduces subsequent saving throws when you deal cold damage --> more reliable topples/elemental node damage 
+ - Stack multiple sources of movement speed reduction: use battleaxe (slashing, topple), slasher feat, frost's chill, hamstring blow. If everything procs, 
+   we'll be able to inflict prone and reduce movement speed by 35ft. For most creatures, this will immobilize them completely ("freeze" them)  
+ - While less effective against enemies who can teleport, the nice thing about movement speed reduction is that it's very generalizeable, and 
+   essentially never countered.  
+ - In general, use warlock invocations and warlock/elemental spells for defense and out-of-combat utility/support and use barbarian class/subclass
+   features for damage. 
+ - Go frost goliath to get additional slow, plus additional movement speed from large form; elemental spells gives us darkvision when we need it 
+ - At character creation, only go 12 points into CON since we won't depend on concentration, then get tough feat via lessons of the first ones. 
+   Between that and barbarian hit die, we should be quite tanky. 
+ - Start warlock-01 to get WIS/CHA save proficiency, relying on rage + high-STR for STR saves, and don't worry about CON saves since we aren't 
+   concentrating in combat; eventually get lucky via lessons of the first ones to further protect (mental) saves; use armor of shadows + shield for 
+   AC (at least until lvl-11 when we get elemental haven) since going warlock-01 means we lose out on medium armor proficiency
+ - Lvl-06 subclass features are primarily defensive, making us an effective tank and support. At barbarian-06, we get spirit shield, reducing damage 
+   taken by allies and at warlock-06, elemental haven gives us non-magical teleports and a large boost to our AC (+CHA)
+ - Starting in tier-03 all the way through tier-04, we go full barbarian to get additional support/mobility/damage features, including 
+   brutal strike (hamstring-blow) for more damage and slow. 
+ - B/c barb damage falls off at higher levels, in late game we are more of a tank/controller. But going full barb starting at lvl-12 gets us 
+   the vengeful spirits sublcass feature at lvl-20, which represents a very nice boost to damage. 
+ - As with many martial builds, you would probably need a magic weapon in order to stay top tier for damage through late game. Also worth noting 
+   that we will be pretty reliant on cold damage for this build, and will be significantly less effective against enemies with cold resistance/immunity 
+   (this too too common, however -- only ~ 19% of monsters in monster manual or cold resistant/immune). That said, we do have flexibility when 
+   it comes to the damage dealt by spiritual protectors. 
+ - Finally, also worth noting that this character would really shine in a campaign setting with significant interaction with aquatic environments 
+ 
+THEMATIC CONCEPT NOTES (TBD): 
+ - you're from a community located in a chain of harsh/semi-arctic isles with a strong legacy/history of influence by giants; 
+   initially community members are under the impression that this legacy is tied to frost and storm giants; through your character's 
+   journey, you learn that your homeland was in fact the last great stronghold of the sea giants  
+ - you birth/upbringing imparts you with some mystical connection to the sea; eventually you learn that your giant heritage comes 
+   from sea giants, rather than frost giants
+ - you were born under a special sign, perhaps even born of supernatural means -- securing you a place in the upper echelon's of 
+   the aristocracy in your community. 
+ - there is some unnerving mysterious power in your homeland related that gives it a strong connection to the inner planes -- 
+   a harsh and dangerous elemental energy suffuses the world, and indeed you 
+ - aesthetically, think of the harsh, gruff, rustic style of a Norwegian fishing village
+ - there is a war of elemental evil bubbling beneath the surface of the world; good and evil actors present in all dimensions of the 
+   elemental spectrum, but the controlling interests on the water plane are good-aligned. 
+ - you end up becoming a member of a force charged with perpetrating the war and pursuing the water plane's interests on the 
+   material plane. 
+ - as your connection to the elemental plane deepens, it awakens in you a connection to your sea giant ancestry, revealing that you  
+   are one of the last scions of the true sea giants (i.e., sea giants similar to fire giant dreadnoughts, cloud giant smiling ones, 
+   frost giant everlasting ones, storm giant quintessents, stone giant dreamwalkers, hill giant mouth of grolanthors, etc.) 
+ - you ancestors, the true sea giants, were part of some elite regiment of protectors, guarding some priceless source of the 
+   water plane's power, or some lost secret that would eventually let them win the `elemental war'
+ - Warlock Patron: Ishitia - neutral good god of water elementals; water as essence of dynamism, change, evolution & life. 
+   `Abyssal Sovereign' - analog of storm giant quintessant, etc.  
+ - pop culture influences: aquaman, water ashari from vox mochina, moana, 
+ - themes (TBD):   
+ - traits (TBD): 
+
+SYNERGISTIC MAGIC ITEMS (* indicates attunement required):
+ - [just a partial/potential list here]
+ - boots of the winterlands 
+ - bracers of defense 
+ - belt of frost giant strength 
+ - bowl of commanding water elementals 
+ - frostbrand 
+ - manual of bodily health, manual of gainful exercise 
+ - candle of the deep
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+#######
+Level-01: Warlock-01
+ - feat: skilled 
+   * gain proficiency in 3 skills: athletics, insight, stealth 
+ - saving throw proficiencies: WIS, CHA    
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * warlock (2): deception, intimidation     
+   * noble (2): history, persuasion   
+   * tools (1): gaming kit (playing cards)   
+   * languages (3): common, giant, primordial (aquan)    
+ - weapon/armor proficiencies:  
+   * weapons: simple weapons 
+   * armor: light armor   
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (noble) + 100gp (warlock)
+   * weapons: javelin x6 (3gp), whip (2gp), battleaxe (10gp) 
+   * armor: none
+   * tools: playing cards (0.5gp)
+   * foci: arcane.focus::crystal (10gp)
+   * gear: caltrops x5 (5gp), chain (5gp), chest (5gp), climber's kit (25gp), 
+           explorer's pack (10gp), fine clothes (15gp), flask (0.02gp), 
+           grappling hook (2gp), hunting trap x3 (15gp), iron spikes x5 (5gp), 
+           perfume x3 (15gp), pole (0.05gp), tent (2gp), traveler's clothes (2gp),  
+   * trinkets: scrap of cloth from an old banner (no. 41 on trinket table)  
+   * spare coin: 18.43gp 
+ - combat equipment:
+   * javelin = 1d6 piercing (slow); thrown (range: 30/120)
+   * armor: mage-armor
+   * AC: 10 + 3(mage-armor) + 2(DEX) = 15
+ - eldritch invocations (1) 
+   * armor of shadow = can cast mage armor w/o spell slot 
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, prestidigitation 
+ - spell slots: 1_{1} 
+ - spells prepared: 2 (warlock)
+   * lvl-1 (warlock): armor of agathys, detect magic (R) 
+ 
+NOTE: Okay, so we start out warlock-01. The main reason is so we can get WIS save proficiency. But since going warlock-01 does mean we sacrifice medium armor proficiency, use our eldritch invocation to take armor of shadows. This gives us AC-15 right now, which we can increase up to 17 next level when we get shield proficiency. That's fine for a (mostly) barbarian character. In terms of equipment, take gold-buy and get a bunch of useful stuff including a battleaxe that we will use as our main weapon starting next level. For now, we just use a javelin as our main weapon. Note that with high STR and because of our goliath powerful build feature, we should be able to carry a chest full of all our many belongings no problem. Ask your DM if you can fashion a chest into a backpack and use that to carry all your stuff. For pact magic, take friends and prestidigitation as cantrips (alternatively, take minor illusion if you prefer). Note friends will work pretty decently with our high-ish CHA. Then take armor of agathys and detect magic as warlock spells. Use your pact magic slots to cast armor of agathys to make up for our low starting HP. Flavor-wise, let mage armor appear as an ethereal/spectral surface of water washing over your skin/body and when you're hit, a splash/ripple effect takes the damage. And let armor of agathys' spike-growths appear like icy coral growths on the shoulders (pauldrons), forearms (bracers) and hands (gauntlets). Between our background/class we do have proficiency in all essential social skills (deception, intimidation, persuasion, insight). In combination with our decent CHA score, we can and should feel comfortable being a pseudo party face, which is rare for a barbarian. Overall, we definitely feel a little weak here at lvl-01, but it's fine. Things will be better starting next level. Base DPR = 1d6+STR = 6.5, plus a little extra from armor of agathys and frost's chill. Throw javelins at range and stay safe!  
+
+
+
+
+#######
+Level-02: Warlock-01, Barbarian-01
+ - weapon/armor proficiencies:  
+   * weapons: simple weapons, martial weapons  
+   * armor: light armor, shields    
+ - weapon masteries (2): battleaxes (topple), javelins (slow)
+ - combat equipment:
+   * battleaxe = 1d8 slashing (topple); versatile (1d10)
+   * armor: mage-armor + shield
+   * AC: 10 + 3(mage-armor) + 2(DEX) + 2(shield) = 17
+ - rage (2, +2) 
+   * resistance to B/P/S dmg 
+   * +2 dmg on hit w/STR-based attacks 
+   * adv on STR checks and saving throws 
+   * no concentration or spells 
+   * 10m duration; attack, force saving throw, or use BA to extend each round
+   * x2 uses per LR, recover 1 on SR
+ - unarmored defense
+   * when not wearing armor, base AC = 10 + 1(CON) + 2(DEX) = 13 
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, prestidigitation 
+ - spell slots: 1_{1} 
+ - spells prepared: 2 (warlock)
+   * lvl-1 (warlock): armor of agathys, detect magic (R) 
+ 
+NOTE: Lvl-02 and we go barbarian-01. We get martial weapon and shield proficiency. We get two weapon masteries, and take battleaxes (topple) and javelins (slow). We still rely on mage armor for our AC but add a shield to bring our AC to 17, which is great. In combination with the bonus durability we get from rage, we should now be a competent (though not invincible) melee front-liner. Especially since rage effectively doubles the THP that we get from armor of agathys, allowing us to get more damage out of it. Just be strategic about when you cast armor of agathys on yourself out of combat. Topple is excellent control when it applies, which at this level is most of the time. Upgrading to a martial weapon and rage makes a big difference for our base DPR, which increases to: 1d8+2(rage)+3(STR)+1(armor of agathys/frost's chill) = 10.5. Middle of B-class for tier-01. Great.  
+
+
+
+
+#######
+Level-03: Warlock-02, Barbarian-01
+ - eldritch invocations (3) 
+   * armor of shadow = can cast mage armor w/o spell slot 
+   * lessons of the first ones: tough = +2 x char-lvl HP, +2 HP whenever we gain a level 
+   * lessons of the first ones: alert = +PB to initiative; can swap initiative w/ally
+ - magical cunning 
+   * 1m rite to recover half pact magic spell slots
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, prestidigitation 
+ - spell slots: 2_{2} 
+ - spells prepared: 3 (warlock)
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), detect magic (R) 
+ 
+NOTE: Lvl-03 and we go warlock-02. This gets us 2 new eldritch invocations, magical cunning, another pact magic spell slot, and one new warlock spell preparation. For our invocations, we take lessons of the first ones twice to pick up both tough and alert. With tough, we now will have/gain HP as if we had CON=16, which is a sufficient baseline for a barbarian/front-liner. With alert, we now have a +4 to our initiative, which is good for this level, and we provide some passive support by allowing for initiative swaps with allies. Having alert will also stack with feral instinct when we eventually get it through taking barbarian levels. For our new spell preparation, we pick up comprehend languages. This is because it's a ritual, sparing our spell slots for casting armor of agathys. And as a pseudo-face/character with decent stealth, we can potentially make use of comprehend languages for diplomacy and recon. In general, it fits with our genteel/nobility background. Between gaining another pact magic slot and getting magical cunning, we can cast armor of agathys up to 5 times per day (assuming 1 SR), significantly increasing our tankiness (25 THP) and increasing our damage output. And note, since we only have 3 effective uses of rage per day (again, assuming 1 SR), we will actually be able to cast armor of agathys 5 times even with only 4 combats -- since in one combat we won't be raging and thus can use our BA to cast it again when the THP runs out. Nice. Other than that, no changes to damage. Assume using agathys more often contributes to a +1 to our overall DPR, then we're coming at ~11.5. Top of B-class. Good. 
+
+
+
+
+#######
+Level-04: Warlock-02, Barbarian-02
+ - danger sense
+   * advantage on DEX saves unless incapacitated
+ - reckless attack
+   * when you make first attack roll on turn, can decide to go reckless
+   * doing so grants you advantage on all STR-based attack rolls during your turn 
+   * in return, enemies have adv on attack rolls against you
+ 
+NOTE: Lvl-04 and we go back to barb. We get danger sense and reckless attack. The former is a nice defensive feature that helps us pretty significantly since we won't ever have a super high DEX score. The latter is a great offensive option, increasing our effective attack roll bonus to +9.5 when attacking at advantage, allowing us to hit much more reliably. Especially good to use if we want to make sure that we land a hit with frost's chill to slow an enemy down or try to topple them. Reckless attack also has some synergy with armor of agathys, since making ourselves easier to hit increases the likelihood that we actually maximize the damage potential of the spell. Cool. Ok so in terms of DPR, we get a nice boost from reckless attack, but otherwise no changes. Most likely still B-class for tier-01. 
+
+
+
+
+#######
+Level-05: Warlock-02, Barbarian-03 (Ancestral Guardian) 
+ - proficiency bonus (PB): +3 
+ - rage (3, +2) 
+ - primal knowledge
+   * while raging, you can use STR for acrobatics, intimidation, perception, stealth, survival checks 
+ - large form (x1/LR): 
+   * BA to activate, 10m duration 
+   * increase size to Large 
+   * +10ft speed 
+   * adv on STR checks 
+ - spiritual protectors (spectral waves)
+   * while rage is active, when you hit w/weapon or unarmed strike, can designate target as target of spirits 
+   * spirits can cause one of 3 effects: 
+   * (i) Distract: until start of next turn, target has Disadv on attack rolls against creatures other than you 
+   * (ii) Protect: until end of target's next turn, next time it hits a creature other than you w/attack roll, creature has resistance 
+   * (iii) Strike: target takes an extra 1d6 damage (acid, cold, fire, force, lightning, or thunder) 
+ 
+NOTE: Alright, big level here. Lvl-05 and we go barb-03 to get our subclass - path of the ancestral guardian. We also get a proficiency bonus increase, an additional use of rage, primal knowledge and we get access to the large form feature of our goliath species. The big thing here is our signature subclass feature: spiritual protectors. Thematically, I imagine these as `elemental protectors' manifesting in a spray of spectral/ethereal waves that dance around us, arc off our weapon attacks, and coalesce into sheets/spikes of ice in order to protect and deal damage. Think of this power as manifesting from an emergent connection to our sea-giant ancestry. Now, we get three options - distract, protect, and strike. At this stage in our career, we should feel free to use any. Distract creates a soft taunt against a target that is augmented by our use of reckless attacks (a target would have advantage against us, and disadvantage against all others). Protect grants damage reduction to allies. And strike gives us extra damage. FWIW, in a few levels we will be shifting to using the `strike' option almost exclusively, so it may feel more natural to just start doing that now. But then again, it's nice to have a bit of strategic decision making to do in an otherwise simple `hit things with axe' build. Note, we can stack the strike option with frost's chill (which we can now use x3 times per LR) to approximate a `smite' effect, dealing an additional 2d6 on hit. I imagine this as our weapon trailing spectral water that coalesces around our target just as we hit it, then freezes and explodes, sending ice shards into our enemy. Very cool. Distract + large form is also a decent option, as we can use our large size to block choke points, extend our effective reach, and draw attention away from our allies. The extra speed from large form also makes us more effective at getting into melee with key targets. Next up, getting another use of rage means that we now have effectively 4 uses of rage per LR, so we can use it in every one of our assumed 4 daily combats. Alternatively, we now have additional uses to spend on primal knowledge. Speaking of, primal knowledge is a nice out-of-combat utility feature -- giving us the option to expend uses of rage to help us succeed on key ability checks. In terms of DPR, we see gains from our proficiency bonus increase (increasing our chance to hit and uses of frost's chill) and, of course, from our persistent use of the strike option of spiritual protectors. Given conservative assumptions, our DPR probably levels out around 15-16, which is at the bottom of the barrel in D-class for tier-02. But it's early days, and we did see nice increases in defensive and out-of-combat utility. So that's good. 
+
+
+
+
+#######
+Level-06: Warlock-02, Barbarian-04 (Ancestral Guardian) 
+ - weapon masteries (3): battleaxes (topple), javelins (slow), whips (slow) 
+ - feat: slasher
+   * ASI: +1 STR (STR=18) 
+   * hamstring: x1/turn when you hit a creature w/an attack and deal slashing damage, reduce the creature's 
+     speed by 10ft until the start of your next turn 
+   * enhanced critical: when you score a critical hit on an attack that deals slashing damage, the creature 
+     has disadvantage on attack rolls until the start of your next turn
+
+NOTE: Lvl-06 and we go barbarian-04 to get an ASI/Feat. We take the slasher feat, which allows us to increase our STR to 18 and gives us two important features. First, we get the hamstring feature which allows us to impose a 10ft slow when we deal slashing damage with attacks. Now when we hit with our battleaxe we can inflict a 10ft slow and potentially topple, which would further halve the opponents' speed. On it's own I don't think hamstring effect is that great, but when combined with topple weapon mastery, it makes our basic attacks impart a significant degree of battlefield control. In combination with our frost's chill species feature, we can really lock down an enemy (-20ft + prone), making us an effective tank. More specifically, for creatures with base speed of 30ft, if we reduce their speed by 20ft and topple them, they will only have 5ft of movement left once they stand up. In this setting, it might even make sense to move back from the enemy after attacking them (ideally burning their reaction to make an AoO and potentially procing armor of agathys for more damage) so that even after they stand up we are more than 5ft away from them and they can't even reach us to attack us on their turn. But hamstring isn't the only thing we get from slasher, we also get the enhanced critical feature -- which makes it so when we crit with slashing damage, the enemy has disadvantage on attack rolls until the start of our next turn. At the very least, this can help offset the advantage we will give our enemies when we make reckless attacks. And crits are more likely if we're making (reckless) attacks with advantage. So that's nice. More generously, the enhanced critical helps establish our identity as a controller and tank, as we can lock down and debuff our targets. Oh and also, at barbarian-04 we also get an additional weapon mastery. Here I think we take whip mastery, which is a slashing weapon and has the slow mastery -- meaning for us it slows by 20ft on hit -- which is pretty good. Plus we'll have more uses for the whip in a few levels. Ok, so overall, boosting our STR increases our damage a bit, but we're still not doing a ton. So lean in to the tank/controller identity. 
+
+
+
+
+#######
+Level-07: Warlock-02, Barbarian-05 (Ancestral Guardian) 
+ - extra attack 
+   * attack twice whenever you take the attack action 
+ - fast movement 
+   * movement speed increases by 10ft while you aren't wearing heavy armor 
+
+NOTE: Lvl-07 and we go barb-05. Key level here. We get extra attack, which brings us back into reasonable territory for DPR in tier-02. Now we deal 2d8+12+1d6 = 24.5 dmg on average if everything hits. Plus whatever we get from crits, armor of agathys, and frost's chill. So probably something in the 25-27 DPR range, which is at the top of C-class for tier-02. Totally fine given that a lot of what we're bringing to the table is battlefield control. Ok at barb-05 we also get fast movement, which increases our base speed to 45ft and up to 55ft when we are in large form. As a melee striker, this is super helpful as we don't currently have any other mobility enhancing abilities. So yeah, nothing too fancy or complex, but we really needed extra attack to prop up our damage, and fast movement means we can continue to be effective in locking down and controlling key targets. 
+
+
+
+
+#######
+Level-08: Warlock-03 (Primordial), Barbarian-05 (Ancestral Guardian) 
+ - primordial element: water 
+ - primordial patron: Istishia/Sea Giant Abyssal Sovereign (True Sea Giant) 
+ - elemental node (1d6): 
+   * magic action to activate 
+   * first use each SR is free, then can use again by expending pact magic slots 
+   * creates 5ft spherical node of elemental energy (range 60ft)
+   * BA to move up it up to 30ft on your turn 
+   * when node appears, when node moves into enemy space, and when enemies enter the node, or end
+     their turn within it --> DEX save or take 1d6 cold damage (max x1/turn) 
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, prestidigitation 
+ - spell slots: 0-2_{2} 
+ - spells prepared: 4 (warlock)
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), detect magic (R) 
+   * lvl-1 (primordial:water): chromatic orb, ice-knife 
+   * lvl-2 (warlock): spider climb
+   * lvl-2 (primordial:water): darkvision, alter self
+
+NOTE: Alright, excellent! Lvl-08 and we go warloc-03 to get our warlock subclass -- the primordial warlock! This rounds out the multiclass concept of this character fully. Mechanically the main features we get here are: (i) the signature feature of the subclass - elemental node, (ii) bound spells, and (iii) an additional warlock spell preparation. Our pact magic slots also level up to lvl-02 here. Ok so let's talk about elemental node. It's a magic action to activate, but it's not a spell and it doesn't require our concentration. So there's nothing to stop us from using it or maintaining it while we are raging. Perfect! So what does it do? Well, currently, it's kind of like a less powerful version of flaming sphere, except its damage type depends on your elemental patron and it doesn't require concentration. Also unlike flaming sphere, it's location isn't limited by physics/the environment and it can be placed/move anywhere (i.e. it can float in the air if we want it to). So when we summon the node, and when enemies enter the node's space or end their turn within it, they are forced to make a DEX save or take damage. Now it's only a piddling 1d6, but since we can move the sphere, it's definitely possible for us to tag multiple targets with it. Furthermore, with our capacity for movement speed reduction, we can also potentially `trap' or `freeze' enemies within the sphere, making them take its damage multiple times. This is the core concept of this build, the reason why we wanted to go barbarian/frost goliath/battleaxe for speed reduction synergy. Basic concept is that now on turn-01 of combat, we use our BA to rage, then we use a magic action to summon our elemental node. Then on subsequent turns, we use our action to attack, slowing and toppling enemies, and use our BA to move the sphere and deal damage. Ideally, on each turn we can move the sphere to tag multiple enemies, and then also `park it' on the enemy that we've toppled/slowed with our attacks, making it likely that they will take the damage on their own turn or, at the very least, that we'll be able to move the sphere to tag them with it again on our next turn. Also note since the node does force a saving throw, we can use it to extend our rage if for some reason we aren't able to make attacks on our turn. Ok, so in terms of usage, we basically get two `free' uses of this per day (assuming 1 SR) but will otherwise have to use pact magic slots to summon the node again. On average, this means that we basically use 1 pact slot per short rest to summon our node (assuming we SR after combat 2), leaving us with only 1 other pact magic slot for casting warlock spells. Of course, we also have magical cunning. But it's probably a good idea to use 1 pact slots at the start of each adventuring day to cast darkvision on ourselves (one of our primordial spells), and then immediately use magical cunning to restore the slot. This means we'll really only be able to cast armor of agathys on ourselves at most twice per day. Bummer. But, since our pact slots leveled up, at least when we do we are now getting 10 THP (effectively 20 while we rage), so there's some chance we can stretch it for the full duration and we deal more damage when enemies hit us. And of course, if we're in a setting where darkvision isn't going to be useful, then save magical cunning and cast armor of agathys more often (or save the slot for other utility spells). Right so then in terms of spellcasting, we get some bound spells from the primordial subclass. Specifically, we get chromatic orb and ice-knife as lvl-01 spells. Probably won't ever use these, but I guess it is nice to have a bit of flexibility for ranged attack options. And ice-knife is very thematic. For lvl-02 spells we get darkvision and alter slef. Darkvision is great, since we don't have it naturally as a goliath. Alter self is somewhat situational, but would let us give ourselves water breathing and a swim speed when we need to explore aquatic environments. This let's us lean more heavily into the RP of our sea giant ancestry and power. We could also use alter self to disguise ourselves to facilitate infiltration/reconnaissance. We do have decent stealth, and proficiency in all CHA-based social skills, so this could be useful. But for both the aquatic adaptation and change appearance options, I would really only consider using them in exploration settings when it's unlikely that we'll be getting into combat. But still, fun to get some additional versatility and out of combat utility. Next, we get one additional warlock spell preparation. Given that the demand for our spell slots is already exceedingly high, and that we can't cast spells in combat while raging, we just want to pick something for situational out of combat utility. I went with spider climb, which would allow us to gain a climb speed when we need it. In my imagination, I envision the spell working for this character by creating binding frost/ice that `sticks' our feet to ceilings/vertical surfaces while it's active. Again really would only use this for exploration/out-of-combat purposes, but it is nice to be a barbarian that actually does have some out-of-combat utility. The other main alternative consideration here was invisibility (though mirror image and misty step are honorable mentions). But in the end, I like the parallel of having alter self for aquatic environments and spider climb for climbing scenarios. And, as an `elemental' barbarian, it feels more consistent/thematic to have our elemental spells work to enhance/augment our physical prowess and capabilities (vs our stealth). Ok yeah, so in terms of DPR, we probably stay about even. While active, we effectively add a little more than +1d6 DPR through elemental node, assuming that we deal damage to at least creature per turn (probably more given that it can be used in AOE, but they might save..). Furthermore, the node can also deal additional damage if our allies force-move enemies into it on their turns, which is increasingly likely given that we're slowing targets and keeping them near the node. We probably also deal slightly more damage through using armor of agathys with lvl-02 pact magic slots, even though we use it less often. On the other hand, our DPR definitely takes a significant hit because using our action to summon the elemental node means we are losing out on attacks on our first turn of combat. Now, we should definitely pre-cast it when we can, but with a duration of 1m this won't be all that easy to do. So yeah, probably still somewhere in the 25-30 DPR range, which is just fine. Overall, the playstyle with elemental node active is just so much more fun, strategic, and thematic. Right and then finally just for a short note on our subclass themes. I think we want to make our elemental patron some sort of true sea giant (Claude came up with `Abyssal Sovereign'), similar to the storm giant quintessants, etc., who themselves has a strong connection to the (neutral good) primordial god of water, Istishia. This type of patron would provide a thematic through line connecting our species (goliath), barbarian subclass (ancestral spirits of water/sea giants) and our warlock subclass (primordial, elemental plane of water). And the discovery of our connection to this ancestry and patron would provide an excellent basis for a character backstory and personal story quest. Ok, whew! Long note. Moving on. 
+
+
+ 
+
+#######
+Level-09: Warlock-04 (Primordial), Barbarian-05 (Ancestral Guardian) 
+ - proficiency bonus (PB): +4
+ - feat: cold caster 
+   * ASI: +1 CHA (CHA=16) 
+   * cantrip: learn ray of frost
+   * frostbite: x1/turn when you hit an enemy w/an attack roll and deal cold damage, 
+                subtract 1d4 from the next saving throw it makes before the end of  
+                your next turn 
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, minor illusion, prestidigitation 
+   * cold caster (1): ray of frost 
+ - spell slots: 0-2_{2} 
+ - spells prepared: 5 (warlock)
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), detect magic (R) 
+   * lvl-1 (primordial:water): chromatic orb, ice-knife 
+   * lvl-2 (warlock): invisibility, spider climb
+   * lvl-2 (primordial:water): darkvision, alter self
+
+NOTE: Ok, lvl-09 and we go warlock-04. We get to take another ASI/feat and we go with the cold caster feat from the heroes of faerun book. As a half feat, this lets us boost our CHA to 16, plus at character lvl-09 we also get a proficiency bonus increase. By itself, this means that the DC of our elemental node goes from DC-13 at lvl-08 to DC-15 here at lvl-09. Great, but that's not all. Cold caster also gives us the frostbite feature, which states that once per turn when we hit an enemy with an attack roll and deal cold damage, the enemy must subtract 1d4 from the next saving throw it makes before the end of our next turn. Well, with our ancestral barbarian `elemental protectors' feature active, we are dealing cold damage with our attacks the first time we hit every turn. This means that our default attack pattern procs the cold caster feat. Sweet. We can use this in one of two ways each turn. By default, if we hit with our battleaxe, then the next saving throw our target will make will be the one against our topple weapon mastery. This would effectively increase the DC for our topple save from DC-16 to DC-18.5. Even though it's a CON save, this is still a pretty tough DC to beat for a lot of creatures. Plus, it just makes so much sense, thematically, for the frost/ice that we conjure on our weapon attacks to make it more likely for our targets to slip and fall. Very nice. Anyway, with cold caster, we should be able to topple much more effectively, which in turn, helps us deal more damage with our elemental node (keeping enemies close/trapping them in the node). Ok but what about enemies that are immune to prone? Or have super high CON saving throws? Well, in that case, I think we just attack with the whip, which has the slow mastery. Because the slow mastery doesn't require a saving throw, the next save our target will make will be the one against our elemental node. Between slasher and the slow mastery, attacking with the whip will reduce enemy movement speed by 20ft (and 30ft if we also use frost's chill). Still pretty effective control. But it will also effectively increase the save DC for our elemental node from DC-15 to DC-17.5 -- better than a warlock with CHA 20 at this level! So quite reliable, even though we only have CHA-16. The only other scenario I can think of is if we hit a creature with our battleaxe on a previous round and completely freeze it -- i.e. through the combination of prone, slasher, and maybe frost's chill -- it has zero movement speed and can't even stand up, then we can attack with our battleaxe on the next round, we won't need to topple and so we can still apply the frostbite nerf to the subsequent save against our elemental node. This is maybe not so likely here at this level, but when we eventually get brutal strike for even more movement speed reduction, it will become more relevant. Right so then the last piece of the cold caster feat is that we get to learn ray of frost! Not only is this super thematic, but it also provides a reasonable alternative to javelins for dealing damage and slowing at range. In general, javelins are still better, since we have a higher attack bonus when attacking with STR, and can use them with extra attack, rage, and reckless attacks. In particular, we can use reckless attacks to negate the disadvantage from attacking at long range, allowing us to make standard attack rolls with javelins at 120ft. But our attack bonus with ray of frost is only 1 less than when we use a javelin (+7 vs. +8), and the standard range of the spell (60ft) is better than that of a javelin throw (30ft). Plus, if we happen to be in a fight and don't have uses of rage left, then ray of frost gives us a way to proc cold caster on our turn without sacrificing too much damage. Furthermore, it's not unreasonable to think that we might end up in a situation where we don't have any javelins (or weapons of any kind) on us! And in that case having ray of frost will be a big boon. Anyway, not a huge pickup, but it does feel very on point for our character, and provides some versatility and limited utility advantages. Cool. Right, so in terms of DPR - the increase to our proficiency bonus and the effect of the ASI/frostbite feature from cold caster on our topple and warlock spell DC should translate to a meaningful increase in damage. How much depends on how you end up modeling damage from elemental node. But it won't be crazy. The PB increase also gives us one additional use of frost's chill per day (total of 4) meaning we can now use it once in every combat. Very nice. For now I would conservatively assume we get something on the order of +1-2 DPR overall here, bringing us into the 26-31 DPR range. Solid B-class for tier-02. and that's fine. This build isn't about maximizing damage, but rather about making a character that feels powerful while being cool as hell, and providing access to interesting mechanics and abilities in combat. On those fronts, I think we're killing it. Oh haha, right, we also get a new warlock spell preparation! Take invisibility for out of combat infiltration/reconnaissance. Done! Moving on! 
+
+
+
+
+#######
+Level-10: Warlock-05 (Primordial), Barbarian-05 (Ancestral Guardian) 
+ - eldritch invocations (5) 
+   * armor of shadow = can cast mage armor w/o spell slot 
+   * lessons of the first ones: tough = +2 x char-lvl HP, +2 HP whenever we gain a level 
+   * lessons of the first ones: alert = +PB to initiative; can swap initiative w/ally
+   * lessons of the first ones: lucky = PB luck points/LR; use to roll d20 test w/adv, or make enemy reroll attack w/disadv
+   * gift of the depths = can breathe underwater, gain swim speed equal to speed; cast water breathing w/o spell slot x1/LR
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, minor illusion, prestidigitation 
+   * cold caster (1): ray of frost 
+ - spell slots: 0-0-2_{2} 
+ - spells prepared: 6 (warlock)
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), detect magic (R) 
+   * lvl-1 (primordial:water): chromatic orb, ice-knife 
+   * lvl-2 (warlock): spider climb
+   * lvl-2 (primordial:water): darkvision, alter self
+   * lvl-3 (warlock): gaseous form, magic circle
+   * lvl-3 (primordial:water): elemental weapon, water walk (R) 
+
+NOTE: Alright, kind of an interesting level here. Lvl-10 and we go warlock-05. Perfect 5-5 multiclass split. Always love to see that. So, at warlock-05, we get 2 new eldritch invocations, some new primordial bound spells, one new warlock spell preparation, access to lvl-03 warlock spells, and our warlock spell slots increase to lvl-03. So what are we doing here? Well, let's start with the eldritch invocations. First off, we take lessons of the first ones again to get the lucky feat. This gives us 4 (PB) luck points per day that we can use to roll d20 tests with advantage or to impose disadvantage on enemy attack rolls. I would probably use this almost exclusively on saving throws. Currently our saving throw stat line is: STR (+8.5), DEX (+6.5), CON (+1), INT (-1), WIS (+3), CHA (+7), where advantage from rage/danger sense is factored into the avg STR/DEX saves. Going warlock-01 to get a +3 to our WIS save (rather than a -1) definitely helps us, but it's still not great. And having a -1 to INT saves and only a +1 in CON saves kind of sucks. Especially given that mental saves (and WIS saves, in particular) can be some of the most important saves in the game and often especially target frontline fighters (like barbarians), I think we'll really appreciate having some luck points to give ourselves advantage. Ok, so that's basically a purely defensive feature, but a meaningful one. Then for our second new invocation, we take gift of the depths. This gives us a swim speed equal to our move speed, plus the ability to breathe underwater (permanently). We also gain the ability to cast water breathing for free once very long rest. Since the spell has a 24hr duration, and can target up to 10 willing creatures, this means we can pretty much constantly keep our party equipped with underwater breathing. Now, obviously this isn't the most powerful invocation option from a damage optimization standpoint. But the options that actually would increase our damage are pretty meager. Like, I guess we could get savage attack through lessons of the first ones. But that would only very marginally increase our damage. Or I suppose we could take devil's sight, which would allow us to bypass the need to cast darkvision on ourselves, but like, is that really worth it? Meh. The other two invocations options that stood out as potential selections were one with shadows -- which would let us cast invisibility on ourselves when we're in dim light or darkness -- and master of myriad forms -- which would let us cast alter self without expending a spell slot. But neither work super well for us. I mean, one with shadows isn't that thematic for our character and we wouldn't be able to use it while raging, since we still need to be able to cast spells. So it would only be for out of combat utility. And master of myriad forms would essentially just allow us to use alter self to give ourselves water breathing and a swim speed -- which is exactly what gift of the depths already does! Given that we have darkvision and alter self as bound spells through primordial warlock -- so it's not like we could switch them out for something more useful -- I think gift of the depths does the most for us here. It's supremely thematic, allows us to use our full combat kit while fighting underwater (since we no longer need to concentrate on alter self to be comfortable in aquatic environments), and provides the whole party with extra utility. Of course, these abilities also just fit seamlessly with the overarching character arc that we've been developing -- where our deepening connection to our sea giant ancestors has imparted us with full mastery over the depths. Given what we're doing narratively, this invocation just makes too much sense to pass up. Of course, if you're in a campaign setting with absolutely no aquatic settings then taking gift of the depths wouldn't really make sense. But in that type of setting, I probably just wouldn't play this character anyways, so it's perhaps a moot point. Right so moving on, let's talk about the primordial bound spells we get here. There are two of them: elemental weapon and water walk. Now it would be sooo great if we could take advantage of elemental weapon. I mean, it would be perfect! It's exactly the kind of flat boost to damage that we would love on this character. Unfortunately it requires concentration, so we can never use it while raging, and thus it is almost totally useless to us. Too bad. I guess you could cast it if you happen to be in a situation where you've run out of rages or on an ally's weapon if that makes sense. But most of the time we won't use it at all. Wah-wah-waaah. Water walk, on the other hand, is a very thematic and practical spell for us. First off as a ritual, we can cast this without eating into our pact magic slots, preserving them for summoning our elemental node. And, with a 1hr duration, we can keep pretty much full uptime on it whenever we need. It can also target up to 10 willing creatures. So between water walk and gift of the depths (water breathing), we are giving our entire party the ability to walk on liquid surfaces and breathe underwater potentially for the entirety of each adventuring day, at zero cost. In a large variety of settings, this will provide a meaningful, party-wide, tactical advantage. I mean, just for example, if we are able to position ourselves near a liquid surface, we can end our turn out on top of it, preventing attackers who don't have water walk from being able to reach us (esp if their movement speed is slowed). Or, we could grapple someone and drag them into the water with us, thus reducing their movement speed by putting them in difficult terrain, making it harder for them to escape our elemental node. All that said, even with water walk + water breathing active on party members, we would still (probably) be the only one with an inherent swim speed -- so we still feel special. And, for RP purposes, you could always exclude party members or other NPCs from the water-breathing spell and retreat to an aquatic sanctuary all to ourselves. Anyway, lots of fun and potentially impactful possibilities to play around with, even if they don't show up in a DPR calculation. Right so moving on to our new spell selection(s). Here's what I propose - drop invisibility as a second level spell and then pick up gaseous form and magic circle as warlock spells. Ok so first up gaseous form. We're basically switching this one in for invisibility one for one. Gaseous form is just so much more thematic. I definitely imagine that when we cast it, we dissipate into a sort of ocean-spray/mist version of ourselves that can float and apparate/reapparate. As with invisibility, we would use this spell to facilitate infiltration/reconnaissance. So it fills a similar role, but is so much more thematic, and will be similar flavor wise to other abilities that will come on line next level (specifically: water teleportation). Plus, with stealth proficiency, we can still be stealthy even without being invisible, and gaseous form gives us a fly speed and the ability to travel through cracks/small areas. Bet. Right so then magic circle is a cool one -- it has a 1m casting time, so we would only ever use it in situations where we have time to prepare for a fight. And because of that it will never interfere with our ability to rage during actual combat. And what does it do? Well it creates a 10ft radius, 20ft tall cylinder that lasts an hour and, while active, provides a bunch of benefits against extraplanar beings (elementals among them). More specifically, it imposes disadvantage on attack rolls against allies within the circle, it prevents specified extra planar beings from entering the circle, and it prevents allies in the circle from being possessed, charmed of frightened by such creatures. This last bit is especially good for us with our less than amazing WIS save and melee front-liner identity. Oh and the spell can also be used `in-reverse' as a kind of trap. This spell is so much fun, and dovetails really well with what our character is all about. Specifically, at this stage, it should be becoming apparent that our character's ancestral sea-giant heritage was committed to *protecting* something. Really a lot of our signature spells/abilities have to do with protection, and abjuration. We carry a shield; we cast mage armor on ourselves for protection each day; we cast armor of agathys to safeguard our vitality; we slow and freeze enemies to neutralize them and protect our allies; we soft taunt/protect allies with our elemental protectors and we debuff enemies when we crit with our slasher feat. Looking ahead, we're also going to get an AC boosting feature next level and a shield feature at barbarian-06 in a few levels. All told, there's a definite defensive and abjurative nature to what we do. That's why the moniker for this character is the depth *guard*. Anyway, we want to think of magic circle as a kind of ancient rite of protection that fits into this narrative theme. And it would be assumed, if we're playing this character that we would have at least some significant interactions with elementals, who are a viable target for the spell. The spell is also good because it is situational -- so we won't always want to use it, sparing our spell slots for summoning the elemental node and casting armor of agathys, etc. Ok, so that's where we're at for spellcasting. Fortunately, because of all the utility/defensive features we pick up here, there are literally no meaningful changes to our damage/DPR. So let's move on. Sorry for the novel-length level note! 
+
+
+
+
+#######
+Level-11: Warlock-06 (Primordial), Barbarian-05 (Ancestral Guardian) 
+ - cantrip scaling: 
+   * ray of frost (3d8) 
+ - elemental node (2d6):
+ - elemental haven 
+   * elemental protection: while w/in your node, you gain +CHA to your AC 
+   * elemental teleport: as a BA, you can teleport into your node (xCHA/LR) 
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, minor illusion, prestidigitation 
+   * cold caster (1): ray of frost 
+ - spell slots: 0-0-2_{2} 
+ - spells prepared: 7 (warlock)
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), detect magic (R) 
+   * lvl-1 (primordial:water): chromatic orb, ice-knife 
+   * lvl-2 (warlock): spider climb
+   * lvl-2 (primordial:water): darkvision, alter self
+   * lvl-3 (warlock): gaseous form, magic circle, remove curse 
+   * lvl-3 (primordial:water): elemental weapon, water walk (R) 
+
+NOTE: Ok, lvl-11 and we go warlock-06. This will be the only level where we are more warlock than barbarian. But the main reason we're going warlock is to upgrade our elemental node and get the level-06 primordial subclass feature: elemental haven. With elemental haven, we can now use our elemental node as a defensive utility and mobility feature in addition to dealing damage with it. More specifically, the feature lets us add our CHA modifier (+3) to our AC when we are within our node, providing us with a strong incentive to end our turn within the node. Moreover, with this feature in hand, I would consider dropping the shield in order to make two-handed attacks with our battleaxe, increasing our base weapon damage to 1d10. But assuming we just stick with the axe and shield, we will have an AC of 20 (absent any magic item bonuses) while we're within our node. That's pretty good. In addition, elemental haven lets us use our node as a transportation hub. And I would definitely imagine this as our body turning to a splash of water which then coalesces inside our node. Now we can only do this CHA (3) times per LR, but it opens up a bunch of new and fun strategic combat options, especially since there's no limitation on how far this teleportation can be, nor any restriction on whether we need to be able to see the node to teleport to it. So for example, you could summon the node in a safe place (say underwater), then charge headlong into the fray of an unwinnable fight hundreds of feet away, knowing that you can teleport away when things get hairy. We could also use our fast movement to extend out and attack a particularly dangerous ally, use our attack/elemental protectors to slow and impose a taunt on them, and then teleport back to our elemental node, boosting our AC. So the enemy would be slowed, have disadvantage on attack rolls against anyone other than us, and they would have to attack us (likely at range) inside our node where we get a +3 to our AC. Overall it's a fun little toy, so get creative with it. Ok the other notable change we get here is that the damage from our elemental node increases to 2d6. Given that we're building around dealing damage with the node, this is a very meaningful increase, especially in AOE when we can tag multiple enemies with the node. I would roughly estimate that this damage increase boosts our overall DPR by a little over 3, putting us in the 29-34 DPR range. Almost certainly back down in D-class for tier-03. But it's nice to get a damage increase to start out here at lvl-11. And we love the defensive and mobility enhancements that go with it. Ok so then in addition to the improvements to our elemental node, we also get one new warlock spell preparation. I opted to take remove curse. Hopefully we won't ever have to cast it, but it is something that most true casters struggle to fit on to their spell list. So it's nice that we can get it and provide that utility to our party. In addition, as a barbarian we might get mixed up with some nasty cursed weapons, and as a denizen of the deep, there's also a good chance that we'll encounter some cursed treasure in our adventuring. Now we have the option to just remove curse from cursed magic items we encounter and un-attune from them whenever we want. In the end, it might be better to just pick invisibility back up for increased versatility in our out-of-combat-utility suite of spells. So do that if you want. But that just feels boring, and given that we really want to focus our spell slots on using elemental node, we just don't really want to expend pact magic slots on casting invisibility. Anyway, that's it for our spellcasting decision-making. From here on out it's all barbarian. So whatever we choose here will be locked in for the rest of our career. But in general, I feel good about where we've ended up. Oh yeah, also note that our ray of frost cantrip scaling increases here at lvl-11. So that's nice, but completely non-essential to what we're doing with our build.
+
+
+
+
+#######
+Level-12: Warlock-06 (Primordial), Barbarian-06 (Ancestral Guardian) 
+ - rage (4, +2)
+ - spirit (elemental) shield
+   * while raging, when another creature w/in 30ft takes damage, you can use rxn to 
+     reduce that dmg by an amount equal to Xd6, where X is determined by your rage bonus
+
+NOTE: Alright lvl-12 and we go back to barbarian. Nice to get another even multiclass split here at 6-6. We get another use of rage per LR (4), bringing our effective total up to 5 per day (assuming 1 SR). Most likely, this means we can use rage one additional time per day out of combat to engage primal knowledge. More importantly, at barb-06 we also get our lvl-06 subclass feature from ancestral guardian - spirit shield. This is another purely defensive feature, which allows us to use our reaction to reduce damage taken by allies within 30ft. We should do this every single turn when applicable. Since we aren't doing a lot of damage now, we have to lean on our defensive and supportive control abilities to be effective in combat. We should also note that because we don't do huge damage, we actually don't mind burning our reaction each round on damage reduction for allies. In addition, because we have built speed reduction through our attacks/features we won't need/want to take sentinel, which would also compete for our reaction Ok so right now, spirit shield only tanks 2d6 (7) damage per round. This may not seem like a lot (it isn't really, here at lvl-12), but especially in situations where an ally is subjected to tick damage (ex. from lots of small attacks, or a DoT effect) then this has the potential to completely negate incoming damage. Critically, it may also mean the difference between an ally going unconscious on their turn versus being able to act. Eventually, we will get this up to 3d6 when we hit barb-09. So that's nice. Flavor-wise, we definitely imagine our spirit shield as being an `elemental shield' where spectral sheets of ice or waves rise up to intercept incoming strike and protect our allies from damage. Very cool. Very synergistic with our overall build. No changes to DPR. 
+
+
+
+
+#######
+Level-13: Warlock-06 (Primordial), Barbarian-07 (Ancestral Guardian) 
+ - proficiency bonus (PB): +5 
+ - feral instinct = advantage on initiative rolls 
+ - instinctive pounce = when you use a BA to activate rage, you can move up to half your speed 
+
+NOTE: Cool, lvl-13 and we go barb-07. We get a proficiency bonus increase -- meaning higher attack rolls, skill checks/saving throw bonuses, more uses of frost's chill, and a higher spell DC. Super nice. We also get the feral instinct and instinctive pounce features from the barbarian base class. Feral instinct is super nice, especially since it stacks with our alert feat (which also got a boost from the PB increase). Now we have a +11.5 to initiative rolls, on average, if we factor in advantage as a +4.5. Pretty nice. Instinctive pounce is an interesting one. Of course, mobility features are always appreciated. But typically, this feature is used by barbarians to get into melee on the same turn that they rage so that they can make attacks. We, however, are most likely going to use our action on our first turn to summon our elemental node. But I think we still value the additional mobility, especially if it lets us situate our elemental node in a more strategic location at the beginning of combat, enabling us to deal more damage or otherwise use the node more effectively for the rest of the fight. Plus, with our high base movement speed from goliath (35ft at baseline, +10ft if in large form) we get more out of instinctive pounce than other barbarians. Feral instinct is probably the most impactful thing we get here. But it's nice that, because we have alert, we are able to extend some of the benefits of our high initiative bonus to our allies via the initiative swap feature. Feels like this continues to play into our identity as a party support. 
+
+
+
+
+#######
+Level-14: Warlock-06 (Primordial), Barbarian-08 (Ancestral Guardian) 
+ - ASI: +2 STR (STR=20) 
+ 
+NOTE: Unbelievably straightforward level here. Lvl-14 and we go barbarian-08. We take an ASI to cap our STR at 20. Boosts our chance to hit, damage, and skill checks when we use primal knowledge. Nuff said. In terms of DPR, we're probably now sitting in the 31-36 range. Likely C-class for tier-03. But we're not worried. Moving on. 
+
+
+
+
+#######
+Level-15: Warlock-06 (Primordial), Barbarian-09 (Ancestral Guardian) 
+ - rage (4, +3) 
+ - brutal strike (x1/turn) 
+   * when you make a STR-based attack w/advantage, can forgo the advantage to impart additional effects on hit
+   * these on hit effects include +1d10 damage and either: 
+     - (i) forceful blow = push target 15ft and move up to half speed w/o provoking AoOs
+     - (ii) hamstring blow = target's speed is reduced by 15ft until start of your next turn 
+ 
+NOTE: Ok lvl-15 and we go barbarian-09. Couple of nice things here. First off, our rage bonus increases to +3, which increases our damage and also increases the amount of damage that we can reduce with our elemental shield (3d6 = 10.5). Sweet. We also get the brutal strike barbarian base class feature. And this is soo good for us. So as a reminder, the way brutal strike works is that when we make a STR-based attack with advantage (for example, if we opt to use reckless attack on our turn) then we can forgo the advantage on one of our attacks in order to impart additional effects on hit. The first of these effects is extra damage. Specifically, when we hit with a brutal strike, we deal an additional 1d10 (5.5) weapon damage. Then, we also get to choose whether we want to (i) push the target 15ft away and move up to half our speed towards them (forceful blow) or (ii) reduce their movement speed by 15ft until the start of our next turn. Now forceful blow is a good option. And we should use it when appropriate. But, in case it wasn't obvious, we are most interested in the hamstring blow option here. And, in case it wasn't obvious, we should try to do this on every turn possible, including using reckless attacks when necessary to give ourselves advantage. With hamstring blow and slasher, we can now reduce enemy movement speed by 25ft on hit. Every. Turn. If we tack on frost's chill, we can reduce movement speed by 35ft. And if we make the attack with our whip, we can reduce movement speed by up to 45ft. And of course, if we're attacking with our battleaxe (our default) we are still forcing a penalized (-1d4) DC-18 CON save or the enemy is knocked prone (penalized b/c of cold-caster + elemental protectors). For a creature with a 30ft of movement, if we reduce their movement speed by 25 (to 5) and knock them prone (forcing them to use half their speed to stand), they effectively won't be able to move on their turn unless they use their action to dash (and even if they do, they're only going 5ft). This means if they are within our elemental node when we knock them down, they will take the damage on our turn, and be forced to end their turn within it, taking the damage again. If we decide to use frost's chill and reduce their movement speed by 35ft, all the way down to zero, then they won't even be able to stand up from prone on their turn. So badass. I mean just the flavor of freezing enemies in place with frost-infused strikes, trapping them in our swirling node of freezing water and ice. So cool. And this is kind of the capstone, mechanically, for this character concept -- building movement speed reduction and damage via martial feats and barbarian levels, and leveraging the primordial warlock elemental node for AOE/non-concentration damage while raging. All while providing superior battlefield control and meaningful defensive utility. In terms of DPR, we get the boost to our rage damage (+2 DPR), the extra damage from brutal strike (+5.5 DPR), and we increase the damage dealt with our elemental node by trapping enemies in it on their turn (maybe +1.5 DPR) -- all told a total increase of approximately +9 DPR. Huge jump, putting us in the 40-49 DPR range. Solidly B-class for tier-03. Perfect for our hybrid control tank/support frontliner type of character. Amazing. 
+
+
+
+
+
+
+#####################################################################################################
+EXTRA NOTES 
+
+Treantmonk Damage Classes by Tier 
+----------------------------------------				
+        Tier 01	 Tier 02  Tier 03  Tier 04 
+LVL     01-04    05-10    11-16    17-20
+----------------------------------------
+A	13-15	 37-43	  50-57	   70-78
+B	10-12	 29-36	  42-49	   60-69
+C	07-09	 22-28	  34-41	   50-59
+D	04-06	 15-21	  26-33	   35-49
+
+
+Primordial Warlock (Water) + Ancestral Barbarian (Ocean Spirits)  
+
+Point-Buy Stats 
+ - STR = 15 (+2) = 17
+ - DEX = 14
+ - CON = 12 
+ - INT = 08 
+ - WIS = 08 
+ - CHA = 14 (+1) = 15
+
+Concepts Notes: 
+ - Primordial Warlock gives you: 
+   * elemental node = magic action to summon, not a spell and doesn't require concentration 
+   * darkvision, alter self, water walk 
+   * eldritch invocations: armor of shadows, lessons of the first ones (tough, alert, lucky)   
+   * elemental haven = +CHA to armor class when you're in node, teleportation to node  
+ - Ancestral barbarian gives you: 
+   * spiritual (elemental) protectors = when you hit with a weapon deal additional 1d6 elemental (cold) damage --> procs cold caster
+   * brutal strike::hamstring blow (lvl-09) = reduce speed by 15ft 
+ - Use pact magic slots to summon node --> can do this even while raging since it doesn't require concentration 
+ - Use slow/topple/brutal strike/frost's chill to slow targets 
+ - Proc cold caster with spiritual protectors feature of ancestral barb = nerfing saving throw against topple or node 
+ - move node with BA to provides passive damage, slowing enemies keeps them within range so you can deal damage to them every turn 
+ - with enough slow, you can `freeze' them in place entirely, making them take node damage on their turn as well 
+ - passive support/control via slowing enemies, shielding enemies (w/spiritual shield) 
+ - pact magic, invocations, and barbarian features give us ritual spells for out of combat utility. 
+   
+Feats/ASI's
+ - lvl-00: skilled 
+ - lvl-03: tough, alert (via lessons of the first ones) 
+ - lvl-06: slasher: +1 STR (STR=18)
+ - lvl-09: cold caster: +1 CHA (CHA=16) 
+ - lvl-10: lucky (via lessons of the first ones) 
+ - lvl-14: ASI: +2 STR (STR=20) 
+ - lvl-18: ASI: +2 CHA (CHA=18)  
+ 
+Equipment 
+ - Battleaxe = 1d8 slashing; versatile (1d10); topple 
+
+Species: Frost Giant (reflavor as Sea/Ocean giant) 
+ - base speed = 35ft
+ - frost's chill (xPB/day) = when you hit a target with an attack roll and deal damage --> +1d6 and slow by 10ft
+ - large form (x1/LR) = increase size to large for 10m; +10 ft movespeed; adv on STR checks/grapple saves, increased carrying capacity 
+
+Background: Noble 
+ - Ability Scores: STR, INT, CHA 
+ - Feat: Skilled (Athletics, Stealth, Insight)  
+ - Skill Proficiencies: History, Persuasion 
+ - Tool Proficiency: Gaming Set (playing cards) 
+
+Progression: 
+ - lvl-01: warlock-01 --> WIS/CHA save proficiency, deception/intimidation proficiency, armor of shadows, armor of agathys
+ - lvl-02: warlock-01, barbarian-01 --> martial weapon/shield proficiency, weapon masteries(2), rage (2, +2) 
+ - lvl-03: warlock-02, barbarian-01 --> magical cunning, lessons of the first ones (x2): tough, alert
+ - lvl-04: warlock-02, barbarian-02 --> danger sense, reckless attack
+ - lvl-05: warlock-02, barbarian-03 (ancestral) --> primal knowledge, spiritual protectors, rage (3, +2), large form
+ - lvl-06: warlock-02, barbarian-04 (ancestral) --> slasher: +1 STR (STR=18), rage (4, +2) 
+ - lvl-07: warlock-02, barbarian-05 (ancestral) --> extra attack 
+ - lvl-08: warlock-03 (primordial), barbarian-05 (ancestral) --> magical cunning, elemental node (1d6), darkvision, alter self, ice knife  
+ - lvl-09: warlock-04 (primordial), barbarian-05 (ancestral) --> cold caster: +1 CHA (CHA=16) 
+ - lvl-10: warlock-05 (primordial), barbarian-05 (ancestral) --> gift of the depths, lessons of the first ones (lucky) 
+ - lvl-11: warlock-06 (primordial), barbarian-05 (ancestral) --> elemental haven, water walk, elemental node (2d6)
+ - lvl-12: warlock-06 (primordial), barbarian-06 (ancestral) --> spirit shield 
+ - lvl-13: warlock-06 (primordial), barbarian-07 (ancestral) --> feral instinct, instinctive pounce 
+ - lvl-14: warlock-06 (primordial), barbarian-08 (ancestral) --> ASI: +2 STR (STR=20) 
+ - lvl-15: warlock-06 (primordial), barbarian-09 (ancestral) --> brutal strike (hamstring blow), rage (4, +3)
+ - lvl-16: warlock-06 (primordial), barbarian-10 (ancestral) --> consult the spirits (augury/clairvoyance) 
+ - lvl-17: warlock-06 (primordial), barbarian-11 (ancestral) --> relentless rage 
+ - lvl-18: warlock-06 (primordial), barbarian-12 (ancestral) --> ASI: +2 CHA (CHA=18), rage (5, +3) 
+ - lvl-19: warlock-06 (primordial), barbarian-13 (ancestral) --> improved brutal strike
+ - lvl-20: warlock-06 (primordial), barbarian-14 (ancestral) --> vengeful spirits 
+
+Warlock Spells: 
+ - cantrips (3): friends, prestidigitation, minor illusion, ray of frost (cold caster) 
+ - lvl-01: armor of agathys, detect magic (R), speak with animals (R) 
+ - lvl-02: invisibility, misty step, mirror image, spider climb
+ - lvl-03: dispel magic, gaseous form, remove curse, tongues 
+
+Thematic notes: 
+- TBD
+
+Magic items 
+ - boots of the winterlands 
+ - bracers of defense 
+ - belt of frost giant strength 
+ - bowl of commanding water elementals 
+ - frostbrand 
+ - manual of bodily health, manual of gainful exercise 
+
+Quick DPR check (lvl-20):  
+ - extra attack (x2) = 2d10(11)+16 = 27*1.3(vengeful spirits) = 35.1
+ - brutal strike = 1d10 (5.5)
+ - elemental spirits (cold) = 1d6 (3.5) 
+ - elemental node (x2) = 4d6 (14) 
+ - Total: 35.1 + 5.5 + 3.5 + 14 = 58.1
+
+
+
+
+ 
+ 

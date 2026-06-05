@@ -1,0 +1,100 @@
+CELESTIAL DRAGON WARRIOR  
+(based on class details available in Playtests 6/7 of revised 2024 players handbook) 
+
+LEVEL 20 
+warlock (celestial) - 10 
+sorcerer (draconic: gold) - 8 
+paladin (2)
+
+RACE: Aasimar
+ - darkvision (60ft)
+ - celestial resistance (res. to radiant and necrotic) 
+ - healing hands (6d4) 
+ - celestial revelation: radiant soul
+
+STARTING STATS (Point-Buy) 
+ - STR: 12 (+1) = 13
+ - DEX: 13 (+1) = 14
+ - CON: 14
+ - WIS: 10
+ - INT: 8  
+ - CHA: 15 (+1) = 16
+
+LEVEL-20 STATS 
+ - STR: 13
+ - DEX: 14
+ - CON: 14
+ - WIS: 10
+ - INT: 8  
+ - CHA: 20
+
+FEATS/ASIs
+* tough
+* durable
+* war caster 
+* +2 CHA (x2) 
+
+EQUIPMENT 
+armor: none 
+weapon: ascendant dragon's wrath longsword (fire) 
+shield: spell guard shield (adv on spell saves, spell attacks have disadv)
+AC = 10 + 2 (DEX) + 5 (CHA) + 2 (shield) + 1 (fighting style: defensive) = 20 
+
+SAVING THROW PROFICIENCIES: WIS, CHA (assume you start as Warlock-1) 
+
+SORCERER CLASS FEATURES 
+ - innate sorcery
+ - font of magic 
+ - sorcery points: 8 
+ - metamagic: seeking spell, empowered spell
+ - draconic resilience
+ - dragons speech
+ - elemental affinity (fire)
+ - sorcerous restoration 
+ - sorcery incarnate
+ - sorcerer spells prepared: 12 
+   * cantrips (5): booming-blade, firebolt, control-flames, message, mage-hand
+   * lvl-1: absorb elements, shield, silvery-barbs
+   * lvl-2: mirror image, misty step, vortex warp 
+   * lvl-3: ashardalon's stride, catnap, counterspell, fireball 
+   * lvl-4: greater invisibility, fire shield
+
+WARLOCK CLASS FEATURES: 
+ - eldritch invocations (7): 
+   * pact of the blade 
+   * thirsting blade 
+   * life drinker
+   * agonizing blast 
+   * eldritch smite 
+   * master of myriad forms 
+   * one with shadows 
+ - magical cunning 
+ - healing light: 10d6
+ - radiant soul
+ - contact patron 
+ - celestial resilience
+ - warlock spells prepared: 10 (* indicates celestial patron spell) 
+   * cantrips (3): green-flame blade, prestidigitation, minor illusion, light*, sacred flame*
+   * lvl-1: armor of agathys, hellish rebuke, cure wounds*, guiding bolt* 
+   * lvl-2: earthbind, dispel magic, lesser restoration*, flaming sphere* 
+   * lvl-3: spirit shroud, enemies abound, fly, daylight*, revivify*
+   * lvl-4: banishment, dimension door, guardian of faith*, wall of fire* 
+   * lvl-5: far step, flame strike*, greater restoration*
+
+PALADIN CLASS FEATURES: 
+ - lay on hands (10) 
+ - weapon mastery 
+ - fighting style: defensive
+ - paladin's smite
+ - spells prepared: 2 (* indicate paladin smite spells) 
+   * lvl-1: detect magic, searing smite, divine smite*, thunderous smite* 
+ 
+ 
+BA: divine-smite (lvl-5) + action: green-flame blade + eldritch smite (lvl-5) 
+
+1d8 + 3 (longsword) + 3d8 (GFB) + 5d8 (divine smite) + 5d8 (eldritch smite) + 5 (elemental affinity) + 5 (warlock: radiant soul)
+                + 5 (agonizing blast) + 6 (aasimar: radiant soul) + 1d6 (lifedrinker) + 5 (CHA) + 3d6 (dragon's wrath)
+
+ = 14d8 + 4d6 + 29 = 106
+
+

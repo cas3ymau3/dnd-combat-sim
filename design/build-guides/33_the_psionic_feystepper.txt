@@ -1,0 +1,945 @@
+Moniker: Psifey Nightcrawler  
+Classes: Psion-12 (Psi Warper), Warlock-08 (Archfey) 
+Species: Elf (High) 
+ - size: medium 
+ - speed: 30ft 
+ - darkvision: 60ft 
+ - elven lineage (high): wizard cantrip (shocking grasp), detect magic (lvl-03), misty step (lvl-05)
+ - fey ancestry: advantage on saves against charmed
+ - keen senses: proficiency in perception
+ - trance: long rest in 4h; don't sleep 
+Sex: Female 
+Background: Noble (modified)
+ - ability scores: STR, INT, CHA  
+ - feat: skilled  
+ - skill proficiencies: history, persuasion  
+ - tool proficiency: weaver's tools (modified)   
+ - languages: common, elvish, sylvan
+ - equipment (gold-buy): 50 gp
+Point-Buy Stats 
+ - STR = 08
+ - DEX = 12 
+ - CON = 15
+ - INT = 15 (+2) = 17
+ - WIS = 08 
+ - CHA = 13 (+1) = 14
+ASI's/Feats:
+ - lvl-00: skilled
+ - lvl-05: fey-touched: +1 INT (INT=18)
+ - lvl-08: alert (via lessons of the first ones)
+ - lvl-10: +2 INT (INT=20)  
+ - lvl-11: tough + MI:cleric (via lessons of the first ones) 
+ - lvl-14: resilient (CON): +1 CON (CON=16)  
+ - lvl-18: skulker: +1 DEX (DEX=13)  
+ - lvl-20: epic boon of dimensional travel: +1 DEX (DEX=14)
+Progression Summary  
+ - lvl-01: psion-01 --> spellcasting, psionic power, subtle telekinesis
+ - lvl-02: psion-01, warlock-01 --> pact magic, eldritch invocations (1): pact of the talisman
+ - lvl-03: psion-02, warlock-01 --> psionic disciplines (2): psionic backlash, devilish tongue, psionic modes
+ - lvl-04: psion-03 (psi warper), warlock-01 --> psi warper spells, teleportation (free misty step x1/LR), warp propel 
+ - lvl-05: psion-04 (psi warper), warlock-01 --> fey-touched: +1 INT (INT=18); bane, misty step (free x1/LR); high-elf (free misty step x1/LR) 
+ - lvl-06: psion-05 (psi warper), warlock-01 --> psionic restoration, 6d8 psionic dice, haste  
+ - lvl-07: psion-06 (psi warper), warlock-01 --> teleporter combat 
+ - lvl-08: psion-06 (psi warper), warlock-02 --> eldritch invocations (3): eldritch mind, LotFO (alert), magical cunning  
+ - lvl-09: psion-06 (psi warper), warlock-03 (archfey) --> steps of the fey (x2/LR)
+ - lvl-10: psion-06 (psi warper), warlock-04 (archfey) --> +2 INT (INT=20) 
+ - lvl-11: psion-06 (psi warper), warlock-05 (archfey) --> lvl-03 pact magic slots; eldritch invocations (5): LotFO (MI:cleric), LoTFO (tough)
+ - lvl-12: psion-06 (psi warper), warlock-06 (archfey) --> misty escape 
+ - lvl-13: psion-07 (psi warper), warlock-06 (archfey) --> psionic surge 
+ - lvl-14: psion-08 (psi warper), warlock-06 (archfey) --> resilient (CON): +1 CON (CON=16)
+ - lvl-15: psion-09 (psi warper), warlock-06 (archfey) --> 8d8 psionic dice; steel wind strike, teleportation circle 
+ - lvl-16: psion-10 (psi warper), warlock-06 (archfey) --> duplicitous target, psionic disciplines (4): backlash, tongue, insinuation, tactical
+ - lvl-17: psion-11 (psi warper), warlock-06 (archfey) --> 8d10 psionic dice 
+ - lvl-18: psion-12 (psi warper), warlock-06 (archfey) --> skulker: +1 DEX (DEX=13)
+ - lvl-19: psion-12 (psi warper), warlock-07 (archfey) --> lvl-04 pact magic slots; protection of the talisman 
+ - lvl-20: psion-12 (psi warper), warlock-08 (archfey) --> epic boon of dimensional travel (+1 DEX): DEX=14
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `psion-warlock'
+ - lvl-01: slots = 2; prepared: 4-0; max level: 1-0
+ - lvl-02: slots = 3_{1}; prepared: 4-2; max level: 1-1
+ - lvl-03: slots = 4_{1}; prepared: 5-2; max level: 1-1
+ - lvl-04: slots = 5_{1}-2; prepared: 6-2; max level: 2-1  
+ - lvl-05: slots = 5_{1}-3; prepared: 7-2; max level: 2-1 
+ - lvl-06: slots = 5_{1}-3-2; prepared: 9-2; max level: 3-1 
+ - lvl-07: slots = 5_{1}-3-3; prepared: 10-2; max level: 3-1
+ - lvl-08: slots = 6_{2}-3-3; prepared: 10-3; max level: 3-1
+ - lvl-09: slots = 4-5_{2}-3; prepared: 10-4; max level: 3-2
+ - lvl-10: slots = 4-5_{2}-3; prepared: 10-5; max level: 3-2
+ - lvl-11: slots = 4-3-5_{2}; prepared: 10-6; max level: 3-3
+ - lvl-12: slots = 4-3-5_{2}; prepared: 10-7; max level: 3-3
+ - lvl-13: slots = 4-3-5_{2}-1; prepared: 11-7; max level: 4-3
+ - lvl-14: slots = 4-3-5_{2}-2; prepared: 12-7; max level: 4-3
+ - lvl-15: slots = 4-3-5_{2}-3-1; prepared: 14-7; max level: 5-3
+ - lvl-16: slots = 4-3-5_{2}-3-2; prepared: 15-7; max level: 5-3
+ - lvl-17: slots = 4-3-5_{2}-3-2-1; prepared: 16-7; max level: 6-3
+ - lvl-18: slots = 4-3-5_{2}-3-2-1; prepared: 16-7; max level: 6-3
+ - lvl-19: slots = 4-3-3-5_{2}-2-1; prepared: 16-8; max level: 6-4
+ - lvl-20: slots = 4-3-3-5_{2}-2-1; prepared: 16-9; max level: 6-4
+
+MECHANICAL CONCEPT NOTES
+ - get lots of free casts of misty step, and use subclass features of psi warper and archfey to weaponize these 
+ - have very low AC for the majority of your career, but offset this by being very escapable (at first) and 
+   eventually by having tough feat and multiple sources of THP to tank hits
+ - you want to get hit in order to deal damage through armor of agathys, and misty escape, psionic backlash 
+ - once you get haste, make that your go to concentration spell, and use hasted action to hide to prevent taking 
+   unwanted hits (+2 AC and adv on DEX saves + hide action -- it's essentially a defensive spell) 
+ - eventually, get skulker feat to make your hiding even more effective.
+ - use mind sliver/bane/bestow curse to nerf enemy saving throws, making your taunting step and dreadful step 
+   work reliably despite having relatively low spell DC 
+ - get utility spells from warlock and damage/control spells through psion
+ - mechanically, the idea is to BA misty step almost every turn. Between high-elf, steps of the fey, fey-touched and teleporter, 
+   you'll have 5 free castings per LR, then use your lvl-02 slots and psionic energy dice to fuel the rest (12 dice per LR w/psionic 
+   restoration @ psion lvl-12) + 3 lvl-02 spell slots = 20 castings
+ - once you get boon of dimensional travel, casting misty-step + cantrip gives you 2 free teleports (since each is a magic action) 
+   meaning you will have unlimited mobility 
+ - take skulker to help with hide as hasted action and allow you to stay hidden if you miss with telekinetic flings 
+ - for the first half of our career, we focus on not getting hit at all. Over time we gain eldritch mind, tough, resilient CON, and eventually 
+   protection of the talisman. All of these make it more feasible to take hits in order to proc our thorns abilities and deal more damage. 
+
+THEMATIC CONCEPT NOTES: 
+ - nightcrawler from x-men meets lady galadriel from LoTR meets James McAvoy from `Split' 
+ - bewitching, deceiving, hexing, cursing, gloaming court fey magic, sneaky, tricksy
+ - patron is a hag/dark archfey who is trying to forge some sort of empowering linkage between planes (way to exist on multiple planes?)
+ - brilliant, innovative, unassuming, charming, magnetic, witty, funny, irreverent, beautiful, touched (wonderfully strange)
+ - cold, cynical, disparaging, uncaring, cruel, masochistic, arrogant, touched (mildly insane)  
+ - speed, agility, grace, fashionable (seamstress), tidy, hygenic, meticulous
+ - spikes and thorns, flowers and vegetation, blood, darkness, and death, misty, ghosts, incorporeality (aesthetics)
+ - play telepathic/teleportation abilities as something akin to quantum superposition and multiple personalities 
+ - idea: play this character as a (mild) schizophrenic, where some part of their personality/soul exists in the Feywild; 
+   then our abilities derive from this sort of interplanar superposition, allowing us to teleport and draw Fey magic into the 
+   material plane through the manipulation (warping) of space. Character development/story revolves around understanding this 
+   condition intellectually, negotiating how it is maintained/controlled by our patron, and managing the mental/psychological 
+   strain of being in multiple places at once. 
+ - needles we use for our telekinetic flings are the same one we use in sewing; ask DM to switch gaming set proficiency for 
+   proficiency with weaver's tools 
+
+SYNERGISTIC MAGIC ITEMS: 
+ - common:
+   * perfume of bewitching: magic action to apply; adv on deception/persuasion checks for 1h 
+   * walloping ammunition: DC-10 STR save or prone on hit
+ - uncommon: 
+   * ammunition (+1): +1 to attack and damage rolls w/telekinetic fling
+   * boots of elvenkind: adv on stealth checks 
+   * boots of striding and springing (requires attunment): gain permanent effect of jump spell
+   * bracers of archery (requires attunement): proficiency with short/longbow; +2 to dmg rolls with short/longbow
+   * bracers of defense (requires attunement): +2 to AC if not wearing armor ow shield 
+   * broom of flying (requires attunement): magic action to activate; gain flying speed of 50ft
+   * cloak of elevenkind (requires attunement): perception checks made to see you at disadv; adv on stealth checks 
+   * hat of disguise (requires attunement): can cast disguise self 
+   * headband of intellect (requires attunement): INT=19; only relevant prior to lvl-05
+   * pearl of power (requires attunement): magic action to recover spell slot of lvl-03 or lower (x1/day)
+   * rod of the pact keeper (requires attunement): +1 to DC/spell bonus of warlock spells; magic action to recover pact magic slot (x1/LR)
+   * luckstone (requires attunement): +1 to ability checks and saving throws 
+   * wand of the war mage (requires attunement): +1 to spell attack rolls; spell attacks ignore half-cover
+   * weapon of warning (requires attunement): alarm + adv on initiative rolls to you/allies w/in 30ft
+   * winged boots (requires attunement): 4 charges (recharge 1d4/day); magic action to gain fly speed of 30ft for 1hr
+ - rare: 
+   * ammunition (+2): +2 to attack and damage rolls w/telekinetic fling
+   * cape of the mountebank: cast dimension door for free x1/day
+   * cloak of arachnida (requires attunement): poison resist; permanent spider climb; spider walk; web (free x1/day)
+   * cloak of displacement (requires attunement): attack rolls have disadv until hit each turn (can't have speed=0)
+   * cloak of the bat (requires attunement): adv on stealth checks; fly speed 40ft in dim light/darkness; polymorph (bat) in dim light/darkness
+   * cube of force (requires attunement): 10 charges (recharge 1d6/day); spellcasting (mage armor, shield, wall of force, etc.)
+   * elven chain (chain shirt): +1 chain shirt (AC=13+DEX+1); no med-armor proficiency requirement 
+   * helm of teleportation (requires attunement): 3 charges (recharge 1d3/day); 1 charge to cast teleport
+   * ioun stone of awareness (requires attunement): adv on initiative and perception checks 
+   * mantle of spell resistance (requires attunement): adv on saving throws against spells
+   * ring of evasion (requires attunement): 3 charges (recharge 1d3/day); expend charge w/rxn to succeed on failed DEX save
+   * ring of feather falling (requires attunement): permanent feather fall
+   * rod of rulership (requires attunement): magic action to force DC-15 WIS save from all in 120ft radius or charmed for 8hr
+   * rod of the pact keeper (requires attunement): +2 to DC/spell bonus of warlock spells; magic action to recover pact magic slot (x1/LR)
+   * staff of charming (requires attunement): 10 charges; spellcasting; reflect enchantment; resist enchantment (see description)
+   * wand of the war mage (requires attunement): +2 to spell attack rolls; spell attacks ignore half-cover
+   * wings of flying (requires attunement): magic action to gain fly speed 60ft for 1hr (x1 use per 1d12 hrs)
+ - very rare: 
+   * ammunition (+3): +3 to attack and damage rolls w/telekinetic fling
+   * ammunition of slaying: DC-17 CON save or +6d10 force dmg on hit against specified creature type
+   * amulet of the planes (requires attunement): DC-15 arcana check to cast plane shift; random location on fail 
+   * crystal ball (requires attunement) = cast scrying (DC-17) while holding it
+   * ioun stone of intellect (requires attunement): +2 INT
+   * ioun stone of leadership (requires attunement): +2 CHA
+   * rod of absorption (requires attunement): rxn to absorb spells cast at you; use absorbed spells to create spell slots
+   * rod of the pact keeper (requires attunement): +3 to DC/spell bonus of warlock spells; magic action to recover pact magic slot (x1/LR)
+   * staff of power (requires attunement): +2 quarterstaff; +2 to AC/saves/spell attack rolls; spellcasting (20 charges; recover 2d8+4/day).
+   * tome of clear thought: +2 INT
+   * wand of the war mage (requires attunement): +3 to spell attack rolls; spell attacks ignore half-cover
+ - legendary: 
+   * cloak of invisibility (requires attunement): 3 charges (recharge: 1d4/day); magic action to become invisible for 1h
+   * crystal ball of mind reading (requires attunement): scrying + detect thoughts w/no concentration 
+   * crystal ball of telepathy (requires attunement): scrying + suggestion w/no concentration
+   * crystal ball of truesight (requires attunement): scrying + truesight w/no concentration
+   * ring of invisibility (requires attunement): magic action to become invisible (until dismissed w/BA)
+   * ring of spell turning (requires attunement): adv on saves against spells; on success against lvl-07 sell or lower, rxn to reflect on caster
+   * ring of telekinesis (requires attunement): can cast telekinesis from it
+   * robe of the archmagi (requires attunement): AC=15+DEX (no armor); adv on saves against spell/magical effects; +2 to spell DC and attack bonus
+   * staff of the magi (requires attunement): 50 charges (recharge 4d6+2/day); spell absorption; spellcasting; retributive strike 
+ - artifact: 
+   
+ 
+MAX LEVEL MAGIC ITEMS
+- lvl-20 (~6 items, max 1 legendary/artifact)   
+  (1) ring of spell turning (legendary, attuned) 
+      + adv on saving throws against spells 
+      + if you succeed on save against a spell of lvl-07 or lower, use rxn to reflect back at caster (using their DC)
+  (2) robe of the archmagi (legendary, attuned) 
+      + AC = 15 + DEX while not wearing armor 
+      + advantage on saving throws against spells/other magical effects 
+      + gain +2 to spell DC and attack bonus 
+  (3) tome of clear thought (very rare)
+      + gain +2 INT (22) after reading 
+  (4) helm of teleportation (rare, attuned)
+      + 3 charges, recharge 1d3 at dawn 
+      + expend 1 charge to cast teleport 
+  (5) cape of the mountebank (rare)
+      + can cast dimension door w/o expending spell slot (x1/LR)
+      + space you teleported from is lightly obscured by smoke 
+  (6) boots of elvenkind (uncommon)
+      + adv on stealth checks 
+  (7) +1 ammunition (uncommon) 
+
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+#######
+Level-01: Psion-01
+ - feat: skilled 
+   * gain proficiency in 3 skills of your choice     
+ - saving throw proficiencies: INT, WIS    
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * psion (2): arcana, investigation     
+   * noble (2): history, persuasion
+   * skilled (3): deception, intimidation, stealth 
+   * keen senses (1): perception  
+   * tools (1): weaver's tools  
+   * languages (3): common, elvish, sylvan  
+ - weapon/armor proficiencies:  
+   * weapons: simple weapons
+   * armor: none 
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (noble) + 50gp (psion)
+   * weapons: none
+   * armor: none
+   * tools: dragonchess set (1gp)
+   * foci: arcane-focus::orb (20gp)
+   * gear: explorer's pack (10gp), fine clothes (15gp), needles x200 (4gp), perfume x3 (15gp)
+   * spare coin: 35gp
+ - combat equipment:
+   * preferred weapon: none 
+   * armor: mage armor 
+   * AC: 13 + 1(DEX) = 14
+ - psionic spellcasting 
+   * when you cast a psion spell, it doesn't require verbal or material components (unless costly/consumed)
+ - psionic power (4d6 psionic dice) 
+   * telekinetic propel: BA; STR save or push/pull target creature PE die x10 ft; range 30ft
+   * telepathic connection: telepathy w/in 5ft; expend die to expand range to PE die x 10 for psion-lvl min
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): blade ward 
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+ - spell slots: 2 
+ - spells prepared: 4 (psion) 
+   * lvl-1 (psion): charm person, command, detect magic (R), mage armor
+       
+NOTE: Start as a ranged controller with decent out of combat utility. Concentrate on blade ward in combat, and use telekinetic fling for damage. Combine mind-sliver/command and use telekinetic propel for control. Use charm person out of combat in combination with deception/persuasion/intimidation proficiency. Use telepathy situationally/if you're stealthing. Note that as psion spells, you can cast charm person and command without a verbal component, making them more effective. 
+
+
+
+
+#######
+Level-02: Psion-01, Warlock-01
+ - eldritch invocations (1) 
+   * pact of the talisman = when you fail an ability check add 1d4 to the roll (no action); PB uses per LR 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (2): blade ward, prestidigitation
+ - spell slots: 3_{1} 
+ - spells prepared: 4 (psion), 2 (warlock) 
+   * lvl-1 (psion): charm person, command, detect magic (R), mage armor
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R)
+       
+NOTE: Go warlock-01 to get an invocation and we take pact of the talisman from Tasha's. This the ability to add 1d4 to a failed ability check proficiency bonus times per day. Not terribly useful right now, but we can use this to help with influence and/or stealth checks, and we're going to want the lvl-07 feature for which this is a prerequisite eventually. Switch high-elf cantrip to shocking grasp and take blade ward as a warlock cantrip. Now we can use shocking grasp to get out of melee if we have to. Also take prestidigitation for utility. Pact magic slot makes casting mage armor less painful. For prepared spells, we absolutely need armor of agathys since we're going for a thorns build. For the second prepared spell, just take comprehend languages since we have high INT and arcana/investigation/history proficiency and it synergizes with that quite well. Continue concentrating on blade ward since our AC sucks hard. 
+
+
+
+
+#######
+Level-03: Psion-02, Warlock-01
+ - psionic disciplines (2) 
+   * devilish tongue = when you take influence action, you can expend 1 psionic die and add it to the roll 
+   * psionic backlash = when hit with attack roll, use rxn and expend 1 die and roll 2 to reduce attack roll by rolled total; 
+                        additionally, enemy makes WIS save or takes psychic dmg equal to rolled total
+ - psionic modes (x2/LR)
+   * BA to activate 
+   * attack mode = bypass psychic resistance; can expend psionic die to reroll INT-mod spell dmg
+   * defense mode = resistance to psychic dmg; can expend psionic die and add to mental save (INT/WIS/CHA) on failure
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (2): blade ward, prestidigitation
+ - spell slots: 4_{1} 
+ - spells prepared: 5 (psion), 2 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R)
+   * lvl-1 (high-elf): detect magic (R) 
+       
+NOTE: Get psionic disciplines and psionic modes. For modes, I would probably preferentially use defense mode, but wouldn't prioritize either for using my psionic dice (always nice to have options tho). For disciplines, we like devilish tongue since we have decent CHA and proficiency with influence skills and we can stack this with pact of the talisman. But the most important one is psionic backlash, which not only makes us harder to hit, but also gives us another way (on top of armor of agathys) to deal damage when we are attacked. For spellcasting, we get another 1st level slot and one more spell preparation. We also get detect magic as a high-elf species spell, so we can pick up two new psion spells. For these, I would take identify and tasha's hideous laughter (THL). THL is a very good and thematic control spell. Identify is a nice ritual to have, and dovetails with our `brainy/scholarly' character identity. We are also still dedicating most of our spell slots to mage armor and armor of agathys, so it's a good idea to take a ritual.
+
+
+
+
+#######
+Level-04: Psion-03 (Psi Warper), Warlock-01
+ - psionic power (4d6 psionic dice) 
+   * telekinetic propel: BA; STR save or push/pull target creature PE die x10 ft; range 30ft
+   * warp propel: when enemy fails save against telekinetic propel, teleport it to unoccupied location w/in 30ft of you
+   * telepathic connection: telepathy w/in 5ft; expend die to expand range to PE die x 10 for psion-lvl min
+   * teleportation: can cast misty step by expending 1 psionic energy die
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (2): blade ward, prestidigitation
+ - spell slots: 5_{1}-2
+ - spells prepared: 6 (psion), 2 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R)
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-2 (psion): suggestion
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+       
+NOTE: Psion-03 and we get our subclass: the psi warper. Three subclass features: (i) bound spells, (ii), teleporter, and (iii) warp propel. For bound spells, we get expeditious retreat, feather fall, misty step and shatter. Feather fall is a great safety valve to have stocked, especially on a caster with limited spell preparations. Expeditious retreat will be situationally useful if we need extra mobility, especially given we don't have a crucial concentration spell in combat. Shatter is our best/only burst/AOE damage option, and doesn't require concentration which is nice. Misty step is going to be our favorite spell. The teleporter ability also lets us cast this w/o a spell slot x1/LR and we can use our psionic energy dice to cast it again. Right now it's only useful for mobility, but teleportation is really strong so definitely consider expending dice to cast it. The warp propel ability is interesting. One obvious use is to reposition an ally to a position of safety. Another is to teleport an enemy away from you or into a hazardous area. Works great in combination with other party members' abilities, so use it to be a team player. Eventually we might want to use this to teleport an enemy close to us in order to encourage it to attack us, thus procing armor of agathys and/or psionic backlash. Given our low AC and HP, however, we definitely don't want to do this yet. At psion-03 we also get two level-2 spell slots, one new preparation, and access to level-02 psion spells. For the preparation, I'm going to take suggestion. The logic here is that we probably want to use our second level slots on casting misty-step/shatter in combat, so we probably won't have many second level slots for casting other spells. Therefore, we don't really want to take any second level spells for combat (e.g., blindness/deafness, silence). Of the out-of-combat options on the psion spell list, I think suggestion is the strongest, but detect thoughts, enhance ability, invisibility, locate object, and zone of truth are all appealing options. Pick your favorites. 
+
+
+
+
+Level-05: Psion-04 (Psi Warper), Warlock-01
+ - proficiency bonus (PB): +3 
+ - cantrip scaling
+   * shocking grasp (2d8) 
+   * mind sliver (2d6) 
+   * telekinetic fling (2d10) 
+ - feat: fey-touched 
+   * ASI: +1 INT (INT=18) 
+   * fey magic: bane, misty step (free x1/LR) 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (2): blade ward, prestidigitation
+ - spell slots: 5_{1}-3
+ - spells prepared: 7 (psion), 2 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R)
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+       
+NOTE: Big level. We go psion-04 to get fey-touched and boost our INT to 18 at the same time that we get a proficiency bonus increase, cantrip scaling, and get an additional species spell. Ok so the main thing here is that between fey-touched and high-elf character-lvl 5, we get 2 additional free castings of misty-step per long rest. So now we can cast the spell 3 times without a spell slot (once from high-elf, once from fey-touched, once from psi warper). This amounts to a significant boost to our mobility while sparing our psionic dice and spell slots for more uses of psionic backlash, telekinetic propel, and castings of helpful spells. In terms of our other fey-touched spell, I'm going with bane. This is because we will want to nerf enemy saving throws as we progress in this build, and this is a very reliable way to do it. It also stacks with mind sliver. Bane, then mind-sliver + warp propel is also a great way to force move targets, even when they have very good STR saves. Furthermore, we don't have an essential concentration spell on this build yet (THL, expeditious retreat, blade ward), so we have the space to integrate bane. In addition, I feel pretty good about taking fey-touched as we are a high-elf and we are going to eventually go with the archfey patron for warlock. So it's very thematically consistent (not always the case). Next, we get new spell preparation and I'm going to take silence. The reasoning here is that, it's another ritual so we can save some spell slots when we cast it out of combat. It also can help a lot with stealth and infiltration, which is one of our proficiencies. Finally, we can still cast our psion spells even in an area of silence. So this is a great way to handicap enemy casters without nerfing our own capabilities too much. 
+
+
+
+
+Level-06: Psion-05 (Psi Warper), Warlock-01
+ - psionic power (6d8 psionic dice) 
+   * telekinetic propel: BA; STR save or push/pull target creature PE die x10 ft; range 30ft
+   * warp propel: when enemy fails save against telekinetic propel, teleport it to unoccupied location w/in 30ft of you
+   * telepathic connection: telepathy w/in 5ft; expend die to expand range to PE die x 10 for psion-lvl min
+   * teleportation: can cast misty step by expending 1 psionic energy die
+ - psionic restoration (x1/LR)
+   * regain 1/2 psionic energy dice after short rest  
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (2): blade ward, prestidigitation
+ - spell slots: 5_{1}-3-2
+ - spells prepared: 9 (psion), 2 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R)
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): fly, tongues 
+   * lvl-3 (psi warper): blink, haste 
+       
+NOTE: Go psion-05. This levels up our psionic energy dice (to 6d8) and gets us psionic restoration, which allows us to recover 3 dice on a short rest once per day (so 9 total). This means even more misty steps, more damage/damage reduction from psionic backlash, and more versatility to use devilish tongue, warp propel, and psionic modes abilities as needed. For spellcasting, we get 2 lvl-03 slots, and 2 new preparations. First off we take fly. While it does require our concentration, with fly we have a movement speed of 60ft (plus more with misty steps) and we can use warp propel to teleport enemies into the air and drop them (sweet). Positioning ourselves in vertical space also helps us avoid taking hits when we don't want to, which is good since we're still very fragile. It also has obvious out of combat utility. Next I think we take tongues. With our influence skill proficiencies, devilish tongue, and pact of the talisman, we are likely our party's face. Tongues lets us fill that role in pretty much any situation, and is consistent with our slick-talking big brain identity. Plus we likely won't have to use it very often, so we can save our spell slots for other things. The main alternative selection to mention here is bestow curse. We will eventually want to take this, since we can use it to impose disadvantage on saving throws, which will stack with mind sliver and (eventually) bane, and we don't mind getting into melee too much since we can just misty step away. But we don't need it just yet, since the only thing we're super hard targeting saving-throw-wise is warp propel (STR) and (maybe) command (WIS). So yeah, don't need it yet. Ok and then we also get psi-warper bound spells and we pick up blink and haste. If we don't need fly, then I think haste should be our go to concentration spell (when we have slots for it). It gives us double movement, a +2 to AC and (importantly) advantage on DEX saving throws. It also gives us an additional action each turn, which we can use to attack, dash, disengage, or *hide*. For us, the hide action is going to be the main one. With haste up, we can cast a spell/cantrip with our action, misty step with our BA, and then hide with our hasted action. With our proficiency in stealth (+4 to checks) and high mobility, we should be able to hide reasonably reliably, especially if we are able to use our pact of the talisman rolls on stealth checks (though this can be a bit wonky, since you don't always know if you've failed the ability check). This means we can become invisible (hidden) at the end of most turns, which represents a significant boost to our defenses, and allows us to kite in and out of combat and avoid getting hit. Blink is similarly a defensive ability. What's nice about it is it's not concentration. What isn't nice about it is that its effect procing depends on a die roll. In theory, we can use this in conjunction with haste or fly to make ourselves even harder to hit. But we probably won't do that very often. Now the downside of haste is that, if we are hit and drop concentration, we become incapacitated for a round. So we will want to avoid taking any hits while we have haste up, if we can help it. Between the extra defenses and mobility that the haste spell provides, psionic backlash, and our stealth proficiency, we should be able to use the spell reasonably safely even though we don't have any boosts to our CON saving throws (yet). 
+
+
+
+
+Level-07: Psion-06 (Psi Warper), Warlock-01
+ - teleporter combat 
+   * cast 1-action psion cantrip as part of same BA when you cast misty step 
+ - psionic power (6d8 psionic dice) 
+   * telekinetic propel: BA; STR save or push/pull target creature PE die x10 ft; range 30ft
+   * warp propel: when enemy fails save against telekinetic propel, teleport it to unoccupied location w/in 30ft of you
+   * warp space: expend 1 die when you cast shatter to expand radius to 20ft; creatures that fail save pulled to center
+   * telepathic connection: telepathy w/in 5ft; expend die to expand range to PE die x 10 for psion-lvl min
+   * teleportation: can cast misty step by expending 1 psionic energy die
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (2): blade ward, prestidigitation
+ - spell slots: 5_{1}-3-3
+ - spells prepared: 10 (psion), 2 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R)
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, fly, tongues 
+   * lvl-3 (psi warper): blink, haste 
+       
+NOTE: Alright, lvl-07 and we go psion-06 in order to gain the lvl-06 subclass feature `teleporter combat' and this is an important one. This feature lets us cast one of our psion cantrips that has a casting time of one action immediately after we cast the misty step spell. This means we can effectively `weaponize' our misty steps by immediately casting telekinetic fling or mind-sliver as part of the teleportation. Furthermore, when we cast misty step without a spell slot we can do this while still using our action to cast a different spell using a spell slot. Now all of a sudden, those free-castings of misty-step from high-elf/fey-touched are much more valuable. For example, we could cast haste on ourselves, then use a free-cast of misty step and cast telekinetic fling and then hide *all on turn 1*. Super clutch. Alternatively, we could BA misty step, use mind-sliver on a target to debuff their saving throws, and then use our action to cast shatter on them (which is also enhanced at this level) or do bestow curse. We could also just double up on telekinetic flings, doing something like `fling + misty-step + fling + hide' on our turn. At psi-warper-06 we also get the `warp space' ability, which allows us to expend a psionic die to alter the shatter spell when we cast it, increasing its radius by 10ft and giving it a gravity effect where it pulls creatures that fail the save to the center of the spells AOE (like the gravity sinkhole spell). This is somewhat situational, but grouping enemies up (and forced movement in general) can be really powerful. For example, we can cast shatter on a point 20ft above enemies and pull them into the air, dealing fall damage and causing them to fall prone. Or cast the spell centered on a point over a cliff or off the side of a bridge. You get it. In general shatter is still one of our best non-concentration damage dealing spells. So this feature just gives us a way to enhance it in the right situations. Now I still think we still want to prioritize using the psionic energy die for casting additional misty steps without spell slots, but this is definitely a nice option to have in our back pocket. Finally, we get a new 3rd level slot and spell preparation. Take bestow curse, since we are going to want it moving forward and this is our last chance for a few levels to change up our psion spells. 
+
+
+
+
+Level-08: Psion-06 (Psi Warper), Warlock-02
+ - eldritch invocations (3) 
+   * pact of the talisman = when you fail an ability check add 1d4 to the roll (no action); PB uses per LR 
+   * eldritch mind = advantage on CON saves to maintain concentration 
+   * lessons of the first ones (alert) 
+ - magical cunning (x1/LR)
+   * conduct a 1m ritual to recover 1/2 your pact magic spell slots (round up)
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (2): blade ward, prestidigitation
+ - spell slots: 6_{2}-3-3
+ - spells prepared: 10 (psion), 3 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, fly, tongues 
+   * lvl-3 (psi warper): blink, haste 
+       
+NOTE: Go warlock-02 and get 2 more invocations. Use one to get eldritch mind to give us advantage on CON saving throws to maintain concentration. This will make it a little less risky to use haste, which is our best concentration option at this level. Though even with eldritch mind, we will still want to avoid taking hits as much as possible. We use our other invocation to get the alert feat via lessons of the first ones. This allows us to add our proficiency bonus to our initiative (+4 now, +5 next level) making it more likely that we can do our set up and get to safety before we take any hits. We also get another pact magic slot, and the magical cunning feature, which lets us recover a pact magic slot with a 1m ritual. I would probably just use this after I cast mage armor on myself each day so I don't have to worry about that anymore. Now we have 6 first level slots, 2 of which recover on a first rest. This means more casts of charm person, command, bane, and armor of agathys. Nice. Finally, we get one new warlock spell preparation. There's nothing we really want/need, so I just took unseen servant. It's thematic and it's a ritual and it can be useful to have in out of combat/exploration scenarios. 
+
+
+
+
+Level-09: Psion-06 (Psi Warper), Warlock-03 (Archfey)
+ - proficiency bonus (PB): +4
+ - steps of the fey 
+   * cast misty step w/o spell slot xCHA/LR 
+   * when you cast, get additional effect:
+   * (i) refreshing step: +1d10 THP to you or one creature w/in 10ft 
+   * (ii) taunting step: WIS save or creatures w/in 5ft of origin are taunted 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (2): blade ward, prestidigitation
+ - spell slots: 4-5_{2}-3
+ - spells prepared: 10 (psion), 4 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): invisibility
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, fly, tongues 
+   * lvl-3 (psi warper): blink, haste 
+       
+NOTE: Ok key level here. We go warlock-03 and get our subclass: the archfey. For subclass features, we get steps of the fey and archfey spells. The big one for us here is steps of the fey, which allows us to cast misty step for free another two times per long rest (so 5 total, between psi-warper, high-elf, fey-touched, and now archfey). It also allows us to add additional effects whenever we cast misty step. We have two options here, and both are good. Refreshing step lets us give ourselves/an ally 1d10 THP when we misty step, boosting our survivability even further. And taunting step lets us give enemies disadvantage on creatures other than us if they fail a WIS save against our spell DC. This is a great control option if we can make it stick. Assuming we have haste up, we can use mind sliver on a target (imparting -1d4 on next saving throw), then run up to them and taunting step away, hit them with telekinetic fling and then use our hasted action to hide. If we succeed on the stealth check, then a target would have to use the search action to even see us and would have disadvantage on attacks against everyone else. Pretty strong debuff. Alternatively, we could concentrate on bestow curse, and do the same thing without hiding but they would have disadvantage and -1d4 on the save against taunt (-6.5 total on avg). So even though the DC for our taunting step is only 14, there would be a very good chance of it working. Our pact magic slots also increase to lvl-02 at this level, meaning we effectively have 6 second level slots (w/magical cunning), two of which recover on a SR. We can use all of these to cast misty step. Add in the 6 castings we can do with psionic energy die, and we can misty step a total of 17 times per day if we use all our resources to do so. Assuming four 4-round combats per day, this is more than enough to misty step every round. Now, this isn't how it will play out, but at this level we should be able to cast misty step on most rounds of every combat. This gives us great mobility and, thanks to our subclass features, damage and control/support effects to boot. Wrapping up here, in addition to misty step we also get other archfey bound spells. Unfortunately, none of them are very good. Sleep has some potential minor utility in stealth/infiltration, but our DC is low so it would only work on weak targets. Faerie fire is unlikely to work given our low warlock spell DC. Calm emotions is super situational, but could be helpful if you/your allies are afflicted by the charmed or feared conditions, or if you happen to be surrounded by some hostile NPCs/low level enemies that are likely to fail the save. So yeah, not great, but free spells are always appreciated. We also get one new spell preparation and we take invisibility. Great spell, great utility, and doesn't depend on our low warlock spell DC. Finally, our proficiency bonus increases, which helps offset the fact that we have delayed capping our INT.  
+
+
+
+
+Level-10: Psion-06 (Psi Warper), Warlock-04 (Archfey)
+ - ASI: +2 INT (INT=20)
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+ - spell slots: 4-5_{2}-3
+ - spells prepared: 10 (psion), 5 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, fly, tongues 
+   * lvl-3 (psi warper): blink, haste 
+       
+NOTE: Ok pretty simple level here. We go warlock-04 to and take an ASI to cap our INT at 20. We get an additional warlock cantrip, which isn't super impactful. I took minor illusion since it works well for stealth/infiltration and fits our tricksy-fey theme, but note that the DC for seeing through it/identifying it as an illusion will be low. Could be better to just take eldritch blast to have a long range damage option (though one with a lower chance to hit). We also get a new spell preparation and I went with mirror image. Hopefully we don't need this. But it is non-concentration and does give us additional defense against super hard hitting enemies. We can, of course, also cast this with our action and still misty step (w/a free-cast) to impose taunt/give ourselves THP. If we're using haste, we might consider casting this on our turn to further reduce the chance that we are hit and lose concentration. 
+
+
+
+
+Level-11: Psion-06 (Psi Warper), Warlock-05 (Archfey)
+ - cantrip scaling
+   * shocking grasp (3d8) 
+   * mind sliver (3d6) 
+   * telekinetic fling (3d10) 
+ - eldritch invocations (5) 
+   * pact of the talisman = when you fail an ability check add 1d4 to the roll (no action); PB uses per LR 
+   * eldritch mind = advantage on CON saves to maintain concentration 
+   * lessons of the first ones (alert) 
+   * lessons of the first ones (tough)
+   * lessons of the first ones (MI::cleric)
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+   * magic-initiate::cleric (2): guidance, thaumaturgy
+ - spell slots: 4-3-5_{2}
+ - spells prepared: 10 (psion), 6 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-1 (MI::cleric): cure wounds (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, fly, tongues 
+   * lvl-3 (psi warper): blink, haste 
+   * lvl-3 (warlock): fly
+   * lvl-3 (archfey): blink, plant growth 
+       
+NOTE: Ok kind of a weird level here. First off, we get cantrip scaling, which is extra great for us since we can easily make two cantrip attacks per round with our teleporter combat psi-warper ability. Then, we go warlock-05, which gets us two new invocations, upgrades our pact magic slots to lvl-03, and gives us a new spell preparation. For the invocations, the first one I'm going to take is magic-initiate (cleric). This is because I really want the cure wounds spell. As we move forward, our playstyle will more-and-more evolve around doing damage by getting enemies to attack us (via armor of agathys, psionic backlash, and -- next level -- misty escape). With our low AC, this will mean taking hits and currently we have no healing. Moreover, as we continue with psion levels moving forward, we will actually want to save our hit dice to use for class features (psionic surge) so we have in *less* effective healing. For all these reasons it makes sense for us to grab cure wounds so that we can cast it on ourselves as a burst heal when we need to. As a side benefit, with all our mobility this also makes us pretty good at being a triage medic and reviving fallen allies in combat. Ok MI::cleric also gives us two cantrips and we're going with guidance and thaumaturgy. These are both really good for us. Guidance can help us face/use influence skills even more effectively and we can also use it to boost our stealth/infiltration abilities out of combat. Side bonus we can provide additional support to our allies. Thaumaturgy is also pretty great. Not only is it very thematic for our character, but we can stack thaumaturgy, guidance, devilish tongue, and protection of the talisman to give ourselves advantage and +2d4 +1d8 (+14) on an intimidation check. With our +2 CHA and proficiency in intimidation (+4) that gives us a whopping +20, on average, to intimidation with only the use of a psionic energy die. Pretty cool, even if intimidation is somewhat niche. And would be super fun to RP. Plus, and this is the last thing I'll say on this, it's always fun to have a character with thaumaturgy, prestidigitation, and minor illusion (all non-concentration) for RP purposes. There are just so many cool possibilities/ways to fuck with people. Ok for our other invocation, we take the tough feat via lessons of the first ones. This boosts our HP by 22 (up from 73 to 95) making us much more durable. As we move forward, we are going to lean in to a `thorns' playstyle that requires taking hits. Given our low hit die, we will need the extra HP from tough to do this effectively. Next, our pact magic slots level up to lvl-03. This is nice since it means we can cast haste/bestow curse/fly much more reliably in combat. We also get two archfey bound spells: blink (which we already had) and plant growth. Plant growth is actually super nice, since it is non-concentration and offers superior control in situations when it's applicable but those situations are relatively uncommon (have to be fighting in a vegetated area). So we will like casting it when it's relevant and it won't interfere with our basic playstyle, but it also isn't butting in on our resource budget for spellcasting. Kind of ideal. Finally, at warlock-05 we also get one new spell preparation of third level or lower. And here I'm actually going to take the fly spell, even though we already have it prepared as a psion spell. This is because, we are going to be headed back to taking psion levels shortly, and when we do we can switch out spells like fly and tongues (that don't depend on our spell DC) as we continue to take levels. Having these spells as warlock spells (where we don't care about our lower DC) means we can do this without losing functionality. Plus, because of the way we've multiclassed, we have *a lot* of different spells we can cast of 3rd level or lower. More than we have slots for, honestly. So I don't think we mind sacrificing the additional versatility now in order to improve our spell list at later levels, when we have access to higher level spells. There also aren't very many other super appealing options for warlock spells that don't depend on a spell DC (like remove curse?, magic circle?, gaseous form? well, gaseous form could be ok, but you get the point). Ok moving on. 
+
+
+
+
+Level-12: Psion-06 (Psi Warper), Warlock-06 (Archfey)
+ - misty escape 
+   * you can cast misty step as a reaction in response to taking damage 
+ - steps of the fey 
+   * cast misty step w/o spell slot xCHA/LR 
+   * when you cast, get additional effect:
+   * (i) refreshing step: +1d10 THP to you or one creature w/in 10ft 
+   * (ii) taunting step: WIS save or creatures w/in 5ft of origin are taunted
+   * (iii) disappearing step: invisible until the start of your next turn, or until after you make an attack/cast a spell
+   * (vi) dreadful step: creatures w/5ft of your origin/destination must make a WIS save or take 2d10 psychic damage 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+   * magic-initiate::cleric (2): guidance, thaumaturgy
+ - spell slots: 4-3-5_{2}
+ - spells prepared: 10 (psion), 7 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-1 (MI::cleric): cure wounds (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, fly, tongues 
+   * lvl-3 (psi warper): blink, haste 
+   * lvl-3 (warlock): fly, tongues
+   * lvl-3 (archfey): blink, plant growth 
+
+NOTE: Ok super fun level here. We go warlock-06 to get the misty escape subclass feature from archfey. This lets us cast misty step as a reaction in response to taking damage. In combination with our teleporter combat feature from psi-warper, this means we can use misty step and then cast a cantrip like telekinetic fling or mind sliver on an enemy *as a reaction*. So through the combination of these two features, we've effectively weaponized our reaction even further (on top of psionic backlash). Now, when an enemy attacks us it's possible for them to (i) take damage from armor of agathys, (ii) take damage from dreadful step and (iii) take damage from the cantrip we cast as a part of dreadful step. With lvl-03 armor of agathys, this would be 15 + 2d10 (dreadful step) + 3d10 (telekinetic fling) = 42.5dmg with our reaction. Super nasty. Now, I think a skeptical DM might rule that the teleporter combat feature only works when you cast misty step as a BA since the feature specifically says you can cast one of your psion cantrips that has a casting time of 1 action 'as part of the Bonus Action'. But my reading is that the feature is written assuming you can only cast misty step as a BA, which is exclusively the case *unless* you have the misty escape feature. So I don't think it is intended to preclude the interaction with the steps of the fey feature. Now, using misty step as a reaction does mean that we can potentially cast it 2x per round, which means we will burn through our uses of it faster. But our character has a lot of mobility and escapability (through invisibility/hiding), so we have a fair amount of control over when we are likely to be attacked. Given this, I think we can be judicious about when we want to try and bait out an attack and deal damage with our reaction, versus when we want to hide/become invisible and stay safe. In general, I probably wouldn't try to bait enemy attacks while I'm concentrating on the haste spell, since the downside of losing concentration there is pretty harsh. But if we are concentrating on something like bane or bestow curse, then I think we can try to engage in the thorns playstyle a bit more, especially if we can target enemies that don't hit super hard with melee attacks. Certainly having the extra HP from tough makes this an option here. It's also worth pointing out that we can use misty escape in response to taking any damage, regardless of whether the source of damage is an enemy. This means we can do things like take fall damage, or damage from environmental hazards in order to deal more damage to enemies with dreadful step/teleporter combat. As we've already discussed a bit, misty escape gives us two new options for steps of the fey. Dreadful step which deals damage either on arrival or departure, and disappearing step which gives us the invisible condition. Dreadful step is obviously our go to damage option, and works best if we can set it up with bane/bestow-curse/mind-sliver. There are too many setups to discuss here, but our least-cost damage dealing combo with this would probably be to run up to an enemy, use mind-sliver on them, then dreadful step away and use telekinetic fling. This would deal 3d6 + 5d10 (38) damage if they fail the save, which is pretty good. If we know a target has a poor WIS save, then we could just use shocking grasp or telekinetic fling to boost this damage even further. Obviously if we have haste up, we can add a hide action to this combination. Another noteworthy combo is to use taunting step to teleport to the other side of a creature we're already in melee with, then use mind-sliver with teleporter combat, then use our action to cast bestow-curse/bane on them. Now the target is strongly incentivized to attack us, and when they do we can use dreadful step and they will have severe penalties on the saving throw against it. In general, casting mind-sliver when you use misty-escape as a reaction is very nice since it sets up the enemy to fail on the first save that they have to make on your next turn. Disappearing step is a good defensive option, and works well as part of set-up turns. For example, cast haste with your action, BA disappearing step and then dash with your hasted action to get yourself in position quickly. Or run up to an enemy, cast bestow curse and then disappearing step away and become invisible so they can't see you to break concentration. Or cast blink on yourself and then cast disappearing step so that no one has any idea where you will appear next turn. The obvious downside is if we use our teleporter combat ability to cast a cantrip after using disappearing step, this well break our invisibility. That said, if we do do this, we can give ourselves advantage on the telekinetic fling we make as part of our disappearing step (since we'll be invisible and thus have advantage when we make the attack roll). So not a total loss. Anyway, this has obviously gone on too long, but it's fun to think about all the utility/options you have given these new steps of the fey options. In general, I think using dreadful step to try and deal damage (both with you BA on your turn, and potentially with your reaction on enemy turns) should be the priority. But we should also still use taunting step, refreshing step, and disappearing step when those options are more suitable. Nice to have such incredible versatility. Alright, and finally we also get a new warlock spell preparation. Take tongues even though we already have it as a psion spell, so we can switch it out once we start taking psion levels again. 
+
+
+
+
+Level-13: Psion-07 (Psi Warper), Warlock-06 (Archfey)
+ - proficiency bonus (PB): +5
+ - psionic surge 
+   * when you roll initiative, expend on hit point dice to regain a use of psionic modes 
+   * when you roll 1 or more psionic dice, expend 1 hit dice to treat a 1, 2, or 3 as a 4
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+   * magic-initiate::cleric (2): guidance, thaumaturgy
+ - spell slots: 4-3-5_{2}-1
+ - spells prepared: 11 (psion), 7 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-1 (MI::cleric): cure wounds (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, fear, fly 
+   * lvl-3 (psi warper): blink, haste 
+   * lvl-3 (warlock): fly, tongues
+   * lvl-3 (archfey): blink, plant growth 
+   * lvl-4 (psion): greater invisibility
+   * lvl-4 (psi-warper): banishment, dimension door
+
+NOTE: Alright, lvl-13 and we go psion-07. We get the psionic surge class feature, which lets us expend hit dice to either (i) restore a use of psionic modes when we roll initiative or (ii) treat a 1, 2, or 3 as a 4 on rolled psionic energy dice. In general, I would imagine option (ii) being most useful for us when we use our psionic backlash ability, as it could prevent us from taking a hit if we don't want to while simultaneously increasing the damage we deal with this ability. We aren't super dependent on our psionic modes ability, so I would probably not waste hit dice on that. But nice to have options. Then, at psion-07 we also get a lvl-04 spell slot and lvl-04 spells. From psi-warper we get banishment and dimension door, which are both fantastic. We also get 1 new spell preparation plus we get to switch out one of those spells that we took as a warlock the past few levels. So two new spells. Given that we only have a single 4th level spell slot, I think we have to take greater invisibility. This just works so well with our general playstyle, since we can become invisible and then still BA misty step all over the place to deal damage and taunt enemies. Obviously, if we're trying to get hit to proc damage with our reaction, this isn't the greatest. But it's so strong as a defensive option, and more impactful in a single fight than any other spell available to us at this level. Then, for our second preparation, I'm going to switch out tongues for the fear spell. While it does require concentration, fear is a super powerful AOE control spell and that's an area where our character is a bit lacking. Plus it's super thematic. It's also nice to add another 3rd level spell that we want to cast, since that's the level of our pact magic slots. In terms of other spells we could have selected, honorable mentions include: arcane eye, psychic lance, charm monster, dispel magic, and clairvoyance. Right and at character lvl-13 we also get a proficiency bonus increase. Nice. 
+
+
+
+
+Level-14: Psion-08 (Psi Warper), Warlock-06 (Archfey)
+ - feat: resilient (CON)
+   * ASI: +1 CON (CON=16)
+   * gain proficiency in CON saving throws
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+   * magic-initiate::cleric (2): guidance, thaumaturgy
+ - spell slots: 4-3-5_{2}-2
+ - spells prepared: 12 (psion), 7 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-1 (MI::cleric): cure wounds (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, dispel magic, fear 
+   * lvl-3 (psi warper): blink, haste 
+   * lvl-3 (warlock): fly, tongues
+   * lvl-3 (archfey): blink, plant growth 
+   * lvl-4 (psion): greater invisibility, raulothim's psychic lance 
+   * lvl-4 (psi-warper): banishment, dimension door
+
+NOTE: Alright, we go psion-08 and we get resilient (CON) which gives us +1 to CON, bumping us up to CON=16 (+3), and proficiency in CON saving throws. Now we have a +8 CON save and we have advantage thanks to eldritch mind. And with this feat I think the thorns playstyle is officially on the table for this character. With advantage and a +8, our average roll on a CON save is a 22. That means unless we take 44 damage or more from a single hit we're likely going to save. With a super robust CON save and the extra HP from tough, I think we can officially feel pretty good about getting up close and personal with enemies in order to bait them into attacking us so that we can deal damage with our reaction. This being an option also increases the utility of armor of agathys, which we can upcast pretty effectively with our abundance of lvl-03 slots. We also get two new psion spells (one new preparation, one from switching out fly since we have it as a warlock spell), and I'm taking psychic lance and dispel magic. Psychic lance is good because it deals decent damage, doesn't require concentration, and synergizes well with mind-sliver which we can cast as a BA when we misty step. Basically, we could do a refreshing step, cast mind-sliver, then use our action to cast psychic lance and incapacitate an enemy for the round, all while maintaining our concentration on greater invisibility, haste, fear, bane, or bestow curse. Now it's a high level move, so we can't do it often, but definitely a combo I would consider dropping on the big bad if/when they show up. And obviously, very thematic for our character. As for dispel magic, it's also non-concentration and upcasts very well. Not as thematic, but just a super useful spell to have in high-level play. And again, it's nice to have more options at lvl-03, since we're likely using most of our level 2 slots to cast misty step and our pact magic slots (which recover on a SR) are lvl-03. 
+
+
+
+
+Level-15: Psion-09 (Psi Warper), Warlock-06 (Archfey)
+ - psionic power (8d8 psionic dice) 
+   * telekinetic propel: BA; STR save or push/pull target creature PE die x10 ft; range 30ft
+   * warp propel: when enemy fails save against telekinetic propel, teleport it to unoccupied location w/in 30ft of you
+   * telepathic connection: telepathy w/in 5ft; expend die to expand range to PE die x 10 for psion-lvl min
+   * teleportation: can cast misty step by expending 1 psionic energy die
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (2): mind sliver, telekinetic fling
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+   * magic-initiate::cleric (2): guidance, thaumaturgy
+ - spell slots: 4-3-5_{2}-3-1
+ - spells prepared: 14 (psion), 7 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-1 (MI::cleric): cure wounds (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, dispel magic, fear 
+   * lvl-3 (psi warper): blink, haste 
+   * lvl-3 (warlock): fly, tongues
+   * lvl-3 (archfey): blink, plant growth 
+   * lvl-4 (psion): greater invisibility, raulothim's psychic lance 
+   * lvl-4 (psi-warper): banishment, dimension door
+   * lvl-5 (psion): mislead, rary's telepathic bond (R)
+   * lvl-5 (psi-warper): steel wind strike, teleportation circle
+
+NOTE: Alright, level-15 and we go psion-09. Our psionic dice upgrade to 8d8, giving us an additional two slot-free casts of misty step, which is great (13 free casts). We also get 5th level spells and two new preparations. For bound spells, we get steel wind strike which is awesome but does mean that we will have to actually carry a weapon with us (kind of incredible that, we've only had needles/our arcane focus up to this point). A simple dagger will suffice. We also get teleportation circle which can definitely come in handy. But honestly, I think the big draw of the 5th level slot is being able to upcast bestow curse so that it no longer requires concentration. Now it's risky, but if we set it up with mind-sliver, we can impose disadvantage on WIS saves without concentration, leaving us free to concentrate on bane/haste/fly/greater invisibility/banishment, etc. Consider this -- we BA refreshing step up to an enemy (no slot), use mind-sliver to give a 1d4 penalty on saves, then upcast bestow-curse at lvl-05. The average challenge rating 15 monster has a WIS save modifier of +6. So on a DC-18 save with a -1d4 (2.5) penalty they would have a ~70% chance of failure. Now they have disadvantage on WIS saves for the duration. Next turn, you cast bane on them (-1d4 to saves) and then dreadful step next to them and cast mind-sliver again. Using this combo you could effectively give them disadvantage and -2d4 on WIS saves (-8.5, on avg), which is amazing. Not only would you be almost guaranteed to land your dreadful step damage, but you could also incapacitate the enemy with command every round while still using misty step to deal damage. Wild. Ok so then, given that we might want to save our 5th level slot to try this, I think our preparations should focus on out-of-combat and utility. For this reason, I went with rary's telepathic bond and mislead. Telepathic bond is a ritual, is thematic, and probably no one else in the party has it. Mislead is also thematic, and is great on a character with high influence skills. It's also likely only ever going to be used out of combat, so it won't compete with our ability to use steel wind strike/bestow curse/teleportation circle. Overall, I like these selections since we have a variety of options for things to do with our lvl-05 spell slot, all of which are pretty good. So it will just depend on the situation. 
+
+
+
+
+Level-16: Psion-10 (Psi Warper), Warlock-06 (Archfey)
+ - duplicitous target
+   * reaction to expend psi die and switch places with a willing creature w/in 30ft when attacked
+ - psionic disciplines (4) 
+   * devilish tongue = when you take influence action, you can expend 1 psionic die and add it to the roll 
+   * psionic backlash = when hit with attack roll, use rxn and expend 1 die and roll 2 to reduce attack roll by rolled total; 
+                        additionally, enemy makes WIS save or takes psychic dmg equal to rolled total
+   * id insinuation = when you cast an enchantment/illusion psion spell, expend 2 die to roll 1 die and subtract from enemy save
+   * tactical mind = when you take study action, you can expend 1 psionic die and add it to the roll
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (3): mind sliver, telekinetic fling, friends
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+   * magic-initiate::cleric (2): guidance, thaumaturgy
+ - spell slots: 4-3-5_{2}-3-2
+ - spells prepared: 15 (psion), 7 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-1 (MI::cleric): cure wounds (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, dispel magic, fear 
+   * lvl-3 (psi warper): blink, haste 
+   * lvl-3 (warlock): fly, tongues
+   * lvl-3 (archfey): blink, plant growth 
+   * lvl-4 (psion): greater invisibility, raulothim's psychic lance 
+   * lvl-4 (psi-warper): banishment, dimension door
+   * lvl-5 (psion): contact other plane (R), mislead, rary's telepathic bond (R), 
+   * lvl-5 (psi-warper): steel wind strike, teleportation circle
+
+NOTE: Right, psion-10 and we get our 10th level subclass feature. Duplicitous target lets us expend a psionic energy die and use a reaction to switch places with another willing creature if we're targeted by an attacker we can see with an attack roll and the willing switcher is within 30ft of us. This could be good if we're concentrating on an important spell like banishment, and don't want to lose our concentration. Or if we're low on hit point and need someone else to tank for us. In the end, it gives us even greater control over when we take damage, which is nice. But ultimately, we can do a lot of damage to enemies when they hit us with attacks so we sort of want them to target/hit us. Plus, we already have psionic backlash which we can use to impose -2d8 (9) on any attack roll likely turning hits into misses. So yeah, marginal extra utility but certainly not a banger feature. Then at psion-10 we also get another 5th level spell slot and one new spell preparation. I wouldn't over think this. I took contact other plane since it's a ritual and we can use psionic modes (defense mode) to give ourselves +1d8 on the save required to make the spell work. With proficiency, INT=20, and +1d8, we would have +14.5 to the roll and it's only a DC-15 check. So if we don't roll a 1 we would pass. Just do it right before long resting and you should be fine. But this is additional utility that you can provide to the party every day without further imposing on your spellcasting resources. It's also very thematic since the spell functions almost exactly like a warlock's contact patron ability. Oh yeah and we also get a 3rd psion cantrip. I took friends here, but I think true-strike would be better if there were any (ranged) magic weapons that we wanted to attune to/use. Friends just seems thematic and fun could be fun to RP with. Might have some situational utility in social encounters/situations, too. But it really doesn't matter. Finally, at psion-10 we also get two new psionic disciplines. I think the first selection is obvious, we should take `id insinuation' which allows us to expend psionic energy dice to impose a penalty on enemy saves against our illusion/enchantment psion spells. Right now this includes: charm person, command, tasha's hideous laughter, suggestion, fear, psychic lance and banishment. So lots of good candidates. Psychic lance and banishment are especially great, since they're high level spells and have debilitating control effects if they work. For our 4th psionic discipline, I would probably take the `tactical mind' option. We have high INT and proficiency in many `study' skills (arcana, history, investigation) so we can use this in combination with protection of the talisman to kick ass at those skill checks when needed. Honestly, there aren't too many great options. Inerrant aim could help us land telekinetic flings or attacks with steel wind strike, but we'd prefer to save our dice for more misty steps. Similarly, ego whip would give us a decent option to use with our reaction, but we kind of want to save our reaction to use misty escape or psionic backlash. So, yeah, I think just boosting our skill proficiencies is the best option. 
+
+
+
+
+Level-17: Psion-11 (Psi Warper), Warlock-06 (Archfey)
+ - proficiency bonus (PB): +6 
+ - cantrip scaling: 
+   * shocking grasp (4d8)
+   * mind sliver (4d6) 
+   * telekinetic fling (4d10) 
+ - psionic power (8d10 psionic dice) 
+   * telekinetic propel: BA; STR save or push/pull target creature PE die x10 ft; range 30ft
+   * warp propel: when enemy fails save against telekinetic propel, teleport it to unoccupied location w/in 30ft of you
+   * telepathic connection: telepathy w/in 5ft; expend die to expand range to PE die x 10 for psion-lvl min
+   * teleportation: can cast misty step by expending 1 psionic energy die
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (3): mind sliver, telekinetic fling, friends
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+   * magic-initiate::cleric (2): guidance, thaumaturgy
+ - spell slots: 4-3-5_{2}-3-2-1
+ - spells prepared: 16 (psion), 7 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-1 (MI::cleric): cure wounds (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, dispel magic, fear 
+   * lvl-3 (psi warper): blink, haste 
+   * lvl-3 (warlock): fly, tongues
+   * lvl-3 (archfey): blink, plant growth 
+   * lvl-4 (psion): greater invisibility, raulothim's psychic lance 
+   * lvl-4 (psi-warper): banishment, dimension door
+   * lvl-5 (psion): contact other plane (R), mislead, rary's telepathic bond (R), 
+   * lvl-5 (psi-warper): steel wind strike, teleportation circle
+   * lvl-6 (psion): mass suggestion
+
+NOTE: Level-17 and we get a boost to our proficiency bonus *and* we get cantrip scaling. Our vanilla telekinetic fling + dreadful step + telekinetic fling combo would now do 10d10 (55) damage, which is pretty good considering we can do this almost an unlimited number of times. If we do something like: telekinetic fling + taunting-step + mind-sliver -- provoke an enemy to attack us, then do -- dreadful step + telekinetic fling with our reaction. Assuming we have a lvl-03 armor of agathys up, this would do 4d10 + 4d6 + 2d10 + 4d10 + 15 = 10d10 + 4d6 + 15 = 84 damage. Sweet! And we could spike this even further by using our action to cast steel wind strike or psychic lance. So yeah, when you add it all up, we are capable of delivering a lot of damage even though 90% of our spell list is utility/control spells. Lovely. Next, at psion-11 we get a 6th level spell slot, a new spell preparation and access to 6th level spells. For our character, there's really only one spell that I think this character needs from the psion list and that's mass suggestion. Super powerful in the right circumstances. Super thematic, and won't always be needed, meaning we could just use our 6th level slot to upcast armor of agathys, bestow curse, or use steel wind strike again. Also, our psionic energy dice level up to d10s (though they don't increase in quantity). This means when we use psionic backlash we can reduce an enemy attack roll by an average of 11. Even with our crappy AC that's likely to turn a hit into a miss. And if we need to we can use psionic surge to ensure a roll of 4 or higher on each d10, meaning the lowest debuff we can get is -8. So even with AC-14, we can reliably make attack rolls lower than 21 miss if we have to, and on average attack rolls of 24 or lower will still miss when we use psionic backlash.  
+
+
+
+
+Level-18: Psion-12 (Psi Warper), Warlock-06 (Archfey)
+ - feat: skulker 
+   * ASI: +1 DEX (DEX=13) 
+   * blindsight: you gain blindsight out to 10ft 
+   * fog of war: you have adv. on stealth checks to hide during combat 
+   * sniper: attack rolls that miss while hidden don't reveal your location
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (3): mind sliver, telekinetic fling, friends
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+   * magic-initiate::cleric (2): guidance, thaumaturgy
+ - spell slots: 4-3-5_{2}-3-2-1
+ - spells prepared: 16 (psion), 7 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-1 (MI::cleric): cure wounds (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, dispel magic, fear 
+   * lvl-3 (psi warper): blink, haste 
+   * lvl-3 (warlock): fly, tongues
+   * lvl-3 (archfey): blink, plant growth 
+   * lvl-4 (psion): greater invisibility, raulothim's psychic lance 
+   * lvl-4 (psi-warper): banishment, dimension door
+   * lvl-5 (psion): contact other plane (R), mislead, rary's telepathic bond (R), 
+   * lvl-5 (psi-warper): steel wind strike, teleportation circle
+   * lvl-6 (psion): mass suggestion
+
+NOTE: Alright, level-18 and we go psion-12 to pick up a new feat. And admittedly, this one is a bit strange. We're going to take the skulker feat. Ok so as a half feat, we can use skulker to boost our DEX to 13, which doesn't do anything for us but does set us up for another half feat at level-20. Then, in addition to the ASI, the skulker feat gives us 3 things. First it gives us 10ft of blindsight. Not crazy impactful right now, but we might actually make use of this next level. Second, it gives us the fog of war ability, which means we have advantage on stealth checks that we make during combat. So now when we have haste up, we can hide with advantage at the end of each of our turns. With stealth proficiency and a +1 DEX modifier, this means we'll have a +10.5 to hide checks in combat. Pretty good. Overall, this makes haste an even more effective defensive option for us. And it should probably be our go-to concentration spell if we aren't using greater invisibility or fly. Finally, the sniper ability means that we don't reveal our location if we miss with an attack roll while hidden. Nice little perk if we are kiting a target, but not game changing. Really, the main draw of the skulker feat is its synergy with haste. And with tough, eldritch mind, and CON save proficiency, we can feel pretty good about using haste and still tanking hits when we want to in order to cheat out more damage via armor of agathys, misty escape, and psionic backlash. I also think it's super cool to be able to make use of this feat -- which is normally reserved for rogues -- as a caster and non-weapon user. 
+
+
+
+
+Level-19: Psion-12 (Psi Warper), Warlock-07 (Archfey)
+ - eldritch invocations (6) 
+   * pact of the talisman = when you fail an ability check add 1d4 to the roll (no action); PB uses per LR 
+   * eldritch mind = advantage on CON saves to maintain concentration 
+   * lessons of the first ones (alert) 
+   * lessons of the first ones (tough)
+   * lessons of the first ones (MI::cleric)
+   * protection of the talisman = when you fail a saving throw add 1d4 to the roll (no action); PB uses per LR
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): shocking grasp  
+   * psion (3): mind sliver, telekinetic fling, friends
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+   * magic-initiate::cleric (2): guidance, thaumaturgy
+ - spell slots: 4-3-3-5_{2}-2-1
+ - spells prepared: 16 (psion), 8 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-1 (MI::cleric): cure wounds (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): darkness, invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, dispel magic, fear 
+   * lvl-3 (psi warper): blink, haste 
+   * lvl-3 (warlock): fly, tongues
+   * lvl-3 (archfey): blink, plant growth 
+   * lvl-4 (psion): greater invisibility, raulothim's psychic lance 
+   * lvl-4 (psi-warper): banishment, dimension door
+   * lvl-5 (psion): contact other plane (R), mislead, rary's telepathic bond (R), 
+   * lvl-5 (psi-warper): steel wind strike, teleportation circle
+   * lvl-6 (psion): mass suggestion
+
+NOTE: Alright, lvl-19 and we go warlock-07. We get one additional invocation, which we use to take protection of the talisman from Tasha's. This lets us add 1d4 to a failed saving throw proficiency bonus times per day (6x). Basically with this, we have as many protections for our CON save as we can get. We have advantage from eldritch mind, we have proficiency from resilient CON, and now we have this. This means when needed we can give ourselves a +11.5 to our CON save with advantage. So we'd roll a 26 on average. For everything except the biggest hits, this should allow us to maintain concentration. Next, at warlock-07 our pact magic slots upgrade to lvl-04 and we get a new spell preparation. The slots going to lvl-04 means we can use spells like greater invisibility, banishment, dimension door, and psychic lance more often. But we also still might just want to use them to cast haste, since that is now definitively our go-to concentration spell. Either way, higher level slots means more flexibility. For the new preparation, I took the darkness spell. This is because when we took skulker at lvl-18 we also gained blindsight within 10ft. This means we can effectively fight an enemy while enveloped in magical darkness if we want to, imposing disadvantage on their attacks while gaining advantage on ours. While a bit gimmicky for lvl-19, I think the synergy with skulker makes the darkness spell the best option that we can select at this level. There aren't really any 3rd level spells we want that don't depend on a high spell DC (again, gaseous form?). And there really aren't any good options at 4th level (like maybe hallucinatory terrain? But the investigation check to see through the illusion is based on our DC). Cloud of daggers could be good since it doesn't require a failed save to deal its damage, but at this point we probably have better uses for our concentration and high-level slots. If nothing else, darkness is a useful `escape hatch' spell that we can use if we get pinned down somewhere, especially since we can cast it and misty step in the same turn, leaving a enemy stranded in darkness, taunted, and unable to see where we went. It feels pretty thematic as well. And doing this doesn't require any high level spell slots. Of course, using the darkness spell effectively comes with all the usual caveats (enemies moving out of it, affecting allies etc.). 
+
+
+
+
+Level-20: Psion-12 (Psi Warper), Warlock-08 (Archfey)
+ - epic boon of dimensional travel 
+   * ASI: +1 DEX (DEX=14) 
+   * whenever you take the attack action or magic action, you can teleport 30ft to a location you can see
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): true-strike   
+   * psion (3): mind sliver, telekinetic fling, friends
+   * subtle telekinesis (1): mage hand (invisible, no somatic components) 
+   * warlock (3): blade ward, prestidigitation, minor illusion
+   * magic-initiate::cleric (2): guidance, thaumaturgy
+ - spell slots: 4-3-3-5_{2}-2-1
+ - spells prepared: 16 (psion), 9 (warlock) 
+   * lvl-1 (psion): charm person, command, identify (R), mage armor, tasha's hideous laughter
+   * lvl-1 (psi warper): expeditious retreat, feather fall
+   * lvl-1 (warlock): armor of agathys, comprehend languages (R), unseen servant (R)
+   * lvl-1 (archfey): faerie fire, sleep
+   * lvl-1 (high-elf): detect magic (R) 
+   * lvl-1 (fey-touched): bane (free x1/LR)
+   * lvl-1 (MI::cleric): cure wounds (free x1/LR)
+   * lvl-2 (psion): suggestion, silence (R)
+   * lvl-2 (psi warper): misty step (free x1/LR), shatter
+   * lvl-2 (warlock): darkness, invisibility, mirror image
+   * lvl-2 (archfey): calm emotions, misty step (free xCHA/LR)
+   * lvl-2 (fey-touched): misty step (free x1/LR)
+   * lvl-2 (high-elf): misty step (free x1/LR) 
+   * lvl-3 (psion): bestow curse, dispel magic, fear 
+   * lvl-3 (psi warper): blink, haste 
+   * lvl-3 (warlock): fly, tongues, gaseous form
+   * lvl-3 (archfey): blink, plant growth 
+   * lvl-4 (psion): greater invisibility, raulothim's psychic lance 
+   * lvl-4 (psi-warper): banishment, dimension door
+   * lvl-5 (psion): contact other plane (R), mislead, rary's telepathic bond (R), 
+   * lvl-5 (psi-warper): steel wind strike, teleportation circle
+   * lvl-6 (psion): mass suggestion
+
+NOTE: Finish out warlock-08 in order to get an epic boon. Really only one choice for this character: the epic boon of dimensional travel. It's weirdly even more impactful on our character than one who doesn't already have teleportation abilities. The kicker is the trigger condition for the free teleport afforded by the epic boon. It's any time we take the attack action *or* the magic action. Well if we cast a spell, then use misty step with our BA and cast a cantrip. That's three magic actions. So with epic boon of dimensional travel, we can teleport 3 separate times for free as part of our turn, not to mention the fourth teleport we get from actually casting misty step. This means we have 120ft of movement via teleportation on our turn, in addition to our 60ft movement speed (with haste). So 180ft total, no dashing required. Next, since we will always be able to disengage via teleport with this feat, we can switch out shocking grasp for true-strike as our high-elf cantrip. With a +5 in intelligence, using true-strike with any weapon will be at least as good as shocking grasp and at this level we are likely to have some interesting magic weapons that do other things. So we might as well make use of those. Finally, we get one additional spell preparation. I took gaseous form, since it can be upcast on multiple targets, is kind of thematic, and has some interesting out of combat uses. The only other option I would consider taking is cloud of daggers, but we would have to do a number of things differently to build around it. Plus, as a lvl-02 concentration spell, on its own, it isn't worth casting. And we have better things to do with our high level slots, even if we're just trying to do damage. So yeah, take gaseous form. Ok and that's it for the build. Overall, I think this would be very fun to play. It takes a little while to get going, but is very thematically and mechanically consistent all the way through. Plus by the end of our career we just have so much mobility and escapability it's kind of nuts. I think DMing against this character would be an absolute nightmare. 
+
+

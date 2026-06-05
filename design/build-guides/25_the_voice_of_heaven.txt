@@ -1,0 +1,904 @@
+Moniker: The Voice of Heaven 
+Classes: Warlock-10 (Celestial), Bard-10 (Glamour) 
+Species: Aasimar (Elven lineage)
+ - size: medium 
+ - speed: 30ft 
+ - celestial resistance: resistance to radiant/necrotic damage
+ - darkvision 60ft 
+ - healing hands: magic action; touch; restore PB d4s HP; x1/LR
+ - light bearer: know light cantrip 
+ - lvl-3: celestial revelation (x1/LR) 
+   * BA to activate 
+   * while transformed, deal PB extra dmg to 1 target / round with attack/spell
+   * three options: 
+     + heavenly wings: gain fly speed = to your speed 
+     + inner radiance: at end of your turn, each creature w/in 10ft takes PB radiant dmg
+     + necrotic shroud: enemies w/in 10ft make CHA save (DC=8+CHA+PB) or be frightened
+Sex: Female 
+Background: hymnodist (someone who writes hymns) 
+ - modified version of `acolyte' background from 2024 PHB
+ - ability scores: INT, DEX, CHA 
+ - feat: magic-initiate (cleric)
+ - skill proficiencies: performance, religion
+ - tool proficiency: calligrapher's supplies 
+ - languages: common, common sign language, celestial
+ - equipment: 50 gp
+Point-Buy Stats: 
+ - STR = 8 
+ - DEX = 15 (+1) = 16 
+ - CON = 14 
+ - INT = 8 
+ - WIS = 10
+ - CHA = 15 (+2) = 17 
+ASI's/Feats
+ - lvl-00: magic-initiate (cleric)
+ - lvl-02: musician (via lessons of the first ones)
+ - lvl-06: fey-touched (CHA=18)
+ - lvl-08: war caster (CHA=19)
+ - lvl-13: ASI, +1 DEX, +1 CHA (DEX=17, CHA=20) 
+ - lvl-18: resilient DEX (DEX=18)  
+PROGRESSION SUMMARY
+ - lvl-01: warlock-01 -------------------------------- armor of shadows
+ - lvl-02: warlock-02 -------------------------------- magical cunning, pact of the tome, lessons of the first ones (musician)
+ - lvl-03: warlock-02, bard-01 ----------------------- inspiration, new cantrips, celestial revelation
+ - lvl-04: warlock-02, bard-02 ----------------------- expertise, jack of all trades
+ - lvl-05: warlock-02, bard-03 (glamour) ------------- beguiling magic, mantle of inspiration 
+ - lvl-06: warlock-02, bard-04 (glamour) ------------- fey-touched: compelled duel, misty step (+1 CHA, CHA=18)
+ - lvl-07: warlock-03 (celestial), bard-04 (glamour) - celestial spells, healing light
+ - lvl-08: warlock-04 (celestial), bard-04 (glamour) - war caster (+1 CHA, CHA=19)
+ - lvl-09: warlock-04 (celestial), bard-05 (glamour) - font of inspiration, d8 bardic die, bestow curse
+ - lvl-10: warlock-04 (celestial), bard-06 (glamour) - mantle of majesty
+ - lvl-11: warlock-05 (celestial), bard-06 (glamour) - agonizing blast, pact of the talisman, celestial spells 
+ - lvl-12: warlock-05 (celestial), bard-07 (glamour) - countercharm
+ - lvl-13: warlock-05 (celestial), bard-08 (glamour) - ASI: +1 DEX (DEX=17), +1 CHA (CHA=20)
+ - lvl-14: warlock-06 (celestial), bard-08 (glamour) - radiant soul 
+ - lvl-15: warlock-06 (celestial), bard-09 (glamour) - expertise 
+ - lvl-16: warlock-06 (celestial), bard-10 (glamour) - magical secrets (spirit guardians, fire shield) 
+ - lvl-17: warlock-07 (celestial), bard-10 (glamour) - 4th level slots, protection of the talisman, celestial spells
+ - lvl-18: warlock-08 (celestial), bard-10 (glamour) - resilient (+1 DEX, DEX=18) 
+ - lvl-19: warlock-09 (celestial), bard-10 (glamour) - contact patron, 5th-lvl slots, gift of the protectors, celestial spells
+ - lvl-20: warlock-10 (celestial), bard-10 (glamour) - celestial resilience
+
+CONCEPT NOTES: 
+ - Use pact of the tome to get word of radiance as a warlock spell
+ - Take agonizing blast and get lvl-6 celestial `radiant soul' ability 
+ - Have warcaster feat
+ - Use glamour bard lvl-6 ability to cast command as a BA without a spell slot 
+ - Use action, reaction, and BA to cast command on multiple creatures, either directing them to approach or `halt' if they're already close 
+ - Be an aasimar with inner radiance celestial revelation
+ - Use word of radiance + inner radiance to deal great damage in AOE 
+
+THEMATIC CONCEPT NOTES: 
+ - bene gesserit but with a celestial overhaul
+ - lady Galadriel shadow-elf magic 
+ - vocal-based magic
+
+COMMENTS: 
+ - At level-18 (warlock-08, bard-10) I think you can either finish by going warlock-10 or by going bard-12 
+ - going bard would give you additional magical secrets, level 6 spells (mass suggestion, sunbeam, bubbling 
+   cauldron, word of recall, planar ally), and an epic boon (epic boon of recovery)
+ - going warlock gets you contact patron, a subclass feature that's similar to inspiring leader, and additional 
+   invocations including gift of the protectors (which is like death ward for your whole party). 
+ - the downside of warlock is that you would top out at 5th level spells
+ - either is good, I think I like the balance of a true multiclass (10-10), so I'm going to go with that
+ - Also, note that I use the pact of the talisman and protection of the talisman options from Tasha's for this build. 
+   They aren't super OP or even central to the build, but I like them better than other options. Obvi would have to 
+   OK this with your DM. 
+
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+#######
+Level-01: Warlock-01
+ - feat: magic-initiate (cleric) 
+   * cantrips (2): spare the dying, thaumaturgy 
+   * lvl-1 (magic-initiate): bless (free x1/LR) 
+ - saving throw proficiencies: WIS, CHA  
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * warlock (2): deception, intimidation    
+   * hymnodist (2): performance, religion
+   * languages (3): common, elvish, celestial 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons
+   * armor: light armor
+   * tools: calligrapher's supplies (hymnodist)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (background) + 100gp (warlock)
+   * weapons: none
+   * armor: none
+   * tools: calligrapher's supplies (10gp)
+   * gear:  arcane focus, crystal (10gp),
+            scholar's pack (40gp), scroll case (1gp)
+            robe (1gp), fine clothes (15gp), perfume (5gp)
+            book (25gp), lyre (30gp)      
+   * trinkets: painted fan (no.74 on trinket table)
+   * spare coin: 13gp
+ - combat equipment:
+   * weapon: none
+   * armor: none 
+   * unarmored AC: 13+3(DEX)=16 with mage armor
+ - eldritch invocations (1) 
+   * armor of shadow = can cast mage armor w/o spell slot 
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, mind-sliver 
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+ - spell slots: 1_{1} 
+ - spells prepared: 2 (warlock)
+   * lvl-1 (warlock): bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+ 
+NOTE: Use mind sliver + tasha's hideous laughter. Use bless to buff allies. You have decent AC with armor of shadows, so just stay alive. 
+
+
+#######
+Level-02: Warlock-02
+ - feat: musician
+   * instrument training = gain tool proficiency with 1 musical instrument (viol)
+   * inspiring song = as you finish a SR or LR, you play a song and give 
+                      heroic inspiration to up to PB allies who can hear you
+  - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons
+   * armor: light armor
+   * tools: calligrapher's supplies (hymnodist)
+   * instruments: lyre, flute, harp
+ - eldritch invocations (3) 
+   * armor of shadow = can cast mage armor w/o spell slot 
+   * pact of the tome = +3 cantrips, +2 lvl-1 rituals
+   * lessons of the first ones = gain one origin feat (musician)
+ - magical cunning 
+   * 1m rite to recover half pact magic spell slots
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, mind-sliver 
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+ - spell slots: 2_{2} 
+ - spells prepared: 3 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+
+NOTE: Add musician to bolster support capabilities (bane/bless). Get pact of tome in order to get word of radiance as a warlock spell. Guidance further adds to supportive capacity. Reflavor thorn whip as `alluring gaze' and have it do psychic damage, otherwise, it's mechanically the same.  Use this and tasha's hideous laughter (THL) for control. When you cast THL, do it like you use message, whisper a joke into your hand and then send it to your target. Even though you aren't that scholarly/intelligent, you have an innate comprehension of language and music (granted by patron) -- giving you comprehend languages and detect magic. Play it sweet and holy, but with a darker/sinister edge underneath.  
+
+
+#######
+Level-03: Warlock-02, Bard-01 
+ - celestial revelation (x1/LR) 
+   * BA to activate 
+   * while transformed, deal PB extra dmg to 1 target / round with attack/spell
+   * three options: 
+     + heavenly wings: gain fly speed = to your speed 
+     + inner radiance: at end of your turn, each creature w/in 10ft takes PB radiant dmg
+     + necrotic shrouhd: enemies w/in 10ft make CHA save (DC=8+CHA+PB) or be frightened
+ - skill proficiencies: 
+   * warlock (2): deception, intimidation    
+   * hymnodist (2): performance, religion
+   * bard (1): persuasion
+   * languages (3): common, elvish, celestial 
+  - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons
+   * armor: light armor
+   * tools: calligrapher's supplies (hymnodist)
+   * instruments: lyre, flute, harp, viol
+ - bardic inspiration (3d6) 
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, mind-sliver 
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (2): blade ward, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+ - spell slots: 4_{2} 
+ - spells prepared: 3 (warlock), 4 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): charm person, command, cure wounds, dissonant whispers
+
+NOTE: Get celestial revelation. Use whichever option seems thematic/situational. Get bardic inspiration, proficiency in persuasion, bard cantrips, and bard spells. You now have proficiency in all CHA-based skills. With blade ward and vicious mockery, you can severely nerf attack rolls. Mind-sliver + THL/command allows you to target saving throws. Take charm person here, but switch out before you get to subclass. 
+
+
+#######
+Level-04: Warlock-02, Bard-02 
+ - expertise
+   * gain expertise in two skills (performance, persuasion)
+ - jack of all trades (+1)
+   * add half PB to all non-proficient skills
+ - skill proficiencies (* indicates expertise): 
+   * warlock (2): deception, intimidation    
+   * hymnodist (2): performance*, religion
+   * bard (1): persuasion*
+   * languages (3): common, elvish, celestial 
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, mind-sliver 
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (2): blade ward, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+ - spell slots: 5_{2} 
+ - spells prepared: 3 (warlock), 5 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): charm person, color spray, command, dissonant whispers, healing word
+
+NOTE: Get expertise and jack of all trades. In combination with guidance, you'll have a +9.5 to performance/persuasion and a +3.5 to all non-proficient skills. Take healing word because it's thematic and gives you BA healing. Cure wounds would be good, but we will get it as a celestial warlock bound spell, so we need to take something else here to manage our spell switching economy. So instead, take color spray -- it's also pretty thematic, not concentration and resonates with our identity as a buffer/debuffer. It's also an illusion spell which will work with our bard subclass feature next level. 
+
+
+#######
+Level-05: Warlock-02, Bard-03 (Glamour) 
+ - Proficiency bonus (PB) = +3
+   * musician (3 allies) 
+   * healing hands (3d4)
+   * celestial revelation/inner radiance (3 damage)
+ - cantrip upgrade 
+   * word of radiance (2d6) 
+   * mind sliver (2d6) 
+   * vicious mockery (2d6)
+   * alluring gaze (2d6)
+   * spare the dying (30ft)
+ - beguiling magic 
+   * have charm person & mirror image prepared
+   * when you cast an enchantment/illusion spell using spell slot
+   * WIS save or charm/frighten creature w/in 60ft
+   * can restore use by expending bardic inspiration
+ - mantle of inspiration
+   * BA to use 
+   * up to CHA (3) allies w/in 60ft gain 2*bardic die THP
+   * they can then use their reaction to move up to speed w/o provoking OAs
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, mind-sliver 
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (2): blade ward, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+ - spell slots: 6_{2}-2 
+ - spells prepared: 3 (warlock), 6 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, command, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person 
+   * lvl-2 (bard): aid, suggestion
+   * lvl-2 (glamour): mirror image
+
+NOTE: Get bard subclass. Beguiling magic applies to bane, bless, charm person, color spray, command, dissonant whispers, mirror image, suggestion and THL. Nice, but probably wouldn't spend inspiration to restore it. Mantle of inspiration is awesome, granting THP and allowing your allies to reposition. For bard spells, take aid and cast it right after a SR then use magical cunning to recover the spell slot. Use suggestion out of combat. Upcast THL/charm person. Stick to core gameplay. PB and cantrip upgrade. 
+
+
+#######
+Level-06: Warlock-02, Bard-04 (Glamour) 
+ - feat: fey-touched (+1 CHA, CHA=18)
+   * bardic inspiration (4d6) 
+   * can target 4 allies with mantle of inspiration
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, mind-sliver 
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+ - spell slots: 6_{2}-3 
+ - spells prepared: 3 (warlock), 7 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, command, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person 
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+
+NOTE: Take fey-touched. Great thematics for this character and boost CHA. Get misty step for mobility. Mind-sliver + compelled duel + beguiling magic (fear) combo. Or mirror image + compelled duel combo. Once enemy is in compelled duel, cast armor of agathys/mind-sliver/vicious mockery to keep them nerfed/do damage and use BA to inspire/move allies around. New bard cantrip (take message). Switch out aid for hold person since we're going to get it as a bound spell next level. For other bard spell. Pick your favorites. Shatter is thematic (high note breaking glass), is not concentration, and can do damage to structures. Honorable mentions: invisibility, zone of truth, enhance ability. 
+
+
+#######
+Level-07: Warlock-03 (Celestial), Bard-04 (Glamour) 
+ - healing light (4d6)
+   * BA to use up to CHA (4) dice; heal creature w/in 60ft
+   * recover on LR
+ - spellcasting 
+ - cantrips: 
+   * warlock (2): friends, mind-sliver 
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-5_{2}
+ - spells prepared: 4 (warlock), 7 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, command, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person 
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+
+NOTE: Get warlock subclass. Healing light is basically like a resource/spell-slot free version of healing word, but you can also upcast it for bigger heals. You can also heal and cast leveled spells on the same turn. We also get celestial warlock bound spells. Guiding bolt is a good damage/support option that isn't concentration. Aid is a staple and we should upcast it during each short rest. Cure wounds and lesser restoration solidify our identity as a healer. For our new warlock spell, I would take ray of enfeeblement and reflavor it as `withering dirge' or `sapping song'. It's very thematic and when appropriate it's a great debuff. You can do it and mind-sliver to nerf attack rolls and saving throws. Invisibility is the main other attractive level-2 spell choice. I don't think it's super thematic, but we'll get it next level. 
+
+
+#######
+Level-08: Warlock-04 (Celestial), Bard-04 (Glamour) 
+ - feat: war caster (+1 CHA, CHA=19)
+   * advantage on con saves to maintain concentration 
+   * can perform somatic components w/weapon + shield in hands (irrelevant) 
+   * can cast spell as reaction instead of OA
+ - healing light (5d6)
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-5_{2}
+ - spells prepared: 5 (warlock), 7 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, command, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person 
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+
+NOTE: We get war caster. Now can cast spells as reaction. To make this more useful, start holding a reach weapon (a whip would be good). Now we can cast control spells like command, THL, hold person, compelled duel, dissonant whispers, alluring gaze, withering dirge all on a reaction. This should help us keep enemies locked down. This and advantage on concentration checks are the main reasons for taking the feat. We get another bump to healing light. Use BA to healing light/healing word/inspire/mantle of inspiration/misty step/compelled duel/activate celestial revelation. Take invisibility with your new warlock spell. Extra warlock cantrip (take prestidigitation; honorable mentions: mage hand, eldritch blast and true strike (if you wanted to wield a weapon)). 
+
+
+#######
+Level-09: Warlock-04 (Celestial), Bard-05 (Glamour) 
+ - Proficiency bonus (PB) = +4
+   * musician (4 allies) 
+   * healing hands (4d4)
+   * celestial revelation/inner radiance (4 damage)
+   * jack of all trades (+2)
+ - bardic inspiration (4d8) 
+ - font of inspiration 
+   * recover all expended bardic inspiration on short rest 
+   * can restore bardic inspiration uses with spell slots
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-5_{2}-2
+ - spells prepared: 5 (warlock), 9 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, command, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person 
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): catnap, sending
+
+NOTE: Level-3 bard spells. Take catnap (from XGtE) and sending. We'll get tongues next level. With catnap and font of inspiration, you will have 12 uses of bardic inspiration with 1 SR per adventuring day. So def spam mantle of inspiration / beguiling magic in combat whenever you need to. This also functionally increases the number of pact magic slots you have per day to 7 (again, assuming 1 SR per adventuring day, with catnap and magical cunning). So you can really cast things at 2nd level at will. I feel ok taking catnap with this build (even tho it's not in 2024 PHB) since this is a pretty slow developing build. So it's not really OP. Like we're level 9 here and still basically restricted to casting a bunch of level-2 control spells. Though, obviously, we do have a lot of versatility and synergy. Anyway, I'm going with catnap here. Proficiency bonus increase boosts our aasimar, musician, and jack of all trades abilities. Bard-5 means our bardic inspiration die boosts up to a d8, making us a better support character. 
+
+
+#######
+Level-10: Warlock-04 (Celestial), Bard-06 (Glamour) 
+ - mantle of majesty 
+   * BA cast command to activate 
+   * duration 1m, requires concentration 
+   * while concentrating, can cast command as BA w/o spell slot 
+   * creatures charmed by you auto-fail command
+   * x1 free use per LR; restore with lvl-3 spell slot. 
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-5_{2}-3
+ - spells prepared: 5 (warlock), 10 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person, command
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, tongues
+
+NOTE: Ok we finally get mantle of majesty. We also get command as a bound spell, so we can pick up both tongues and bestow curse as bard spells. We take tongues so that we can use it on any creature that has language if we need. We won't actually use bestow curse much for a few levels, when we can cast it without concentration as a 5th level spell, but there aren't any other spells we really need. Mantle of majesty is basically like a very strong level 3 concentration spell. Now we can (up)cast command with our action, and use mantle of majesty to cast it as a bonus action. This will allow us to target 3-4 creatures per round with command, forcing them to `approach' or `halt'. Once they're close we can use inner radiance and word of radiance to deal nice AOE damage. We can also use war caster to cast command on a single target as a reaction if a creature tries to leave our melee range. If we have armor of agathys up, then we do additional thorns damage to creatures that attack us. If we're in single target, we can use mantle of majesty BA:commands to try and incapacitate a single enemy (halt) while still dealing damage with cantrips/spells (mind-sliver, vicious mockery, guiding bolt, inner radiance). Note also that on the turn that you end your concentration on mantle of majesty, you can still cast another concentration spell -- like you do BA: command + action: hold-person (or THL, or withering dirge, etc.).
+
+ADDENDUM: In 2024 PHB, command spell places no restriction on language or creature type (but does restrict command options). In this case, you might not need tongues, though it is still a fine and thematic spell to take for this character. 
+
+
+#######
+Level-11: Warlock-05 (Celestial), Bard-06 (Glamour) 
+ - cantrip upgrade 
+   * word of radiance (3d6) 
+   * mind sliver (3d6) 
+   * sacred flame (3d8) 
+   * vicious mockery (3d6)
+   * alluring gaze (3d6)
+   * spare the dying (60ft)
+ - healing light (6d6)
+ - eldritch invocations (5) 
+   * armor of shadow = can cast mage armor w/o spell slot 
+   * pact of the tome = +3 cantrips, +2 lvl-1 rituals
+   * lessons of the first ones = gain one origin feat (musician)
+   * pact of the talisman = +1d4 to ability checks (no action required) PBx/LR
+   * agonizing blast (word of radiance) = +CHA to damage rolls with this cantrip
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-3-5_{2}
+ - spells prepared: 6 (warlock), 10 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person, command
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, tongues
+   * lvl-3 (warlock): magic circle 
+   * lvl-3 (celestial): daylight, revivify
+
+NOTE: Cantrip upgrade. Healing light improvement + nice utility from celestial spells. New eldritch invocations. Take pact of talisman and agonizing blast (word of radiance). Note pact of talisman is from Tasha's, but it's not OP and it's appropriate/thematic for our character. With talisman active + guidance + jack-of-all trades we get a baseline +7 to all skills we aren't proficient in. For proficient skills (deception, intimidation, religion) we'd be at +9, and for skills with expertise (performance, persuasion) we'd be at +13. Very nice for a party face/skill monkey. In terms of damage, with cantrip upgrade, inner radiance active and agonizing blast, we would do 3d6+4+4 = 18.5 damage to all creatures in 5ft AOE (max 4). Not great, but note that this is still better than a 4th level spirit guardians and doesn't require concentration. For our new warlock spell: counterspell is good but I don't believe in it. Dispel magic is good but boring. Fear is thematic but anti-synergistic. Fly is good for out of combat utility only. Vampiric touch is interesting, but a little off-theme. Hypnotic pattern is good and on-theme, but doesn't synergize with our core mechanics and we have a lot of control options. We can also get it later. Given this, I think I want to take magic circle. It requires careful setup, but we don't actually want to move around much in combat. If we know we're fighting a certain type of creature, we can pre-cast magic circle, command them to approach us and trap them in the magic circle (reversing the effect). Then, if we want to dip and leave them there, we can always misty step out. Pretty cool. 
+
+
+#######
+Level-12: Warlock-05 (Celestial), Bard-07 (Glamour) 
+ - countercharm 
+   * when creature w/in 30ft fails save against charmed/frightened 
+   * use reaction to give them reroll with advantage
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-3-5_{2}-1
+ - spells prepared: 6 (warlock), 11 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person, command
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, tongues
+   * lvl-3 (warlock): magic circle 
+   * lvl-3 (celestial): daylight, revivify
+   * lvl-4 (bard): compulsion
+
+NOTE: B-lining for ASI. Get countercharm. Lvl-4 slot and lvl-4 bard spell. Take compulsion (weird) since we will get all other good lvl-4 spells from warlock. Honorable mentions: dimension door, polymorph, greater invisibility. Note 4th level command can target 4 creatures, which is the max you can get with word of radiance. 
+
+
+#######
+Level-13: Warlock-05 (Celestial), Bard-08 (Glamour)
+ - Proficiency bonus (PB) = +5
+   * musician (5 allies) 
+   * healing hands (5d4)
+   * celestial revelation/inner radiance (5 damage)
+ - ASI: +1 DEX, +1 CHA (DEX=17, CHA=20)
+   * bardic inspiration (5d8)
+   * can target 5 allies with mantle of inspiration
+   * agonizing blast (+5) 
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-3-5_{2}-2
+ - spells prepared: 6 (warlock), 12 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person. command 
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, tongues
+   * lvl-3 (warlock): magic circle 
+   * lvl-3 (celestial): daylight, revivify
+   * lvl-4 (bard): compulsion, dimension door
+
+NOTE: Finally cap CHA and boost DEX + PB increase. Take dimension door as new bard spell your high-level mobility skill. Honorable mentions: greater invisibility, compulsion, polymorph, confusion. Still mostly use 4th level slots for casting high-level commands. 
+
+
+#######
+Level-14: Warlock-06 (Celestial), Bard-08 (Glamour)
+ - radiant soul 
+   * x1/turn when you cast a spell that deals radiant or fire damage
+   * add CHA mod to damage roll against one target. 
+ - healing light (6d6)
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-3-5_{2}-2
+ - spells prepared: 7 (warlock), 10 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person, command
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, tongues
+   * lvl-3 (warlock): hypnotic pattern, magic circle 
+   * lvl-3 (celestial): daylight, revivify
+   * lvl-4 (bard): compulsion, dimension door
+
+NOTE: Build `complete' at this level. Get radiant soul. Now you can deal 3d6+15 = 25.5 dmg to a single target with word of radiance/inner radiance, while still doing 20.5 damage to all other creatures in AOE. Would be great if your DM let's you apply the radiant soul buff to all targets affected by this cantrip, but not RAW. Get hypnotic pattern with your new warlock spell.
+
+
+#######
+Level-15: Warlock-07 (Celestial), Bard-08 (Glamour)
+ - eldritch invocations (6) 
+   * armor of shadow = can cast mage armor w/o spell slot 
+   * pact of the tome = +3 cantrips, +2 lvl-1 rituals
+   * lessons of the first ones = gain one origin feat (musician)
+   * pact of the talisman = +1d4 to ability checks (no action required) PBx/LR
+   * agonizing blast (word of radiance) = +CHA to damage rolls with this cantrip
+   * protection of the talisman = +1d4 to saving throws (no action required) PBx/LR
+ - healing light (7d6)
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-3-3-4_{2}
+ - spells prepared: 8 (warlock), 12 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person, command 
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, tongues
+   * lvl-3 (warlock): hypnotic pattern, magic circle 
+   * lvl-3 (celestial): daylight, revivify
+   * lvl-4 (bard): compulsion, dimension door
+   * lvl-4 (warlock): charm monster
+   * lvl-4 (celestial): guardian of faith, wall of fire
+
+NOTE: Warlock spell upgrade. More healing light dice. New invocation. Take protection of the talisman (from Tasha's) to give you +1d4 on saves (+2d4 if you have bless up). New warlock spell. Take charm monster. Not great options. Also celestial bound spells. Both wall of fire and guardian of faith are great to cast once you have creatures locked in place. The latter does require concentration tho. 
+
+
+#######
+Level-16: Warlock-08 (Celestial), Bard-08 (Glamour)
+ - feat: resilient (+1 DEX, DEX=18) 
+   * unarmored AC (w/mage armor) = 13+4(DEX)=17
+ - healing light (8d6)
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-3-3-4_{2}
+ - spells prepared: 9 (warlock), 12 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person, command 
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, tongues
+   * lvl-3 (warlock): hypnotic pattern, magic circle 
+   * lvl-3 (celestial): daylight, revivify
+   * lvl-4 (bard): compulsion, dimension door
+   * lvl-4 (warlock): banishment, charm monster
+   * lvl-4 (celestial): guardian of faith, wall of fire
+
+NOTE: Resilient gives us proficiency in DEX + WIS saves. Warcaster gives us advantage on CON saves. Plus we can use protection of the talisman. More healing light dice. New warlock spell. Take banishment. Not great options. 
+
+
+#######
+Level-17: Warlock-08 (Celestial), Bard-09 (Glamour)
+ - skill proficiencies (* indicates expertise): 
+   * warlock (2): deception, intimidation*    
+   * hymnodist (2): performance*, religion*
+   * bard (1): persuasion*
+   * languages (3): common, elvish, celestial 
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (3): blade ward, message, vicious mockery
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-3-3-5_{2}-1
+ - spells prepared: 9 (warlock), 14 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person, command
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, tongues
+   * lvl-3 (warlock): hypnotic pattern, magic circle 
+   * lvl-3 (celestial): daylight, revivify
+   * lvl-4 (bard): compulsion, dimension door
+   * lvl-4 (warlock): banishment, charm monster
+   * lvl-4 (celestial): guardian of faith, wall of fire
+   * lvl-5 (bard): mass cure wounds, hold monster 
+
+NOTE: Expertise (intimidation, religion). Could do deception for expertise in all social skills. Lvl-5 spell slot and lvl-5 bard spells. Now we can upcast bestow curse at lvl-5 to do it without concentration. For other spells, take mass cure wounds and hold monster. Honorable mentions: synaptic static, teleportation circle, dominate person, modify memory, yolande's regal presence. 
+
+#######
+Level-18: Warlock-08 (Celestial), Bard-10 (Glamour)
+ - magical secrets
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (4): blade ward, message, vicious mockery, mage hand
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-3-3-5_{2}-2
+ - spells prepared: 9 (warlock), 15 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person, command
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, spirit guardians, tongues
+   * lvl-3 (warlock): hypnotic pattern, magic circle 
+   * lvl-3 (celestial): daylight, revivify
+   * lvl-4 (bard): dimension door
+   * lvl-4 (warlock): banishment, charm monster
+   * lvl-4 (celestial): guardian of faith, wall of fire
+   * lvl-5 (bard): flame strike, mass cure wounds, hold monster 
+
+NOTE: Magical secrets. Drop compulsion in order to take two new lvl-5 spells. Take flame strike for a really good (and thematic) non-concentration AOE damage spell. Then take spirit guardians. Since it requires concentration, upcasting spirit guardians means we can't use mantle of majesty. But we can still upcast command with our action to lock enemies in place once we have them. And it's still 6d8 damage plus a slow to everyone in the AOE. So worth getting. Plus it's very thematic for this character. Wall of force is the other potential option that seems really appealing. But it's just a bit less thematic, and still requires concentration. 
+
+
+#######
+Level-19: Warlock-09 (Celestial), Bard-10 (Glamour)
+ - eldritch invocations (7) 
+   * armor of shadow = can cast mage armor w/o spell slot 
+   * pact of the tome = +3 cantrips, +2 lvl-1 rituals
+   * lessons of the first ones = gain one origin feat (musician)
+   * pact of the talisman = +1d4 to ability checks (no action required) PBx/LR
+   * agonizing blast (word of radiance) = +CHA to damage rolls with this cantrip
+   * protection of the talisman = +1d4 to saving throws (no action required) PBx/LR
+   * gift of the protectors = basically death ward on up to CHA (5) creatures, but ends once triggered
+ - contact patron 
+   * contact other plane (always prepared, free x1/LR, auto-succeed)
+ - healing light (9d6)
+ - spellcasting 
+ - cantrips: 
+   * warlock (3): friends, mind-sliver, prestidigitation
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (4): blade ward, message, vicious mockery, mage hand
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-3-3-3-4_{2}
+ - spells prepared: 10 (warlock), 15 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person, command
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, spirit guardians, tongues
+   * lvl-3 (warlock): hypnotic pattern, magic circle 
+   * lvl-3 (celestial): daylight, revivify
+   * lvl-4 (bard): dimension door
+   * lvl-4 (warlock): banishment, charm monster
+   * lvl-4 (celestial): guardian of faith, wall of fire
+   * lvl-5 (bard): flame strike, mass cure wounds, hold monster 
+   * lvl-5 (warlock): contact other plane, jallarzi's storm of radiance
+   * lvl-5 (celestial): greater restoration, summon celestial
+
+NOTE: Warlock spell levels up (lvl-5). New warlock spell and new bound spells. Additional invocation. For bound spells, greater restoration is a nice default to have prepped and adds to our support/healer capabilities. Summon celestial doesn't synergize with our main combat play style, but is a good spell (use the protector celestial). For our new warlock spell, take jallarzi's storm of radiance. It's an amazing debuff for spell casters and if we're using mantle of majesty, we can use a BA to make a spellcaster `halt', then end MoM and cast jallarzi's, locking the spellcaster in the storm. Super strong. Honorable mentions include: synaptic static, teleportation circle, scrying. For the Invocation, take gift of the protectors, which functions as an awesome party-wide cast of death ward. 
+
+
+#######
+Level-20: Warlock-10 (Celestial), Bard-10 (Glamour)
+ - celestial resilience 
+   * +15 THP to you and +10 THP to up to 5 allies on SR/magical cunning
+ - healing light (10d6)
+ - spellcasting 
+ - cantrips: 
+   * warlock (4): friends, mind-sliver, prestidigitation, true-strike
+   * magic-initiate (2): spare the dying, thaumaturgy
+   * aasimar (1): light
+   * bard (4): blade ward, message, vicious mockery, mage hand
+   * pact of the tome (3): alluring gaze (thorn whip), guidance, word of radiance
+   * celestial (1): sacred flame
+ - spell slots: 4-3-3-3-4_{2}
+ - spells prepared: 10 (warlock), 15 (bard)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter 
+   * lvl-1 (magic-initiate): bless (free x1/LR)
+   * lvl-1 (pact of the tome): comprehend languages, detect magic
+   * lvl-1 (bard): color spray, dissonant whispers, healing word
+   * lvl-1 (glamour): charm person, command
+   * lvl-1 (fey-touched): compelled duel (free x1/LR)
+   * lvl-1 (celestial): cure wounds, guiding bolt
+   * lvl-2 (bard): hold person, shatter, suggestion
+   * lvl-2 (glamour): mirror image
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (warlock): invisibility, withering dirge (ray of enfeeblement)
+   * lvl-2 (celestial): aid, lesser restoration
+   * lvl-3 (bard): bestow curse, catnap, sending, spirit guardians, tongues
+   * lvl-3 (warlock): hypnotic pattern, magic circle 
+   * lvl-3 (celestial): daylight, revivify
+   * lvl-4 (bard): dimension door
+   * lvl-4 (warlock): banishment, charm monster
+   * lvl-4 (celestial): guardian of faith, wall of fire
+   * lvl-5 (bard): flame strike, mass cure wounds, hold monster 
+   * lvl-5 (warlock): contact other plane, jallarzi's storm of radiance
+   * lvl-5 (celestial): greater restoration, summon celestial
+
+NOTE: Healing light improves to 10d6. Get celestial resilience, which is basically a weaker version of the inspiring leader feat. Inspiring leader would give you and all allies 25 THP on SR at this level. Celestial resilience only provides 15/10 THP, but we can also use it when we do magical cunning, so in between short rests. Assuming we do this, it's closer to 30/20, which is basically just as good. Plus we didn't need to use a feat on it. We also get another warlock cantrip. Take true-strike in case there are any banger magic weapons that you want to use. There's nothing impactful to left to do here. Final thoughts: really fun build. The actual utility of the command/inner radiance/word of radiance combo is a bit dubious. But it's very thematic. And it's nice that we get something to do in combat while we also provide superior healing and control. 
+
+
+
+
+######################################################################
+NOTES 
+
+
+
+Point-Buy Stats: 
+ - STR = 8 
+ - DEX = 15 (+1) = 16 
+ - CON = 14 
+ - INT = 8 
+ - WIS = 10
+ - CHA = 15 (+2) = 17 
+
+
+
+Eldritch invocations (7) 
+ - lvl-0: pact of the tome 
+ - lvl-0: armor of shadows 
+ - lvl-2: lessons of the first ones (musician) 
+ - lvl-0: pact of the talisman
+ - lvl-2: agonizing blast 
+ - lvl-7: protection of the talisman
+ - lvl-9: gift of the protectors
+[- lvl-2: rebuke of the talisman]
+[- lvl-2: eldritch spear (thorn whip/alluring gaze)] 
+
+feats: 
+ - lvl-0: magic-initiate (cleric) = thaumaturgy, spare the dying, shield of faith/bless
+ - lvl-0: musician (via lessons of the first ones) 
+ - lvl-4: fey-touched (celestia-touched): compelled duel, misty step 
+ - lvl-4: war-caster
+ - lvl-4: resilient (DEX) 
+
+aasimar spells: 
+ -cantrips: light
+
+magic-initiate (cleric) spells: 
+ - cantrips: spare the dying, thaumaturgy
+ - lvl-1: bless
+
+bard spells: 
+ - cantrips: friends, message, vicious mockery
+ - lvl-1: bane, command, cure wounds, dissonant whispers, healing word, heroism, sleep, tasha's hideous laughter, unseen servant
+ - lvl-1 (glamour): charm person 
+ - lvl-2: aid, crown of madness, detect thoughts, enhance ability, hold person, see invisibility, suggestion, zone of truth
+ - lvl-2 (glamour): mirror image
+ - lvl-3: bestow curse, hypnotic pattern, mass healing word, sending, slow, tongues
+
+warlock spells: 
+ - cantrips: blade ward, mage hand, mind-sliver 
+ - cantrips (pact of the tome): guidance, thorn whip (reflavor), word of radiance
+ - cantrips (celestial): sacred flame 
+ - lvl-1: armor of agathys, bane, hellish rebuke, protection from evil and good, tasha's hideous laughter, unseen servant
+ - lvl-1 (pact of the tome): comprehend languages, detect magic, identify
+ - lvl-1 (celestial): cure wounds, guiding bolt
+ - lvl-2: crown of madness, hold person, invisibility, mind spike, misty step, ray of enfeeblement, suggestion
+ - lvl-2 (celestial): aid, lesser restoration
+ - lvl-3: counterspell, dispel magic, fly, hypnotic pattern, summon fey, tongues, vampiric touch
+ - lvl-3 (celestial): daylight, revivify
+
+
+

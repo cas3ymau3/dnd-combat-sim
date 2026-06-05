@@ -1,0 +1,546 @@
+OVERVIEW
+Moniker: Star Chamber Guardian (Chosen of the Old Ones) 
+Name: Xecha'tar a.k.a. `Xecha' or `Xe'
+Sex: Female 
+Age: 30
+Race: lizardfolk 
+ - hold breath
+ - natural armor: 13 + DEX
+ - nature's intuition: proficiency in (2) of medicine, nature, perception, stealth, survival, animal handling
+   * choose: perception, stealth
+ - bite + hungry jaws (bite is 1d6 + STR; hungry jaws = bite gives PB THP; PBx/day) - use on animals/game 
+ - swimming speed equal to walking speed 
+Background: Athlete = proficiency in athletics and acrobatics 
+Classes: 
+ - paladin-9 (oath of glory) 
+ - druid-9 (circle of stars) 
+ASI/Feats: 
+ - lvl-1: defensive duelist = +PB to AC in reaction to melee attack
+ - lvl-5: ASI: +2 DEX
+ - lvl-9: skill expert: +1 CHA, proficiency in insight, expertise in perception
+ - lvl-12: ASI: +2 DEX
+ - lvl-17: shield master = +shield to DEX saves, evasion, BA shove
+Point-Buy Stats: 
+ - STR = 13
+ - DEX = 14 (+2) = 16
+ - CON = 12
+ - INT = 8
+ - WIS = 14
+ - CHA = 12 (+1) = 13
+
+APPEARANCE 
+She is a pale blue (almost white) lizardfolk female. She is tall, lithe and athletic. Her skin has dark blue and lavender accents on the scales on her forehead, throat, shoulders, tail, and ankles. She has a bright crimson crest of braided and beaded hair running from the top of her head all the way to the midnight blue tip of her 4ft long whip-like tail. She has delicate features, including a soft face that protrudes onto a rounded tapering snout, slender dexterous hands tipped with black claws, and long almost birdlike feet ending in talons. Her eyes are those of a lizard, with black vertical slit pupils and massive yellow irises flecked with gold and ringed in vibrant violet. She wears a touch of eyeshadow to give her eyes a bit of a smokey look. She has a few small gold rings in one eyebrow, and wears a few small gold rings set with stones on the fingers of her left hand. One heavy gold-link chain lies draped around her neck. Geometric-pattern tattoos run in bands around her wrists, ankles, and at the end of her tail. On her upper body, she wears an oxblood-colored sleeveless silk shirt that folds across her chest and tucks into sturdy leather wraps that are tied about her waist. The shirt is decorated with a bit of embroidery in thread-of-gold, depicting birds in flight, running across the chest. On her head, she wears a loosely-wrapped headscarf that is the same color as her shirt. The scarf is heavily embroidered with gold birds. On her lower body, she wears tight-fitting mid-calf length, oxblood-colored breeches. Her lower calves are covered with leather wrappings. Her ankles and bare, clawed feet are exposed. She wears a long-bladed dagger in a gator-skin sheath strapped to her left thigh. At her left waist, she carries a long narrow-bladed rapier in a cherry wood scabbard. Both the scabbard and the hilt of the sword are lightly gilded. On her right hip is a quiver of arrows, and she carries a dark wood longbow in her right hand. On her back, she wears an adventurer's backpack. Strapped to the back of the pack is a large, circular, tortoise-shell shield. 
+
+PERSONALITY/MANNERISMS 
+ - in the quick twitchy way she looks about you might see intensity, curiosity and intelligence; 
+   others might see the frightened, hungry eyes of a beast 
+ - she is wary of humans and clearly unfamiliar with the quotidian environs of towns and 
+   cities, but brims with an excited curiosity to see and learn how things work. 
+ - earnest and quick of tongue, she is as likely to offer a playful barb as to make 
+   a fool of herself by speaking out of her depth 
+ - she sort of squawks softly in surprise (like a chicken clucking) if she is started 
+   or if you say something intriguing or disconcerting
+
+BACKSTORY NOTES 
+ - chosen of the impoverished, downtrodden, waning old-one lizardfolk tribes 
+ - the blood of the old ones is thinning (think 'we are the last of the Amichi'), 
+   and the great old saurians struggle to hold together an ancient society as lizardmen
+   continue to transform/descend into beasts
+ - the blood of the old ones is cursed/poisoned; despite our hero's athleticism and
+   physical prowess, the cursed constitution of the old ones weakens the body, 
+   and eventually drives one to madness
+ - our hero is adventuring to find a way to lift the curse/prevent the decline
+   of her people, and to restore glory and honor to the name of the old ones
+ - trained in war and ancient druidic magic by the old sages and bastions of 
+   her home temple-city
+ - the lizardmen martial and magic traditions focus on the preservation of life 
+   and nature, and the extermination and abjuration of the wicked 
+ - our hero has always been exceptional among her people; at times she has been 
+   called a prodigy; she looks down on her lesser and she struggles to accept the 
+   `base' and `animalistic' traditions define her kin, and which she herself 
+   sometimes desires to embrace. 
+ - as she progresses in levels, I imagine this character moving towards some kind of
+   `enlightenment' about the role/fate of the lizardfolk and how their collective story
+   is related to the gods, and the (tragic) past/future of the world in which they live. 
+ - perhaps her narrative has a kind of `last of the great saurians' vibe, in she 
+   helps to steward in a new age of humanity/gods in which her people -- whose purpose 
+   no longer exists, and whose role in the making/securing of the modern world is 
+   defunct -- gracefully exit stage left and become fully a part of nature (i.e., 
+   turn into beasts) 
+
+THOUGHTS ON EQUIPMENT/MAGIC ITEM SYNERGIES 
+Weapons: 
+ * Moon-Touched Sword = creates 15ft radius of bright light in darkness
+ * Sun Blade = +2 sword, deals radiant damage (extra to undead), source of light
+ * Moon Sickle = +1/2/3 sickle; + to spell DC/attack rolls for druid spells; bonus healing
+ * Crystal Blade = +1d8 radiant on hit, healing charges, shines bright light (30ft)
+ * Glimmering Moonbow = +1 longbow; +1d6 radiant on hit; BA incorporeality
+ * Serpent's Fang = +1d10 poison on hit
+Shield
+ * Sentinel Shield = adv on perception and initiative rolls 
+ * Shield of the Silver Dragon = +2 shield, +2 to initiative 
+Robes:  
+ * Robe of Stars = +1 to saving throws, 6 uses of magic missile (lvl-5); enter astral plane
+ * Robe of Foraging = +5 to survival checks 
+ * Robe of Disguise = cast disguise self 
+ * Robe of Running = bonus to movement and jumping speed 
+ * Robe of Enhancement = +2 to ability score (DEX > CON > INT > WIS > CHA, preferred) 
+Accessories: 
+ * Ring of Jumping
+ * Ring/Bracers of Protection
+ * Sage's Signet
+ * Ring of Spell Storing 
+ * Ring of Amity 
+ * Ring of Shooting Stars 
+Other: 
+ * Boots of Striding and Springing
+ * Boots of Speed
+ * Boots of Elvenkind
+ * Amulet of the Devout = + to spell attack/DC, free use of Channel Divinity
+ * Cloak of Protection = +1 to AC and saves
+ * Goggles of Night 
+ * Headband of Intellect
+ * Ioun Stone of Supreme Intellect
+
+PROGRESSION SUMMARY 
+ * lvl-1: druid-1 
+ * lvl-2: druid-1, paladin-1 
+ * lvl-3: druid-1, paladin-2
+ * lvl-4: druid-1, paladin-3 (glory)
+ * lvl-5: druid-1, paladin-4 (glory)
+ * lvl-6: druid-1, paladin-5 (glory)
+ * lvl-7: druid-2, paladin-5 (glory)
+ * lvl-8: druid-3 (stars), paladin-5 (glory) 
+ * lvl-9: druid-4 (stars), paladin-5 (glory) 
+ * lvl-10: druid-4 (stars), paladin-6 (glory) 
+ * lvl-11: druid-4 (stars), paladin-7 (glory) 
+ * lvl-12: druid-4 (stars), paladin-8 (glory) 
+ * lvl-13: druid-4 (stars), paladin-9 (glory) 
+ * lvl-14: druid-5 (stars), paladin-9 (glory) 
+ * lvl-15: druid-6 (stars), paladin-9 (glory) 
+ * lvl-16: druid-7 (stars), paladin-9 (glory) 
+ * lvl-17: druid-8 (stars), paladin-9 (glory) 
+ * lvi-18: druid-9 (stars), paladin-9 (glory) 
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES  
+
+Level-1: Druid-1 
+ - saving throw proficiencies: INT, WIS
+ - proficiency bonus (PB) = +2 
+ - skill proficiencies: 
+   * druid (2): arcana, nature 
+   * nature's intuition (lizardfolk): perception, stealth
+   * athlete (background): athletics, acrobatics 
+   * languages: common, primordial, druidic 
+ - weapon/armor/tool proficiencies: 
+   * druid: simple weapons, light armor, shields, herbalism kit
+ - equipment: 
+   * weapon: dagger
+   * armor: none 
+   * AC = 13 + DEX (3) + shield (2) = 18 (20 w/defensive duelist) 
+ - feat: defensive duelist 
+ - primal order: magician = +1 cantrip, +WIS to nature checks 
+ - cantrips: 
+   * druid (3): thorn whip, druidcraft, guidance 
+ - spell slots: 2 
+ - spells prepared: 4 (druid); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, detect magic, absorb elements, ensnaring strike 
+                    speak with animals*
+
+NOTE: Fight in melee with a dagger and a shield. Use defensive duelist to get 20 AC at level-1. Use hungry jaws to `attack/eat' small animals/game in order to buff yourself with temp HP. Use absorb elements when applicable to mitigate incoming damage. Use thornwhip and ensnaring strike for control. In general, jump in and be a front-line fighter that provides some damage while offering good utility, healing, and control. 
+
+Level-2: Druid-1, Paladin-1
+ - lay on hands (5) 
+ - weapon/armor/tools proficiencies: 
+   * druid: simple weapons, light armor, shields, herbalism kit
+   * paladin: martial weapons, medium armor
+ - weapon mastery: rapier (vex), longbow (slow)
+ - equipment: 
+   * weapon: rapier or longbow
+   * armor: none 
+   * AC = 13 + DEX (3) + shield (2) = 18 (20 w/defensive duelist) 
+ - cantrips: 
+   * druid (3): thorn whip, druidcraft, guidance 
+ - spell slots: 3 
+ - spells prepared: 4 (druid), 2 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, detect magic, absorb elements, ensnaring strike
+                    speak with animals*
+   * lvl-1 (paladin): bless, divine favor
+
+NOTE: Switch to a rapier in melee. Add longbow as a ranged option. Use bless for hard to hit enemies. Use divine favor to boost damage. Otherwise same tactics as level-1. 
+ 
+
+Level-3: Druid-1, Paladin-2 
+ - lay on hands (10)
+ - fighting style: protection = reaction impose disadv on attack w/in 5ft
+ - cantrips: 
+   * druid (3): thorn whip, druidcraft, guidance 
+ - spell slots: 3 
+ - spells prepared: 4 (druid), 3 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, detect magic, absorb elements, ensnaring strike
+                    speak with animals*
+   * lvl-1 (paladin): bless, divine favor, shield of faith 
+                      divine smite*, thunderous smite* 
+
+NOTE: Protection fighting style lets us impose disadvantage if enemy attacks an ally within 5ft. In combination with defensive duelist, this means we have good defensive options if enemies attack allies or us. Switch out shield of faith for protection from good and evil as needed (note material cost). Use smite spells for extra damage (thunderous to knock prone).
+
+
+Level-4: Druid-1, Paladin-3 (Oath of Glory) 
+ - subclass: oath of glory
+ - lay on hands (15) 
+ - channel divinity (2 uses; recover 1 on short rest, all on long rest)
+   * divine sense
+   * peerless athlete 
+   * inspiring smite  
+ - cantrips: 
+   * druid (3): thorn whip, druidcraft, guidance
+ - spell slots: 4-2 
+ - spells prepared: 4 (druid), 4 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, detect magic, absorb elements, ensnaring strike
+                    speak with animals*
+   * lvl-1 (paladin): bless, divine favor, shield of faith, protect from evil/good 
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism* 
+
+NOTE: You get level-2 spell slots, which you can use for big smites. You also get channel divinity here. Peerless athlete is awesome for mobility/grappling and out of combat stuff. Inspiring smite gives you more support/tanking capacity.
+
+
+Level-5: Druid-1, Paladin-4 (Oath of Glory) 
+ - proficiency bonus (PB) = +3
+ - ASI: DEX = 18 (AC=19, 22 with defensive duelist)
+ - lay on hands (20) 
+ - cantrips: 
+   * druid (3): thorn whip, druidcraft, guidance
+ - spell slots: 4-2 
+ - spells prepared: 4 (druid), 5 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    speak with animals*
+   * lvl-1 (paladin): bless, divine favor, shield of faith, protect from evil/good
+                      detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+
+NOTE: Increasing DEX increases, AC, chance to hit, and damage. Other than that not much here. Switch out detect magic for jump as a druid spell, which will let you do some wild shenanigans when combined with peerless athlete. For reference, with 13 STR, your base running long/high jump is 13/4 ft. With peerless athlete and jump active, you can running long jump 69ft and running high jump 42 ft (if you have movement). 
+
+
+Level-6: Druid-1, Paladin-5 (Oath of Glory) 
+ - lay on hands (25) 
+ - extra attack 
+ - faithful steed
+ - cantrips: 
+   * druid (3): thorn whip, druidcraft, guidance
+ - spell slots: 4-3 
+ - spells prepared: 4 (druid), 6 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    speak with animals*
+   * lvl-1 (paladin): bless, shield of faith, protect from evil/good
+                      detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond 
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+
+NOTE: Some big changes here. Extra attack gives a lot more damage and lets us use the vex feature of our rapier. We also get 2nd level paladin spells. Definitely default to using one level 2 slot to cast aid each adventuring day to increase survivability. Warding bond is a good default option to stock as an additional level 2 spell that fits with our protection/support theme. Other situationally good ones include: lesser restoration, locate object, augury (thematic with future druid subclass), prayer of healing, silence. Probably the most exciting thing that happens here is that we get our faithful steed. As a baseline our movement speed increases to 60ft while mounted. Use the `fey' option (I'm thinking of a giant fey aurochs, or fey cold one rider), to get access to misty step while mounted 1x/day. Use protection fighting style, inspiring smite, and aid to help keep it safe. Have a blast RPing with a new mounted friend. Shining smite is a good counter to invisible creatures if you can hit them with a melee attack. With guidance and enhance ability, we also have pretty good options for out of combat utility and/or social interactions. 
+
+
+Level 7: Druid-2, Paladin-5 (Oath of Glory) 
+ - wild shape (2 uses; restore 1 on short rest, all on long rest)
+    * 3 known forms (CR=1/4): giant lizard, velociraptor, giant wolf spider
+    * wild companion = can use wild shapes to cast find familiar (bat)
+ - cantrips: 
+   * druid (3): thorn whip, druidcraft, guidance
+ - spell slots: 4-3-2 
+ - spells prepared: 5 (druid), 6 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    longstrider
+                    speak with animals*
+   * lvl-1 (paladin): bless, shield of faith, protect from evil/good
+                      detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond 
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+ 
+NOTE: Ok pivoting to druid here. Continuing with paladin would get us aura of protection (lvl-6) and aura of alacrity (lvl-7), which is great for durability/control. But we get a lot of utility from going druid, all while increasing our spell caster progression much faster than paladin levels. Since smites are our main source of damage, this is pretty important. Here at level 7, we get one more druid spell (I would take longstrider, which we can cast on ourselves or on our mount). Plus we get 3rd level spell slots for big smites and upcasts of aid. We also get all the (updated) utility of wild-shape/wild companion. In terms of forms, I think I would probably take: giant lizard, velociraptor, and giant wolf spider. The lizard is large (can be used as an additional mount), can climb, and has decent strength. The velociraptor is tiny, has high perception and pack tactics. The spider has awesome stealth (though our base stealth is nearly as good), plus blindsight and spider climb abilities. All three are thematic. For the familiar, I would probably go with the bat to get us a fly speed and some blindsight (potentially reflavor it as a tiny echolocating pteradon thing).
+
+ 
+Level 8: Druid-3 (Circle of Stars), Paladin-5 (Oath of Glory) 
+ - subclass (circle of stars) 
+ - wild shape (2 uses; restore 1 on short rest, all on long rest)
+    * 3 known forms (CR=1/4): giant lizard, velociraptor, giant wolf spider
+    * wild companion = can use wild shapes to cast find familiar (bat)
+    * starry form: archer, chalice, dragon
+ - cantrips: 
+   * druid (3): thorn whip, druidcraft, resistance
+   * circle of stars (1): guidance
+ - spell slots: 4-3-3 
+ - spells prepared: 6 (druid), 6 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    speak with animals*
+                    guiding bolt*
+   * lvl-2 (druid): darkvision, pass without trace
+   * lvl-1 (paladin): bless, shield of faith, protect from evil/good
+                      detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond 
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+
+NOTE: Ok we get our druid subclass. Circle of stars is super thematic. Lizard prophet warrior, ancient astromancer shit. We get the guidance cantrip for free, so switch over to resistance as our third druid cantrip to simulate (weakly) the saving throw bonus that we're forgoing by not going paladin. We get to use guiding bolt as a druid spell (+2 to attack rolls), but it still isn't great. We also get the option to use starry form with our wild shape. Dragon is probably our default. In combination with our druid proficiencies, magician primal order, and guidance/enhance ability it allows our INT-8 character to kick ass at int/wis skill checks (ex., with chalice active our lowest arcana/nature roll would be 12/14, with enhance ability we'd be rolling with advantage). It's also good in combat if you need it for concentration. Chalice is also a great option since it means that we can effectively twin-spell healing word. In combination with lay on hands, this makes us a good triage healer. Next, we also get 2nd level druid spells. One auto-include is probably darkvision, since we don't have it by default. Ideally we get a source of light from a magic item (see above section), but nice to know we don't have to depend on that. Pass without trace, in combination with our stealth proficiency and high DEX, would make us ultra sneaky and is probably also a default. Definitely nice to be a stealthy paladin! Other good situational level-2 options are: augury, lesser restoration, locate object, locate animals/plants, enlarge/reduce, silence, spike growth. 
+
+
+Level-9: Druid-4 (Circle of Stars), Paladin-5 (Oath of Glory) 
+ - proficiency bonus (PB) = +4
+ - feat: skill expert = CHA=14, proficiency in insight, expertise in perception 
+ - skill proficiencies (* indicates expertise): 
+   * druid (2): arcana, nature 
+   * nature's intuition (lizardfolk): perception*, stealth
+   * athlete (background): athletics, acrobatics 
+   * skilled feat: insight
+   * languages: common, primordial, druidic
+ - wild shape (2 uses; restore 1 on short rest, all on long rest)
+    * 4 known forms (CR=1/2): giant lizard, giant wolf spider, 
+                              reef shark, clawfoot raptor
+    * wild companion = can use wild shapes to cast find familiar (bat)
+    * starry form: archer, chalice, dragon
+ - cantrips: 
+   * druid (4): thorn whip, druidcraft, resistance, spare the dying
+   * circle of stars (1): guidance
+ - spell slots: 4-3-3-1
+ - spells prepared: 7 (druid), 6 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    longstrider 
+                    speak with animals*
+                    guiding bolt*
+   * lvl-2 (druid): darkvision, pass without trace
+   * lvl-1 (paladin): bless, shield of faith, protect from evil/good
+                      detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond 
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+
+NOTE: Alright, this might seem like a strange choice. Why the skill expert feat? The main reason is that we want to get to 14 CHA so that we have a +2 modifier when we take paladin-6 and get aura of protection next level. Other half feats that give +1 CHA aren't very thematic (actor, fey touched, etc.). Shield master (SM) is also a good option for us (and thematic), but mechanically it's weaker than skill expert. SM gives us evasion and a +2/+3 (depending on our shield) to DEX saves, but increasing our CHA will give us and our allies (including our mount) a +2 to *all* saving throws next level. With our low STR we also can't really take advantage of the BA shove that SM gives us. By contrast, since we also increase our PB at level-9, taking skill expert immediately gives us a big bump to some important skills (+10 perception, +6 to insight). Becoming more insightful and perceptive is also more consistent with taking star druid levels (more prophetic). At druid-4 we also get access to CR 1/2 wild shape forms, and we learn another form. I'd probably keep giant lizard as a mount/climbing option and keep spider for stealth. Take reef shark so you have a pure aquatic option, then switch out velociraptor for clawfoot raptor, which would be your go-to combat form. Probably you aren't using wildshape that often, but this set gives you a lot of versatility while still being lizard-y. Crocodile is another good option, but is largely redundant with your natural lizardfolk abilities. 
+
+Another game changer is the 4th level spell slot we get. While we could use this for a big smite or casting aid for more hit points, probably the best thing to do is to use it to cast find-steed, giving us a flying mount. In addition to awesome mobility for positioning, since we're a DEX-based paladin who uses a longbow, a flying mount also means we can just sit 150 up in the air and rain arrows down on fools if we want. Fuck yeah. Overall, this level isn't a big power spike combat-wise, but we get a TON of additional utility from skill expert, additional wild shape options, our flying mount, and we even get an extra cantrip. Note, the cantrips I took here are meant to be the most consistent with our paladin/druid protector/seer identity. Others such as elementalism/message might be more useful in game.
+
+
+Level-10: Druid-4 (Circle of Stars), Paladin-6 (Oath of Glory) 
+ - lay on hands (30) 
+ - aura of protection = +2 to all saving throws w/in 10ft
+   * with this feature, our saves will be: +3 (STR), +6 (DEX), +3 (CON), 
+     +5 (INT), +8 (WIS), +4 (CHA)
+ 
+NOTE: We just get aura of protection and more lay on hands. That's it. But in taking the skill expert feat last level, we now have a pretty crazy saving throw stat-line, and the buff we provide to our allies is more meaningful. Plus you can bless yourself/allies to make yourselves even more resilient. 
+
+
+Level-11: Druid-4 (Circle of Stars), Paladin-7 (Oath of Glory) 
+ - lay on hands (35) 
+ - aura of alacrity = +10 movement to all allies w/in 10ft
+ - cantrips: 
+   * druid (4): thorn whip, druidcraft, resistance, spare the dying
+   * circle of stars (1): guidance
+ - spell slots: 4-3-3-2
+ - spells prepared: 7 (druid), 7 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    longstrider 
+                    speak with animals*
+                    guiding bolt*
+   * lvl-2 (druid): darkvision, pass without trace
+   * lvl-1 (paladin): bless, shield of faith, protect from evil/good
+                      detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond, augury  
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+ 
+NOTE: We get aura of alacrity, which is pretty dope. Note that it will automatically apply to your mount, so you will have 70 movement speed (fly speed) while mounted, your mount will get +2 to saves, and you can impose disadvantage on attacks targeting your mount with protection fighting style. We also get another 4th level spell slot. With two 4th level spell slots, we can use 1 to cast find steed (flying mount) and the other to cast aid, including on the mount. If you do this the mount will have a whopping 60 HP, and you can use your inspiring smites to give it even more temp HP. You could also cast warding bond on it to make it nigh invincible. Fuck yeah. We also get extra preparable paladin spell for utility/flexibility. But otherwise, this level's all about increasing our mobility/mounted combat prowess. 
+
+
+Level-12: Druid-4 (Circle of Stars), Paladin-8 (Oath of Glory) 
+ - lay on hands (40) 
+ - ASI: DEX=20 
+
+NOTE: Yep. That's it. Nothing fancy here. Maxing DEX at this stage is important, so we gotta do it. It also means our base AC with our shield is 20. We can bump this up to 24 with our defensive duelist feat, and to 26 if we also cast shield of faith on ourselves. That and we'll have a base +7 to DEX saving throws. So pretty hard to hit. 
+
+
+Level-13: Druid-4 (Circle of Stars), Paladin-9 (Oath of Glory) 
+ - proficiency bonus (PB) = +5
+ - lay on hands (45) 
+ - channel divinity (2 uses; recover 1 on short rest, all on long rest)
+   * divine sense
+   * peerless athlete 
+   * inspiring smite 
+   * abjure foes 
+ - cantrips: 
+   * druid (4): thorn whip, druidcraft, resistance, spare the dying
+   * circle of stars (1): guidance
+ - spell slots: 4-3-3-3-1
+ - spells prepared: 7 (druid), 9 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    longstrider 
+                    speak with animals*
+                    guiding bolt*
+   * lvl-2 (druid): darkvision, pass without trace
+   * lvl-1 (paladin): bless, protect from evil/good, detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond, augury  
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+   * lvl-3 (paladin): dispel magic, mass healing word, revivify  
+                      haste*, protection from energy*, blinding smite* 
+
+NOTE: We get a new channel divinity option (abjure foes), but it isn't that useful for us because of our low CHA. But we do get access to 3rd level paladin spells, and we get to prepare 2 more paladin spells. This is the main draw here. Mass healing word and revivify complete our skill set as a triage/emergency healer. Dispel magic is probably also an auto include for higher-level play. Haste and protection and energy are amazing. With jump + longstrider + peerless athlete + haste, your base movement speed is 100ft (200 if you dash) and you can easily jump 70ft horizontally or 40ft vertically on your turn. You can also haste your mount to get a 140ft fly speed. As a damage option it's only ok, since you still can only smite once per turn (only one BA). Protection from energy + absorb elements means you can 1/4 incoming elemental damage. Other useful/thematic paladin spells include: clairvoyance, beacon of hope, aura of vitality, spirit guardians. Blinding smite is also pretty good, but the DC of your spell save isn't the greatest. We also get a 5th level spell slot. Use it to upcast find steed, aid, mass healing word, or smites. 
+
+Level-14: Druid-5 (Circle of Stars), Paladin-9 (Oath of Glory) 
+ - wild resurgence = convert spell slots to wild-shapes (or vice-versa 1x/day) 
+ - cantrips: 
+   * druid (4): thorn whip, druidcraft, resistance, spare the dying
+   * circle of stars (1): guidance
+ - spell slots: 4-3-3-3-2
+ - spells prepared: 9 (druid), 9 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    longstrider 
+                    speak with animals*
+                    guiding bolt*
+   * lvl-2 (druid): darkvision, pass without trace
+   * lvl-3 (druid): lightning arrow, plant growth
+   * lvl-1 (paladin): bless, protect from evil/good, detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond, augury  
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+   * lvl-3 (paladin): dispel magic, mass healing word, revivify  
+                      haste*, protection from energy*, blinding smite*
+ 
+NOTE: We get wild resurgence, which is cool because it means we can use our wild-shape options much more liberally (esp. dragon starry-form transformation out of combat). We also get access to 3rd level druid spells. I opted for lightning arrow and plant growth as defaults. The former gives us a very good way to do damage at range (not common for paladins). The latter is an amazing control spell. Other good options include: nondetection (thematic), daylight (non-concentration), or situational spells like water breathing, speak with plants, etc. There's also a lot of overlap with the divine spell list here (dispel magic, mass healing word, revivify) so if you wanted to stock those as druid spells and then take something like beacon of hope/aura of vitality in paladin, you could also do that.  
+
+Level-15: Druid-6 (Circle of Stars), Paladin-9 (Oath of Glory) 
+ - wild shape (3 uses; restore 1 on short rest, all on long rest)
+ - cosmic omen = roll die in morning; reaction to add/subtract d6 on any d20 roll PBx/day
+   * weal (even) = add d6 
+   * woe (odd) = subtract d6
+   * 30ft range 
+ - cantrips: 
+   * druid (4): thorn whip, druidcraft, resistance, spare the dying
+   * circle of stars (1): guidance
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: 10 (druid), 9 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    longstrider 
+                    speak with animals*
+                    guiding bolt*
+   * lvl-2 (druid): darkvision, pass without trace
+   * lvl-3 (druid): lightning arrow, plant growth, daylight
+   * lvl-1 (paladin): bless, protect from evil/good, detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond, augury  
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+   * lvl-3 (paladin): dispel magic, mass healing word, revivify  
+                      haste*, protection from energy*, blinding smite*
+ 
+NOTE: Big addition here is our cosmic omen druid subclass feature. This is kind of the capstone ability for our character as a diviner/seer, allowing you to add/subtract a d6 from d20 rolls that you can see (sort of like diviner portent ability). We also get an additional use of wild-shape. Now with dragon-form, enhance ability, and weal, we can absolutely own skill checks, allowing us to fully RP as smarty-pants intellectual despite our ability scores. We can also use weal in combination with bless/our aura of protection to get nutty bonuses to saving throws (+8 bonus to saves on avg). For woe, the best use is probably to land attacks on hard to hit enemies in order to smite the shit out of them. It could also be used defensively to make dangerous enemy attacks miss, thus improving survivability. Overall, this ability dovetails super nicely with what our character does best, which is providing awesome utility, both in and out of combat. In addition to cosmic omen, we get one more druid spell to prepare, giving us more flexibility with our spells, and we get a 6th level spell slot. Again, useful for upcasting find-steed, aid, smites, or (mass) healing word. 
+
+
+Level-16: Druid-7 (Circle of Stars), Paladin-9 (Oath of Glory) 
+ - elemental fury (primal strike) =  +1d8 acid/fire/cold/lighting dmg on hit 1x/turn
+ - cantrips: 
+   * druid (4): thorn whip, druidcraft, resistance, spare the dying
+   * circle of stars (1): guidance
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: 11 (druid), 9 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    longstrider 
+                    speak with animals*
+                    guiding bolt*
+   * lvl-2 (druid): darkvision, pass without trace
+   * lvl-3 (druid): lightning arrow, plant growth
+   * lvl-4 (druid): guardian of nature, divination 
+   * lvl-1 (paladin): bless, protect from evil/good, detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond, augury  
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+   * lvl-3 (paladin): dispel magic, mass healing word, revivify  
+                      haste*, protection from energy*, blinding smite*
+
+NOTE: At druid-7 we get our elemental fury feature. We take primal strikes, which basically allows us to do another d8 of elemental damage per round, which is a nice consistent boost even though we aren't built for damage. In particular, it works well on the longbow and with lightning arrow. Upcast lightning arrow + primal strikes for some serious ranged nuke attacks (8d8 + 5d8 AOE for lvl-6 lightning arrow). We also get access to 4th level druid spells. Guardian of Nature is from XGtE and it's kind of the perfect spell for this character, both thematically and mechanically. Both options the spell provides (primal beast, great tree) are useful. Great tree is probably the default as it gives us advantage on DEX based attacks. The divination spell is also very thematic and useful (plus it's a ritual). Fire shield is non-concentration and an awesome way to boost survivability while dealing damage in melee. You can even cast it in combination with protection from energy to get double elemental resistance. It's not super thematic though, and requires that you get hit which kind of goes against our high AC build. Plus, save some of those 4th level slots for smites! Other big value spells at this level include: polymorph, control water, freedom of movement, locate creature. Pick your favorites.
+
+
+Level-17: Druid-8 (Circle of Stars), Paladin-9 (Oath of Glory)
+ - proficiency bonus (PB) = +6  
+ - feat: shield master (alternatives: WIS=16, CHA=16, tough, war caster)  
+ - wild shape (3 uses; restore 1 on short rest, all on long rest)
+    * 5 known forms (CR=1): flying snake, giant wolf spider, 
+                            giant octopus, moorbounder (reflavor),
+                            giant eagle (reflavor)
+    * wild companion = can use wild shapes to cast find familiar (bat)
+    * starry form: archer, chalice, dragon
+ - cantrips: 
+   * druid (4): thorn whip, druidcraft, resistance, spare the dying
+   * circle of stars (1): guidance
+ - spell slots: 4-3-3-3-2-1-1
+ - spells prepared: 12 (druid), 9 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    longstrider 
+                    speak with animals*
+                    guiding bolt*
+   * lvl-2 (druid): darkvision, pass without trace
+   * lvl-3 (druid): lightning arrow, plant growth
+   * lvl-4 (druid): guardian of nature, divination, fire shield  
+   * lvl-1 (paladin): bless, protect from evil/good, detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond, augury  
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+   * lvl-3 (paladin): dispel magic, mass healing word, revivify  
+                      haste*, protection from energy*, blinding smite*
+
+NOTE: As always, hard to decide what makes the most sense in terms of ASI/feats at the end of a characters progression. Increasing WIS increases our perception and insight, WIS save, as well as our spell modifier for our druid spells. Increasing CHA gives us another +1 to all saving throws with aura of protection and a small boost to our social abilities. Tough would increase our HP from 114 (avg) to 148 (avg). Shield master would give us evasion, a +10 to our DEX saves, and a bonus action DC-15 shove. War caster would give us advantage on concentration checks. I think (at the moment, anyway) I would probably go with shield master. We've had our shield since level 1, and DEX saves are the most common type of save in the game and typically to prevent flat damage. We'll be hard to hit with attack rolls, but even half damage on big spells can wear us down. It also has the `cool' factor, imo, over tough/ASIs. It adds a little bit more martial flavor to our gish-y character. 
+
+In addition, at druid-8 we also learn another wildshape form, and get access to CR-1 forms. Switch out reef shark for giant octopus for your aquatic form. Switch out giant lizard for moorbounder (mighty nein creature) as a land-based mount (speed 70, great jumping ability), though maybe reflavor this to a reptilian form (e.g., cold one). Switch out clawfoot raptor for flying snake. We won't use wildshape in combat at this level anyway, and the flying snake is tiny, can fly and swim, and has blindsight. It's also very thematic. Then add the giant eagle as a large fast flying form, capable of carrying allies etc. Would probably also want to reflavor this so it's reptilian. You could switch giant wolf spider to giant spider. But the wolf spider is faster, smaller, and has bonuses to perception the big spider doesn't. It just doesn't have a web attack or as much HP, which we don't care about. 
+
+Finally, we get a 7th level spell slot. As above, probably makes the most sense to use it to upcast aid (30 HP), find steed, healing spells or smites. 
+
+Level-18: Druid-9 (Circle of Stars), Paladin-9 (Oath of Glory) 
+ - class feature: commune with nature 
+ - cantrips: 
+   * druid (4): thorn whip, druidcraft, resistance, spare the dying
+   * circle of stars (1): guidance
+ - spell slots: 4-3-3-3-2-1-1
+ - spells prepared: 14 (druid), 9 (paladin); * indicates granted by class/subclass
+   * lvl-1 (druid): healing word, jump, absorb elements, ensnaring strike
+                    longstrider 
+                    speak with animals*
+                    guiding bolt*
+   * lvl-2 (druid): darkvision, pass without trace
+   * lvl-3 (druid): lightning arrow, plant growth
+   * lvl-4 (druid): guardian of nature, divination, fire shield  
+   * lvl-5 (druid): scrying, tree stride,
+                    commune with nature* 
+   * lvl-1 (paladin): bless, protect from evil/good, detect magic   
+                      divine smite*, thunderous smite*
+                      guiding bolt*, heroism*
+   * lvl-2 (paladin): aid, warding bond, augury  
+                      shining smite*, find steed* (free 1x/day)
+                      enhance ability*, magic weapon*
+   * lvl-3 (paladin): dispel magic, mass healing word, revivify  
+                      haste*, protection from energy*, blinding smite*
+
+NOTE: We get the druid class feature commune with nature, which lets us cast commune with nature. It's a nice spell (ritual) and very thematic for our character. We also get access to level 5 druid spells. I think scrying and tree stride are the most useful/thematic. They both seem like a sort of capstone in our characters diviner/seer abilities. Plus, how nice would it be for your party's paladin to do some scrying/teleporting every now and then! Other great options at this level include: mass healing word, greater restoration, and reincarnate. 
+
+
+

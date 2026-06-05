@@ -1,0 +1,343 @@
+OVERVIEW 
+Moniker: The Outlaw Monk 
+Classes: Monk-8 (Open hand), Ranger-1, Rogue-9 (Thief) 
+Race: Tabaxi 
+ - size: medium/small  
+ - speed 30 (+ climbing speed) 
+ - cat's claws = unarmed strikes do 1d6 slashing
+ - cat's talent = proficiency in perception + stealth 
+ - darkvision (60ft)
+ - feline agility 
+Background: Outlander (bounty-hunter) = proficiency in athletics + survival
+Point-Buy Stats 
+ - STR  = 10 
+ - DEX  = 15 (+2) = 17
+ - CON  = 14 
+ - INT  = 10
+ - WIS  = 14 (+1) = 15
+ - CHA  = 8
+ASIs/Feats: 
+ - lvl-1: dual-wielder
+ - lvl-5: DEX+1, WIS+1
+ - lvl-10: DEX+2 
+ - lvl-14: resilient (WIS+1) 
+ - lvl-17: observant (WIS+1) 
+
+PROGRESSION SUMMARY: 
+ - lvl-1: monk-1 
+ - lvl-2: monk-1, ranger-1
+ - lvl-3: monk-2, ranger-1 
+ - lvl-4: monk-3 (open-hand), ranger-1
+ - lvl-5: monk-4 (open-hand), ranger-1
+ - lvl-6: monk-5 (open-hand), ranger-1 
+ - lvl-7: monk-5 (open-hand), ranger-1, rogue-1
+ - lvl-8: monk-5 (open-hand), ranger-1, rogue-2
+ - lvl-9: monk-5 (open-hand), ranger-1, rogue-3 (thief) 
+ - lvl-10: monk-5 (open-hand), ranger-1, rogue-4 (thief) 
+ - lvl-11: monk-5 (open-hand), ranger-1, rogue-5 (thief)
+ - lvl-12: monk-6 (open-hand), ranger-1, rogue-5 (thief) 
+ - lvl-13: monk-7 (open-hand), ranger-1, rogue-5 (thief) 
+ - lvl-14: monk-8 (open-hand), ranger-1, rogue-5 (thief)
+ - lvl-15: monk-8 (open-hand), ranger-1, rogue-6 (thief)
+ - lvl-16: monk-8 (open-hand), ranger-1, rogue-7 (thief) 
+ - lvl-17: monk-8 (open-hand), ranger-1, rogue-8 (thief)
+ - lvl-18: monk-8 (open-hand), ranger-1, rogue-9 (thief) 
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES  
+
+
+Level-1: Monk-1 
+ - feat: dual-wielder
+ - saving throw proficiencies: STR, DEX 
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * monk (2): acrobatics, insight 
+   * tabaxi (2): perception, stealth 
+   * outlander (2): athletics, survival
+   * languages: common, elvish, dwarvish
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, light martial melee weapons 
+   * tools: flute (outlander), jeweler's tools (monk)
+ - starting equipment (gold-buy):
+   * starting gold = 75: 65 (monk) + 10 (outlander)
+   * scimitar (25) + shortsword (10) = 35
+   * jeweler's tools (25), explorer's pack (10), staff,
+     hunting trap, traveler's clothes, wolf-tooth necklace 
+   * spare coin (5) 
+ - combat equipment:
+   * weapon: shortsword + scimitar
+     + scimitar = 1d6 slashing (nick)
+     + shortsword = 1d6 piercing (vex) 
+ - martial arts: die = 1d6
+ - unarmored defense: AC = 10 + 3 (DEX) + 2 (WIS) + 1 (dual-wielder) = 16 
+
+NOTE: Even though we have dual-wielder, it's actually better at this level to just make one weapon attack and then do a BA unarmed strike (versus attacking with both weapons) since we can add our DEX to both hits. So we just hold the weapons in order to get the +1 AC from dual-wielder. This will change when we get weapon mastery at level-2. General tactics are to fight in melee, and use the grapple/shove options on your unarmed strikes for some minimal control. Also don't sleep on the cat's claws species ability, which essentially lets us choose whether we do slashing or bludgeoning damage with our unarmed strikes. At level-1 it won't matter, but as we progress this option will become situationally very useful for bypassing resistance or exploiting damage vulnerabilities. 
+
+
+Level-2: Monk-1, Ranger-1 
+ - weapon mastery: shortswords + scimitars
+ - skill proficiencies: 
+   * monk (2): acrobatics, insight 
+   * tabaxi (2): perception, stealth 
+   * outlander (2): athletics, survival
+   * ranger (1): investigation 
+   * languages: common, elvish, dwarvish
+ - combat equipment:
+   * weapon: shortsword + scimitar
+     + scimitar = 1d6 slashing (nick)
+     + shortsword = 1d6 piercing (vex)
+   * druidic focus 
+ - spell slots: 2
+ - spells prepared: 2 (ranger); * indicates spells granted by class 
+   * lvl-1 (ranger): jump, detect magic 
+                     hunter's mark* (free cast 2x/LR) 
+ 
+NOTE: Ok the big draw here is that we get weapon mastery and hunter's mark. Our basic attack string will be as follows: (1) attack with the scimitar; if you hit you proc `nick', allowing you to (2) attack with the shortsword as part of the same action, if this hits then you proc `vex' and get to (3) attack with a BA unarmed strike with advantage. If you have hunter's mark on a target, then you get +1d6 on each hit. If everything hits and you have hunter's mark active, you would do: 6d6+6 = 27 damage in a single round, which is very good for level-2. Notably, however, hunter's mark is concentration and we're going to be in melee getting hit quite a bit. So with limited spell slots it's really only for use against dangerous foes. In terms of other spells, I think taking detect magic makes sense because it's useful, thematic for a hunter-style character, and  can be cast as a ritual to save your spell slots. Finally, we take the jump spell in order to do some awesome acrobatics stuff later on down the line. 
+
+
+Level-3: Monk-2, Ranger-1
+ - unarmored movement (40)
+ - uncanny metabolism
+ - martial discipline
+   * patient defense 
+   * step of the wind 
+   * flurry of blows 
+ - focus points: 2 
+
+NOTE: Ok now we get to do monk stuff. Monks in the 2024 PHB now can do patient defense (PD) to disengage as a BA  for free and disengage + dodge if you spend a focus point. Similarly, step of the wind (SoW) lets you dash as a BA for free, and disengage + dash for a focus point. Flurry of blows (FoB) lets you do 2 BA unarmed strikes or up to 4 attacks per round. This means, if we get everything to hit, we can put enemies in the blender. Hunter's mark + dual-wielding + FoB would do 8d6+9 = 37 dmg. We have pretty limited uses of this, but if we are fighting any kind of big, hard-hitting-but-easy-to-hit type enemy, we can dish out some serious hurt. Plus the new uncanny metabolism feature lets us regain all focus points (plus some HP) once per long rest when we roll initiative. So our effective pool of focus points is really doubled. 
+
+Obviously, we have very limited uses of this,  
+
+
+Level-4: Monk-3 (Open-Hand), Ranger-1 
+ - subclass: open-hand
+ - weapon mastery: scimitar + javelin/spear
+ - focus points: 3 
+ - deflect missiles
+ - open-hand technique = addle, push, or topple on FoB attacks
+ - combat equipment: 
+   * weapon: scimitar + javelin/spear
+     + scimitar = 1d6 slashing (nick)
+     + javelin = 1d6 piercing (slow); thrown (30/120)
+     + spear = 1d6 piercing (sap); thrown (20/60) 
+
+NOTE: At level-3, we get deflect missiles (DM) and our monk subclass. DM is a nice defensive reaction to have in our back pocket, but we probably won't use it a whole lot and even when we do, probably should save our focus points for more FoBs. Open-hand technique is the big draw here, giving us weapon-mastery like features on our FoB attacks. This gives our character some nice control options on top of damage. One particularly good one is if we switch our weapon mastery to scimitars + javelins -- which we can still effectively dual-wield because of our dual-wielder feat -- then we can do (1) scimitar (nick) + (2) javelin (slow) + (3) BA: FoB (topple + push). If everything goes through, then this reduces an the enemies speed by 10ft, knocks them prone, and pushes them back 15ft. In a lot of situations this is enough movement reduction to effectively take an enemy out of the fight for a whole round. The javelin also gives our character a nice ranged option if we need it. A more defensive option is to switch over to a spear, which has the sap property, allowing us to impose disadvantage on enemies that we are fighting. This could be nice since we don't currently don't have super high AC (though this changes next level) 
+
+
+Level-5: Monk-4 (Open-Hand), Ranger-1 
+ - proficiency bonus (PB): +3
+ - ASI: DEX=18, WIS=16
+ - slow fall 
+ - focus points: 4
+
+NOTE: Increasing DEX and WIS does a lot for us here. First, we get a +2 bump to our unarmored AC taking us up to 18. Upping DEX increases our chance to hit and damage on all our attacks, and increasing WIS increases the save DC for our open-hand maneuvers (to DC-14). Now our full round of 4 attacks will do: 6d6+2d8+12 = 42 dmg. Also don't sleep on slow fall, which is awesome for a character with an inherent climbing speed. Finally we get more focus points for more FoBs. But other than that, we have no tactical changes to our gameplay at this level. 
+
+
+Level-6: Monk-5 (Open-Hand), Ranger-1 
+ - focus points: 5 
+ - extra attack 
+ - stunning strike 
+ - empowered strikes 
+ - martial arts: die = 1d8
+
+NOTE: Ok a few very meaningful changes here. First off we get extra attack, upping our total number of potential attacks per round to 5. Our martial arts die also increases to a d8. Both are meaningful increases to our DPR. With hunter's mark active, our full round of 5 attacks would do: 7d6 + 2d8 + 16 = 49.5 damage. We also get stunning strike (SS), which got a rework in 2024. Now you can only attempt stunning strike 1x/round (very reasonable) and the stun only lasts to the start of your next turn (also fine), but even if they save you halve their speed and the next attack against them has advantage. You can also make stunning strikes with monk weapons. This means if we hit with our javelin and use 2 focus points to FoB + SS, even if the enemy saves we still, (i) reduce their speed by 10, and then halve it (better if vice-versa, but subject to DM), then (ii) knock them prone and (iii) push them away. So even if they aren't stunned, they likely can't move. Finally, we get empowered strikes, which lets us change the damage type of our unarmed strikes to force, allowing us to bypass resistances to non-magical damage.
+
+
+Level-7: Monk-5 (Open-Hand), Ranger-1, Rogue-1 
+ - sneak attack: 1d6
+ - weapon mastery (ranger): scimitar, javelin
+ - weapon master (rogue): shortswords, daggers
+ - skill proficiencies (*indicates expertise): 
+   * monk (2): acrobatics, insight 
+   * tabaxi (2): perception*, stealth* 
+   * outlander (2): athletics, survival
+   * ranger (1): investigation 
+   * rogue (1): sleight of hand 
+   * languages: common, elvish, dwarvish, thieves' cant, infernal
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, light martial melee weapons 
+   * tools: flute (outlander), jeweler's tools (monk), 
+            thieves' tools (rogue)
+ - combat equipment: 
+   * option 1 (melee damage): shortsword (vex) + scimitar (nick)
+   * option 2 (melee control): scimitar (nick) + javelin (slow)
+   * option 3 (range): dagger (nick) + javelin (slow)
+
+NOTE: Pivoting to rogue here, and we get a lot of nice things, mostly for utility. From multiclassing we get another skill proficiency -- I took sleight of hand since we'll eventually be going thief -- but take whatever. We also get expertise in two skills. I think perception and stealth make sense for our character, and we'd now have a +9 and +10 in those skills, respectively. We also get two additional weapon masteries. Here I think we take daggers and shortswords because it gives us the best suite of weapon options. First, if we're just trying to do as much damage as possible in melee, then we can use shortswords + scimitars. Shortswords have vex, giving us an automatic source of advantage on our second scimitar attack which lets us proc sneak attack. Second, we keep the scimitar + javelin option for enemies that we want to slow down/control. Finally, we can switch to daggers + javelins and since daggers have the nick mastery property, we can still do three attacks per round at 20ft range. Finally, we get sneak attack, which right now is a small but consistent boost to our damage when we can proc it, which should be most of the time. Now our full round of 5 attacks with hunter's mark active will do: 8d6+2d8+16 = 53 damage. So definitely a modest increase, but it's going to grow over time as we progress in this class. 
+
+
+Level-8: Monk-5 (Open-Hand), Ranger-1, Rogue-2 
+ - cunning action (hide) 
+
+NOTE: Cunning action let's us hide (in addition to dashing and disengaging) with our bonus action. But that's actually it for this level. Kind of a bummer, but it's the price to be paid for multiclassing. 
+
+
+Level-9: Monk-5 (Open-Hand), Ranger-1, Rogue-3 (Thief)
+ - proficiency bonus (PB): +4
+ - sneak attack: 2d6 
+ - steady aim
+ - subclass: thief 
+   * fast hands = BA use object or sleight of hand 
+   * second story work = move on ceilings (w/handhold); jump with DEX
+
+NOTE: Ok, lots of great new additions at this level. Let's start with the base class features. We get steady aim, which lets us use our BA to gain advantage on an attack if we don't move afterwards. This is probably best used to give ourselves advantage on ranged attacks with thrown weapons, but we could also use it in melee to give ourselves advantage/proc sneak attack w/o having to hit with our shortsword (vex). This will only be situationally useful, though, since we'll be forgoing our monk BA unarmed strike to do it. But on very hard to hit enemies, you might find it worthwhile to give yourself advantage an pile on sneak attack damage instead of having to try and hit with a BA unarmed strike. Next, our sneak attack damage increases to 2d6. Still not a ton, but it does mean our full 5 attacks (with hunter's mark) DPR goes up, just a little, to 9d6+2d8+16 = 56.5 damage. 
+
+Next, at Rogue-3 we get our subclass, and we're goin thief. Not only is thief mechanically one of the most fun rogue subclasses, but I think it is very thematic for our `bad-boy' monk character who is turning away from aestheticism and leaning into to chaos and loose morals. In terms of features, first we get fast hands, which lets us use our BA to make sleight of hand checks or to use an object. This is one of those easy-to-overlook features that is actually super-super cool and provides a TON of fun/utility. Ever been in an encounter where you need to disarm a trap, open a locked door, or steal something. Now you can do this without having to burn your action. In terms of using objects, here are some of my favorite things to do with fast-hands: (i) give someone a healing potion as a BA, (ii) set a hunting-trap or drop caltrops with your BA, then use an unarmed strike to shove an opponent into it/them, (iii) use your action to grapple an enemy, drag them over to your barbarian friend and lock them together with manacles with your BA, (iv) use your BA to throw/break an oil flask, then use your action to use a tinderbox and light it, (v) use your BA to coat a weapon in poison in order to boost your damage a tiny bit. Super fun, super flavorful, and adds even more utility and control to our character.
+
+But we're not done. At Rogue-3 we also get the second-story work feature, which gives us a climbing speed (we already had one) but also lets us move across ceilings provided there are handholds. Nice. Finally, and perhaps most importantly, in the updated 2024 PHB, the second-story work feature now also makes it so that our character's jump distance is determined by our DEX instead of our STR. With 18 DEX, we have a base standing long (high) jump of 9ft (3.5ft). If we use a focus point to do step of the wind, we can disengage, dash, and double our jump distance. Without any movement, this means we could long (high) jump 18ft (7ft). If we give ourselves a 10ft running start, then we can long (high) jump 36ft (21ft). If we use our action to cast jump on ourselves before we do BA step of the wind, then we triple this, meaning we can running long jump 108ft and running high jump 63ft. When we use step of the wind, we get to dash, so our movement is already at 80ft. If we use our tabaxi feline agility ability, then we have 160ft of movement to work with, and 240ft if we can also use our action to dash. Combine this with our ability to climb and move on ceilings, and we basically have basically unlimited mobility when we need it. Super sweet. And you were wondering why we took the jump spell with our 1 level of ranger? 
+
+
+Level-10: Monk-5 (Open-Hand), Ranger-1, Rogue-4 (Thief) 
+ - ASI: DEX=20 
+ 
+NOTE: Yep, another super simple level. Capping our DEX increases our AC, chance to hit, damage, jump distance, shove/grapple DC, stealth, acrobatics, and sleight of hand. So we gotta do it now when we can. With 20 DEX, our AC is now 19 without any magic items, which is pretty good. And our full 5-attack with sneak attack damage combo does: 9d6 + 2d8 + 20 = 67.5 damage. With step of the wind our base running jump is now 40ft, and our base high jump is 16ft. If we cast the jump spell, this goes up to 120ft (long) and 48ft (high). 
+
+
+Level-11: Monk-5 (Open-Hand), Ranger-1, Rogue-5 (Thief) 
+ - sneak attack: 3d6
+ - cunning strike
+ - uncanny dodge 
+
+NOTE: At Rogue-5, we get uncanny dodge, which is a nice boost to our survivability. More importantly our sneak attack dice pool increases to 3d6, and we get the new 2024 rogue cunning strike ability. Now when we hit with our sneak attack, we can either do damage or `spend' 1d6 of our sneak attack dice to add one of the following effects: disarm, poison, trip, or withdraw. Combined with our fast-hands, open-hand technique, and unarmed strikes, cunning strikes gives an unprecedented ability to do damage while debuffing and controlling single target enemies. For example, we could start a turn by using FoB to addle and topple an enemy, then sneak attack with our scimitar (advantage b/c they're prone) and poison them with cunning strike, then slow them with javelin attacks. You could also attack with your shortsword, vex an opponent, then sneak attack them with your scimitar and disarm them, shortsword them again, and then use FoB to knock them prone and push them 15ft away from their weapon. Note that half the cunning strike options (trip and disarm), two-thirds of the open-hand technique options we have (push, topple), the default control options we have for unarmed strikes (grapple, shove), and a number of our favorite fast-hands items (caltrops, trap, manacles) require either STR or DEX saves. Creatures affected by the stunned condition automatically fail STR and DEX saves. You also make melee attacks against stunned creatures with advantage. This means that if you open up any combo with a stunning-strike attack you can automatically gain sneak attack on the next attack (with a finesse weapon), and, if you successfully stun, then automatically trip, disarm, topple, push, shove, or grapple the enemy with your remaining attacks. So, for example, you could use a stunning-strike on a javelin attack to stun an enemy, then scimitar sneak attack to automatically disarm them (DEX save), attack with the javelin again, auto grapple them (STR save) with an unarmed strike and then feline agility to carry them 40ft away from their weapon. Below are some different (awesome) control techs that you can pull off with this character. I'm sure there are others I haven't thought of, but even this set of moves increases the control ability of this character to a scary level. 
+
+ DEBUFF COMBO
+ (1) BA:FoB (addle + topple) + sneak-attack(1):scimitar (nick + poison) + 
+     attack(2,3):javelin (slow)
+     * If all the hits in this `super debuff' combo hit, the enemy will be prone, poisoned, 
+       slowed, and unable to make OoAs. Requires 1 focus point. 
+
+ DISARM COMBO 
+ (2a) attack(1):shortsword (vex) + sneak-attack(2):scimitar (nick + disarm) + 
+      attack(3):shortsword (vex) + BA:FoB (topple + push)
+ (2b) attack(1):javelin (stun + slow) + sneak-attack(2):scimitar (nick + disarm) + 
+      attack(3):javelin (slow) + BA:grapple + movement (drag away from weapon)
+ (2c) attack(1):javelin (stun + slow) + sneak-attack(2):scimitar (nick + disarm) + 
+      attack(3):javelin (slow) + BA:pick-up weapon (fast hands) + movement (run away)
+      * Combos 2a and 2b disarm the opponent and then move them away from their weapon. 
+        Combo 2c involves disarming the opponent, picking up their weapon with fast hands
+        and then running away. Combo 2a does the most damage. Both 2b and 2c can be 
+        enhanced by using feline agility. Both 2b and 2c can also be used if you open up 
+        with a shortsword (vex) attack, and in this wouldn't cost any resources. I just 
+        chose the javelin variants here to illustrate the synergy with stunning strike.  
+     
+ FAST-HANDS ITEM COMBO 
+ (3) BA:caltrops + sneak-attack(1):scimitar (stun + nick + trip) + attack(2):javelin (slow)
+     + attack(3):shove (into caltrops)
+     * To execute this combo, you would need to start with an external source of advantage,
+       such as flanking with an ally. You can also do it without the stunning strike, but 
+       then you'll rely on the save DC of the item. Switch out caltrops for a hunting trap
+       or ball-bearings for different effects. With caltrops, even if they save on SS, you
+       quarter your opponents movement, knock them prone, and reduce their movement by 20. 
+       Even highly mobile enemies probably can't even stand up after that. 
+
+ RANGED COMBO 
+ (4) BA:steady-aim + sneak-attack(1):dagger (nick + trip) + attack(2):javelin (slow) + 
+      attack(3):javelin (slow) 
+      * This combo doesn't cost any focus points, and can be executed from 20ft away. 
+        Only situationally useful though, as you won't be able to move afterwards. Can
+        be combined with combo 5a below. 
+
+ KITING/MULTI-ENEMY COMBO 
+ (5a) feline-agility + move + attack(1):shortsword (vex) + 
+      sneak-attack(2):scimitar (nick + withdraw) + attack(3):shortsword (vex) + 
+      move + BA:hide
+ (5b) feline-agility + move + attack(1):shortsword (vex) + 
+      sneak-attack(2):scimitar (nick + withdraw) + attack(3):shortsword (vex) + 
+      move + BA:FoB (addle + topple) 
+      * Using feline agility doubles our movement on a given turn. The withdraw cunning 
+        strike option let's us move half our speed after sneak-attacking. For combo 5a, 
+        you move up to 80ft, attack an enemy, then can move up to 40ft to find a place 
+        to hide. Note you could infinitely cycle this with combo (4) if you can find 
+        places to hide within 20ft of your opponent. Kite in, attack, withdraw and hide, 
+        then spend the next turn standing still doing the ranged combo. Rinse and repeat.
+        Combo 5b extends your movement if there are enemies you can hit along the way. 
+        Hit one enemy within range of your movement with the scimitar+shortsword, proc 
+        withdraw and move half your speed to another target, then hit them a flurry of 
+        blows and keep on moving. 
+
+
+Level-12: Monk-6 (Open-Hand), Ranger-1, Rogue-5 (Thief) 
+ - focus points: 6 
+ - unarmored movement: 45ft 
+ - wholeness of body 
+
+NOTE: Shifting back to monk here for a couple of reasons. Mostly, a lot of our good control combos require focus points, and we don't have that many of them (even with uncanny metabolism). So going monk lets us do our best moves more reliably in combat. We also get a slight movement speed buff. Finally, we get the subclass feature wholeness of body, which lets us spend a focus point to BA to heal 1d8 (martial arts die) + 6 (monk level) and we can do this WISx/long rest. Pretty situational, but definitely useful after a combat before a short rest if you have residual focus points, as it reduces your dependence on hit dice and external sources of healing a bit. 
+
+
+Level-13: Monk-7 (Open-Hand), Ranger-1, Rogue-5 (Thief) 
+ - proficiency bonus (PB): +5
+ - focus points: 7
+ - evasion
+
+NOTE: Evasion is super clutch. We're getting it six levels after our non-multiclassing monk/rogue buddies, which is a bummer. But that means were definitely happy to have it here at level 13. Oh yeah, and our proficiency bonus increases (woot woot!) 
+
+
+Level 14: Monk-8 (Open-Hand), Ranger-1, Rogue-5 (Thief) 
+ - feat: resilient (WIS=17) 
+ - focus points: 8 
+
+NOTE: DEX and WIS are the most important saves in the game. We have high scores in both. Taking resilient allows us to get proficiency in WIS saves (so we'd have a +8), and allows us to round out our characters ability scores with our next ASI at level 17. Plus I think this character's MO is all about the balance between order/discipline and fun/chaos, which is thematically consistent with a high WIS score. As is the ability to stay cool/calm under pressure (e.g., in the midst of a heist). 
+
+
+Level-15: Monk-8 (Open-Hand), Ranger-1, Rogue-6 (Thief) 
+ - skill proficiencies (*indicates expertise): 
+   * monk (2): acrobatics*, insight 
+   * tabaxi (2): perception*, stealth* 
+   * outlander (2): athletics, survival
+   * ranger (1): investigation* 
+   * rogue (1): sleight of hand 
+
+NOTE: Expertise in two more skills is nice. I think investigation as an out of combat ability makes sense (and is helpful). Expertise in acrobatics could help us with all the crazy jumping around we're going to be doing. Insight is another good option. Pick your favorites 
+
+
+Level-16: Monk-8 (Open-Hand), Ranger-1, Rogue-7 (Thief) 
+ - sneak attack: 4d6 
+ - reliable talent 
+
+NOTE: At Rogue-7, we get an increase to our sneak-attack damage. We're mostly a controller at this point, but hey we'll take a little bit more damage if we can get it. We also get reliable talent, which is rounds out our abilities as a skill monkey. We have a lot of skill/tool proficiencies from multiclassing so we should have plenty to lean on both in and/out of combat. 
+
+
+Level-17: Monk-8 (Open-Hand), Ranger-1, Rogue-8 (Thief) 
+ - proficiency bonus (PB): +6
+ - feat: observant (WIS=18) 
+ 
+NOTE: Taking another point in WIS with a half feat gives us an 18, which increases our base AC to 20, and our martial-arts save DC to 17. Also, by multiclassing, we forgo a number of high-level monk/rogue features that give you protection against mental effects. With WIS=18 and proficiency in WIS saving throws, we should be fine even without those. Finally, observant is just kind of a broken effect for us. With the feat, we have a +21 to perception checks and a +16 to investigation checks. With reliable talent, the lowest we can get on a perception/investigation check is 31/26, respectively. Finally, lip reading is also pretty thematic for our crafty-cat character. So I think this is a nice capstone ability for high-level play.  
+
+
+Level-18: Monk-8 (Open-Hand), Ranger-1, Rogue-9 (Thief) 
+ - sneak attack: 5d6
+ - supreme sneak 
+
+NOTE: Unfortunately, neither of the level-9 subclass abilities (for open hand or thief) are super useful. Supreme sneak does let us improve our `kiting combo' (combo 5a described at level-11 above). Namely, if we start our turn hidden we can use our movement to kite in, do a round of attacks with supreme sneak, then use step of the wind to dash and disengage as bonus action, letting us move up to 45ft to find cover again. Not super clear when this will be useful, but it's nice to have in the bag. We also get a slight boost to our sneak attack damage at level-9 rogue, up to 5d6. Now our full damage combo will do: 13d6 + 2d8 + 20 = 74.5 damage. Not amazing for lvl-18, but nothing to sniff at either. 
+
+
+
+
+
+#####################################################################################################
+NOTES ON WEAPONS 
+ - light martial weapons  
+   * scimitar = 1d6 slashing (nick) 
+   * shortsword = 1d6 piercing (vex)
+ - good simple weapons 
+   * spear =  1d6 piercing (sap); thrown (20/60) + versatile (1d8),
+   * javelin = 1d6 piercing (slow); thrown (30/120) 
+   * handaxe = 1d6 slashing (vex); light, thrown (20/60) 
+   * dagger = 1d4 piercing (nick); finesse, light, thrown (20/60)
+ - feat: dual wielder 
+   * +1 to AC while dual wielding 
+   * can dual wield non-light weapons 
+   * draw/stow two-weapons at a time 
+ - fighting style: two-weapon fighting 
+   * when you make extra attack granted by light weapon property 
+     you can add ability modifier to damage 
+ - light property
+   * when you take the attack action with a light weapon, you can make 
+     an extra attack with a different light weapon as a bonus action. 
+     don't add ability modifier to second attack 
+ - nick property 
+   * when you make extra attack of Light property, doesn't consume bonus
+     action (only 1x per turn) 
+

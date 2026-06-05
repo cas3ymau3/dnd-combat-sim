@@ -1,0 +1,509 @@
+Moniker: The Umbral Fang
+Classes: Rogue-04 (Soul Knife), Psion-08 (Metamorph), Fighter-08 (Champion)
+Species: Dragonborn (Black) 
+ - size: medium 
+ - speed: 30ft 
+ - darkvision: 60ft 
+ - breath weapon (xPB/LR) 
+   + replaces one attack when you take attack action 
+   + 15 ft cone or 30ft line 
+   + DEX save (DC = 8+CON+PB)
+   + damage (acid) = 1d10 (lvl-01), 2d10 (lvl-05), 3d10 (lvl-11), 4d10 (lvl-17) 
+ - damage resistance: acid 
+ - draconic flight (x1/LR, lvl-05+) 
+   + BA to activate, gain fly speed equal to speed 
+   + duration = 10m 
+Sex: Female 
+Background: Soldier 
+ - ability scores: STR, DEX, CON 
+ - skill proficiencies: athletics, intimidation 
+ - tool proficiency: gaming set (dragonchess) 
+ - languages: common, common sign language, draconic 
+ - equipment (gold-buy): 50gp
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15 (+2) = 17
+ - CON = 15 (+1) = 16
+ - INT = 14
+ - WIS = 10 
+ - CHA = 08
+ASI's/Feats 
+ - lvl-00: savage attacker 
+ - lvl-06: mage slayer: +1 DEX (DEX=18) 
+ - lvl-08: ASI: +2 DEX (DEX=20) 
+ - lvl-12: resilient (CON): +1 CON (CON=17) 
+ - lvl-16: speedy: +1 CON (CON=18) 
+ - lvl-18: ASI: +2 CON (CON=20) 
+ - lvl-20: epic boon of dimensional travel: +1 INT (INT=15) 
+Progression Summary 
+ - lvl-01: rogue-01 --> expertise, sneak attack, thieves' cant, weapon mastery (2)
+ - lvl-02: rogue-01, psion-01 --> psionic power (4d6), subtle telekinesis, spellcasting (mage armor) 
+ - lvl-03: rogue-02, psion-01 --> cunning action
+ - lvl-04: rogue-03 (soul knife), psion-01 --> psionic power (psi-bolstered knack, psychic whispers), psychic blades
+ - lvl-05: rogue-03 (soul knife), psion-02 --> psionic disciplines (2): inerrant aim, sharpened mind
+ - lvl-06: rogue-04 (soul knife), psion-02 --> mage slayer: +1 DEX (DEX=18) 
+ - lvl-07: rogue-04 (soul knife), psion-03 (metamorph) --> mutable form, organic weapons, bound spells  
+ - lvl-08: rogue-04 (soul knife), psion-04 (metamorph) --> +2 DEX (DEX=20) 
+ - lvl-09: rogue-04 (soul knife), psion-05 (metamorph) --> psionic restoration, psionic disciplines (3): + psionic guards, bound spells 
+ - lvl-10: rogue-04 (soul knife), psion-06 (metamorph) --> extra attack + cantrip, flesh weaver 
+ - lvl-11: rogue-04 (soul knife), psion-07 (metamorph) --> psionic surge, lvl-04 spells, bound spells
+ - lvl-12: rogue-04 (soul knife), psion-08 (metamorph) --> resilient (CON): +1 CON (CON=17)
+ - lvl-13: rogue-04 (soul knife), psion-08 (metamorph), fighter-01 --> second wind, fighting-style: dueling, medium armor
+ - lvl-14: rogue-04 (soul knife), psion-08 (metamorph), fighter-02 --> action surge 
+ - lvl-15: rogue-04 (soul knife), psion-08 (metamorph), fighter-03 (champion) --> enhanced critical, superior athlete 
+ - lvl-16: rogue-04 (soul knife), psion-08 (metamorph), fighter-04 (champion) --> speedy: +1 CON (CON=18) 
+ - lvl-17: rogue-04 (soul knife), psion-08 (metamorph), fighter-05 (champion) --> tactical shift 
+ - lvl-18: rogue-04 (soul knife), psion-08 (metamorph), fighter-06 (champion) --> ASI: +2 CON (CON=20) 
+ - lvl-19: rogue-04 (soul knife), psion-08 (metamorph), fighter-07 (champion) --> fighting-style: thrown weapon fighting 
+ - lvl-20: rogue-04 (soul knife), psion-08 (metamorph), fighter-08 (champion) --> epic boon of dimensional travel: +1 INT (INT=15)
+
+MECHANICAL CONCEPT NOTES
+ - get psychic weapon and BA attack via soul knife 
+ - sharpened mind psionic discipline gives you scaling damage die replacement for psychic damage 
+ - savage attacker gives you damage reroll on weapon attacks 
+ - savage attacker + sharpened mind adds ~1d8 to your basic attack combo while you take psion levels (equivalent to 2 levels of rogue)
+ - metamorph gives you extra attack and viscera launcher weapon, which also adds 2d6+DEX damage (equivalent to 6 levels of rogue) 
+ - metamorph also gives you THP generation, healing spells, and increased durability via mutable form 
+ - finish out fighter to get medium armor, dueling and thrown weapon fighting flat damage bonuses (+4 to all dagger attacks) and increased 
+   crit chance; higher crit chance disproportionately benefits our damage because of our damage dice upgrading via savage attacker/sharpened mind 
+ - overlap in functionality between psion and soul knife means you can target psionic dice resources more efficiently -- ex. since 
+   you get powerful telepathy from soul knife, you can focus psion dice on inerrant aim; similarly, since we can use rogue dice 
+   to add psionic dice to ability checks, we don't have to take psionic disciplines to boost our skill-monkey capacity 
+ - mage slayer + psionic guards + intellect fortress (spell) safeguards your mental saves  
+ - go (relatively) low INT and cast primarily healing/utility/mobility spells
+ - build CON for melee durability; high CON also strengthens breath weapon, which contributes a small amount to overall damage scaling 
+ - overall, you're a bit less than a half caster, kind of like a better version of an arcane trickster (1/3 caster), where you sacrifice 
+   pure rogue scaling for the extra damage you get from the subclass synergies 
+ - build hinges upon one key interpretation of metamorph wording. Specifically, the organic weapons feature says that: 
+   	"When you take the Attack action, you can use this feature before you make the attack roll. Your limb retains the 
+         form of the organic weapon until ...you return the limb to its previous form (no action required)."
+   and the psychic blades feature of the soul knife says: 
+   	"Whenever you take the Attack action or make an Opportunity Attack, you can manifest a Psychic Blade in your free 
+         hand and make the attack with that blade...After you attack with the blade on your turn, you can make a melee or
+         ranged attack with a second psychic blade as a Bonus Action on the same turn if your other hand is free to create it."  
+ - so the key interpretation here is as follows: assume that we have nothing in our hands at the start of our turn; then we 
+   (i) take the attack action and, per organic weapons, transform our `first' hand into a viscera launcher and (ii), per psychic
+   blades, manifest a psychic blade in our `second' (free) hand, then (iii) attack with the viscera launcher and, per organic 
+   weapons, revert the limb back to its original form at no action cost so it's free for the BA psychic blade and then (iv) 
+   attack with the initial psychic blade (the one in our `second hand'), triggering the BA attack which we make with our `first' 
+   hand now that it's reverted back to it's original form. Overall this allows us to make two psychic blade attacks and our 
+   viscera launcher attack on our turn. 
+
+THEMATIC CONCEPT NOTES 
+ - go black dragonborn so that `viscera launcher' from metamorph (which deals acid damage) can be easily 
+   incorporated thematically/reflavored (e.g., as more breath weapon attacks); bone blade can also be 
+   reflavored as a tail spine 
+ - you're kind of a `monstrous' psionic black dragon, a physical specimen whose power emanates from 
+   their highly perfected mind and body; not a powerhouse, but a lithe creature of stealth and death 
+ - themes: TBD
+ - traits: TBD
+
+SYNERGISTIC MAGIC ITEMS: 
+ - common:
+ - uncommon: 
+ - rare: 
+ - very rare: 
+ - legendary: 
+ - artifact: 
+   
+MAX LEVEL MAGIC ITEMS
+- lvl-20 (~6 items, max 1 legendary/artifact)   
+
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+#######
+Level-01: Rogue-01
+ - feat: savage attacker
+   * x1/turn when you hit an enemy w/a weapon, you can roll the weapon's damage dice twice and use either roll     
+ - saving throw proficiencies: DEX, INT   
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies (* indicates expertise): 
+   * rogue (4): acrobatics, investigation, perception*, stealth     
+   * soldier (2): athletics, intimidation    
+   * tools (2): gaming set (dragonchess), thieves' tools 
+   * languages (4): common, common sign language, draconic, thieves' cant    
+ - weapon/armor proficiencies:  
+   * weapons: simple + martial weapons w/finesse or light property
+   * armor: light armor 
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (solder) + 100gp (rogue)
+   * weapons: shortbow (25gp), rapier (25gp), quiver of arrows x3 (3gp)
+   * armor: studded leather (45gp)
+   * tools: thieves' tools (25gp), dragonchess set (1gp)
+   * foci: arcane.focus::crystal (10gp)
+   * gear: explorer's pack (10gp), caltrops x2 (2gp), net x3 (2gp), traveler's clothes (2gp)
+   * spare coin: 0gp
+ - combat equipment:
+   * rapier = 1d8 piercing (vex); finesse 
+   * shortbow = 1d6 piercing (vex); ammunition (range 80/320); two-handed   
+   * armor: studded leather
+   * AC: 12 + 3(DEX) = 15
+ - weapon masteries (2) 
+   * shortbow (vex), rapier (vex)
+ - sneak attack (1d6) 
+       
+NOTE: Go rogue-01 for extra skill proficiencies. Take proficiency in acrobatics to fit with our `physical excellence/grace' theme and take expertise in perception so that we can lean into being `dragon-like' (despite having low WIS). In general, I think proficiency in stealth and high DEX (along with spells) will make us good enough at sneaking around. For gear, start with shortbow and rapier. Use studded leather armor. Also get some nets, caltrops, and an arcane focus. Stay at range if you can. Between vex, savage attacker, and sneak attack, you will do very good damage for lvl-01. Use breath weapon for AOE. 
+
+
+
+
+#######
+Level-02: Rogue-01, Psion-01 
+ - psionic spellcasting 
+   * when you cast a psion spell, it doesn't require verbal or material components (unless costly/consumed)
+ - psionic power (4d6) 
+   * recover +1 on SR, all on LR 
+   * telekinetic propel: BA; STR save or push/pull target creature 5ft; alt: roll PED to push/pull PEx5 ft (only expend on failed save); range 30ft
+   * telepathic connection: telepathy w/in 30ft; alt: BA roll PED to expand range to PED x 10ft (free x1/LR) for 1hr
+ - combat equipment:
+   * rapier = 1d8 piercing (vex); finesse 
+   * shortbow = 1d6 piercing (vex); ammunition (range 80/320); two-handed   
+   * armor: none (mage armor) 
+   * AC: 13 + 3(DEX) = 16
+ - spellcasting 
+ - cantrips: 
+   * psion (2): blade ward, minor illusion
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 2 
+ - spells prepared: psion (4)
+   * lvl-1 (psion): feather fall, jump, mage armor, shield  
+ 
+NOTE: Go psion-01 to get mage armor for a +1 to our AC (up to 16). We also get the blade ward cantrip which can help our durability. With our relatively high CON we should be decent at maintaining concentration, even when we get hit. We'll want the extra defenses since we'll be playing a pretty fragile multiclass (rogue/psion) until later levels. This is also why we took a decent CON score at character creation and will ideally stay at range in combat. For our other cantrip, take minor illusion for distraction/utility. Notably, invisible mage hand via subtle telekinesis is also great on a rogue. For leveled spells, take jump for mobility and shield/feather fall for defense and escapability. Note we will only be able to cast one spell with a spell slot per day (since we're using 1 on mage armor). So pick your spots carefully. Use psionic dice to provide support by (i) moving willing creatures with telekinetic propel (they can opt to fail save) and (ii) providing expanded telepathy when scouting/stealthing. Nice that we can pick this up here at lvl-02 to foreground our rogue subclass. No changes to damage/combat tactics 
+
+
+
+
+#######
+Level-03: Rogue-02, Psion-01 
+ - cunning action = can use BA to dash, disengage, or hide 
+
+NOTE: Yep, pretty straightforward. We get cunning action which is really nice for our action economy. As a ranged fighter, we should probably be dashing or hiding with our BA on most turns. But take full advantage of all the different options when they are called for. Still no changes to damage or tactics. 
+
+
+
+
+#######
+Level-04: Rogue-03 (Soul Knife), Psion-01 
+ - sneak attack (2d6) 
+ - steady aim = can use BA to give yourself adv on next attack if you haven't moved on turn; doing so sets speed to 0 for rest of turn 
+ - psionic power (4d6) 
+   * recover +1 on SR, all on LR 
+   * psi-bolstered knack: can roll psionic die on failed check with skill/tool with which you are proficient, adding rolled value (expended only on success) 
+   * psychic whispers (free x1/LR) 
+     + magic action to activate; create telepathic connection b/w us and up to PB other creatures
+     + roll psionic die, duration = rolled value hours 
+     + range = 1mi; creatures can end connection at will 
+ - psychic blades 
+   * psychic blade = simple melee weapon (vex), 1d6 psychic, finesse, thrown (30/120)
+   * when you take attack action, can manifest blade in free hand to make attack 
+   * if you attacked with the blade, can use BA to manifest/attack with second blade in other hand (dmg = 1d4) 
+
+NOTE: Drop/sell all your weapons. Now we just use psychic blades. Note we also now have two separate pools of psionic dice (rogue/psion). Rogue's telepathy is better, and we can use it for free x1/LR. Provides great utility during stealth/infiltration. Psi-bolstered knack is also a nice boost to our skill checks. We should use all our rogue dice on these and should no longer use any of our psion dice on expanded telepathy (though it's nice that we retain the base telepathy of 30ft). The big thing we get here is psychic blades. Since the extra bonus action attack is just a normal melee attack, we also get to add our DEX modifier to damage making this very strong here at early levels. Plus, making multiple attacks with the blades builds in a way to generate advantage for sneak attack on our turn. Very good. We also get an increase in our sneak attack damage and note that sneak attack damage is the same damage type as the weapon we use for the attack (so psychic for a psychic blade attack). This will be relevant later. Between the BA attack, sneak attack dmg increase, and savage attacker we will be doing great damage for tier-01. And the overlap in functionality between our psion multiclass and our rogue subclass lends thematic consistency and expanded support functionality, as we can now leverage our multiple pools of psionic dice to focus each classes' dice on their most impactful uses. Oh yeah, and we also get steady aim here. Probably won't get a ton of use out of this. But with jump we could get ourselves into a very defensible position and use steady aim to make attacks w/advantage. Nice versatility. 
+
+
+
+
+#######
+Level-05: Rogue-03 (Soul Knife), Psion-02 
+ - proficiency bonus (PB): +3
+ - breath weapon: 2d10
+ - draconic flight (x1/LR) 
+ - psionic disciplines (2) 
+   * inerrant aim = when you miss with an attack roll, you can expend a PED and add it to the roll, potentially changing 
+                    a miss into a hit  
+   * sharpened mind = at start of turn, expend one PED and roll it to activate, gain following benefits for 1m 
+     + bypassing psionics: damage from weapon attacks/psion spells/psion features ignores resistance to psychic 
+     + attack mode: x1/turn when you deal psychic dmg, you can replace num rolled with num rolled on PED when we activate this feature 
+     + can use other psionic disciplines on same turn you use sharpened mind
+ - spellcasting 
+ - cantrips: 
+   * psion (2): blade ward, minor illusion
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 3 
+ - spells prepared: psion (5)
+   * lvl-1 (psion): detect magic (R), feather fall, jump, mage armor, shield 
+
+NOTE: You might think we should go rogue-04 to get our first feat/ASI. But no, instead we're going psion-02 to pick up two psionic disciplines. Both are going to be important for us in the long run, but sharpened mind is the big one. Because we are doing multiple instances of psychic damage on our turn (between our weapon, sneak attack, and BA attack it's 4 separate die rolls) there is a high chance that one of those rolls will be less than our sharpened mind roll. This greatly increases the value of sharpened mind and this stacks on top of the damage high-grading we are already gaining from savage attacker. On average, sharpened mind + savage attacker will increase our DPR by ~2-3, which is a bigger jump than we would get from just bumping our DEX modifier by 1. And while boosting DEX would also increase our chance to hit, we did also just get a proficiency bonus increase. And we picked up inerrant aim which we can use to make sure our initial psychic blade attack lands and applies vex. Then, with advantage, we still have a very good chance to hit. Now we don't yet have the quantity of psionic dice to do this often. If we are in 4 combats per day and want to use sharpened mind in each of them, that leaves us with only 1 use of inerrant aim (assuming 1 SR per day). But we will eventually get more psionic dice, and at least some days we probably will be in fewer than 4 full combats. `But what about the defense boost from bumping DEX?', you ask. Well, going psion-02 also gets us another spell slot, meaning we can cast shield an additional time per day. That isn't quite the same value as a permanent +1 to AC, but it's not nothing. And as a ranged fighter, hopefully we aren't getting attacked all that often. So all in all, going psion-02 here boosts our damage, chance to hit, and defensive capacity in a similar manner to a boost to our DEX mod. And it's more fun to get our core multiclass features online sooner rather than later, versus just taking a boring boost to DEX. So yeah, that's why we do that here. 
+
+
+
+
+#######
+Level-06: Rogue-04 (Soul Knife), Psion-02
+ - feat: mage slayer
+   * ASI: +1 DEX (DEX=18) 
+   * concentration breaker: when you damage enemies they have disadv. on CON saves to maintain concentration 
+   * guarded mind: when you fail a INT/WIS/CHA saving throw you can succeed instead (x1/SR) 
+ - combat equipment:  
+   * armor: none (mage armor) 
+   * AC: 13 + 4(DEX) = 17
+
+NOTE: Ok, level-06 and we go rogue-04 to get an ASI/feat. We take mage slayer and boost our DEX to 18. This increases both our damage and defenses, which is excellent. We also get to benefit from the concentration breaker and guarded mind features, which are both fantastic. Mage slayer is also very thematic for our highly psionic character. Mage slayer is the first ability that we're going to pick up that we can use to protect our mental saves. We have proficiency in INT saves from rogue, but not a great modifier. And our WIS and CHA saves aren't great. Now, at least, we can avoid failing these saves x1/SR. And we'll be adding even more features in a few levels to further safeguard these saving throws, too. In general, protecting our mental saves feels thematic and also offsets some of the defensive features that we will be missing out on from the rogue base class (e.g., evasion, uncanny dodge). Anyway, no change to combat tactics here. But we do get a nice boost to damage. 
+
+
+
+
+#######
+Level-07: Rogue-04 (Soul Knife), Psion-03 (Metamorph)  
+ - organic weapons 
+   * as a magic action or when you take attack action, you can convert your free hand into 1 of 3 weapons: 
+     + bone blade (simple melee, finesse) = 1d8 piercing; you have adv if non-incapacitated ally is w/in 5ft when you make the attack 
+     + flesh maul (simple melee) = 1d10 bludgeoning; on hit enemy has disadv. on next STR/CON save before end of your next turn 
+     + viscera launcher (simple ranged 30/90) = 1d6 acid + 1d6 acid on hit (x1/turn) 
+   * your hand remains in that form until you (i) take a magic action to change it to a diff weapon, (ii) go unconscious, or 
+     (iii) revert it to it's normal form (no action required). 
+   * you can use INT for attack/dmg rolls with organic weapons 
+ - mutable form  
+   * BA + psionic energy die to activate 
+   * roll expended PED and gain THP = rolled value + INT (min 1) 
+   * gain: reach +5ft, speed +5ft, can give touch spells a range of 10ft
+ - spellcasting 
+ - cantrips: 
+   * psion (2): blade ward, minor illusion
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-2
+ - spells prepared: psion (6)
+   * lvl-1 (psion): detect magic (R), feather fall, jump, mage armor, shield 
+   * lvl-1 (metamorph): cure wounds, inflict wounds 
+   * lvl-2 (psion): invisibility
+   * lvl-2 (metamorph): alter self, lesser restoration 
+
+NOTE: Go psion-03 and get our subclass (metamorph). I would play this as leaning more into the draconic side of our character. Becoming more animalistic and more dragon-like. We won't use the organic weapons yet, though we can if we want (e.g, if there's a type weakness or something), but they don't enable our BA attack or deal psychic damage so they aren't preferred. We also won't use INT for attacks unless we're using the flesh maul (which we shouldn't use unless we're trying to help an ally set up a spell or something). Definitely theme the viscera launcher as a targeted acid breath blast (black dragonborn) and the bone blade as a retractable tail spine. Regardless, since we aren't going to use the organic weapons yet the features we get here at this level are (i) mutable form and (ii) additional spellcasting. Mutable form is cool, and probably mainly useful to us as a way to generate THP (though not a lot since we have low-ish INT). But we want to spend our psionic dice on activating sharpened mind. So I would only use mutable form situationally. The spellcasting, however, is quite useful. We get another first level slot -- so more castings of shield/jump/feather fall etc. And we get cure wounds and inflict wounds as lvl-01 spells. Inflict wounds sucks, but cure wounds is great. We also get two lvl-02 spell slots and access to lvl-02 (bound) spells. For bound spells we get alter self and lesser restoration. Alter self is potentially useful out of combat, or if we need a swim speed/underwater breathing. And lesser restoration is good in a pinch and only takes a BA to cast. For our new spell preparation, I would take invisibility. This will help increase our stealth capabilities despite the fact that we're not going to get additional expertise/reliable talent through rogue. Overall, our level-02 spells are pretty much pure utility, and so I would just use them as applicable in situations that call for them. And if none of those arise, upcasting cure wounds at level-02 is a great option for boosting durability. Overall, a really nice spell list and the additional spellcasting resources definitely boost our overall versatility and durability. But no changes to our combat strategy or damage at this level, despite getting our subclass. Kinda funky in that way. 
+
+
+
+
+#######
+Level-08: Rogue-04 (Soul Knife), Psion-04 (Metamorph)  
+ - ASI: +2 DEX (DEX=20)
+ - combat equipment:  
+   * armor: none (mage armor) 
+   * AC: 13 + 5(DEX) = 18
+ - spellcasting 
+ - cantrips: 
+   * psion (3): blade ward, dancing lights, minor illusion 
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-3
+ - spells prepared: psion (7)
+   * lvl-1 (psion): detect magic (R), feather fall, jump, mage armor, shield 
+   * lvl-1 (metamorph): cure wounds, inflict wounds 
+   * lvl-2 (psion): enhance ability, invisibility
+   * lvl-2 (metamorph): alter self, lesser restoration 
+
+NOTE: Go psion-04 and to get an ASI and boost our DEX to 20. This boosts our damage, chance to hit, and ups our AC to 18. We also get another cantrip -- we take dancing lights for some additional utility (or maybe prestidigitation, it doesn't matter much). We would like to take true strike so we can use it with extra attack in a few levels, but this doesn't technically work since our organic weapons don't have a gold value and plus our INT isn't super high so we probably wouldn't want to true strike in most situations anyway. We get one additional lvl-02 spell slot and one additional spell preparation. We take enhance ability to boost our out of combat utility/support, and to replace the fact that we aren't getting additional expertise/reliable talent via rogue. In general, the ASI provides a nice boost to our damage and survivability. Other than that, we just take additional spellcasting to flesh out our versatility and out-of-combat utility. 
+
+
+
+
+#######
+Level-09: Rogue-04 (Soul Knife), Psion-05 (Metamorph)  
+ - proficiency bonus (PB): +4
+ - psionic power (6d8) 
+ - psionic restoration 
+   * perform 1m ritual to recover all expended psionic energy die (x1/LR) 
+ - psionic disciplines (3) 
+   * inerrant aim = when you miss with an attack roll, you can expend a PED and add it to the roll, potentially changing 
+                    a miss into a hit  
+   * sharpened mind = at start of turn, expend one PED and roll it to activate, gain following benefits for 1m 
+     + bypassing psionics: damage from weapon attacks/psion spells/psion features ignores resistance to psychic 
+     + attack mode: x1/turn when you deal psychic dmg, you can replace num rolled with num rolled on PED when we activate this feature 
+     + can use other psionic disciplines on same turn you use sharpened mind
+   * psionic guards = at start of turn, can expend one psionic die to grant yourself (until the start of your next turn): 
+     + immunity to charmed and frightened (or end either of these conditions on yourself) 
+     + advantage on INT saving throws 
+     + can use other psionic disciplines on same turn you use sharpened mind
+ - spellcasting 
+ - cantrips: 
+   * psion (3): blade ward, dancing lights, minor illusion 
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-3-2
+ - spells prepared: psion (9)
+   * lvl-1 (psion): detect magic (R), feather fall, jump, mage armor, shield 
+   * lvl-1 (metamorph): cure wounds, inflict wounds 
+   * lvl-2 (psion): enhance ability, invisibility
+   * lvl-2 (metamorph): alter self, lesser restoration 
+   * lvl-3 (psion): fly, sending
+   * lvl-3 (metamorph): aura of vitality, haste 
+
+NOTE: Big level here. Our psion psionic energy dice level up to d8s and we get 6 of them. We also get psionic restoration meaning we can recover all of our expended dice x1/LR. Functionally, this means we go from having 4d6 psionic dice per day to 13d8 psionic dice per day. Awesome. Increasing the die to a d8 also increases the damage gained from our sharpened mind discipline. Having more dice means we can now use our other disciplines/features much more frequently, such as mutable form and inerrant aim. We also get to learn another psionic discipline. I went with psionic guards which we can use to protect ourselves against charmed/frightened (consistent with our investment in mental fortitude via mage slayer). Ideally, we just use 4 psionic dice per day on sharpened mind, then use the rest (9) on inerrant aim if we miss, or psionic guards if we are in a situation where we are at risk of charmed/frightened. In terms of damage, increased usages of inerrant aim and the higher damage from sharpened mind go a long way. Next, in terms of spellcasting we get level 3 (bound) spells. Our bound spells are aura of vitality and haste. These are both quite nice: one boosts our healing/durability; the other gives us increased movement speed, an additional attack per turn, and a boost to our AC. Both are useful in the right situation, but I wouldn't count on either as a definitive go to (even though haste would make our DPR sheet the highest). For prepared spells, take sending as an extension of our telepathy/communication capabilities and fly. Use sending in out of combat situations and use fly twice per day pre-combat to give yourself a nice defensive boost (plus we have feather fall so it isn't a huge deal if we get hit and fall). Note we already have flight via our dragonborn species trait once per day. So now we are flying 3x per day, which is really nice (and I would flavor the flight granted by the spell as being granted by the same wings we use when we use our species feature).  
+
+
+
+
+#######
+Level-10: Rogue-04 (Soul Knife), Psion-06 (Metamorph)  
+ - extra attack + cantrip 
+ - flesh weaver = mutable form now grants: 
+   * a +2 to AC 
+   * empowered healing: can expend PED when you cast healing spells w/spell slots and add die value to roll 
+ - spellcasting 
+ - cantrips: 
+   * psion (3): blade ward, dancing lights, minor illusion 
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-3-3
+ - spells prepared: psion (10)
+   * lvl-1 (psion): detect magic (R), feather fall, jump, mage armor, shield 
+   * lvl-1 (metamorph): cure wounds, inflict wounds 
+   * lvl-2 (psion): enhance ability, invisibility
+   * lvl-2 (metamorph): alter self, lesser restoration 
+   * lvl-3 (psion): fly, sending, intellect fortress 
+   * lvl-3 (metamorph): aura of vitality, haste 
+
+NOTE: Alright, another big level here. We get extra attack + cantrip through metamorph. This means we can *finally* start using our organic weapons. As described in the mechanical note above, we should (RAW) be able to make both our psychic blade attacks and use one of our organic weapons on the same turn. This means we can make a viscera launcher attack (reflavored as  blast of acid breath) with our first attack, then throw a psychic blade with our second attack, and throw a second psychic blade with our BA. Excellent. We should also leverage extra attack + cantrip to deploy blade ward or minor illusion in combat (both of which can be very handy) while still dishing out damage. Note we can also seamlessly use the same strategy if we are fighting in melee, where we simply substitute using the bone blade (tail spine) instead of the viscera launcher. Very nice. At metamorph-06 we also get the flesh weaver feature which improves our mutable form -- making it so we gain a +2 to AC (up to 20 w/mage armor) and empowered healing while we are in this form. It is technically a DPR loss to use this, but we do have enough psionic dice to use it, as well as sharpened mind, in every combat and still have some dice left over for inerrant aim. So definitely use this liberally/as needed. Finally, we get another 3rd level spell slot and one more spell preparation. I went with intellect fortress, since it dovetails well with our `mental fortitude' theme and gives us a good way to protect our mental saving throws whenever we need it. In general, I would just use the extra slot to cast fly another time, giving us flight in all 4 combats per day (x1 from dragonborn, x3 casts of fly using 3rd level slots). Anyway, the addition of the viscera launcher into our core rotation brings up our DPR substantially. 
+
+
+
+
+#######
+Level-11: Rogue-04 (Soul Knife), Psion-07 (Metamorph)  
+ - breath weapon: 3d10 
+ - psionic surge 
+   * after you roll one or more of your PED, you can expend a hit die to treat a 1, 2, or 3 as a 4
+ - spellcasting 
+ - cantrips: 
+   * psion (3): blade ward, dancing lights, minor illusion 
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-3-3-1
+ - spells prepared: psion (11)
+   * lvl-1 (psion): detect magic (R), feather fall, jump, mage armor, shield 
+   * lvl-1 (metamorph): cure wounds, inflict wounds 
+   * lvl-2 (psion): enhance ability, invisibility
+   * lvl-2 (metamorph): alter self, lesser restoration 
+   * lvl-3 (psion): fly, sending, intellect fortress 
+   * lvl-3 (metamorph): aura of vitality, haste 
+   * lvl-4 (psion): greater invisibility
+   * lvl-4 (metamorph): polymorph, stoneskin 
+
+NOTE: Alright, another good one here. We go psion-07 and pick up the psionic surge feature. With this in hand, the damage floor for our sharpened mind feature is now set to 4, which represents a significant boost to our overall damage output. We also get 4th level psion spells (including bound spells). The bound spells are actually pretty excellent. Polymorph is great for utility when we need it, and can also provide a boost of THP when we are in danger. Good to keep in the back pocket. Stoneskin is also a pretty great pick. Gaining resistance to bludgeoning, piercing and slashing damage can be a huge survivability boost for our character, who, despite everything will still be somewhat fragile. They are both also quite thematic for our character as we lean further into our `dragon-like' aspect and further hone our physical bestial prowess. Then, for our new prepared spell, I went with greater invisibility. I know it's not an amazing spell, and it has somewhat diminished value for us given that we're using a vex weapon to make most of our attacks, and given that there's some non-negligible probability that enemies at this level will be able to see through invisibility. But when it works it will be a great offensive and defensive boost. Plus, it seems thematically consistent with our character (unlike many other lvl-04 psion spells) and doesn't depend on a high spell save DC. Given that we only have 1 fourth level slot, I like having this set of spells (polymorph, stoneskin, greater invisibility) accessible so that we can make the most of our highest-level spell in a variety of different situations. All in all, this suite of lvl-04 spells mostly serves to provide us with greater versatility and to further deepen our defensive capabilities. This is perfectly consistent with the mechanical identity of this build, which has always been focused on surviving in close(ish) quarters combat, and on using weapon attacks for damage and. These also get a buff here, but from psionic surge increasing our sharpened mind die, rather than from accessing a new spell. And this caps off a nice 4-level stint (starting at lvl-08) where we see meaningful increases to our DPR at each level. Good way to finish out tier-02. This is a pretty great feature of this build, which definitely avoids the standard `step function' power curve associated with a lot of other (straight) class builds. 
+
+
+
+
+#######
+Level-12: Rogue-04 (Soul Knife), Psion-08 (Metamorph)  
+ - feat: resilient (CON) 
+   * ASI: +1 CON (CON=17) 
+   * gain proficiency in CON saving throws 
+ - spellcasting 
+ - cantrips: 
+   * psion (3): blade ward, dancing lights, minor illusion 
+   * subtle telekinesis (1): mage hand (invisible, no somatic component) 
+ - spell slots: 4-3-3-2
+ - spells prepared: psion (12)
+   * lvl-1 (psion): detect magic (R), feather fall, jump, mage armor, shield 
+   * lvl-1 (metamorph): cure wounds, inflict wounds 
+   * lvl-2 (psion): enhance ability, invisibility
+   * lvl-2 (metamorph): alter self, lesser restoration 
+   * lvl-3 (psion): fly, sending, intellect fortress 
+   * lvl-3 (metamorph): aura of vitality, haste 
+   * lvl-4 (psion): dimension door, greater invisibility
+   * lvl-4 (metamorph): polymorph, stoneskin 
+
+NOTE: Alright, finishing off our psion levels, we go psion-08 and pick up resilient (CON) and boost our CON to 17. Now that we've maxed our DEX, we have to choose what secondary stat to invest in. Obviously, as a psion, we could focus on INT and then continue with psion levels in order to become more of a full caster. The problem with this is that it kind of means we'll basically just leave behind the mechanical synergies we've built through our multiclass/abilities so far, and just end up a somewhat weaker full caster. Nothing on the psion spell list is going to synergize super well with what we've already built and our character's overall playstyle/identity. So instead, we're going to lean in to our martial identity and build CON as our secondary stat. However, since this will be our last caster level, gaining proficiency in CON saving throws will allow us to make the most of the spells that we do have access to. Probably the biggest beneficiary here is haste. Obviously, the downside of haste is the stun effect we suffer if we drop concentration on it during combat. The upside is the extra mobility, AC, and the extra attack we can make each turn. We should still concentrate on our other key (non-damage boosting) spells like fly, stoneskin, greater invisibility, etc. whenever those are more appropriate. But making haste more reliable via the resilient feat does represent a meaningful increase to our damage profile, which is a nice way to kick off tier-03. Plus the resilient feat gets us one step closer to a higher CON modifier, which will further boost our survivability and increase the reliability of damage dealt with our breath weapon. Speaking of the breath weapon, it now officially out damages our viscera launcher: 2d6+5 (12) vs 3d10 (16.5) in single target, even accounting for the boost we get to viscera launcher damage from savage attacker. Of course, the damage is still gated by a DEX save (though we still get half on fail) so the viscera launcher might still be better, on average, depending on the enemy. But in general, we should use the breath weapon on cooldown to maximize our damage. So yeah, that's the logic of taking resilient here. We also get one new prepared spell (our last for this build), and I'm going to go with dimension door. Again, we don't have many 4th level slots and so we want to stock options that have the potential to be highly impactful when needed. Dimension door is definitely one such spell, and it gives us a great escape/mobility option that doesn't depend on our concentration or spell DC. Especially given that straight-classed soul knife rogues have the psychic teleportation ability at this level, which lets them move all over the map, it feels good to stay somewhat comparable in that department by picking up dimension door and making haste a more appealing option. Anyway, using haste a few combats per day gives us a nice damage boost, but other than that our combat mechanics remain exactly the same as they've always been. Also, as a final note. I would say the build is technically `complete' at this level. The last 3rd of our development is more about boosting our damage scaling while maintaining our character's combat/overall identity. And I think we do that successfully/in an interesting way. But we've essentially built all the core parts of the foundation here at level-12. So keep that in mind if you are looking at a low- to mid-level campaign setting.  
+
+
+
+
+####### 
+Level-13: Rogue-04 (Soul Knife), Psion-08 (Metamorph), Fighter-01 
+ - proficiency bonus (PB): +5
+ - second wind (x2, +1 on SR, recover all on LR) 
+   * BA to heal 1d10 + fighter-lvl (1) 
+ - feat: fighting-style::dueling 
+   * when holding melee weapon in 1 hand and no other weapons, gain +2 to dmg rolls with that weapon 
+ - weapon/armor proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light + medium armor, shields  
+ - weapon masteries (5) 
+   * shortbow (vex), hand-crossbow (vex), pistols (vex), rapier (vex), dagger (nick) 
+
+NOTE: Alright, pivot level here. We're level 13 and we go fighter-01. You might be wondering why we go fighter instead of dipping back to rogue in order to pick up another 1d6 sneak attack dice, cunning strike, uncanny dodge, and move closer to all the juicy higher-level rogue base class features (expertise, reliable talent, evasion, etc.). Well the main reason is that base rogue damage scaling isn't good. And the soul knife subclass isn't going to give us anything else that will help our damage scaling other than sneak attack. I mean, it's just +1d6 every 2 levels. So while the defensive/out-of-combat features are good (and they are), if we want to do real damage into tier-03 and tier-04, then we'll have to seek greener pastures. And, in this case it's with fighter levels. For example, right off the bat at fighter-01 we get to pick a fighting style, and we go with dueling. Given our attack mechanics, we will only ever make attacks with our psychic blades when we are holding no other weapons, so the dueling damage bonus will always apply. As a bonus, if/when we use our bone-blade in melee the dueling bonus will also apply to those attacks (this is why we favor dueling over two-weapon fighting here). Given that we make two psychic blade attacks per turn, this is adding a flat +4 to our DPR, and that is already *more* than what we would get from going rogue-05. In addition, fighter-01 also gets us second wind for a bit of healing each day (helps offset not getting uncanny dodge), and some extra proficiencies (medium armor, shields, all martial weapons) and additional weapon masteries. The proficiencies and masteries are not important. Though I suppose it does give us the ability to use a broader suite of magic armor/weapons/items if these happen to be in our game. For our simulation purposes, we're going to assume that we continue to use mage armor and only our psychic blades/organic weapons. This is mostly for flavor/thematic consistency. We haven't needed armor/weapons for so long, it feels weird to pick them up now and we don't really need to. But I suppose it's nice to have options. So yeah, pretty straightforward level in terms of simulated DPR. We get the flat boost from the dueling fighting style and we also get a proficiency bonus increase, meaning greater chance to hit and more breath attacks per day, which also increases our damage a bit. Nice. Going fighter is also nice since the d10 hit die will help give us more HP as we progress. Thematically, I think we like fighter more than continuing in rogue since our character's identity is that of overwhelming natural power, cunning, and ability. At this point, we aren't really some delicate rogue. We are a psionic warrior, fueled by our own physical excellence and martial prowess. Lean in to this kind of identity as we progress further. 
+
+
+
+
+
+####### 
+Level-14: Rogue-04 (Soul Knife), Psion-08 (Metamorph), Fighter-02
+ - action surge (x1/SR)
+ - tactical mind 
+   * expend use of second wind to give yourself 1d10 + fighter-lvl(2) to any ability check 
+   * don't expend use if you still fail
+
+NOTE: Another very basic level here. We go fighter-02 to get action surge and tactical mind. Action surge boosts our DPR a bit (and more so since we already have extra attack). And tactical mind dovetails nicely with our rogue skill-monkey aspect, and can stack with psi-bolstered knack to help us succeed at critical skill checks when needed. Other than action-surge everything stays the same combat-wise.
+
+
+
+
+####### 
+Level-15: Rogue-04 (Soul Knife), Psion-08 (Metamorph), Fighter-03 (Champion)
+ - improved critical 
+   * attacks with weapons and unarmed strikes crit on 19 or 20 
+ - remarkable athlete 
+   * gain advantage on initiative rolls and athletics checks 
+   * after you score a critical hit, you can move up to 1/2 speed w/o provoking AoOs
+
+NOTE: Lvl-15 and we go fighter-03 to pick up our subclass -- the champion. A great subclass for us for a variety of reasons, but I think the theme is also on point. We are an exemplar of the physical and mental superiority of dragon-kind: our mind and body a highly refined instrument of death. This fits very neatly into the themes of the champion subclass. Mechanically, the champion is also great, and fairly straightforward. The big draw is the improved critical feature, which dovetails particularly well with our other features and combat playstyle. Basically, we gain increased value from critical hits because of the damage die upgrading we get from sharpened mind and savage attacker, and the fact that our sneak attack and viscera launcher add extra dice to our weapon attacks (which are doubled on crits). Thus, doubling our crit chance with improved critical increases our average DPR substantially. And since we're using vex weapons, and probably gaining advantage externally (e.g., from things like greater invisibility, steady aim, hiding, etc.) we increase the chance of scoring critical hits even further. Remarkable athlete is also nice, especially the advantage on initiative rolls (which we were already pretty good at, with our high DEX). But the additional mobility from remarkable athlete is also great, given that we'll be critting pretty regularly. It's also nice to be able to take a subclass in a 3rd class without changing our character identity or playstyle significantly. The champion subclass just augments what we already do, and thus fits into this build fairly seamlessly. Excellent. Moving on. 
+
+
+
+
+####### 
+Level-16: Rogue-04 (Soul Knife), Psion-08 (Metamorph), Fighter-04 (Champion)
+ - feat: speedy 
+   * ASI: +1 CON (CON=18) 
+   * Speed increases by 10ft
+   * When you take the Dash action on your turn, difficult terrain doesn't slow you for the rest of the turn 
+   * Opportunity attacks have disadvantage against you 
+ - second wind (x3, +1 on SR, recover all on LR)
+   * BA to heal 1d10 + fighter-lvl (4) 
+ - weapon masteries (6) 
+   * shortbow (vex), hand-crossbow (vex), pistols (vex), rapier (vex), dagger (nick), shortswords (vex) 
+
+NOTE: Right, lvl-16 and we go fighter-04 to pick up another feat. We take speedy to boost our CON to 18, improving our toughness/HP and giving us a number of nice mobility features. In combination with mutable form, we can get a +15 to our base movement speed, which also carries over to our fly speed when we have our dragon wings active and also dovetails with the extra movement we get through remarkable athlete (nice). And, as a rogue who can dash with a BA through cunning action, we get good value out of the dash over difficult terrain feature. Finally, as a fighter that prefers ranged combat, we like the ability to impose disadvantage on opportunity attacks against us, since then we don't have to use our BA to disengage, leaving it free to make BA psychic blade attacks. Boosting CON also increases the save DC for our breath weapon, which we are actually using in this build. Fighter-04 also gives one extra use of second wind, meaning more healing or more empowered skill checks. Both of these also synergize quite well with our other base/subclass features (like psi-bolstered knack, our healing focused metamorph bound spells and THP generation, etc.). Oh yeah, and we get another weapon mastery, which doesn't matter at all. In terms of DPR, the only bump we get is from the higher DC on our breath weapon, and that's not huge. But it's worth noting that this is the first level since level 08 where we haven't substantially increased our DPR. That's really good. And we're still increasing, even here. 
+
+
+
+
+####### 
+Level-17: Rogue-04 (Soul Knife), Psion-08 (Metamorph), Fighter-05 (Champion)
+ - proficiency bonus (PB): +6 
+ - breath weapon: 4d10 
+ - tactical shift 
+   * when you activate second wind with a BA you can move 1/2 speed w/o provoking AoOs 
+ 
+NOTE: Lvl-17 and we go fighter-05. We get extra attack, but we already have it so that's a dud. A bit of a bummer that we have to expend level-capital to pick that up twice. But despite that, this isn't a totally dead level. We get a proficiency bonus increase, and the damage of our breath weapon increases to 4d10. Both of these serve to boost our DPR a little bit. We also get tactical shift, which gives us even more mobility and escapability. As with the speedy feet and our remarkable athlete feature, extra movement without provoking AoOs from tactical shift works super well with our ranged/rogue fighting style. Anyway, not a super consequential level here, but it is nice that we can get extra damage from our breath weapon in what would otherwise be a totally dead level. Nice to see a bit of a boost to start out here in tier-03. 
+
+
+
+
+####### 
+Level-18: Rogue-04 (Soul Knife), Psion-08 (Metamorph), Fighter-06 (Champion)
+ - ASI: +2 CON (CON=20)
+ 
+NOTE: Alright, lvl-18 and we go fighter-06 to take an ASI and boost our CON to 20. This boosts our toughness/durability, helps with concentration checks, and increases the DC for our breath weapon to its max (19). Awesome that we can continue to push our damage with stat boosts even while we aren't getting uber-powerful class/subclass features. Otherwise no changes to anything. 
+
+
+
+
+####### 
+Level-19: Rogue-04 (Soul Knife), Psion-08 (Metamorph), Fighter-07 (Champion)
+ - feat: thrown-weapon fighting 
+   * when you hit with a ranged attack roll using a thrown weapon, gain a +2 to damage 
+ 
+NOTE: Lvl-19 and we go fighter-07 to get our lvl-07 subclass feature, which for champion fighters is an extra fighting style. We take thrown weapon fighting, which adds +2 to damage on all our thrown weapon hits. This applies to each of our psychic blade attacks, so it's a flat +4 to damage each turn. Not a massive increase, but it's the best we can do now that we've maxed out both our primary and secondary stats (DEX, CON). No other changes to damage or playstyle. But with this boost we round out the build in a very good place damage-wise. 
+
+
+
+
+####### 
+Level-20: Rogue-04 (Soul Knife), Psion-08 (Metamorph), Fighter-08 (Champion)
+ - feat: epic boon of dimensional travel
+   * ASI: +1 INT (INT=15) 
+   * blink steps: immediately after you take the attack or magic action you can teleport 30ft to an unoccupied space you can see 
+ 
+NOTE: Lvl-20. We go fighter-08 to get an epic boon. Combat prowess probably does the most for our damage. But it just feels so boring. Since we already do good damage, we take the epic boon of dimensional travel in order to get the blink steps ability, which is awesome. This ability is also very similar to the psychic teleportation ability that soul knife rogues get at level 09, so it's thematic that this character can end up with a similar ability (albeit only here at lvl-20). Anyway, no changes to damage here. 
+

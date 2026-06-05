@@ -1,0 +1,1165 @@
+Moniker: The Arrow of Primus
+Classes: Sorcerer (Clockwork Soul) - 12, Paladin (Devotion) - 6, Warlock - 2 
+Species: Human 
+ - size: medium 
+ - speed: 30ft 
+ - resourceful: gain heroic inspiration whenever you finish a LR
+ - skillful = gain proficiency in 1 skill (history)
+ - versatile = gain a 1st-level feat of your choice (alert)
+Sex: Female 
+Background: alchemical/magical supplies merchant
+ - slightly modified version of the `merchant' background from 2024 PHB
+ - ability scores: CON, INT, CHA
+ - feat: lucky
+ - skill proficiencies: arcana, persuasion
+ - tool proficiency: alchemist's supplies 
+ - languages: common, common sign language, celestial (modron) 
+ - equipment: 50 gp
+Point-Buy Stats: 
+ - STR = 13
+ - DEX = 12
+ - CON = 13 (+1) = 14
+ - INT = 10
+ - WIS = 10
+ - CHA = 15 (+2) = 17
+ASI's/Feats
+ - lvl-0: alert
+ - lvl-0: lucky
+ - lvl-5: fey-touched (+1 CHA) - reflavor this to be `mechanus-touched'
+ - lvl-8: fighting-style: defensive (via paladin) 
+ - lvl-10: great-weapon master (+1 STR)
+ - lvl-15: ASI: +2 CHA
+ - lvl-16: magic initiate - druid (via lessons of the first ones) 
+ - lvl-20: epic boon of truesight
+PROGRESSION SUMMARY
+ - lvl-1: sorcerer-1 --> true strike, CON save proficiency 
+ - lvl-2: sorcerer-2 --> metamagic, font of magic, switch cantrips
+ - lvl-3: sorcerer-3 (clockwork) --> restore balance, lvl-2 spells (magic weapon) 
+ - lvl-4: sorcerer-3 (clockwork), warlock-1 --> agonizing blast, light armor  
+ - lvl-5: sorcerer-4 (clockwork), warlock-1 --> fey touched (CHA=18) 
+ - lvl-6: sorcerer-5 (clockwork), warlock-1 --> sorcerous restoration, lvl-3 spells (catnap)
+ - lvl-7: sorcerer-5 (clockwork), warlock-1, paladin-1 --> longbow, medium armor, divine favor, weapon mastery
+ - lvl-8: sorcerer-5 (clockwork), warlock-1, paladin-2 --> fighting style: defensive 
+ - lvl-9: sorcerer-5 (clockwork), warlock-1, paladin-3 (devotion) --> sacred weapon
+ - lvl-10: sorcerer-5 (clockwork), warlock-1, paladin-4 (devotion) --> great weapon master (STR=14)
+ - lvl-11: sorcerer-5 (clockwork), warlock-1, paladin-5 (devotion) --> extra attack, faithful steed
+ - lvl-12: sorcerer-5 (clockwork), warlock-1, paladin-6 (devotion) --> aura of courage 
+ - lvl-13: sorcerer-6 (clockwork), warlock-1, paladin-6 (devotion) --> bastion of law
+ - lvl-14: sorcerer-7 (clockwork), warlock-1, paladin-6 (devotion) --> sorcery incarnate, lvl-4 spells
+ - lvl-15: sorcerer-8 (clockwork), warlock-1, paladin-6 (devotion) --> ASI: +2 CHA 
+ - lvl-16: sorcerer-8 (clockwork), warlock-2, paladin-6 (devotion) --> magic-initiate(druid), lessons of 1st ones
+ - lvl-17: sorcerer-9 (clockwork), warlock-2, paladin-6 (devotion) --> lvl-5 spells 
+ - lvl-18: sorcerer-10 (clockwork), warlock-2, paladin-6 (devotion) --> additional metamagic 
+ - lvl-19: sorcerer-11 (clockwork), warlock-2, paladin-6 (devotion) --> lvl-6 spells
+ - lvl-20: sorcerer-12 (clockwork), warlock-2, paladin-6 (devotion) --> epic boon of truesight 
+
+CONCEPT NOTES: 
+Mechanically, the basic concept of this build is to be an archer who makes devastating CHA-based attacks with a longbow. To make this viable, we go with devotion paladin for their sacred weapon channel divinity ability, which let's them use CHA for attacks with a weapon they're holding. We then go great-weapon master, which in the updated 2024 PHB applies to attacks made with a longbow. Then we go sorcerer to get quicken spell. When it's all up and running, we'll be able to make 2 CHA-based longbow attacks that benefit from GWM each turn, then quicken true-strike to make a 3rd with our bonus action. We then stack weapon attack buffs from divine favor, magic weapon, hunter's mark, and agonizing blast to boost our damage even further. We also get some really nice capstone abilities at level-19 and 20 that put this build over the top. The nice thing about the way we've set this up, is that we actually make use of the +1 to STR that we have to take with GWM to facilitate our multiclass into paladin. This let's us maintain decent ability scores in other key stats while still going fully into CHA.  
+
+Thematically, I think we want to think of this character as a kind of `steampunk knight' who fights with a magically enhanced bow. Something in our backstory connects us to the foundations of modern civilization, and we have a great admiration for their stories and accomplishments. Perhaps an ancestor was one of the founders of the city where we live, or was a great architect of the city's grand palaces and structures, or a great scholar or intellectual. Whatever the case, this personal connection has led us to be an amateur student of history, economics, and magical technology. Prior to adventuring, we worked in the family business as a merchant, buying and selling alchemical supplies, enchantment materials, and minor magic item across the world/region. The way that trade and economic systems integrate and enrich people's lives has always appealed to us. But we find that in our day-to-day work, we are bombarded by chaos and irrationality. This distresses us, perhaps to the point of depression and anxiety. We find solace in the quiet pursuit of our craft -- in the balancing of the account books, or in the orderly loading and stocking of wagons, boats, and caravans. We love to watch the merchant ships dock and unload their goods in the early morning, before any of the crowds are out, or the master engineers equilibrate the brumestone engines on newly constructed giant airships, or the master enchanters transform as they transform inert materials, runes, and incantations into realized magical objects. We are fascinated by the politics of our land, and have respect/admiration for leaders we consider enlightened and reasonable, and scorn/distaste for those who seem impetuous, fickle, fanatical, or ignorant. 
+
+As our character grows and progresses, we first identify that we derive peace and insight from the logical arrangement of structure. That this has always been a part of us. Eventually, we come to believe that our personal experience is a microcosm for the larger world, and we commit ourselves to the veneration and protection of order. We commit ourselves to the idea that a logical, sensible, and just society is the prerequisite for human(oid) flourishing and that only through the technocratic advancement of civilization can we achieve a better world. Perhaps as we move towards the end of our career, we will soften our dogmatism a bit, and come to recognize that there is a balance between order and chaos. That one only exists in opposition to the other,  and thus form the alpha and omega of the cosmos. That creativity and innovation can arise from idiosyncrasy and that the most fertile ground for human ingenuity involves both order and chaos. Structure and unpredictability. Logic and feeling. 
+
+Building off this theme, we will RP this character as someone who's charisma emerges from their intelligence/clear-thinking, and worldliness/sophistication. We are personable because of our insightful self-awareness, and our genuine curiosity/inquisitiveness. We are likeable because of our honesty and fairness. We are a persuasive debater, and capable of convincing deceptions because of our ability to accurately infer what other people think. 
+
+The manifestation of order in our physical body will be raised lines and dots under our skin that look like traces on a circuit board. At the beginning of our career these traces will be scarce and faint, perhaps only on the back of one hand, or a simple set of traces above our one eye. When we cast spells, I imagine light traveling along these lines, like electricity. For example, when we cast true-strike, I imagine there will be a flash in our eyes, followed by a pulse of electricity along the circuit traces originating from our eye and going to our hand where we hold the bow. As we progress in our career, I imagine we will become more `cyborg-like'. For example, the circuit traces on our body could become more prevalent, and more complex, perhaps creating a beautiful pattern across the entirety of our body. A lot of our spellcasting will also have this kind of `cyborg' vibe (ex.,  hunter's mark as a luminous crosshair that appears in our eye and on the target). 
+
+THEMATIC CONCEPT NOTES: 
+ - magic theme: scanning and detection (of extra-planar beings, poison/disease, invisible creatures, etc.) 
+ - magic theme: restoring balance and neutrality, healing, restoration, warding of destruction and evil 
+ - magic theme: bending fate, warping reality, coercing the cosmos to adhere to the structure and 
+                organization that we specify/desire. this includes charming humanoids to think/believe/act 
+                in accordance with our wishes
+ - weapon theme: recast crossbow/shortbow/longbow as a 'pulse rifle' that gets better/more tricked out 
+                 as we progress. This works because we do entirely radiant/force damage with our attacks 
+                  throughout our entire career. 
+ - martial theme: go back through and re-cast melee sword and board and (eventually) melee great weapon 
+                  options as a backup fighting style. Like we prefer archery but we'd be ok switching over
+                  to a melee weapon if the situation called for it. This would let us use some of our smite
+                  bound spells to impose control effects, too.
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+
+
+
+#######
+Level-1: Sorcerer-1
+ - feat: alert
+   * initiative proficiency = +PB to initiative rolls 
+   * initiative swap = swap places with a willing ally when you roll initiative 
+ - feat: lucky
+   * luck points: # of luck points equal to PB; spend them to impose advantage or disadvantage
+   * advantage: when roll a d20 test, use a luck point to roll it with advantage 
+   * disadvantage: when a creature rolls a d20 test, use a luck point to impose disadvantage
+ - saving throw proficiencies: CON, CHA  
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * sorcerer (2): insight, deception    
+   * magic supplies merchant (2): arcana, persuasion
+   * skillful (human) (1): history
+   * languages (3): common, common sign language, celestial
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons
+   * armor: none
+   * tools: alchemist's supplies (magic supplies merchant)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (background) + 50gp (sorcerer)
+   * weapons: light crossbow (25gp), crossbow bolts x40 (2gp)
+   * tools: alchemist's supplies (50gp)
+   * gear:  arcane focus, rod (10gp), explorer's pack (10gp)
+   * spare coin: 3gp
+ - combat equipment:
+   * weapon: light crossbow
+     + light crossbow = 1d8 piercing (slow); ammunition (range 80/320), loading, two-handed 
+   * armor: none
+   * unarmored AC: 10+1(DEX)=11, 13+1(DEX)=14 with mage armor
+ - innate sorcery (x2/LR) 
+   * bonus action to activate 
+   * 1m duration: spell save DC+1, advantage on attack rolls with sorcerer spells 
+ - spellcasting 
+ - cantrips: 
+   * sorcerer (4): true-strike, sorcerous burst, shocking grasp, light
+ - spell slots: 2 
+ - spells prepared: 2 (sorcerer)
+   * lvl-1 (sorcerer): mage armor, jump 
+ 
+NOTE: Ok so here we go with level-1. Let's start off with a few comments on character creation. We go with human for our species in order to get an additional skill proficiency and an additional origin feat. For our background, we create a custom background that we're calling 'magic supplies merchant'. This is almost identical to the merchant background in the new PHB, except we've switched out animal handling for arcana in our skill proficiencies, and switched out navigator's tools for alchemist's supplies in our tool proficiencies. This is just to give our character a bit more arcane knowledge and intellectual flavor. It will have very limited impact on our game play so I think it's fair. In terms of our origin feats, we go with alert for our extra human feat, and we get lucky from the merchant background. Getting the alert feat is one of the main reasons for going human with this character. We will have low DEX for our entire career, so we really like that the alert feat lets us add our PB to our initiative rolls. As an archer/ranged attacker, we want to be able to position ourselves advantageously at the start of combat, and this is going to help us do that. Alert is also a great for overall party tactics, as the initiative swap ability can help your team set up powerful synergies and combos. Thematically, our character is going to be all about order and will be using our inherent magic to bend the world around us towards a desirable structure/organization. The alert feat literally lets us manipulate the order of combat, so it's very on brand for us. Lucky is the same. We can think of luck points as us exerting our magical will to nudge reality towards a desired set of outcomes, a desired structure. I'm imagining our character shooting an arrow that seems like it's going to miss, but its trajectory suddenly changes at the last second (when we use a luck point) in order to turn the miss into a hit. Luck points are also similar mechanically to the `restore balance' feature that we will get from clockwork sorcerer, and the epic boon that we will get all the way at the end of our career at level-20. So, overall, on theme. Luck is also great for us since, for much of our career, we're going to be landing a relatively small number of `big hits' on our turn. So more than other characters, I think we will like the ability to give ourselves advantage on those. It also dovetails nicely with our `innate sorcery' feature to help with landing saving throw spells. Innate sorcery let's us bump our spell save DC by 1. Then we can also make a target roll the save with disadvantage using Luck. 
+
+In terms of skill proficiencies, from sorcerer I took insight and deception. From our background, I took arcana and persuasion. And for our extra human skill proficiency, I took history. Our background as a purveyor of magical materials gives us proficiency in arcana. Our connection to and interest in the great civilizations of old is reflected in our proficiency in history. Insight and persuasion are social skills that we developed while being a merchant. And deception comes from our cleverness. We have a good sense of how people think / how they will react. So, when it suits us, we use can effectively `press people's buttons' to manipulate them. See the concept note above for a longer explanation. The alchemist's supplies tool proficiency is on-brand for our background, and it also provides the mechanical advantage of allowing us to craft potions (of healing) in our downtime if we so choose. This also feels like something we should be able to do given our background. Ok, enough on skills. 
+
+For equipment, we go with the gold-buy method and pick up alchemist's supplies (expensive!) a light-crossbow, some crossbow bolts, an arcane focus (I think rod is most appropriate) and an explorer's pack. The light crossbow is going to be our best combat option for the first couple of levels here. It's on a d8 damage die, which is good for a simple weapon. But it has the loading and two-handed property. So we can only make one attack with it on our turn and we have to have two free hands. For now, neither of those things is a problem for us, so we'll take the extra damage. Eventually we'll switch this out once we start wanting to make multiple attacks on our turn. Alright, and we don't have any armor proficiencies, so we don't wear any armor which puts our AC at a measly 11. Barf, but we're going to be staying as far away from enemies as we can for now. 
+
+Alright, so then for class features, as a sorcerer we of course get spellcasting. For cantrips, we take true-strike, sorcerous burst, shocking grasp, and light. True-strike is going to be our go to, allowing us to make attacks using our crossbow with CHA instead of DEX. For reference, here is the updated text for true-strike: 
+
+True Strike (divination)
+ - Casting Time: Action 
+ - Range: Self 
+ - Components: S, M (a weapon with which you have proficiency) 
+ - Duration: Instantaneous 
+ - Description: Guided by a flash of magical insight, you make one attack with the 
+                weapon used in the spell’s casting. The attack uses your spellcasting
+                ability for the attack and damage rolls instead of using Strength or 
+                Dexterity. If the attack deals damage, it can be Radiant damage or the
+                weapon’s normal damage type (your choice).
+                Cantrip Upgrade. Whether you choose to deal Radiant damage or the 
+                weapon’s normal damage type, the attack deals extra Radiant damage when
+                you reach levels 5 (1d6), 11 (2d6), and 17 (3d6).
+
+Sorcerous burst is a new sorcerer-exclusive cantrip that does 1d8 damage (at level-1) with the potential to do additional damage if you roll an 8. On average, it's still less damage than true-striking with our crossbow, since we get to add our CHA modifier to true-strike attacks. But sorcerous burst does let you choose the damage type (from options: acid, fire, cold, lightning, thunder, psychic, poison) when you cast it, so it's good to have in our back pocket for overcoming resistances. Plus, it will benefit from cantrip scaling as we level up so it'll always be a ranged damage option. This could be useful if we find ourselves in situations where we don't have our weapons, or can't consistently make CHA based weapon attacks. We take shocking grasp in case we get stuck in melee and need to disengage. It's also on-theme for our mechanical/cyborg themed spellcasting. Notably, however, it was nerfed in 2024. Now it only prevents targets hit by it from making opportunity attacks, rather than from taking any kind of reaction whatsoever. Still good enough for us. Finally we take the light cantrip since we are a lowly human who lacks darkvision. We will also be a pretty light/radiant themed character, so it's on brand. 
+
+In terms of leveled-spells, we get 2 spells -- and I think we take mage armor and the jump spell. Mage armor and shield are the two premium options to deal with our pathetic AC. In my opinion, mage armor is slightly better than shield for us right now. We only have 2 spell slots, so we can't cast shield a lot. And mage armor gives us a base AC of 14 for a full 8 hours. But whatever, if you prefer shield then go with that. As for the jump spell, the updated version of it is super good -- providing the option to jump 30 ft for 10ft of movement on your turn for the duration of the spell. It will be a staple mobility skill for our character. Plus it upcasts well and works with twinned spell (though we may not take advantage of that till much later). As an archer, I imagine we will always be trying to find the `high ground' where we can see our enemies and they can't reach us. Being able to jump 30ft on our turn will be very helpful in attaining it. It's also a bonus action to cast, and we don't have anything good to do with our BA right now, except for innate sorcery. Plus, I think it fits easily into our kind of mechanical/cyborg magical aesthetic. Like, I could easily imagine a pulse of magical energy running through the circuit-board on our body and producing pulse of arcane energy that propels us upward for a big jump. You know, kind of like `engage thrusters'.  
+
+In addition to spellcasting, we get the new (to the 2024 PHB) sorcery innate sorcery base class feature. This ability is a bonus action to activate, we can do it twice per long rest, and when we activate it for the next 1m we get +1 to our spell save DC and we get advantage on attack rolls of sorcerer spells we cast. This is an awesome limited use combat steroid. Right now at level-1, we don't have any spells that force saving throws. But innate sorcery still gives us automatic advantage on attacks we make with true-strike, which is our bread-and-butter attack cantrip. So we love it. I think we can also imagine this feature as operating in the same thematic way as our luck points and heroic inspiration. A kind of magical altering of the grand equation of the cosmos to change outcomes in real time. So that's great, too. 
+
+In terms of combat tactics -- try to precast mage armor if you can. Seize the initiative with the alert feat (we have a +3 to initiative rolls right now), use jump to get to an advantageous spot, then make a true-strike attack with the light crossbow as our action to do 1d8 + 3 = 7.5 damage. Thematically, I would imagine our crossbow as more like a `pulse rifle' and would definitely use the option in true-strike to change the weapon damage type to radiant. Use innate sorcery, luck points, or the heroic advantage we get each day as a human to make the attacks stick. Alright, that's it for level-1. It's always a long one. But we did it, so let's move on. 
+
+
+
+
+
+#######
+Level-2: Sorcerer-2
+ - sorcery points (SP): 2
+ - font of magic
+   * convert spell slots into sorcery points 
+   * create spell slots with sorcery points 
+ - metamagic 
+   * quickened spell (2 SP) 
+   * extended spell (1 SP) 
+ - combat equipment:
+   * weapon: shortbow
+     + shortbow = 1d6 piercing (vex); ammunition (range 80/320), two-handed 
+   * armor: none
+   * unarmored AC: 10+1(DEX)=11, 13+1(DEX)=14 with mage armor
+ - cantrips: 
+   * sorcerer (4): true-strike, sorcerous burst, shocking grasp, light
+ - spell slots: 3 
+ - spells prepared: 4 (sorcerer)
+   * lvl-1 (sorcerer): mage armor, jump, comprehend languages, detect magic
+ 
+NOTE: Ok we're level-2 and we're going sorcerer-2. First off, we get the font of magic base class feature, which endows us with 2 sorcery points, and gives us the ability to convert spell slots into sorcery points and vice versa. In addition, we get to pick two metamagic options that we can use our sorcery points to fuel. The main one we need for this build is quickened spell, which let's us cast a spell that normally has a casting time of 1 action as a bonus action, subject to the constraint that you can't use this ability to cast two spells of level-1 or higher on the same turn. Note that language of quicken spell prohibits casting two-leveled spells on the same turn, regardless of whether or not they consume spell slots. So even though we now have the `only one spell slot per turn' rule in the 2024 PHB, we still can't use quickened spell to cast a level-1 or higher spell as a BA and another level-1 or higher spell as an action, even if one of those is cast without a spell slot. This won't matter for us much, but it's worth clarifying. 
+
+The main thing we're going to be doing with quickened spell is using it to cast true-strike with our Bonus Action. Now in order to actually do this, we have to switch out our primary weapon over to the shortbow. This is because the light crossbow has the loading property, which means you can only make 1 attack per turn. The shortbow does a bit less damage, but that's just the cost of doing business. So now we can make one true-strike attack on our turn with our shortbow as an action, then use quickened spell to make an additional true-strike attack using our bonus action. When we do this, we will do a very respectable 2d6 + 6 = 13 damage on our turn. Pretty good for level-2. Now, quickened spell costs 2 sorcery points (SP), and right now we only have 2 SP. We can also convert our spell slots into SP at a ratio of 1 SP per spell slot level. But even if we convert 2 level-1 spell slots to sorcery point sin order to give ourselves 4 SP, we can only do our BA true strike attack a maximum of twice per long rest. Not great, but not terrible either. 
+
+For our second metamagic option -- I'm going to recommend taking extended spell. When you use extended spell when casting a spell with a duration of 1m or longer, you double the spell's duration (up to 24h) and, if the spell requires concentration, you have advantage on saving throws to maintain concentration. This latter feature is new in the 2024 PHB. We like extended spell for a few reasons. First, our character is going to be using a number of spells that passive buffs for a period of time (e.g., mage armor, divine favor, magic weapon, etc.). These are much easier to precast if you can double their duration. Now this won't always be worth the sorcery points, but sometimes it very much will be (especially at later levels). For example, right at level-2 we can easily use extended spell when we cast mage armor to increase the duration to 16 hours, pretty much guaranteeing that we will have it up for the entire day. Second, as our character progresses, we are going to be relying on a number of key concentration spells to enhance our character's mobility and utility (e.g., spider climb, fly, circle of power, etc.). Since we'll be converting a lot of our spell slots into sorcery points to fuel bonus action attacks, it's going to be critical that we be able to maintain concentration on these spells when we cast them. Extended spell will help with this, in addition to boosting their duration. 
+
+Ok, finally, in addition to sorcery points and metamagic, at sorcerer-2 we also get to another 1st-level spell slot, and we get to prepare two new sorcerer spells. Considering my recommendation is to burn *two* of our 1st-level slots to create 2 sorcery points, this means we will only have 1 level-1 slot left with which to cast spells. As a default, if there's an chance we'll end up in combat, then we probably need to cast mage armor. This leaves us with *no* spell slots for any new spells. Since we're currently in this situation, what we want are spells that we can cast as rituals. Comprehend languages and detect magic both fit the bill. Both are also, in my opinion, very thematic. I imagine our character's spellcasting as having a kind of mechanical/cyborg-like quality -- with magical effects manifesting as arcane technological enhancements. And I can certainly imagine our character sending a magic pulse to her ears enabling her to understand any spoken language, or activating a lens of magic runes in her eye that allows her to read any writing. And `activating' detect magic as a kind of sensory scanner also seems consistent with this kind of aesthetic. Both also work well with our extended spell metamagic, if we happen to still have a sorcery point left to use. 
+
+Ok, well that's it for level-2. Moving on! 
+
+
+
+
+
+#######
+Level-3: Sorcerer-3 (Clockwork Soul) 
+ - sorcery points: 3
+ - subclass: clockwork soul 
+ - clockwork magic
+   * gain bound spells at select sorcerer levels 
+   * can choose abjuration or transmutation spells from sorc/warlock/wizard spell list 
+     when you get more preparable spells
+ - restore balance = neutralize advantage or disadvantage as reaction CHA times / long rest (60ft range)
+ - cantrips: 
+   * sorcerer (4): true-strike, sorcerous burst, shocking grasp, light
+ - spell slots: 4-2
+ - spells prepared: 6 (sorcerer)
+   * lvl-1 (sorcerer): mage armor, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-2 (sorcerer): magic weapon, spider climb, arcane vigor
+   * lvl-2 (clockwork): aid, lesser restoration
+
+NOTE: Ok we're level-3 and we're going sorcerer-3. We get 3 new spell slots (two lvl-2 and another lvl-1), 2 new prepared spells, and, of course, we get our sorcerer subclass. For our subclass, if it wasn't obvious, we're going with clockwork soul. The affinity for civilization, structure, law and order defines this character and officially, at this level, becomes the source of their magical power. In terms of narrative arc, I would say that in taking this subclass, our character has developed a self awareness of this fact, and become cognizant of the fact that they draw power from the sublime order and beautiful, harmonic organization of the cosmos. They have recognized that they find peace and strength in those aspects of their life that embody these concepts, and begin to more strongly gravitate towards those activities.
+
+Mechanically, when we take this subclass, we get a few things. First we get the `restore balance' feature, which allows us to use our reaction to neutralize advantage or disadvantage on a d20 roll being made by a creature we can see within 60 ft of us. The only update to this feature in the 2024 PHB is that now we can use it a number of times per day equal to our CHA modifier (so, for us, 3 times). Previously the number of uses was based on your proficiency bonus. This is a great ability. It provides great flavor for the subclass theme, and dovetails nicely with our lucky origin feat. It is also a great way to provide utility in combat that doesn't require any of our -- at this point -- very scarce spellcasting resources. So we definitely love that. 
+
+Next, we get the `clockwork magic' feature. This feature provides us with bound spells when we reach certain sorcerer levels. Here at level-3 we get alarm and protection from evil and good. We always have these spells prepared, but they don't count against the number of spells we can prepare. Neither is great. Alarm is a ritual so we like that. And protection against evil and good is a strong defensive option in the right situations. Unfortunately, in the 2024 PHB this feature was also significantly nerfed, and we can no longer swap out these clockwork spells for other spells on the warlock/wizard lists when we gain levels. This is a huge bummer, as it significantly reduces the flexibility of spell selection for this subclass. And if I were DM'ing, I would 100% let players swap out spells as per the old clockwork magic feature. But this nerf is offset by expanded base class spell list for sorcerers in the 2024 PHB, as well as by the other base class features that sorcerers gained. For this guide, I'm going to try to stick to the RAW, and that means keeping the clockwork spells we are given. 
+
+Ok so what new spells do we choose to prepare? Well, to start we're actually going to take two transmutation spells: magic weapon and spider climb. We like both of these spells a lot. Magic weapon has been updated in the 2024 PHB, and no longer requires concentration. So we can cast it on our shortbow (possibly enhanced with extended spell) and give it a +1 to attack and damage rolls. We get especially good mileage out of this when we use our action and bonus action to make crossbow true-strike attacks. With magic weapon up, our special double true-strike attack would do 2d6 + 8  = 15 damage. Pretty good. As for spider climb, it is a premier early-level mobility/defensive option for any character that makes ranged attacks. Walk up on to the ceiling and rain down crossbow bolts on melee enemies who have no way to reach you. And while it does require concentration, we do have proficiency in CON saves and we can use extended spell to give ourselves advantage on concentration checks if we have to. Plus we have lucky and our human heroic advantage. So we should feel very confident using spider climb and going wherever we please. And lastly, we're going to drop comprehend languages and take the new `arcane vigor' spell available to sorcerers. The details of this spell are below, but the tldr is that it's a bonus action heal with hit dice that scales off your spellcasting ability modifier (instead of CON) and upcasts well. Since we are fragile, have low AC, and don't (and won't) have a lot of healing abilities, we want to have something here we can use in emergency situations. 
+
+Arcane Vigor 
+ - level-2 Abjuration (Sorcerer, Wizard) 
+ - casting time: bonus action 
+ - range: self 
+ - components: V,S
+ - duration: instantaneous
+ - description: you tap into your life force to heal yourself. Roll one or two of your unexpended 
+                Hit Dice, and regain a number of Hit Points equal to the roll's total plus your 
+                spellcasting ability modifier. These dice are then expended. Using a higher level
+                spell slot: The number of unexpended Hit Dice you can roll increases by 1 for each 
+                spell slot level above 2. 
+
+However, because we are using our sorcery points to fuel bonus action attacks. We have to think carefully about our spell resources. As a default, I would suggest that we burn one lvl-2 slot and two lvl-1 slots each day to give ourselves 4 additional sorcery points (total of 7). Now you have 2-1 spell slots remaining. Use one sorcery point and one lvl-1 slot to cast mage armor on yourself with extended spell. Now you have 1-1 spell slots remaining and 6 sorcery points with which to make extra bonus action attacks (so three bonus action attacks). During combat, choose different options at each spell level depending on the situation. For example, with your lvl-1 slot, you could either cast jump (works great with spider climb) or protection from evil and good (works great against fey, fiends, or undead). And with your level-2 slot, you can either cast magic weapon as an offensive option, spider climb for defense/mobility, or arcane vigor for an emergency heal. Of course, you can still cast detect magic and alarm as rituals. I wouldn't bother with aid/lesser restoration at this level, but they could be situationally useful. Of course we can adjust this paradigm as needed to fit whatever situation we're in, but I think it's helpful to have a baseline. 
+
+
+
+
+
+#######
+Level-4: Sorcerer-3, Warlock-1 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons
+   * armor: light armor
+   * tools: alchemist's supplies (magic supplies merchant)
+ - eldritch invocations (1)
+   * agonizing blast = add CHA modifier to damage roll of 1 warlock cantrip (true-strike)
+ - pact-magic 
+ - cantrips: 
+   * sorcerer (4): true-strike, sorcerous burst, shocking grasp, light
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-2 
+ - spells prepared: 6 (sorcerer), warlock (2)
+   * lvl-1 (sorcerer): mage armor, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-2 (sorcerer): magic weapon, spider climb, arcane vigor
+   * lvl-2 (clockwork): aid, lesser restoration
+   
+NOTE: Ok level-4 and we take a 1-level warlock dip. We're only ever going to take 1 more level of warlock, so don't lean into too much in terms of character identity. For thematic consistency, perhaps we can say that as part of taking the clockwork soul subclass we establish a intertemporal connection with one of our ancestors who visited Mechanus, or are telepathically connected to a Greater Modron. Don't overthink it. The main reason we're going for the warlock dip is to get the agonizing blast eldritch invocation, which received an update in the 2024 PHB. The new version of agonizing blast reads: 
+
+Agonizing Blast:
+Prerequisite: At Least One Warlock Cantrip
+Choose one of your known Warlock cantrips that deals damage. You can add your spellcasting ability modifier to that spell’s damage rolls. Whenever you gain a Warlock level, you can change which of your damaging Warlock cantrips benefits from this invocation.
+
+Ok, so the big change from 2014 is that this invocation no longer *only* applies to eldritch blast. This means it can work with true-strike. Amazing. Now, unfortunately, it doesn't actually do anything for us right now. If you look back at the level-1 note to see the full language of true-strike, you'll notice that the spell itself doesn't do any damage until level-5. Prior to that, it let's us make an attack with a weapon using our spellcasting ability modifier for our attack and damage rolls, and change the damage to radiant if we want, but doesn't do any damage on it's own. Obviously, this will change next level and we'll be able to start adding our CHA modifier twice when we make attacks with true-strike. But, yeah, bummer for us here at level-4. Hang in there. 
+
+Next, note that the agonizing blast invocation text specifically states that it has to apply to one of our *warlock* cantrips. So this is why we take true-strike as a warlock cantrip even though we already knew it as a sorcerer. This also means that when we want to use our innate sorcery ability to make true-strike attacks with advantage, we can't also benefit from agonizing blast. Unfortunately, because both abilities (innate sorcery and agonizing blast) are class specific we can't stack them both on a single casting of the spell. However, by keeping true-strike as a cantrip in both classes, we will be able to choose whether we want the increased damage of agonizing blast or the increased accuracy of innate sorcery. So that's nice. And this also feels kind of thematic -- like adjusting the specs on our weapon to either prioritize damage or accuracy. Has a kind of techno-specialization vibe. For our second warlock cantrip -- I took friends. Friends also got a rework for 2024. It no longer works automatically, and instead requires the target make a WIS saving throw or be charmed. But it also no longer alerts the target that you (tried to) charm them, or makes them hostile to you afterwards. Overall, I think this is a big positive improvement, as it means we can use friends in social settings without as much fear of blowing everything up. 
+
+Going warlock-1 also gets us pact magic. We get one lvl-1 pact-magic spell slot (recovered on a short rest) and we get to prepare 2 warlock spells. For spells, I opted for comprehend languages and charm person. Both are spells that we had in our repertoire previously and dropped to make room for juicier options. Both are thematic. We love that comprehend languages is a ritual. And charm person dovetails with our adding friends as a cantrip. It's also probably worth mentioning that we could have taken Hex as a first level spell, which would give us an additional 1d6 necrotic damage each time we hit with our crossbow. This would be a nice damage boost here at low levels, but we won't take another warlock level for a long time, and eventually we'll have better things to concentrate on. Furthermore, we're going to get hunter's mark in a bit, and that will be strictly better in terms of damage (because we can upcast it). I also don't love the `fey' or `curse' themes of Hex for this character. Like, if I did take Hex, I would want to reflavor it somehow. So, anyway, I'm going to skip Hex and pass up the slight damage boost in the short run, in favor of a more useful overall spell list later on. 
+
+Next, in terms of our resource economy. Getting a pact magic spell slot is actually quite good for us, since it comes back on a short rest. If we assume we're getting at least 1 short rest per day, then this equates to another 2 sorcery points that we can generate through font of magic. IF we use these on quickened spell, this gets us one additional true-strike bonus action attack per day (now up to 4). Obviously, we can also keep it and have it available to cast more leveled spells. But this flexibility is one of the things I love about this build. Between quickened spell and font of magic, we can somewhat seamlessly switch between using our limited resources to fuel bonus action attacks versus casting spells depending on the situation. Gaining pact magic here augments this flexibility not only by giving us new spells to cast, but also by giving us resource generation on a short rest. Very nice. 
+
+Alright, and finally we note that by multiclassing into warlock we gained light armor proficiency. For now we still prefer to just cast mage armor on ourselves everyday, but that will eventually change. Ok that's it for level-4, let's keep going. 
+
+
+
+
+
+#######
+Level-5: Sorcerer-4 (Clockwork Soul), Warlock-1  
+ - proficiency bonus (PB): +3 
+ - cantrip scaling 
+   * true-strike (1d6) 
+   * sorcerous burst (2d8) 
+ - sorcery points: 4
+ - feat: fey-touched (+1 CHA)
+   * lean misty step + one lvl-1 divination/enchantment spell (hunter's mark) 
+   * can cast these spells w/o spell slot x1/LR 
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-3 
+ - spells prepared: 7 (sorcerer), warlock (2)
+   * lvl-1 (sorcerer): mage armor, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-2 (sorcerer): magic weapon, spider climb, arcane vigor, vortex warp
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR) 
+
+NOTE: Ok, we're level-5 and we go sorcerer-4. A number of important things happen for us here. First, we get a proficiency bonus increase, which increases our boost to initiative rolls from alert, as well as the number of luck points we get each long rest. Nice. We also get cantrip scaling. Now when we cast true-strike, we do an additional 1d6 radiant damage *and*, if we cast it as a warlock cantrip, we proc our agonizing blast invocation, allowing us to add our CHA modifier to the damage roll of the spell. Functionally, this means when we cast true-strike as a warlock spell, we get to add our CHA modifier twice: once as part of the weapon attack and then again on the extra radiant damage roll because of agonizing blast. Awesome. 
+
+Next, at sorcerer-4 we also get to take an ASI/feat and we're going to go with `fey-touched'. Now, this is a case where I'm prioritizing the mechanical advantages of the feat over the fit with the character. Our character has no connection to the feywild. We're not an elf. We don't use primal magic. And we aren't particularly tricksy or mischievous. If anything, I we actually probably reject the emotionally-driven nature of fey creatures, for we are an individual who values logic and rationality. For all these reasons, I would strongly recommend that we reflavor the fey-touched feat for this character, and instead call it `mechanus-touched' or `modronic' or something like that. Rather than an exposure to the feywild's magic, this feat represents our continued exposure to the magic and power of Mechanus and the domain of order. All that said, we *really* want the fey-touched feat on this character. There are a few reasons. First, it gives us a +1 boost to our INT/WIS or CHA. We take a +1 CHA to bring ourselves up to CHA=18 and increase our modifier to +4. This not only increases our chance to hit, damage, and spell save DC but also gives us an extra use of `restore balance' each long rest (4 total). Second, the fey-touched feat let's us learn misty-step and one spell from the divination or enchantment schools *and* it lets us cast these spells without using a spell slot once per day. For our character who converts a lot of spell slots into sorcery points to fuel bonus action attacks, these free castings are amazing. 
+
+In terms of the spells, misty step is great for pretty much any character, but I think our character will especially appreciate being able to bamf up to an advantageous position from which to start raining down arrows. I would also reflavor this spell. Instead of (dis)apparating in a puff of mist, I would think of it more like `warp-step' where we bend the fabric of space-time to warp from one location to another. For our level-1 spell, we take hunter's mark. And this is the real reason we needed to get fey-touched. Hunter's mark is a level-1 divination spell, so we are allowed to take it with this feat. It's also now a ranger exclusive spell, so fey-touched is, I believe, the only way to get the spell without multiclassing into ranger. In addition, hunter's mark has received some changes in the 2024 PHB. Here's the new text of the spell: 
+
+Hunter's Mark
+Level-1 Divination (Ranger) 
+ - casting time: bonus action 
+ - range: 90ft 
+ - components: V 
+ - duration: concentration, 1hr
+ - description: You choose one creature you can see within range and magically mark it as your quarry. 
+                Until the spell ends, you deal an extra 1d6 Force damage to the target the first time 
+                you hit it with an attack roll on any turn. You also have Advantage on any Wisdom 
+                (Perception or Survival) check you make to find it. If the target drops to 0 Hit Points 
+                before this spell ends, you can use a Bonus Action to mark a new creature. At Higher Levels.
+                When you cast this spell using a spell slot of level 3 or 4, you can maintain your 
+                concentration on the spell for up to 8 hours, and the extra damage increases to 2d6. 
+                When you use a spell slot of level 5 or higher, you can maintain your concentration on 
+                the spell for up to 24 hours, and the extra damage increases to 3d6.
+
+Ok so it's still a bonus action to cast. It still requires concentration. It still gives you advantage on perception checks to find the marked target, and it still adds 1d6 damage when you hit a marked enemy with a weapon attack. The key differences are that (1) the extra damage from hunter's mark is now Force damage, rather than the same damage type your weapon (this is great for overcoming damage resistances), and (2) that the 2024 version of the spell can be upcast. Now when you cast hunter's mark with a spell slot of 3 or 4 the damage increases to 2d6 each time we hit, and the duration goes up to 8h. And if we use a 5th level slot or higher, the damage goes up to 3d6 and the duration increases to 24h. The increased damage scaling is the main reason we want hunter's mark, and the main reason we poohpooh-ed the hex spell when we took our warlock dip. Right now, of course, we only have first and second level spell slots. So it's just going to be an additional 1d6 on our damage per hit for now. But the point is that this will change as we progress. For this build especially, since we end up multiclassing across three different spellcasting classes (sorcerer, paladin, warlock), we will have higher level spell slots than we have leveled spells to cast. So having spells that upcast well is going to be key. Hunter's mark is great for this, and will officially our best concentration option for damage moving forward. As an additional aside, it's worth highlighting that hunter's mark at lvl-3 or lvl-4 also works very well with extended spell, as it would then last for a full 16h (if we can maintain concentration), potentially allowing us to help track an elusive quarry over an entire adventuring day. 
+
+Ok, moving on from fey/mechanus-touched, going sorcerer-4 also gets us some additional spellcasting. First, as noted in the previous level's note, we need to have true-strike as a cantrip in both classes so that we can choose whether we want to cast it as a warlock cantrip (and use agonizing blast) or as a sorcerer cantrip (and use innate sorcerery). So even though we could switch out the sorcerer version for something new here, we're going to keep it. However, at sorcerer-4 the number of cantrips we know also increases (up to 5). So we ostensibly get can add something to our repertoire. I went with mind-sliver and message. This is because it works very well with quickened spell. The idea is, cast mind-sliver to impose a penalty on an enemy's next saving throw, then quicken a spell that forces a save. This isn't our bread and butter right now, but will be good with a number of spells we have/will get in the future. But, as always, pick your favorites.
+
+Next up, gaining another sorcerer level means we get to prepare an additional spell and there are *a lot* of things that we want, even just here at level 2. In terms of priorities, since we're going to be leaving sorcerer soon, we really want spells that upcast well. We also want spells that are either non-concentration, so that we can use them while concentrating on hunter's mark in combat, or provide great out-of-combat utility. And of course we always want spells that add thematic depth and richness to our character. Based on this, the spell that I'm going to opt for is the level-2 spell vortex warp. This is a non-concentration spell that allows us to teleport friendly *or* enemy creatures (subject to a CON save) to locations within 90ft of us. It is thematically consistent with our newfound `warping/teleporting' ability that we get from fey-touched. And it provides us with the ability to strategically reposition creatures on the battlefield to suit our needs/desires, which is very strong. In fact, I think vortex warp is one of the few spells that can be viewed as having offensive (warp an enemy into a dangerous/disadvantageous location), defensive (warp an enemy far away from yourself) and support/utility (warp a friend out of trouble) uses. It also upcasts reasonably well, with each level above 2nd adding another 30ft to the effective range, and can be used effectively as part of our mind-sliver quickened spell combo (which itself is significantly enhanced when we're using innate sorcery). 
+
+Ok, but there were definitely other great options. For example, we could have taken suggestion to improve our abilities as a party face. We could have taken invisibility, which upcasts well and provides great out-of-combat utility. Or we could have taken mirror image, which is a strong non-concentration defensive buff. I even really like the idea of having see-invisibility on this character, since it feels super thematic. In the end, as always, pick your favorites. For me, suggestion leans a bit too much into the face/charming role. That isn't really our main shtick. Invisibility is great, but we have low DEX and lack stealth proficiency, so we make a poor scout/infiltrator. We could of course just cast it on our friends, but that just doesn't seem as worth it. Mirror image is also good, but we have low AC, which reduces the efficacy of the spell (the new 2024 version, anyway). Plus, in combat we should be trying to stay at range and do everything we can to avoid taking hits. So if we're doing this well then mirror image won't be as good. We also just have such limited spell casting resources, and it feels a little conservative to spend them on a defensive safety-blanket spell. Finally, while see invisibility is thematic, it's also just very niche. Maybe we can get it eventually, but hard to justify with such stiff competition. So yeah, for all those reasons -- we take vortex warp. 
+
+Finally, to conclude, let's talk a little bit about our new limited resource economy and damage. As a default here's what I would suggest. We start with 4 sorcery points. We then convert a lvl-2 spell slot and three lvl-1 spell slots into sorcery points to give ourselves 5 more. So that's 9 total, or the equivalent of 4 quickened-spell bonus action true-strike attacks + 1 additional SP. And it leaves us with two lvl-1 spell slots (2 from sorcerer, 1 from pact magic) and two lvl-2 slots (i.e. 2_{1}-2). We use one lvl-1 slot to cast mage armor on ourselves and spend a sorcery point to use extended spell. That leaves us with one lvl-1 slot for casting hunter's mark (or anything else), plus the additional free-casting we get from fey-touched. We can also assume that we get our pact magic slot on a short rest at least once per day. So use that for another casting of hunter's mark (up to 3 per day). Then, as compared to level-4, we have a bit more flexibility for our level-2 slots. If we want to up our chance to hit and damage, we cast magic weapon. If we need healing, we can cast arcane vigor. If we need mobility, we can use spider climb or misty step (noting, of course, that we get a free cast of misty step each day). If we need some strategic repositioning, we can cast vortex warp. And if we need to dish out max damage, we can convert another lvl-2 slot into sorcery points to give ourselves another quickened spell bonus action attack (up to 5 per day). 
+
+To conclude, we do a quick damage check. And things have improved for us a lot. We got a boost to our CHA modifier, we got cantrip scaling and extra damage from agonizing blast. And we get extra damage from hunter's mark. Assuming we have hunter's mark and magic weapon up, our max-damage double true-strike combo attack would now do: 
+
+2d6 (shortbow) + 2d6 (hunter's mark) + 2d6 (true-strike) + 16 (4*CHA) + 2 (magic weapon) = 39 damage
+
+And we can potentially do this 5 times per long rest. That's really good for level-5! It's still pretty resource intensive for us to do this kind of damage, but we always maintain the flexibility to sacrifice damage for other spellcasting utility if we want/need to. In general, it's really nice to see this character starting to come together. Ok, huge essay here at level-5. Let's move on. 
+
+
+
+
+
+#######
+Level-6: Sorcerer-5 (Clockwork Soul), Warlock-1  
+ - sorcery points: 5
+ - sorcerous restoration
+   * regain 1/2 sorcerer level (rounded down) sorcery points on SR (x1/day) 
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-3-2
+ - spells prepared: 9 (sorcerer), warlock (2)
+   * lvl-1 (sorcerer): mage armor, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-2 (sorcerer): magic weapon, arcane vigor, vortex warp
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy 
+
+NOTE: Cool so level-6 and we go sorcerer-5. We get one additional sorcery point (bringing us up to 5) and we get the new sorcerer base class feature `sorcerous restoration' which let's us recover 1/2 our sorcerer level (rounded down) in sorcery points when we finish a short rest once per day. So right now this gives us 2 additional sorcery points per day. Obviously, this is a great feature for us, since we use our sorcery points to fuel our powerful bonus action true-strike attacks. We also get a big boost to our spellcasting. More specifically, we gain two level-3 spell slots, and we get to prepare two additional sorcerer spells. 
+
+Ok so what do we do here? Well let's start with this. We're going to want to get the catnap spell as a level-3 spell. Why? Well, the catnap spell lets us gain the benefits of a short rest when we cast it (takes 10m). This means we can recover our pact magic spell slot, and (if we want) we can use sorcerous restoration. So when we cast this spell, we can get back the equivalent of 3 sorcery points (and use Hit Dice + gain any other benefit of a short rest). That's a 60% increase in our baseline pool of sorcery points (from 5 to 8), and this will only get better as we continue to take sorcerer levels/upgrade our pact magic. We can also share the catnap benefit with 2 other allies. Note, it's still safe to assume that we can actually take 1 short rest per day, too, which will regenerate our pact magic slot again. So our effective daily pool of sorcery points, assuming we use catnap, take 1 short rest per day, and convert both our pact magic slots to sorcery points using font of magic is 9. This was our default target last level *after* we converted a bunch of spell slots into sorcery points. So yeah, we could do 4 bonus action true-strike attacks per day, and cast mage armor on ourselves with extended spell without really burning any extra spell slots. Very nice. We're also definitely going to want catnap once we start multiclassing into paladin because paladin channel divinity uses recover on a short rest.
+
+Ok so one of our lvl-3 slots is spoken for with catnap each day. Then we probably want to keep the other one to be able to cast spells. I think we can still safely burn one lvl-2 spell slot to get 2 sorcery points, which leaves us with two others for casting spells. Next, I think we can safely burn two more lvl-1 slots to get 2 more sorcery points. This means that in total our default resource endowment by spell level looks like this: 
+ - lvl-1
+   * start with 5_{1} lvl-1 slots
+   * convert 1 pact magic and 1 sorcerer slots to sorcery points = +2 sorcery points 
+   * now we have 3 slots left
+   * cast mage armor and use extended spell = -1 sorcery point
+   * now we have 2 slots left
+   * recover 1 pact magic slot from catnap and convert it to a sorcery point = +1 sorcery point 
+   * recover 1 pact magic slot from a short rest and convert it to a sorcery point = +1 sorcery point
+   * TOTAL = +3 sorcery points and 2 lvl-1 spell slot for casting during the day 
+ -lvl-2 
+   * start with 3 lvl-2 slots 
+   * convert 1 lvl-2 slot into sorcery points = +2 sorcery points 
+   * TOTAL = +2 sorcery points and 2 lvl-2 slots for casting during the day
+ - lvl-3 
+   * start with 2 lvl-3 slots
+   * use 1 lvl-3 slot on catnap 
+   * TOTAL = 1 lvl-3 slot for casting during the day 
+ - sorcerous restoration = +2 sorcery points 
+ EFFECTIVE SORCERY POINTS: 5 + 3 + 2 + 2 = 12 = 6 BA true-strike attacks 
+ EFFECTIVE SPELL SLOTS: 2-2-1 
+
+Right so then in terms of new prepared spells. Let's think about our lvl-3 slot first. Our premier damage option will be to upcast hunter's mark in order to do an additional 2d6 on each weapon attack. With this and magic weapon active, we would do 46 damage, on average with our `double true-strike' shortbow attack combo. So we don't really need a damage spell, though there are some appealing options at lvl-3 (e.g., lightning bolt). I think one obvious change we should make is to sub out spider climb and take fly. In a combat setting, fly is a pretty much straight upgrade over spider climb. The only downside is that it has a shorter duration (10m instead of 1h), but that's not a huge deal. Plus, we have extended spell. But yeah, as a ranged attacker, I think we were always going to want fly as soon as we could get it. Ok so we have a damage option (hunter's mark) and a defense/mobility option (fly). What's left? Well I think we would like a spell that either provides some sort of control/combat utility or a great deal of out of combat utility. Looking at the lvl-3 options available to sorcerers, the out-of-combat options are a bit lacking (maybe we like clairvoyance or tongues since they seems thematic?). And for combat options, I think the main contenders are: blink, haste, lightning bolt, and counterspell. Blink is a strictly defensive option and we've covered that a bit already with fly. We are also getting protection from energy as a bound spell, too, which we can also use for defensive utility. I do really like blink, though, since it's non-concentation, and think we should try to pick it up, eventually, if we can. Haste isn't actually super useful to us now, since we can't use true-strike with the extra hasted action, but it would potentially provide a small damage buff down the line after we've taken some paladin levels. Not good enough to take here. We already have hunter's mark for damage, so lightning bolt feels a little meh. And I basically think that counterspell makes the game less fun. Plus we get dispel magic as a clockwork spell. So in the end the spell that I think we should take is slow. It's a great combat control effect. It's very thematic for our character/subclass, and it has good synergy with extended spell (adv on concentration) and innate sorcery (+1 to save DC). 
+
+Ok right, that's kind of it for level-6. I mentioned already but we get dispel magic and protection from energy as bound spells. Neither is core to the build. Both are situationally quite useful. So avail yourselves of them when and if it is appropriate. Otherwise, let's sally forth! 
+
+
+
+
+
+#######
+Level-7: Sorcerer-5 (Clockwork Soul), Warlock-1, Paladin-1 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons, martial weapons
+   * armor: light armor, medium armor, shields
+   * tools: alchemist's supplies (magic supplies merchant)
+ - weapon masteries (2): longbows, javelins
+ - combat equipment:
+   * weapon: longbow / javelin + shield 
+     + longbow = 1d8 piercing (slow); ammunition (range 150/600), heavy, two-handed 
+     + javelin = 1d6 piercing (slow); thrown (range 30/120)
+   * armor: breastplate
+   * armored AC: 14+1(DEX)=15 / 14+1(DEX)+2(shield)=17
+ - lay on hands (5)
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-3-3
+ - spells prepared: 9 (sorcerer), warlock (2). paladin (2)
+   * lvl-1 (sorcerer): mage armor, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds 
+   * lvl-2 (sorcerer): magic weapon, arcane vigor, vortex warp
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+
+NOTE: Ok we're level-7 and we're going paladin-1. Multiclassing again, here we go! In terms of narrative arc, I think we can say the following about this multiclass. Over the past several levels our character has become more self-aware, and more in touch with origins and nature of their powers. They have also established an (intertemporal) connection with an ancient ancestor/great architect of human civilization. Through this connection, and through our own journey of self-discovery we have come to understand that we ourselves draw strength from the grand order, structure, and organization of the cosmos -- calculations of the grand equation that spin out reality. And as a result of this realization, we have begun allocating our time towards those activities (such as they are) in adventuring that embody these notions of orderliness, structure, and control. Now, as we move into taking paladin levels, I think our character's journey will embark in a slightly new direction. Whereas much of our previous development has been internally focused, now we begin to question how we should exert ourselves upon the external world around us. In thinking through this question, our character will come to realize that they want to dedicate themselves to the principles of order, and promote peace, and human flourishing by making manifest structure, law, efficiency, and fairness in the world around them. This will eventually lead to our taking an oath of devotion to these principles. And that's how I would give narrative shape to this character's particular multiclass combination. Not too difficult, actually. 
+
+Ok narrative stuff aside, going paladin-1 gets us a couple key things. First off, we get medium armor mastery. So let's (finally!) put on some decent medium armor (breastplate) to bring our AC up to 15. Still not good, but  we also no longer need to cast mage armor just to avoid certain death. Hooray! We also get martial weapon proficiency and weapon mastery. So we can switch out our shortbow and pick up a longbow. Switching to the longbow is actually a boost to our offensive and defensive capabilities. The longbow has a range of 150ft (versus 80ft for the shortbow), so we can stay even further away from enemies, reducing our damage intake. It also has the slow mastery property, meaning we can slow down enemies trying to come and get us. There's also another way we can go with this, though I would only use it situationally. Taking paladin levels also gets us shield proficiency. And we do get a second weapon mastery (we use one on longbows). So one thing we could do is start carrying a shield and make thrown weapon attacks with javelins using true-strike. This will do less damage than the longbow, and require that we be much closer to our enemies (javelins have a range of 30ft). But we would be able to up our armor class to AC-17. Personally, I think of this character as an archer, so I'm going to go with the longbow. But, hey, if the situation calls for it, why not make use of those extra proficiencies/weapon masteries. 
+
+Paladin-1 also gets us 5 point of lay on hands bonus action healing, which is a nice supplement to what we already have with arcane vigor. And, new in the 2024 PHB, as a 1st level paladin we also get spellcasting. More specifically, we get to prepare 2 new paladin spells, and we get to add half our paladin level (rounded-up) to our multiclass spellcaster level. This means we become a 6th level spellcaster with a single level-1 pact magic spell slot. So our spell slots look like: 5_{1}-3-3. In terms of paladin spells, there's one big one that we really care about, and that's divine favor. Updated for the 2024 PHB, divine favor is now a bonus action to cast, lasts a minute, and *doesn't* require concentration (!). While the spell is active all your weapon attacks do an addition 1d4 radiant damage on hit. Ok so the big change is that it's no longer concentration. This means we can stack it with hunter's mark and magic weapon to make our longbow true-strike attacks deal some pretty nasty damage. More precisely, if we have an upcast lvl-3 hunter's mark on an enemy, and we've managed to cast both magic weapon and divine favor on ourselves, then our basic double true-strike combo attack (with agonizing blast) would deal: 
+
+2d8 (longbow) + 4d6 (hunter's mark) + 2d6 (true-strike) + 2d4 (divine favor) + 16 (4*CHA) + 2 (magic weapon) = 
+53 damage.
+
+Not too shabby! Now, obviously it takes a bit of work/time to get all our buffs in place (divine favor and hunter's mark are both bonus actions, for example). But this is pretty great damage for this level, and we're going to take it even further. So yeah, thanks divine favor! 
+
+For our second paladin spell, I would say, pick your favorites. For me, I chose cure wounds. As a somewhat squishy spell caster (despite just taking a level in paladin) with low DEX, it seems like a good idea to boost our ability to heal ourselves. Arcane vigor and lay on hands are nice (and we'll get more from lay on hands), but they're still small potatoes. By contrast, we can upcast cure wounds at lvl-3 for a pretty big burst heal (6d8+4=31hp). So it's nice to have that in our back pocket in case we take a big hit. If you wanted to lean more into control, I think command would be pretty good. And if we wanted to do more support stuff for our allies, then bless and heroism would be strong picks. Anyway, like I said, pick your favorites. 
+
+Now, in terms of resource management here's what I would recommend as a default:  
+ - lvl-1
+   * start with 5_{1} lvl-1 slots
+   * convert 1 pact magic and 1 sorcerer slots to sorcery points = +2 sorcery points 
+   * now we have 3 slots left
+   * recover 1 pact magic slot from catnap and convert it to a sorcery point = +1 sorcery point 
+   * recover 1 pact magic slot from a short rest and convert it to a sorcery point = +1 sorcery point
+   * TOTAL = +4 sorcery points and 3 lvl-1 spell slot for casting during the day 
+ -lvl-2 
+   * start with 3 lvl-2 slots 
+   * convert 1 lvl-2 slot into sorcery points = +2 sorcery points 
+   * TOTAL = +2 sorcery points and 2 lvl-2 slots for casting during the day
+ - lvl-3 
+   * start with 3 lvl-3 slots
+   * use 1 lvl-3 slot on catnap 
+   * now we have 2 slots left 
+   * convert 1 lvl-3 slot into sorcery points = +3 sorcery points 
+   * TOTAL = +3 sorcery points and 1 lvl-3 slot for casting during the day 
+ - sorcerous restoration = +2 sorcery points 
+ EFFECTIVE SORCERY POINTS: 5 + 4 + 2 + 3 + 2 = 16 = 8 BA true-strike attacks 
+ EFFECTIVE SPELL SLOTS: 3-2-1 
+
+With this distribution, we would be able to make BA true-strike attacks on at least a couple of turns during each combat of the adventuring day. And we'd still have spell slots left to cast hunter's mark, divine favor, magic weapon, arcane vigor, fly, slow, etc. Obviously adjust the ratio of sorcery points for BA attacks versus spell slots up or down as needed. But I think this is potentially a good benchmark. Alright, let's keep going. 
+
+
+
+
+#######
+Level-8: Sorcerer-5 (Clockwork Soul), Warlock-1, Paladin-2 
+ - lay on hands (10)
+ - feat: fighting-style: defensive
+ - armored AC = 14+1(DEX)+1(defensive)=16 / 14+1(DEX)+2(shield)+1(defensive)=18
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-3-3
+ - spells prepared: 9 (sorcerer), warlock (2). paladin (3)
+   * lvl-1 (sorcerer): mage armor, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, command 
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-2 (sorcerer): magic weapon, arcane vigor, vortex warp
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+
+NOTE: Ok, level-8 and we go paladin-2. Kind of a dead level for us, honestly. We get 5 more points of lay on hands, which is nice. But the main thing we get here is a paladin fighting style. We go with defensive since none of the other options (dueling, great weapon fighting, interception, protection) will work with our archery playstyle. This brings our AC when wielding the longbow up to a respectable AC-16. The only other fighting style even worth considering is blessed warrior -- which would let us get two cleric cantrips. We could use this to get guidance and resistance, which would be nice for out-of-combat stuff and saving throws. But we're going to get some pretty serious boosts to our saving throws in a bit, and our out-of-combat abilities are also just fine with friends, detect magic, alarm, comprehend languages, charm person, dispel magic, etc. We actually really need the defensive fighting style since our base AC was is so low, but it's definitely not the most exciting option. The other reason this level is a bit dead for us is because the main thing that paladins get at 2nd-level is smite spells. So now we always have divine smite and thunderous smite prepared. But they can only be used with attacks made with melee weapons or unarmed strikes. And here's where we're going to be swimming upstream a bit with this build for a few levels. 
+
+You see, we could forgo the longbow, pick up a shield and wade into close-quarters to start smiting with javelins or some other melee weapon. Or, lets say we even dropped the shield and just tried to max out melee smite damage. So we pick up a great axe (1d12), use true-strike to attack with it, then add a level-3 divine smite as a bonus action. Well, even with upcast (lvl-3) hunter's mark, magic weapon, and divine favor active this would only do: 1d12 + 3d6 + 4d8 + 1d4 + 2*CHA + 1 = 46.5 damage. That's less than what we do with our double true-strike combo. And we'd only be able to do this big smite once with our current spell slots, versus being able to do the double true-strike combo (in theory) 8 times per day. So the unfortunate reality is that here in 2024, where smite is a spell that consumes our bonus action, it's just kind worse than using our bonus action to cast another cantrip with quickened spell. Sad. This is perhaps particularly painful because the paladin smite feature also lets us cast a smite spell for free once per day. So we won't be able to take advantage of that. Really the only situation when I would maybe consider smite useful is if we were somehow dispossesed of our longbow. Like, if we're thrown in jail and all our weapons/arcane focus were taken, I guess maybe we could make use of smiting someone with unarmed strikes if we had to...? But even there, we'd probably prefer to just attack with our ranged cantrips, if we can. So yeah, we'll be a paladin who doesn't smite. Funny world we live in, isn't it?
+
+Ok, but we could still wade into melee right? I mean, couldn't we just do the double true-strike combo with a great axe or halberd, or even with a longsword? Wouldn't this do more damage than the longbow? The short answer is yes it would. But the idea of wading into melee with AC-16 and around 55 hit points (which is what we would have, on average with 5d6 + 1d8 + 2d10 Hit Dice and a +2 CON) is a bit scary. We would be a total glass cannon, and the damage we would gain is actually pretty marginal. And sure, we could drop alert and instead take the tough feat at character origin, or make other choices that at earlier levels that would facilitate a melee playstyle. But that's just a different character. So, yeah, it's hard to put into hard numbers the defensive/durability benefit of being able to make all our attacks from 150ft range, but that's what we're talking about. And that's what's really tipping the scales towards the bow over melee weapon options, even despite the smite spells. Ok, rant over. That's all we get here at level-8 anyway. Moving on. 
+
+
+
+
+#######
+Level-9: Sorcerer-5 (Clockwork Soul), Warlock-1, Paladin-3 (Oath of Devotion) 
+ - proficiency bonus (PB): +4
+ - lay on hands (15)
+ - channel divinity (CD)
+   * 2 uses; recover 1 on SR, all on LR 
+   * divine sense = 10m duration, sense celestials, fiends, or undead w/in 60ft  
+   * sacred weapon = no action required to activate; use CHA for attack and damage rolls
+                     with a weapon you're touching for 10m; weapon emits bright light 
+                     in 20ft radius and dim light 20ft beyond that. 
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-3-3-1
+ - spells prepared: 9 (sorcerer), warlock (2), paladin (4)
+   * lvl-1 (sorcerer): mage armor, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, command, heroism 
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-2 (sorcerer): magic weapon, arcane vigor, vortex warp
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+
+NOTE: Ok we're level-9 and we go paladin-3. We get 5 more points of lay on hands (up to 15) and we get a proficiency bonus increase, which gives us a bigger boost to our initiative from alert, and an additional luck point each day (in addition to improved skill checks and chance to hit). Nice! We also get to prepare an additional paladin spell. There aren't a lot of impactful options. We could, of course, take bless and play more of a support role. But that's not really our thing, and we're going to want to be concentrating on hunter's mark. We could also take detect good and evil to lean in to the `cyborg sensor' theme that we have going. This could maybe be a nice addition to our out of combat repertoire, but it's not a particularly useful spell. In the end, I opted to go for heroism. With +4 CHA, this would give +4 THP each turn. Not great, but a fine boost to our/our allies' durability. Perhaps the more useful aspect of the heroism spell is that the character becomes immune to the frightened condition. So between this, and lesser restoration, we have a decent capacity to end harmful status effects. Anyway, we'll probably switch out for new spells when we get access to level-2 paladin spells next level. So don't get too attached. Going paladin-3 also bumps us up to a 7th level caster, which gains us a 4th level spell slot. We have some pretty good options for upcasting, too. For example, we could now upcast magic weapon to make our longbow a +2 longbow. We could upcast charm person, command, heroism, or fly to target additional creatures. Or we could upcast aid to give our whole party 15 additional hit points. For our role as a damage dealer, I think magic weapon would be the most impactful of these. But, honestly, I think the best option might just be to convert the spell slot into sorcery points and give ourselves another 2 bonus action quickened spell true-strike attacks per day. This would bring us up to 10 (if we kept the same resource management we had at level-7). That's enough to be using the double true-strike combo on most turns in combat, for 2-3 combats per adventuring day. So that's pretty nice. Definitely one advantage of this build is that the resource constraints become significantly less as we gain more spell slots, and we are only taking levels in classes with at least some spellcasting. 
+
+Next, at paladin-3 we also get our paladin subclass, and we're going with oath of devotion. This subclass saw some significant updates for the 2024 PHB, and is now arguably the most powerful paladin subclass. Narratively, as we have described previously, taking this subclass equates to our character pledging to promote lawful organization, peaceful order, and efficient structure in the world around them. Our oath's will manifest as a 
+form of duty to make the world a better place, to preserve what is best of what humanity has created, and to abjure and destroy the corrupting and chaotic forces that seek to undermine it. In general, I think it's a pretty easy subclass to weave in to our character's overall narrative and progression. So have fun with it. 
+
+Mechanically, going oath of devotion gets us two things at paladin-3. First, we get two bound spells -- protection from good and evil and shield of faith. Well we already had protection from good and evil from clockwork sorcerer, and we can't even switch it out as a sorcerer anymore. So we're stuck with that redundancy. Grr..bummer. We also probably won't get a ton of use out of shield of faith, but in those scenarios where we really need to boost our armor class (which, admittedly isn't the highest) or that of an allies, it's a fine spell. It also will dovetail thematically with the `bastion of law' feature that we're going to get from clockwork soul in a few levels, so that's nice. But yeah, unfortunately we don't gain a whole lot of additional functionality from the oath spells at this level.
+
+The other thing we get at paladin-3 is the channel divinity (CD) feature. We get two uses of CD at the start of each day, and we regain 1 expended use on a short rest (so yes, also on a catnap) and all expended uses on a long rest. We can use our channel divinity to do two things. First, like all paladins, we can use it to do `divine sense' which tells us whether there are celestials, fiends, or undead within 60ft of us for 10m, and let's us identify consecrated or desecrated areas. As devotion paladins, the other option for our channel divinity is the `sacred weapon' feature. This is an awesome ability. It requires no action or bonus action to activate -- which is super clutch for us since we have a lot of things going on with our bonus action right now (hunter's mark, divine favor) -- and it lasts a full 10m once it's up (also buffed in the 2024 version of this ability). So what does it do? Well, when we activate sacred weapon, a weapon we are touching starts glowing and begins shedding bright light in a 20ft radius around it, and dim light for another 20ft. In addition, when we attack with our sacred weapon, we can use our CHA modifier instead of STR or DEX for attack and damage rolls. Sound familiar? Yes, this ability is very similar to true-strike. The key difference is that it will apply to the standard attacks that we make with the attack action on our turn. And that's going to be important in a few levels. For now, since we can only make one attack per turn, this ability is basically entirely redundant with true-strike, and we'd do less damage making standard attacks than true-strikes anyway. Perhaps the only advantage is that it simultaneously provides us with a light source, so that could be useful (?). Anyway, weird as it may sound, it's probably actually better for us to use our CD to cast divine sense at this level. Again, lean into the `cyborg magical sensor' kind of theme we have built up. Alternatively, if you're playing with the optional `harness divine power' rule from Tasha's then paladins can convert their channel divinities into spell slots. Here at level-9 / paladin-3 we could do this once per day, and we could recover up to two spell-levels worth of spell slots (ex. one lvl-2 spell slot). Obviously, with font of magic, we could also then convert these into more sorcery points, which would be great. Not sure how legit it is to mix and match across the different published versions of the base-class. But our character already does a lot of `power conversion' with our spell slots and font of magic, so perhaps your DM would say this optional rule is consistent with our character identity and allow us to use it. Worth a mention, for sure. 
+
+Alright, and that's actually it for level-9. No big changes to our playstyle or abilities. Basically we get the equivalent of 4 sorcery points in the form of a new 4th level spell slot, and we get a couple new spells we probably won't use very much (heroism, shield of faith). And we get channel divinity, which we don't have any great uses for just yet, except potential as fuel for more sorcery points (if we're playing with harness divine power). Don't worry, this character is going to get some nice power spikes soon. Just hang in there. Ok, on to level-10!
+
+
+
+
+
+#######
+Level-10: Sorcerer-5 (Clockwork Soul), Warlock-1, Paladin-4 (Oath of Devotion) 
+ - lay on hands (20)
+ - feat: great weapon master (STR=14)
+ - combat equipment:
+   * weapon: longbow / javelin + shield 
+     + longbow = 1d8 piercing (slow); ammunition (range 150/600), heavy, two-handed 
+     + javelin = 1d6 piercing (slow); thrown (range 30/120)
+   * armor: half plate
+   * armored AC: 15+1(DEX)+1(defensive)=17 
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-3-3-1
+ - spells prepared: 9 (sorcerer), warlock (2), paladin (5)
+   * lvl-1 (sorcerer): mage armor, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, command, heroism, purify food and drink 
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-2 (sorcerer): magic weapon, arcane vigor, vortex warp
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+
+NOTE: Level-10 and we go paladin-4. Another pretty dead level here. Ugh! But this is the last one, I promise! Ok so what happens here. Well, we go paladin-4, we get another 5 point of lay on hands. Ok that's nice. We also get to prepare another level-1 paladin spell. Woohoo... Yeah there aren't really any spells we want. Take bless if you want to have the option to support your friends. I took purify food and drink since it's a ritual so we won't feel tempted to burn spell slots on it. Pick your favorites. Moving on. Of course the big draw at paladin-4 is the fact that we get an ASI/feat, but the feat we take here is going to be an investment in the future, and won't actually do much for us here at this level. Ok next let's talk about it. The feat we're going to take here is...(drum roll please)....great weapon master (GWM)? What the heck!? Aren't we a bow user? Yes, yes we are, and this is till going to be excellent for us. Let me explain. The GWM feat was updated in the 2024 PHB. For reference, here is the updated text of the GWM feat: 
+
+Great Weapon Master 
+ - Prerequisites: Level 4+, STR 13+ 
+ - ASI: +1 STR
+ - Heavy Weapon Mastery: When you hit a creature with a weapon that has the Heavy property
+                         as part of the Attack action on your turn, you can cause the 
+                         weapon to deal extra damage to the target. The extra damage is 
+                         equal to your Proficiency Bonus. [This applies to longbows and 
+                         heavy crossbows].  
+ - Hew: Immediately after you score a Critical Hit with a Melee weapon or reduce a creature
+        to 0 HP with one, you can make one attack with the same weapon as a Bonus Action. 
+
+Ok so we need to have 13+ STR to take it. Check. It gives us a boost to our STR, bumping us up to STR=14, which increases our ability modifier and STR save, but is otherwise useless for us. And then it gives us the `heavy weapon mastery' feature, which allows us to add our proficiency bonus to attacks that we make with heavy weapons when we take the attack action on our turn. Ok, so unlike the 2014 version of this feat, it no longer only applies to melee weapons. Specifically for us, the longbow is a Heavy weapon, and so we will be able to benefit from this feat when we use it to attack. The other big change is that the added damage applies to *all* attacks you make during the attack action on your turn. It's not just a single +10 on hit once per turn like it was in 2014. Now, obviously, right now we can only make one attack with the attack action on our turn. And even if we had sacred weapon active, we would do significantly less damage shooting our bow with GWM than we would with a true-strike attack. But you can see where we're headed with this. We're going to get extra attack at paladin-5 and then, in combination with our sacred weapon ability, we'll be able to make multiple CHA-based GWM longbow attacks each turn using the attack action. To finish up on the feat, we also get the `Hew' ability which gives us a bonus action attack when we crit with a melee weapon or kill an enemy with one. We won't ever use this. 
+
+So yeah, between feat that doesn't do anything for us, the lack of spell slot progression, and the lack of useful new spells to cast, this is really a dud of a level for us. In some ways, I think this is just the cost of doing business with multiclassing, no matter how you do it. In many cases, you might become more multiple ability score dependent (MAD) when you multiclass. That isn't so much the case for us since sorc, warlock, and paladin are all CHA-based classes. Instead, this character runs into other multiclass hurdles -- like the redundancy of having to have two versions of true-strike, or the overlap between the devotion oath spells and clockwork magic spells. This level is another multiclass hurdle associated with the lining up the timing of our abilities so that we can benefit from the cross-class synergies. So yeah, there's always a cost of trying to multiclass. The question is always whether the payoff is worth this cost. For this character, I think it is. And we're about to hit this payoff next level. So thanks for sticking with me! 
+
+As a final note, and to soothe the pain of this unfortunate level a bit. I'm going to say that here at level-10 we also get enough money to purchase ourselves some halfplate, which boosts our base armor class up to AC-17. Now, we will have disadvantage on stealth checks. But this character has always sucked at stealth checks, and has no real scouting capabilities. So it doesn't feel like much of a sacrifice. And as a ranged character, I think AC-17 is probably good enough for us, in general, provided we can stay out of trouble and keep ourselves healed up (and we should be able to with lay on hands, cure wounds, heroism, aid, arcane vigor, etc.) 
+
+
+
+
+
+#######
+Level-11: Sorcerer-5 (Clockwork Soul), Warlock-1, Paladin-5 (Oath of Devotion) 
+ - cantrip scaling: 
+   * true-strike (2d6) 
+   * sorcerous burst (3d8)
+ - lay on hands (25)
+ - extra attack, faithful steed  
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-3-3-2
+ - spells prepared: 9 (sorcerer), warlock (2), paladin (6)
+   * lvl-1 (sorcerer): mage armor, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, heroism, detect evil and good
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-2 (sorcerer): magic weapon, arcane vigor, vortex warp
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (paladin): prayer of healing, locate object
+   * lvl-2 (paladin's smite): shining smite
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+   * lvl-2 (devotion): aid, zone of truth
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+
+NOTE: Ok this is it. No more underwhelming levels. We're level 11 and we go paladin-5. We get a BUNCH of new stuff. Specifically, we get: extra-attack, the new paladin `faithful steed' feature, our cantrips level up, and we get additional spell slots, get to prepare new paladin spells (including level-2 paladin spells), and we get new oath of devotion bound spells. Whew! 
+
+So let's start with the big stuff. Extra-attack officially changes the game for us. Now our best damage attack combo is no longer the `double true-strike combo'. Instead our standard moveset will be to take the attack action to make two attacks with our longbow, and then use quickened spell to make a true-strike longbow attack with our bonus action. This is true despite the fact that our true-strike levels up here, and now does an extra 2d6 radiant on hit. Basically, with great weapon master and damage boosting spells like magic weapon, hunter's mark, and divine favor, we get more damage the more attacks we can make. So even though we would use true-strike if we wanted to make the strongest single attack we possibly could, doing more attacks produces more damage on our turn. Here's a brief damage comparison: 
+
+Assume we have precast magic weapon (at lvl-4), upcast hunter's mark (at lvl-3), cast divine favor, and activated sacred weapon. Then the new premier damage combo, a.k.a. `attack-attack-true-strike' would look like: 
+
+attack(1):longbow(GWM) + attack(2):longbow(GWM) + BA:true-strike(longbow)_{quickened spell, agonizing blast}
+
+And this would do: 
+
+3d8(longbow) + 6d6(hunter's mark) + 2d6(true-strike) + 3d4(divine favor) + 16(4*CHA) + 
+8(GWM) + 6(magic-weapon) =  79 damage
+
+By contrast, the standard double true-strike combo would only do: 
+
+2d8(longbow) + 4d6(hunter's mark) + 4d6(true-strike) + 2d4(divine-favor) + 16(4*CHA) + 
+4(magic-weapon) = 62 damage
+
+So the new approach increases our max damage combo by 27%, on average, which is a big jump. 
+
+Now let's talk about the steed. So new to the 2024 PHB, all paladin's get the `faithful steed' feature at level 5, which lets them learn the find steed spell, always have it prepared, and cast it for free (at lvl-2) once per day. Mechanically, this is actually going to be quite good for us. Up to this point (or at least for the past several levels), the premier mobility/defensive option that we have been using in combat is the fly spell. Well, when upcast at 4th level, the otherworldly steed summoned by find steed has a fly speed of 60ft. Additionally, as a controlled mount that acts on our initiative in combat, we can use it's movement and command it to take the Dash action on our turn -- ostensibly giving us 120ft of flying movement per turn. It also lasts indefinitely, or rather it only disappears if it is killed, we dismiss it, or we die. For comparison the fly spell only gives us flight for 10m. But that's not all. The steed can also make an attack (using our spell modifier for the attack and damage roll) and gains a special bonus action determined by the type of steed we summon (fey, fiend, or celestial). More on that in a second. Finally, and perhaps most importantly, it doesn't require our concentration, freeing us up to cast hunter's mark while flying. The general point is that, at a baseline, find steed gives us more mobility and more action economy than our previous best mobility option. So we really like this spell. Now, to give it a fly speed, we need to use a 4th level spell slot. And we only have two of those. But, if we're careful, we can do this once and have the steed last for multiple adventuring days. Alternatively, if we want a budget option, we can use our free casting to summon the steed at level-2, and then cast jump on it to give it additional (vertical) mobility. Which of these will be the best option depends on the context, but I would probably shell out for the level-4 steed and see if I could make it last, and then use the budget steed (or revert back to casting fly) in a pinch. 
+
+Right, so now let's talk about the special bonus actions. When we summon the steed we can choose whether we want it to be a fey, celestial, or fiend. Each different type gets a special bonus action ability that we can use once per long rest. If we choose fiend, we get the 'fell glare' ability which can frighten a target. If we choose the celestial steed, then we get the `healing touch' ability which restores some hit points. And if we choose the fey steed we get the `fey step' ability which let's us (steed and rider) teleport up to 60ft. For me, I think the fey option is the clear winner, with the celestial coming in second. A free 60ft teleport once per day, on top of the additional mobility the mount provides? Yes, please! I think this is more valuable than a pretty decent heal, as we can use the extra mobility to stay out of danger, or even to rush over and heal our allies if we need to. Plus, we have the thematic consistency with the free misty-step our character gets from the fey-touched feat. So yeah, I think we should be summoning the fey steed. 
+
+Now, let's talk about the thematics. I don't actually love them. First off, I kind of agree with some of the recent critiques of the `faithful steed' feature that have arisen since it was confirmed to be in the 2024 PHB. Like, not all paladin's have a mount. It's a class that can be played in a wide variety of ways, and it seems awkward to give every single one this mount-based ability that you either shoe-horn into your RP or feel bad about not using. For our character, I don't think it's sooo bad. I mean, I don't imagine them with a mount as a baseline, but I think it can be reflavored to make sense. And we really like the mechanical advantages the feature provides. So I'm happy to reflavor it as needed. Right so speaking of flavor -- while we want the fey themed mount, I don't actually think this is very thematically consistent with our character. In fact, none of the options are, really. I mean, I suppose we could choose the celestial option, but it doesn't seem like a great fit. I mean, if anything our character's identity is quite strongly based out of the world of the material plane, with our powers having a kind of techno-mechanical vibe. Doesn't scream angel horse to me. If anything, we have somewhat of a proclivity for abjuring extra-planar beings and sending them back to their own planes of existence. So it feels weird to summon one. Finally, as we discussed when we took the fey-touched feat, the fey realm is kind of the least compatible with our character's neutral, rational, and logical way of viewing the world. But here we are and we want to summon a fey horse. So my recommendation is to reflavor the steed as some kind of mechanical steed from Mechanus. It will still technically be fey on paper, but it will RP like a kind of animated machine that we can summon and ride. I'm imagining a star-wars hover-speeder type thing, or maybe a clockwork horse kind of deal. But get creative with it. And then, we reflavor the mount's fey-step ability in the same way we did our own misty-step ability from fey-touched -- i.e. as more of a `warp-step' teleport, rather than a puff of fey mist. 
+
+Wow, ok so we've talked about extra attack and we've talked about faithful steed. Now let's talk about spellcasting. Perhaps the simplest place to start is the bound spells. At level-5, the `paladin's smite' feature lets us learn the shining smite spell, which we won't have much use for unless we decide to go into melee. Shining smite imposes blindness (in addition to damage), which is a decent control effect. So there may be situations where we might want to use it. But probably not. As a level-5 oath of devotion paladin we also get two new bound spells. First off, we learn aid, which we already knew -- more redundancy, bummer. But we also get zone of truth. Zone of truth is not a spell that I usually go for, but I actually kind of love it on this character. It fits really nicely into our `bending reality to the order/structure we desire' theme of our magical abilities and I can imagine some ways to flavor the way the spell looks that fit nicely with our technomagic vibe. It also provides us with great out-of-combat social-interaction utility. In combination with our high CHA, charm spells, and proficiencies in insight, persuasion, and deception -- zone of truth will make us an excellent interrogator. And it's nice to add to this dimension of the character without having to sacrifice our limited set of prepared spells to do so. 
+
+In terms of prepared spells, at paladin-5 we get to prepare 6 paladin spells, which is only one more than paladin-4. But we can now prepare level-2 paladin spells. Usually, this means we get access to some juicy new options, but between our sorcerer spells and our bound spells, we actually already know/have prepared almost all the spells that we would actually want from the lvl-2 paladin spell list (aid, find steed, lesser restoration, magic weapon, zone of truth). The most appealing options remaining (in my opinion) are prayer of healing, warding bond, and locate object. We could also take protection from poison, to lean into our `restore balance' theme, but it's very situational, so I wouldn't stock it as a default. Now, usually I love warding bond, but it's not a great fit for this character since we are not a super tanky character and we will be trying to concentrate on some important spells (ex. hunter's mark). So that leaves prayer of healing and locate object. I think prayer of healing should be an auto-include. It's a good out-of-combat AOE heal for up to six creatures, and benefits from our high spellcasting ability modifier. I also imagine casting it as a kind of `restorative field' which is thematically consistent with a number of our other abilities. As for locate object -- it's kind of one of those spells that you don't know you need until you need it. So it's nice to have an excuse to stock it here. And it's probably more useful than any of the other lvl-1 or lvl-2 spells we could take instead. It also has some fun RP potential as an extension of our `sensing/detection' magic theme. So cool enjoy that. 
+
+I think we also take the opportunity to make some other small adjustments to our spell list. In particular, now that we are going to be using our channel divinity for exclusively for sacred weapon, we won't be using it for divine sense. Because of that, I opted to switch out the command spell for detect evil and good. The latter is just a bit more thematically consistent with our magic identity (though command isn't bad), and I think there's stiffer competition for our actions in combat. So it's less likely that we'll want to cast command than it is for some out-of-combat situation to arise where detect evil and good can be handy. I suppose if you prefer command to heroism, I could see doing that. But I like having heroism on hand as a way to provide immunity to fear. 
+
+Ok so that's all on the spell choices. Now let's finish up by discussing resource management. The first thing that is worth noting is that we are now pretty reliant on sacred weapon to do our best damage in combat. We start with two uses of this ability, get 1 back on a short rest, and can also recover one by casting catnap. This gives us 4 uses per day, which should be enough for most days. Plus, if we're ever stuck in combat without sacred weapon, we can just fall back on the `double true-strike' combo and we'll be fine. But yeah, also thank god for catnap. Now, thinking about spell slots and sorcery points gets a little more complicated here because of what we're doing with find steed. I think it's a bit too conservative to assume that we're casting find steed at lvl-4 *every day*. I mean, hopefully we can keep our steed alive at least some of the time. Especially since we are literally using it so that we can stay out of the fray and fly safely overhead while shooting arrows. But it's not clear how often we'll actually need to cast it. So I think what I'll do is lay out the resource management regime I would use assuming we have already have our steed. Then, if we need to summon the steed, we would just keep (rather than convert) our second 4-lvl slot and use it to cast the spell. So this would reduce our effective sorcery point pool by 4, meaning two fewer bonus action true-strikes. Alright, but assuming we do have our steed with us, here's what I would recommend in terms of resource management on a standard adventuring day: 
+
+ - lvl-1
+   * start with 5_{1} lvl-1 slots
+   * convert 1 pact magic and 1 sorcerer slots to sorcery points = +2 sorcery points 
+   * now we have 3 slots left
+   * recover 1 pact magic slot from catnap and convert it to a sorcery point = +1 sorcery point 
+   * recover 1 pact magic slot from a short rest and convert it to a sorcery point = +1 sorcery point
+   * TOTAL = +4 sorcery points and 3 lvl-1 spell slot for casting during the day 
+ -lvl-2 
+   * start with 3 lvl-2 slots 
+   * convert 1 lvl-2 slot into sorcery points = +2 sorcery points 
+   * TOTAL = +2 sorcery points and 2 lvl-2 slots for casting during the day
+ - lvl-3 
+   * start with 3 lvl-3 slots
+   * use 1 lvl-3 slot on catnap 
+   * now we have 2 slots left 
+   * convert 1 lvl-3 slot into sorcery points = +3 sorcery points 
+   * TOTAL = +3 sorcery points and 1 lvl-3 slot for casting during the day 
+ - lvl-4 
+   * start with 2 lvl-4 slots 
+   * convert 1 lvl-4 slot into sorcery points = +4 sorcery points 
+ - sorcerous restoration = +2 sorcery points 
+ EFFECTIVE SORCERY POINTS: 5 + 4 + 2 + 3 + 4 + 2 = 20 = 10 BA true-strike attacks 
+ EFFECTIVE SPELL SLOTS: 3-2-1-1
+
+With this distribution, we would probably be able to make BA true-strike attacks as often as we want. I mean, with 10 BA true-strikes in the bank, we could do 3 per combat for each of 3 combats per day. Given that many combats don't even last three rounds, I imagine that that's probably enough. And, with our remaining spell slots we can still: upcast magic weapon, upcast hunter's mark, cast divine favor a number of times, or cast any of our other spells at each spell level, as needed. Right, so I think at this point we've probably reached saturation with the number of BA true-strike attacks we can do per day and we won't need to convert any more spell slots into sorcery point fodder. So moving forward, we can think about additional spell slots we gain as just adding to the resources we have available to cast spells, which is great. 
+
+Alright, jeez, what an essay! Not sure why, but this character just requires so much exposition. Anyway, let's move on. 
+
+
+
+
+
+#######
+Level-12: Sorcerer-5 (Clockwork Soul), Warlock-1, Paladin-6 (Oath of Devotion) 
+ - lay on hands (30)
+ - aura of protection 
+   * + CHA to all saving throws within 10ft of us
+
+NOTE: Haha, wow. This is an almost comical contrast to the previous level in terms of brevity. Right so we're level-12 and we go paladin-6. We get our aura of protection, which allows us and any allies within 10ft of us to add our CHA modifier to any saving throw they have to make. Perhaps obviously, this is super good for us. With CHA=18, this ability gives us a whopping +4 to all of our saving throws. So now our saves would look like:  
+STR (+6), DEX (+5), CON (+10), INT (+4), WIS (+4), CHA (+12). The baseline boost to our DEX and WIS saves is particularly nice, since there are a lot of enemy attacks/abilities that force those and we were kind of vulnerable to them before. We also love that this ability stacks with our CON save proficiency to give us a +10 to CON saves. This means that unless we take a *massive* hit, we shouldn't ever lose concentration on a spell, especially if we've used extended spell to give ourselves advantage. And I mean, yeah, CHA saves are very rare, but we're verry safe on those. In combination with lucky and the human heroic inspiration that we get each day,  the aura of protection ability officially makes us feel very safe on just about any saving throw. And it's hard to understate just how valuable this is, especially as we move into the late game. It's one of the main reasons that multiclassing into paladin was so appealing, and worth all the challenges/redundancies that we've had to endure to this point. Now, perhaps the only downside of this feature on this character is that, in the ideal combat scenario, we are flying high above the battlefield. This will make it hard to share the aura with our allies. So that's too bad. But despite this, with the mobility that we'll have from find steed, I think we can swoop in and buff up our friends with our aura when it is needed. Somewhat weirdly, other than getting another 5 points of lay on hands, aura of protection is literally the only thing that changes for us at this level. We get no additional spells prepared, no additional spell levels, no other base or subclass abilities. Nothing. Short and sweet. Gotta love it. And yeah, that's going to be it for us in terms of paladin. So say goodbye to this class/subclass and let's move on . 
+
+
+
+
+#######
+Level-13: Sorcerer-6 (Clockwork Soul), Warlock-1, Paladin-6 (Oath of Devotion) 
+ - proficiency bonus (PB): +5 
+ - sorcery points: 6
+ - bastion of law
+   * as an action, expend (1-5) sorcery points to give a creature a shield worth (1-5)d8
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-3-3-3-1
+ - spells prepared: sorcerer (10), warlock (2), paladin (6)
+   * lvl-1 (sorcerer): shield, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, heroism, detect evil and good
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-2 (sorcerer): magic weapon, arcane vigor, vortex warp, see invisibility
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (paladin): prayer of healing, locate object
+   * lvl-2 (paladin's smite): shining smite
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+   * lvl-2 (devotion): aid, zone of truth
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy 
+
+NOTE: Alright, level-13 and we're headed back to sorcerer, where we'll be for almost the rest of the way. We take sorcerer-6 and we get a few things. First, at level-13 we get a proficiency bonus increase. So more luck points, bigger boost to initiative from alert, better skill/weapon proficiencies and more damage from great weapon master. Nice. We also get the level-6 clockwork soul subclass feature `bastion of law', which lets us create a shield using sorcery points. More specifically, we can elect to use anywhere from 1-5 sorcery points to create the shield and then whenever the shielded creature takes damage, then can roll a number of d8s up to the number of sorcery points used to make the shield to reduce incoming damage. Now, this isn't a very big shield. Even if we maxed it out with 5 sorcery points, it would only give us 5d8 (22.5) damage reduced. But the nice thing is that the shield lasts until we finish a long rest (or until we use the feature again) and there's no limit on how often we can use it. We have become more of a `shield bot' as we've progressed and this feature is very consistent with that. We could even combine it with shield of faith to give an ally +2 AC and a shield. Situational, but potential useful. I'm not complaining. 
+
+Next up, we get some additional spellcasting. In particular, in taking sorcerer-6 we become a 9th level caster, which gives us a 5th level spell slot. And we also get to prepare an additional sorcerer spell (10 total), though we are still restricted to spells of 3rd level or lower. So here's the thing about our spellcasting moving forward. As I've mentioned previously, the downside of some of the multiclassing we've been doing is that we've been stuck with some redundancies. This, unfortunately, will always be the case to some extent. But, there are also a number of places where that overlap is useful. In particular, since paladins set their spell list each day after a long rest, we can start switching out sorcerer spells that are also on the paladin spell list in order to make more changes to our list of prepared spells as we go further into sorcerer. Pretty cool. Now, we're not actually going to do that here, but I did want to preview this since we'll be doing it soon. Instead, here at sorcerer-6, I'm going to say that we should switch out the mage armor spell for the shield spell, and then learn the see invisibility spell as lvl-2 spell. Ok, not the most exciting changes, I know. But now that we wear medium armor, we never use mage armor anymore, and shield gives us a way to boost our AC to 22 with our reaction. It's also consistent with our new bastion of law ability. As for see invisibility, I think it's incredibly thematic for this character, and has actually become much more useful with the changes made to the Hidden condition in the new 2024 PHB. More specifically, now in 2024 when creatures successfully hide, they acquire the invisible condition. So taking see invisibility means that we have a way to see any hidden creature, which is very useful. It also lasts 1hr, meaning it works well with extended spell, and doesn't require concentration. So we can fly around on a speeder/clockwork steed with this up, see invisible/hidden creatures, then mark them with hunter's mark (giving us advantage on perception/survival checks to track them) and attack from 150ft away. So I think see invisibility is potentially super useful, and adds depth to our `sensing/detection/tracking' magic theme. 
+
+There also aren't, in my opinion, a ton of compelling alternative options. Here are some honorable mentions I considered: blink, counterspell, haste, detect thoughts, invisibility, mirror image, suggestion, clairvoyance, lightning bolt. In general, I think defensive options like blink and mirror image are a bit redundant with some of our other abilities (and blink doesn't work well with the steed). As I've mentioned many times, I generally dislike counterspell. Haste is an interesting case. You might think getting another attack on our turn would be great with our GWM feat and sacred weapon. The problem is it's concentration, so it means we'd lose all the damage from hunter's mark. When you factor this in, it's actually a DPR loss to use haste. Now, it's an action instead of a bonus action, so that helps a bit with our setup. And we would get an extra +2 to our AC and could deal extra damage to any target we attack, not just the ones we have marked. But that doesn't feel worth it to me. Plus, we wouldn't benefit from the movement speed bonus if we're using our mount. Invisibility is perhaps the other main contender. But we're going to get greater invisibility soon, and we have never been much of  a scout, so I'd say just skip it. The other out-of-combat options like suggestion, clairvoyance, and detect thoughts would all be nice -- but I think see invisibility is cooler and more thematic. 
+
+Finally, it's worth noting that with a 5th level spell slot, we can upcast hunter's mark at an even higher level, meaning it would do 3d6 extra force damage on each weapon hit. And honestly, this is probably the best use of our new 5th level spell slot. For a quick damage check, if we are doing our `attack-attack + BA:true-strike' combo with sacred weapon, magic weapon, divine favor, and a lvl-5 hunter's mark active, we would do: 
+
+3d8(longbow) + 9d6(hunter's mark) + 2d6(true-strike) + 3d4(divine favor) + 16(4*CHA) + 
+10(GWM) + 6(magic-weapon) = 91.5 damage
+
+Amazing! And yeah, I think that's all there is to say here at leve-13. Let's keep going! 
+
+
+
+
+
+#######
+Level-14: Sorcerer-7 (Clockwork Soul), Warlock-1, Paladin-6 (Oath of Devotion) 
+ - sorcery points: 7
+ - sorcery incarnate 
+   * use two metamagic options on each spell you cast while using innate sorcery
+   * restore a use of innate sorcery for 2 sorcery points 
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-3-3-3-2
+ - spells prepared: sorcerer (11), warlock (2), paladin (6)
+   * lvl-1 (sorcerer): shield, jump, detect magic
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, detect evil and good
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-2 (sorcerer): arcane vigor, vortex warp, see invisibility
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (paladin): magic weapon, prayer of healing, locate object
+   * lvl-2 (paladin's smite): shining smite
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+   * lvl-2 (devotion): aid, zone of truth
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+   * lvl-4 (sorcerer): banishment, greater invisibility
+   * lvl-4 (clockwork): freedom of movement, summon construct 
+
+NOTE: Alright, level-14 and we go sorcerer-7. We get the new base class `sorcery incarnate' feature, which says that while we're using our innate sorcery ability, we can use two metamagic options on the casting of a single spell. Unfortunately, I think we want to stick with quicken spell and extended spell as our metamagic options, and those have basically no synergy. So that's unfortunate. Sorcery incarnate also says that we can recover a use of our innate sorcery if we have none by expending 2 sorcery points. At this point in our progression, we actually have enough resources that I would consider this in the right circumstances. Especially if we're fighting an enemy that's tough to hit, I might prefer the advantage granted by innate sorcery over the extra damage from agonizing blast since so much of our damage comes from additional effects that proc on hit (magic weapon, hunter's mark, divine favor, great weapon master, etc.). So yeah, we might actually want to burn some sorcery points to be able to use innate sorcery. But overall, I would say that the sorcery incarnate feature isn't super impactful for us. 
+
+In addition to this feature, we also get more spellcasting. In particular, we get to prepare one additional sorcerer spell (up to 11) and we get access to level-4 sorcerer spells. We also get two new bound spells from clockwork magic. Starting with these bound spells -- we get freedom of movement and summon construct. Freedom of movement is nice. It's not concentration and works well with extended spell. It also fits nicely with our `restoring balance/neutrality' magic theme. Summon construct is more situational for sure. But it's nice to have summons to send in to the frontlines to occupy enemies while we sit back and shoot arrows at them. And summoning a construct is not out of character for us, since we've been summoning our mechanical (fey) steed for a few levels now. In terms of prepared spells, we're going to take advantage of the paladin spell list overlap a bit here. Specifically, I would say drop heroism as a level-1 paladin spell (unless you know you'll be dealing with fear causing monsters), and instead take magic weapon as a paladin level-2 spell. This means we can drop magic weapon as a sorcerer spell, allowing us to take two new 4th level spells without losing any important spellcasting functionality. For these spells, I'm going to recommend banishment and greater invisibility. 
+
+Banishment is a very strong single target control spell, and with all the abilities we have at this level, we can *really* use it effectively. For example, if we are using innate sorcery, our spell DC goes up by 1 (to DC-18). We can also use the mind-sliver + quicken-spell combo to give a target minus 1d4 on the save (and we would have advantage on the mind-sliver attack to impose this disadvantage). If, for some reason, the target was going to have advantage on the save against our banishment, then we could use our reaction and restore balance to neutralize this advantage. Then, since the duration of banishment is 1m, we can also use extended spell to give ourselves advantage on concentration checks to maintain it. Finally, with sorcery incarnate, we could do the mind-sliver + quicken spell combo and use extended spell. So yeah, we can really do a lot to make sure our banishment spell sticks. Of course, banishment is also thematic for this character, who is all about the natural order and abjuring extra-planar entities. FWIW charm monster is also a good pick here, for almost all of the same reasons we like banishment. It's also not concentration and has a much longer duration (1hr), so we could also, in theory, use it out of combat with extended spell. Our character is also uniquely equipped to wield charm monster because we can use restore balance to neutralize the advantage that creatures we're fighting would usually have on the save for the spell. However, the reason I prefer banishment is because, especially here at high level, a *lot* of tough monsters are going to have immunity to the charmed condition. So banishment is a bit more generally applicable. 
+
+Next, let's talk about greater invisibility. First off, I think it fits super easily into our magic themes. I would imagine it like engaging our character engaging a `cloaking mode'. Now obviously, at a baseline, greater invisibility is an awesome spell. But I think it's extra powerful on this character because of the interactions we can exploit with our mount. So first, if we cast greater invisibility on our mount, then we (i.e., our character) become an object that mount is carrying and so we become invisible too. That means we can be invisible, while flying on an invisible mount and shooting pulse blasts (arrows) from range. Pretty awesome. We could also cast it on ourselves while we're mounted, leaving our mount visible, in order to do some trickery shenanigans. Like, make one round of attacks while invisible atop the mount, then dismount, and move away. Your opponent will think you're still mounted atop the (visible) steed and may attack them. Then you can attack unsuspectingly from a different location on your next turn. Meet up with/mount the steed again and then attack again, to further confuse the hell out of your enemies. Now greater invisibility does require concentration, so the downside is we can't combine this with hunter's mark for max damage. But we can combine it with extended spell to give ourselves advantage on CON checks to maintain it. Overall, as a defensive utility spell this is *really* good. 
+
+Ok cool, so I believe that's a wrap on level-14. Let's go on to level-15. 
+
+
+
+
+
+#######
+Level-15: Sorcerer-8 (Clockwork Soul), Warlock-1, Paladin-6 (Oath of Devotion) 
+ - ASI: +2 CHA (CHA=20) 
+ - sorcery points: 8
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+ - spell slots: 5_{1}-3-3-3-2-1
+ - spells prepared: sorcerer (12), warlock (2), paladin (6)
+   * lvl-1 (sorcerer): shield, jump
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, detect magic
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-2 (sorcerer): arcane vigor, vortex warp, see invisibility
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (paladin): magic weapon, prayer of healing, locate object
+   * lvl-2 (paladin's smite): shining smite
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+   * lvl-2 (devotion): aid, zone of truth
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+   * lvl-4 (sorcerer): banishment, greater invisibility, dimension door, psychic lance
+   * lvl-4 (clockwork): freedom of movement, summon construct 
+
+NOTE: Ok level-15 and we go sorcerer-8. We take an ASI and *finally* increase our CHA to 20, boosting our chance to hit and damage, spell DC, gives us an additional use of restore balance, and increases all of our CHA based skill proficiencies. Hard to believe that we haven't boosted our CHA since level 5. But it's nice to finally be able to do it now. Other than the ASI, we also get additional spellcasting here. More specifically we get an additional prepared spell (up to 12) and a shiny new level 6 spell slot. Regarding the prepared spell, we use the same trick we did at level-14 and drop detect magic as a sorcerer spell, then swap out detect evil and good for detect magic in our paladin spells. And while we don't love dropping this spell, ultimately, detect magic is more important/useful. And if we really had to detect extraplanar beings, we could still always use our channel divinity to do divine sense. Dropping detect good and evil let's us prepare two new sorcerer spells of 4th level or low. There are a lot of good choices here, but I'm going to go with dimension door and psychic lance. Both are non-concentration, so they don't interfere with our basic playstyle at all. Dimension door adds to our `warping' theme, and has been updated in 2024 so it no longer restricts you to only taking other creatures of your size or smaller. So we can dimension door on our mount just fine. Psychic lance is also decently thematic. It fits in with our `tracking/detection' magic theme, as we can use it on targets in range even if we can't see them if we know their name. It's got good range (120 ft) and so is compatible with our ranged playstyle, does decent damage (7d6), and works great with innate sorcery and the mind-sliver combo. With an INT save, it's also a pretty reliable way to incapacitate an important single target for a round. In terms of alternatives, at 4th level, the sorcerer spell list has a number of elemental spells that aren't very thematic for our character. There's fire shield, which is a great non-concentration defensive option, but works much better on melee characters. And of course we could also take charm monster, but it seems a bit too redundant with banishment. Anyway, not hugely influential picks here, so (as always) go with your favorites. 
+
+Right so before we move on, let's do another quick damage check. If we're just focused on damage then we should use our 6th level slot to upcast magic weapon, making our longbow a +3 weapon. Then, with all the normal buffs active (sacred weapon, lvl-5 hunter's mark, divine favor, agonizing blast) we would do: 
+
+3d8(longbow) + 9d6(hunter's mark) + 2d6(true-strike) + 3d4(divine favor) + 20(4*CHA) + 
+10(GWM) + 9(magic-weapon) = 98.5 damage
+
+Now that's really awesome sustainable damage. Soo close to the century mark! Let's keep going! 
+
+
+
+
+
+#######
+Level-16: Sorcerer-8 (Clockwork Soul), Warlock-2, Paladin-6 (Oath of Devotion) 
+ - magical cunning 
+   * x1/LR, perform 1m esoteric rite to regain half expended warlock spell slots (rounded-up) 
+ - eldritch invocations (3): 
+   * agonizing blast = add CHA modifier to damage roll of 1 warlock cantrip (true-strike)
+   * devil's sight = can see in dim light or darkness (magical or non) out to 120ft 
+   * lessons of the first ones = gain feat: magic-initiate (druid) 
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+   * druid (2): guidance, starry wisp 
+ - spell slots: 6_{2}-3-3-3-2-1
+ - spells prepared: sorcerer (12), warlock (3), paladin (6)
+   * lvl-1 (sorcerer): shield, jump
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person, armor of agathys
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, detect magic
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-1 (druid): absorb elements (free x1/day)
+   * lvl-2 (sorcerer): arcane vigor, vortex warp, see invisibility
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (paladin): magic weapon, prayer of healing, locate object
+   * lvl-2 (paladin's smite): shining smite
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+   * lvl-2 (devotion): aid, zone of truth
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+   * lvl-4 (sorcerer): banishment, greater invisibility, dimension door, psychic lance
+   * lvl-4 (clockwork): freedom of movement, summon construct 
+
+NOTE: Alright, a bit of a hiatus here at level-16. Perhaps to your surprise, we're going to go warlock-2. And, while we do actually get a number of nice things out of doing this, the main reason we're taking another level in warlock here is so that we can finish out the rest of our career in sorcerer and get an epic boon feat at level 20. If we didn't take another warlock level and just went sorc the rest of the way, then we'd get our next ASI/feat at sorcerer-12 at level-19. Taking another dip in warlock here means we can end with a feat at level 20, which makes us eligible for the epic boons. Now, this might not be important to you. A lot of campaigns don't go to level-20 (though the new rules seem to encourage it more) and you might think that sacrificing power in the short term here for a bigger boon at level 20 is silly. If that's the case, then just skip ahead one level in this guide and ignore the level-20 description. Pretty much everything else will be the same. But for me, I'm interested in sheeting this character all the way through their career, so I'm going to take the warlock dip here. 
+
+For what it's worth, we actually get some really nice stuff by going warlock-2. First of all, we get another pact magic spell slot that we can convert to sorcery points. This is really nice since it comes back on a short rest, and we have catnap to get our pact magic slots back again. In addition, at warlock-2 we also get the new magical cunning feature, which lets us recover half our warlock spell slots once per day if we conduct a 1m esoteric ritual. So let's do the math. At level-15 when we were just a level-1 warlock, we had 1 pact magic spell slot. Assuming we cast catnap and got 1 short rest per adventuring day, this spell slot was worth the equivalent of 3 sorcery points. Here at level-16, we start with 2 pact magic slots. Assuming we get them back with a catnap, a short rest, and then recover half of them with magical cunning, our warlock spell slots are now equivalent to 7 sorcery points. That's a massive increase in our pool of sorcery points! Now, we haven't been too worried about our resource economy for a few levels now. But this means we can really feel free to cast spells and use our quickened spell bonus action attacks pretty much whenever we feel like it. Awesome. 
+
+But that's not all. At warlock-2 we also get two new eldritch invocations. And there are some pretty good ones to pick from. We could take pact of the blade, of course, and give ourselves a permanent CHA-based melee option. But, nah, we don't really need that. We are an archer first and foremost and we have sacred weapon for that if we need it. Eldritch mind is also a really good option, which would give us advantage on concentration checks. But, nah, we kind of have that already with our extended spell metamagic. Plus we have a +10 to our CON saves with our paladin aura of protection anyways, so eldritch mind seems like overkill. We could also take the new otherworldly leap invocation, which would let us cast jump on ourselves at well, freeing us up to drop that spell for something better when we take our next sorcerer level. Fine that's nice. But since we have a flying mount, I hope we aren't using jump very much at this point anyway. And I think we can manage the spell list situation just fine without having to burn a whole invocation on freeing up a slot. 
+
+So what do we pick? Well the first one that stands out to me is devil's sight. For our entire career up until this point, we've been trying to attack our enemies at range. But if we're fighting in the dark, then we need to rely on light sources to see our attackers. Now sure, we have good ways to produce light. But most of them center on *us*, meaning we would have to get closer to our enemies in order to see and attack them. Devil's sight puts this problem to bed, giving us 120ft of darkvision that can penetrate even magical darkness. Excellent. I also really like the flavor here, as I would think of devil's sight on our technomagic-themed character as the equivalent of `night-vision'. And it dovetails super well with our see invisibility. 
+
+In addition to devil's sight, I'm going to go with the new `lessons of the first ones' invocation, which let's us gain an additional origin feat. And for this feat I'm going to take magic-initiate (druid). `What?' you ask. Ok, hear me out. Going magic initiate druid gets us two cantrips and one first level spell from the druid spell list. And for these cantrips, I'm going with guidance and starry wisp. The former is a pretty-much universal buff to ability checks. We aren't a skill-jockey type character by any means, but I think having guidance strengthens our ability to RP by giving us a boost to skills that are part of our background (history and arcana, for example) but where we have relatively poor ability scores. And the latter could be useful for helping mark invisible targets and fits with our `see invisibility/radiant' theme. Guidance also fits nicely into our `coercing reality to conform to our desired structure/order' magic theme. 
+
+For the first-level spell, I'm going to say we should take absorb-elements. DEX is our second weakest save, and a ton of harmful elemental effects come out on DEX saves (hello, dragon's breath attack). We still aren't a tanky character by any stretch of the imagination, so having the ability to take half damage from an elemental attacks is super nice. In a way, because it's effectiveness scales with enemy damage, absorb elements is a level-1 spell that has some built in scaling. And it's certainly one of the best defensive options after shield. We also don't mind the damage boost absorb elements provides on subsequent weapon attacks. All in all magic-initiate druid provides us with a bevy of small but useful defensive/support tools, and I think that makes it better than any other origin feat we could take here. The other contenders I considered were tough for some extra hit points, and skilled for some more out of combat utility. But I think the additional support potential of guidance and resistance makes magic initiate more appealing than tough, and it feels sort of weird to pick up a whole range of new skill proficiencies here at level-16. 
+
+Next, lets talk about the new warlock spell we can prepare. I'm going to say we should take armor of agathys. It works with extended spell, is a good source of THP when upcast, and doesn't require concentration. It can also stack with our bastion of law shield to give us a significant boost to our durability when we need it. As an alternative, I think we could take detect magic as a warlock spell, and get back detect evil and good as a paladin spell. But I think our channel divinity divine sense serves that roll. You might also be wondering why we didn't take armor of agathys when we originally took warlock-1. Well, the reasons is that we were really starved for spellcasting resources during our early levels. So we would have had it on our spell list for a long time without actually being able/wanting to cast it. So, I opted instead to get ritual and out-of-combat spells that we might actually use. Now that we've more or less escaped any serious resource constraints, the spell is pretty good for us. So we take it.  
+
+Ok so overall, by going warlock-2 here, we get the equivalent of 4 additional sorcery points, improved darkvision, we get guidance, starry wisp, and absorb elements to use on our reaction, and we gain armor of agathys, which we can upcast and combine with our bastion of law. Really a pretty good haul despite not pushing our ability/damage ceiling up any further. 
+
+Right now let's finish up by taking a quick peek back at our resource management regime. 
+
+- lvl-1
+   * start with 6_{2} lvl-1 slots
+   * convert 2 pact magic slots to sorcery points = +2 sorcery points 
+   * recover 2 pact magic slots from catnap and convert them to sorcery points = +2 sorcery points 
+   * recover 2 pact magic slots from a short rest and convert them to sorcery points = +2 sorcery points
+   * recover 1 pact magic slot from magical cunning and convert it into a sorcery point = +1 sorcery point
+   * TOTAL = +7 sorcery points and 4 lvl-1 spell slot for casting during the day 
+ -lvl-2 
+   * start with 3 lvl-2 slots 
+   * convert 1 lvl-2 slot into sorcery points = +2 sorcery points 
+   * TOTAL = +2 sorcery points and 2 lvl-2 slots for casting during the day
+ - lvl-3 
+   * start with 3 lvl-3 slots
+   * use 1 lvl-3 slot on catnap 
+   * now we have 2 slots left 
+   * TOTAL = +0 sorcery points and 2 lvl-3 slot for casting during the day 
+ - lvl-4 
+   * start with 3 lvl-4 slots  
+   * if we already have a steed summoned, then convert 1 lvl-4 slot into sorcery points = +4 sorcery points 
+   * if we don't have a steed summoned, then cast find steed at level 4
+   * now we have 2 lvl-4 spell slots for casting during the day
+   * TOTAL = +4 sorcery points and 2 lvl
+ - lvl-5 
+   * start with 2 lvl-5 slots 
+   * keep them both for upcasting hunter's mark during the day 
+   * TOTAL = +0 sorcery points and 2 lvl-5 slots for casting during the day 
+ - lvl-6 
+   * start with 1 lvl-6 slot 
+   * use it to cast magic weapon once per day 
+   * TOTAL = +0 sorcery points and 0 lvl-6 spell slots for casting during the day 
+ - sorcerous restoration = +4 sorcery points 
+ EFFECTIVE SORCERY POINTS: 8 + 7 + 2 + 4 + 4 = 25 = 12 BA true-strike attacks 
+ EFFECTIVE SPELL SLOTS: 4-2-2-2-2
+
+Looks really good. Should be able to do pretty much whatever we need to whenever we need to. Let's move on to level-17
+
+
+
+
+
+#######
+Level-17: Sorcerer-9 (Clockwork Soul), Warlock-2, Paladin-6 (Oath of Devotion) 
+ - proficiency bonus (PB): +6 
+ - cantrip scaling: 
+   * true-strike (3d6) 
+   * sorcerous burst (4d8) 
+ - sorcery points: 9
+ - cantrips: 
+   * sorcerer (5): true-strike, sorcerous burst, shocking grasp, light, mind-sliver
+   * warlock (2): true-strike, friends
+   * druid (2): guidance, starry wisp 
+ - spell slots: 6_{2}-3-3-3-2-1
+ - spells prepared: sorcerer (14), warlock (3), paladin (6)
+   * lvl-1 (sorcerer): shield, jump
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person, armor of agathys
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, detect magic
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-1 (druid): absorb elements (free x1/day)
+   * lvl-2 (sorcerer): arcane vigor, vortex warp, see invisibility
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (paladin): magic weapon, prayer of healing, locate object
+   * lvl-2 (paladin's smite): shining smite
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+   * lvl-2 (devotion): aid, zone of truth
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+   * lvl-4 (sorcerer): banishment, greater invisibility, dimension door, psychic lance
+   * lvl-4 (clockwork): freedom of movement, summon construct 
+   * lvl-5 (sorcerer): synaptic static, teleportation circle
+   * lvl-5 (clockwork): greater restoration, wall of force 
+
+NOTE: Alright, level-17 and we go sorcerer-9. First off, we get a proficiency bonus increase (up to +6), meaning more luck points, bigger boost to initiative from alert, and a bigger boost to all our skill proficiencies. We also get cantrip scaling, which isn't hugely important except for the fact that the boost to our true-strike damage will boost our max damage combo up to 102 DPR, which is awesome (yeah, century mark crossed!). The main thing we get here is additional spellcasting. More specifically, we get to prepare two new additional sorcerer spells (up to 14) and we get access to 5th level sorcerer spells. We also get two new bound spells from clockwork magic -- greater restoration and wall of force. Let's start with these bound spells. Greater restoration is really nice as a bound spell. Probably not something that anyone loves to choose to prepare, but you're happy to have it when you need it, so it's a good one to be forced to take. It also fits very nicely into our overall theme of restoring balance/neutrality, etc. So we like that. Wall of force is an awesome control spell with lots of creative uses. We aren't built as a pure controller, but we actually have some pretty good spells/capabilities in that department (e.g., vortex warp, slow, banishment, psychic lance) so we are glad to add to that even more with wall of force. Thematically, wall of force is also really nice for us, since it fits perfectly into our shield-bot magic theme. In terms of prepared spells, I opted to go with synaptic static and teleportation circle. The former is a great AOE control spell that doesn't require concentration, has great range, and works well with innate sorcery. It also fits thematically with our other control abilities like slow and psychic lance. Between wall of force and synaptic static, it's nice that we have gained a bit more in AOE department. Teleportation circle is also super nice to have at later levels, and fits well with our `warping' magic theme. Take this and let your party's other casters save their higher level spells slots or use them on big combat spells. Alright, that's pretty much it for level-17. Moving on! 
+
+
+
+
+
+#######
+Level-18: Sorcerer-10 (Clockwork Soul), Warlock-2, Paladin-6 (Oath of Devotion) 
+ - sorcery points: 10
+ - metamagic 
+   * quickened spell (2 SP) 
+   * extended spell (1 SP) 
+   * heightened spell (2 SP)
+ - cantrips: 
+   * sorcerer (6): true-strike, sorcerous burst, shocking grasp, light, mind-sliver, mage hand
+   * warlock (2): true-strike, friends
+   * druid (2): guidance, starry wisp
+ - spell slots: 6_{2}-3-3-3-2-1-1
+ - spells prepared: sorcerer (15), warlock (3), paladin (6)
+   * lvl-1 (sorcerer): shield, jump
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person, armor of agathys
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, detect magic
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-1 (druid): absorb elements (free x1/day)
+   * lvl-2 (sorcerer): arcane vigor, vortex warp, see invisibility
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (paladin): magic weapon, prayer of healing, locate object
+   * lvl-2 (paladin's smite): shining smite
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+   * lvl-2 (devotion): aid, zone of truth
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+   * lvl-4 (sorcerer): banishment, greater invisibility, dimension door, psychic lance
+   * lvl-4 (clockwork): freedom of movement, summon construct 
+   * lvl-5 (sorcerer): synaptic static, teleportation circle, skill empowerment
+   * lvl-5 (clockwork): greater restoration, wall of force 
+
+NOTE: Level-18, we go sorcerer-10. We get an additional sorcerer cantrip. I chose mage hand, but take whatever. We also get to pick an additional metamagic. Distant spell would be pretty good, so that we can really stay far out of the fray. We also have a couple spells that could work with twinned spell (charm person, banishment), but not enough to make it worth it. But I think I would probably go with heightened spell, since we have recently acquired some big save-or-suck spells and it would be nice to be able to make those stick. Especially given that we still want to fodder a number of our spell slots to create sorcery points. As always, pick your favorites. We also get to prepare another sorcerer spell (15 total) of 5th level or lower. I took skill empowerment so that we can give ourselves (or an ally) expertise in a chosen skill that we/they are proficient in. There aren't a lot of combat options that I think we need, and skill empowerment does a lot for our out-of-combat and RP potential. It also works with extended spell, so that's nice. Anyway, now we can really rock those history/arcana checks in addition to being an even more persuasive/deceptive face for the party. Ok and we also get a 7th level spell slot, and honestly, we don't have many great uses for it. We could upcast aid to give our whole party 25 additional hit points. We could upcast find steed to give ourselves a much tanky-er flying mount. Probably the best thing we can do is to convert our 7th level slot into sorcery points so that we can spare our lower level spell slots. A bit disappointing, for sure, but not to worry. We'll better uses for that spell slot soon. Here's what our resource management regime might look like if we take this approach: 
+
+- lvl-1
+   * start with 6_{2} lvl-1 slots
+   * convert 2 pact magic slots to sorcery points = +2 sorcery points 
+   * recover 2 pact magic slots from catnap and convert them to sorcery points = +2 sorcery points 
+   * recover 2 pact magic slots from a short rest and convert them to sorcery points = +2 sorcery points
+   * recover 1 pact magic slot from magical cunning and convert it into a sorcery point = +1 sorcery point
+   * TOTAL = +7 sorcery points and 4 lvl-1 spell slot for casting during the day 
+ -lvl-2 
+   * start with 3 lvl-2 slots 
+   * TOTAL = +0 sorcery points and 2 lvl-2 slots for casting during the day
+ - lvl-3 
+   * start with 3 lvl-3 slots
+   * use 1 lvl-3 slot on catnap 
+   * now we have 2 slots left 
+   * TOTAL = +0 sorcery points and 2 lvl-3 slot for casting during the day 
+ - lvl-4 
+   * start with 3 lvl-4 slots   
+   * if we don't have a steed summoned, then cast find steed at level 4
+   * assuming we do have a steed, we have 3 lvl-4 spell slots for casting during the day
+   * TOTAL = +4 sorcery points and 2 lvl
+ - lvl-5 
+   * start with 2 lvl-5 slots 
+   * keep them both for upcasting hunter's mark during the day 
+   * TOTAL = +0 sorcery points and 2 lvl-5 slots for casting during the day 
+ - lvl-6 
+   * start with 1 lvl-6 slot 
+   * use it to cast magic weapon once per day 
+   * TOTAL = +0 sorcery points and 0 lvl-6 spell slots for casting during the day
+ - lvl-7 
+   * start with 1 lvl-7 slot and convert it to sorcery points 
+   * TOTAL = +7 sorcery points and 0 lvl-7 spell slots for casting during the day   
+ - sorcerous restoration = +4 sorcery points 
+ EFFECTIVE SORCERY POINTS: 10 + 7 + 4 + 7 = 28 = 14 BA true-strike attacks 
+ EFFECTIVE SPELL SLOTS: 4-3-3-2-2
+
+Alright, moving on! 
+
+
+
+
+
+#######
+Level-19: Sorcerer-11 (Clockwork Soul), Warlock-2, Paladin-6 (Oath of Devotion) 
+ - sorcery points: 11
+ - cantrips: 
+   * sorcerer (6): true-strike, sorcerous burst, shocking grasp, light, mind-sliver, mage hand
+   * warlock (2): true-strike, friends
+   * druid (2): guidance, starry wisp 
+ - spell slots: 6_{2}-3-3-3-2-1-1
+ - spells prepared: sorcerer (16), warlock (3), paladin (6)
+   * lvl-1 (sorcerer): shield
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person, armor of agathys
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, detect magic
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-1 (druid): absorb elements (free x1/day)
+   * lvl-2 (sorcerer): arcane vigor, vortex warp, see invisibility
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (paladin): magic weapon, prayer of healing, locate object
+   * lvl-2 (paladin's smite): shining smite
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+   * lvl-2 (devotion): aid, zone of truth
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+   * lvl-4 (sorcerer): banishment, greater invisibility, dimension door, psychic lance
+   * lvl-4 (clockwork): freedom of movement, summon construct 
+   * lvl-5 (sorcerer): synaptic static, teleportation circle, skill empowerment
+   * lvl-5 (clockwork): greater restoration, wall of force
+   * lvl-6 (sorcerer): fizban's platinum shield, globe of invulnerability 
+
+NOTE: Drop jump, pick up 6th level abjuration spells. Globe of invulnerability can be upcast to block 6th level spells or lower. Platinum shield can be used to shift from damage to support and can be cast on our mount. Gives great protection to our weakest saving throw (DEX). Stackable with our bastion of law, armor of agathys, and absorb elements. Can't take tenser's transformation because it's a wizard spell. We could take Tasha's otherworldly guise but it really only gets us flying speed, +2 to AC, and some resistances. And we'd have to sacrifice all our hunter's mark damage to do it. 
+
+
+
+
+
+#######
+Level-20: Sorcerer-12 (Clockwork Soul), Warlock-2, Paladin-6 (Oath of Devotion) 
+ - epic boon of truesight: 
+   * +1 CHA (CHA=21) 
+   * truesight out to 60ft 
+ - sorcery points: 12
+ - cantrips: 
+   * sorcerer (6): true-strike, sorcerous burst, shocking grasp, light, mind-sliver, mage hand
+   * warlock (2): true-strike, friends
+   * druid (2): guidance, starry wisp
+ - spell slots: 6_{2}-3-3-3-2-1-1-1
+ - spells prepared: sorcerer (16), warlock (3), paladin (6)
+   * lvl-1 (sorcerer): shield
+   * lvl-1 (clockwork): alarm, protection from evil and good 
+   * lvl-1 (warlock): comprehend languages, charm person, armor of agathys
+   * lvl-1 (fey-touched): hunter's mark (free x1/LR)
+   * lvl-1 (paladin): divine favor, cure wounds, detect magic
+   * lvl-1 (paladin's smite): divine smite, thunderous smite
+   * lvl-1 (devotion): protection from evil and good, shield of faith 
+   * lvl-1 (druid): absorb elements (free x1/day)
+   * lvl-2 (sorcerer): arcane vigor, vortex warp
+   * lvl-2 (clockwork): aid, lesser restoration
+   * lvl-2 (fey-touched): misty-step (free x1/LR)
+   * lvl-2 (paladin): magic weapon, prayer of healing, locate object
+   * lvl-2 (paladin's smite): shining smite
+   * lvl-2 (faithful steed): find steed (free x1/LR) 
+   * lvl-2 (devotion): aid, zone of truth
+   * lvl-3 (sorcerer): catnap, fly, slow
+   * lvl-3 (clockwork): dispel magic, protection from energy
+   * lvl-4 (sorcerer): banishment, greater invisibility, dimension door, psychic lance
+   * lvl-4 (clockwork): freedom of movement, summon construct 
+   * lvl-5 (sorcerer): synaptic static, teleportation circle, skill empowerment
+   * lvl-5 (clockwork): greater restoration, wall of force
+   * lvl-6 (sorcerer): fizban's platinum shield, globe of invulnerability, disintegrate  
+
+NOTE: Epic boon of truesight is technically only for priest group (cleric, paladin), but we should try to get it on our character, who has always been invested in detection/improved vision. With it, we would have truesight out to 60ft and still be able to see in (magical and non-magical) darkness out to 120 ft. It also means we can drop the see invisibility spell and pick up disintegrate. I think disintegrate is a nice capstone spell. It's not concentration, doesn't interfere with our basic attack pattern, and does great damage. We could also retheme it as a special shot from our pulse rifle. If we can't take epic boon of truesight, then take epic boon of fate or the epic boon of dimensional travel. 
+
+
+
+#####################################################################################################
+EXTRA NOTES 
+
+Clockwork Sorcerer: 
+clockwork spells (abjuration or transmutation: sorcerer, warlock, wizard) 
+ - lvl-1: catapult, feather fall, expeditious retreat, jump, shield 
+ - lvl-2: darkvision, earthbind, enhance ability, magic weapon, spider climb, knock
+ - lvl-3: blink, counterspell, flame arrows, fly, haste, magic circle, slow
+ - lvl-4: banishment
+ - lvl-5: skill empowerement, telekinesis, circle of power
+ - lvl-6: create homunculus, fizban's platinum shield, globe of invulnerability
+          tenser's transformation, tasha's otherworldly guise 
+
+clockwork bound spells: 
+  - lvl-1: alarm, protection from evil and good 
+  - lvl-2: aid, lesser restoration
+  - lvl-3: dispel magic, protection from energy 
+  - lvl-4: freedom of movement, summon construct 
+  - lvl-5: greater restoration, wall of force 
+
+other good non-abjuration non-transmutation sorcerer spells by level 
+ - lvl-1: absorb elements, comprehend languages, detect magic, thunderwave, 
+          charm person, color spray 
+ - lvl-2: blur, darkness, detect thoughts, hold person, invisibility, levitate
+          mirror image, misty step, binding ice, see invisibility, spray of cards
+          suggestion, tasha's mind whip, vortex warp, web, arcane vigor
+ - lvl-3: catnap, clairvoyance, lightning bolt, melf's minute meteors, tongues 
+ - lvl-4: charm monster, dimension door, greater invisibility, stoneskin
+ - lvl-5: hold monster, synaptic static, dominate person, far step
+ - lvl-6: mass suggestion, scatter, true seeing
+
+
+
+
+
+ 
+ 
+
+ 
+
+
+
+
+
+

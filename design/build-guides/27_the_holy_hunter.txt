@@ -1,0 +1,646 @@
+OVERVIEW
+Moniker: The Holy Hunter 
+Classes: Paladin-04 (Devotion), Ranger-09 (Hunter), Cleric-07 (War) 
+Species: Orc 
+ - size: medium 
+ - speed: 30ft 
+ - adrenaline rush  
+   * BA dash + PB THP (PBx/SR)
+ - darkvision (120ft) 
+ - relentless endurance 
+   * come back to 1HP when reduced to 0 (x1/LR) 
+Sex: Female 
+Background: gaucho (tribal pastoralist)
+ - slightly modified version of the `farmer' background from 2024 PHB
+ - ability scores: STR, CON, WIS
+ - feat: tough
+ - skill proficiencies: perception, nature
+ - tool proficiency: carpenter's tools  
+ - languages: common, giant, orc 
+ - equipment: 50 gp
+Point-Buy Stats 
+ - STR = 14 (+2) = 16
+ - DEX = 13 
+ - CON = 13 (+1) = 14
+ - INT = 8
+ - WIS = 13
+ - CHA = 13
+ASI's/Feats
+ - lvl-01: tough
+ - lvl-03: great weapon fighting
+ - lvl-05: great weapon master (STR=17)
+ - lvl-09: ASI: +1 STR, +1 WIS (STR=18, WIS=14) 
+ - lvl-13: ASI: +2 STR
+ - lvl-17: Resilient CON (CON=15)
+Progression Summary: 
+ - lvl-01: paladin-01 -------------------------------------------------> tough, heavy armor, divine favor/smite
+ - lvl-02: paladin-01, ranger-01 --------------------------------------> favored enemy
+ - lvl-03: paladin-01, ranger-02 --------------------------------------> deft explorer, great weapon fighting   
+ - lvl-04: paladin-01, ranger-03 (hunter) -----------------------------> hunter's prey, colossus slayer
+ - lvl-05: paladin-01, ranger-04 (hunter) -----------------------------> great weapon master (STR=17)
+ - lvl-06: paladin-01, ranger-05 (hunter) -----------------------------> extra attack
+ - lvl-07: paladin-01, ranger-06 (hunter) -----------------------------> roving
+ - lvl-08: paladin-01, ranger-07 (hunter) -----------------------------> defensive tactics
+ - lvl-09: paladin-01, ranger-08 (hunter) -----------------------------> ASI: STR=18, WIS=14
+ - lvl-10: paladin-01, ranger-09 (hunter) -----------------------------> expertise, elemental weapon 
+ - lvl-11: paladin-02, ranger-09 (hunter) -----------------------------> channel divinity, paladin smite, defensive
+ - lvl-12: paladin-03 (devotion), ranger-09 (hunter) ------------------> sacred weapon 
+ - lvl-13: paladin-04 (devotion), ranger-09 (hunter) ------------------> ASI: STR=20
+ - lvl-14: paladin-04 (devotion), ranger-09 (hunter), cleric-1 --------> divine order: thaumaturge 
+ - lvl-15: paladin-04 (devotion), ranger-09 (hunter), cleric-2 --------> channel divinity, 5th lvl slot
+ - lvl-16: paladin-04 (devotion), ranger-09 (hunter), cleric-3 (war) --> guided strike, war priest
+ - lvl-17: paladin-04 (devotion), ranger-09 (hunter), cleric-4 (war) --> resilient, CON=15 
+ - lvl-18: paladin-04 (devotion), ranger-09 (hunter), cleric-5 (war) --> sear undead 
+ - lvl-19: paladin-04 (devotion), ranger-09 (hunter), cleric-6 (war) --> war god's blessing, 7th lvl slot
+ - lvl-20: paladin-04 (devotion), ranger-09 (hunter), cleric-7 (war) --> blessed strikes
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `paladin-ranger-cleric'
+ - lvl-01: slots = 2; prepared: 2-0-0; max level: 1-0-0
+ - lvl-02: slots = 3; prepared: 2-2-0; max level: 1-1-0
+ - lvl-03: slots = 3; prepared: 2-3-0; max level: 1-1-0
+ - lvl-04: slots = 4-2; prepared: 2-4-0; max level: 1-1-0  
+ - lvl-05: slots = 4-2; prepared: 2-5-0; max level: 1-1-0 
+ - lvl-06: slots = 4-3; prepared: 2-6-0; max level: 1-2-0 
+ - lvl-07: slots = 4-3; prepared: 2-6-0; max level: 1-2-0
+ - lvl-08: slots = 4-3-2; prepared: 2-7-0; max level: 1-2-0
+ - lvl-09: slots = 4-3-2; prepared: 2-7-0; max level: 1-2-0
+ - lvl-10: slots = 4-3-3; prepared: 2-9-0; max level: 1-3-0 
+ - lvl-11: slots = 4-3-3; prepared: 3-9-0; max level: 1-3-0  
+ - lvl-12: slots = 4-3-3-1; prepared: 4-9-0; max level: 1-3-0
+ - lvl-13: slots = 4-3-3-1; prepared: 5-9-0; max level: 1-3-0 
+ - lvl-14: slots = 4-3-3-2; prepared: 5-9-4; max level: 1-3-1
+ - lvl-15: slots = 4-3-3-3-1; prepared: 5-9-5; max level: 1-3-1
+ - lvl-16: slots = 4-3-3-3-2; prepared: 5-9-6; max level: 1-3-2
+ - lvl-17: slots = 4-3-3-3-2-1; prepared: 5-9-7; max level: 1-3-2 
+ - lvl-18: slots = 4-3-3-3-2-1; prepared: 5-9-9; max level: 1-3-3 
+ - lvl-19: slots = 4-3-3-3-2-1-1; prepared: 5-9-10; max level: 1-3-3
+ - lvl-20: slots = 4-3-3-3-2-1-1; prepared: 5-9-11, max level: 1-3-4 
+
+CONCEPT NOTES
+ - we assume that great weapon fighting (GWF) applies to extra damage dice specifically from the *weapon*
+ - this means it applies to the d4s from elemental weapon and from divine favor, and the d8 from colossus
+   slayer, but not the d6s from hunter's mark or the d8s from divine smite. 
+ - idea is to try and maximize the value of GWF by wielding a greatsword, and tagging on weapon damage riders 
+ - ultimately, concentrate on upcast elemental weapon for best damage (3d4 per hit w/7th level slot)
+ - with low CHA and WIS, choose only utility spells from paladin/ranger/cleric 
+ - identity is a melee striker who will buff damage with spells and have out-of-combat utility 
+ - BA flexibility; limited spell slots 
+
+THEMATIC CONCEPT NOTES: 
+ - monster hunter (iceborne) greatsword / hammer
+ - religiously-inspired hunter of evil beings (Van Helsing -esque)
+ - Tribal/rustic/primal orc vibe
+ - detection, tracking, survival 
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+#######
+Level-01: Paladin-01 
+ - feat: tough
+   * HP +2, and +2 each level
+ - saving throw proficiencies: WIS, CHA   
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * paladin (2): athletics, intimidation     
+   * gaucho (2): perception, nature
+   * languages (3): common, giant, orc
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light + med + heavy armor + shields
+   * tools: carpenter's tools (gaucho)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (background) + 150gp (paladin)
+   * weapons: greatsword (50gp), maul (10gp), x10 javelins (5gp)
+   * armor: chain mail (75gp)
+   * tools: carpenters' tools (8gp)
+   * foci: druidic focus::mistletoe (1gp), holy symbol::amulet (5gp) 
+   * gear: explorer's pack (10gp), traveler's clothes (2gp), hunting trap (5gp)
+   * spare coin: 29gp
+ - combat equipment:
+   * preferred weapon: greatsword
+     + greatsword = 2d6 slashing (graze); heavy, two-handed 
+   * secondary weapons
+     + maul = 2d6 bludgeoning (topple); heavy, two-handed
+     + javelin = 1d6 piercing (slow); thrown (range 30/120)
+   * armor: chain mail 
+   * AC: 16 (disadv. on stealth)
+ - weapon masteries (2): 
+   * mauls (topple)
+   * greatswords (graze) 
+ - lay on hands (5)
+ - spellcasting 
+ - spell slots: 2 
+ - spells prepared: paladin (2)
+   * lvl-1 (paladin): divine favor, divine smite 
+
+NOTE: TBD
+
+
+
+#######
+Level-02: Paladin-01, Ranger-01
+ - skill proficiencies: 
+   * paladin (2): athletics, intimidation     
+   * gaucho (2): perception, nature
+   * ranger (1): survival
+   * languages (3): common, giant, orc
+ - weapon masteries (4): 
+   * greatswords (graze)
+   * mauls (topple) 
+   * pikes (push)
+   * javelins (slow) 
+ - spellcasting 
+ - spell slots: 3 
+ - spells prepared: paladin (2), ranger (2)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (ranger): detect magic (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 2x/LR)
+
+NOTE: TBD 
+
+
+
+#######
+Level-03: Paladin-01, Ranger-02
+ - deft explorer
+   * expertise in one skill, +2 languages
+ - fighting style: great weapon fighting 
+   * treat 1 or 2 as a 3 on damage roll with two-handed/versatile weapon
+ - skill proficiencies (* indicates expertise): 
+   * paladin (2): athletics, intimidation     
+   * gaucho (2): perception*, nature
+   * ranger (1): survival
+   * languages (5): common, draconic, dwarvish, giant, orc 
+ - spellcasting 
+ - spell slots: 3 
+ - spells prepared: paladin (2), ranger (3)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (ranger): alarm (R), detect magic (R), speak with animals (R)  
+   * lvl-1 (favored-enemy): hunter's mark (free 2x/LR)
+
+NOTE: TBD
+
+
+
+#######
+Level-04: Paladin-01, Ranger-03 (Hunter)
+ - hunter's lore 
+   * learn immunities/resistances/vulnerabilities of creatures you hunter's mark 
+ - hunter's prey (change on SR/LR)
+   * colossus slayer = weapon deals +1d8 if enemy is missing any HP (x1/turn)
+   * horde breaker = can attack another creature w/in 5ft of original attack
+ - spellcasting 
+ - spell slots: 4-2 
+ - spells prepared: paladin (2), ranger (4)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (ranger): alarm (R), cure wounds, detect magic (R), speak with animals (R) 
+   * lvl-1 (favored-enemy): hunter's mark (free 2x/LR)
+
+NOTE: TBD
+
+
+
+#######
+Level-05: Paladin-01, Ranger-04 (Hunter)
+ - proficiency bonus (PB): +3
+ - feat: great weapon master (GWM)
+   * ASI: +1 STR (STR=17)
+   * heavy weapon mastery: +PB damage on hit with heavy weapon during attack action
+   * hew: if you kill or crit a creature with a melee weapon, make an additional attack as a BA
+ - spellcasting 
+ - spell slots: 4-2 
+ - spells prepared: paladin (2), ranger (5)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (ranger): alarm (R), cure wounds, detect magic (R), speak with animals (R), detect poison and diseas (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 2x/LR)
+
+NOTE: TBD
+
+
+
+#######
+Level-06: Paladin-01, Ranger-05 (Hunter)
+ - extra attack 
+ - combat equipment:
+   * armor: splint armor 
+   * AC: 17; disadv. on stealth
+ - spellcasting 
+ - spell slots: 4-3 
+ - spells prepared: paladin (2), ranger (6)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (ranger): alarm (R), cure wounds, detect magic (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 3x/LR)
+   * lvl-2 (ranger): locate object, locate animals or plants (R) 
+
+NOTE: TBD 
+
+
+
+#######
+Level-07: Paladin-01, Ranger-06 (Hunter)
+ - roving 
+   * speed increases by 10ft while not wearing heavy armor (x) 
+   * gain a climb speed and swim speed equal to your speed
+ - spellcasting (no change)
+
+NOTE: TBD 
+
+
+
+#######
+Level-08: Paladin-01, Ranger-07 (Hunter)
+ - defensive tactics (change on SR/LR)
+   * escape the horde = OAs on you have disadvantage 
+   * multiattack defense = if you're hit by an attack roll, subsequent attack rolls (by same creature) at disadv.
+ - spellcasting 
+ - spell slots: 4-3-2 
+ - spells prepared: paladin (2), ranger (7)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (ranger): alarm (R), cure wounds, detect magic (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 3x/LR)
+   * lvl-2 (ranger): lesser restoration, locate animals or plants (R), locate object 
+
+NOTE: TBD 
+
+
+
+#######
+Level-09: Paladin-01, Ranger-08 (Hunter)
+ - proficiency bonus (PB): +4
+ - ASI: +1 STR (STR=18), +1 CON (CON=15)
+ - spellcasting (no change)
+
+NOTE: TBD 
+
+
+  
+#######
+Level-10: Paladin-01, Ranger-09 (Hunter)
+ - expertise 
+   * choose 2 skill proficiencies in which to gain expertise
+ - skill proficiencies (* indicates expertise): 
+   * paladin (2): athletics*, intimidation     
+   * gaucho (2): perception*, nature
+   * ranger (1): survival*
+   * languages (5): common, draconic, dwarvish, giant, orc 
+ - spellcasting 
+ - spell slots: 4-3-3 
+ - spells prepared: paladin (2), ranger (9)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (ranger): alarm (R), cure wounds, detect magic (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-2 (ranger): lesser restoration, locate animals or plants (R), locate object 
+   * lvl-3 (ranger): elemental weapon, revivify
+
+NOTE: TBD 
+
+
+
+#######
+Level-11: Paladin-02, Ranger-09 (Hunter)
+ - fighting style: defensive
+   * +1 to AC while you are wearing armor or a shield 
+   * AC (splint armor): 17+1(defensive)=18; disadv. on stealth
+ - paladin's smite: 
+   * always have divine smite prepared 
+   * can cast w/o spell slot (x1/LR) 
+ - lay on hands (10)
+ - spellcasting 
+ - spell slots: 4-3-3 
+ - spells prepared: paladin (3), ranger (9)
+   * lvl-1 (paladin): cure wounds, detect magic (R), divine favor
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (ranger): alarm (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-2 (ranger): lesser restoration, locate animals or plants (R), locate object, pass without trace  
+   * lvl-3 (ranger): elemental weapon, revivify, water breathing (R)
+
+NOTE: TBD 
+
+
+
+#######
+Level-12: Paladin-03 (Devotion), Ranger-09 (Hunter)
+ - channel divinity (x2/LR, +1 on SR)
+   * divine sense = detect evil and good spell w/60ft radius (non-concentration)
+   * sacred weapon
+     + activate w/attack action using melee weapon
+     + add CHA (+1) to attack rolls
+     + 10m duration
+     + can change damage type to radiant 
+ - lay on hands (15)
+ - combat equipment:
+   * armor: plate armor 
+   * AC: 18+1(defensive)=19; disadv. on stealth
+ - spellcasting 
+ - spell slots: 4-3-3-1 
+ - spells prepared: paladin (4), ranger (9)
+   * lvl-1 (paladin): cure wounds, detect evil and good, detect magic (R), divine favor
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from evil and good, shield of faith
+   * lvl-1 (ranger): alarm (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-2 (ranger): lesser restoration, locate animals or plants (R), locate object, pass without trace  
+   * lvl-3 (ranger): elemental weapon, revivify, water breathing (R)
+
+NOTE: TBD 
+
+
+
+#######
+Level-13: Paladin-04 (Devotion), Ranger-09 (Hunter)
+ - proficiency bonus (PB): +5
+ - ASI: +2 STR (STR= 20)
+ - lay on hands (20)
+ - spellcasting 
+ - spell slots: 4-3-3-1 
+ - spells prepared: paladin (5), ranger (9)
+   * lvl-1 (paladin): cure wounds, detect evil and good, detect magic (R), detect poison and disease (R)
+                      divine favor
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from evil and good, shield of faith
+   * lvl-1 (ranger): alarm (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-2 (ranger): lesser restoration, locate animals or plants (R), locate object, pass without trace  
+   * lvl-3 (ranger): elemental weapon, revivify, water breathing (R)
+
+NOTE: TBD 
+
+
+
+#######
+Level-14: Paladin-04 (Devotion), Ranger-09 (Hunter), Cleric-01
+ - divine order
+   * extra cleric cantrip
+   * thaumaturge = +WIS (1) to arcana/religion checks 
+ - spellcasting 
+ - cantrips: 
+   * cleric (3): guidance, spare the dying, thaumaturgy
+   * thaumaturge (1): light
+ - spell slots: 4-3-3-2 
+ - spells prepared: paladin (5), ranger (9), cleric (4)
+   * lvl-1 (paladin): detect evil and good, detect magic (R), detect poison and disease (R)
+                      divine favor, heroism
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from evil and good, shield of faith
+   * lvl-1 (ranger): alarm (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-1 (cleric): create or destroy water, cure wounds, healing word, purify food and drink (R)
+   * lvl-2 (ranger): lesser restoration, locate animals or plants (R), locate object, pass without trace  
+   * lvl-3 (ranger): elemental weapon, revivify, water breathing (R)
+
+NOTE: TBD 
+
+
+
+#######
+Level-15: Paladin-04 (Devotion), Ranger-09 (Hunter), Cleric-02
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark 
+     + magic action; (i) heal 1d8 + WIS or (ii) deal 1d8+WIS radiant/necrotic on CON save
+   * turn undead 
+     + magic action; undead WIS save or frightened/incapacitated and run away
+ - spellcasting 
+ - cantrips: 
+   * cleric (3): guidance, spare the dying, thaumaturgy
+   * thaumaturge (1): light
+ - spell slots: 4-3-3-3-1 
+ - spells prepared: paladin (5), ranger (9), cleric (5)
+   * lvl-1 (paladin): detect evil and good, detect magic (R), detect poison and disease (R)
+                      divine favor, heroism
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from evil and good, shield of faith
+   * lvl-1 (ranger): alarm (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-1 (cleric): bless, create or destroy water, cure wounds, healing word, 
+                     purify food and drink (R)           
+   * lvl-2 (ranger): lesser restoration, locate animals or plants (R), locate object, pass without trace  
+   * lvl-3 (ranger): elemental weapon, revivify, water breathing (R)
+
+NOTE: TBD 
+
+
+
+#######
+Level-16: Paladin-04 (Devotion), Ranger-09 (Hunter), Cleric-03 (War)
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark 
+     + magic action; (i) heal 1d8 + WIS or (ii) deal 1d8+WIS radiant/necrotic on CON save
+   * turn undead 
+     + magic action; undead WIS save or frightened/incapacitated and run away
+   * guided-strike 
+     + when you or ally w/in 30ft miss w/attack roll, use CD to give +10
+ - war priest 
+   * make BA weapon attack WISx(1)/SR
+ - spellcasting 
+ - cantrips: 
+   * cleric (3): guidance, spare the dying, thaumaturgy
+   * thaumaturge (1): light
+ - spell slots: 4-3-3-3-2 
+ - spells prepared: paladin (5), ranger (9), cleric (6)
+   * lvl-1 (paladin): cure wounds, detect evil and good, detect magic (R), detect poison and disease (R)
+                      divine favor
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from evil and good, shield of faith
+   * lvl-1 (ranger): alarm (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-1 (cleric): N/A
+   * lvl-1 (war): guiding bolt, shield of faith
+   * lvl-2 (ranger): locate animals or plants (R), pass without trace
+   * lvl-2 (cleric): aid, augury (R), gentle repose (R), lesser restoration, locate object, prayer of healing
+   * lvl-2 (war): magic weapon, spiritual weapon
+   * lvl-3 (ranger): elemental weapon, revivify, speak with plants, water breathing (R), water walk (R)
+
+NOTE: TBD
+
+
+
+#######
+Level-17: Paladin-04 (Devotion), Ranger-09 (Hunter), Cleric-04 (War)
+ - proficiency bonus (PB): +6
+ - feat: resilient (CON) 
+   * +1 CON (CON=16) 
+   * gain proficiency in CON saving throws 
+ - saving throw proficiencies: WIS, CHA, CON   
+ - spellcasting 
+ - cantrips: 
+   * cleric (4): guidance, mending, spare the dying, thaumaturgy
+   * thaumaturge (1): light
+ - spell slots: 4-3-3-3-2-1
+ - spells prepared: paladin (5), ranger (9), cleric (7)
+   * lvl-1 (paladin): cure wounds, detect evil and good, detect magic (R), detect poison and disease (R)
+                      divine favor
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from evil and good, shield of faith
+   * lvl-1 (ranger): alarm (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-1 (cleric): N/A
+   * lvl-1 (war): guiding bolt, shield of faith
+   * lvl-2 (ranger): locate animals or plants (R), pass without trace
+   * lvl-2 (cleric): aid, augury (R), enhance ability, gentle repose (R), lesser restoration, 
+                     locate object, prayer of healing
+   * lvl-2 (war): magic weapon, spiritual weapon
+   * lvl-3 (ranger): elemental weapon, revivify, speak with plants, water breathing (R), water walk (R)
+
+NOTE: TBD 
+
+
+
+#######
+Level-18: Paladin-04 (Devotion), Ranger-09 (Hunter), Cleric-05 (War)
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark 
+     + magic action; (i) heal 1d8 + WIS or (ii) deal 1d8+WIS radiant/necrotic on CON save
+   * turn undead 
+     + magic action; undead WIS save or frightened/incapacitated and run away
+   * guided-strike 
+     + when you or ally w/in 30ft miss w/attack roll, use CD to give +10
+   * sear undead 
+     + when you turn undead, each undead that fails the save takes WIS d8 (1d8) radiant dmg
+ - spellcasting 
+ - cantrips: 
+   * cleric (4): guidance, mending, spare the dying, thaumaturgy
+   * thaumaturge (1): light
+ - spell slots: 4-3-3-3-2-1 
+ - spells prepared: paladin (5), ranger (9), cleric (9)
+   * lvl-1 (paladin): cure wounds, detect evil and good, detect magic (R), detect poison and disease (R)
+                      divine favor
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from evil and good, shield of faith
+   * lvl-1 (ranger): alarm (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-1 (cleric): N/A
+   * lvl-1 (war): guiding bolt, shield of faith
+   * lvl-2 (ranger): locate animals or plants (R), pass without trace
+   * lvl-2 (cleric): aid, augury (R), gentle repose (R), lesser restoration, locate object, prayer of healing
+   * lvl-2 (war): magic weapon, spiritual weapon
+   * lvl-3 (ranger): elemental weapon, revivify, speak with plants, water breathing (R), water walk (R)
+   * lvl-3 (cleric): speak with dead, clairvoyance, dispel magic
+   * lvl-3 (war): crusader's mantle, spirit guardians
+
+NOTE: TBD
+
+
+
+#######
+Level-19: Paladin-04 (Devotion), Ranger-09 (Hunter), Cleric-06 (War)
+ - channel divinity (x3/LR, +1 on SR) 
+   * divine spark 
+     + magic action; (i) heal 1d8 + WIS or (ii) deal 1d8+WIS radiant/necrotic on CON save
+   * turn undead 
+     + magic action; undead WIS save or frightened/incapacitated and run away
+   * guided-strike 
+     + when you or ally w/in 30ft miss w/attack roll, use CD to give +10
+   * sear undead 
+     + when you turn undead, each undead that fails the save takes WIS d8 (1d8) radiant dmg
+   * war god's blessing 
+     + can use CD to cast shield of faith/spiritual weapon w/o spell slot or concentration (1m)
+ - spellcasting 
+ - cantrips: 
+   * cleric (4): guidance, mending, spare the dying, thaumaturgy
+   * thaumaturge (1): light
+ - spell slots: 4-3-3-3-2-1-1 
+ - spells prepared: paladin (5), ranger (9), cleric (10)
+   * lvl-1 (paladin): cure wounds, detect evil and good, detect magic (R), detect poison and disease (R)
+                      divine favor
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from evil and good, shield of faith
+   * lvl-1 (ranger): alarm (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-1 (cleric): N/A
+   * lvl-1 (war): guiding bolt, shield of faith
+   * lvl-2 (ranger): locate animals or plants (R), pass without trace
+   * lvl-2 (cleric): aid, augury (R), gentle repose (R), lesser restoration, locate object, prayer of healing
+   * lvl-2 (war): magic weapon, spiritual weapon
+   * lvl-3 (ranger): elemental weapon, revivify, speak with plants, water breathing (R), water walk (R)
+   * lvl-3 (cleric): speak with dead, clairvoyance, dispel magic, meld into stone (R) 
+   * lvl-3 (war): crusader's mantle, spirit guardians
+
+NOTE: TBD 
+
+
+
+#######
+Level-20: Paladin-04 (Devotion), Ranger-09 (Hunter), Cleric-07 (War)
+ - blessed strikes 
+   * +1d8 radiant/necrotic on hit with weapon (x1/turn) 
+ - spellcasting 
+ - cantrips: 
+   * cleric (4): guidance, mending, spare the dying, thaumaturgy
+   * thaumaturge (1): light
+ - spell slots: 4-3-3-3-2-1-1 
+ - spells prepared: paladin (5), ranger (9), cleric (11)
+   * lvl-1 (paladin): cure wounds, detect evil and good, detect magic (R), detect poison and disease (R)
+                      divine favor
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from evil and good, shield of faith
+   * lvl-1 (ranger): alarm (R), speak with animals (R)
+   * lvl-1 (favored-enemy): hunter's mark (free 4x/LR)
+   * lvl-1 (cleric): N/A
+   * lvl-1 (war): guiding bolt, shield of faith
+   * lvl-2 (ranger): locate animals or plants (R), pass without trace
+   * lvl-2 (cleric): aid, gentle repose (R), lesser restoration, locate object, prayer of healing
+   * lvl-2 (war): magic weapon, spiritual weapon
+   * lvl-3 (ranger): elemental weapon, revivify, speak with plants, water breathing (R), water walk (R)
+   * lvl-3 (cleric): speak with dead, clairvoyance, dispel magic
+   * lvl-3 (war): crusader's mantle, spirit guardians
+   * lvl-4 (cleric): divination (R), locate creature, death ward
+   * lvl-4 (war): fire shield, freedom of movement 
+
+NOTE: TBD 
+
+Quick damage check: With 7th level elemental weapon, you get +3d4 on each greatsword hit. Assume you have divine favor up, then it's 4d4 per hit, where each one can't roll less than a 3, so 4*3.25 = 13 extra damage on hit. With GWM and STR=20, you will do an additional 11 per hit. With GWF the avg damage on a greatsword is 8. So each hit would do 32 points of damage, on average. Then if you use war priest, you can make three of such attacks per round. Meaning you would do 92 points of damage on average, if you hit all three times. You also get +1d8 from colossus slayer, and +1d8 from blessed strikes (+9), bringing the total to 101. Pretty good.   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+###########################################################################################################
+Paladin spells: 
+ - lvl-1: divine favor, divine smite / detect magic (@11) / cure wounds (@12) / detect evil and good (x@15, @16) / 
+          heroism (@15 x@16)
+ - lvl-1 (bound): protection from good and evil, shield of faith 
+
+Ranger spells 
+ - lvl-1: detect magic (x@11), speak with animals / alarm / cure wounds (x@12) / detect poison and disease (x@6)
+ - lvl-1 (bound): hunter's mark 
+ - lvl-2: locate object, lesser restoration / locate plants and animals / pass without trace (@11)
+ - lvl-3: elemental weapon, revivify (x@18) / water breathing (@12), water walk (@18)
+
+Cleric spells: 
+ - cantrips: guidance, spare the dying, thaumaturgy / light
+ - lvl-1: create or destroy water, detect poison and disease, healing word, purify food and drink /
+          detect evil and good (@15, x@16)
+ - lvl-1 (bound): guiding bolt, shield of faith
+ - lvl-2: augury, prayer of healing / aid / enhance ability
+ - lvl-2 (bound): magic weapon, spiritual weapon
+ - lvl-3: revivify, speak with dead / clairvoyance  
+ - lvl-3 (bound): crusader's mantle, spirit guardians 
+ - lvl-4: divination, locate creature 
+ - lvl-4 (bound): fire shield, freedom of movement 
+
+
+
+
+
+
+

@@ -1,0 +1,497 @@
+Goblin Witchdoctor 
+
+Feats
+level-1 feat: crafter (herbalists tools, alchemists tools, poisoner's kit) 
+level-1 feat: magic-initiate (cantrips: primal savagery, thorn whip, shillelagh, magic stone
+                              level 1: dissonant whispers, entangle) 
+level-4 feat: ritual caster
+ - INT+1 or WIS+1 or CHA+1
+ - 2 level-1 ritual spells (always prepared) 
+ - can cast ritual w/regular casting time w/o spell slot (1x per spell per long rest) 
+level-4 feat: observant
+ - INT+1 or WIS+1
+ - proficiency in insight/investigation/perception (expertise if you're already proficient)
+ - search as a bonus action
+level-4 feat: keen mind
+level-4 feat: inspiring leader 
+ - WIS+1 or CHA+1 
+ - give up to 6 allies 2d4+PB THP at end of short or long rest
+
+
+Fighter-1 
+ - weapon mastery (3): slings (slow), blowgun (vex), quarterstaff (topple) 
+ - fighting style: blindfighting = blindsight within 10ft
+
+Race: Goblin 
+ - size: small 
+ - darkvision (60ft) 
+ - fey ancestry = adv. on saves against charmed 
+ - fury of the small = +PB damage on damage when hitting a creature larger than you (PBx/LR)
+ - nimble escape = BA disengage or hide 
+
+Point-Buy Stats 
+ - STR = 8 
+ - DEX = 14
+ - CON = 12
+ - INT = 15 (+2) = 17
+ - WIS = 14 (+1) = 15
+ - CHA = 8
+
+Trickery Cleric 
+ - blessing of the trickster (lvl-3) 
+   + advantage on stealth check for 1h 
+ - domain spells (lvl-3) 
+   + charm person, disguise self, invisibility, pass without trace 
+ - invoke duplicity (lvl-3) 
+   + create illusion as a BA (teleport to location w/in 30ft of it when you create it) 
+   + can cast spells from illusion's space 
+   + have adv. on attack rolls while illusion is w/in 5ft of creature that can see it 
+   + teleport: can move illusion up to 30ft as a BA and then teleport to it's location (swap) 
+ - domain spells (lvl-5) 
+   + hypnotic pattern, nondetection
+ - trickster's magic (lvl-6) 
+   + can cast illusion spells as a BA (provided original casting time is an action) 
+   + use this feature WISx/long rest 
+
+Illusionist 
+ - illusion savant (lvl-3)
+   + get 2 new illusion spells from wizard list at level 3 (add to spellbook) 
+   + add 1 new illusion spell to spellbook every time you gain access to new wizard spell slots 
+ - improved illusion (lvl-3) 
+   + know minor illusion - can do sound and image and can cast as BA
+   + can cast illusion spells w/o verbal components
+   + any illusion spell with range of at least 10ft has range increased by 60ft
+ - phantasmal creatures (lvl-6)
+   + learn summon beast and summon fey (always have prepared) 
+   + can cast these as normal, or can cast them as illusion spells w/o expending a spell slot (free 1x/day)
+     but illusory creature has 1/2 the hit points as normal 
+ - illusory self (lvl-10) 
+   + create illusory duplicate of yourself in reaction to an attack hitting you, causing it to 
+     automatically miss (1x/short rest) 
+   + triggered by you being hit, rather than just an attack roll being made at you 
+   + can restore feature by expending a lvl-2 or higher spell slot 
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES  
+
+Level-1: Cleric-1:
+ - proficiency bonus (PB): +2 
+ - feat: magic-initiate (INT)
+ - saving throw proficiencies: WIS, CHA 
+ - skill proficiencies: 
+   * cleric (2): medicine, insight 
+   * background = goblin forager (2): stealth, nature
+   * languages: common, goblin, celestial
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple weapons 
+   * armor: light armor, medium armor, shields
+   * tools: alchemist's supplies (goblin forager)
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (background) + 110gp (cleric)
+   * weapons: dagger (2gp)
+   * tools: alchemist's supplies (50gp) 
+   * gear: scholars pack (40gp)
+           holy-symbol:amulet (5gp)
+   * armor: chain shirt (50gp) + shield (10 gp)
+   * spare coin: 3 gp
+ - combat equipment:
+   * weapon: dagger = 1d4 piercing (vex); finesse, light, thrown (20/60)
+   * armor: chain mail
+   * armored AC = 13 + 2(DEX) + 2(shield) = 17 
+ - divine order: thaumaturge = +1 cantrip, +WIS to religion checks 
+ - cantrips: 
+   * cleric (3): guidance, thaumaturgy, spare the dying  
+   * thaumaturge (1): toll the dead
+   * magic initiate (2): primal savagery, thorn whip
+ - spell slots: 2 
+ - spells prepared: 4(cleric)
+   * lvl-1 (cleric): bane, cure wounds, inflict wounds, command
+   * lvl-1 (magic initiate): entangle
+
+NOTE: TBD
+
+
+
+Level-2: Cleric-1, Wizard-1 
+ - arcane recovery 
+ - ritual adept = can cast rituals in spellbook even if you don't have them prepared
+ - cantrips: 
+   * cleric (3): guidance, thaumaturgy, spare the dying  
+   * thaumaturge (1): toll the dead 
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (3): minor illusion, shocking grasp, mold earth
+ - spell slots: 3 
+ - wizard spellbook spells (6) 
+   * lvl-1: shield, color spray, fog cloud
+            detect magic, find familiar, unseen servant
+ - spells prepared: 4(cleric), 4(wizard)
+   * lvl-1 (cleric): bane, cure wounds, inflict wounds, command
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (wizard): shield, color spray, fog cloud, alarm 
+
+NOTE: Ritual cast find familiar. Bat has blindsight. Create fog cloud, use your action to shocking grasp through familiar, and BA to hide. Use mold earth to create holes to hide in. Cast other touch spells (guidance, resistance, spare the dying, cure wounds, inflict wounds) through the familiar to increase utility. Debuff/control with bane, command, and entangle. Use shield to stay alive. 
+
+
+
+Level-3: Cleric-1, Wizard-2
+ - scholar (nature)
+ - skill proficiencies (* indicates expertise): 
+   * cleric (2): medicine, insight 
+   * background = goblin forager (2): stealth, nature*
+   * languages: common, goblin, celestial
+ - cantrips: 
+   * cleric (3): guidance, thaumaturgy, spare the dying  
+   * thaumaturge (1): toll the dead 
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (3): minor illusion, shocking grasp, mold earth
+ - spell slots: 4-2 
+ - wizard spellbook spells (8) 
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers
+            detect magic, find familiar, unseen servant
+ - spells prepared: 4(cleric), 5(wizard)
+   * lvl-1 (cleric): bane, cure wounds, inflict wounds, command
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (wizard): shield, color spray, fog cloud, sleep, dissonant whispers
+
+NOTE: Upcast sleep, dissonant whispers, inflict wounds. Otherwise, same game as level-1. 
+
+
+
+Level-4: Cleric-1, Wizard-3 (Illusionist)
+ - illusionist savant 
+   * add 2 new illusion (wizard) spells to spellbook
+   * add 1 new illusion (wizard) spell to spellbook when you get new wizard spell level
+ - improved illusions
+   * know minor illusion - can do sound and image and can cast as BA
+   * can cast illusion spells w/o verbal components
+   * any illusion spell with range of at least 10ft has range increased by 60ft
+ - cantrips: 
+   * cleric (3): guidance, thaumaturgy, spare the dying  
+   * thaumaturge (1): toll the dead 
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (3): message, shocking grasp, mold earth
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3 
+ - wizard spellbook spells (10); *indicates illusion savant spell 
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers
+            detect magic, find familiar, unseen servant, identify
+   * lvl-2: darkness, mirror image*, phantasmal force* 
+ - spells prepared: 4(cleric), 6(wizard)
+   * lvl-1 (cleric): bane, cure wounds, inflict wounds, command
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers
+   * lvl-2 (wizard): darkness, mirror image, phantasmal force
+
+NOTE: neither mirror image or phantasmal force on trickery cleric list. use illusion/distraction/stealth instead of invisibility for infiltration. cast darkness on bat familiar, and have it sit on your shoulder, then see through it's eyes with it's blindsight.
+
+
+
+Level-5: Cleric-1, Wizard-4 (Illusionist)
+ - proficiency bonus (PB): +3 
+ - feat: ritual caster 
+   * WIS = 16 (+1) 
+   * 2 lvl-1 rituals always prepared 
+   * quick ritual = can cast unprepared ritual spells with normal casting time 
+                    1x/long rest 
+ - cantrips: 
+   * cleric (3): guidance, thaumaturgy, spare the dying  
+   * thaumaturge (1): toll the dead 
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (4): message, mold earth, shocking grasp, mind sliver
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3-2 
+ - wizard spellbook spells (12); *indicates illusion savant or ritual caster spell 
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers, snare              
+            detect magic, find familiar, unseen servant, identify
+            speak with animals*, comprehend languages*
+   * lvl-2: darkness, nathair's mischief (reflavor), mirror image*, phantasmal force* 
+ - spells prepared: 4(cleric), 7(wizard)
+   * lvl-1 (cleric): bane, cure wounds, inflict wounds, command
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers, snare
+   * lvl-2 (wizard): darkness, phantasmal force, mirror image
+
+NOTE: take speak with animals and comprehend languages with ritual adept since they are actions to cast (quick ritual). Take mind sliver for BA illusion spells at future levels (e.g., mind sliver + phantasmal force/nathair's mischief). Snare + command/dissonant whispers/phantasmal force combo. Set up snare with familiar (if DM allows).
+
+
+
+Level-6: Cleric-1, Wizard-5 (Illusionist)
+ - memorize spell = +1 to prepared spells (can change w/1m study) 
+ - cantrips: 
+   * cleric (3): guidance, thaumaturgy, spare the dying  
+   * thaumaturge (1): toll the dead 
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (4): message, mold earth, shocking grasp, mind sliver
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3-3
+ - wizard spellbook spells (14); *indicates illusion savant or ritual caster spell 
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers, snare
+            detect magic, find familiar, unseen servant, identify
+            speak with animals*, comprehend languages*
+   * lvl-2: darkness, nathair's mischief (reflavor), mirror image*, phantasmal force* 
+   * lvl-3: enemies abound, blink, major image*
+ - spells prepared: 4 (cleric), 9(wizard)+1(memorized)
+   * lvl-1 (cleric): bane, cure wounds, inflict wounds, command
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers, snare
+   * lvl-2 (wizard): darkness, phantasmal force, nathair's mischief
+   * lvl-3 (wizard): enemies abound, blink, major image
+
+NOTE: Enemies abound is a wizard exclusive, very thematic, and an INT save. Blink is also a wizard exclusive, and more fun than mirror image for now. Switch in nathair's mischief for AOE madness. 
+
+
+
+Level-7: Cleric-1, Wizard-6 (Illusionist)
+ - phantasmal creatures (lvl-6)
+   * learn summon beast and summon fey (always have prepared) 
+   * can cast as normal, or as illusion spells w/o expending a spell slot (free 1x/day)
+     but illusory creature has 1/2 the hit points as normal 
+ - memorize spell = +1 to prepared spells (can change w/1m study) 
+ - cantrips: 
+   * cleric (3): guidance, thaumaturgy, spare the dying  
+   * thaumaturge (1): toll the dead 
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (4): message, mold earth, shocking grasp, mind sliver
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3-3-1
+ - wizard spellbook spells (16); *indicates illusion savant or ritual caster
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers, snare
+            detect magic, find familiar, unseen servant, identify
+            speak with animals*, comprehend languages*
+   * lvl-2: darkness, nathair's mischief (reflavor), mirror image*, phantasmal force* 
+   * lvl-3: enemies abound, blink, catnap, phantom steed, major image*
+ - spells prepared: 4 (cleric), 10(wizard)+1(memorized)
+   * lvl-1 (cleric): bane, cure wounds, inflict wounds, command
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers, snare
+   * lvl-2 (wizard): darkness, phantasmal force, nathair's mischief
+   * lvl-3 (wizard): enemies abound, blink, major image, catnap
+   * lvl-3 (illusionist): summon fey, summon beast
+
+NOTE: Take catnap to refresh channel divinity later and instead of tiny hut (I don't believe in tiny hut). Take phantom steed since it's a ritual and similar to phantasmal creatures. Could also have taken earthen grasp, but feels like we have entangle. Eff counterspell (I don't believe in counterspell). 
+
+
+
+Level-8: Cleric-2, Wizard-6 (Illusionist)
+ - channel divinity (2 uses; recover 1 on SR, all on LR)
+   + divine spark 
+   + turn undead
+ - cantrips: 
+   * cleric (3): guidance, thaumaturgy, spare the dying  
+   * thaumaturge (1): toll the dead 
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (4): message, mold earth, shocking grasp, mind sliver
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3-3-2
+ - wizard spellbook spells (16); *indicates illusion savant or ritual caster
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers, snare
+            detect magic, find familiar, unseen servant, identify
+            speak with animals*, comprehend languages*
+   * lvl-2: darkness, nathair's mischief (reflavor), mirror image*, phantasmal force* 
+   * lvl-3: enemies abound, blink, catnap, phantom steed, major image*
+ - spells prepared: 5 (cleric), 10(wizard)+1(memorized)
+   * lvl-1 (cleric): bane, cure wounds, inflict wounds, command, sanctuary
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers, snare
+   * lvl-2 (wizard): darkness, phantasmal force, nathair's mischief
+   * lvl-3 (wizard): enemies abound, blink, major image, catnap
+   * lvl-3 (illusionist): summon fey, summon beast
+
+NOTE: Cast sanctuary on steed in combat. 
+
+
+
+Level-9: Cleric-3 (Trickery), Wizard-6 (Illusionist)
+ - proficiency bonus (PB): +4
+ - subclass: trickery domain
+   + blessing of the trickster
+   + channel divinity: invoke duplicity
+ - cantrips: 
+   * cleric (3): guidance, thaumaturgy, spare the dying  
+   * thaumaturge (1): toll the dead 
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (4): message, mold earth, shocking grasp, mind sliver
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3-3-3-1
+ - wizard spellbook spells (16); *indicates illusion savant or ritual caster
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers, snare
+            detect magic, find familiar, unseen servant, identify
+            speak with animals*, comprehend languages*
+   * lvl-2: darkness, nathair's mischief (reflavor), mirror image*, phantasmal force* 
+   * lvl-3: enemies abound, blink, catnap, phantom steed, major image*
+ - spells prepared: 6 (cleric), 10(wizard)+1(memorized)
+   * lvl-1 (cleric): cure wounds, inflict wounds, command, sanctuary
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (trickery): charm person, disguise self
+   * lvl-2 (cleric): silence, blindness/deafness
+   * lvl-2 (trickery): invisibility, pass without trace
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers, snare
+   * lvl-2 (wizard): darkness, phantasmal force, nathair's mischief
+   * lvl-3 (wizard): enemies abound, blink, major image, catnap
+   * lvl-3 (illusionist): summon fey, summon beast
+
+NOTE: TBD
+
+
+
+Level-10: Cleric-4 (Trickery), Wizard-6 (Illusionist)
+ - skill expert: INT=18, proficiency in investigation, expertise in stealth
+ - cantrips: 
+   * cleric (4): guidance, thaumaturgy, spare the dying, light  
+   * thaumaturge (1): toll the dead
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (4): message, mold earth, shocking grasp, mind sliver
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3-3-3-2
+ - wizard spellbook spells (16); *indicates illusion savant or ritual caster
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers, snare
+            detect magic, find familiar, unseen servant, identify
+            speak with animals*, comprehend languages*
+   * lvl-2: darkness, nathair's mischief (reflavor), mirror image*, phantasmal force* 
+   * lvl-3: enemies abound, blink, catnap, phantom steed, major image*
+ - spells prepared: 7 (cleric), 10(wizard)+1(memorized)
+   * lvl-1 (cleric): cure wounds, inflict wounds, command, sanctuary
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (trickery): charm person, disguise self
+   * lvl-2 (cleric): silence, blindness/deafness, aid
+   * lvl-2 (trickery): invisibility, pass without trace
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers, snare
+   * lvl-2 (wizard): darkness, phantasmal force, nathair's mischief
+   * lvl-3 (wizard): enemies abound, blink, major image, catnap
+   * lvl-3 (illusionist): summon fey, summon beast
+
+NOTE: TBD 
+
+
+
+Level-11: Cleric-5 (Trickery), Wizard-6 (Illusionist)
+ - channel divinity: sear undead = WIS d8 radiant to undead who fail
+ - cantrips: 
+   * cleric (4): guidance, thaumaturgy, spare the dying, light  
+   * thaumaturge (1): toll the dead
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (4): message, mold earth, shocking grasp, mind sliver
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3-3-3-2-1
+ - wizard spellbook spells (16); *indicates illusion savant or ritual caster
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers, snare
+            detect magic, find familiar, unseen servant, identify
+            speak with animals*, comprehend languages*
+   * lvl-2: darkness, nathair's mischief (reflavor), mirror image*, phantasmal force* 
+   * lvl-3: enemies abound, blink, catnap, phantom steed, major image*
+ - spells prepared: 9 (cleric), 10(wizard)+1(memorized)
+   * lvl-1 (cleric): cure wounds, inflict wounds, command, sanctuary
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (trickery): charm person, disguise self
+   * lvl-2 (cleric): silence, blindness/deafness, aid
+   * lvl-2 (trickery): invisibility, pass without trace
+   * lvl-3 (cleric): bestow curse, dispel magic
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers, snare
+   * lvl-2 (wizard): darkness, phantasmal force, nathair's mischief
+   * lvl-3 (wizard): enemies abound, blink, major image, catnap
+   * lvl-3 (illusionist): summon fey, summon beast
+
+NOTE: 5th level bestow curse doesn't require concentration. Neither does 6th level major image (permanent image). Other lvl-3 cleric spells: magic circle, revivify, mass healing word
+
+
+
+Level-12: Cleric-6 (Trickery), Wizard-6 (Illusionist)
+ - channel divinity (3 uses; recover 1 on SR, all on LR) 
+ - trickster's magic = cast illusion spells as BA (WISx/long rest)
+ - cantrips: 
+   * cleric (4): guidance, thaumaturgy, spare the dying, light  
+   * thaumaturge (1): toll the dead
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (4): message, mold earth, shocking grasp, mind sliver
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3-3-3-2-1
+ - wizard spellbook spells (16); *indicates illusion savant or ritual caster
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers, snare
+            detect magic, find familiar, unseen servant, identify
+            speak with animals*, comprehend languages*
+   * lvl-2: darkness, nathair's mischief (reflavor), mirror image*, phantasmal force* 
+   * lvl-3: enemies abound, blink, catnap, phantom steed, major image*
+ - spells prepared: 10 (cleric), 10(wizard)+1(memorized)
+   * lvl-1 (cleric): cure wounds, inflict wounds, command, sanctuary
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (trickery): charm person, disguise self
+   * lvl-2 (cleric): silence, blindness/deafness, aid
+   * lvl-2 (trickery): invisibility, pass without trace
+   * lvl-3 (cleric): bestow curse, dispel magic, revivify
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers, snare
+   * lvl-2 (wizard): darkness, phantasmal force, nathair's mischief
+   * lvl-3 (wizard): enemies abound, blink, major image, catnap
+   * lvl-3 (illusionist): summon fey, summon beast
+
+NOTE: Illusion spells you can now cast as a bonus action: minor illusion, color spray, disguise self, silence, mirror image, invisibility, phantasmal force, nathair's mischief, major image, hypnotic pattern, summon fey (illusory), summon beast (illusory). Have darkness up on your bat, move it to where you are in melee with an enemy, kill the enemy with a cantrip (shocking grasp, primal savagery), then cast disguise self as a BA to become them. Cast primal savagery and do some damage, then upcast color spray to blind them (and others, potentially. Cast silence around yourself + a magic user, then use attack them with primal savagery. Cast primal savagery next to your duplicate (at advantage) and then BA cast mirror image (now there's like 4 of you). Cast mind-sliver and then BA phantasmal force/nathair's mischief/color spray/hypnotic pattern. Cast minor illusion and then BA level-6 major image (permanent, no concentration) -- you could even make it another illusory version of yourself. 
+
+
+
+Level-13: Cleric-6 (Trickery), Wizard-7 (Illusionist)
+ - cantrips: 
+   * cleric (4): guidance, thaumaturgy, spare the dying, light  
+   * thaumaturge (1): toll the dead
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (4): message, mold earth, shocking grasp, mind sliver
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3-3-3-2-1-1
+ - wizard spellbook spells (18); *indicates illusion savant or ritual caster
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers, snare
+            detect magic, find familiar, unseen servant, identify
+            speak with animals*, comprehend languages*
+   * lvl-2: darkness, nathair's mischief (reflavor), mirror image*, phantasmal force* 
+   * lvl-3: enemies abound, blink, catnap, phantom steed, major image*
+   * lvl-4: faithful hound, hallucinatory terrain, greater invisibility*
+ - spells prepared: 10 (cleric), 11(wizard)+1(memorized)
+   * lvl-1 (cleric): cure wounds, inflict wounds, command, sanctuary
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (trickery): charm person, disguise self
+   * lvl-2 (cleric): silence, blindness/deafness, aid
+   * lvl-2 (trickery): invisibility, pass without trace
+   * lvl-3 (cleric): bestow curse, dispel magic, revivify
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers, snare
+   * lvl-2 (wizard): darkness, phantasmal force
+   * lvl-3 (wizard): enemies abound, blink, major image, catnap
+   * lvl-3 (illusionist): summon fey, summon beast
+   * lvl-4 (wizard): faithful hound, greater invisibility 
+
+NOTE: Some awesome traps you can set. Snare + faithful hound. Hallucinatory terrain + phantasmal force/major image. 
+
+
+
+Level-14: Cleric-6 (Trickery), Wizard-8 (Illusionist)
+ - ASI: WIS = 18
+ - cantrips: 
+   * cleric (4): guidance, thaumaturgy, spare the dying, light  
+   * thaumaturge (1): toll the dead
+   * magic initiate (2): primal savagery, thorn whip
+   * wizard (4): message, mold earth, shocking grasp, mind sliver
+   * illusionist (1): minor illusion (improved)
+ - spell slots: 4-3-3-3-2-1-1
+ - wizard spellbook spells (20); *indicates illusion savant or ritual caster
+   * lvl-1: shield, color spray, fog cloud, sleep, dissonant whispers, snare
+            detect magic, find familiar, unseen servant, identify
+            speak with animals*, comprehend languages*
+   * lvl-2: darkness, nathair's mischief (reflavor), mirror image*, phantasmal force* 
+   * lvl-3: enemies abound, blink, catnap, phantom steed, vampiric touch, major image*
+   * lvl-4: faithful hound, hallucinatory terrain, greater invisibility*
+ - spells prepared: 10 (cleric), 12(wizard)+1(memorized)
+   * lvl-1 (cleric): cure wounds, inflict wounds, command, sanctuary
+   * lvl-1 (magic initiate): entangle
+   * lvl-1 (trickery): charm person, disguise self
+   * lvl-2 (cleric): silence, blindness/deafness, aid
+   * lvl-2 (trickery): invisibility, pass without trace
+   * lvl-3 (cleric): bestow curse, dispel magic, revivify
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+   * lvl-1 (wizard): color spray, sleep, dissonant whispers, snare
+   * lvl-2 (wizard): darkness, phantasmal force, mirror image
+   * lvl-3 (wizard): enemies abound, vampiric touch, major image, catnap
+   * lvl-3 (illusionist): summon fey, summon beast
+   * lvl-4 (wizard): faithful hound, greater invisibility 
+
+NOTE: Some awesome traps you can set. Snare + faithful hound. Hallucinatory terrain + phantasmal force/major image. Maybe take dimension door or polymorph instead of vampiric touch here. Though VT is kind of a nice emergency option to have, and it is very thematic. 
+

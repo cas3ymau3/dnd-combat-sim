@@ -1,0 +1,721 @@
+Moniker: TBD
+Classes: Blood.Hunter-10 (Profane Soul), Rogue-10 (Magic Stealer) 
+Species: Elf (High)   
+ - size: medium 
+ - darkvision: 60ft
+ - speed: 30ft  
+ - fey ancestry: adv on saves to end or avoid charmed 
+ - keen senses: proficiency in survival
+ - trance: don't sleep; can't be put to sleep; LR in 4hrs
+ - elven lineage (high elf): wizard cantrip (lvl-00), detect magic (free x1/LR, @lvl-03), misty step (free x1/LR, @lvl-05) 
+Sex: Female 
+Background: Scribe (modfied)  
+ - source: 2024 PHB
+ - ability scores: DEX, INT, WIS
+ - feat (modified): magic initiate (cleric) 
+ - skills: investigation, perception  
+ - tools: calligrapher's supplies  
+ - languages: common, elvish, sylvan  
+ - equipment (gold-buy): 50 gp
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15 (+2) = 17 
+ - CON = 14
+ - INT = 15 (+1) = 16
+ - WIS = 10 
+ - CHA = 08
+ASI's/Feats: 
+ - lvl-00: magic initiate (cleric): guidance, resistance, shield of faith (re-flavor: arcane shield) 
+ - lvl-07: crossbow expert: +1 DEX (DEX=18)  
+ - lvl-09: defensive duelist: +1 DEX (DEX=19) 
+ - lvl-14: ASI: +1 DEX (DEX=20), +1 INT (INT=17)
+ - lvl-16: war caster: +1 INT (INT=18) 
+ - lvl-20: +2 INT (INT=20) // epic boon 
+Progression Summary: 
+ - lvl-01: blood.hunter-01 --> DEX/INT save/martial weapon/alchemist's supplies proficiency, hunter's bane, blood maledict (1 curse, x1/SR)
+ - lvl-02: blood.hunter-01, rogue-01 --> expertise (survival, perception), sneak attack (1d6), thieves' cant, thieves' tools proficiency, weapon mastery (2) 
+ - lvl-03: blood.hunter-01, rogue-02 --> cunning action, detect magic (high elf)   
+ - lvl-04: blood.hunter-02, rogue-02 --> crimson rite (1d4), fighting style::archery 
+ - lvl-05: blood.hunter-03 (profane.soul:hexblade), rogue-02 --> pact magic (true-strike, blade ward, PfEG), misty step (high elf), rite focus (hexblade)
+ - lvl-06: blood.hunter-03 (profane.soul:hexblade), rogue-03 (magic.stealer) --> drain magic, empowered sneak attack, sneak attack (2d6), steady aim 
+ - lvl-07: blood.hunter-04 (profane.soul:hexblade), rogue-03 (magic.stealer) --> crossbow expert: +1 DEX (DEX=18) 
+ - lvl-08: blood.hunter-05 (profane.soul:hexblade), rogue-03 (magic.stealer) --> extra attack, crimson rite (1d6) 
+ - lvl-09: blood.hunter-05 (profane.soul:hexblade), rogue-04 (magic.stealer) --> defensive duelist: +1 DEX (DEX=19) 
+ - lvl-10: blood.hunter-06 (profane.soul:hexblade), rogue-04 (magic.stealer) --> brand of castigation, blood maledict (2 curses, x2/SR), x2 pact magic slots 
+ - lvl-11: blood.hunter-06 (profane.soul:hexblade), rogue-05 (magic.stealer) --> cunning strike, uncanny dodge, sneak attack (3d6) 
+ - lvl-12: blood.hunter-06 (profane.soul:hexblade), rogue-06 (magic.stealer) --> expertise (arcana, history) 
+ - lvl-13: blood.hunter-06 (profane.soul:hexblade), rogue-07 (magic.stealer) --> evasion, reliable talent, sneak attack (4d6) 
+ - lvl-14: blood.hunter-06 (profane.soul:hexblade), rogue-08 (magic.stealer) --> ASI: +1 DEX (DEX=20), +1 INT (INT=17) 
+ - lvl-15: blood.hunter-07 (profane.soul:hexblade), rogue-08 (magic.stealer) --> lvl-02 pact slots, +1 crimson rite, mystic frenzy, revealed arcana (shining smite) 
+ - lvl-16: blood.hunter-08 (profane.soul:hexblade), rogue-08 (magic.stealer) --> war caster: +1 INT (INT=18) 
+ - lvl-17: blood.hunter-08 (profane.soul:hexblade), rogue-09 (magic.stealer) --> magical sabotage, sneak attack (5d6) 
+ - lvl-18: blood.hunter-09 (profane.soul:hexblade), rogue-09 (magic.stealer) --> grim psychometry 
+ - lvl-19: blood.hunter-10 (profane.soul:hexblade), rogue-09 (magic.stealer) --> dark augmentation (+INT to STR/DEX/CON saves), blood maledict (3 curses, x2/SR) 
+ - lvl-20: blood.hunter-10 (profane.soul:hexblade), rogue-10 (magic.stealer) --> ASI: +2 INT (INT=20) // epic boon (combat prowess, spell recall, dimensional travel) 
+Spellcasting Summary: 
+ - NOTE: all slots are pact magic slots (recover on SR); preparations and max-lvl incl. MI/high-elf spells
+ - lvl-01: slots = 0; prepared: 1; max level: 1
+ - lvl-02: slots = 0; prepared: 1; max level: 1
+ - lvl-03: slots = 0; prepared: 1; max level: 1
+ - lvl-04: slots = 0; prepared: 1; max level: 1
+ - lvl-05: slots = 1; prepared: 3; max level: 2
+ - lvl-06: slots = 1; prepared: 3; max level: 2
+ - lvl-07: slots = 1; prepared: 3; max level: 2
+ - lvl-08: slots = 1; prepared: 4; max level: 2
+ - lvl-09: slots = 1; prepared: 4; max level: 2
+ - lvl-10: slots = 2; prepared: 4; max level: 2
+ - lvl-11: slots = 2; prepared: 4; max level: 2
+ - lvl-12: slots = 2; prepared: 4; max level: 2
+ - lvl-13: slots = 2; prepared: 4; max level: 2
+ - lvl-14: slots = 2; prepared: 4; max level: 2
+ - lvl-15: slots = 0-2; prepared: 5; max level: 2
+ - lvl-16: slots = 0-2; prepared: 5; max level: 2
+ - lvl-17: slots = 0-2; prepared: 5; max level: 2
+ - lvl-18: slots = 0-2; prepared: 6; max level: 2
+ - lvl-19: slots = 0-2; prepared: 6; max level: 2
+ - lvl-20: slots = 0-2; prepared: 6; max level: 2
+
+MECHANICAL CONCEPT NOTES:
+ - magic stealer rouge drain magic and empowered sneak attack features can be used on spells you cast on yourself (ex., shield of faith, detect magic)
+ - this provides a means for a class/subclass that is starved for spell slots (e.g., profane soul blood hunter) to gain deal more damage and cast more spells 
+ - even with just 1 pact magic slot, with drain magic we can cast a concentration spell in each of 4 combats (recharge 1 on SR and x2 w/drain magic) 
+ - so we take magic initiate cleric at character creation to get access to shield of faith --> this provides a target for empowered sneak attack in combat
+   and a target for drain magic once combat is over; using shield of faith offsets the defensive loss from dual wielding while empowered sneak attack 
+   provides us with additional damage scaling
+ - going high elf also gives us detect magic which we can cast for free x1/LR or as a ritual and provides a self-generated target for drain magic
+ - blood.hunter martial/class features (fighting style, crimson rite, extra attack, brand of castigation, rite focus) do more for damage than base rogue sneak attack scaling 
+ - blood.hunter d10 hit dice + shield of faith and defensive duelist makes operating as a melee rogue more tenable even with self damage from crimson rite/blood curse usage 
+ - crossbow expert is the cornerstone feat: 
+   (i) allows us to go into melee and dual wield hand-crossbow + dagger; wielding dagger in off-hand enables defensive duelist for big boost to AC in melee
+   (ii) hand-crossbow benefits from archery fighting style (offsetting delayed ASI's), while crossbow expert essentially reproduces two weapon fighting (+DEX to BA attacks)
+ - using a dagger (nick mastery) in our off-hand keeps our bonus action free for casting spells, activating crimson rite, blood curses, or cunning actions
+ - starting @ lvl-07, we develop multiple attack patterns (see summary): ones that leverage nick to keep our BA free, and ones that use BA weapon attacks for more damage 
+ - in addition to spell slots, blood hunter also gets us blood curse of marked, which can be amplified to auto-generate advantage for sneak attack; at later levels 
+   profane soul also gets us shining smite (via revealed arcana) which we can use to boost damage and generate advantage for sneak attack; it also can work w/drain magic 
+   and synergizes w/lvl-09 magic stealer feature (magical sabotage) which imposes disadvantage on the save against shining smite (maximizing efficiency of scarce spells) 
+ - blood curse of the marked also works with hexblade rite focus, giving us additional rite damage while facilitating sneak attacks 
+ - in tier-04, once we get good enough cantrip scaling and our INT is high enough, we can use profane soul mystic frenzy ability to do: true-strike + BA:attack to 
+   deal more damage than even our attack combos that use extra-attack (assuming we don't need our BA, again see below). 
+ - in general, we start building DEX and then shift to INT in late game to maximize spell damage/DC; going DEX first means we can use cunning strikes effectively for 
+   control as needed once we get that ability (lvl-11). IMO this is better than going for an INT-first true-strike build which would handicap cunning strike until 
+   very late in our career. 
+ - overall, we provide out-of-combat utility through our excellent skills/ability checks, varied skill distribution and artisan's/thieves tools, and class/subclass 
+   features (e.g., hunter's bane, grim psychometry in late game). In combat we are a single-target DPR monster. The main downside of this build will be our weak mental 
+   saves (WIS, CHA). You could take mage slayer over defensive duelist if you really wanted, but I think you just lean in to it and make it a part of the character 
+   identity (failure is fun). 
+
+ MECHANICAL BREAKPOINTS SUMMARY: 
+ * (1) Levels 01-01: Main hand attack with hand crossbow + BA offhand attack with dagger 
+ * (2) Levels 02-06: Main hand attack with hand crossbow (vex) then sneak attack w/offhand thrown dagger (nick); use BA for spells/abilities
+ * (3) Levels 07-07: Once we get crossbow expert, move into melee. Now we have two attack patterns: 
+                     (a) If we want to cast BA spell/ability --> use same attack pattern as (2).
+                     (b) If we don't have alternate use of BA --> main hand attack w/dagger and BA attack w/hand crossbow (adding DEX mod)
+ * (4) Levels 08-17: Once we get extra attack, always open w/hand-crossbow to proc vex. Two new attack patterns: 
+                     (a) If we want to cast BA spell/ability --> attack twice w/the hand crossbow + offhand nick attack w/the dagger, keeping the BA free 
+                     (b) If we don't have alternate use of BA --> attack1::hand-crossbow + attack2::dagger + BA::hand-crossbow_{xbow-expert}, where 
+                         we add our DEX mod to every attack 
+ * (5) Levels 17-20: Once the extra damage from using true-strike is greater than the damage lost from making a dagger attack, we leverage mystic frenzy to 
+                     do: true-strike + BA:hand-crossbow. Since the BA attack granted by mystic frenzy is a standard weapon attack, we still add our ability 
+                     modifier to damage. So now we have the following two attack patterns: 
+                     (a) If we want to cast BA spell/ability --> use same attack pattern as (4a) 
+                     (b) If we don't have alternate use of BA --> true-strike::hand-crossbow + BA::hand-crossbow 
+
+BACKSTORY AND THEMATIC OVERVIEW: 
+
+Wherever there is a city of consequence, there is an elven library. This is simply a fact of the world, as unremarkable as dwarven forges or halfling inns. The elves did not invent the written word, but they perfected its keeping — and over millennia, their archival traditions became the standard by which all serious collections are measured. From the grand athenaeum of a human capital to the modest reading room of a provincial trade town, the organizational principles are elven: the indexing systems, the preservation rites, the classification hierarchies, even the architecture of the stacks. Other races staff these institutions too — humans, gnomes, the occasional dwarf with a bookish streak — but the senior positions, the old knowledge, and the founding charters belong to the elves, and the cultural gravity of that heritage shapes everything. It is an influence so deeply woven into civic life that most people never think to question it, the way one does not question who built the roads.
+
+In every such library there is a **Quillkeepers' Circle** — a modest clerical guild responsible for the unglamorous work that keeps the institution running: copying damaged texts, cataloguing new acquisitions, maintaining indices, shelving returns, managing correspondence between branches. Quillkeepers are a familiar sight across the civilized world, recognizable by their uniform grey robes and their signature tool: an articulated glove fitted with pen nibs, minor enchantments for page-turning and text-scanning, and slender finger-slots for holding different quills. Scholars barely notice them. Patrons look through them. They are, by design, the most forgettable people in the building.
+
+The **Sisters of the Quill** hide among them. Not every Quillkeeper is a Sister — in fact almost all are exactly what they appear to be, dutiful archivists doing honest work — but scattered through the Circles of libraries across nations and continents are women who are something else entirely. They are orphan girls, selected young for the raw arcane potential in their blood, and subjected to the Hunter's Bane — an ancient and agonizing alchemical ritual that severs the subject's connection to the Weave and transmutes that inherent magical potential into enhanced physical prowess and augmented arcane senses. Their Quills are arcane-mechanical weapons disguised as clerical tools: fitted to the hand like a second skin, their eldritch engines fed not by conventional magic but by the wearer's own blood. Fine channels woven through the glove's interior press against the skin, drawing just enough to keep the mechanism primed — a constant, low ache that every Sister learns to ignore the way one ignores a heartbeat. In its mundane mode, this trickle of vitality powers the small conveniences any Quillkeeper enjoys: pages flipped at a gesture, search terms highlighted across an open codex, pen nibs held steady for transcription. But when the pen nibs are swapped for needle-thin bolts, the engine drinks deeper. The glove flushes warm, the channels bite, and the same life force that riffled harmlessly through parchment is concentrated into a killing stroke that drives steel through leather, chain, and bone. Every bolt a Sister fires costs her something. 
+
+The Sisters are the killing edge of the **Aeloria Vaelithar** — the *Keepers of the Unwritten* — an ancient and morally ambiguous elven covenant that has warded the Material Plane against extraplanar threats since before human memory, and has never hesitated to lie, murder, or topple governments to do it. Their name refers to the histories they ensure never get written: the incursions they silenced, the rulers they removed, the planes they sealed shut — all erased, all kept only in the vaults beneath their libraries, in books that no one outside the order will ever read. The libraries are not merely a cover — they are the infrastructure. A network of reading rooms and archives spanning every kingdom gives the Vaelithar eyes and ears in every court, every university, every city of power, staffed by people so mundane that no one thinks twice about their presence.
+
+Every Sister is bonded to her Quill from the moment she is old enough to wear it. The bonding is part of the Bane — the weapon becomes a vessel for the eldritch residue that the transformation couldn't fully burn away, and the girl's magic flows into the mechanism through her blood the way water finds a crack. The Quill learns her. It learns the rhythm of her pulse, the composition of her blood, the exact threshold of what she can give before she falters. In return, it gives her power — but it is always taking, always feeding, a symbiosis that never quite stops feeling like a wound. The Sisters speak of their Quills the way warriors speak of their swords: *this is mine, there are many like it, but this one is mine.* It is devotion, dependency, and damage all braided together — less a partnership than a scar the girl and her weapon share. She sleeps with the glove on. She feels its weight when it is absent like a phantom limb. Whether the mechanism hums in response to her touch because of engineering or because of something older is a question the Sisters do not ask.
+
+Our character doesn't know that she descends from one of the most powerful elven bloodlines in history, a lineage tracing back to Corellon himself — only that the Bane took to her like fire to dry kindling. But the Bane couldn't take everything. In most Sisters, the transformation is total: the connection to the Weave is fully severed, the magic reforged into the body, and what remains flows only through the Quill. In her, something survived — a thread of raw potential so deep that even the Bane couldn't cauterize it. She began to notice it quietly, privately: the way she could feel a spell on someone's skin like a change in temperature, the way she could pull at an enchantment and watch it unravel into energy she could use. It wasn't part of her training. No other Sister could do it. She told no one — because a girl raised in the Sisterhood learns early that being different is dangerous, and being useful in the wrong way is worse. It is a secret she carries alongside all the others, one more thing to hide, one more question she cannot safely ask. Now, cut loose and alone, that question is one more thread to pull. Something has gone wrong. Her handler is dead or vanished, her network has gone dark, and she has washed up alone in the world for the first time, stripped of purpose and orders, carrying a body built for violence and a mind trained in secrets but utterly unprepared for the simple, terrifying business of living a free life.
+
+KEY THEMATIC IDEAS AND DM HOOKS 
+
+- **The Aeloria Vaelithar ("Keepers of the Unwritten")**: An ancient, Freemason-like elven secret society whose power is built on the backbone of the elven library network — a sprawling, continent-spanning infrastructure of archives, reading rooms, and athenaeia embedded in virtually every city of consequence. The libraries are real, functional, and respected civic institutions; the Vaelithar operate in the spaces between, using this unparalleled access to information and proximity to power as the foundation for intelligence-gathering, political manipulation, assassination, and extraplanar defense. Publicly dismissed as myth or conspiracy theory. Their name reflects their function: they are the custodians of the history that never happened, the crises no one remembers, the secrets locked in vaults beneath the stacks.
+
+- **Elven library culture as pervasive institution**: Elves didn't invent libraries, but their archival traditions became the gold standard centuries ago, and now the organizational DNA of virtually every serious collection in the world is elven — the indexing systems, preservation rites, classification hierarchies, even the architecture. Other races work in these institutions, but elves dominate the senior ranks and the founding traditions. This cultural ubiquity is what makes the Vaelithar possible: their agents are everywhere because their libraries are everywhere, and no one questions the presence of quiet elven archivists in any city, court, or university. A DM can place this infrastructure in any setting and use it as a source of information, intrigue, or threat — every library the party enters is potentially a node in the network.
+
+- **The Quillkeepers' Circles**: The mundane cover. A widespread, entirely legitimate guild of library clerks, copiers, indexers, and archivists present in every major library. Grey-robed, quiet, overlooked. Most Quillkeepers are ordinary people doing ordinary work — which is precisely what makes the Circles such effective camouflage. A DM can place Quillkeepers in any library the party visits, and the players will never know which ones are just scribes and which ones are Sisters — and neither will most of the Quillkeepers themselves.
+
+- **The Sisterhood of the Quill**: A disturbing subsect hidden within the Quillkeepers. Orphan girls selected for magical potential, subjected to the Hunter's Bane ritual, and raised as hunter-assassins. Evokes child soldier programs, Black Widow's Red Room, and the Handmaids — themes of stolen agency, engineered identity, and bodies shaped by others' designs.
+
+- **The Quill (Hexblade bond)**: Not a pen but a weapon disguised as one — an arcane-mechanical glove fitted to the hand, its eldritch engine powered by the wearer's own blood. Fine channels woven through the interior press against the skin, drawing vitality to fuel both mundane functions (page-flipping, text-scanning, transcription) and lethal ones (firing needle-bolts with killing force). The more violence a Sister commits, the more the Quill takes from her — every bolt costs a small piece of her life force. Each Sister is ritually bonded to her Quill in childhood, and the device learns her blood, her pulse, her limits. The bond mirrors the Hexblade pact: power flowing through an object that gives as much as it takes, that is at once an extension of the self and something disturbingly parasitic. She treats it with a tenderness she has never learned to extend to people. The Quills are a signature feature of the Sisterhood, and a DM could use them as a recognition signal — if the party ever encounters another woman wearing an unusually sophisticated archivist's glove, it means something. The blood-cost also provides narrative tension: a Sister who fights too much, too often, pays for it physically.
+
+- **The Unburnt Thread (Magic Stealer origin)**: The Bane is supposed to sever a Sister's connection to the Weave entirely. In her case, it didn't. A residual capacity to touch, absorb, and recycle magical energy survived the transformation — but the Vaelithar don't know about it. She discovered it on her own, gradually, and kept it hidden out of self-preservation instinct. No other Sister she has met can do what she does, and she has no explanation for why she can. This is a secret she holds even from her own order — and as the ability grows stronger over the course of the campaign, it becomes harder to conceal and more urgent to understand. The truth, which she does not yet suspect, is that her bloodline was simply too potent for the Bane to fully extinguish.
+
+- **Hidden lineage**: She unknowingly carries one of the most potent elven bloodlines in existence (direct descent from Corellon). This is why the Bane was so effective on her body — and why it failed to fully extinguish her magic. Neither she nor the Vaelithar understand the connection. If the truth surfaces, it could rewrite her relationship with the order entirely: did they recruit her by coincidence, or did someone arrange for a daughter of that bloodline to end up in an orphanage in the first place?
+
+- **Cut loose**: At campaign start, her chain of command has collapsed — handler dead, network silent, possibly memories tampered with. She's adrift and, for the first time, making her own choices. The campaign is partly a mystery (what happened?) and partly an identity crisis (who is she without orders?).
+
+- **Intelligence over charm**: CHA 8 means she can't smooth-talk or deceive; she hides her nature through cleverness, misdirection, and careful information control — playing dumb, changing the subject, knowing what not to say. A spy who survives on INT rather than charisma.
+
+- **Sheltered naivety**: WIS 10 with low saves means she's perceptive and sharp-eyed (trained hunter) but emotionally vulnerable — easily frightened, manipulated, or charmed. Book-smart but life-ignorant; awkward in social situations not because she's shy but because she was raised in a cloister of assassin-librarians and has no frame of reference for normal life. Perhaps the Vaelithar purposefully keeps the Sister's sheltered and traumatized in order to make them more easily controlled. 
+
+- **The quiet one**: Her cover identity as a Quillkeeper should feel real — she genuinely loves knowledge, languages, and the work of cataloguing and preserving texts. The violence underneath is something she compartmentalizes, not something she revels in.
+
+- **Pop culture touchstones**: Black Widow (Red Room survivor, engineered killer finding her own identity), The Handmaid's Tale (systemic control of women's bodies/agency), John Wick (hidden world of assassins with codes and consequences), Alita: Battle Angel (amnesiac weapon discovering her own past), The Witcher (mutated hunters, tragic transformation, outsider status), Assassin's Creed (ancient order, hidden blades, Templar-style conspiracy), Full Metal Jacket (the ritualized, psychologically coercive bond between warrior and weapon). 
+ 
+ 
+
+SYNERGISTIC MAGIC ITEMS (* indicates attunement required):
+ - [just a partial/potential list here]
+ 
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+#######
+Level-01: Blood.Hunter-01
+ - feat: magic initiate (cleric)  
+   * learn two cleric cantrips (guidance, resistance) 
+   * learn one lvl-01 cleric spell, cast for free x1/LR (shield of faith)  
+ - saving throw proficiencies: DEX, INT    
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * blood.hunter (3): acrobatics, arcana, history 
+   * scribe (2): investigation, perception
+   * keen senses (1): survival      
+   * tools (2): alchemists' supplies (blood.hunter), calligrapher's supplies (scribe)   
+   * languages (3): common, elvish, sylvan    
+ - weapon/armor proficiencies:  
+   * weapons: simple + martial weapons 
+   * armor: light + medium armor, shields    
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (scribe) + 150gp (blood hunter)
+   * weapons: hand-crossbow (75gp), dagger (2gp), case of crossbow bolts x1 (1gp)
+   * armor: studded leather (45gp) 
+   * tools: thieves' tools (25gp)
+   * foci: ruby of the war mage (50gp)
+   * gear: traveler's clothes (2gp) 
+   * trinkets: an alabaster mask (no. 63 on trinket table)  
+   * spare coin: 0 gp 
+ - combat equipment:
+   * main-hand: hand crossbow = 1d6 piercing (vex), ammunition (range 30/120; bolt), light, loading
+   * off-hand: dagger = 1d4 piercing (nick); finesse, light, thrown (range 20/60)
+   * armor: studded leather 
+   * AC: 12 + 3(DEX) = 15
+ - hunter's bane 
+   * advantage on survival checks to track fey, fiends, or undead, as well as on INT checks to recall information about them
+ - blood maledict (x1 curse, x1/SR) 
+   * blood curse of the marked: BA to mark creature you can see w/in 30ft; until the end of your turn when you hit it with a 
+                                weapon that has an active crimson rite, roll 1 additional hemocraft die when determining rite dmg;  
+                                Amplified: the next attack roll you make before the end of your turn has advantage 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): blade ward 
+   * cleric (2): guidance, resistance  
+ - spell slots: 0 
+ - spells prepared: magic-initiate (1)
+   * lvl-1 (magic initiate): shield of faith (`arcane shield', free x1/LR)  
+ 
+NOTE: Starting as Blood Hunter rather than Rogue is a deliberate choice. Both classes share the same saving throw proficiencies (DEX, INT), so there's no difference there. The advantage comes from tool proficiencies: since multiclassing into Rogue at lvl-02 still grants one skill proficiency (bringing us to 4 class skills total — the same as if we'd started Rogue), starting Blood Hunter nets us Alchemist's Supplies proficiency for free.
+
+Skills. Acrobatics is our physical proficiency (scales with DEX). Arcana and History flesh out our bookish backstory — Arcana plus Calligrapher's Supplies enables spell scroll crafting, and History will synergize with Grim Psychometry in when we get it in tier-04. Investigation and Perception are both thematic and come from our background. Survival from Keen Senses (elf lineage) is a key pickup, since it pairs with the advantage granted by Hunter's Bane.
+
+Class Features. At this level we get Hunter's Bane (advantage on Survival/INT checks related to fey, fiends, or undead), martial weapon proficiency, and one blood curse. I take Blood Curse of the Marked — its base effect won't matter until lvl-03 (when we get Crimson Rite), but for now we can amplify it to grant ourselves advantage on one attack.
+
+Equipment. Our starting gold (50gp Scribe + 150gp Blood Hunter) funds what is essentially our core kit for the entire career — same weapons, armor, and spellcasting setup from lvl-01 to lvl-20:
+ - Hand crossbow + bolts — our primary weapon.
+ - Dagger — offhand for two-weapon fighting.
+ - Studded leather — AC 15 (AC 17 with Shield of Faith).
+ - Thieves' tools — we gain proficiency next level, and these are harder to find in-world than other artisan's tools.
+ - Ruby of the War Mage — attached to the hand crossbow (our "glove weapon"), letting us perform somatic and material components with our main hand. Not strictly essential (we could draw/stow each turn, and we'll eventually get War Caster), but it eliminates component management from the start, makes physical sense for a glove weapon, and avoids relying on finding one later.
+
+Shopping List. Three priorities for when we have gold: (1) More daggers (at least 5 at 2gp each) so we can reliably use our two-weapon fighting pattern at range — if someone can lend us gold, even better. (2) Calligrapher's supplies (10gp) for scribing spell scrolls in downtime; the build is already designed around scarce spell slots, and scrolls further relax those constraints. Not urgent since we can't afford scroll crafting costs yet anyway. (3) Alchemist's supplies, which let us craft spy-useful items (acid, alchemist's fire) and identify magical substances.
+
+Origin Feat: Magic Initiate (Cleric). The centerpiece here is Shield of Faith. We want a concentration spell that can last an entire combat, which we can later dispel via the Magic-Stealer Rogue's Drain Magic feature to recover spell slots. Shield of Faith fits perfectly — it's long-duration, and the +2 AC is genuinely needed while we're dual wielding in melee. Right now we can only cast it once per LR with no spell slots to recast, but that changes at lvl-05 with our Blood Hunter subclass. Thematically, I'd re-flavor it as "Arcane Shield" — something emanating from the Quill rather than a divine source. For cantrips, Guidance and Resistance both fit the "enhanced arcane senses" flavor of Hunter's Bane. We also get wizard cantrip from high elf and we take blade ward. Guidance is excellent out-of-combat utility (especially with our strong skill bonuses), and Resistance/Blade-Ward give us a decent defensive concentration options when Shield of Faith is spent. 
+
+Combat Tactics. To maximize DPR, we Attack with the hand crossbow (main hand) and throw a dagger as a bonus action (offhand, two-weapon fighting). Ideally we stay at range to avoid disadvantage on crossbow attacks, but with only one dagger at creation we may need to close to melee. When we want to cast Shield of Faith or use Blood Curse of the Marked, the BA goes there instead of the offhand attack. Peak damage is 1d6+3+1d4 = 9 per round, though in practice it'll be lower given hit chance, limited daggers and competing BA uses. We likely land in C-class for tier-01 by Treantmonk's DPR categories. Fine for lvl-01. 
+
+
+ 
+
+#######
+Level-02: Blood.Hunter-01, Rogue-01
+  - skill/tool proficiencies (* indicates expertise): 
+   * blood.hunter (3): acrobatics, arcana, history 
+   * rogue (1): stealth
+   * scribe (2): investigation, perception*
+   * keen senses (1): survival*      
+   * tools (2): alchemists' supplies (blood.hunter), calligrapher's supplies (scribe), thieves' tools (rogue)    
+   * languages (3): common, elvish, sylvan, thieves' cant     
+ - weapon masteries (2): hand-crossbows (vex), daggers (nick) 
+ - sneak attack (1d6) 
+
+NOTE: Lvl-02 and we multiclass into Rogue-01. We pick up Stealth proficiency, solidifying our identity as a spy/operative, along with Thieves' Tools proficiency and Thieves' Cant — both of which reinforce the shadowy secret-society flavor. Thieves' Cant works especially well in the context of the Quillkeepers and Sisters of the Quill.
+
+Expertise. We get expertise in two skills and I take Perception and Survival. The reasoning: our WIS will always be low, so expertise is needed if we want to actually depend on WIS-based skills. Both are central to our identity — especially Survival, which pairs with Hunter's Bane. At +4 in each, these are more immediately useful than boosting already-decent INT skills. We'll get another round of expertise at Rogue-06, and at that point pushing specialized skills like Arcana or Investigation to very high modifiers will be more impactful.
+
+Weapon Mastery + Sneak Attack. This is the big pickup. If Blood Hunter were updated for the 2024 rules it would likely get weapon mastery natively, but since we're working from the 2014 version, Rogue is how we access it. We take Hand Crossbow (Vex) and Dagger (Nick), and together they solve our Sneak Attack delivery problem. The pattern: main-hand crossbow attack applies Vex, granting advantage on our offhand dagger attack. If the dagger hits, Sneak Attack procs. And because Nick lets us make the offhand attack as part of the Attack action (no BA required), our bonus action stays free every turn — though we have limited uses for it at this stage.
+
+DPR. With sneak attack and weapon mastery online, our DPR potential is now 2d6+3+1d4 = 12.5 per round. And we're generating advantage via vex. Solidly B-class for tier-01 by Treantmonk's categories. Excellent.
+
+
+
+
+#######
+Level-03: Blood.Hunter-01, Rogue-02
+ - cunning action = can use BA to dash, disengage, or hide 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): blade ward 
+   * cleric (2): guidance, resistance  
+ - spell slots: 0 
+ - spells prepared: magic-initiate (1), high elf (1)
+   * lvl-1 (magic initiate): shield of faith (`arcane shield', free x1/LR)  
+   * lvl-1 (high elf): detect magic (R, free x1/LR)
+
+NOTE: Lvl-03 and we go Rogue-02. This might seem surprising — we'd love to get Crimson Rite to make better use of Blood Curse of the Marked — but the priority right now is making efficient use of the bonus action that Nick mastery freed up last level. Cunning Action (dash, disengage, or hide as a BA) is the answer, and all three options matter for us here:
+
+- Dash lets us kite in and out of our weapons' limited ranges (30ft crossbow, 20ft dagger throw) or close gaps to get into attack range.
+- Disengage lets us back away from melee combatants to make ranged attacks without eating opportunity attacks.
+- Hide gives us another way to generate advantage for Sneak Attack when Vex or amplified Blood Curse of the Marked aren't available.
+
+Overall, the action economy gain from Rogue-02 definitely outweighs the extra damage and resource efficiency we'd get from Blood Hunter-02 at this stage.
+
+High Elf Spellcasting. At character lvl-03, we also pick up Detect Magic from our High Elf Elven Lineage trait. Completely on-brand — it plays directly into the "heightened arcane senses" and "magic sensing/absorbing" themes we're building. As a ritual spell, we can use it as often as we want given time, plus we still get one free cast per day. It's a minor addition, but combined with Magic Initiate, I think the species spellcasting helps sell the "unburnt thread" theme: our magical aptitude is visibly growing and augmenting even while we take levels in purely martial classes.
+
+Combat Tactics. Same baseline attack pattern as lvl-02 (Attack: hand crossbow with Vex, then dagger with Nick/TWF), but now we have meaningful BA options — Cunning Action, Shield of Faith, and Blood Curse of the Marked. No changes to DPR.
+
+
+
+
+#######
+Level-04: Blood.Hunter-02, Rogue-02
+ - crimson rite (1d4)
+   * BA to activate; take 1 hemocraft die necrotic dmg; lasts until short/long rest
+   * rite of the storm = extra rite damage is lightning dmg 
+ - feat: fighting-style::archery 
+   * +2 bonus to attack rolls with ranged weapons 
+
+NOTE: Lvl-04 and we go Blood Hunter-02, picking up Crimson Rite and a fighting style.
+
+Fighting Style: Archery. We take Archery (+2 to ranged attack rolls) over Two-Weapon Fighting, which might seem odd for a dual wielder. The reasoning: we'll get the equivalent of TWF's benefit through Crossbow Expert at lvl-07, and unlike Fighters, Blood Hunters can't swap their fighting style on level-up. Since we're locked in, we take the option with the best long-term payoff — and that's Archery. There's thematic logic here too. A lot of our character's identity is tied to the Quill (hand crossbow); we've already invested in making it feel special (Ruby of the War Mage) and will continue to do so (Crossbow Expert). Archery leans into that. Mechanically, the +2 to hit on our crossbow also increases Vex consistency, which in turn makes Sneak Attack proc more reliably. Since Sneak Attack will ultimately represent a larger share of our damage profile than the extra TWF damage would, Archery is the better investment. Finally, straight-classed characters are getting their first ASI/feat here at lvl-04, likely bumping their primary ability modifier. We're delaying that by multiclassing, but Archery helps us keep pace on hit chance so we don't feel relatively weak.
+
+Crimson Rite. The signature Blood Hunter feature: BA to take necrotic self-damage and infuse a held weapon with elemental energy, adding a hemocraft die (1d4) of damage on hit until the next short rest. We take Rite of the Storm (lightning) — rarely resisted damage typing, and fits our theme perfectly. The fantasy here is that the Quill drinks our blood and becomes charged with a seething electrical current channeled into our bolts. We put Crimson Rite on the hand crossbow specifically, since it benefits from the Archery +2 to hit, making it strictly optimal for damage. Crimson Rite also finally unlocks the full potential of Blood Curse of the Marked, which now adds an additional hemocraft die of lightning damage on a cursed target. That's probably only twice per day given our one use of Blood Maledict per short rest, but it's a nice bump and further underscores the Quill's special nature.
+
+Action Economy. Nick mastery keeping the BA free means we can activate Crimson Rite on turn one if needed. But since the effect lasts until the next short rest, we should activate it out of combat whenever possible to preserve the BA for Cunning Action, Shield of Faith, or blood curses during the fight. Ideally, our combat strategy and attack patterns stay exactly the same as lvl-03.
+
+Crafting and Gear. If we haven't yet, pick up more daggers (enough ammunition for thrown weapon attacks) and a set of Calligrapher's Supplies (10gp). With the supplies in hand, start crafting spell scrolls — specifically scrolls of Shield of Faith (25gp in materials and 8hrs of downtime each). At lvl-04 we probably won't have enough gold to do this often, but every bit helps. And, other than artisan's tools, we already have all the gear we'll ever need, so the opportunity cost of spending gold on this is pretty low. Plus, we'll eventually be casting Shield of Faith in every combat, so using it more frequently isn't off-brand. Scrolls also dovetail with the unburnt thread theme, slowly increasing the overall amount of spellcasting we do throughout the day. And practically, the defensive boost from Shield of Faith is something we'd really appreciate in tough combats.
+
+DPR. With Blood Curse of the Marked active, we could hit for 2d6+3+3d4 = 17.5 (avg) on a single round. Average DPR also sees meaningful gains from Archery (better hit rate, more reliable Sneak Attack) and Crimson Rite's added damage. Likely top of B-class or low A-class for tier-01 by Treantmonk's categories. Very nice.
+
+
+
+
+#######
+Level-05: Blood.Hunter-03 (Profane Soul - Hexblade), Rogue-02
+ - proficiency bonus (PB): +3 
+ - cantrip scaling 
+   * true strike: +1d6
+ - rite focus
+   * while you have an active crimson rite, can use weapon as spellcasting focus for warlock spells + specific benefit based on chosen pact
+   * hexblade = when you successfully target a creature w/a blood curse, the next time you hit while the curse is in effect, deal PB extra dmg 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): message 
+   * cleric (2): guidance, resistance  
+   * warlock (2): blade ward, true strike 
+ - spell slots: 1_{1}
+ - spells prepared: magic-initiate (1), high elf (2), warlock (2) 
+   * lvl-1 (magic initiate): shield of faith (`arcane shield', free x1/LR)  
+   * lvl-1 (high elf): detect magic (R, free x1/LR)
+   * lvl-1 (warlock): comprehend languages (R), protection from evil and good 
+   * lvl-2 (high elf): misty step (free x1/LR) 
+
+NOTE: Lvl-05 and this is a big one to kick off tier-02. We go Blood Hunter-03 and take our subclass — Order of the Profane Soul, Hexblade patron.
+
+Flavor. Thematically, this represents a deepening of the relationship we already have with the Quill. Previously it was a weapon tied to dark obsession and buried trauma; now it achieves some degree of sentience. Not quite a cursed weapon that speaks to us, but an otherworldly essence — fundamental to the horrific nature of the Sisterhood — that manifests through the Quill. It grants us power, but binds us more tightly to the dark, corrupting force at the heart of the Hunter's Bane. Perhaps this is what drives some Sisters to whisper that their Quills speak to them, or why others are driven to madness after too much service. A very fun and thematic subclass for our character.
+
+Pact Magic. We get a single warlock spell slot (recovers on short rest), two warlock cantrips, and two prepared lvl-01 warlock spells. The spell slot is the biggest impact here — we can now cast Shield of Faith up to 3 times per day (1 free from MI + 1 warlock slot + 1 more after a SR). We sorely need the extra defensive utility. For cantrips, we take True Strike (needed at later levels) and Blade Ward, picking up the latter as a warlock spell so we can swap our High Elf cantrip to Message — on-brand for both a librarian and a member of a shadow organization steeped in subterfuge. For prepared spells, we take Comprehend Languages and Protection from Evil and Good. Comprehend Languages is a ritual, so it provides utility without burning spell slots, and has a scholarly/archival vibe that fits our face identity. Protection from Evil and Good (PfEG) aligns perfectly with the Sisterhood's focus on combating extraplanar threats, feels like a natural extension of Hunter's Bane, and in fights against its target creature types will often be a stronger defensive buff than Shield of Faith. It also doesn't require high INT to be effective, can protect our weak WIS save against the frightened condition, and looking ahead, it functions perfectly with Magic-Stealer's Drain Magic.
+
+High Elf: Misty Step. At character lvl-05, our High Elf traits grant Misty Step (free once per LR). We have no 2nd-level spell slots to recast it, and it's not an ongoing effect so it won't work with Drain Magic — but a back-pocket emergency Misty Step is always welcome. And it will work with Empower Sneak Attack (when we get it). Furthermore, like everything else here, it further fleshes out the unburnt thread theme: something unique about our blood, combined with the deepening Quill pact, allows us to produce magic despite the Hunter's Bane.
+
+Rite Focus. This ability lets us use a weapon with an active Crimson Rite as a spellcasting focus and grants a patron-specific rider effect. The focus aspect is only minorly impactful since we already have the Ruby of the War Mage, but it does let us free up that attunement slot. One caveat: Rite Focus specifies it works for warlock spells, so a strict DM might rule we still need a separate focus for High Elf and Magic Initiate spells. If so, just keep the Ruby and everything works the same.
+
+The next source of value is the Hexblade rider: when we successfully target a creature with a blood curse, the next time we deal damage while the curse is in effect, we add our proficiency bonus in extra damage. This is excellent for us. Blood Curse of the Marked doesn't require the target to fail a save, so we always satisfy the trigger condition. The rider also stacks naturally with the curse itself — both amplify our next hit. With our PB increase to +3 at this level, the Rite Focus damage (3) is now on par with Blood Curse of the Marked's extra hemocraft die (1d4 = 2.5 avg). Both effects further strengthen our Quill attacks and help offset the opportunity cost of not taking more Rogue levels for Sneak Attack dice. Usage is still limited (~2x per LR assuming 1 SR), but the Hexblade Rite Focus does more than anything else to make the multiclass feel integrated and the character feel cohesive.
+
+Combat Tactics. Nothing fundamentally changes — same attack pattern (crossbow with Vex, offhand dagger with Nick). The difference is we're now casting Shield of Faith more often (up to 3 combats per day, more with spell scrolls), have PfEG as an option when appropriate, and gain Misty Step as a once-per-LR BA option.
+
+DPR. With Blood Curse of the Marked and Hexblade Rite Focus active, peak single-round damage is 2d6+6+3d4 = 22.5, a nice increase over lvl-04's nova. Unfortunately, average DPR doesn't climb much since we only get the curse/rite focus burst a couple times per day. Probably, we end up in the 15–17 DPR range, which puts us in D-class for tier-02 by Treantmonk's categories. But we just entered the tier, and most of what we gained here is defensive (more frequent Shield of Faith). So no worries, we'll catch up. 
+
+
+
+
+#######
+Level-06: Blood.Hunter-03 (Profane Soul - Hexblade), Rogue-03 (Magic Stealer) 
+ - sneak attack (2d6) 
+ - steady aim
+   * can use BA to give yourself adv on next attack if you haven't moved on turn; doing so sets speed to 0 for rest of turn 
+ - empower sneak attack (xINT/LR) 
+   * immediately after a creature you can see w/in 30ft casts a lvl 1+ spell, take a rxn to absorb energy from the spell 
+   * next time you hit with your sneak attack, deal extra force dmg = Xd6, where X = the spell's level
+ - drain magic (x1/SR) 
+   * magic action, touch a willing creature and end one ongoing lvl-01 or lvl-02 spell on it
+   * the target immediately recovers an expended spell slot of lvl-02 or lower (target's choice) 
+ 
+NOTE: Lvl-06 and we go Rogue-03, picking up our second subclass. Two subclasses in a row, with a perfect 1:1 subclass split all the way through tiers 1 and 2 — really like the class balance and thematic cohesion we've built.
+
+Base Class Features. Sneak Attack increases to 2d6 (+3.5 base DPR). We also get Steady Aim, which lets us sacrifice movement to gain advantage on our next attack as a BA. We probably won't use this much — we already generate advantage through Vex/TWF, and amplified Blood Curse of the Marked does the same without costing movement. But more tools in the toolkit is always nice, and it makes consistent Sneak Attack procs even more reliable.
+
+Subclass: Magic Stealer. We've been building toward this both mechanically and thematically. Flavor-wise, it's the full realization of the unburnt thread — our potent magical ancestry couldn't be fully suffocated by the Hunter's Bane, and what remains gives us an inherent ability to sense and absorb magic. This makes us something unprecedented among the Sisters: more effective as an agent of the Vaelithar, but also more threatening to the magic users in the order's upper echelons. The subclass also meshes naturally with our Blood Hunter identity as a tracker and predator attuned to extraplanar threats — Magic Stealer is the same archetype, but for magic users. We won't ever have a super deep anti-magic toolkit mechanically (we'll get a few things), but the thematic consistency makes the multiclass feel very cohesive.
+
+Empower Sneak Attack (x INT/LR). When a creature we can see within 30ft casts a lvl-01+ spell, we can use our reaction to empower our next Sneak Attack, adding Xd6 force damage where X equals the spell's level. The annoying thing about this feature for a straight-classed Magic Stealer is its dependency on other creatures casting spells nearby. Our multiclass solves this: nothing in the wording precludes the triggering creature from being ourselves (we can see ourselves, and we're within 30ft of ourselves). Since at this level we're probably casting at least one spell per combat (see below), we have built-in opportunities to use Empower Sneak Attack up to our full INT uses (currently 3) each day. It essentially functions as extra Sneak Attack damage. That said, higher-level spells grant more bonus damage, so our lvl-01 spells are really just the baseline for guaranteed procs. We should definitely use Empower when we cast Misty Step (lvl-02), and we should stay opportunistic about absorbing higher-level spells from enemies or allies — a lvl-06 straight-classed caster has lvl-03 spells, so there will be opportunities. This preserves the intended "stealing magic from others" fantasy; we just aren't dependent on it.
+
+Drain Magic (x1/SR). As a magic action, we touch a willing creature under the effect of a lvl-01 or lvl-02 spell, end the spell, and let the creature recover an expended spell slot of lvl-02 or lower. As with Empower Sneak Attack, nothing prevents us from targeting ourselves. This makes us a significantly more potent spellcaster than a typical martial-caster subclass. Specifically: our single pact magic slot effectively yields 4 lvl-01 casts per day — recover once on SR (pact magic), then recover twice more via Drain Magic (assuming 1 SR). Combined with our free cast from Magic Initiate, that's up to 5 casts of Shield of Faith per day, which should be enough to cover every round of every combat even if we lose concentration. A huge defensive buff.
+
+The key insight for Drain Magic is that we use it on ongoing spells that have outlived their usefulness. Shield of Faith is the perfect target: cast it in combat, and with a 10-minute duration it's usually still active when the fight ends. The +2 AC does nothing out of combat, so we absorb it and recover the slot. PfEG functions similarly. But Shield of Faith/PfEG aren't our only options. Since Drain Magic doesn't require the spell to have been cast using a slot, rituals like Detect Magic and Comprehend Languages create valid spell effects we can absorb. This matters if we lose concentration mid-combat and need a target for Drain Magic afterward. We can even use our free daily cast of Detect Magic (from High Elf) as a quick action-only target if we don't have 10 minutes for a ritual. Finally, while the build is designed around self-targeting, Drain Magic also works as a support ability. We can touch willing allies to recover their spell slots — potentially a lvl-02 slot, which is higher than anything we currently have. If another caster in the party has more impactful spells to recast, this flexibility is worth keeping in mind.
+
+DM Check-In. Both Empower Sneak Attack and Drain Magic self-targeting are central to this build. I'm very confident this works under a strict RAW reading, but check with your DM to confirm. If self-targeting doesn't fly, the character will feel much clunkier.
+
+DPR. With 3 (INT) uses of Empower Sneak Attack per day — procced off our own spells — we get an extra 4d6 Sneak Attack damage daily (2d6 from Misty Step, 1d6 each from two lvl-01 casts), averaging +0.875 to sustained DPR (over 16 combat rounds) on top of the +3.5 from our Sneak Attack increase, so a +4.375 total gain. Max nova in a single round (Empower off Misty Step + Blood Curse of the Marked): 1d6 (crossbow) + 2d6 (sneak) + 2d6 (empower) + 3 (DEX) + 3 (hexblade) + 1d4 (dagger) + 1d4 (rite) + 1d4 (curse) = 5d6+6+3d4 = 31. Pretty good burst. Average DPR is probably in the 20–22 range, straddling D and C-class for tier-02. Not amazing sustained damage, but a significant improvement over lvl-05, and the big defensive buff from casting Shield of Faith in every combat makes the full picture much stronger.
+
+
+
+
+#######
+Level-07: Blood.Hunter-04 (Profane Soul - Hexblade), Rogue-03 (Magic Stealer) 
+ - feat: crossbow expert 
+   * ASI: +1 DEX (DEX=18) 
+   * ignore loading: ignore loading of hand crossbow, light crossbow, heavy crossbow; can load w/o free hand 
+   * firing in melee: no longer have disadv. on attacks when firing in melee with crossbows 
+   * dual wielding: when you make the extra attack of the Light property, if you're using a hand-crossbow you 
+                    can add your ability modifier to the damage (if you weren't already) 
+ - combat equipment:
+   * main-hand: hand crossbow = 1d6 piercing (vex), ammunition (range 30/120; bolt), light, loading
+   * off-hand: dagger = 1d4 piercing (nick); finesse, light, thrown (range 20/60)
+   * armor: studded leather 
+   * AC: 12 + 4(DEX) + 2(SoF) = 18
+
+NOTE: Lvl-07 and we go Blood Hunter-04 for a feat/ASI. We take Crossbow Expert — a cornerstone of the entire build.
+
+Thematic Fit. This is the natural next step in our ongoing investment in the Quill. We've already poured resources into making our hand crossbow feel special (Ruby of the War Mage, Archery fighting style, Crimson Rite), and gaining increased mastery of the weapon as our skills progress just makes sense.
+
+DEX +1. As a half feat, Crossbow Expert bumps DEX to 18 (mod +4). We've substantially delayed this first primary ability boost due to multiclassing — though I think Archery, Vex, and our accumulated damage sources have effectively compensated. The +1 improves attack rolls, damage, initiative, DEX-based skills (Stealth, Acrobatics), and AC. In studded leather we're now at AC 16, or AC 18 with Shield of Faith active (which it should be in most combats).
+
+Ignore Loading. Lets us bypass the loading property of crossbows and load without a free hand. Doesn't matter at lvl-07, but becomes essential next level when we get Extra Attack and start making multiple hand crossbow attacks per turn.
+
+Firing in Melee. No more disadvantage on crossbow attacks within 5ft. This is a quiet game-changer — moving forward, the build increasingly shifts toward a melee playstyle and this feature makes that viable. Being in melee means we can benefit from magic daggers (e.g., a +1 dagger) without needing to throw them, and we stop worrying about dagger ammunition tracking entirely. We can still attack at range when needed, but melee becomes the default. As a bonus, if the table uses flanking rules, being in melee gives us another avenue to generate advantage for sneak attack. Consistent shield of faith for decently high AC as well as the extra HP we get from blood hunter hit dice also make the melee playstyle more viable, relative to a straight-classed rogue (where it can feel precarious).
+
+Dual Wielding. The most impactful and most complex feature. It lets us add our ability modifier to offhand attacks made with a hand crossbow — which is why we took Archery over TWF at Blood Hunter-02. Crossbow Expert gives us the TWF benefit, but only when the hand crossbow is the offhand weapon. Since the hand crossbow has Vex (not Nick), the only way to make an offhand attack with it is to use our BA. This means we now have two distinct attack patterns:
+
+- Pattern (a) — damage priority: Attack with dagger first, then BA hand crossbow. We add DEX to both attacks, maximizing damage output. The tradeoff is it costs our BA and doesn't auto-generate advantage via Vex for Sneak Attack within the same turn. So we want to restrict this to situations where we have an external advantage source (flanking, ally adjacent, etc.) or where we'll use the same pattern next turn so Vex carries over. This particular downside goes away once we get Extra Attack next level.
+
+- Pattern (b) — BA priority: Same pattern we've used since lvl-02. Attack with hand crossbow (applying Vex), then offhand dagger with Nick. BA stays free for spells, Crimson Rite, blood curses, or Cunning Action.
+
+Having two attack patterns makes the character more fun to play — rather than repeating the same sequence every turn, we're thinking strategically about each combat situation to maximize output.
+DPR. Nova damage doesn't change structurally — Blood Curse of the Marked (1d4+3 = 5.5 via BA) still beats the +4 DEX damage from pattern (a), so our burst turn still uses pattern (b). The DEX increase bumps nova avg damage potential to 32. For sustained DPR, the gain from pattern (a) depends on how often we actually use it. Rough estimate: in a typical adventuring day (~16 combat rounds), we're probably using our BA for spells on ~4 rounds, blood curses on ~2 rounds, and Cunning Action or other abilities on ~6 rounds — leaving about 4 rounds for pattern (a). At +4 damage per use, that's roughly +1 average DPR across the day. So sustained DPR is probably in the 21–23 range now, which is C-class for tier-02. Still not amazing, but the big payoff comes next level with Extra Attack. Crossbow Expert here is the setup — plus it brings significant quality-of-life improvements and a more engaging combat experience.
+  
+
+
+ 
+#######
+Level-08: Blood.Hunter-05 (Profane Soul - Hexblade), Rogue-03 (Magic Stealer) 
+ - extra attack 
+   * attack twice whenever you take the attack action 
+ - crimson rite (1d6)
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): message 
+   * cleric (2): guidance, resistance  
+   * warlock (2): blade ward, true strike 
+ - spell slots: 1_{1}
+ - spells prepared: magic-initiate (1), high elf (2), warlock (3) 
+   * lvl-1 (magic initiate): shield of faith (`arcane shield', free x1/LR)  
+   * lvl-1 (high elf): detect magic (R, free x1/LR)
+   * lvl-1 (warlock): comprehend languages (R), hex, protection from evil and good 
+   * lvl-2 (high elf): misty step (free x1/LR) 
+
+NOTE: Lvl-08 and we go Blood Hunter-05. We get Extra Attack, our hemocraft die increases to 1d6, and we gain one new warlock spell preparation. The hemocraft die increase is a straightforward damage bump, amplified by Extra Attack — though it also increases our self-damage when activating Crimson Rite (ouch).
+
+Extra Attack. The big pickup. With Extra Attack, our two attack patterns evolve:
+
+- Pattern (a) — damage priority: First attack-action attack with hand crossbow (generating advantage via Vex), second attack-action attack with dagger (not using Nick). Since the dagger is a light weapon, this second attack procs a BA offhand hand-crossbow attack, which benefits from Crossbow Expert dual wielding. Result: DEX modifier on all 3 attacks. And since we both start and end our turn with crossbow attacks, we generate advantage within our turn and often carry it into the next turn against the same target.
+
+- Pattern (b) — BA priority: Both attack-action attacks with hand crossbow, then offhand dagger via Nick (part of the attack action). No DEX mod on the offhand dagger, but BA stays free for spells and abilities. Multiple crossbow attacks create multiple opportunities to proc Vex and land Sneak Attack within each turn.
+
+Both patterns now internally generate advantage for Sneak Attack, so we no longer depend on external sources as we did at lvl-07. We'll also use these same two patterns from now until lvl-17, giving us consistency in our combat identity while retaining strategic flexibility. Thematically, it's satisfying to start as a TWF rogue who's always made multiple attacks, then use multiclassing to access Extra Attack (which straight-classed rogues never get) for 3 attacks per turn — a natural extension of our martial abilities.
+
+New Spell: Hex. For our warlock spell preparation, I suggest Hex. The reasoning: it gives us an offensive concentration option to balance Shield of Faith and PfEG; it synergizes exceptionally well with our dual-wielding + Extra Attack playstyle (up to +3d6 per turn); and looking ahead, we're going back to Rogue levels where — beyond base Sneak Attack scaling — we won't see many meaningful damage increases for a while, even as we pick up a bevy of nice defensive features. Having Hex on hand for fights where damage output is the premium, or where we feel comfortable about survivability, gives us important flexibility. Shield of Faith should still be our default concentration spell, but it's important to have the offensive option too. The other spell I considered was Illusory Script — great flavor for a spy-masquerading-as-scribe, and it's a ritual. But given how few spell preparations we have, we can't afford a niche RP pick right now. We'll have chances to grab it later.
+
+DPR. Our nova turn uses pattern (b), since making multiple Crimson Rite crossbow attacks lets us get a second damage instance from Blood Curse of the Marked. The burst from the curse plus Hexblade Rite Focus (+2d6+PB = 10) far outstrips the extra DEX mod (+4) from pattern (a). Assuming Hex is active and we have a lvl-02 Empowered Sneak Attack: 1d6 (crossbow) + 1d6 (crossbow) + 2d6 (sneak) + 2d6 (empower) + 2d6 (rite) + 2d6 (curse) + 3d6 (hex) + 1d4 (dagger) + 8 (2×DEX) + 3 (hexblade) = 13d6+1d4+11 = 59. Worth noting this nova realistically takes 3 full rounds to set up (cast Hex, cast Misty Step for lvl-02 Empower, then Blood Curse + attack), which further emphasizes the value of leveraging allies' or enemies' spellcasting to proc Empower Sneak Attack opportunistically.
+
+For sustained DPR: pattern (a) baseline (no Hex) deals 6d6+1d4+12 = 35.5; pattern (b) baseline is 31.5. Assuming pattern (b) in ~3/4 of combat rounds, that's roughly 32.5. Adding Hex in ~1/5 of combats (applied on 3/4 of rounds within those combats) contributes another ~1.6, bringing sustained DPR to around 34. That's near the top of B-class for tier-02 by Treantmonk's categories — strong, and fitting for a character with an assassin/huntress identity. We're not a fully optimized DPR build, though, since we also bring meaningful utility through skill proficiencies, ritual spells, artisan's tools, and Hunter's Bane. Shouldn't expect the absolute top of the charts.
+
+Crafting Reminder. If we haven't yet, pick up Alchemist's Supplies so we can identify substances and craft items like acid and alchemist's fire. They won't be part of our standard combat kit, but for RP, exploration, and NPC interaction, these tools tend to be useful. Maximize the utility of all our crafting proficiencies!
+ 
+
+
+
+#######
+Level-09: Blood.Hunter-05 (Profane Soul - Hexblade), Rogue-04 (Magic Stealer) 
+ - proficiency bonus (PB): +4
+ - feat: defensive duelist 
+   * ASI: +1 DEX (DEX=19) 
+   * parry: if you're holding a finesse weapon and an enemy hits you w/a melee attack, can take rxn to add PB to AC, 
+            potentially causing attack to miss; gain bonus to AC against melee attacks until start of next turn 
+
+NOTE: Lvl-09 and we go Rogue-04 for an ASI/feat. We take Defensive Duelist. As a half feat, we bump DEX by +1 to 19. This doesn't increase our modifier, but we really want this feat now, and taking it here allows us to cap both DEX and INT by lvl-20.
+
+Parry. The main attraction. When we're hit with a melee attack while holding a finesse weapon, we can use our reaction to add our PB to AC against melee attacks until the start of our next turn. Our dagger (always in our offhand) satisfies the finesse weapon requirement, so we can do this whenever we are hit with a melee attack (assuming our reaction is available). Now that Crossbow Expert has shifted us toward a melee playstyle, we need extra defensive tools to survive as a front-liner. And for all the investment we've made in the Quill as our damage-dealing signature weapon, it's thematically satisfying to give the dagger a distinct defensive identity in our fighting style.
+
+The timing is ideal — we're also getting a PB increase to +4 at character lvl-09, and the bonus stacks with Shield of Faith. So against a melee attacker, our AC can reach 22 (16 studded leather + 2 Shield of Faith + 4 Defensive Duelist). That's excellent for anyone in light armor, let alone a rogue. This also opens the door to using Hex more comfortably: against primarily melee enemies, Hex + Defensive Duelist may provide enough survivability to forgo Shield of Faith. We'll still heavily prioritize Shield of Faith in most cases, but having the option is valuable.
+
+Reaction Economy. Defensive Duelist adds a third meaningful use for our reaction, giving us a nice spread of options: opportunity attack Sneak Attack (purely offensive), Empower Sneak Attack (charge-up), and Parry (defensive). More interesting tactical decisions each round.
+
+Skill Note. The PB increase also pushes Survival and Perception to +8, tying them with Stealth and Acrobatics as our best skills — fun and very fitting for the character we've built.
+
+DPR. No structural changes. We might see a marginal increase if we use Hex more often thanks to the added melee survivability, but it's fine to assume our spell choice/usage remains consistent. Sustained DPR stays around 34.
+
+
+
+
+#######
+Level-10: Blood.Hunter-06 (Profane Soul - Hexblade), Rogue-04 (Magic Stealer) 
+ - blood maledict (x2 curses, x2/SR) 
+   * blood curse of the marked: BA to mark creature you can see w/in 30ft; until the end of your turn when you hit it with a 
+                                weapon that has an active crimson rite, roll 1 additional hemocraft die when determining rite dmg;  
+                                Amplified: the next attack roll you make before the end of your turn has advantage 
+   * blood curse of the muddled mind: BA to curse a creature w/in 30ft that is concentrating on a spell or using a feature that requires 
+                                      concentration. That creature has disadvantage on the next CON save it makes to maintain concentration
+                                      before the end of your next turn. Amplified: the cursed creature has disadvantage on all concentration
+                                      checks before the end of your next turn 
+
+ - brand of castigation (x1/SR) 
+   * when you damage a creature w/a weapon w/an active crimson rite, you can brand them (no action required)
+   * you always know the direction to the branded creature (as long as it's on the same plane)
+   * each time the branded creature deals dmg to you or a creature you can see w/in 5ft of you, they take psychic
+     damage equal to your hemocraft modifier (INT)
+   * brand lasts until dismissed, or you use the feature again; can be dispelled and is treated as a spell w/level 
+     equal to half your blood hunter level
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): message 
+   * cleric (2): guidance, resistance  
+   * warlock (2): blade ward, true strike 
+ - spell slots: 2_{2}
+ - spells prepared: magic-initiate (1), high elf (2), warlock (3) 
+   * lvl-1 (magic initiate): shield of faith (`arcane shield', free x1/LR)  
+   * lvl-1 (high elf): detect magic (R, free x1/LR)
+   * lvl-1 (warlock): comprehend languages (R), hex, protection from evil and good 
+   * lvl-2 (high elf): misty step (free x1/LR) 
+
+
+NOTE: Rounding out tier-02 at lvl-10, we go Blood Hunter-06. Three major pickups: an upgrade to Blood Maledict, a second pact magic spell slot, and Brand of Castigation.
+
+Blood Maledict Upgrade. We learn a new blood curse and our uses increase to 2 per short rest. For the new curse, there are a number of solid options — Blood Curse of Binding (STR save or speed drops to 0) and Blood Curse of the Eyeless (disadvantage on attack rolls) both have appeal. But I'm going with Blood Curse of the Muddled Mind, which lets us target a concentrating creature and impose disadvantage on their next concentration save (all checks if amplified).
+
+Muddled mind is probably not the most widely applicable curse, but we like it for two reasons. First, the thematic synergy with Magic Stealer is perfect — a character who senses and absorbs magic should naturally be able to disrupt spellcasters. One of my main regrets about this build is not fitting in the Mage Slayer feat (primarily for mental save protection, but also for its concentration-disruption effect). Blood Curse of the Muddled Mind gives us that same anti-mage capability through class features instead. Second, practically speaking, we prefer the extra damage from Blood Curse of the Marked and will default to it whenever possible. A more versatile curse like Binding or Eyeless would create situational tradeoffs that complicate optimal play. Muddled Mind gives us thematic flavor and a niche anti-caster tool while preserving simplicity.
+
+Increased Curse Uses. With 2 uses per short rest (~4 per day assuming 1 SR), we can now use Blood Curse of the Marked roughly once per combat. This adds real consistency to our tactics. A typical combat now looks like: turn one, BA spell (Shield of Faith or Hex); one turn, BA blood curse; one turn, BA offhand crossbow (Crossbow Expert dual wielding); one turn, BA for Cunning Action, Crimson Rite activation, or recasting a spell. The additional Blood Curse of the Marked uses also mean a straight damage increase — two extra uses per day yield four extra Crimson Rite damage instances (+4d6 = 14) and two extra Hexblade Rite Focus procs (+8), for roughly +1.4 average DPR.
+
+New Pact Magic Slot. At Blood Hunter-06 we gain a second lvl-01 pact magic slot, both recovering on a short rest. Combined with Drain Magic, we now functionally have up to 3 lvl-01 spell slots per SR (6 per LR), plus our free Shield of Faith from Magic Initiate — potentially 7 casts of Shield of Faith per day if needed. That's likely overkill unless we're losing concentration frequently, but the extra slot provides two meaningful benefits:
+
+First, resilience against lost concentration. Previously with one slot, losing concentration mid-combat meant we needed Drain Magic just to recast — and that required an ongoing spell effect to absorb. Now with two slots, we can cast SoF/Hex, lose concentration, and simply recast it on a subsequent turn. Not always worth the BA, but valuable flexibility.
+
+Second, it frees Drain Magic for ally support. With two slots recovering on SR, we can feasibly cover Shield of Faith or Hex in every combat without ever needing Drain Magic for ourselves, letting us use it to recover spell slots for allies instead. It's limited to lvl-02 or lower, but that's still higher than our own slots and could be impactful in a variety of situations. A nice bit of support functionality for a character otherwise focused on damage and utility.
+
+Brand of Castigation (x1/SR). When we hit a creature with our hand crossbow (Crimson Rite active), we can brand them at no action cost. The brand persists until dismissed, reused, or dispelled (treated as a spell with level equal to half our Blood Hunter level). Two benefits: we always know the branded creature's direction as long as they're on the same plane (great for our tracker/hunter identity), and a thorns effect — whenever the branded creature damages us or an ally within 5ft, they take psychic damage equal to our hemocraft modifier (currently 3). Since we fight primarily in melee, we're well-positioned to proc this regularly. At minimum, the brand may discourage enemies from targeting us, reducing incoming damage and helping preserve concentration. Estimating conservatively at 2–3 procs per day, the brand adds roughly +0.5 to average DPR.
+
+DPR. The combined features add ~1.8 to sustained DPR, bringing us to around 36 — the very bottom of A-class to close out tier-02. And beyond damage, we've gained fun thematic tools: tracking via Brand of Castigation, anti-mage disruption via Blood Curse of the Muddled Mind, and additional consistency/support through our extra pact magic slot. 
+
+
+
+
+#######
+Level-11: Blood.Hunter-06 (Profane Soul - Hexblade), Rogue-05 (Magic Stealer) 
+ - cantrip scaling 
+   * true-strike: +2d6
+ - sneak attack (3d6) 
+ - uncanny dodge 
+   * use reaction to 1/2 damage from attack roll made by attacker you can see
+ - cunning strike 
+   * poison (1d6): CON save or poisoned for 1m (repeat at end of turn)
+   * trip (1d6): DEX save or prone (Large or smaller)
+   * withdraw (1d6): immediately after attack, move up to 1/2 speed w/o provoking OAs
+
+NOTE: Lvl-11 and we go Rogue-05. A few base class pickups: Sneak Attack increases to 3d6, and we get Uncanny Dodge and Cunning Strike.
+
+Uncanny Dodge. We can use our reaction to halve damage from an attack (by an attacker we can see). Another defensive tool alongside Defensive Duelist and Shield of Faith/PfEG, though it competes with Parry for our reaction. The decision framework: use Uncanny Dodge when the attack roll is high enough to hit even through Parry, when we're only likely to take one attack before our next turn (negating Parry's ongoing AC benefit), or against ranged attacks where Parry doesn't apply.
+
+Cunning Strike. We can trade Sneak Attack dice for control effects when we land a Sneak Attack. Three options at Rogue-05:
+
+- Poison (−1d6): Strong effect (poisoned for up to 1 minute, repeating save) but targets CON — the hardest save to land, especially at higher levels. Least appealing of the three.
+
+- Trip (−1d6): Situational but useful. Knocking enemies prone generates advantage for subsequent Sneak Attacks, and the speed reduction provides battlefield control. As a melee front-liner, there are situations where we'd want to keep enemies locked in combat with us rather than letting them reach squishier allies — especially if we've tagged them with Brand of Castigation. DEX is a decent save to target (surprisingly, even better at higher levels), though our save DC is only 16 until we cap DEX.
+
+- Withdraw (−1d6): The one I like most. Lets us move up to half speed without provoking opportunity attacks immediately after our attack. This is similar to Cunning Action disengage, but the key difference is action economy. Competition for our BA has gotten stiffer — between increased Blood Maledict uses, Crossbow Expert offhand attacks, and more frequent BA spellcasting (Hex, Shield of Faith), using the BA just to disengage feels like a bigger sacrifice now than it did back at lvl-03. Withdraw is the happy middle ground: repositioning while still delivering damage and keeping our BA free. It also requires no saving throw, so our un-capped DEX doesn't matter. And unlike straight-classed rogues, we have enough other damage sources (Crimson Rite, Hex, blood curses, Extra Attack) that sacrificing 1d6 for a useful control effect is often a good trade.
+
+Even though our cunning strike save DC isn't maxed yet, we'll be capping DEX shortly and making heavy use of Magic Stealer's signature cunning strike options at later levels. So getting comfortable integrating these riders into our combat playstyle now is valuable. Overall, both Uncanny Dodge and Cunning Strike add another satisfying layer of combat complexity — we now have fun, strategic options across every component of our action economy (action, BA, reaction, movement).
+
+DPR. The only damage increase is +1d6 from Sneak Attack scaling, putting sustained DPR in the 37–39 range (C-class for tier-03, but we're just starting out). Nova increases by 3.5 to 62.5.
+ 
+
+
+
+#######
+Level-12: Blood.Hunter-06 (Profane Soul - Hexblade), Rogue-06 (Magic Stealer) 
+ - skill/tool proficiencies (* indicates expertise): 
+   * blood.hunter (3): acrobatics, arcana*, history 
+   * rogue (1): stealth
+   * scribe (2): investigation*, perception*
+   * keen senses (1): survival*      
+   * tools (2): alchemists' supplies (blood.hunter), calligrapher's supplies (scribe), thieves' tools (rogue)    
+   * languages (3): common, elvish, sylvan, thieves' cant   
+  
+NOTE: Lvl-12 and we go Rogue-06 for another perfectly even multiclass split. Very cool. Simple level — the only pickup is a second round of Expertise from the rogue base class. We take Arcana and Investigation.
+
+Expertise: Arcana. This is where our character's dual identity really shines. On one hand, Arcana expertise reflects our scholarly roots — years spent as a scribe and librarian in the Vaelithar's archives, immersed in texts on magical theory and arcane history. On the other, it feels like a natural mechanical expression of the unburnt thread: our inherent magical sensitivity, honed through Hunter's Bane and the deepening Quill pact, gives us an intuitive understanding of arcane phenomena that goes beyond book learning. Practically, high Arcana also supports spell scroll crafting (paired with our Calligrapher's Supplies proficiency) and helps us identify magical effects, creatures, and phenomena in the field — exactly what a Sister of the Quill would be trained to do.
+
+Expertise: Investigation. This rounds out our operative toolkit. Investigation augments our ability to RP as a spy, tracker, and covert agent — piecing together clues, finding hidden information, and seeing through deceptions. It also has a distinctly archival dimension: Investigation is the skill for finding information in books and documents, which fits perfectly for someone whose cover identity is a scribe and whose real work involves intelligence gathering for a shadow organization. With expertise now in Survival, Perception, and Investigation, we have an exceptional trifecta for tracking, dungeon crawling, and general information gathering — whether we're following a target through the wilderness, sweeping a room for threats, or combing through a library for hidden correspondence.
+
+DPR. No mechanical combat changes this level. Sustained DPR and nova remain the same.  
+
+
+
+
+#######
+Level-13: Blood.Hunter-06 (Profane Soul - Hexblade), Rogue-07 (Magic Stealer) 
+ - proficiency bonus (PB): +5
+ - sneak attack (4d6) 
+ - evasion
+   * if subjected to an effect that forces a DEX save for half damage, you take half damage 
+     if you fail and no damage if you succeed 
+ - reliable talent 
+   * when ever you make an ability check that uses one of your skill/tool proficiencies, you 
+     can treat a roll on the d20 of 9 or lower as a 10
+ 
+NOTE: Lvl-13 and we go Rogue-07. A rich level — PB increase, Sneak Attack scaling, Evasion, and Reliable Talent. Mechanically strong across the board, and thematically this is where our character starts to feel like a true master of her craft.
+
+Proficiency Bonus +5. Beyond the standard benefits, a few things worth highlighting. Our expertise skills all jump significantly: Arcana and Investigation hit +13, Perception and Survival reach +10, and Acrobatics and Stealth sit at +9 (with History at +8). These are deep, well-developed proficiencies that reflect a character who has spent years sharpening a very specific set of tools — the keen senses of a hunter, the analytical mind of a scholar, and the situational awareness of a spy. The PB increase also boosts our Hexblade Rite Focus damage. With up to 4 procs per day (once per Blood Curse of the Marked use), that's roughly +1 to sustained DPR and nova.
+
+Sneak Attack 4d6. Straightforward +3.5 to sustained DPR and nova. The Quill strikes truer and deadlier — our prey rarely sees us coming, and when they do, it's already too late.
+
+Evasion. When subjected to a save-for-half-damage DEX save, we now take no damage on a success and half on a failure. One of the top-tier defensive features in the game, and especially impactful for us. Most effects that trigger these saves are ranged abilities — fireballs, dragon's breath, and the like. Since Defensive Duelist already makes us feel durable in melee, Evasion fills the complementary role of protecting us against ranged threats. The PB increase also pushes our DEX save to +9, making it all the more reliable. Thematically, spells are by far the most common source of save-for-half DEX effects, so Evasion feeds directly into our budding anti-mage identity — a natural extension of Magic Stealer and Blood Curse of the Muddled Mind. The Sister of the Quill doesn't just absorb magic; she slips through it like smoke.
+
+Reliable Talent. Rolls of 9 or lower count as 10 on any proficient skill or tool check. Our floor on Arcana and Investigation is now 23; on Perception and Survival, 20; and on Stealth, 19. Oh and don't forget we have the guidance spell, so we can tack on an additional +1d4 to any skill check when we need to. This is the mechanical embodiment of a professional who has refined her tradecraft to the point where she simply doesn't make amateur mistakes. The scribe who never misreads an arcane text; the tracker who never loses the trail; the operative who never overlooks a hidden detail — and who, when she doesn't want to be found, virtually never is. A perhaps under-appreciated beneficiary here is our Alchemist's Supplies proficiency, where crafting success often depends on a d20 roll — Reliable Talent makes our alchemical work consistently excellent. And looking ahead, having Reliable Talent on History checks will greatly increase the utility of Grim Psychometry when we pick it up in a few levels. Overall, Reliable Talent represents a significant boost to out-of-combat utility and makes our character more effective at exploration, infiltration, and problem-solving — the core competencies of a Sister of the Quill operating at the height of her abilities.
+
+DPR. The PB increase and Sneak Attack scaling combine for +4.5 to both sustained DPR and nova. Sustained DPR lands in the 41–43 range, nova around 66. Solidly B-class for tier-03 by Treantmonk's categories.
+  
+
+
+
+#######
+Level-14: Blood.Hunter-06 (Profane Soul - Hexblade), Rogue-08 (Magic Stealer) 
+ - ASI: +1 DEX (DEX=20), +1 INT (INT=17) 
+ - combat equipment:
+   * main-hand: hand crossbow = 1d6 piercing (vex), ammunition (range 30/120; bolt), light, loading
+   * off-hand: dagger = 1d4 piercing (nick); finesse, light, thrown (range 20/60)
+   * armor: studded leather 
+   * AC: 12 + 5(DEX) + 2(SoF) = 19
+
+ 
+NOTE: Lvl-14 and we go Rogue-08. Simple level — just an ASI, boosting DEX to 20 and INT to 17.
+
+DEX 20. Capping DEX increases our hit chance, damage, and core DEX-based skill modifiers (Acrobatics, Stealth). Since we add DEX to 2–3 attacks per round, this translates to roughly +2 to +3 for both sustained DPR and nova. Sustained DPR lands in the 43–46 range, nova at 68. Still B-class — fine for where we are. Boosting DEX also increases our base AC in light armor up to 17, giving us a 19 with shield of faith and a whopping AC-24 if we use defensive duelist parry. 
+
+INT 17 and the Endgame. The more interesting thing here is what capping DEX via half feats unlocks for our endgame stat profile. By delaying DEX 20 until now (compensated for along the way with Archery, expertise, Vex, etc.), we're able to pick up +1 INT as bonus at the same time that we cap our DEX. And with INT 17 here, we will be able to reach INT 20 by lvl-20 with one more +1 half feat and one +2 ASI. It's rare for a character to cap both primary ability scores, and ours truly feels like equal parts DEX and INT, so thematically that will be very satisfying. Mechanically, capping INT in tier-04 will deliver a significant late-game damage kick — from additional Empower Sneak Attack uses and the incorporation of True Strike — that we wouldn't otherwise get from Blood Hunter or Rogue base classes or our subclasses, none of which provide major damage boosts at very high levels. So even though this level plays almost identically to the last, we're setting up future potential.  
+
+
+
+
+#######
+Level-15: Blood.Hunter-07 (Profane Soul - Hexblade), Rogue-08 (Magic Stealer) 
+ - crimson rite (1d6)
+   * BA to activate; take 1 hemocraft die necrotic dmg; lasts until short/long rest
+   * rite of the storm = extra rite damage is lightning dmg
+   * rite of the flame = extra rite damage is fire dmg 
+ - revealed arcana (modified)
+   * you learn a distinctive spell based on patron
+   * you always have that spell prepared and can cast it with any pact magic slots you have 
+ - mystic frenzy 
+   * when you cast a cantrip, you can use your BA to make a weapon attack 
+ - spellcasting 
+ - cantrips: 
+   * high elf (1): message 
+   * cleric (2): guidance, resistance  
+   * warlock (2): blade ward, true strike 
+ - spell slots: 0-2_{2}
+ - spells prepared: magic-initiate (1), high elf (2), warlock (4) 
+   * lvl-1 (magic initiate): protection from evil and good (free x1/LR)  
+   * lvl-1 (high elf): detect magic (R, free x1/LR)
+   * lvl-1 (warlock): comprehend languages (R), hex, illusory script (R)  
+   * lvl-2 (high elf): misty step (free x1/LR) 
+   * lvl-2 (warlock): spider climb
+   * lvl-2 (revealed arcana): shining smite
+
+NOTE: Lvl-15 and we go Blood Hunter-07. An odd assortment of pickups, but several are very impactful — particularly the shift in our default concentration spell.
+
+New Crimson Rite. We learn a second rite option. I take Rite of the Flame (fire damage) for damage-type flexibility, though we would only switch from Rite of the Storm if we know ahead of time that we're facing lightning-resistant enemies. Minor pickup.
+
+Mystic Frenzy. When we cast a cantrip, we can make a BA weapon attack. We don't want to use this yet. The eventual idea is to cast True Strike with our action — making a weapon attack and adding radiant damage — and then follow up with a BA weapon attack via Mystic Frenzy. The tradeoff is sacrificing Extra Attack and using INT instead of DEX for the attack roll, but gaining True Strike's bonus damage. Right now the math doesn't support it: True Strike only adds 2d6 (7) radiant, which is less than even an offhand dagger attack (1d4+DEX = 7.5), and the lower INT modifier means worse hit chance. This calculus flips once we boost INT and get additional cantrip scaling at lvl-17. Another feature that's about unlocking future potential.
+
+Pact Magic Upgrade. Our pact magic slots increase to lvl-02, we gain a new warlock spell preparation, and we get the Revealed Arcana subclass feature, which grants a patron-specific spell — Shining Smite for Hexblade. These changes interact significantly, so let's walk through the resulting spell reorganization and then discuss why it matters.
+
+Spell Changes. Since Shining Smite is replacing Shield of Faith as our default combat concentration spell (explained below), we no longer need SoF on our spell list. Instead, we move Protection from Evil and Good over to our Magic Initiate (Cleric) slot, preserving both the free daily cast and the continuing-effect synergy with Drain Magic. PfEG remains valuable for its defensive utility against charm and frighten effects, which is especially important given our low WIS and CHA saves. This frees up PfEG's former warlock preparation slot, which we fill with Illusory Script — a flavor pick that is deeply on-brand for a spy and librarian. Magically encoded messages feel like a natural formalized communication method for the Vaelithar's upper echelons, and the spell pairs beautifully with our Calligrapher's Supplies proficiency. There is also a potential mechanical angle worth exploring: if your DM rules that creatures designated to read Illusory Script count as being "under the effect" of the spell for Drain Magic purposes, its 10-day duration and unlimited number of designations make it an incredibly versatile Drain Magic target. You could write something on a piece of paper, designate your whole party as readers, and then use Drain Magic on any of them throughout the day to recover spell slots. Thematically, imagine using our Calligrapher's Supplies to create something like a "scroll of spell recovery" — an object that looks and feels like a spell scroll but functions for slot recovery rather than spellcasting. Fun if your DM allows it, but no big deal if not — we can still proc Drain Magic via free casts of Detect Magic or PfEG.
+
+For our new lvl-02 warlock spell preparation, we take Spider Climb. This gives us a meaningful mobility option in a build that doesn't have many. Our movement toolkit has been limited to Cunning Action dash/disengage, the Withdraw cunning strike, and a once-per-day Misty Step — all useful, but none of them address vertical movement or difficult terrain in the way Spider Climb does. For a spy and infiltrator, the ability to scale walls and traverse ceilings without a check opens up exploration and positioning possibilities that are hard to replicate otherwise. It also pairs well with our fighting style, since we can fire our hand crossbow perfectly well from a wall or ceiling at limited range while staying out of melee reach. Invisibility was the other strong contender here, and would certainly be a fine pick for a stealth-oriented character. But between our high Stealth floor (Reliable Talent), Cunning Action hide, and the general availability of Invisibility from other party members, I think Spider Climb fills a more unique gap in our capabilities.
+
+Revealed Arcana — A Note on RAW. As written on DnD Beyond, Revealed Arcana lets you cast the signature spell using pact magic slots but only once per long rest. This is supposed to mirror the warlock's Mystic Arcanum, which grants free casts of spells above pact slot level. But we are getting Shining Smite, a lvl-02 spell, at the same time our pact slots become lvl-02. There is no reason we should not be able to cast it freely with our available slots, and any reasonable DM should agree. It is a slight departure from strict RAW, but worth noting.
+We are also using the 2024 PHB version of Shining Smite rather than the 2014 Branding Smite specified on the profane soul wiki. The only difference is that the 2024 version adds advantage on attack rolls against the affected target, and this is what makes the spell worth building around.
+
+Why Shining Smite Over Shield of Faith. This is the big shift at this level. From a pure personal-DPR perspective, Hex actually outdamages Shining Smite — three attacks over multiple rounds versus a one-time 2d6 burst. But casting lvl-01 spells with lvl-02 slots is bad value, and Shining Smite's real strength is not personal damage but rather the party-wide advantage it provides. Granting our entire party advantage against a key target for the duration of a fight is almost certainly worth more than the extra personal damage from Hex, and it also guarantees our own Sneak Attack procs every turn we hit.
+The tradeoff is losing Shield of Faith's +2 AC, and there is no getting around that hit to survivability. But this is precisely why we went up to Rogue-08 before coming back for Shining Smite. With Evasion, Uncanny Dodge, Defensive Duelist, and our DEX now capped — plus whatever magic items we have accumulated by this point — we are durable enough to let go of SoF. We can still fall back on Blade Ward if we need a purely defensive option, and magic items that boost AC are far more common than ones that grant party-wide advantage on attacks.
+
+Pact Slots at Lvl-02 — Other Benefits. Our Empower Sneak Attack now always procs at +2d6, since all of our self-cast spells are lvl-02 via pact slots. This is an increase from the previous mix of lvl-01 and lvl-02 procs. We can also now cast Misty Step with spell slots rather than relying solely on our once-per-LR free cast, which provides nice additional flexibility.
+
+DPR. Switching from Hex to Shining Smite as our default concentration spell nets roughly +3d6 (10.5) damage per day from the more offensive spell, and the across-the-board lvl-02 Empower Sneak Attack adds another ~+1.1 to sustained DPR. We land in the 44–48 range for sustained DPR, still B-class for tier-03. Nova takes a small hit without Hex, down to about 59.5. We still have access to Hex if we want maximum burst, though we will be swapping it out next level. The slight dip in AC and nova is well worth the party-wide advantage and improved sustained damage.
+
+
+
+
+
+Progression Summary: 
+ - lvl-01: blood.hunter-01 --> DEX/INT save + martial weapon + alchemist's supplies proficiency, arcana, acrobatics, history, hunter's bane, blood maledict (1 curse, x1/SR)
+ - lvl-02: blood.hunter-01, rogue-01 --> expertise (survival, perception), sneak attack (1d6), thieves' cant, thieves' tools proficiency, weapon mastery (2) 
+ - lvl-03: blood.hunter-01, rogue-02 --> cunning action, detect magic (high elf)   
+ - lvl-04: blood.hunter-02, rogue-02 --> crimson rite (1d4), fighting style::archery 
+ - lvl-05: blood.hunter-03 (profane.soul:hexblade), rogue-02 --> pact magic: true-strike, blade ward (switch elf cantrip to message), comprehend languages, PfEG, misty step (high elf), rite focus 
+ - lvl-06: blood.hunter-03 (profane.soul:hexblade), rogue-03 (magic.stealer) --> drain magic, empowered sneak attack, sneak attack (2d6), steady aim 
+ - lvl-07: blood.hunter-04 (profane.soul:hexblade), rogue-03 (magic.stealer) --> crossbow expert: +1 DEX (DEX=18) 
+ - lvl-08: blood.hunter-05 (profane.soul:hexblade), rogue-03 (magic.stealer) --> extra attack, crimson rite (1d6) 
+ - lvl-09: blood.hunter-05 (profane.soul:hexblade), rogue-04 (magic.stealer) --> defensive duelist: +1 DEX (DEX=19) 
+ - lvl-10: blood.hunter-06 (profane.soul:hexblade), rogue-04 (magic.stealer) --> brand of castigation, blood maledict (x2/SR), lvl-02 pact magic slots 
+ - lvl-11: blood.hunter-06 (profane.soul:hexblade), rogue-05 (magic.stealer) --> cunning strike, uncanny dodge, sneak attack (3d6) 
+ - lvl-12: blood.hunter-06 (profane.soul:hexblade), rogue-06 (magic.stealer) --> expertise 
+ - lvl-13: blood.hunter-06 (profane.soul:hexblade), rogue-07 (magic.stealer) --> evasion, reliable talent, sneak attack (4d6)  
+ - lvl-14: blood.hunter-06 (profane.soul:hexblade), rogue-08 (magic.stealer) --> ASI: +1 DEX (DEX=20), +1 INT (INT=17) 
+ - lvl-15: blood.hunter-07 (profane.soul:hexblade), rogue-08 (magic.stealer) --> 2nd level pact slots, +1 crimson rite, mystic frenzy, revealed arcana (shining smite), switch MI:cleric to PfEG
+ - lvl-16: blood.hunter-08 (profane.soul:hexblade), rogue-08 (magic.stealer) --> war caster: +1 INT (INT=18) 
+ - lvl-17: blood.hunter-08 (profane.soul:hexblade), rogue-09 (magic.stealer) --> magical sabotage, sneak attack (5d6) 
+ - lvl-18: blood.hunter-09 (profane.soul:hexblade), rogue-09 (magic.stealer) --> grim psychometry 
+ - lvl-19: blood.hunter-10 (profane.soul:hexblade), rogue-09 (magic.stealer) --> dark augmentation (+INT to STR/DEX/CON saves) 
+ - lvl-20: blood.hunter-10 (profane.soul:hexblade), rogue-10 (magic.stealer) --> ASI: +2 INT (INT=20) // epic boon (combat prowess, spell recall, dimensional travel) 
+
+
+#####################################################################################################
+EXTRA NOTES 
+
+Treantmonk Damage Classes by Tier 
+----------------------------------------				
+        Tier 01	 Tier 02  Tier 03  Tier 04 
+LVL     01-04    05-10    11-16    17-20
+----------------------------------------
+A	13-15	 37-43	  50-57	   70-78
+B	10-12	 29-36	  42-49	   60-69
+C	07-09	 22-28	  34-41	   50-59
+D	04-06	 15-21	  26-33	   35-49
+
+
+ 
+ 
+
+
+    
+

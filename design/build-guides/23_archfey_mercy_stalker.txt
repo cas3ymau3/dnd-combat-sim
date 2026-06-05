@@ -1,0 +1,395 @@
+Warlock (Archfey) - 8
+Monk (Mercy) - 8
+Ranger (Gloom Stalker) - 4
+Species: Human 
+ - origin feat: tough 
+ - additional skill proficiency: perception 
+Background: Entertainer
+ - background feat: musician 
+ - background skill proficiencies: acrobatics, performance
+Starting class = Warlock 
+ - starting proficiencies: deception, intimidation
+
+Point-Buy Stats 
+ - STR = 8 
+ - DEX = 13 (+1) = 14 
+ - CON = 12 
+ - INT = 8 
+ - WIS = 15 (+1) = 16
+ - CHA = 15 (+1) = 16
+
+##################################################################################
+PROGRESSION SUMMARY 
+
+lvl-1: Warlock-1
+ - invocations (1)
+   * pact of the blade 
+ - cantrips: 
+   * warlock (2): friends, eldritch blast 
+ - spell slots: 1_{1}
+ - prepared spells: 2 (warlock) 
+   * lvl-1 (warlock): armor of agathys, bane
+
+lvl-2: Warlock-1, Ranger-1
+ - weapon mastery: spear (sap), quarterstaff (topple) 
+ - extra skill proficiency: stealth
+ - medium armor proficiency
+ - favored enemy = hunter's mark prepared, free cast x2/day
+ - cantrips: 
+   * warlock (2): friends, eldritch blast 
+ - spell slots: 2_{1}
+ - prepared spells: 2 (ranger), 2 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane
+   * lvl-1 (ranger): jump, ensnaring strike 
+   * lvl-1 (favored enemy): hunter's mark (free x2) 
+
+lvl-3: Warlock-1, Ranger-2 
+ - expertise in 1 skill (deception)
+ - fighting style: druidic warrior 
+ - cantrips: 
+   * warlock (2): friends, eldritch blast
+   * ranger (2): guidance, message
+ - spell slots: 2_{1}
+ - prepared spells: 3 (ranger), 2 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane
+   * lvl-1 (ranger): jump, ensnaring strike, speak with animals  
+   * lvl-1 (favored enemy): hunter's mark (free x2) 
+
+lvl-4: Warlock-1, Ranger-3 (Gloom Stalker) 
+ - ambusher's leap = +10 to speed on first turn of combat 
+ - dreadful strike = +2d6 psychic on weapon hit (xWIS/LR) 
+ - initiative bonus = +WIS to initiative
+ - umbral sight = +darkvision to 60ft, invisible while in darkness
+ - cantrips: 
+   * warlock (2): friends, eldritch blast
+   * ranger (2): guidance, message
+ - spell slots: 3_{1}
+ - prepared spells: 4 (ranger), 2 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane
+   * lvl-1 (ranger): jump, ensnaring strike, speak with animals, detect magic   
+   * lvl-1 (favored enemy): hunter's mark (free x2)
+   * lvl-1 (gloom stalker): disguise self 
+
+lvl-5: Warlock-1, Ranger-4 (Gloom Stalker)
+ - ASI: +2 CHA (18)
+ - cantrips: 
+   * warlock (2): friends, eldritch blast
+   * ranger (2): guidance, message
+ - spell slots: 3_{1}
+ - prepared spells: 5 (ranger), 2 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane
+   * lvl-1 (ranger): jump, ensnaring strike, speak with animals, detect magic, cure wounds   
+   * lvl-1 (favored enemy): hunter's mark (free x2)
+   * lvl-1 (gloom stalker): disguise self 
+
+lvl-6: Warlock-2, Ranger-4 (Gloom Stalker)
+ - magical cunning = regain half pact magic slots in 1m (x1/LR) 
+ - invocations (3)
+   * pact of the blade
+   * eldritch mind 
+   * lessons of the first ones (magic-initiate: druid) 
+ - cantrips: 
+   * warlock (2): friends, eldritch blast
+   * magic-initiate: druid (2): thorn whip, starry wisp
+   * ranger (2): guidance, message
+ - spell slots: 3_{2}
+ - prepared spells: 5 (ranger), 3 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane, charm person
+   * lvl-1 (ranger): jump, ensnaring strike, speak with animals, detect magic, cure wounds   
+   * lvl-1 (favored enemy): hunter's mark (free x2)
+   * lvl-1 (gloom stalker): disguise self
+   * lvl-1 (magic-initiate druid): entangle (free x1) 
+
+lvl-7: Warlock-3 (Archfey), Ranger-4 (Gloom Stalker) 
+ - steps of the fey 
+   * cast misty step w/o spell slot xCHA/LR 
+   * when you cast, get additional effect:
+   * (i) refreshing step: +1d10 THP to you or one creature w/in 10ft 
+   * (ii) taunting step: WIS save or creatures w/in 5ft of origin are taunted 
+ - cantrips: 
+   * warlock (2): friends, eldritch blast
+   * magic-initiate: druid (2): thorn whip, starry wisp
+   * ranger (2): guidance, message
+ - spell slots: 3-2_{2}
+ - prepared spells: 5 (ranger), 4 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane
+   * lvl-1 (ranger): jump, ensnaring strike, speak with animals, detect magic, cure wounds   
+   * lvl-1 (favored enemy): hunter's mark (free x2)
+   * lvl-1 (gloom stalker): disguise self
+   * lvl-1 (magic-initiate druid): entangle (free x1)
+   * lvl-1 (archfey): faerie fire, sleep 
+   * lvl-2 (warlock): mirror image, suggestion
+   * lvl-2 (archfey): calm emotions, phantasmal force, misty step (free xCHA)
+
+lvl-8: Warlock-4 (Archfey), Ranger-4 (Gloom Stalker) 
+ - feat: shadow-touched (+1 CHA, CHA=19)
+ - cantrips: 
+   * warlock (3): friends, eldritch blast, mind sliver
+   * magic-initiate: druid (2): thorn whip, starry wisp
+   * ranger (2): guidance, message
+ - spell slots: 3-2_{2}
+ - prepared spells: 5 (ranger), 5 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane
+   * lvl-1 (ranger): jump, ensnaring strike, speak with animals, detect magic, cure wounds   
+   * lvl-1 (favored enemy): hunter's mark (free x2)
+   * lvl-1 (gloom stalker): disguise self
+   * lvl-1 (magic-initiate druid): entangle (free x1)
+   * lvl-1 (archfey): faerie fire, sleep 
+   * lvl-1 (shadow-touched): wrathful smite (free x1)
+   * lvl-2 (warlock): mirror image, suggestion, spider climb
+   * lvl-2 (archfey): calm emotions, phantasmal force, misty step (free xCHA) 
+   * lvl-2 (shadow-touched): invisibility (free x1)
+
+lvl-9: Warlock-5 (Archfey), Ranger-4 (Gloom Stalker) 
+ - invocations (5)
+   * pact of the blade
+   * eldritch mind 
+   * lessons of the first ones (magic-initiate: druid) 
+   * thirsting blade 
+   * master of myriad forms 
+ - cantrips: 
+   * warlock (3): friends, eldritch blast, mind sliver
+   * magic-initiate: druid (2): thorn whip, starry wisp
+   * ranger (2): guidance, message
+ - spell slots: 3-0-2_{2}
+ - prepared spells: 5 (ranger), 6 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane
+   * lvl-1 (ranger): jump, ensnaring strike, speak with animals, detect magic, cure wounds   
+   * lvl-1 (favored enemy): hunter's mark (free x2)
+   * lvl-1 (gloom stalker): disguise self
+   * lvl-1 (magic-initiate druid): entangle (free x1)
+   * lvl-1 (archfey): faerie fire, sleep 
+   * lvl-1 (shadow-touched): wrathful smite (free x1)
+   * lvl-2 (warlock): suggestion, spider climb
+   * lvl-2 (archfey): calm emotions, phantasmal force, misty step (free xCHA) 
+   * lvl-2 (shadow-touched): invisibility (free x1)
+   * lvl-2 (master of myriad forms): alter self (at will) 
+   * lvl-3 (warlock): dispel magic, gaseous form
+   * lvl-3 (archfey): blink, plant growth
+
+lvl-10: Warlock-5 (Archfey), Ranger-4 (Gloom Stalker), Monk-1 
+ - martial arts 
+   * bonus action unarmed strike 
+   * martial arts die = 1d6
+   * dexterous attacks = DEX instead of STR for unarmed strike/grapple/shove
+ - unarmored defense: AC = 10 + 2(DEX) + 3(WIS) = 15
+ 
+lvl-11: Warlock-5 (Archfey), Ranger-4 (Gloom Stalker), Monk-2 
+ - focus points: 2
+ - unarmored movement (speed = 40ft)
+ - uncanny metabolism 
+   * when you roll initiative, regain all expended focus points 
+   * also heal HP equal to a roll of your martial arts die + Monk level
+ - monk's focus 
+   * flurry of blows 
+   * patient defense 
+   * step of the wind 
+
+lvl-12: Warlock-5 (Archfey), Ranger-4 (Gloom Stalker), Monk-3 (Mercy) 
+ - focus points: 3
+ - deflect attacks
+   * use reaction to reduce B/P/S dmg by 1d10 + DEX + Monk-lvl
+ - implements of mercy 
+   * proficiency in insight and medicine
+   * proficiency w/herbalism kit
+ - hand of harm
+   * deal 1d6+WIS extra necrotic w/ unarmed strike (x1/turn, 1fp) 
+ - hand of healing
+   * touch a creature and restore 1d6+WIS HP (magic action 1fp/as part of FoB)
+
+lvl-13: Warlock-5 (Archfey), Ranger-4 (Gloom Stalker), Monk-4 (Mercy) 
+ - feat: inspiring leader (+1 CHA, CHA=20) 
+   * give character-lvl + CHA (18) THP to up to 6 allies on SR/LR
+ - focus points: 4
+ - slow fall: reduce fall damage by 5x monk level (reaction)
+
+lvl-14: Warlock-5 (Archfey), Ranger-4 (Gloom Stalker), Monk-5 (Mercy) 
+ - focus points: 5
+ - extra attack 
+ - monk's focus 
+   * flurry of blows 
+   * patient defense 
+   * step of the wind 
+   * stunning strike 
+ - martial arts 
+   * bonus action unarmed strike 
+   * martial arts die = 1d8
+   * dexterous attacks = DEX instead of STR for unarmed strike/grapple/shove
+
+lvl-15: Warlock-6 (Archfey), Ranger-4 (Gloom Stalker), Monk-5 (Mercy) 
+ - invocations (5)
+   * pact of the blade
+   * eldritch mind 
+   * lessons of the first ones (magic-initiate: druid) 
+   * repelling blast (eldritch blast) 
+   * master of myriad forms 
+ - misty escape 
+   * can cast misty step as a reaction to taking damage
+ - steps of the fey 
+   * cast misty step w/o spell slot xCHA/LR 
+   * when you cast, get additional effect:
+   * (i) refreshing step: +1d10 THP to you or one creature w/in 10ft 
+   * (ii) taunting step: WIS save or creatures w/in 5ft of origin are taunted
+   * (iii) disappearing step: invisible until start of next turn (or attack/spell/deal dmg)
+   * (iv) dreadful step: creatures w/in 5ft of origin/destination WIS save or 2d10 psychic
+ - cantrips: 
+   * warlock (3): friends, eldritch blast, mind sliver
+   * magic-initiate: druid (2): thorn whip, starry wisp
+   * ranger (2): guidance, message
+ - spell slots: 3-0-2_{2}
+ - prepared spells: 5 (ranger), 7 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter
+   * lvl-1 (ranger): jump, ensnaring strike, speak with animals, detect magic, cure wounds   
+   * lvl-1 (favored enemy): hunter's mark (free x2)
+   * lvl-1 (gloom stalker): disguise self
+   * lvl-1 (magic-initiate druid): entangle (free x1)
+   * lvl-1 (archfey): faerie fire, sleep 
+   * lvl-1 (shadow-touched): wrathful smite (free x1)
+   * lvl-2 (warlock): suggestion, spider climb
+   * lvl-2 (archfey): calm emotions, phantasmal force, misty step (free xCHA) 
+   * lvl-2 (shadow-touched): invisibility (free x1)
+   * lvl-2 (master of myriad forms): alter self (at will)
+   * lvl-3 (warlock): dispel magic, gaseous form
+   * lvl-3 (archfey): blink, plant growth
+
+lvl-16: Warlock-6 (Archfey), Ranger-4 (Gloom Stalker), Monk-6 (Mercy) 
+ - focus points: 6
+ - unarmored movement (speed = 45ft)
+ - empowered strikes 
+   * unarmed strikes can deal force dmg instead of normal dmg type
+ - physician's touch: 
+   * hand of harm: gives creature poisoned condition till end of your next turn
+   * hand of healing: removes blinded, paralyzed, poisoned, deafened, stunned
+
+lvl-17: Warlock-6 (Archfey), Ranger-4 (Gloom Stalker), Monk-7 (Mercy) 
+ - focus points: 7
+ - evasion
+
+lvl-18: Warlock-6 (Archfey), Ranger-4 (Gloom Stalker), Monk-8 (Mercy)
+ - ASI: +2 WIS, WIS=18 
+ - unarmored defense: AC = 10 + 2(DEX) + 4(WIS) = 16
+ - focus points: 8
+
+lvl-19: Warlock-7 (Archfey), Ranger-4 (Gloom Stalker), Monk-8 (Mercy)
+ - invocations (6)
+   * pact of the blade
+   * eldritch mind 
+   * lessons of the first ones (magic-initiate: druid) 
+   * repelling blast (eldritch blast) 
+   * master of myriad forms 
+   * eldritch smite 
+ - cantrips: 
+   * warlock (3): friends, eldritch blast, mind sliver
+   * magic-initiate: druid (2): thorn whip, starry wisp
+   * ranger (2): guidance, message
+ - spell slots: 3-0-0-2_{2}
+ - prepared spells: 5 (ranger), 8 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter
+   * lvl-1 (ranger): jump, ensnaring strike, speak with animals, detect magic, cure wounds   
+   * lvl-1 (favored enemy): hunter's mark (free x2)
+   * lvl-1 (gloom stalker): disguise self
+   * lvl-1 (magic-initiate druid): entangle (free x1)
+   * lvl-1 (archfey): faerie fire, sleep 
+   * lvl-1 (shadow-touched): wrathful smite (free x1)
+   * lvl-2 (warlock): suggestion, spider climb
+   * lvl-2 (archfey): calm emotions, phantasmal force, misty step (free xCHA) 
+   * lvl-2 (shadow-touched): invisibility (free x1)
+   * lvl-2 (master of myriad forms): alter self (at will)
+   * lvl-3 (warlock): dispel magic, gaseous form
+   * lvl-3 (archfey): blink, plant growth
+   * lvl-4 (warlock): banishment
+   * lvl-4 (archfey): dominate beast, greater invisibility
+
+lvl-20: Warlock-8 (Archfey), Ranger-4 (Gloom Stalker), Monk-8 (Mercy)
+ - feat: epic boon of dimensional travel 
+   * immediately after you attack or take a magic action, you can teleport to an 
+     unoccupied space w/in 30ft that you can see 
+   * +1 CON/WIS/DEX/CHA (whatever makes sense) 
+ - invocations (6)
+   * pact of the blade
+   * eldritch mind 
+   * lessons of the first ones (magic-initiate: druid) 
+   * repelling blast (eldritch blast) 
+   * master of myriad forms 
+   * eldritch smite 
+ - cantrips: 
+   * warlock (3): friends, eldritch blast, mind sliver
+   * magic-initiate: druid (2): thorn whip, starry wisp
+   * ranger (2): guidance, message
+ - spell slots: 3-0-0-2_{2}
+ - prepared spells: 5 (ranger), 9 (warlock)
+   * lvl-1 (warlock): armor of agathys, bane, tasha's hideous laughter
+   * lvl-1 (ranger): jump, ensnaring strike, speak with animals, detect magic, cure wounds   
+   * lvl-1 (favored enemy): hunter's mark (free x2)
+   * lvl-1 (gloom stalker): disguise self
+   * lvl-1 (magic-initiate druid): entangle (free x1)
+   * lvl-1 (archfey): faerie fire, sleep 
+   * lvl-1 (shadow-touched): wrathful smite (free x1)
+   * lvl-2 (warlock): suggestion, spider climb
+   * lvl-2 (archfey): calm emotions, phantasmal force, misty step (free xCHA) 
+   * lvl-2 (shadow-touched): invisibility (free x1)
+   * lvl-2 (master of myriad forms): alter self (at will)
+   * lvl-3 (warlock): dispel magic, gaseous form
+   * lvl-3 (archfey): blink, plant growth
+   * lvl-4 (warlock): banishment, charm monster
+   * lvl-4 (archfey): dominate beast, greater invisibility
+
+#############################################################################################
+
+* NOTE: If you're playing with spells from sources other than 2024 PHB, take shadow of moil warlock spell and then get epic boon of the night spirit. With shadow of moil up, you'll be invisible (from gloom stalker ability) and have resistance to all damage except psychic. 
+
+* NOTE: Blackfeather magic weapon (spear) would be pretty great for this character 
+
+Eldritch invocations: 
+ - (lvl-0): pact of the blade (spear) 
+ - (lvl-0): eldritch mind
+ - (lvl-2): lessons of the first ones 
+ - (lvl-2): repelling blast  
+ - (lvl-5): thirsting blade 
+ - (lvl-5): master of myriad forms  
+ - (lvl-5): eldritch smite 
+ -------------------------------- 
+ - (lvl-2): devil's sight
+ - (lvl-5): one with shadows 
+ - (lvl-2): otherworldly-leap 
+ - (lvl-2): mask of many faces 
+
+Warlock Spells 
+ - lvl-0: blade ward, eldritch blast, mind sliver 
+ - lvl-1: armor of agathys, bane, tasha's hideous laughter
+ - lvl-2: mirror image, spider climb, suggestion, ray of enfeeblement 
+ - lvl-3: fly, counterspell, dispel magic, summon fey, gaseous form, hypnotic pattern
+ - lvl-4: banishment, charm monster, dimension door, hallucinatory terrain 
+
+Feats: 
+ - lvl-0: tough
+ - lvl-0: magic-initiate (wizard) 
+ - lvl-0: musician  
+ - lvl-4: shadow-touched 
+ - lvl-4: war caster
+ - lvl-4: inspiring leader 
+ - lvl-4: charger
+
+Magic initiate (Druid) 
+ - cantrips: guidance, thorn whip 
+ - lvl-1: entangle 
+
+Magic initiate (Cleric) 
+ - cantrips: guidance, spare the dying 
+ - lvl-1: command, bless 
+
+Magic initiate (Wizard): 
+ - cantrips: friends, message (shocking grasp/chill touch) 
+ - lvl-1: find familiar, ray of sickness, shield, charm person 
+
+ 
+
+
+
+
+
+
+
+
+
+

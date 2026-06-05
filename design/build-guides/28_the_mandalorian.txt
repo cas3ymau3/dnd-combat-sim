@@ -1,0 +1,582 @@
+Moniker: The Mandalorian 
+Classes: Paladin-04 (Devotion), Fighter-06 (Psi Warrior), Artificer-10 (Battle Smith)   
+Species: Dwarf 
+ - size: medium 
+ - speed: 30ft 
+ - darkvision: 120ft 
+ - dwarven resilience = resistance to poison dmg; adv on saves to end poisoned 
+ - dwarven toughness = +1HP; +1HP each level 
+ - stonecunning = BA to gain tremorsense for 10m (xPB/LR); have to be on stone 
+Sex: Female 
+Background: Devotional Artisan (Smith)
+ - modified version of `artisan' background from 2024 PHB
+ - ability scores: STR, DEX, INT 
+ - feat: magic-initiate (cleric)
+ - skill proficiencies: investigation, persuasion 
+ - tool proficiency: smith's tools  
+ - languages: common, dwarvish, celestial
+ - equipment: smith's tools (20gp), 2 pouches (1gp), traveler's clothes (2gp), 32gp
+Point-Buy Stats: 
+ - STR = 12 (+1) = 13 
+ - DEX = 08
+ - CON = 14 
+ - INT = 15 (+2) = 17 
+ - WIS = 08 
+ - CHA = 14
+ASI's/Feats:
+ - lvl-00: magic-initiate (cleric)
+ - lvl-05: war-caster (INT=18)
+ - lvl-08: fighting-style: defensive 
+ - lvl-10: great weapon master (STR=14) 
+ - lvl-11: fighting-style: great weapon fighting  
+ - lvl-14: resilient CON (CON=15) 
+ - lvl-16: ASI: +2 INT (INT=20) 
+ - lvl-18: heavy armor master (CON=16) 
+Progression Summary: 
+ - lvl-01: paladin-01 ------------------------------------------------------------> divine favor/smite; weapon/armor/WIS-save proficiency 
+ - lvl-02: paladin-01, artificer-01 ----------------------------------------------> spell-casting (true-strike); skill/tool proficiency
+ - lvl-03: paladin-01, artificer-02 ----------------------------------------------> replicate magic item (4 plans, 2 items) 
+ - lvl-04: paladin-01, artificer-03 (battle smith) -------------------------------> bound-spells; INT-based attacks; right tool for job
+ - lvl-05: paladin-01, artificer-04 (battle smith) -------------------------------> war caster: +1 INT (INT=18)
+ - lvl-06: paladin-01, artificer-05 (battle smith) -------------------------------> extra attack, bound-spells, lvl-2 artificer spells 
+ - lvl-07: paladin-01, artificer-06 (battle smith) -------------------------------> magic item adept (5 plans, 3 items); mithral armor
+ - lvl-08: paladin-02, artificer-06 (battle smith) -------------------------------> fighting-style::defensive; paladin's smite
+ - lvl-09: paladin-03 (devotion), artificer-06 (battle smith) --------------------> sacred weapon' bound-spells
+ - lvl-10: paladin-04 (devotion), artificer-06 (battle smith) --------------------> great weapon master: +1 STR (STR=14)
+ - lvl-11: paladin-04 (devotion), artificer-06 (battle smith), fighter-01 --------> great weapon fighting; second wind
+ - lvl-12: paladin-04 (devotion), artificer-06 (battle smith), fighter-02 --------> action surge; tactical mind 
+ - lvl-13: paladin-04 (devotion), artificer-06 (battle smith), fighter-03 (psi) --> psionic power; 4d6 psi dice
+ - lvl-14: paladin-04 (devotion), artificer-06 (battle smith), fighter-04 (psi) --> resilient (CON): +1 CON (CON=15) 
+ - lvl-15: paladin-04 (devotion), artificer-06 (battle smith), fighter-05 (psi) --> tactical shift; 6d8 psi dice 
+ - lvl-16: paladin-04 (devotion), artificer-06 (battle smith), fighter-06 (psi) --> ASI: +2 INT (INT=20)
+ - lvl-17: paladin-04 (devotion), artificer-07 (battle smith), fighter-06 (psi) --> flash of genius
+ - lvl-18: paladin-04 (devotion), artificer-08 (battle smith), fighter-06 (psi) --> heavy armor master: +1 CON (CON=16)
+ - lvl-19: paladin-04 (devotion), artificer-09 (battle smith), fighter-06 (psi) --> arcane jolt; lvl-3 artificer spells 
+ - lvl-20: paladin-04 (devotion), artificer-10 (battle smith), fighter-06 (psi) --> magic item adept (6 plans, 4 items)
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `paladin-artificer'
+ - lvl-01: slots = 2; prepared: 2-0; max level: 1-0
+ - lvl-02: slots = 3; prepared: 2-2; max level: 1-1
+ - lvl-03: slots = 3; prepared: 2-3; max level: 1-1
+ - lvl-04: slots = 4-2; prepared: 2-4; max level: 1-1  
+ - lvl-05: slots = 4-2; prepared: 2-5; max level: 1-1 
+ - lvl-06: slots = 4-3; prepared: 2-6; max level: 1-2 
+ - lvl-07: slots = 4-3; prepared: 2-6; max level: 1-2
+ - lvl-08: slots = 4-3; prepared: 3-6; max level: 1-2
+ - lvl-09: slots = 4-3-2; prepared: 4-6; max level: 1-2
+ - lvl-10: slots = 4-3-2; prepared: 5-6; max level: 1-2
+ - lvl-11: slots = 4-3-2; prepared: 5-6; max level: 1-2
+ - lvl-12: slots = 4-3-2; prepared: 5-6; max level: 1-2
+ - lvl-13: slots = 4-3-2; prepared: 5-6; max level: 1-2
+ - lvl-14: slots = 4-3-2; prepared: 5-6; max level: 1-2
+ - lvl-15: slots = 4-3-2; prepared: 5-6; max level: 1-2
+ - lvl-16: slots = 4-3-2; prepared: 5-6; max level: 1-2 
+ - lvl-17: slots = 4-3-3; prepared: 5-7; max level: 1-2 
+ - lvl-18: slots = 4-3-3; prepared: 5-7; max level: 1-2
+ - lvl-19: slots = 4-3-3-1; prepared: 5-9; max level: 1-3
+ - lvl-20: slots = 4-3-3-1; prepared: 5-9; max level: 1-3
+
+CONCEPT NOTES
+ - leverage battle smith to make INT-based weapon attacks 
+ - go paladin to get smites/spells; go devotion to get sacred weapon 
+ - use sacred weapon to defer bumping INT to 20 in favor of GWM/resilient 
+ - go psi-warrior and maximize value of psionic strikes 
+ - identity is a hard-hitting melee tank and striker with buffing/control spells 
+ - use artificer to get mithral armor and go full plate even with only having STR-14 
+
+THEMATIC CONCEPT NOTES: 
+ - think `the armorer' from `the mandalorian' (religiously-inspired smith and devotee of war/forge gods)
+ - also maps well to `Jayce' from Arcane (techno-magical lawful-good paladin) 
+ - religion, investigation, arcana, strength  
+ - play this character as a charismatic commander/warrior leader
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+
+#######
+Level-01: Paladin-01 
+ - feat: magic-initiate (cleric) 
+   * cantrips: guidance, thaumaturgy 
+   * lvl-1 spell: shield of faith 
+ - saving throw proficiencies: WIS, CHA   
+ - proficiency bonus (PB): +2 
+ - skill proficiencies: 
+   * paladin (2): athletics, intimidation     
+   * devotional artisan (2): investigation, persuasion 
+   * languages (3): common, dwarvish, celestial 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light + med + heavy armor + shields
+   * tools: smith's tools (devotional artisan)
+ - starting equipment (devotional artisan + paladin gold-buy):
+   * starting gold = 32gp (background) + 150gp (paladin)
+   * weapons: maul (10gp)
+   * armor: chain mail (75gp)
+   * tools: smith's tools (artisan), tinker's tools (50gp) 
+   * foci: holy symbol::amulet (5gp) 
+   * gear: priest's pack (33gp), traveler's clothes (artisan), pouches x2 (artisan)
+   * spare coin: 9gp
+ - combat equipment:
+   * weapon: maul
+     + maul = 2d6 bludgeoning (topple); heavy, two-handed 
+   * armor: chain mail 
+   * AC: 16 (disadv. on stealth); 18 w/shield of faith 
+ - weapon masteries (2): 
+   * mauls (topple)
+   * greatswords (graze) 
+ - lay on hands (5)
+ - spellcasting 
+ - cantrips: 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 2 
+ - spells prepared: paladin (2)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (magic-initiate): shield of faith (free x1/LR) 
+
+NOTE: Use shield of faith; stay alive. 
+
+
+
+#######
+Level-02: Paladin-01, Artificer-01 
+ - magical tinkering 
+   * create item from list using magic action (xINT/LR) 
+   * item vanishes after 1hr
+ - skill proficiencies: 
+   * paladin (2): athletics, intimidation     
+   * devotional artisan (2): investigation, persuasion 
+   * artificer (1): arcana 
+   * languages (3): common, dwarvish, celestial 
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light + med + heavy armor + shields
+   * tools: smith's tools (devotional artisan), tinker's tools (artificer) 
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 3 
+ - spells prepared: paladin (2), artificer (2)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (magic-initiate): shield of faith (free x1/LR) 
+   * lvl-1 (artificer): detect magic, jump  
+
+NOTE: Start using true-strike for INT-based maul attacks. 
+
+
+
+#######
+Level-03: Paladin-01, Artificer-02 
+ - replicate magic item 
+   * plans (4): +1 weapon, perfume of bewitching, bag of holding, sending stones
+   * items (2): +1 weapon, perfume of bewitching
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 3 
+ - spells prepared: paladin (2), artificer (3)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (magic-initiate): shield of faith (free x1/LR) 
+   * lvl-1 (artificer): cure wounds, detect magic, jump  
+
+NOTE: Produce one +1 maul, bag of holding, and set of sending stones, then start batch producing perfumes of bewitching. Of course you can also produce more sending stones, and more +1 weapons as needed. Giving sending stones to important NPCs is a good tech. Note: perfume of bewitching gives takes a magic action to use and gives you advantage on persuasion and deception checks. 
+
+
+
+#######
+Level-04: Paladin-01, Artificer-03 (Battle Smith)  
+ - weapon/armor/tool proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light + med + heavy armor + shields
+   * tools: smith's tools (devotional artisan), tinker's tools (artificer), alchemist's supplies (battle smith) 
+ - replicate magic item 
+   * plans (4): +1 weapon, perfume of bewitching, clockwork amulet, sending stones
+   * items (2): clockwork amulet, perfume of bewitching
+ - battle ready 
+   * arcane empowerment = can use INT for attack/dmg rolls w/ weapons 
+   * weapon knowledge = gain proficiency w/martial weapons 
+ - steel defender 
+   * see stat block 
+   * deflect attack (reaction): can impose disadv. on attack against creature w/in 5ft 
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 3 
+ - spells prepared: paladin (2), artificer (4)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (magic-initiate): shield of faith (free x1/LR) 
+   * lvl-1 (artificer): cure wounds, detect magic, identify, jump    
+   * lvl-1 (battle smith): heroism, shield
+
+NOTE: If playing optimally, you would want to use the steel defender. Thematically, I don't love it. So I would probably just play this character without it. I guess you could make it a `droid' like bb8 and just have it hover/float around the battlefield and impose disadvantage until it dies. Switch out bag of holding for clockwork amulet and start making those. Note: clockwork amulet lets you forgo rolling a d20 and give yourself a 10 x1/LR. Good for guaranteeing a hit if/when you know an enemy's AC. Make multiple and give them to your friends if you want. Gain additional tool proficiency. I opt for alchemist's supplies because it's INT-based, and we can use it to make more perfume (as well as acid/alchemist's fire, oil, and other useful things). Would have to purchase a set on our own though. 
+
+
+
+#######
+Level-05: Paladin-01, Artificer-04 (Battle Smith)  
+ - proficiency bonus (PB): +3 
+ - replicate magic item 
+   * plans (4): +1 weapon, perfume of bewitching, horn of silent alarm, sending stones
+   * items (2): horn of silent alarm, perfume of bewitching
+ - feat: war caster 
+   * +1 INT; INT=18 
+   * Advantage on CON saves to maintain concentration 
+   * Can cast spell as reaction instead of OA 
+   * Can perform somatic components with weapon/shield in hand
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 4-2 
+ - spells prepared: paladin (2), artificer (5)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (magic-initiate): shield of faith (free x1/LR) 
+   * lvl-1 (artificer): cure wounds, detect magic, faerie fire, identify, jump   
+   * lvl-1 (battle smith): heroism, shield
+
+NOTE: Take war caster for advantage on concentration checks. Weapon/shield as somatic components doesn't help us because we still need to hold our smith's tools to cast spells. At this level, we also like reactive spell because we can cast true-strike as an OA and do additional damage. Upcasting: divine smite, heroism, jump, cure wounds. Make some horns of silent alarm for party utility. Note: horn of silent alarm = 4 charges; regain 1d4 charges at dawn; one creature w/in 600ft can hear blare (no one else). Continue to stock up on perfumes of bewitching. 
+
+
+
+#######
+Level-06: Paladin-01, Artificer-05 (Battle Smith)  
+ - replicate magic item 
+   * plans (4): +1 weapon, perfume of bewitching, tankard of sobriety, sending stones
+   * items (2): tankard of sobriety, perfume of bewitching
+ - extra attack 
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 4-2 
+ - spells prepared: paladin (2), artificer (6)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (magic-initiate): shield of faith (free x1/LR) 
+   * lvl-1 (artificer): cure wounds, detect magic, identify, jump   
+   * lvl-1 (battle smith): heroism, shield
+   * lvl-2 (artificer): blur, heat metal 
+   * lvl-2 (battle smith): shining smite, warding bond 
+
+NOTE: Stop using true-strike in favor for multiple INT-based weapon attacks. Drop faerie fire because it has similar functionality to shining smite. Take blur as high level defensive option. Take heat metal as thematic/situationally powerful spell. Could also switch out true-strike in favor of a different artificer cantrip (ex. mending if using steel defender), but we still want it for use in OAs. Make tankard(s) of sobriety to help you leverage social interactions around alcohol to your advantage (also fun/dwarvish). 
+
+
+
+#######
+Level-07: Paladin-01, Artificer-06 (Battle Smith)  
+ - magic item tinker 
+   * drain magic item = BA to convert magic item to spell slots (common=1, uncommon=2); x1/LR 
+   * expanded replication = can access lvl-06 magic item plan list 
+ - replicate magic item 
+   * plans (5): +1 weapon, perfume of bewitching, sending stones, mithral armor, weapon of warning
+   * items (3): perfume of bewitching, mithral armor, weapon of warning 
+ - combat equipment:
+   * weapon: +1 maul
+     + maul = 2d6 bludgeoning (topple); heavy, two-handed 
+   * armor: mithral armor (full plate)
+   * AC: 18; 20 w/shield of faith  
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 4-3 
+ - spells prepared: paladin (2), artificer (6)
+   * lvl-1 (paladin): divine favor, divine smite 
+   * lvl-1 (magic-initiate): shield of faith (free x1/LR) 
+   * lvl-1 (artificer): cure wounds, detect magic, identify, jump   
+   * lvl-1 (battle smith): heroism, shield
+   * lvl-2 (artificer): blur, heat metal 
+   * lvl-2 (battle smith): shining smite, warding bond 
+
+NOTE: No changes to spellcasting other than gaining another lvl-2 slot. Use expanded replication to craft yourself mithral armor (full plate). Mithral armor can be worn under clothes, doesn't have a STR requirement and doesn't impose disadv. on stealth checks. This gives us base AC of 18 with the ability to up it to 20 with shield of faith. Weapon of warning (requires attunement) = while you are attuned to this weapon, you and any allies w/in 30ft have advantage on initiative rolls and are magically awakened if asleep when combat begins. We won't use the weapon of warning in combat, but the advantage on initiative is great for us (our DEX sucks) and is a great party-wide buff. Use drain magic item on stored up perfumes of bewitching/sending stones/weapons of warning (as needed) to give yourself additional spells/smites. 
+
+
+
+#######
+Level-08: Paladin-02, Artificer-06 (Battle Smith)
+ - feat: fighting-style: defensive 
+ - lay on hands (10) 
+ - paladin's smite 
+   * you always have divine smite prepared and can cast it for free x1/LR  
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 4-3 
+ - spells prepared: paladin (3), artificer (6)
+   * lvl-1 (paladin): bless, divine favor, shield of faith  
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (magic-initiate): command (free x1/LR) 
+   * lvl-1 (artificer): cure wounds, detect magic, identify, jump   
+   * lvl-1 (battle smith): heroism, shield
+   * lvl-2 (artificer): blur, heat metal 
+   * lvl-2 (battle smith): shining smite, warding bond 
+
+NOTE: Defensive fighting style bumps our base AC to 19, which is very good. Paladin's smite frees up a prepared spell slot and gives us one free smite per day. Use additional prepared spell to take bless and shield of faith as paladin spells. Then change your magic-initiate (cleric) spell to command. Command upcasts well, can be used to prone enemies, is thematic, and having it on MI leverages our INT for the spell DC. Plus, in combat we would probably prefer to concentrate on blur as a defensive option over shield of faith, so having the free cast is less useful than it was at early levels. We get additional lay on hands for more healing. Keep making weapons of warning/perfumes/sending stones to use w/drain magic item. 
+
+
+
+#######
+Level-09: Paladin-03 (Devotion), Artificer-06 (Battle Smith)
+ - proficiency bonus (PB): +4
+ - channel divinity (x2/LR, recover 1 on SR) 
+   * divine sense = detect celestial/fiends/undead for 10m 
+   * sacred weapon
+     + activate on attack action; duration 10m 
+     + add CHA to attack rolls; weapon can deal radiant dmg 
+     + weapon sheds bright light w/in 20ft; dim light 20ft further
+ - lay on hands (15)   
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 4-3-2
+ - spells prepared: paladin (4), artificer (6)
+   * lvl-1 (paladin): bless, cure wounds, detect magic, divine favor
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from good and evil, shield of faith
+   * lvl-1 (magic-initiate): command (free x1/LR) 
+   * lvl-1 (artificer): feather fall, identify, jump   
+   * lvl-1 (battle smith): heroism, shield
+   * lvl-2 (artificer): blur, heat metal, spider climb
+   * lvl-2 (battle smith): shining smite, warding bond 
+
+NOTE: Sacred weapon gives us +2 to attack rolls while active and let's us deal radiant damage with our weapon if needed for the purposes of overcoming resistance. So we'll be a +7 to hit with a +1 weapon. We gain PfGE and Shield of Faith as devotion bound spells. So we switch out SoF as a paladin spell and also prepare cure wounds as a paladin. This reduces our healing a bit (+2 instead of +4), but we'd prefer to prepare different/better artificer spells since we gain two additional spell slots. We go with feather fall and spider climb (which kind of go hand-in-hand). Jump + spider climb is nearly as good as flight in most situations and will be our main mobility solution here in tier 2. Honorable mentions for alternative artificer spells include: grease, expeditious retreat, aid, invisibility, arcane vigor, web, magic weapon. Still we want to save our spell slots for smites, and save our concentration for blur/heroism/bless/shining smite. Great thematic synergy between devotion and battle smith subclasses.   
+
+
+ 
+#######
+Level-10: Paladin-04 (Devotion), Artificer-06 (Battle Smith)
+ - feat: great weapon master 
+   * ASI: +1 STR (STR=14) 
+   * heavy weapon mastery: +PB to dmg when you hit w/heavy weapon as part of attack action
+   * hew: make BA weapon attack if you crit or kill with a heavy weapon
+ - lay on hands (20) 
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 4-3-2
+ - spells prepared: paladin (5), artificer (6)
+   * lvl-1 (paladin): bless, cure wounds, detect magic, divine favor, thunderous smite
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from good and evil, shield of faith
+   * lvl-1 (magic-initiate): command (free x1/LR) 
+   * lvl-1 (artificer): feather fall, identify, jump   
+   * lvl-1 (battle smith): heroism, shield
+   * lvl-2 (artificer): blur, heat metal, spider climb
+   * lvl-2 (battle smith): shining smite, warding bond 
+
+NOTE: We take great weapon master (GWM) to get +4 on each hit with our maul/greatsword, boost our STR, and gain a free way to deal damage with our BA on a kill/crit. Take thunderous smite with our new paladin spell. It can push and prone irrespective of size, which is nice, but our DC will be low since it's a paladin spell. Searing smite is another decent/thematic option, but it's a CON save (whereas thunderous is STR) and so even less likely to work. Pick your favorites. 
+
+
+
+#######
+Level-11: Paladin-04 (Devotion), Artificer-06 (Battle Smith), Fighter-01
+ - feat: fighting-style: great weapon fighting 
+   * treat 1's and 2's on great weapon attacks as 3's
+ - second wind (x2/LR, recover 1 on SR)
+   * BA to heal 1d10 + fighter-level 
+ - weapon masteries (5): 
+   * mauls (topple)
+   * greatswords (graze)  
+   * war hammers (push) 
+   * war picks (sap) 
+   * great axes (cleave)
+
+NOTE: Shifting to fighter. Take great weapon fighting (GWF) fighting style. Assume this applies to the extra 1d4 dealt by weapons under the effect of divine favor. Then it increases our maul's base damage from 2d6 (7) to 9 on hit, and increases the radiant damage from divine favor from 2.5 to 3.25. So, on net, while divine favor is active it boosts our standard weapon damage by 2.75 per hit, which is better than what we would get from dueling. Plus it's the only good option since we can't wield a shield (I guess blindfighting?). We also get additional weapon masteries -- take whatever you need to use the best magic weapons available to you. I chose dwarf/forge related things. 
+
+
+
+#######
+Level-12: Paladin-04 (Devotion), Artificer-06 (Battle Smith), Fighter-02
+ - action surge (x1/LR)
+ - second wind (x2/LR, recover 1 on SR)
+   * BA to heal 1d10 + fighter-level 
+   * tactical mind = expend use on failed ability check to add 1d10 to the roll
+
+NOTE: Use action surge for burst damage and even more GWM attacks (especially if you have advantage due to prone/shining smite). Tactical mind further boosts our ability to face and can be used in conjunction with perfumes of bewitching.
+
+
+
+#######
+Level-13: Paladin-04 (Devotion), Artificer-06 (Battle Smith), Fighter-03 (Psi Warrior)
+ - proficiency bonus (PB): +5 
+ - psionic dice: 4d6 (recover on SR)
+ - psionic power 
+   * psionic strike = x1 per turn, add psi die + INT to weapon dmg roll 
+   * protective field = use reaction to reduce incoming dmg by psi die + INT (30ft range) 
+   * telekinetic movement = magic action; force move object/creature 30ft (free x1/SR; recharge with psi die) 
+
+NOTE: Psi warrior subclass. Lean in to sci-fi/techno-magic aesthetic. I would argue that great weapon fighting applies to psionic strike, since it specifically applies to the damage dealt by our weapon. This means psionic strike adds an additional 4 + 4 (INT) = 8 dmg to our attacks. We can only use this 4 times per SR right now, but we will increase this ASAP. And it gives us another way to deal burst damage when we want to. Telekinetic movement is great for control and we can use it x1/SR for free. Prioritize using psionic die for damage. Only use them for protective field/additional uses of telekinetic movement in a pinch. But nice to have more control/support options.
+
+
+
+#######
+Level-14: Paladin-04 (Devotion), Artificer-06 (Battle Smith), Fighter-04 (Psi Warrior) 
+ - feat: resilient (CON)
+   * ASI: +1 CON (CON=15) 
+   * gain proficiency in CON saving throws
+ - saving throw proficiencies: WIS, CHA, CON 
+ - second wind (x2/LR, recover 1 on SR)
+   * BA to heal 1d10 + fighter-level 
+   * tactical mind = expend use on failed ability check to add 1d10 to the roll
+ - weapon masteries (6): 
+   * mauls (topple)
+   * greatswords (graze)  
+   * war hammers (push) 
+   * war picks (sap) 
+   * great axes (cleave)
+   * battle axe (topple) 
+
+NOTE: Gain an extra weapon mastery (whatever) as well as an extra use of second wind (nice). Between second wind and lay on hands we have a nice pool of non-spell based healing. We get a feat and, while we would love to buff INT to 20, we delay it another couple levels and take resilient CON instead. We have very limited spell slots and some good defensive/utility spells that require concentration (bless, SoF, PfGE, heroism, blur, shining smite, heat metal, spider climb), many of which are lvl-2 spells. With resilient CON and warcaster, we now have an average of +11.5 to our CON saves to maintain concentration. Would have loved to work this in sooner, but better late than never. Could feasibly take this before getting GWM, but we're prioritizing offense over utility/defense in this build. Anyway, we sacrifice damage in order to make the most of our limited resources here at this level. Going fighter means we get another ASI in a few levels anyway.
+
+
+
+#######
+Level-15: Paladin-04 (Devotion), Artificer-06 (Battle Smith), Fighter-05 (Psi Warrior) 
+ - second wind (x2/LR, recover 1 on SR)
+   * BA to heal 1d10 + fighter-level 
+   * tactical mind = expend use on failed ability check to add 1d10 to the roll
+   * tactical shift = when you activate second wind, move up to 1/2 speed w/o provoking OAs
+ - psionic dice: 6d8 (recover on SR)
+
+NOTE: We already have extra attack, but one of the nice things about psi warrior is you get an additional offensive boost (more psi dice) at lvl-05. We go from 4d6 psi dice to 6d8, meaning we can do more psionic strikes, and they do more damage. Combined with GWF, each psionic strike does 8.875 dmg (up from 8 previous level). We also get tactical shift, further enhancing our mobility. 
+
+
+
+#######
+Level-16: Paladin-04 (Devotion), Artificer-06 (Battle Smith), Fighter-06 (Psi Warrior) 
+ - ASI: +2 INT (INT=20) 
+ 
+NOTE: Very straightforward level here. We get to cap our INT at 20, increasing the damage of all our attacks and psionic strikes as well as our spell bonus and DC. Assuming we have divine favor active, a `standard' hit with our +1 maul using psionic strike will do: 2d6 (9) + 1d4 (3.25) + 1d8 (4.875) + 2*INT (10) + 6 (GWM) +1 (weapon) = 34.125 dmg. And we can, of course, stack on additional damage with multiple hits and divine smite. In a full nova round, assuming we have divine favor active, use psionic strike, burn a lvl-3 slot on divine smite and use action surge to make multiple attacks we can do: 
+  - attack1_{psionic-strike) + BA::divine-smite(lvl-3) = 2d6(9) + 1d4(3.25) + 1d8(4.875) + 2*INT(10) + 5(GWM) + 1(weapon) + 4d8(smite) = 51.125
+  - attack2 = 2d6(9) + 1d4(3.25) + INT(5) + 5(GWM) +1(weapon) = 23.25
+  - action-surge
+  - attack3 = same as attack2 (23.25)
+  - attack4 = same as attack2 (23.25)
+  - total = 51.125 + 3*(23.25) = 120.875
+This is some really great burst damage. Hopefully, at this level, we also have access to a badass magic weapon that further boosts the damage applied on each hit (flame tongue, holy avenger, axe of the dwarvish lords, silver sword of astral plane, fane eater, whelm, sword of wounding, pyremaul, hammer of thunderbolts)
+
+
+
+#######
+Level-17: Paladin-04 (Devotion), Artificer-07 (Battle Smith), Fighter-06 (Psi Warrior) 
+ - proficiency bonus (PB): +6
+ - flash of genius 
+   * on failed ability check/saving throw, use reaction to add +INT to roll (xINT/LR); range 30ft
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 4-3-3
+ - spells prepared: paladin (5), artificer (7)
+   * lvl-1 (paladin): bless, cure wounds, detect magic, divine favor, thunderous smite
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from good and evil, shield of faith
+   * lvl-1 (magic-initiate): command (free x1/LR) 
+   * lvl-1 (artificer): feather fall, identify, jump   
+   * lvl-1 (battle smith): heroism, shield
+   * lvl-2 (artificer): blur, heat metal, spider climb, web
+   * lvl-2 (battle smith): shining smite, warding bond 
+
+NOTE: Back to artificer (where we're going to finish out). We (finally) get flash of genius, giving us/our allies a nice +5 to key saving throws/checks per day. Use this on ourselves to protect our crappy DEX save. Also nice since it feels kind of similar to the paladin aura of courage ability which we weren't able to get (though obviously has limited uses and requires a reaction). Anyway, very strong ability. We also get another artificer spell. I think web is probably the best option and probably one of the strongest control spells in the game. We can also make great use of it with our high INT. I don't love the aesthetics, though. I would probably reflavor it as `chains' where magical metal chains spring forth to bind enemies to fit with our metal/forge aesthetic. Other honorable mentions include: aid (we're already pretty tanky and want to save our spell slots), arcane vigor (have a lot of non-spell-based healing), enhance ability (can use perfume for adv. on CHA checks), invisibility (not on brand), and see invisibility (not that good).
+
+
+
+#######
+Level-18: Paladin-04 (Devotion), Artificer-08 (Battle Smith), Fighter-06 (Psi Warrior) 
+ - feat: heavy armor master 
+   * ASI: +1 CON (CON=16) 
+   * damage reduction: reduce incoming B/P/S damage by PB while wearing heavy armor
+  
+NOTE: Pretty simple level here. We take Heavy Armor Master to boost our CON (increasing our save/HP) and giving ourselves a massive boost to our durability against the most common types of damage in the game (probably even still at level-18). Combined with the heroism spell, we could make ourselves very tanky, which is great. If we weren't already, I would probably be using warding bond to protect a weak/squishy ally once every long rest. Really love that we are able to work this and resilient CON into this build. Definitely like the way our final stat distribution has worked out. 
+
+
+
+#######
+Level-19: Paladin-04 (Devotion), Artificer-09 (Battle Smith), Fighter-06 (Psi Warrior) 
+ - arcane jolt (xINT/LR, no more than x1/turn) 
+   * when you hit with an attack roll using a magic weapon/your steel defender hits you can
+   * (i) destructive energy: deal an additional 2d6 force damage 
+   * (ii) restorative energy: heal a target w/in 30ft by 2d6
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 4-3-3-1
+ - spells prepared: paladin (5), artificer (9)
+   * lvl-1 (paladin): bless, cure wounds, detect magic, divine favor, thunderous smite
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from good and evil, shield of faith
+   * lvl-1 (magic-initiate): command (free x1/LR) 
+   * lvl-1 (artificer): feather fall, identify, jump   
+   * lvl-1 (battle smith): heroism, shield
+   * lvl-2 (artificer): blur, heat metal, spider climb, web
+   * lvl-2 (battle smith): shining smite, warding bond 
+   * lvl-3 (artificer): fly, haste
+   * lvl-3 (battle smith): aura of vitality, conjure barrage 
+
+NOTE: Absolutely love this level. Lvl-09 battle smith feature arcane jolt is so on point for us. It feels like it has synergy with divine smite (a damage rider on hit) and with our psi warrior psionic strike (dealing force damage). It represents the cherry on top of our maxed out damage dealing capacity. Oh yeah and it also can be used for non-spell-based healing if needed, which also dovetails with our character's identity/playstyle. We also get a huge boost to spellcasting a this level. We get a 4th level spell slot for upcasting divine smite (for burst dmg) or other spells. We also get access to lvl-3 battle smith bound spells and get to prepare 2 new artificer spells. First let's talk the bound spells -- aura of vitality (AoV) and conjure barrage. AoV is a fantastic option for tanking, while also giving us the ability to res fallen allies. When we're concentrating on it, we can heal ourselves/a creature w/in 30ft by 2d6 each turn. Combined with heavy armor master we are as durable as any barbarian. Conjure barrage is also super great. It's so thematic for our character. I can just imagine doing a Jayce-esque energy blast with our magic weapon. And it's huge AOE (60ft cone), which is great because up until now we have been almost exclusively single target. Finally, it deals force damage and is weapon-related which is exactly on point for this character. Super nice that the bound spells in this build end up being not only very useful, but also super on point thematically. In terms of other prepared spells, we want to take haste and one other spell. I think fly is probably the best for now since it's thematic with our Mandalorian/iron-man kind of vibe. But we won't need it soon. Haste is the big one as it provides our character with a huge boost to mobility, defense, and offense all in one spell. Plus we have invested in having excellent concentration, so it will be nigh-impossible to knock us out of haste once we cast it. While concentrating on it, haste doubles our movement speed (+ jump if we have it up), adds +2 to our AC (up to 21), gives us advantage on DEX saves (which we sorely need), and gives us an extra attack per round (up to 3). This is a huge boost to our sustained DPR. It also enables our end-game nova move, which is as follows (assuming we have divine favor up, are concentrating on haste, and have a +2 weapon): 
+  - attack1_{psi-strike, arcane-jolt) + BA::smite(lvl4) = 2d6(9) + 1d4(3.25) + 1d8(4.875) + 2d6(jolt) + 2*INT(10) + 6(GWM) + 2(weapon) + 5d8(smite) = 64.625
+  - attack2 = 2d6(9) + 1d4(3.25) + INT(5) + 6(GWM) +2(weapon) = 25.25
+  - attack3 (haste) = same as attack2
+  - action-surge
+  - attack4 = same as attack2 (25.25)
+  - attack5 = same as attack2 (25.25)
+  - total = 64.625 + 4*(25.25) = 165.625
+Dear lord. And remember, we can activate sacred weapon to give ourselves +2 to hit with all these attacks. And if we prone the enemy, then we will also have advantage. Absolutely nasty. 
+
+
+
+#######
+Level-20: Paladin-04 (Devotion), Artificer-10 (Battle Smith), Fighter-06 (Psi Warrior) 
+ - magic item adept
+   * additional attunement = can attune up to 4 magic items, rather than 3 
+   * expanded replication = can access lvl-10 magic item plan list 
+ - replicate magic item 
+   * plans (6): perfume of bewitching, sending stones, mithral armor, weapon of warning, cloak of protection, broom of flying
+   * items (4): cloak of protection, broom of flying, weapon of warning
+ - spellcasting 
+ - cantrips: 
+   * artificer (2): firebolt, true-strike 
+   * magic-initiate (2): guidance, thaumaturgy 
+ - spell slots: 4-3-3-1
+ - spells prepared: paladin (5), artificer (9)
+   * lvl-1 (paladin): bless, cure wounds, detect magic, divine favor, thunderous smite
+   * lvl-1 (paladin's smite): divine smite (free x1/LR)
+   * lvl-1 (devotion): protection from good and evil, shield of faith
+   * lvl-1 (magic-initiate): command (free x1/LR) 
+   * lvl-1 (artificer): feather fall, identify, jump   
+   * lvl-1 (battle smith): heroism, shield
+   * lvl-2 (artificer): blur, enhance ability, heat metal, web
+   * lvl-2 (battle smith): shining smite, warding bond 
+   * lvl-3 (artificer): dispel magic, haste
+   * lvl-3 (battle smith): aura of vitality, conjure barrage 
+
+NOTE: We finish out with artificer 10 in order to get more key magic items. Specifically, we can produce a cloak of protection, and a broom of flying. The cloak gives us a +1 to AC (20 base, 22 with haste) and a +1 to saving throws (very paladin-y). Our final stat line of saving throws would be: +3(STR), +0(DEX), +10(CON), +6(INT), +6(WIS), +9(CHA). Plus we have advantage on CON saves to maintain concentration (+14.5), and on DEX saves while hasted (+4.5), and we can add a +5 to any save with Flash of Genius as needed. The broom of flying takes a magic action to activate, but once active gives us a fly speed of 50ft (assuming us + all our equipment is <200 lbs, should be fine given mithral armor + bag of holding). Obviously we will want to reflavor the broom of flying as a `jetpack of flying' to be consistent with the Mandalorian theme we have going. But this is basically concentration free fly speed when we need it. For attunement, we have (1) a weapon of warning, (2) cloak of protection, (3) jetpack of flying, and (4) a badass primary weapon. And we can ditch the weapon of warning if needed for something better. Since we no longer need the fly spell or the spider climb spell, switch them out for something else. I opted for dispel magic to use in emergencies, and enhance ability to use in social/exploration situations. But lots of other good options: aid, invisibility, arcane vigor, glyph of warding, water breathing/water walk. We could probably also ditch feather fall for something else, too, if we wanted, but I think I still like having it in the back pocket for use on allies/objects/NPCs as need (though we can also use telekinetic movement for this). Whatever, it's a first level spell. Pick your favorites. Overall, this level increases our survivability, utility, and versatility, but doesn't do anything for our damage. 
+
+CLOSING THOUGHTS: Very nice and consistent theme throughout the character's progression that works across all three classes/subclasses we end up taking. No awkward hooks to deal with, which is super nice. Super strong melee striker with excellent durability/sustain, pretty good control/utility/support through spells/magic items, as well as strong social/exploration abilities through CHA/INT-based skills. The main challenge with this character is that we end up as basically a 1/3 caster. Choosing when to spend our relatively scarce spell resources will be tough while playing this build. That said, we also get a lot of non-spell-based utility through features like lay on hands, second wind, telekinetic movement, and artificer magic items. Many of the most powerful features of the build also come online towards later levels. This is to be expected, but you would want to be sure you get to high level play. You would also need to be in a party with other utility casters/healers for this to work. But I think you end up being more useful than a pure non-caster along the way. Finally, I think this character has the highest nova damage of any I've built thus far at lvl-20, and has the ability to incorporate powerful magic items (most notably, a weapon) that you would accrue/encounter during a campaign, which is awesome. 10/10 would play.  
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

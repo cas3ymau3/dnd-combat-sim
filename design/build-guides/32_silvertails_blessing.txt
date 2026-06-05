@@ -1,0 +1,843 @@
+Moniker: Blessed of Silvertail  
+Classes: Fighter-04 (Battle Master), Ranger-04 (Beast Master), Cleric-12 (Trickery)    
+Species: Air Genasi 
+ - size: small 
+ - speed: 35ft 
+ - darkvision: 60ft 
+ - unending breath: can hold breath indefinitely while not incapacitated
+ - lightning resistance 
+ - mingle with wind (WIS): shocking grasp (lvl-00), feather fall (lvl-03), levitate (lvl-05)
+Sex: Female 
+Background: Farmer
+ - ability scores: STR, CON, WIS  
+ - feat: tough 
+ - skill proficiencies: animal handling, nature  
+ - tool proficiency: carpenter's tools   
+ - languages: common, common sign language, primordial 
+ - equipment (gold-buy): 50 gp
+Point-Buy Stats 
+ - STR = 14 (+1) = 15 
+ - DEX = 14 
+ - CON = 12
+ - INT = 08
+ - WIS = 15 (+2) = 17 
+ - CHA = 08
+ASI's/Feats:
+ - lvl-00: tough
+ - lvl-05: mounted combatant: +1 WIS (WIS=18)
+ - lvl-09: resilient (WIS): +1 WIS (WIS=19)  
+ - lvl-13: inspiring leader: +1 WIS (WIS=20)  
+ - lvl-16: resilient (DEX): +1 DEX (DEX=15)  
+ - lvl-20: epic boon of fate (DEX): +1 DEX (DEX=16)
+Progression Summary  
+ - lvl-01: fighter-01 --> CON/STR save + heavy armor proficiency, fighting-style::protection, second-wind
+ - lvl-02: fighter-01, ranger-01 --> lvl-01 ranger spells, favored enemy
+ - lvl-03: fighter-01, ranger-02 --> deft explorer, fighting-style::druidic-warrior (starry wisp, thorn whip), feather fall
+ - lvl-04: fighter-01, ranger-03 (beast master) --> primal companion 
+ - lvl-05: fighter-01, ranger-04 (beast master) --> mounted combatant: +1 WIS (WIS=18), levitate 
+ - lvl-06: fighter-01, ranger-04 (beast master), cleric-01 --> lvl-01 cleric spells (bless, command), divine order::thaumaturge
+ - lvl-07: fighter-01, ranger-04 (beast master), cleric-02 --> channel divinity (divine spark)
+ - lvl-08: fighter-01, ranger-04 (beast master), cleric-03 (trickery) --> BoT, duplicate, lvl-02 spells (aid, prayer of healing, warding bond)
+ - lvl-09: fighter-01, ranger-04 (beast master), cleric-04 (trickery) --> resilient (WIS): +1 WIS (WIS=19)  
+ - lvl-10: fighter-01, ranger-04 (beast master), cleric-05 (trickery) --> lvl-03 spells (clairvoyance, spirit guardians)
+ - lvl-11: fighter-02, ranger-04 (beast master), cleric-05 (trickery) --> action surge, tactical mind 
+ - lvl-12: fighter-03 (battle master), ranger-04 (beast master), cleric-05 (trickery) --> commander's, distracting, maneuvering
+ - lvl-13: fighter-04 (battle master), ranger-04 (beast master), cleric-05 (trickery) --> inspiring leader: +1 WIS (WIS=20)
+ - lvl-14: fighter-04 (battle master), ranger-04 (beast master), cleric-06 (trickery) --> trickster's transposition 
+ - lvl-15: fighter-04 (battle master), ranger-04 (beast master), cleric-07 (trickery) --> lvl-04 spells (freedom of movement), blessed strikes 
+ - lvl-16: fighter-04 (battle master), ranger-04 (beast master), cleric-08 (trickery) --> resilient (DEX): +1 DEX (DEX=15)
+ - lvl-17: fighter-04 (battle master), ranger-04 (beast master), cleric-09 (trickery) --> lvl-05 spells (circle of power, scrying) 
+ - lvl-18: fighter-04 (battle master), ranger-04 (beast master), cleric-10 (trickery) --> divine intervention 
+ - lvl-19: fighter-04 (battle master), ranger-04 (beast master), cleric-11 (trickery) --> lvl-06 spells (heroes' feast, word of recall)
+ - lvl-20: fighter-04 (battle master), ranger-04 (beast master), cleric-12 (trickery) --> mage slayer (DEX): +1 DEX (DEX=16)
+Spellcasting Summary: 
+ - NOTE: for `prepared' and `max level' the order goes `ranger-cleric'
+ - lvl-01: slots = 0; prepared: 0-0; max level: 0-0
+ - lvl-02: slots = 2; prepared: 2-0; max level: 1-0
+ - lvl-03: slots = 2; prepared: 3-0; max level: 1-0
+ - lvl-04: slots = 3; prepared: 4-0; max level: 1-0  
+ - lvl-05: slots = 3; prepared: 5-0; max level: 1-0 
+ - lvl-06: slots = 4-2; prepared: 5-4; max level: 1-1 
+ - lvl-07: slots = 4-3; prepared: 5-5; max level: 1-1
+ - lvl-08: slots = 4-3-2; prepared: 5-6; max level: 1-2
+ - lvl-09: slots = 4-3-3; prepared: 5-7; max level: 1-2
+ - lvl-10: slots = 4-3-3-1; prepared: 5-9; max level: 1-3
+ - lvl-11: slots = 4-3-3-1; prepared: 5-9; max level: 1-3
+ - lvl-12: slots = 4-3-3-1; prepared: 5-9; max level: 1-3
+ - lvl-13: slots = 4-3-3-1; prepared: 5-9; max level: 1-3
+ - lvl-14: slots = 4-3-3-2; prepared: 5-10; max level: 1-3
+ - lvl-15: slots = 4-3-3-3-1; prepared: 5-11; max level: 1-4
+ - lvl-16: slots = 4-3-3-3-2; prepared: 5-12; max level: 1-4
+ - lvl-17: slots = 4-3-3-3-2-1; prepared: 5-14; max level: 1-5
+ - lvl-18: slots = 4-3-3-3-2-1; prepared: 5-15; max level: 1-5
+ - lvl-19: slots = 4-3-3-3-2-1-1; prepared: 5-16; max level: 1-6
+ - lvl-20: slots = 4-3-3-3-2-1-1; prepared: 5-16; max level: 1-6
+
+CONCEPT NOTES
+ - go air genasi to get small size + shocking grasp (attack roll, prohibits AoOs)
+ - go tough + lvl-01:fighter for extra HP + CON save proficiency, allowing you to only put CON=12 with point buy 
+ - go STR=15 at character creation, and use heavy armor + shield for AC 
+ - use shocking grasp + beast strike to deal WIS-based dmg with action + BA, prone enemies, and kite in/out w/o provoking AoOs
+ - go cleric to gain access to healing/abjurative spells; use these to buff/protect beast (e.g., aid/warding bond) 
+ - go trickery domain for blessing of trickster, and bound spells that work well with primal companion (invisibility, pass 
+   without trace, dimension door) + advantage on attacks in melee against targets next to your duplicate
+ - go battle master to get maneuvers that you can use in concert with primal companion (restore with PoH)
+ - use air genasi bound spells (feather fall, levitate) in concert with jump spell to give mount pseudo flight 
+ - use beast for physical skill checks (athletics, acrobatics) while we stack proficiency in WIS-skills and rely on animal
+   handling to stay mounted. 
+ - get inspiring leader to give yourself and your beast a bunch of THP on SR
+ - finish out cleric to get access to high(er) level spells; primarily functioning as a utility caster and healer/tank 
+ - go resilient DEX + mage slayer with final two feats to boost DEX to 16, cover all important saving throws (CON, STR, WIS, DEX) 
+   and provide a balanced boost to offensive (concentration breaker) and defensive (guarded mind) capacity
+ - alternatively, for feats you could finish with some combination of resilient DEX, heavy armor master, shield master, 
+   and/or an epic boon feat (recovery, maybe?) 
+ - ultimately, you aren't going to be a max-DPR character, but will do decent damage while still functioning as a high mobility 
+   tank with all the utility/control and healing of a high-level cleric 
+ - mechanically, the idea is to play a mounted character with a pet that actually maximizes the utility and action economy 
+   of having an allied creature with you all the time.
+ - for spellcasting, the idea of this character's particular multiclass is to use spell slots to buff allies/our mount and
+   and primarily rely on cantrips/beast companion attacks for damage and control in combat. 
+
+THEMATIC CONCEPT NOTES: 
+ - think `robin hood' + `white lions of thrace' from Warhammer universe  + San from Princess Mononoke 
+ - abstract concepts: luck/fortune, protection/abjuration, healing, mystery/mercurial, hypnotism, trickery, forest/mountain/snow
+ - start as a humble shepherd of the mountain highlands (air genasi)
+ - though your affinity for wildlife/nature, develop a connection with a wild giant snow fox (primal companion) that roams 
+   your dreams/the forests you travel through
+ - through circumstance, we obtain a shield emblazoned with a symbol of Tymora (lady of luck), starting equipment
+ - initially it provides us with no power, but over time we develop faith through desperation and our burgeoning sense of honor
+ - as your character develops, you come to understand that the fox is an avatar of Tymora allowing you to synergistically RP 
+   your ranger beast companion interactions and cleric's faith in a divine entity. 
+ - one potential idea: starting at level-04 you have a horrific accident that leaves you paralyzed from the waist down. The 
+   beast companion literally becomes your STR and mobility (if you do this, I would ask your DM for a `saddle of the cavalier' 
+   magic item to make sure we aren't ever dismounted). 
+ - you become an audacious war-leader and elite shock trooper, who with a wink and nod can rally adventurer's and unlikely 
+   heroes to a common cause and lead them to victory 
+ - Tymora = adventurers, skill, victory, good fortune, trickery, chaos, good luck, protection, travel
+ - primal magic themes, combined with mounted martial prowess 
+ - your religiosity has a bold but caring nature, fierce and heroic, but also humorous, you care deeply for your friends 
+   and have no sympathy for heretics, villains, and fools  
+ - seeing through illusions; wise to all others tricks
+ - Trickery is simply the other side of truth. Your ability to see the truth of matters derives from your deep understanding 
+   of the nature of deception. 
+
+
+SYNERGISTIC MAGIC ITEMS: 
+ - common: 
+   * cast off armor = you can doff the armor w/a magic action
+ - uncommon: 
+   * adamantine armor = can't be critically hit 
+   * cloak of elvenkind = perception checks to see you have disadv; you have adv. on stealth checks (requires attunement) 
+   * cloak of protection = +1 to AC and saving throws (requires attunement) 
+   * enspelled weapon = 6 charges used to cast lvl-01 spell/cantrip (use for extra uses of jump/longstrider); requires attunement
+   * eyes of the eagle (wondrous item) = adv. on perception checks that rely on sight 
+   * mithral armor = heavy armor with no disadv on stealth and no STR requirement 
+   * nature's mantle = spellcasting focus for ranger spells; can hide as BA in lightly obscured area (requires attunement) 
+   * pearl of power = recover 1 spell slot of lvl-3 or lower (requires attunement) 
+   * periapt of wound closure = double HP recovered by hit die; auto-succeed death save rolls (requires attunement)
+   * saddle of the cavalier = attack rolls against mount have disadv; can't be forcefully dismounted 
+   * sentinel shield = adv. on initiative rolls and perception checks 
+   * wraps of unarmed power = +1 to attack/dmg rolls w/unarmed strikes (mount); change damage type to force dmg
+ - rare: 
+   * amulet of health = CON=19 while you wear it (requires attunement)
+   * armor +1 (armor) = +1 to AC 
+   * armor of resistance (armor) = gain resistance to 1 dmg type 
+   * arrow catching shield = +2 AC against ranged attacks; can use rxn to become target of ranged attacks if w/in 5ft of target 
+                              (requires attunement); better version of protector fighting-style for mount 
+   * cape of the mountebank = free cast of dimension door x1/LR
+   * gem of seeing = 3 charges of truesight; recharge 1d3 uses at dawn (requires attunement)
+   * horseshoes of speed = affix to mount to increase their speed by 30ft
+   * ioun stone of awareness = adv on initiative and perception checks (requires attunement) 
+   * ioun stone of protection = +1 to AC (requires attunement) 
+   * ioun stone of reserve = stores up to 4 levels of spell slots (freedom of movement); requires attunement. 
+   * ring of protection = +1 to AC and saves (requires attunement) 
+   * robe of eyes = adv on perception checks; true-sight w/120ft; light/daylight cast on you blinds you (requires attunement) 
+   * rod of alertness = adv. on perception/initiative; spellcasting; protective aura (+1 to AC/saves); requires attunement 
+   * staff of healing = 10 charges, recharge 1d6+4; cure wounds=1; lesser restoration=2; 5=mass cure wounds (requires attunement)
+ - very rare 
+   * crystal ball = cast scrying (DC-17) while holding it (requires attunement) 
+   * dwarven plate = +2 to AC; if forced to move you can use rxn to reduce forced movement by 10ft 
+   * horseshoes of a zephyr = affix to mount to allow them to levitate 4in off the ground; ignore difficult 
+                                              terrain and not suffer exhaustion after 12h of travel
+   * ioun stone of insight = +2 WIS while you wear it (requires attunement) 
+   * tome of understanding = +2 WIS
+ - legendary: 
+   * armor of invulnerability (plate armor) = resistant to B/P/S dmg; magic action to become immune to BPS for 10m (x1/LR)
+                                              (requires attunement) 
+   * crystal ball of mind reading = scrying + detect thoughts w/no concentration (requires attunement) 
+   * crystal ball of telepathy = scrying + suggestion w/no concentration (requires attunement)
+   * crystal ball of truesight = scrying + truesight w/no concentration (requires attunement) 
+   * ioun stone of mastery = +1 to PB while wearing this (requires attunement) 
+   * ioun stone of regeneration = recover 15HP every hour while you have at least 1HP (requires attunement) 
+   * rod of resurrection = 5 charges; 1 to cast heal, 5 to cast resurrection (requires attunement) 
+   * shield of the cavalier = +2 to AC; shield bash; protective field (x1/LR); see description (requires attunement) 
+   * talisman of pure good = +2 to spell attack rolls; 7 charges of pure rebuke; see description (requires attunement) 
+ - artifact: 
+   * book of exalted deeds (divine wisdom) = +2 WIS up to 24  (requires attunement) 
+   * book of exalted deeds (enlightened magic) = any spell you cast counts as 1 spell lvl higher (requires attunement) 
+
+
+MAX LEVEL MAGIC ITEMS
+- lvl-20 (~6 items, max 1 legendary/artifact) 
+  (1) book of exalted deeds (artifact, temporarily attuned)
+    + enlightened magic: any spell you cast counts as 1 spell lvl higher 
+    + major beneficial properties (2): 
+      - +2 WIS (22)
+      - immunity to blinded, deafened, petrified, stunned 
+    + minor beneficial properties (2): 
+      - +1 to AC 
+      - immunity to charmed and frightened
+  (2) horseshoes of the zephyr (wondrous item, very rare): 
+    + affix to mount to allow them to levitate 4in off the ground; ignore difficult terrain and not 
+      suffer exhaustion after 12h of travel   
+  (3) rod of alertness (wondrous item, rare, attuned): 
+    + adv. on perception checks and initiative rolls 
+    + spellcasting: detect evil & good, detect magic, detect poison & disease, see invisibility
+    + protective aura (x1/LR): 60ft radius bright light; while in light +1 to AC and saves; have to plant rod in ground 
+  (4) gem of seeing (wondrous item, rare, attuned): 
+    + 3 charges; expend a charge to cast true-seeing; regain 1d3 charges at dawn
+  (5) wraps of unarmed power +2 (wondrous item, rare): 
+    + apply to mount allowing them to change damage they deal to force dmg 
+    + plus 2 to attack/dmg rolls w/unarmed strikes (+1d8+10 on hit)
+  (6) mithral armor +1 (armor, rare): 
+    + no disadv. on stealth checks; no STR requirement
+    + +1 to AC
+  (7) saddle of the cavalier (wondrous item, uncommon): 
+    + attack rolls against mount have disadv 
+    + can't be forcefully dismounted
+    + allows you to switch fighting style from protection to defensive, giving you a +1 to AC 
+  (8) cloak of protection (wondrous item, uncommon, attuned)
+    + +1 to AC and saving throws 
+  
+
+
+  
+
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+#######
+Level-01: Fighter-01
+ - feat: tough 
+   * increase HP by 2x character level (2) and by 2 each time you gain a level    
+ - feat: fighting-style::protection 
+   * when a creature you can see attacks a creature other than you w/in 5ft of you 
+   * interpose shield to impose disadvantage on the triggering attack and all other attacks until 
+     start of next turn 
+ - saving throw proficiencies: STR, CON   
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * fighter (2): insight, perception     
+   * farmer (2): animal handling, nature   
+   * tools (1): carpenter's tools (farmer)
+   * languages (3): common, common sign language, primordial  
+ - weapon/armor proficiencies:  
+   * weapons: simple + martial weapons
+   * armor: light/med/heavy armor, shields 
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (farmer) + 155gp (fighter)
+   * weapons: longsword (15gp), whip (2gp), javelins x10 (5gp)
+   * armor: chain mail (75gp), shield (10gp)
+   * tools: carpenter's tools (8gp)
+   * foci: holy-symbol::emblem (5gp), druidic focus::quarterstaff (5gp)
+   * gear: explorer's pack (10gp), traveler's clothes (2gp), rations x6 (3gp)
+   * spare coin: 10gp
+ - combat equipment:
+   * preferred weapon: none 
+   * alternative weapons: 
+     + quarterstaff = 1d6 bludgeoning (topple); versatile (1d8)
+     + longsword = 1d8 slashing (sap); versatile (1d10) 
+     + whip = 1d4 slashing (slow); finesse, reach 
+     + javelin = 1d6 piercing (slow); thrown (30/120)
+   * armor: chain mail 
+   * AC: 16 + 2(shield) = 18
+ - second wind (x2/LR, +1 per SR)  
+   * BA to heal 1d10 + fighter-lvl (1)
+ - weapon masteries (3) 
+   * quarterstaff (topple), longsword (sap), javelin (slow)
+ - spellcasting 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+ - spell slots: 0 
+ - spells prepared: none
+       
+NOTE: Start fighter for CON/STR save and heavy armor proficiency. Use weapons for control if desired. Javelins for ranged attacks. Use shocking grasp in melee for most reliable damage. We have high AC and are pretty durable, so just chip away at enemies and stay alive. 
+
+
+
+
+#######
+Level-02: Fighter-01, Ranger-01  
+ - skill proficiencies: 
+   * fighter (2): insight, perception     
+   * farmer (2): animal handling, nature   
+   * ranger (1): stealth
+   * tools (1): carpenter's tools (farmer)
+   * languages (3): common, common sign language, primordial  
+ - weapon masteries (5) 
+   * quarterstaff (topple), longsword (sap), javelin (slow), whips (slow), hand crossbows (vex)
+ - spellcasting 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+ - spell slots: 2 
+ - spells prepared: ranger (2)
+   * lvl-1 (ranger): entangle, jump
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+
+NOTE: Gain stealth proficiency, though offset by disadvantage from heavy armor. Gain additional weapon masteries to round ut anything you might be using. Learn spells. Hunter's mark + shocking grasp for damage. Entangle for control. Jump for mobility 
+
+
+
+
+#######
+Level-03: Fighter-01, Ranger-02  
+ - feat: fighting-style::druidic-warrior 
+   * learn two cantrips from the druid spell list 
+ - deft explorer 
+   * gain expertise in 1 skill
+   * gain knowledge of 2 languages
+ - skill proficiencies (* indicates expertise): 
+   * fighter (2): insight, perception     
+   * farmer (2): animal handling, nature   
+   * ranger (1): stealth*
+   * tools (1): carpenter's tools (farmer)
+   * languages (5): common, common sign language, primordial, druidic, thieves' cant 
+ - weapon masteries (5) 
+   * quarterstaff (topple), longsword (sap), javelin (slow), whips (slow), hand crossbows (vex)
+ - spellcasting 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+ - spell slots: 2 
+ - spells prepared: ranger (3)
+   * lvl-1 (ranger): entangle, jump, longstrider 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+
+NOTE: Take druidic warrior fighting style to learn starry wisp and thorn whip. Starry wisp is now our go-to ranged attack, though they will do slightly less damage than javelins on hit at this level (it will be better starting at lvl-05). Thorn whip gives us some forced movement control, meaning we don't have to rely on weapons for control. We could also have taken shillelagh or a utility option, but I think our selections are both useful and thematic (starry wisp prevents creatures from hiding/being invisible, and thorn whip can be used to make creatures fall/encounter hazards, both very tricksy). We also get deft explorer, which gives us expertise in one skill and 2 languages. Take expertise in stealth (still mitigated by heavy armor) and learn druidic and thieves' cant. Now between common sign language, druidic, and thieves' cant, we know all the `secret' languages and can use them to communicate incognito -- again on brand for our robin-hood like character. For our new spell, take longstrider but it probably isn't worth casting at this level. We also get feather fall as an air-genasi bound spell. 
+
+
+
+
+#######
+Level-04: Fighter-01, Ranger-03 (Beast Master) 
+ - primal companion (beast of the land)
+   * size: medium  
+   * AC = 13+3(WIS) = 16 
+   * HP = 5 + 5*ranger-lvl = 20 
+   * BA to beast strike: 1d8 + 2 + WIS(3)
+   * charge attack = +1d6 dmg and auto-prone (large or smaller) if you run 20ft before making attack 
+   * primal bond = +PB to all ability checks and saving throws 
+   * speed: 40ft, climb speed: 40ft
+ - combat equipment:
+   * preferred weapon: none 
+   * alternative weapons: 
+     + quarterstaff = 1d6 bludgeoning (topple); versatile (1d8)
+     + longsword = 1d8 slashing (sap); versatile (1d10) 
+     + whip = 1d4 slashing (slow); finesse, reach 
+     + javelin = 1d6 piercing (slow); thrown (30/120)
+   * armor: splint armor (200 gp)  
+   * AC: 17 + 2(shield) = 19
+ - spellcasting 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+ - spell slots: 3 
+ - spells prepared: ranger (4)
+   * lvl-1 (ranger): entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+
+NOTE: Primal companion = cornerstone feature. We've made a spiritual connection with a giant snow fox. Since it is medium size and we are small, we can ride it as a controlled mount. This means we essentially increase our movement speed to 40ft, and gain a climb speed of 40ft. We also can summon a medium size beast of the sea if we need to do any underwater exploration and, since we can hold our breath indefinitely, we can use it as a mount for mobility and have free reign underwater. But the beast of the land is our main go-to. Basic attack plan is to run in, use our BA to command the beast to do a charge attack beast strike knocking the enemy prone, then use our action to cast shocking grasp (w/advantage since they're prone), then use the rest of our movement to dip back to safety. In addition, with our protection fighting style, if anyone targets the beast with an attack (including with an AoO), we can impose disadvantage with our shield until our next turn. So we should feel pretty comfortable keeping the beast safe while kiting enemies. We can buff the beast with our spells like jump and longstrider to further increase our mobility. We can use feather fall to jump off of high places while riding the beast and take no damage, and we can use speak with animals to communicate with the beast allowing us to RP with our new bonded friend. Assume we have the cash to upgrade to splint armor, bringing our AC to 19. 
+
+
+
+
+Level-05: Fighter-01, Ranger-04 (Beast Master) 
+ - proficiency bonus (PB): +3 
+ - cantrip scaling 
+   * shocking grasp: 2d8 
+   * starry wisp: 2d8 
+   * thorn whip: 2d6 
+ - feat: mounted combatant
+   * ASI: +1 WIS (WIS=18) 
+   * mounted attack: you have adv on attacks against creatures w/5ft that are smaller than your mount 
+   * leap aside: mount takes no dmg on successful DEX save, half on fail 
+   * veer: when attack hits mount, you can cause it to hit you instead 
+ - primal companion (beast of the land)
+   * size: medium  
+   * AC = 13+4(WIS) = 17 
+   * HP = 5 + 5*ranger-lvl = 25 
+   * BA to beast strike: 1d8 + 2 + WIS(4)
+ - spellcasting 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+ - spell slots: 3 
+ - spells prepared: ranger (5)
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+
+NOTE: Go ranger-04 and take mounted combatant feat. This lets us boost our WIS to 18, which increases our dmg and our beasts dmg. The feat also significantly increasing the survivability of our beast (through AC, leap aside, and veer). If we happen to be fighting small creatures, this also gives us an offensive advantage. We get one additional prepared spell. Take cure wounds so that we can heal the beast if we need to. Ideally still use spell slots to buff beast via jump and longstrider. We also get levitate as an air genasi bound spell. Talk to DM about how this would work, but I would argue that you can levitate the beast while your riding it, and use thorn whip to pull yourself around. The beast also has a climb speed, so as long as your in an area with some walls it can use those to have essentially unlimited vertical movement. I'm imagining doing crouching tiger hidden dragon shit in the forest while riding a giant white fox (super cool). Nice synergy with species bound spells and class features.
+
+
+
+
+Level-06: Fighter-01, Ranger-04 (Beast Master), Cleric-01 
+ - divine order::thaumaturge 
+   * learn one additional cleric cantrip 
+   * +WIS to arcana and religion checks 
+ - spellcasting 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (3): guidance, light, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-2 
+ - spells prepared: ranger (5), cleric (4)
+   * lvl-1 (cleric): bless, command, guiding bolt, sanctuary 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+
+NOTE: Start with cleric levels. Tymora is our lady of fortune. Per the thematic notes above, the narrative here is that we have been carrying a shield with Tymora's emblem since lvl-01, and our adventures thus far have prompted our character to finally develop a true sense of faith and `deserve' the deities favor. This could be, for example, as our character transitions from being aloof/isolated from the world, to becoming a leader and a shepherd of the wandering/downtrodden souls that exist in the world we adventure in. Mechanically, for divine order go thaumaturge since we already have heavy armor and martial weapon proficiency. For cantrips, go for all the utility options (note guidance helps with stealth). For prepared spells, take bless and make it our new go to concentration spell (phase out hunter's mark, unless we don't have spell slots), and then non-concentration spells that upcast well (command, cure wounds, guiding bolt). Note we can use guiding bolt to give our beast friend advantage on the charge attack to knock prone (bless + advantage = +13.5 to hit, on average). We also grab sanctuary since it has some synergy with our mounted playstyle. For example, if we are low on health, we can cast it on ourselves and then sacrifice our attack action to have our beast make attacks without breaking sanctuary. Alternatively, if the beast is low on HP, or we want to send the beast into a dangerous situation without us, we can cast sanctuary on it. Of course we can also cast in on other allies/NPCs as needed. The utility is situational, but overall I think still better than other options available to us here (PfGE is an honorable mention, since it could help prevent our beast from being charmed, but not generally going to be worth our concentration). 
+
+
+
+
+Level-07: Fighter-01, Ranger-04 (Beast Master), Cleric-02 
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark = heal 1d8 + WIS or deal 1d8 + WIS radiant/necrotic on CON save
+   * turn undead = magic action; undead w/in 30ft WIS save or frightened + incapacitated for 1m
+ - spellcasting 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (3): guidance, light, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3 
+ - spells prepared: ranger (5), cleric (5)
+   * lvl-1 (cleric): bless, command, detect magic (R), guiding bolt, sanctuary 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+
+NOTE: Get channel divinity. For now it's really only useful as a little extra healing for our beast buddy. Turn undead is also situationally very useful. We get to prepare one additional cleric spell. Take detect magic for out of combat utility as a ritual. If someone else in the party already has this (hopefully they do), then take some other ritual (detect poison and disease, purify food and drink) 
+
+
+
+
+Level-08: Fighter-01, Ranger-04 (Beast Master), Cleric-03 (Trickery) 
+ - blessings of the trickster 
+   * magic action to give yourself/another creature advantage on stealth checks until 
+     next LR
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark = heal 1d8 + WIS or deal 1d8 + WIS radiant/necrotic on CON save
+   * turn undead = magic action; undead w/in 30ft WIS save or frightened + incapacitated for 1m
+   * invoke duplicity = BA create illusion for 1m, cast spells in it's location, distract w/in 5ft, move with BA 
+ - combat equipment:
+   * preferred weapon: none 
+   * alternative weapons: 
+     + quarterstaff = 1d6 bludgeoning (topple); versatile (1d8)
+     + longsword = 1d8 slashing (sap); versatile (1d10) 
+     + whip = 1d4 slashing (slow); finesse, reach 
+     + javelin = 1d6 piercing (slow); thrown (30/120)
+     + hand crossbow = 1d6 piercing (vex); range (30/120)
+   * armor: splint armor (200 gp)  
+   * AC: 18 + 2(shield) = 20
+ - spellcasting 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (3): guidance, light, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-2 
+ - spells prepared: ranger (5), cleric (6)
+   * lvl-1 (cleric): bless, command, sanctuary 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+
+NOTE: Cleric-03 and go trickery domain. Number of key benefits. First, we get blessing of the trickster, which we should use on ourself each LR to negate the disadvantage from wearing heavy armor. Now we have straight expertise in stealth giving us a +7 to stealth checks, and our beast has a +5 (plus guidance) so we should be pretty good at stealthing around together. The second key benefit from the trickery subclass is the bound spells. For lvl-01 spells, we get charm person and disguise self. Charm person is pretty bad, since our CHA sucks and we don't have proficiency in any social skills, but disguise self is always handy. The real benefit is the lvl-02 bound spells. We can upcast invisibility or use pass without trace to give both us and our mount even more stealth capabilities. So yeah, between blessing of the trickster, invisibility, and pass without trace -- we are now a pretty effective infiltrator, which is very nice to have for your tank/support. Next we get lvl-02 cleric spells, and we're going to take aid, prayer of healing, and warding bond. All 3 boost the durability of our beast buddy. We should default to casting lvl-03 aid on ourselves, our mount, and one lucky party member at the start of each day then cast warding bond on our beast companion. This will increase our mount's HP from 25 to 40 and give it resistance to all damage, functionally giving it 80 HP. It's AC also increases to 18 and it get's a +1 to all saving throws, which is clutch. Now, we will take damage when the mount is hit, but we have a lot of HP (from tough), proficiency in CON saves (for concentration), and can heal ourselves pretty well with spells/divine spark/second wind. Plus we still have veer and protection fighting-style to prevent hits. Prayer of healing is a nice party-wide buff and gives us an additional channel divinity and second wind use when we cast it. To make room for these lvl-02 spells, we drop guiding bolt and detect magic. Rationale here is that, with the new demands on our lvl-02 spell slots, we probably won't be upcasting guiding bolt and I'm assuming someone else in the party has detect magic (if not, then I would consider keeping this over sanctuary). First level spell slots should preferentially go towards bless, jump, longstrider, and (if needed) cure wounds. Next, trickery cleric also gives us invoke duplicity. Now, the combat utility here is relatively situational. The big one is the `distract' feature, which gives us and our allies advantage on attacks against targets w/in 5ft of both us and our duplicate. This means if we can get our duplicate next to an enemy, then we can make our beast strike charge attack with advantage (and bless), increasing the chances that we damage and prone our enemies. The challenge is that moving the duplicate consumes our BA, which we would like to use to do beast strike, but if we had to sacrifice our action to do it, we could. The duplicate is also pretty good with thorn whip for repositioning enemies and dragging them into hazards, since we can cast spells from it's location. And of course, there's also some good out of combat utility if we can use it as a distraction. Ok and finally, assume that we have earned enough cash to buy ourselves some splint armor (1500gp), boosting our AC to 20, as well as a hand crossbow (75gp). The only reason for the hand crossbow is because it has the vex mastery, which gives us another way to gain advantage for our beast strike charge attack. 
+
+
+
+
+Level-09: Fighter-01, Ranger-04 (Beast Master), Cleric-04 (Trickery) 
+ - proficiency bonus (PB): +4
+ - feat: resilient (WIS)
+   * ASI: +1 WIS (WIS=19) 
+   * gain proficiency in WIS saving throws 
+ - spellcasting 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (4): guidance, light, resistance, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3 
+ - spells prepared: ranger (5), cleric (7)
+   * lvl-1 (cleric): bless, command, sanctuary 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, lesser restoration, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+
+NOTE: Cleric-04 and we take the resilient feat to boost our WIS to 19 and give ourselves proficiency in WIS saves (+8 now). Take the half feat now rather than capping since we want to take more WIS half feats later. Plus we get a PB increase here to offset not capping WIS, and with bless as our go-to concentration spell, we will still have a very good chance to hit (base +6.5). PB increase also boosts our key saving throws (+6 STR, +5 CON, +8 WIS) as well as all the saves and abilities of our beast (+5 base, with warding bond up). We get another cleric cantrip. There's nothing good that we want, so I took resistance for potential situational utility and because it synergizes a bit with warding bond. For our new spell preparation, I took lesser restoration since we might need if our mount gets tagged with any nasty status effects (in particular, paralyzed). No real change in tactics here. I would probably use our new 3rd level slot to upcast aid a second time and boost the HP of the entire party (not just us, our beast and one other). This still leaves us with a third level slot for upcasting invisibility (or bless/command/something else) if we need.  
+
+
+
+
+Level-10: Fighter-01, Ranger-04 (Beast Master), Cleric-05 (Trickery) 
+ - channel divinity (x2/LR, +1 on SR) 
+   * divine spark = heal 1d8 + WIS or deal 1d8 + WIS radiant/necrotic on CON save
+   * sear undead = magic action; undead w/in 30ft WIS save or frightened + incapacitated for 1m and take WIS(4)d8 radiant
+   * invoke duplicity = BA create illusion for 1m, cast spells in it's location, distract w/in 5ft, move with BA 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (4): guidance, light, resistance, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-1 
+ - spells prepared: ranger (5), cleric (9)
+   * lvl-1 (cleric): bless, command, sanctuary 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, lesser restoration, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+
+NOTE: lvl-10 and we go cleric-05. This gets us two new spell preparation, trickery domain bound spells, and access to lvl-03 cleric spells. Oh and we also get sear undead, which is a nice boost to damage if we happen to be fighting undead. For the bound spells, we get hypnotic pattern and nondetection. Hypnotic pattern is a good-but-not-great control spell and nondetection is very situational. So nothing great there. A notable upside of hypnotic pattern, however, is that it does impart the incapacitated condition, so if someone dominates/charms your mount with a spell you can cast this to break their concentration. With our two new spell preparations, I think we take spirit guardians and revivify. Honorable mentions include augury as 2nd-lvl spell, clairvoyance for scouting, aura of vitality for sustain, and mass healing word for healing. Here's the logic -- first on revivify. The fact of the matter is that a lot of our spell resources are somewhat bespoke since we need to use them to continue buffing/supporting our beast companion and our party. At least, that is our character's core identity. Here at level-10, we should probably use our lvl-04 slot to cast aid on ourselves, our beast, and one ally, then use one lvl-03 slot to cast aid on the rest of the party. This leaves us with two additional lvl-03 slots, one of which we can use to upcast invisibility on ourselves + our beast if we need or cast spirit guardians, and then one more. Since we're likely the only cleric in the party, and we have only one `free' 3rd level spell slot, we should probably just save it for revivify in case of emergency. That said, if we know that we're going to be in a scouting/travel/other non-combat situation, then I would definitely switch this out for something more useful. As for spirit guardians, it just synergizes too well with our high-mobility mounted playstyle to pass up. For example, we could cast spirit guardians, then use our BA to command our beast to dash, giving us 80-100ft of movement on a turn and allowing us to tag a large number of enemies with the spirit guardians emanation. And, if we're worried about opportunity attacks, recall that the protector fighting style imparts disadvantage on all attacks against the target after the triggering attack, so we could potentially run around and waste our enemies reaction. Alternatively, we could cast spirit guardians and then use our beast strike charge attack to knock the enemy prone in the emanation. This would mean when they start their turn they have their speed halved, and have to use half their speed to stand up. For creatures with 30ft move speed, this could lock them in the spirit guardians (15ft movement, 7.5 to stand up, emanation is 15ft) unless they use their action to dash. Now, given our limited spell resources, we probably will only be able to use this spell in 1 (maybe 2) fight(s) per day, but it will be pretty effective when we do. Ok, then we use our lvl-02 spell slots to cast warding bond, prayer of healing, upcast bless, and situationally cast pass without trace, lesser restoration, or upcast command. Finally, we use our lvl-01 slots to cast cure wounds, jump, and longstrider. All-in-all it's not the flashiest set of preparations, nor does it use the most interesting (IMO) offerings from the cleric spell list, but it is sustainable and consistent with our character's identity. This is particularly critical since we're going to be going back to fighter for the next several levels which will leave our spellcasting capabilities stuck in neutral. 
+
+
+
+
+Level-11: Fighter-02, Ranger-04 (Beast Master), Cleric-05 (Trickery) 
+ - cantrip scaling 
+   * shocking grasp: 3d8 
+   * starry wisp: 3d8 
+   * thorn whip: 3d6 
+ - action surge (x1/SR)
+ - tactical mind 
+   * expend use of second wind to give yourself 1d10 + fighter-lvl(2) to any ability check 
+   * don't expend use if you still fail
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (4): guidance, light, resistance, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-1 
+ - spells prepared: ranger (5), cleric (9)
+   * lvl-1 (cleric): bless, command, sanctuary 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, lesser restoration, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+
+NOTE: Lvl-11 and we go fighter-02. We get tactical mind and action surge. The nice thing about both of these features is that they recharge on a short rest, and so we will get additional uses of them when we cast prayer of healing. Tactical mind is a nice feature to have in our back pocket for key ability checks, but doesn't do anything for us in combat. Action surge, on the other hand, does really help us with our setups in combat. With action surge, we can use our action to cast a spell (e.g., bless, spirit guardians), use our BA to invoke duplicity, then action surge and sacrifice our attack action to have our beast do its beast strike charge attack (with advantage). This lets us get our damage out starting on the first round of combat, and will make it much easier to use our invoke duplicity ability. Plus, channel divinity and action surge have similarly limited uses and both recover on a SR, so that lines up pretty well. Overall, action surge usually has much more limited utility for spell casters given the updated rules that prohibit you using the extra action to do the magic action, but it actually synergizes quite nicely with our build since we can give our attack action to our beast. Finally, we also get cantrip scaling at character lvl-11 which represents a nice boost to our damage. 
+
+
+
+
+Level-12: Fighter-03 (Battle Master), Ranger-04 (Beast Master), Cleric-05 (Trickery) 
+ - student of war 
+   * gain proficiency with one set of artisan's tools 
+   * gain proficiency in one fighter skill 
+ - skill proficiencies (* indicates expertise): 
+   * fighter (3): insight, perception, survival     
+   * farmer (2): animal handling, nature   
+   * ranger (1): stealth*
+   * tools (1): carpenter's tools (farmer), calligrapher's supplies (battle master) 
+   * languages (5): common, common sign language, primordial, druidic, thieves' cant 
+ - combat superiority 
+   * superiority dice: 4d8 (recover on SR) 
+   * maneuvers (3): 
+     + commander's strike: when you take attack action, direct ally to use reaction to make attack; +SD to dmg
+     + distracting strike: when you hit w/ attack roll, + SD to dmg, next attack by ally has adv
+     + maneuvering attack: when you hit w/ attack roll, + SD to dmg, ally can move 1/2 speed as reaction (no AoOs)
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (4): guidance, light, resistance, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-1 
+ - spells prepared: ranger (5), cleric (9)
+   * lvl-1 (cleric): bless, command, sanctuary 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, lesser restoration, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+
+NOTE: Alright, lvl-12 and we go fighter-03 and take the battle master subclass. This gives us a number of nice features. First we get an extra skill proficiency. I chose survival to be thematic (we are a predator/creature of the forest/mountain after all, plus it leverages our high WIS). We also gain proficiency with one set of artisan's tools. Here I think calligrapher's tools are the obvious choice, since it enables us to scribe spell scrolls given time and gold (which hopefully at this level, we have in abundance). The main thing I would use this for is to scribe scrolls of jump and scrolls of longstrider. With scrolls of jump, you can cast a spell (e.g., bless) using a spell slot with your action, and then cast jump using the spell scroll in order to get buffs up more quickly. For longstrider, the main idea is that it has a 1hr uptime, so if you have scrolls you can keep the buff up more reliably without burning spell slots. It only takes 1 day and 25gp to scribe a scroll for a lvl-01 spell, so provided we have a few days downtime in our campaign every now and then, we should be able to accumulate a nice little stock of these scrolls. Anyway, for what is essentially a ribbon feature, we actually get a lot out of it due to the synergies across classes within this build. Ok but the main thing we get with the battle master subclass is, of course, superiority dice and battle master maneuvers. We get 4d8 superiority dice to fuel maneuvers, but these recover on a SR so we can also get them back when we cast prayer of healing, which is a great. The maneuvers we're going to select are ones that work particularly well with our mount. Commander's strike allows us to sacrifice our attack action to direct an ally (our beast buddy qualifies) to make an unarmed strike/weapon attack with their reaction. Essentially this allows us to do 2 beast strikes per turn (one with our attack action/the beast's reaction, and one with our BA/the beast's action). Two things this lets us do: (1) we can potentially do the beast strike charge attack on two targets, knocking both prone and (2) if we want, we can attack twice per turn and use both our action and BA without breaking sanctuary. Moving on, distracting strike allows us to give our beast advantage on its beast-strike attack if we hit the target with an attack roll first. So if we tag a target with starry wisp we can then charge up and beast-strike with advantage to knock prone (nice). Or say we are fighting an enemy in water or one that is wearing metal (so we have advantage with shocking grasp), then we can shocking grasp first, use distracting strike, and then beast-strike with advantage. This is a great way to generate advantage for the beast strike when we don't have our duplicate in position, allowing us to prone targets even more reliably. Finally, we take maneuvering attack which allows us to let an ally move 1/2 speed using their reaction when we hit with an attack roll. This works particularly well for us, since we can use the ability to give our mount extra movement without burning its action to dash. For example, if we are too far away to get into melee with just our movement alone, we can hit a target with a ranged spell attack like starry wisp, then use maneuvering attack to give our beast additional movement on its reaction and preserve its ability to make the beast strike charge attack using our bonus action. Great way to close the gap and get on top of squishy targets. It also synergizes with our invoke duplicity duplicate. Say we are stuck in melee with something nasty and hard to hit and we want to disengage. We could make a ranged spell attack against a different easy-to-hit target from our duplicates position, then use maneuvering attack to direct our beast to move without provoking AoOs. So for all these maneuvers, there are nice synergies that emerge from our specific multiclass and, in total, the maneuvers represent a really nice boost to our combat versatility as well as a meaningful boost to our damage (through the additional superiority die). Furthermore, as noted above, we can get our SD back using prayer of healing (in addition to short-resting) so we should be able to use these quite frequently throughout the adventuring day. 
+
+
+
+
+Level-13: Fighter-04 (Battle Master), Ranger-04 (Beast Master), Cleric-05 (Trickery) 
+ - proficiency bonus (PB): +5
+ - feat: inspiring leader
+   * ASI: +1 WIS (WIS=20) 
+   * bolstering performance: when you finish SR or LR, grant up to 6 allies THP = char-lvl + WIS (18)
+ - second wind (x3/LR, +1 per SR)  
+   * BA to heal 1d10 + fighter-lvl (4)
+   * can also use for tactical mind 
+ - weapon masteries (6) 
+   * quarterstaff (topple), longsword (sap), javelin (slow), whips (slow), hand crossbows (vex), lance (topple)
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (4): guidance, light, resistance, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-1 
+ - spells prepared: ranger (5), cleric (9)
+   * lvl-1 (cleric): bless, command, sanctuary 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, lesser restoration, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+
+NOTE: Ok lvl-13 and I would say the build is technically `complete' at this level. We go fighter-04 to get a feat and we take inspiring leader. This lets us boost our WIS to 20, increasing our spell DC, chance to hit, our beast's AC (now 19 w/warding bond) and all our WIS-based skills. We also get a proficiency bonus increase here, further boosting our skills, key saves, and chance to hit, as well as all our beast's saving throws and ability check bonuses (+6 base to all saves w/warding bond). Inspiring leader also lets us give ourselves and up to 5 allies (so us, our beast, and four others) a big chunk of THP on every short/long rest. For our beast, this means they start with 25 HP, boosted up to 40 with a lvl-04 aid spell, then up to 58 w/the THP from inspiring leader and functionally doubled to 116 through warding bond. Pretty tanky. And definitely durable enough to stick it out in high-level combat encounters. So even though we had to wait until lvl-13 to cap WIS, doing it with 3 half-feats gives us huge boosts to ours and our beast's survivability, in addition to boosting our support capabilities. Especially given that, even at this level, we are primarily still concentrating on bless during combat, delaying capping our WIS score seems like a worthwhile sacrifice. Finally, at fighter-04 we also get an additional use of second-wind, which further boosts our own healing/survivability, and we gain another weapon mastery. The weapon mastery doesn't really matter since we don't want to use weapons, but I took lances since it is synergistic with the mounted playstyle and we have the strength to wield them. 
+
+
+
+
+Level-14: Fighter-04 (Battle Master), Ranger-04 (Beast Master), Cleric-06 (Trickery) 
+ - channel divinity (x3/LR, +1 on SR) 
+   * divine spark = heal 1d8 + WIS or deal 1d8 + WIS radiant/necrotic on CON save
+   * sear undead = magic action; undead w/in 30ft WIS save or frightened + incapacitated for 1m and take WIS(5)d8 radiant
+   * invoke duplicity = BA create illusion for 1m, cast spells in it's location, distract w/in 5ft, move with BA 
+ - trickster's transposition 
+   * when you take a BA to move or create the duplicate you can teleport, swapping 
+     places with it
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (4): guidance, light, resistance, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-2 
+ - spells prepared: ranger (5), cleric (10)
+   * lvl-1 (cleric): bless, command 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, lesser restoration, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): clairvoyance, dispel magic, revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+
+NOTE: Alright, heading back to cleric we go cleric-06. We get an additional use of channel divinity per LR, meaning we can use our duplicate more frequently. We also get the trickster's transposition ability, which lets us BA teleport between our location and the location of our duplicate. Unfortunately, this isn't as impactful for us as it would be for other clerics, since our beast mount can't move the illusion if we aren't riding it, and it consumes our BA to teleport. You can, of course, try and be creative with it and maybe there are advantages I'm not thinking of, but I don't think it's the best feature for us. Perhaps the biggest boost at this level is that we get an additional 4th level spell slot, and we get to prepare one more spell. For the slot, I would probably just use it to upcast aid at lvl-04 twice in order to get give our entire party +15 HP. For the new spell, I really like clairvoyance, since we are a great scout and stealth infiltrator, and this spell is super handy for recon purposes. I also think that at this level we can drop sanctuary as a level 1 spell in order to pick up dispel magic. This is a great spell for us since it's non-concentration, and we can use (upcast) it to end any nasty effects on our beast mount or allies. Plus the sanctuary gimmick at this point is just pretty situational (though still potentially useful for protecting others/NPCs) and we kind of just want to use our first level slots to boost our mobility (via jump/longstrider). Other honorable mentions include: mass healing word, aura of vitality, magic circle, augury, and guiding bolt. Pick your favorites. 
+
+
+
+
+Level-15: Fighter-04 (Battle Master), Ranger-04 (Beast Master), Cleric-07 (Trickery) 
+ - blessed strikes: 
+   * add your WIS modifier to the damage you deal with cleric cantrips 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (4): guidance, light, resistance, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-3-1 
+ - spells prepared: ranger (5), cleric (11)
+   * lvl-1 (cleric): bless, command 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, lesser restoration, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): clairvoyance, dispel magic, revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+   * lvl-4 (cleric): freedom of movement
+   * lvl-4 (trickery): confusion, dimension door 
+
+NOTE: Alright, lvl-15 and we go cleric-07. First up we get blessed strikes, which allows us to add our WIS mod to damage with cleric cantrips. Ideally we can apply this to damage dealt with our shocking grasp (which we learned via species), but you have to check with your DM on this. But if it doesn't apply to shocking grasp then the feature is literally useless, since we aren't making weapon attacks and have no cleric cantrips that deal damage. It's not a huge damage increase anyway, so I would hope that your DM would be cool with it. Second, we additional spellcasting. We get an additional 4th and a 5th level spell slot, trickery domain bound spells, access to 4th level cleric spells, and an additional spell preparation. For the spell preparation, I would say take freedom of movement. This is a super nice non-concentration buff that you can cast on your mount that gives your mount additional mobility (no effect of difficult terrain), a swim speed, and immunity to paralyzed, restrained and (functionally), grappled. For bound spells, we get dimension door and confusion. Dimension door is awesome since we can use it to teleport with our mount. Confusion is also pretty good, and works as a good control option against enemies that are immune to charmed (hypnotic pattern won't). Resource-wise, I would use the 5th level slot to upcast aid (+20 HP to you/beast and ally), use one 4th level slot to cast aid on the rest of the party, and use another 4th level slot to cast freedom of movement on the beast (pre-cast prior to combat). This leaves you with one 4th level slot for confusion/dimension door, and all of your 3rd level slots for our other good spells (e.g., clairvoyance, spirit guardians, dispel magic, upcast invisibility, cure wounds, command, or prayer of healing). For a quick damage check, if we use a battle master maneuver on our basic shocking-grasp/beast-strike charge attack sequence, while we have spirit guardians up we would do: 7d8+1d6+2+2*WIS = 46 dmg. Obviously this is pretty low, but we are primarily a support and have a lot of versatility/capacity for control, all while maintaining great mobility and survivability, and providing significant healing and utility to our party. 
+
+
+
+
+Level-16: Fighter-04 (Battle Master), Ranger-04 (Beast Master), Cleric-08 (Trickery) 
+ - feat: resilient (DEX) 
+   * ASI: +1 DEX (DEX=15) 
+   * gain proficiency in DEX saving throws 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (4): guidance, light, resistance, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-3-2 
+ - spells prepared: ranger (5), cleric (12)
+   * lvl-1 (cleric): bless, command 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, lesser restoration, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): clairvoyance, dispel magic, revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+   * lvl-4 (cleric): freedom of movement, divination (R)
+   * lvl-4 (trickery): confusion, dimension door 
+
+NOTE: Alright, we go cleric-08 and take the resilient DEX feat. This boosts our DEX to 15 and gives us proficiency in DEX saving throws. We now have proficiency in STR, CON, WIS, and DEX saves, making us very resilient to all the most important types of enemy attacks. This dovetails with our identity as a tank. We also get an additional 5th level spell slot and another spell preparation and I think we go with divination. Probably most importantly, it's a ritual, so it spares our 4th level slots for castings of dimension door and confusion (or other spells). It also dovetails nicely with our identity as a spy, scout, and infiltrator. Notably, it does cost 25gp to cast (not too bad at this level) and becomes unreliable if you cast it more than once per day, but we should use this at least once per day to help set the course of action for the party. Honorable mentions include death ward, locate creature and stone shape. Death ward is probably the most thematic for us as a steward of our mount, but we're unlikely to need it and it requires one of our highest level spell slots. Stone shape is incredibly powerful and good for infiltration -- but with our great stealth capabilities and dimension door to get to hard to reach places, it feels a bit redundant. Locate creature is good and is on brand for our character's hunter/predator theme, but the 1000 ft range makes it hard to use effectively very often. So I think the upside of being able to cast divination every day without expending spell resources wins out. In terms of resource use, I would probably just use both our 5th level slots to upcast aid on the entire party, cast divination every day and keep our other spell uses as they have been up to this point (e.g., freedom of movement + warding bond on our mount, etc.). Again, the philosophy here is to use our higher level slots to maximize the buffs we give to our mount/party and then use our newly freed up lower level slots to engage in situational spellcasting and control/healing. 
+
+
+
+
+Level-17: Fighter-04 (Battle Master), Ranger-04 (Beast Master), Cleric-09 (Trickery) 
+ - proficiency bonus (PB): +6 
+ - cantrip scaling 
+   * shocking grasp: 3d8 
+   * starry wisp: 3d8 
+   * thorn whip: 3d6 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (4): guidance, light, resistance, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-3-2-1 
+ - spells prepared: ranger (5), cleric (14)
+   * lvl-1 (cleric): bless, command 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, lesser restoration, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): clairvoyance, dispel magic, revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+   * lvl-4 (cleric): freedom of movement, divination (R)
+   * lvl-4 (trickery): confusion, dimension door 
+   * lvl-5 (cleric): circle of power, mass cure wounds 
+   * lvl-5 (trickery): dominate person, modify memory
+
+NOTE: Alright, on the home stretch here. We get a proficiency bonus increase, increasing our chance to hit, bonus to skill checks and saving throws, and as well as the bonus to ability checks and saves for our beast mount. Our combined saving throw stat line is now pretty bonkers. We have a +8 STR, +8 DEX, +7 CON, +11 WIS, -1 INT, -1 CHA and our beast is at +9 STR, +9 DEX, +9 CON, +9 WIS, +6 INT, +7 CHA (w/warding bond). We also get cantrip scaling, which is a nice boost to our damage. For spellcasting, we get a 6th level slot, 5th level trickery bound spells, access to 5th level cleric spells, and two additional preparations. For bound spells we get dominate person and modify memory. Neither are game changers, but both are spells not accessible to clerics and spells that would be difficult to fit into a set of prepared spells for any caster. So in some ways it's nice that we get them for free. Obviously dominate person can be encounter-breaking in the right circumstances. Modify memory is similarly super powerful in certain circumstances, and works well with our invoke duplicity ability (walk up do/say something dramatic, then modify memory and then disappear by dismissing the duplicate). For new preparations, we take circle of power and mass cure wounds. Circle of power grants advantage on saving throws against spells and magical effects to everyone in a 30ft emanation and gives you evasion on save or half damage spells. This further bolsters yours and your mounts defenses against spells, which can be devastating at this level. Mass cure wounds is another staple of the cleric spell list, and gives us a burst heal option that can target the entire party if multiple party members are seriously injured or downed. In terms of resource use, I would use the 6th level spell slot on aid, and then have the rest trickle down from there. With 6th level aid, our primal companion would have 50 HP + 23 THP = 73 HP which is functionally equivalent to 146 HP with warding bond. Very nice. 
+
+
+
+
+Level-18: Fighter-04 (Battle Master), Ranger-04 (Beast Master), Cleric-10 (Trickery) 
+ - divine intervention (x1/LR)
+   * magic action to cast any cleric spell of lvl-05 or lower w/o spell components 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (5): guidance, light, resistance, sacred flame, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-3-2-1 
+ - spells prepared: ranger (5), cleric (15)
+   * lvl-1 (cleric): bless, command 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, lesser restoration, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): clairvoyance, dispel magic, revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+   * lvl-4 (cleric): freedom of movement, divination (R)
+   * lvl-4 (trickery): confusion, dimension door 
+   * lvl-5 (cleric): circle of power, mass cure wounds, scrying 
+   * lvl-5 (trickery): dominate person, modify memory
+
+NOTE: First off, at cleric-10 we get another cleric cantrip (woo-hoo). Take sacred flame since it works with our blessed-strikes feature, and can bypass cover. Moving on, we get divine intervention. Divine intervention is broken since it can be used to cast any cleric spell of level 5 or lower as a magic action, irrespective of the actual casting time of the spell. This makes using it to cast the `hallow' spell the most powerful option (check out the spell to see everything it can do). So do that if you want, or alternatively use divine intervention as a catch all -- need mobility in an aquatic environment? Use it to cast water walk. Need a large nuke of damage, use it to cast flame strike. Need to remove petrification from someone? Use it to cast greater restoration. Need to revive a dead ally and didn't get there in time for revivify? Use it to cast raise dead. Need answers to key questions about how to move forward? Use it to cast commune. You get the point. Given just how broken hallow is, I would probably opt for the `catch-all' option in order to keep things more balanced, but hey it's level-18 so do whatever. Ok moving on, we also get one new spell preparation. There are a lot of good/interesting considerations -- first there's greater restoration which provides coverage against exhaustion, petrification and other HP reducing spell effects. It's not a sexy pick and we wouldn't use it very often but can be clutch when needed. Second there's gaes, which is a long term charm spell, and feels very thematic for our hypnotic fox-rider character. But it's not that useful. Banishment is also a very powerful control option, even though I don't love how it makes combat more boring. In the end, I opted for scrying since it is a very useful spell, often is cast in-between combats (so isn't a persistent drain on our spell resources) and feels very on theme for our character, who is now and has been for a while an excellent scout and information gatherer. Anyway, as always, pick your favorites. 
+
+
+
+
+Level-19: Fighter-04 (Battle Master), Ranger-04 (Beast Master), Cleric-11 (Trickery) 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (5): guidance, light, resistance, sacred flame, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-3-2-1-1 
+ - spells prepared: ranger (5), cleric (16)
+   * lvl-1 (cleric): bless, command 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): clairvoyance, dispel magic, revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+   * lvl-4 (cleric): freedom of movement, divination (R) 
+   * lvl-4 (trickery): confusion, dimension door 
+   * lvl-5 (cleric): circle of power, mass cure wounds, scrying 
+   * lvl-5 (trickery): dominate person, modify memory
+   * lvl-6 (cleric): heroes' feast, word of recall
+
+NOTE: Alright, level-19 and we get a 7th level spell slot, one new spell preparation, and access to lvl-06 cleric spells. There's a number of ways to go here, but here's my take. First off, I think heroes' feast is an auto include. At the end of the day, this character's identity has always been about using magic to buff allies and heroes' feast is simply the best option there. Next, given that heroes' feast makes you immune to the poisoned condition, and freedom of movement makes our mount immune to the paralyzed condition the value of keeping lesser restoration on our spell list is reduced. Basically, lesser restoration only helps us with the blinded and deafened conditions, and that just doesn't justify the preparation. So we're also going to drop that in order to prepare word of recall. In terms of resource use, the idea is that we should use a 6th level slot the night before big fights to cast heroes feast, then wake up and use a 7th and 5th level slot to cast aid on the whole party (+30HP/+20HP), leaving us with a 6th level slot to cast word of recall as an emergency BAMF/way home. If we don't need to teleport, we can use the 6th level slot to upcast aid/mass cure wounds/spirit guardians. The other reason we like word of recall is because it dovetails with our reconnaissance and infiltration capabilities. Basically if we're willing to spend a day scouting, we can use our high stealth/mobility, invisibility/pass w/o trace, non-detection, clairvoyance, dimension door, dominate person, modify memory, and scrying to get deep into an area and gather a lot of information about it. Then we can use word of recall to safely/instantly teleport back to our sanctuary. Other honorable mentions that are both useful and thematic include: heal, true-seeing, and forbiddance. But I think word of recall wins out since it's consistent with both our identity as a safety blanket for the party and our identity as a stealth infiltrator and information gatherer. 
+
+
+
+
+Level-20: Fighter-04 (Battle Master), Ranger-04 (Beast Master), Cleric-12 (Trickery) 
+ - feat: epic boon of fate 
+   * ASI: +1 DEX (DEX=16)
+   * improve fate: when you or a creature w/60ft succeeds or fails on a D20 test, you can 
+     roll 2d4 and add/subtract it from the roll; recharges on initiative, SR, and LR 
+ - cantrips: 
+   * air genasi (1): shocking grasp (WIS) 
+   * ranger (2): starry wisp, thorn whip
+   * cleric (5): guidance, light, resistance, sacred flame, spare the dying
+   * thaumaturge (1): thaumaturgy
+ - spell slots: 4-3-3-3-2-1-1 
+ - spells prepared: ranger (5), cleric (16)
+   * lvl-1 (cleric): bless, command 
+   * lvl-1 (ranger): cure wounds, entangle, jump, longstrider, speak with animals (R) 
+   * lvl-1 (favored enemy): hunter's mark (free x2/LR) 
+   * lvl-1 (air genasi): feather fall (free x1/LR)
+   * lvl-1 (trickery): charm person, disguise self 
+   * lvl-2 (cleric): aid, prayer of healing, warding bond 
+   * lvl-2 (air genasi): levitate (free x1/LR) 
+   * lvl-2 (trickery): invisibility, pass without trace 
+   * lvl-3 (cleric): clairvoyance, dispel magic, revivify, spirit guardians
+   * lvl-3 (trickery): hypnotic pattern, nondetection
+   * lvl-4 (cleric): freedom of movement, divination (R) 
+   * lvl-4 (trickery): confusion, dimension door 
+   * lvl-5 (cleric): circle of power, mass cure wounds, scrying 
+   * lvl-5 (trickery): dominate person, modify memory
+   * lvl-6 (cleric): heroes' feast, word of recall
+
+NOTE: Alright lvl-20. We go cleric-12 to get our final feat. As always with lvl-20, there's a lot of cool/different directions we can go here. Regardless of what we choose, I think we want to take a half feat that lets us bump our DEX to 16. Mostly this is just to boost our initiative and DEX save a bit more, both of which are impactful. In terms of the feat, I've opted here to go for the epic boon of fate, which gives us the ability to add/subtract 2d4 from any D20 test after seeing whether roll succeeds/fails once per combat/SR/LR. The thinking here is that at high levels, critical rolls often swing encounters/situations dramatically. This is a feat that can be used defensively to protect ourselves/our mount/an ally from failing a critical saving throw *or* offensively to make a key spell/effect stick on an enemy *or* situationally to ensure success on a key ability check (either in or outside of combat). So it's very versatile. Moreover, our character doesn't have any truly devastating abilities. We do most of our healing/buffing in camp/before combat and our offensive prowess is not outstanding (though we're still no slouch). As a result, I think the most impactful thing we can do in combat is actually to help make our allies' biggest/most important abilities stick or keep them in combat. Epic boon of fate works for that. Especially since most of our key saving throws are already very high, it's more likely that we'll be able to use this feat in an offensive capacity in more encounters. Also, I think we can't ignore the thematic consistency here. As a devotee of the lady of luck, what more appropriate capstone ability than being able to tilt the scales of the universe in our favor to promote a fortunate outcome? Ok so now let's talk about some of the potential alternatives. If not for boon of fate, then I think my second choice would be the epic boon of truesight, which gives us permanent truesight out to 60ft. This would significantly increase our utility as a spy and infiltrator, as our truesight would work through scrying/clairvoyance sensors and allow us to better sniff out/avoid potentially hidden hazards in any setting. It's also very thematic as it would let us `see through any deceptions' and see any invisible/shapechanged creatures. In short, true-sight would make us very hard to fool, deceive, and hide from, which feels on brand. The downside is that, in the majority of combat settings it's not going to do anything for us. So it pushes even more of our utility to settings outside of combat. Another potential option is the epic boon of recovery, which gives us a pool of 10d10s that we can use to heal ourselves with a BA. This would be a significant boost to our survivability, but it isn't as thematic and we are already allocating a lot of resources towards making ourselves durable. Honestly, my third-place choice is probably the mage slayer feat, which would boost our DEX, make it so that we impose disadvantage on CON saves when we damage concentrating creatures, and give us a legendary resistance against mental saves on a SR. The reason I like this is because, like the epic boon of fate, it boosts to both our offensive and defensive capabilities simultaneously. Furthermore, the concentration-breaker part of the feat is just passive, so it gives us additional utility in any combat with spellcasters without relying on limited resources. The guarded mind feature also protects our weakest saves (INT/CHA) and allows us to auto-succeed rather than relying on a roll. I think this is actually better than epic boon of fate here at lvl-20 since, with a -1 to INT/CHA saves, the chances that adding 2d4 (5) to the roll will change a failure to a save are more limited. I think it also works with our characters identity, in way, since we use most of our magical capabilities outside of combat and rely on our/our beast's martial prowess to do most of our damage. In the end though, I think mage slayer is less versatile than epic boon of fate, is a bit more restricted in terms of situational applicability and resource availability, and has lower offensive upside than epic boon of fate. Plus, while the thematics are good, I think epic boon of fate fits like a glove. So yeah, that's probably how I would round it out. All in all, I think this character would be *so* much fun to play. You get to buff the shit out of your party (so everyone loves you) and be a highly-effective tank-healer while still bringing a bunch of versatility and control to combat. Then out of combat, you have a pretty fun distribution of skills and can serve as an excellent scout/spy/stealth infiltrator, which is atypical for a cleric. And you get to give your DM the gift of a long-term beast buddy that you can communicate with and RP with throughout almost the entire campaign. Finally, just for the sake of interest, let's do an HP check. At lvl-20 with our specific multiclass and stat/feat distribution, we would have around 152HP base. So then with heroes' feast, a 7th-lvl aid spell, and inspiring leader we can give ourselves +66 effective HP, on avg, bringing us up to 218, which is amazing. For our beast buddy, he starts with 25HP + 30 from aid + 11 from heroes' feast + 25 THP from inspiring leader = 91 effective HP, doubled to 182 HP with warding bond. We have base AC of 20 (+ any boosts from magic items) and our beast has a base AC of 19 (w/warding bond). We have +7 or higher for STR/DEX/CON/WIS saves and our beast is just as good (even better for INT/CHA). Plus with circle of power active, we can grant advantage on saves to us and our allies. This makes us super durable and resilient. So even though we don't do a ton of damage, we will be incredibly hard to take down. 

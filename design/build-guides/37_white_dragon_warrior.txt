@@ -1,0 +1,743 @@
+Moniker: The White Dragon Warrior  
+Classes: Sorcerer-06 (Draconic::White), Monk-12 (Tatooed.Warrior), Warlock-02
+Species: Human  
+ - size: medium
+ - speed: 30ft 
+ - skillful: +1 skill proficiency at character creation (stealth) 
+ - resourceful: gain x1 heroic inspiration after each LR 
+ - versatile: +1 origin feat at character creation (tough) 
+Sex: Female
+Background: Entertainer 
+ - ability scores: STR, DEX, CHA 
+ - feat (modified): cryokinesis
+ - skills: acrobatics, performance 
+ - tools: musical instrument of your choice (travel harp) 
+ - languages: common, common sign language, draconic 
+ - equipment: 50gp 
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15 (+2) = 17
+ - CON = 12 
+ - INT = 08 
+ - WIS = 13 
+ - CHA = 15 (+1) = 16
+ASI's/Feats: 
+ - lvl-00: tough 
+ - lvl-00: cryokinesis
+ - lvl-05: weapon master: +1 DEX (DEX=18)
+ - lvl-08: sentinel: +1 DEX (DEX=19) 
+ - lvl-13: resilient (DEX): +1 DEX (DEX=20) 
+ - lvl-18: ASI: +2 CHA (CHA=18) 
+ - lvl-20: alert (via lessons of the first ones) 
+ - lvl-20: lucky (via lessons of the first ones)  
+Progression Summary
+ - lvl-01: sorcerer-01 ---------------------------------------------> CON save, spellcasting, innate sorcery 
+ - lvl-02: sorcerer-01, monk-01 ------------------------------------> martial arts (d6), unarmored defense 
+ - lvl-03: sorcerer-02, monk-01 ------------------------------------> font of magic, metamagic (extended, careful)
+ - lvl-04: sorcerer-03 (draconic), monk-01 -------------------------> draconic resilience, draconic spells 
+ - lvl-05: sorcerer-04 (draconic), monk-01 -------------------------> weapon master (daggers): +1 DEX (DEX=18)
+ - lvl-06: sorcerer-04 (draconic), monk-02 -------------------------> unarmored movement (+10ft), monk's focus, uncanny metabolism
+ - lvl-07: sorcerer-04 (draconic), monk-03 (tattooed) --------------> deflect attacks, beast tattoos (bat, crane)
+ - lvl-08: sorcerer-04 (draconic), monk-04 (tattooed) --------------> sentinel: +1 DEX (DEX=19)
+ - lvl-09: sorcerer-05 (draconic), monk-04 (tattooed) --------------> sorcerous restoration, draconic spells, sleet storm 
+ - lvl-10: sorcerer-05 (draconic), monk-05 (tattooed) --------------> extra attack, stunning strike, martial arts (d8) 
+ - lvl-11: sorcerer-05 (draconic), monk-06 (tattooed) --------------> empowered strikes, unarmored movement (+15ft), celestial tattoo (eclipse) 
+ - lvl-12: sorcerer-05 (draconic), monk-07 (tattooed) --------------> evasion  
+ - lvl-13: sorcerer-05 (draconic), monk-08 (tattooed) --------------> resilient (DEX): +1 DEX (DEX=20)
+ - lvl-14: sorcerer-05 (draconic), monk-08 (tattooed), warlock-01 --> pact magic, eldritch mind 
+ - lvl-15: sorcerer-05 (draconic), monk-09 (tattooed), warlock-01 --> acrobatic movement 
+ - lvl-16: sorcerer-05 (draconic), monk-10 (tattooed), warlock-01 --> heightened focus, unarmored movement (+20ft), self restoration 
+ - lvl-17: sorcerer-05 (draconic), monk-11 (tattooed), warlock-01 --> nature tattoo (storm/wave), martial arts (d10) 
+ - lvl-18: sorcerer-05 (draconic), monk-12 (tattooed), warlock-01 --> ASI: +2 CHA (CHA=18)
+ - lvl-19: sorcerer-06 (draconic), monk-12 (tattooed), warlock-01 --> elemental affinity (cold) 
+ - lvl-20: sorcerer-06 (draconic), monk-12 (tattooed), warlock-02 --> LotFO:alert, LotFO:lucky
+
+MECHANICAL CONCEPT NOTES
+ - DEX-CHA monk with sorcerer (and warlock) multiclass; enhance monk abilities with spellcasting; use 
+   high CHA and skill proficiencies to be a `face' type character with the monk (rather than sorc) chassis 
+ - leverage draconic sorc subclass + tough for HP even though we sacrifice CON at point buy 
+ - take cryokinesis origin feat to get armor of agathys for additional durability and damage
+ - together these HP/THP boosting abilities will help us manage our relatively low AC (not terrible tho)
+ - take weapon master feat early to get dagger (nick) mastery, enabling 3 attacks per turn w/o extra attack
+ - go tattooed warrior monk subclass for access to blindsight; idea is to combine this with fog cloud and 
+   (eventually) sleet storm to gain advantage on all our attacks while imposing disadvantage on enemy attacks
+ - take sentinel feat so that we can use our reaction to lock enemies within our fog cloud/sleet storm 
+ - until we get sentinel, use sorcery points to create lvl-01 spell slots for more castings of armor of agathys 
+ - once we have sentinel at lvl-08, start casting fog cloud. then immediately at lvl-09 go sorc-05 to get 
+   more sorcery points and use those to fuel buffs like darkvision and magic weapon. 
+ - go with extended spell and careful spell for metamagic options. Use extended to give ourselves (near) full-day 
+   up time on magic weapon and armor of agathys. Eventually use careful spell so that we can cast sleet storm 
+   around ourselves and auto-succeed on the first DEX save (so it lasts at least 1-turn). 
+ - take resilient DEX to improve the chances that we succeed on the saving throw against sleet storm 
+ - take a warlock dip at lvl-14 in order to eldritch mind and some pact magic slots that we can convert to sorcery points 
+   in order to make our main combat tactic super consistent. Note that with CON save proficiency and eldritch mind, we'll 
+   very rarely fail concentration checks even with CON=12 (deflect attacks also helps with this, since we can reduce the 
+   DC of concentration checks when enemies hit us). 
+ - Lvl-15-18 we go monk in order to get nice base class features, increase our martial arts die to a d10, and get an ASI. 
+ - Use nature tattoo subclass feature to give yourself additional damage resistances. 
+ - Finish out sorc for additional sorcery points and elemental affinity. End on warlock-02 in order to get alert and lucky from 
+   lessons of the first ones.  
+ - Overall, it's a simple mechanical concept wherein we use sentinel/grapple/nets to lock enemies inside a fog cloud or sleet 
+   storm, and then make a bunch of attacks with advantage through the combination of the monk class (FoB) and nick mastery. 
+   Late game investments in saving throws (eldritch mind CON, resilient/nature tattoo DEX, lucky) all facilitate a playstyle 
+   where we can actually fight effectively within the sleet storm that we can cast. 
+ - This is the best thing I could come up with that actually leverages the garbage that they give you in the tattooed monk 
+   subclass. In the end I think it does a pretty good job and we end up with a cool/thematic build. But we'll essentially just 
+   be a weird monk when we can't blind our enemies through heavily obscuring an area (i.e., if they have tremorsense or immunity 
+   to the blinded condition). But that's not *that* common, so I think we should be fine. 
+
+THEMATIC CONCEPT NOTES: 
+ - think of `subzero' meets `mulan' meets `kislev (warhammer)' meets `black widow/red sparrow'
+ - we are a dancer/member of an elite troupe of ballerinas/acrobatic performers (cirque du soleil monks) from some cold/frozen biome and 
+   authoritarian civilization 
+ - our body is infused with cold magic and manifests aspects of the great white dragons; our martial techniques have a cold/frozen theme
+   (e.g., `freeze' enemies with sentinel, fog cloud is `snowstorm', cryokinesis turns our hand to `ice' when we punch, etc.)
+ - hands and forearms are covered in fine white dragon scales; our hair retains some of the rigidity of dragon spines (dread-like at the base)
+ - we were raised as a child prodigy, with the sole purpose of becoming a standard bearer/representation of our nation's 
+   strength and glory (think Russian ballet)
+ - our burgeoning connection to the primal forces of nature and arcana (cold magic, dragons) challenges our culture's norms and forces 
+   us to question the role we've chosen to pursue; ultimately we come to realize we can achieve greater heights by breaking the mold and 
+   pursuing our own path the greatness
+ - perhaps our story culminates with us challenging the deadly grace and power of white dragons themselves, or at least earning their
+   respect
+ - we could develop a meaningful relationship with a white dragon (though it would have to be somewhat fraught, given this character's 
+   alignment is almost certainly lawful good) who eventually becomes our warlock patron 
+ - long elaborate blond hair (almost white), sharp ice blue eyes, svelte and dangerously lithe but small, pretty and easy to underestimate;
+   our toughness is definitely more than meets the eye. 
+ - themes: cold, freezing, ice storms, brutal traditions of physical excellence (e.g., ballet), artistic meaning/freedom in authoritarian regime, 
+           pursuit of excellence/glory, connection to primal forces of nature and arcana, infectious optimism and enthusiasm for adventure, 
+           belief in humanoid's inherent potential for greatness, breaking conventions, harbinger of social change, bonding through shared trauma  
+ - traits: honest/earnest, instinctive, graceful, competitive, hardworking, devoted proud, strident, bombastic, friendly, self-confident, ferocious
+           hasty, prideful, unquestioning of bias/authority, narrow-minded, quick to anger, sanctimonious, reckless, savage   
+ - reflavor tattoos from monk subclass to fit overall background setting/theme/country of origin for this character
+
+SYNERGISTIC MAGIC ITEMS (TBD): 
+ - common:
+ - uncommon: 
+ - rare: 
+ - very rare: 
+ - legendary: 
+ - artifact: 
+   
+MAX LEVEL MAGIC ITEMS (TBD)
+- lvl-20 (~6 items, max 1 legendary/artifact)   
+
+
+DAMAGE PROFILE
+
+
+
+#####################################################################################
+DETAILED PROGRESSION NOTES
+
+
+
+#######
+Level-01: Sorcerer-01
+ - feat: tough 
+   * increase HP by 2x character level (2) and by 2 each time you gain a level   
+ - feat: cryokinesis 
+   * ice manimpulation = once per turn, when you deal B/P/S or psychic dmg, you can turn it to cold dmg 
+   * psionic talent = ray of frost, armor of agathys (free 1/LR), ice knife (free x1/LR)
+                      when you cast these spells, no verbal or material components required  
+ - saving throw proficiencies: CON, CHA    
+ - proficiency bonus (PB): +2 
+ - skill/tool proficiencies: 
+   * sorcerer (2): insight, persuasion    
+   * entertainer (2): acrobatics, performance
+   * human (1): stealth   
+   * tools (1): musical instrument (travel harp)     
+   * languages (3): common, common sign language, draconic   
+ - weapon/armor proficiencies:  
+   * weapons: simple weapons
+   * armor: none   
+ - starting equipment (gold-buy):
+   * starting gold = 50gp (entertainer) + 50gp (sorcerer)
+   * weapons: x2 daggers (4gp) 
+   * armor: none 
+   * tools: travel.harp (25gp)
+   * foci: arcane.focus::crystal (10gp)  
+   * gear: explorer's pack (10gp), grappling hook (2gp), fine clothes (15gp),  mirror (5gp), x1 net (1gp)
+           x2 lamp (1gp), x4 perfume (20gp), tent (2gp), traveler's clothes (2gp)
+            
+   * spare coin: 3gp
+ - combat equipment:
+   * weapon: dagger (x2) = 1d4 piercing; finesse, light, thrown
+   * armor: mage.armor 
+   * AC: 13 + 3(DEX) = 16
+ - innate sorcery (x2/LR) 
+   * BA to activate; duration 1m
+   * advantage on attack rolls w/sorcerer spells 
+   * sorcerer spell DC +1 
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (4): blade ward, elementalism, friends, message
+ - spell slots: 2 
+ - spells prepared: sorcerer (2)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR)   
+   * lvl-01 (sorcerer): detect magic (R), mage armor 
+
+NOTE: Since we'll never be boosting CON, start out sorcerer to get CON save proficiency. Take mage armor and detect magic as sorcerer spells. Use one spell slot to cast mage armor, use other spell slot for armor of agathys (x2, including free cast). If we can, pre-cast blade ward before combat to increase our durability. Use innate sorcery to boost damage from ice knife. Moving forward, we won't rely on innate sorcery at all for this build, so it's just a bonus if you happen to be able to activate it. Ray of frost and ice-knife for ranged. Dual wield daggers in melee (drawing an sheathing one so you have a free hand for spellcasting). With tough, we start with 9 HP (same as a wizard with CON=16) and we also get 10 THP per long rest from casting armor of agathys. For DPR purposes, assume we're dual wielding daggers in melee when we aren't using ice knife and that we use innate sorcery before we cast ice-knife to give ourselves advantage and increase our spell DC. Also, assume that we proc our armor of agathys once each time we cast it (5 dmg each time) and that we only hit one target with the ice knife AOE. Also, assume that we use our reaction to make an attack of opportunity on 1/3 of combat rounds. Against an AC-13 target we hit and don't crit if we roll 8-19 (60% of outcomes) and we crit if we roll a 20 (5% of outcomes). If we roll with advantage (which we will when we use ice knife with innate sorcery) we have a 10% chance to crit and a 78% chance to hit. And a target with a +1 DEX save has a 60% chance of failing against our DC-14 (w/innate sorcery) ice knife attack. Given all this, we're dealing: 
+ (main-hand attack): (15/16)*(0.60*5.5 + 0.05*8)  = 3.47 dpr
+ (BA off-hand attack): (15/16)*(0.60*2.5 + 0.05*5) = 1.64 dpr
+ (armor of agathys x2): 10/16 = 0.625 dpr 
+ (ice knife, innate sorcery): (1/16)*(0.78*5.5 + 0.1*11 + 0.6*7) = 0.60 dpr
+ (attacks of opportunity): (1/3)*(0.60*5.5 + 0.05*8) = 1.23 dpr
+ (total): 7.57 DPR 
+ (HP/THP): 9/10
+Not bad for a melee sorcerer at lvl-01 actually. Squarely in C-level for tier-01 damage according to Treantmonk's rankings (07-09 DPR). For RP/out of combat, use perfume + friends + persuasion proficiency to serve as a face. Use stealth and high DEX to sneak around. Use acrobatics + performance for distraction/cover and/or to earn gold from NPCs. 
+
+
+
+
+#######
+Level-02: Sorcerer-01, Monk-01
+ - unarmored defense 
+   * base AC = 10 + DEX(3) + WIS(1) = 14
+ - martial arts: 
+   * while not wearing armor or holding shield, gain following: 
+   * BA unarmed strike = can make an unarmed strike as a BA 
+   * dexterous attacks = can use DEX for unarmed strikes, attacks w/monk weapons and shove/grapple DC 
+   * martial arts die (1d6) = use martial arts die in place of damage die for unarmed strikes/monk weapons 
+
+NOTE: Ok, lvl-02 and we go monk-01 to get martial arts. This boosts our damage substantially since we can use a d6 martial arts die for our attacks with monk weapons (incl. daggers) and unarmed strikes. With our relatively low WIS (for a monk, anyways), unarmored defense doesn't do us much good. We still want to cast mage armor at the start of each adventuring day, but at least now if it wears off or is dispelled our AC doesn't totally fall off a cliff. Monster AC and DEX save bonus both increase by 1 at this level (to 14 and +2, respectively). Factoring this in our new DPR is: 
+ (main-hand attack): (15/16)*(0.55*6.5 + 0.05*10)  = 3.82 dpr
+ (BA unarmed strike): (15/16)*(0.55*6.5 + 0.05*10) = 3.82 dpr
+ (armor of agathys x2): 10/16 = 0.625 dpr 
+ (ice knife, innate sorcery): (1/16)*(0.7425*5.5 + 0.1*11 + 0.55*7) = 0.56 dpr
+ (attacks of opportunity): (1/3)*(0.55*6.5 + 0.05*10) = 1.36 dpr
+ (total): 10.19 DPR 
+ (HP/THP): 16.5/10 
+Note that with tough, at lvl-02 we have the same HP as a lvl-02 monk with CON=14 would have (16.5) but we also get the 10 THP from armor of agathys and have blade ward. So we're actually quite a bit more durable than it would seem. Given this, we should feel comfortable going into melee. The BA unarmed strike from monk significantly boosts our damage here, pushing us up into B-level for tier-01 damage (10-12 DPR). 
+
+
+
+#######
+Level-03: Sorcerer-02, Monk-01
+ - sorcery points (SP): 2
+ - font of magic
+   * convert spell slots into sorcery points 
+   * create spell slots with sorcery points 
+ - metamagic (x2)
+   * extended spell (1 SP)  
+   * carefull pell (1 SP)  
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (4): blade ward, elementalism, friends, message
+ - spell slots: 3 
+ - spells prepared: sorcerer (4)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), mage armor, fog cloud
+
+NOTE: Ok lvl-03 and we go back to sorcerer for sorc-02. We get another spell slot, two new spell preparations, 2 sorcery points, font of magic, and we get to pick two metamagic options. For metamagic we pick extended spell and careful spell. We'll be using the former to boost uptime on our buff spells (like armor of agathys and magic weapon). And we'll use eventually use careful spell when we start casting sleet storm at later levels. The main draw here is the spell slot and sorcery points. With three lvl-01 spell slots and two sorcery points, we use one spell slot to cast mage armor, convert 2 sorcery points to 1 lvl-01 spell slot (3 avail) and then use all our remaining slots + our free cast to cast armor of agathys four times for up to 4hr of uptime. Note that it's probably more valuable to use our SP to create a new spell slot for an additional casting of armor of agathys, versus using them to extend the spell's duration, since it's more likely that we burn through the THP we get from casting it in combat than it is that the duration expires. This seems reasonable given that we are playing a melee striker build and have modest AC. I think it's also more reliable/flexible to cast the spell multiple times (when you think there might be danger) versus hoping that you can get multiple encounters out of a single cast + extended spell. For our new spell preparations we take comprehend languages and fog cloud. We'll want to start casting fog cloud at later levels, so we take it now. And comprehend languages is a ritual that is potentially very useful on a face character. Since we're using all our spell slots on armor of agathys, we don't really want to pick something that requires slots to cast in combat. Right, so then with 4 casts of armor of agathys per LR and no changes to monster AC or DEX saves, our new DPR calcs to: 
+ (main-hand attack): (15/16)*(0.55*6.5 + 0.05*10)  = 3.82 dpr
+ (BA unarmed strike): (15/16)*(0.55*6.5 + 0.05*10) = 3.82 dpr
+ (armor of agathys x4): 20/16 = 1.25 dpr 
+ (ice knife, innate sorcery): (1/16)*(0.7425*5.5 + 0.1*11 + 0.55*7) = 0.56 dpr
+ (attacks of opportunity): (1/3)*(0.55*6.5 + 0.05*10) = 1.36 dpr
+ (total): 10.81 DPR 
+ (HP/THP): 23/20 
+And we have an effective HP/THP pool of 43 hit points. This is more than a barbarian with CON=16 would have at this point (34), though obviously they also get dmg reduction from rage. Anyway, the point is that we are certainly tanky enough to wade into melee combat. And we're still dealing solid B-level damage (10-12 DPR) here in tier-01. Nice. 
+
+
+
+
+#######
+Level-04: Sorcerer-03 (Draconic), Monk-01
+ - sorcery points (SP): 3
+ - draconic resilience:
+   * HP +3
+   * +1 HP each time you gain a level in this class 
+   * unarmored AC = 10+3(DEX)+3(CHA) = 16
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (4): blade ward, elementalism, friends, message
+ - spell slots: 4-2 
+ - spells prepared: sorcerer (6)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), fog cloud, jump 
+   * lvl-01 (draconic): chromatic orb, command
+   * lvl-02 (sorcerer): darkvision, magic weapon
+   * lvl-02 (draconic): alter self, dragon's breath
+
+NOTE: Ok lvl-04 and we go sorcerer-03 to get our subclass. We go draconic and get draconic resilience and draconic spells. With draconic resilience, we have a base HP of 32.5, which is almost the same as a fighter with CON=14 at this level (34.5). And, of course, we're still getting lots of THP. We also get a CHA-based unarmored AC. Now, our unarmored AC is the same as what we get with mage armor (16). So we switch out the mage armor spell for jump in our spell preparations. We don't really like any of the draconic bound spells we get, except for command which is a very good spell (I guess alter self could situationally be useful, too, for a swim speed or altered appearance). For our two new spell preparations, we take darkvision and magic-weapon. In terms of our spellcasting resources, since we no longer have (or need) mage armor, we turn 2 sorcery points into 1 lvl-01 spell slot to give ourselves 5 lvl-01 slots for casting armor of agathys/command/jump. Then we use one lvl-02 spell slot to cast darkvision and our other lvl-02 slot to cast magic weapon on a dagger, using our last sorcery point to extend the spell when we cast it. In total with this allocation, we get 8hr of darkvision, 2hr uptime on magic weapon, 4 casts of armor of agathys (including our free cast), and two lvl-01 flex slots for casting jump/command (or just more armor of agathys). Assuming we are able to proc it, using our BA to cast armor of agathys during combat deals more damage (5) than using our BA to make an unarmed strike (3.82) because right now we only have a 55% chance to hit (with monster AC=15). So for our DPR calculation, I assume that we're getting 6 procs of armor of agathys per long rest, and forgoing 2 BA unarmed strikes in combat to cast it (we already forgo one to do innate sorcery when we cast ice knife). Let's also assume that with 2hr uptime on magic weapon, we're able to use a +1 dagger for our main-hand attacks in 1/2 of our combat rounds (as well as for 1/2 of our opportunity attacks). Noting that average monster AC increases to 15 here at lvl-04, our new DPR calcs out to:
+ (main-hand attack, +1 dagger): (8/16)*(0.55*7.5 + 0.05*11)  = 2.34 dpr
+ (main-hand attack, +0 dagger): (7/16)*(0.50*6.5 + 0.05*10)  = 1.64 dpr
+ (BA unarmed strike): (13/16)*(0.50*6.5 + 0.05*10) = 3.05 dpr
+ (armor of agathys x6): 30/16 = 1.875 dpr 
+ (ice knife, innate sorcery): (1/16)*(0.70*5.5 + 0.1*11 + 0.55*7) = 0.55 dpr
+ (attacks of opportunity, +1 dagger): (1/2)*(1/3)*(0.55*7.5 + 0.05*11) = 0.78 dpr
+ (attacks of opportunity, +0 dagger): (1/2)*(1/3)*(0.50*6.5 + 0.05*10) = 0.625 dpr
+ (total): 10.86 DPR
+ (HP/THP): 32.5/30 
+Right so the damage increase we get from magic weapon and additional uses of armor of agathys almost exactly offsets the DPR loss from monster AC increasing. So we end up just a hair better, damage-wise, than level-03. Overall, our average tier-01 DPR is 9.86, which is right at the very tippy top of C-level according to Treantmonk's rankings (B-level is 10-12). Not too shabby, and better than the blade-pact baseline for sure. And to go along with our damage, we are definitely quite tanky (especially for a sorcerer) and bring some interesting versatility/utility to the party via our high CHA and party-face skills. 
+
+
+
+
+#######
+Level-05: Sorcerer-04 (Draconic), Monk-01
+ - proficiency bonus (PB): +3
+ - sorcery points (SP): 4
+ - feat: weapon master 
+   * ASI: +1 DEX (DEX=18) 
+   * mastery property: can use weapon mastery property of 1 weapon you're proficient with; 
+     can change which weapon on LR (choose daggers)
+ - draconic resilience:
+   * unarmored AC = 10+4(DEX)+3(CHA) = 17
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (5): blade ward, elementalism, friends, message, mind sliver
+ - spell slots: 4-3 
+ - spells prepared: sorcerer (7)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), fog cloud, jump, shield 
+   * lvl-01 (draconic): chromatic orb, command
+   * lvl-02 (sorcerer): darkvision, magic weapon
+   * lvl-02 (draconic): alter self, dragon's breath
+
+NOTE: Alright, to start off tier-02, we go sorcerer-04. We get a proficiency bonus increase (+3) and we pick up a feat: weapon master. Weapon master lets us bump our DEX to 18 and lets us use the mastery property of one simple/martial weapon with which we are proficient. Any weapon with the nick property (daggers, light hammers, sickles, scimitars) will work, but I think we should just take daggers since they also have the thrown property which might come in handy if we want to make ranged dagger attacks now that our DEX mod is higher than our CHA mod (which we would use for ray of frost). So yeah, daggers it is. The boost to our DEX increases our unarmored AC to 17, which is nice and probably on par with what straight-classed monks have at this level. Having access to the nick property means when we take the attack action we can attack with a dagger, then make the extra attack of the light property as part of the attack action (2 attacks) and still have our BA to make an unarmed strike. So effectively we have 3 attacks, which is pretty nice. Sorcerer-04 also gets us another sorcery point, another 2nd level spell slot, and one additional spell preparation. For the preparation, I took the shield spell. That's because with the increase to our DEX mod it's better to use our BA to make an unarmed strike (5.05 dmg, on average, accounting for chance to hit/crit) than it is to cast armor of agathys. And it's much easier to make sure the damage goes through since we don't have to rely on enemies hitting us. To be clear, we still want to cast armor of agathys out of combat, but we don't need to use flex spell slots to cast it with our BA in combat. As a result, we have a few extra spell slots per day to cast other spells and shield is a *great* option, especially since we can stack it with blade ward to become *very* hard to hit. So we pick that up. In terms of spellcasting resources, we turn 2 sorcery points into 1 lvl-01 spell slot (5 total). Then we use 1 lvl-02 spell slot to cast darkvision, and use 2 lvl-02 spell slots to cast magic weapon twice, using 1 sorcery point each time for extended spell (2h duration). That leaves 3 lvl-01 slots + our free cast to cast armor of agathys in between combats (x4/LR), and two flex slots to use for casting jump/shield/command, etc. In total we get: 8hr of darkvision, 4hr of magic weapon, 4x armor of agathys, 2 lvl-01 flex spell slots. In terms of DPR, a full round of attacks against an AC-15 enemy now does more damage (12.55), on average, than casting ice-knife (9.38, even with innate sorcery active). Obviously, we might still want to do BA:innate.sorcery + ice-knife if there's a great opportunity to deal damage to a bunch of enemies in the ice-knife AOE, or we aren't in melee range. But for DPR optimization purposes, we just want to make 3 attacks on every turn. Finally, given that we will now have 4hr of uptime on magic weapon, I'm going to assume that we get to use our +1 dagger in 3/4 of combat rounds per day and for 3/4 of our attacks of opportunity. Given this, our new DPR calcs to: 
+ (main-hand attack, +1 dagger): (12/16)*(0.65*8.5 + 0.05*12)  = 4.59 dpr
+ (main-hand attack, +0 dagger): (4/16)*(0.60*7.5 + 0.05*11)  = 1.26 dpr
+ (off-hand attack, +0 dagger): (0.60*3.5 + 0.05*7) = 2.45 dpr 
+ (BA unarmed strike): (0.60*7.5 + 0.05*11) = 5.05 dpr
+ (armor of agathys x4): 20/16 = 1.25 dpr 
+ (attacks of opportunity, +1 dagger): (3/4)*(1/3)*(0.65*8.5 + 0.05*12) = 1.53 dpr
+ (attacks of opportunity, +0 dagger): (1/4)*(1/3)*(0.60*7.5 + 0.05*11) = 0.42 dpr
+ (total): 16.55 DPR
+ (HP/THP): 40/20
+This isn't great DPR. Certainly we're living at the bottom of D-level for damage in tier-02 (15-21 DPR). But it's early days still, and we are quite tanky. Plus we will be working towards abilities that boost our DPR in just a few levels. Oh right, and at sorc-04 we also get a new cantrip. I opted for mind-sliver since nerfing enemy saving throws is always useful. For example, we can use it right away to try and land grapples more effectively if we were interested in doing that (action::mind-sliver + BA:unarmed.strike::grapple). Maybe this bit of extra control can help offset our relatively lackluster damage. Plus, targeting INT saves increases our chances of success given our relatively low spell DC. 
+
+
+
+
+#######
+Level-06: Sorcerer-04 (Draconic), Monk-02
+ - unarmored movement 
+   * movement speed increases by 10ft (40ft) while not wearing armor/shield
+ - uncanny metabolism 
+   * on initiative roll: recover all FP and md(1d6) + monk-level HP (x1/LR) 
+ - monk's focus (2 FP) 
+   * recover all FP on SR
+   * flurry of blows (1FP): make two unarmed strikes as a BA 
+   * step of the wind: dash as a BA, disengage + dash as BA (1FP) 
+   * patient defense: disengage as BA, disengage + dodge as BA (1FP) 
+
+NOTE: Right so lvl-06 and we go back to taking monk levels. We get unarmored movement (40ft), 2 focus points, uncanny metabolism, and monk's focus. The extra movement is definitely nice since we have been relying on the occasional cast of the jump spell for extra mobility to this point, and we are a melee focused character that wants to get up close and personal. The extra healing from uncanny metabolism is minimal (5.5 HP), but also welcome and adds to our impressive durability. But the big bonus here are the new techniques we get from monk's focus. Being able to dash and disengage as a bonus action (no cost) is pure additional mobility/utility. So that's great. And flurry of blows helps us deal more damage. With uncanny metabolism, we ostensibly get 6 focus points per LR. For DPR optimization purposes, we should just use all of these on flurry of blows, amounting to an extra 6 BA unarmed strikes per day. But obviously if situations call for them, we can also spend FP to disengage + dash/dodge. Anyway, with no other changes here, so our new DPR calcs to:  
+ (main-hand attack, +1 dagger): (12/16)*(0.65*8.5 + 0.05*12)  = 4.59 dpr
+ (main-hand attack, +0 dagger): (4/16)*(0.60*7.5 + 0.05*11)  = 1.26 dpr
+ (off-hand attack, +0 dagger): (0.60*3.5 + 0.05*7) = 2.45 dpr 
+ (BA unarmed strike): (0.60*7.5 + 0.05*11) = 5.05 dpr
+ (flurry of blows): (6/16)*(0.60*7.5 + 0.05*11) = 1.89 dpr
+ (armor of agathys x4): 20/16 = 1.25 dpr 
+ (attacks of opportunity, +1 dagger): (3/4)*(1/3)*(0.65*8.5 + 0.05*12) = 1.53 dpr
+ (attacks of opportunity, +0 dagger): (1/4)*(1/3)*(0.60*7.5 + 0.05*11) = 0.42 dpr
+ (total): 18.44 DPR 
+ (HP/THP): 47.5/20
+Still in the basement of tier-02 damage-wise, but we're trending upwards at a decent rate. So hang in there. 
+
+
+
+
+#######
+Level-07: Sorcerer-04 (Draconic), Monk-03 (Tattooed.Warrior)
+ - monk's focus (3 FP) 
+ - deflect attacks
+   * when hit by attack that deals B/P/S dmg 
+   * use rxn to reduce dmg by 1d10 + DEX + monk-lvl (12.5)
+ - magic tattoos
+   * tattoos appear as patterns of scale (choose how they look) 
+   * tattoo DC = 8+PB+WIS=12
+   * spellcasting ability for tattoo spells = WIS 
+   * can change one tattoo to another option on the same list after LR 
+ - beast tattoos (2) 
+   * bat = learn dancing lights; gain 10ft of blindsight  
+   * crane = learn guidance; when you miss w/unarmed strike granted by FoB, gain
+     advantage on remaining attacks granted by FoB 
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (5): blade ward, elementalism, friends, message, mind sliver
+   * tattooed.warrior (2): dancing lights, guidance 
+ - spell slots: 4-3 
+ - spells prepared: sorcerer (7)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), fog cloud, jump, shield 
+   * lvl-01 (draconic): chromatic orb, command
+   * lvl-02 (sorcerer): darkvision, magic weapon
+   * lvl-02 (draconic): alter self, dragon's breath
+
+NOTE: Alright, lvl-07 and we go monk-03 to get our subclass. And we're going with the `tattooed warrior'. Now, in terms of power, this isn't a great subclass. And it's quite likely that it gets significantly reworked in future UAs. But I do quite like the themes and visuals of this and the notion of an `arcane' monk seems to dovetail seamlessly with a sorcerer multiclass. I mean, what are sorcerers if not the class where magic originates from the body and self, and who more so than the draconic sorcerers whose magic derives from beings (dragons) whose physical form is so inherently magical. This seems to have a strong parallel to the way that monks develop their own supernatural abilities. Plus, what type of dragon is more connected to physical/martial strength than white dragons? So yeah, thematically, I think the tattooed warrior subclass works perfectly for our current multiclass. I also really like the notion that our ice-ballerina character gains tattoos in the form of patterns of white dragon scales. Pretty cool visuals. Anyway, mechanically we get a number of things at monk-03. First off, we get deflect attacks as a base class feature. This is an excellent feature, and we should use it when we get hit (which we will be fairly often given our low-ish AC) to reduce incoming damage. With our high HP and substantial THP generation, this makes us even more durable and that was already a strength of our build. Great. We also get another focus point, bringing our total to 3, which amounts to 9 effective points per long rest given 1 short rest per day and one use of uncanny metabolism. This means more flurries of blows per LR, which is a nice boost to our damage. Next, the tattooed warrior grants us two `beast' tattoos from a list of available options. The most important for us is the bat tattoo -- which gives us the dancing lights cantrip and grants us blindsight of 10ft. The idea is that we're going to combine this with fog cloud -- which thematically/flavor-wise, I imagine as a kind of snow-cloud that produces whiteout conditions -- in order to trap enemies in a heavily obscured area, granting us advantage on attacks and imposing disadvantage on enemy attacks. Right now, the best way to do this is with grappling. Run up to an enemy cast fog/snow cloud, then use our BA to make an unarmed strike and grapple the target (flavor-wise, I like to imagine `binding' ourselves to our enemies with ice/frost). If we successfully initiate the grapple (DC-15) and the enemy fails their save to break the grapple on their turn, then on turn-02 we would have advantage on all our attacks, they would have disadvantage on attacks against us, and they wouldn't be able to see our allies. Pretty good combination of offensive punch and defense/control. However, the reality is doing this move with grappling would result in a significant DPR loss relative to just continuing with the basic attack strategy that we've been thus far. This is because we have to sacrifice all our turn-01 damage in order to do the setup. And, in addition, we would have to reallocate spell resources in order to be able to cast fog cloud consistently, meaning fewer casts of magic weapon/armor of agathys. The fog cloud spell is also essentially wasted unless the enemy fails *two* consecutive saves against our grapple (DC-15) -- once on turn-01 when we try to initiate it, and once on their turn when they try to escape it. If they succeed, they can just move out of the fog cloud. And while we could use flurry of blows to give ourselves more grapple attempts, doing so still doesn't make this worth it. For these reasons, I'm going to assume that we *don't* use our fog-cloud combo at this level in our DPR calculations. But just know that it is a potential option, and could be effective against an easily grapple-able (physically weak) enemy or in situations where control is more valuable than damage. Now, before we talk DPR, let's go through the rest of the beast tattoo stuff. So in addition to blindsight, the bat tattoo also lets us learn the dancing lights cantrip. This is actually quite nice, since we don't have inherent darkvision. So there may be situations where having dancing lights eliminates the need to cast darkvision with one of our prized second level spell slots. If we are able to spare a lvl-02 slot, this means more uptime on magic weapon which equals more damage. Yay. But for DPR calculation purposes, we'll still assume that we're casting darkvision each day. For our second tattoo, we take the crane tattoo, which lets us learn the guidance cantrip, and buffs attacks that are part of our flurry of blows. More specifically, the crane tattoo makes it so that when we miss with an unarmed strike granted by FoB, we have advantage on all other remaining attacks granted by FoB (just one at this level). This is also a pretty weak feature, but given that we have more focus points and are using FoB more often, having advantage on some of our FoB attacks does the most to boost our overall damage. Plus, having the guidance cantrip makes us better at all skills, including some of the critical skills in which we are proficient (persuasion, insight, stealth). So we definitely like having guidance. In terms of spellcasting resources, we are doing the same thing we've done since lvl-05: turn 2 sorcery points into 1 lvl-01 spell slot (5 total), use 1 lvl-02 spell slot to cast darkvision, and use 2 lvl-02 spell slots to cast magic weapon twice, using 1 sorcery point each time for extended spell (2h duration). That leaves 3 lvl-01 slots + our free cast to cast armor of agathys in between combats (x4/LR), and two flex slots to use for casting fog-cloud/jump/shield/command. In total we get: 8hr of darkvision, 4hr of magic weapon, 4x armor of agathys, 2 lvl-01 flex spell slots. Finally, for DPR, we assume we're using all our additional focus points to do FoB more often (+3 times per LR) and we factor in the conditional advantage on BA FoB attacks from the crane tattoo. We also account for the fact that average enemy AC increases to 16 here at lvl-07. 
+ (main-hand attack, +1 dagger): (12/16)*(0.60*8.5 + 0.05*12)  = 4.28 dpr
+ (main-hand attack, +0 dagger): (4/16)*(0.55*7.5 + 0.05*11)  = 1.17 dpr
+ (off-hand attack, +0 dagger): (0.55*3.5 + 0.05*7) = 2.28 dpr 
+ (BA unarmed strike): (0.55*7.5 + 0.05*11) = 4.68 dpr
+ (flurry of blows, no advantage): (9/16)*(0.60)*(0.55*7.5 + 0.05*11) = 1.58 dpr
+ (flurry of blows, advantage): (9/16)*(0.40)*(0.7425*7.5 + 0.10*11) = 1.50 dpr
+ (armor of agathys x4): 20/16 = 1.25 dpr 
+ (attacks of opportunity, +1 dagger): (3/4)*(1/3)*(0.60*8.5 + 0.05*12) = 1.43 dpr
+ (attacks of opportunity, +0 dagger): (1/4)*(1/3)*(0.55*7.5 + 0.05*11) = 0.39 dpr
+ (total): 18.56 DPR 
+ (HP/THP): 55/20
+So yeah, we nearly doubled our DPR from flurry of blows (through more FP and crane tattoo), but this is offset by the DPR loss from monster AC increasing. Overall we hold steady at 18.5 DPR, which is squarely in the basement of D-level for tier-02 damage. Ouch. But we did get more utility (cantrips) and damage reduction (deflect attacks) while still managing to hold steady with damage. So I don't consider it a total loss. We'll do better next level, I promise 
+
+
+
+
+#######
+Level-08: Sorcerer-04 (Draconic), Monk-04 (Tattooed.Warrior)
+ - monk's focus (4 FP)  
+ - slow fall 
+   * can take a reaction to reduce fall damage by 5x monk lvl (20) 
+ - feat: sentinel 
+   * ASI: +1 DEX (DEX=19) 
+   * guardian: immediately after a creature w/in 5ft disengages, or attacks another creature 
+               w/in 5ft of you, you can make an AoO 
+   * halt: when you hit an enemy with an AoO, their speed is reduced to 0 for the rest of the turn
+
+NOTE: Lvl-08 and we go monk-04. We get another focus point (4 total, x12 per LR) and we get the slow fall monk base class ability which gives us more durability. We also get to take a feat or ASI and we go with the sentinel feat. This bumps our DEX to 19 and gives us the guardian and halt features. And between grappling and sentinel, we can now trap enemies in our fog/snow cloud very reliably. In terms of action economy, the idea is that on turn-01 of combat we (i) run up to an enemy and cast fog cloud, heavily obscuring a 20ft radius sphere around us, then (ii) use our BA to do flurry of blows, using one or both of our unarmed strikes to make a grapple attempt. Then (iii) on the enemy's turn, if we successfully grappled our target, they must use their action to try and break the grapple, remaining trapped in the fog cloud on a failure. Even if we failed our initial grapple attempt, or the enemy breaks free on their turn, if/when they try and move away from us (even if they disengage), sentinel allows us to use our reaction to make an opportunity attack (at advantage, because we're in the fog cloud) which, on hit, reduces the target's speed to zero ('freezes' them), keeping them trapped in the cloud. If we happen to roll super low when we make this opportunity attack and we have it available, we should use the heroic inspiration we get each LR from being a human to roll the AoO with triple advantage. This means that to avoid being trapped in the cloud, a target would have to succeed against our grapple at least once (2 chances) *and* avoid being hit by our sentinel attack, which we make with advantage or even triple advantage. For a quick back of the envelope, with a +3 to save against our grapple (and two chances to save) an enemy has about a ~70% chance of not being grappled. Then they also need to avoid being hit with our sentinel attack. Attacking with a +1 dagger against an AC-16 enemy, we have a 65% base chance to hit, an 88% chance to hit with advantage, and a 96% chance to hit with triple advantage. If we are just using the normal dagger, then we have a 60% base chance to hit, and 84% chance to hit with advantage, and a 94% chance to hit with triple advantage. Given this, let's just assume we have about an 85% chance to hit with our sentinel attack. Then, that means that there's a 15% chance of us missing. So in total, our enemies only have a 70%*15% = 10.5% chance of escaping the fog cloud. And that's a conservative estimate, given that we can use heroic inspiration/flurry of blows to increase the reliability even further. That's pretty good! And with this combination of features, I think we should feel good about sacrificing some damage on our first turn in order to attempt to impose the strong debuff/control effects associated with trapping enemies in the fog cloud. It's also worth noting here that most teleport features (e.g., misty step) require that targets be able to see the space to which they are teleporting. So even if enemies have teleportation capabilities, if they are stuck in the fog cloud they won't be able to teleport out. In a similar vein, many creatures end up having the ability to see through magical darkness, which makes the darkness spell significantly less potent. But we are instead leveraging a spell that makes an area heavily obscured. So even creatures with sight in darkness will still be blinded, unless they are immune to the blinded condition. In terms of spellcasting resources: we turn 4 sorcery points into 2 lvl-01 spell slots, giving us 6 total. Then we use 1 lvl-02 spell slot to cast darkvision, and use 2 lvl-02 spell slots to cast magic weapon twice w/a 1h duration (no extended spell). Use 3 lvl-01 slots + free-cast on armor of agathys (x4). This leaves 3 slots for fog-cloud (x3/LR). If we happen to be in a situation where we know we won't need darkvision, then we can convert one of our lvl-02 spell slots into 3 SP, and cast extended spell on magic weapon/armor of agathys. Next, let's talk focus point management. We effectively have 12FP (but only max 4 in each combat). Assuming 4 rounds per combat, this means we use FoB each round, even if we are casting fog cloud with our action on turn-01 and we have to sacrifice one (or both) of our FoB attacks to attempt a grapple. Effective and super simple. Great. And of course we can always sacrifice damage and use our FP to do other fun monk things as needed. Ok so now for the DPR calculation. First let's just (re)state some facts/assumptions: 
+ - With 2h duration on magic weapon, assume that we have a +1 dagger available in 1/2 of combat rounds, and 2/3 of combat rounds where we attempt fog cloud
+ - Attacking with a +1 dagger against an AC-17 enemy, we have a 60% base chance to hit, an 84% chance to hit with advantage, and a 94% chance to hit with triple advantage
+ - Attacking with a normal dagger or unarmed strike, we have a 55% base chance to hit, and 80% chance to hit with advantage, and a 91% chance to hit with triple advantage
+ - Assume that we only cast fog cloud on enemies which rely on sight (no blindsight), so it always grants us advantage on attacks (and imposes disadvantage)
+ - Assume that enemies use their action to attempt to break our grapple if they are grappled, and attempt to move out of the fog cloud if they can, procing an AoO from us when they do
+ - Assume that if the enemy escapes the cloud, for the rest of the combat we just attack them normally (still using FoB)
+ [- Assume that if the enemy escapes our fog cloud, we go back to only making AoOs on 50% of turns).] 
+
+
+
+So let's start with the easy stuff. For 1/4 combats per day, we just make 3 attacks against our target with no source of advantage every round. Half the time, we'll have a +1 dagger. This adds: 
+ (no fog cloud): (0.25)*((0.5)*(0.6*8.5) + (1.5)*(0.55*7.5) + (0.55*3.5)) = 2.67 DPR 
+Assume we also make an attack of opportunity in 1/3 combat rounds: 
+ (no fog cloud, AoO): (0.25)*(1/3)*((0.5*0.6*8.5) + (0.5*0.55*7.5)) = 0.38 DPR
+Now, consider the first combat where we use fog cloud. On turn-01 we use our BA to do step of the wind, get in range, and activate blindsight, then use our action to cast fog-cloud. When the enemy attempts to leave our melee range, we make an attack of opportunity and we use our heroic inspiration to give ourselves triple advantage. This reaction attack deals: 
+ (AoO, c1t1): (2/3)*(0.94*8.5) + (1/3)*(0.91*7.5) 
+Then, on our next turn, we use our basic attack combo + flurry of blows 
+ (attacks, turn-02): (2/3)*((0.94)*(0.84*8.5 + 0.80*(3.5 + 2*7.5) + 
+                            (1-0.94)*(0.6*8.5 + 0.55*(3.5 + 2*7.5)) + 
+                     (1/3)*(0.91*0.80*(3.5 + 3*7.5) + 
+                            (1-0.91)*(0.55*(3.5 + 3*7.5)))
+ (AoO, c1t2): (0.94)*((2/3)*(0.84*8.5) + (1/3)*(0.80*7.5)) + 
+              (1-0.94)*(0.5*((2/3)*(0.6*8.5) + (1/3)*(0.55*7.5)))
+ 
+ (attacks, turn-03): (2/3)*((0.94*0.84)*(0.84*8.5 + 0.80*(3.5 + 2*7.5) + 
+                            ((1-0.94) + (1-0.84))*(0.6*8.5 + 0.55*(3.5 + 2*7.5)) + 
+                     (1/3)*(0.91*0.80*0.80*(3.5 + 3*7.5) + 
+                            ((1-0.91) + (1-0.80))*(0.55*(3.5 + 3*7.5))) 
+
+ (AoO, c1t3): (0.94)*((2/3)*(0.84*8.5) + (1/3)*(0.80*7.5)) + 
+              (1-0.94)*(0.5*((2/3)*(0.6*8.5) + (1/3)*(0.55*7.5)))
+   
+
+
+
+So basically, 3/4 combats per day, the first round of combat looks like: 
+ - BA:SotW/PD + action::unarmed-strike::grapple
+ 
+And then, for round 2, there's a 70% chance they've escaped the grapple: 
+ - if they've escaped (70%), then we do: attack + attack(nick) + BA:FoB (no advantage)
+ - if they're still grappled (30%), then we do: fog-cloud + BA:FoB (w/advantage)
+
+And then in subsequent rounds, we just do: attack + attack(nick) + BA:unarmed-strike, and
+ - if they're still grappled/in the fog-cloud, then we have advantage 
+ - if they escape the grapple, then we lose advantage
+
+Assume that in the 4th combat per day, we don't attempt the grapple + fog-cloud move, and instead we just do: 
+ - turn-01: attack + attack(nick) + BA:unarmed-strike 
+ - turn-02: attack + attack(nick) + BA:FoB
+ - turn-03: attack + attack(nick) + BA:FoB 
+ - turn-04: attack + attack(nick) + BA:FoB 
+
+So for combats 1-3, where we attempt to fog-cloud + grapple maneuver, our DPR looks like: 
+ (0.75)*(
+         (0.70)*((2/3)*(0.60*8.5) + 2.59*(0.55*7.5)) --> grapple fails, use FoB on turn-02 then back to basic attacks, account for 2/3 uptime on magic weapon
+         (0.30)*(
+                 2*(0.80*7.5) --> grapple succeeds, FoB on turn-02
+                 0.55*((2/3)*(0.84*8.5) + (1/3)*(0.80*7.5) + (0.80*7.5)) --> still in fog cloud on turn-03 
+                 0.45*((2/3)*(0.60*8.5) + (1/3)*(0.55*7.5) + (0.55*7.5)) --> not in fog cloud on turn-03 
+                 0.55^2*((2/3)*(0.84*8.5) + (1/3)*(0.80*7.5) + (0.80*7.5)) --> still in fog cloud on turn-04 
+                 (1-0.55^2)*((2/3)*(0.60*8.5) + (1/3)*(0.55*7.5) + (0.55*7.5)) --> not in fog cloud on turn-04
+                )/4
+        )
+  = 9.26 dmg
+        
+And for combat-04 we just account for 50% uptime on magic weapon and FoB on every turn after turn-02 
+ (0.25)*(
+         (0.25)*((0.5)*(0.60*8.5) + (1.5)*(0.55)*(0.75)) +
+         (0.75)*((0.5)*(0.60*8.5) + (2.5)*(0.55)*(0.75))
+        )
+ = 0.87 dmg
+
+Add in damage from armor of agathys (x4): 20/16 = 1.25 dmg
+
+And our total DPR is: 11.38 DPR 
+
+
+
+(0.75)*((0.70)*((2/3)*(0.60*8.5) + 2.59*(0.55*7.5)) + (0.30)*(2*(0.80*7.5) + 0.55*((2/3)*(0.84*8.5) + (1/3)*(0.80*7.5) + (0.80*7.5)) + 0.45*((2/3)*(0.60*8.5) + (1/3)*(0.55*7.5) + (0.55*7.5)) + 0.55^2*((2/3)*(0.84*8.5) + (1/3)*(0.80*7.5) + (0.80*7.5)) + (1-0.55^2)*((2/3)*(0.60*8.5) + (1/3)*(0.55*7.5) + (0.55*7.5)))/4) = 9.26 dmg
+
+
+
+(grapple + fog-cloud, turn-02): (0.55)^2*(2*(0.80)*(7.5))
+(grapple + fog-cloud, turn-03, +1 dagger): (0.55)^3*((0.84)*(8.5)+2*(0.80)*(7.5))
+(grapple + fog-cloud, turn-04, +1 dagger): (0.55)^4*((0.84)*(8.5)+2*(0.80)*(7.5))
+
+(grapple + fog-cloud, turn-03, normal weapon): (0.55)^3*(3*(0.80)*(7.5))
+(grapple + fog-cloud, turn-04, normal weapon): (0.55)^4*(3*(0.80)*(7.5))
+
+Assuming we have magic weapon active for 2 out of 3 castings of fog cloud, fog-cloud + grapple damage is: 
+
+(grapple + fog-cloud, turn-02): (0.55)^2*(2*(0.80)*(7.5)) + 
+(grapple + fog-cloud, turn-03-4): ((0.55)^3 + (0.55)^4)*((2/3)*((0.84)*(8.5)+2*(0.80)*(7.5)) + (1/3)*(3*(0.80)*(7.5)))
+
+
+Assume that on turn-01 of 3/4 combats we attempt our fog cloud move. On these turns, there's a (1-(0.55)^2) = 70% chance by the time we get to turn-02, the enemy has escaped our grapple. 
+
+
+
+ 
+
+
+#### STOPPED HERE 
+
+ 
+
+#####################################################################################
+EXTRA NOTES 
+
+White Dragon Warrior 
+
+Point-Buy Stats 
+ - STR = 08 
+ - DEX = 15 (+2) = 17 
+ - CON = 12 
+ - INT = 08 
+ - WIS = 13
+ - CHA = 15 (+1) = 16 
+
+Species: Human 
+ * size: medium 
+ * speed: 30ft 
+ * skillful: stealth
+ * resourceful: heroic inspiration x1/LR 
+ * versatile: tough 
+
+Background: Entertainer 
+ - ability scores: STR, DEX, CHA 
+ - feat (modified): cryokinesis --> ray of frost, armor of agathys, ice knife
+ - skills: acrobatics, performance 
+ - tools: musical instrument of your choice 
+ - equipment: 50gp 
+ 
+Sorcerer skills (2): insight, persuasion
+
+Origin Feats: 
+ - tough
+ - cryokinesis -> ray of frost, armor of agathys, ice knife
+
+Progression:
+ - lvl-01: sorcerer-01 ---------------------------------------------> CON save, spellcasting, innate sorcery -> AC-16 (mage armor)
+ - lvl-02: sorcerer-01, monk-01 ------------------------------------> martial arts (d6), unarmored defense 
+ - lvl-03: sorcerer-02, monk-01 ------------------------------------> font of magic, metamagic (extended, careful)
+ - lvl-04: sorcerer-03 (draconic), monk-01 -------------------------> draconic resilience, draconic spells -> AC-16 (no mage armor)
+ - lvl-05: sorcerer-04 (draconic), monk-01 -------------------------> weapon master (daggers): +1 DEX (DEX=18) -> AC-17
+ - lvl-06: sorcerer-04 (draconic), monk-02 -------------------------> unarmored movement (+10ft), monk's focus, uncanny metabolism
+ - lvl-07: sorcerer-04 (draconic), monk-03 (tattooed) --------------> deflect attacks, beast tattoos (bat, spider)
+ - lvl-08: sorcerer-04 (draconic), monk-04 (tattooed) --------------> sentinel: +1 DEX (DEX=19)
+ - lvl-09: sorcerer-05 (draconic), monk-04 (tattooed) --------------> sorcerous restoration, draconic spells, sleet storm  --> just use lvl-03 slots to create more sorc points 
+ - lvl-10: sorcerer-05 (draconic), monk-05 (tattooed) --------------> extra attack, stunning strike, martial arts (d8) 
+ - lvl-11: sorcerer-05 (draconic), monk-06 (tattooed) --------------> empowered strikes, unarmored movement (+15ft), celestial tattoo (eclipse) 
+ - lvl-12: sorcerer-05 (draconic), monk-07 (tattooed) --------------> evasion  
+ - lvl-13: sorcerer-05 (draconic), monk-08 (tattooed) --------------> resilient (DEX): +1 DEX (DEX=20) --> now switch over to actually using sleet storm -> AC-18
+ - lvl-14: sorcerer-05 (draconic), monk-08 (tattooed), warlock-01 --> pact magic, eldritch mind 
+ - lvl-15: sorcerer-05 (draconic), monk-09 (tattooed), warlock-01 --> acrobatic movement 
+ - lvl-16: sorcerer-05 (draconic), monk-10 (tattooed), warlock-01 --> heightened focus, unarmored movement (+20ft), self restoration 
+ - lvl-17: sorcerer-05 (draconic), monk-11 (tattooed), warlock-01 --> nature tattoo (storm/wave), martial arts (d10) 
+ - lvl-18: sorcerer-05 (draconic), monk-12 (tattooed), warlock-01 --> ASI: +2 CHA (CHA=18) -> AC-19
+ - lvl-19: sorcerer-06 (draconic), monk-12 (tattooed), warlock-01 --> elemental affinity (cold) 
+ - lvl-20: sorcerer-06 (draconic), monk-12 (tattooed), warlock-02 --> LotFO:alert, LotFO:lucky 
+
+
+
+
+
+
+
+
+
+lvl-01: sorcerer-01 
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (4): blade ward, elementalism, friends, message
+ - spell slots: 2 
+ - spells prepared: sorcerer (2)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): detect magic (R), mage armor 
+
+NOTE: Use one spell slot to cast mage armor, use other spell slot for armor of agathys (x2) 
+
+
+lvl-03: sorcerer-02, monk-01
+ - sorcery points (2) --> 1 extra lvl-01 spell slot (armor of agathys) 
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (4): blade ward, elementalism, friends, message
+ - spell slots: 3 
+ - spells prepared: sorcerer (4)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), mage armor, fog cloud
+
+NOTE: Use one spell slot to cast mage armor. Convert 2 sorcery points to 1 lvl-01 spell slot (3 avail). Use remaining slots + free cast to cast armor of agathys (x4)
+
+
+lvl-04: sorcerer-03 (draconic), monk-01
+ - sorcery points (3) --> 1 extra lvl-01 spell slot (armor of agathys), 1 sorc point for extended spell (magic weapon) 
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (4): blade ward, elementalism, friends, message
+ - spell slots: 4-2 
+ - spells prepared: sorcerer (6)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), fog cloud, shield 
+   * lvl-01 (draconic): chromatic orb, command
+   * lvl-02 (sorcerer): darkvision, magic weapon
+   * lvl-02 (draconic): alter self, dragon's breath
+
+NOTE: No longer need mage armor. Turn 2 sorcery points into 1 lvl-01 spell slot (5 total). Use lvl-02 spell slots to cast darkvision and magic weapon and use 1 sorcery point to extend magic weapon (2h duration). That leaves 5 slots and 
+a free cast for armor of agathys (x6) 
+
+lvl-05: sorcerer-04 (draconic), monk-01
+ - sorcery points (4) --> 1 extra lvl-01 spell slot (armor of agathys), 2 sorc point for extended spell (magic weapon) 
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (5): blade ward, elementalism, friends, message, mind sliver 
+ - spell slots: 4-3 
+ - spells prepared: sorcerer (7)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), fog cloud, shield
+   * lvl-01 (draconic): chromatic orb, command
+   * lvl-02 (sorcerer): darkvision, magic weapon
+   * lvl-02 (draconic): alter self, dragon's breath
+
+NOTE: Turn 2 sorcery points into 1 lvl-01 spell slot (5 total). Use 1 lvl-02 spell slots to cast darkvision, and use 2 lvl-02 spell slots to cast and magic weapon twice, using 1 sorcery point each time to extend magic weapon (2h duration). That leaves 5 slots and a free cast for armor of agathys (x6) 
+
+
+
+lvl-08: sorcerer-04 (draconic), monk-04 (tattooed)
+ - sorcery points (4) --> 2 extra lvl-01 spell slots (armor of agathys, fog-cloud) 
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (5): blade ward, elementalism, friends, message, mind sliver 
+ - spell slots: 4-3 
+ - spells prepared: sorcerer (7)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), fog cloud, shield
+   * lvl-01 (draconic): chromatic orb, command
+   * lvl-02 (sorcerer): darkvision, magic weapon
+   * lvl-02 (draconic): alter self, dragon's breath
+
+NOTE: Now we have sentinel and can trap enemies in fog-cloud. Turn 4 sorcery points into 2 lvl-01 spell slot (6 total). Use 1 lvl-02 spell slots to cast darkvision, and use 2 lvl-02 spell slots to cast and magic weapon twice w/a 1h duration. Use 3 lvl-01 slots + free-cast on armor of agathys (x4). Leaves 3 slots for fog-cloud (x3/LR). 
+
+
+
+lvl-09: sorcerer-05 (draconic), monk-04 (tattooed)
+ - sorcery points (7, including sorcerous restoration) 
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (5): blade ward, elementalism, friends, message, mind sliver
+ - spell slots: 4-3-2 
+ - spells prepared: sorcerer (9)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), fog cloud, shield
+   * lvl-01 (draconic): chromatic orb, command
+   * lvl-02 (sorcerer): darkvision, magic weapon
+   * lvl-02 (draconic): alter self, dragon's breath
+   * lvl-03 (sorcerer): sleet storm, water walk (R) 
+   * lvl-03 (draconic): fear, fly
+
+NOTE: Turn both lvl-03 spell slots into 6 sorcery points. This gives us 13 sorcery points total per LR (5 base, 2 from sorcerous restoration, 6 from font of magic). Convert 3 sorcery points into a lvl-02 spell slot (giving us 4), then use 1 to cast darkvision on ourselves (8hr duration). Use remaining 3 lvl-02 spell slots to cast magic weapon, and use 3 more sorcery points to extend the spell on each casting. This means we have 6hr of magic weapon uptime per day. Ok so we have 7 sorcery points left. Convert 6 into 3 lvl-01 spell slots, giving us 7 total. Use 4 of these slots to cast fog cloud in each combat. Use 3 + free-cast to cast armor of agathys 4 times. Use last sorcery point to extend the duration of armor of agathys on one casting of the spell (5hr uptime). So in total with these new resources we get: 8hr of darkvision, 6hr of magic weapon, 5hr of armor of agathys uptime, fog cloud in every combat.  
+
+
+
+
+lvl-13: sorcerer-05 (draconic), monk-08 (tattooed)
+ - sorcery points (7, including sorcerous restoration)  
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (5): blade ward, elementalism, friends, message, mind sliver
+ - spell slots: 4-3-2 
+ - spells prepared: sorcerer (9)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), fog cloud, shield
+   * lvl-01 (draconic): chromatic orb, command
+   * lvl-02 (sorcerer): darkvision, magic weapon
+   * lvl-02 (draconic): alter self, dragon's breath
+   * lvl-03 (sorcerer): sleet storm, water walk (R) 
+   * lvl-03 (draconic): fear, fly
+
+NOTE: Cast sleet storm in 2 combats per day. This means we only have to cast fog cloud twice, so we only need 5 lvl-01 spell slots (2 fog clouds, 3 armor of agathys + free-cast). So we only need to convert 2 of our base 7 sorcery points into lvl-01 spell slots. This means we have 5 left, 3 for extending magic weapon, and 2 for using careful spell when we cast sleet storm. So in total with these resources we get: 6hr of magic weapon, 4hr of armor of agathys uptime, 2 fog clouds 2 careful sleet storms. No darkvision, but just for this level. 
+
+
+
+lvl-14: sorcerer-05 (draconic), monk-08 (tattooed), warlock-01
+ - sorcery points (7, including sorcerous restoration)  
+ - cantrips: 
+   * psionic talent (1): ray of frost 
+   * sorcerer (5): blade ward, elementalism, friends, message, mind sliver
+   * warlock (2): thunderclap, true strike 
+ - spell slots: 5_{1}-3-2 
+ - spells prepared: sorcerer (9), warlock (2)
+   * lvl-01 (cryokinesis): armor of agathys, ice knife (free x1/LR) 
+   * lvl-01 (sorcerer): comprehend languages (R), detect magic (R), fog cloud, shield
+   * lvl-01 (draconic): chromatic orb, command
+   * lvl-01 (warlock): charm person, speak with animals (R) 
+   * lvl-02 (sorcerer): darkvision, magic weapon
+   * lvl-02 (draconic): alter self, dragon's breath
+   * lvl-03 (sorcerer): sleet storm, water walk (R) 
+   * lvl-03 (draconic): fear, fly
+
+NOTE: Cast sleet storm in 2 combats per day. So we no longer need to convert any sorcery points in order to have enough lvl-01 spell slots. We have 5 slots (2 for casting fog cloud, 3 for casting armor of agathys + free cast). In fact, we have 1 extra that we can convert to 1 additional sorcery point (for 8 total). Then we use 3SP to create an additional second level spell slot, which we use to cast darkvision, use 3SP for extending magic weapon 3 times, and use 2SP for using careful spell when we cast sleet storm. So in total with these resources we get: 8hr darkvision, 6hr of magic weapon, 4hr of armor of agathys, 2 fog clouds and 2 careful sleet storms. Perfect! 
+
+
+
+
+
+
+
+
+
+###################################################
+Origin Feats: 
+ - tough 
+ - MI:wizard -> blade ward, mind sliver, mage armor 
+
+Progression 
+ - lvl-01: monk-01 --> DEX save, martial arts (d6), unarmored defense 
+ - lvl-02: monk-01, wizard-01 --> spellcasting, ritual adept, arcane recovery
+ - lvl-03: monk-01, wizard-02 --> scholar 
+ - lvl-04: monk-01, wizard-03 (bladesinger) --> bladesong, training in war and song
+ - lvl-05: monk-01, wizard-04 (bladesinger) --> weapon master (daggers): +1 DEX (DEX=18) 
+ - lvl-06: monk-02, wizard-04 (bladesinger) --> unarmored movement (+10ft), monk's focus, uncanny metabolism 
+ - lvl-07: monk-03 (tattooed), wizard-04 (bladesinger) --> deflect attacks, beast tattoos (bat, tortoise)
+ - lvl-08: monk-04 (tattooed), wizard-04 (bladesinger) --> ASI: +2 DEX (DEX=20), slow fall  
+ - lvl-09: monk-05 (tattooed), wizard-04 (bladesinger) --> extra attack, stunning strike, martial arts (d8)
+ - lvl-10: monk-06 (tattooed), wizard-04 (bladesinger) --> empowered strikes, unarmored movement (+15ft), celestial tattoo (eclipse) 
+ - lvl-11: monk-07 (tattooed), wizard-04 (bladesinger) --> evasion
+ - lvl-12: monk-08 (tattooed), wizard-04 (bladesinger) --> ASI: +2 INT (INT=18) 
+ - lvl-13: monk-09 (tattooed), wizard-04 (bladesinger) --> acrobatic movement 
+ - lvl-14: monk-10 (tattooed), wizard-04 (bladesinger) --> heightened focus, unarmored movement (+20ft), self restoration
+ - lvl-15: monk-11 (tattooed), wizard-04 (bladesinger) --> nature tattoo (wave), matrial arts (d10) 
+ - lvl-16: monk-12 (tattooed), wizard-04 (bladesinger) --> ASI: +2 INT (INT=20) 
+ - lvl-17: monk-13 (tattooed), wizard-04 (bladesinger) --> deflect energy
+ - lvl-18: monk-14 (tattooed), wizard-04 (bladesinger) --> disciplined survivor, unarmored movement (+25ft) 
+ - lvl-19: monk-14 (tattooed), wizard-05 (bladesinger) --> memorize spell 
+ - lvl-20: monk-14 (tattooed), wizard-06 (bladesinger) --> extra attack + cantrip
+
+
+Wizard spells:
+ - cantrips (4): blade ward, message, mind-sliver (lvl-01), true-strike (lvl-04) 
+ - spellbook (lvl-01): comprehend languages (R), detect magic (R), find familiar (R), identify (R), jump, shield
+ - lvl-02: fog cloud, protection from evil and good 
+ - lvl-03: augury (R), darkvision
+ - lvl-04: enlarge/reduce, magic weapon
+ - lvl-05: bestow curse, sleet storm 
+ 
