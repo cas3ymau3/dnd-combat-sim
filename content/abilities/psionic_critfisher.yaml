@@ -1,0 +1,133 @@
+# psionic_critfisher.yaml
+# The hard coverage test: five modifier hooks stacking on a single attack roll.
+# See design/ability_schema.md §9 — "run the hard coverage test."
+#
+# Stack: improved_critical + savage_attacker + sharpened_mind (activation +
+#        rider) + psionic_surge + sneak_attack
+#
+# Resolution order on a crit (19 via improved_critical):
+#   Phase 1 — improved_critical lowers threshold to 19; crit doubles die count
+#              for both weapon dice AND sneak_attack injected dice
+#   Phase 2 — roll the full doubled pool
+#   Phase 3 — savage_attacker rerolls weapon dice (take better);
+#              sharpened_mind_rider substitutes one die with stored PED value;
+#              psionic_surge floors PED value at 4 (already applied at activation)
+#   Phase 4 — sum all dice
+#   Phase 5 — add flat bonuses (DEX/STR, dueling, magic weapon, etc.)
+
+---
+# ─── IMPROVED CRITICAL ───────────────────────────────────────────────────────
+
+name: improved_critical
+tags: [passive]
+trigger: null
+effect:
+  - verb: apply_modifier
+    hook: crit_behavior
+    crit_threshold: 19        # crits on 19 or 20 (default is 20)
+cost: null
+duration:
+  type: permanent
+
+---
+# ─── SAVAGE ATTACKER ─────────────────────────────────────────────────────────
+
+name: savage_attacker
+tags: [passive]
+trigger:
+  all:
+    - event: on_damage_roll
+    - once_per_turn: true
+    - source: weapon_attack   # applies to weapon attacks (not spells or unarmed)
+effect:
+  - verb: apply_modifier
+    hook: reroll_take_better
+    phase: 3                  # per-die modification phase
+    applies_to: weapon_damage_dice   # scoped to weapon dice only, not injected dice
+cost: null
+duration:
+  type: permanent
+
+---
+# ─── SHARPENED MIND — ACTIVATION ─────────────────────────────────────────────
+# At the start of your turn (free, no action cost): spend a PED, roll it,
+# store the result. The stored value persists for 1 minute as a status.
+# Psionic surge (below) floors the roll at 4 before storing.
+
+name: sharpened_mind_activation
+tags: [active, magic_action]
+trigger:
+  all:
+    - event: turn_start
+cost:
+  action_economy: null        # free — no action economy cost
+  resource:
+    type: psionic_energy_die
+    count: 1
+effect:
+  - verb: roll
+    die: psionic_energy_die
+    store_as: ped_result       # psionic_surge modifier intercepts this roll at phase 3
+  - verb: apply_status
+    status: sharpened_mind_active
+    value_ref: ped_result      # the status carries the (possibly floored) rolled value
+duration:
+  type: minutes
+  value: 1
+
+---
+# ─── SHARPENED MIND — RIDER ──────────────────────────────────────────────────
+# Once per turn during the minute: optionally replace one psychic damage die
+# with the stored PED value. The stored value is read from the active status.
+
+name: sharpened_mind_rider
+tags: [passive]
+trigger:
+  all:
+    - event: on_damage_roll
+    - damage_type: psychic
+    - once_per_turn: true
+    - requires_status: sharpened_mind_active
+effect:
+  - verb: apply_modifier
+    hook: die_value_replacement
+    mode: substitute_stored_value
+    phase: 3
+    target: one_psychic_damage_die
+    value_ref: sharpened_mind_active.value
+cost: null
+duration:
+  type: instantaneous
+
+---
+# ─── PSIONIC SURGE ───────────────────────────────────────────────────────────
+# Permanent passive: any psionic energy die result of 1, 2, or 3 is treated as 4.
+# Fires during the sharpened_mind_activation roll (phase 3 of that roll event),
+# before the result is stored. Also applies if the PED is rolled for other purposes.
+
+name: psionic_surge
+tags: [passive]
+trigger:
+  all:
+    - event: on_roll
+    - die_type: psionic_energy_die
+effect:
+  - verb: apply_modifier
+    hook: die_value_replacement
+    mode: minimum_floor
+    phase: 3
+    applies_to: psionic_energy_die
+    minimum_value: 4
+cost: null
+duration:
+  type: permanent
+
+---
+# ─── SNEAK ATTACK (reference — full definition in core_examples.yaml) ─────────
+# Included here only to annotate its interaction with the crit stack.
+# On a crit, sneak_attack dice are injected at phase 1 and therefore ALSO doubled.
+# Savage attacker does NOT reroll sneak attack dice (applies_to: weapon_damage_dice).
+# Sharpened mind targets psychic dice; sneak attack dice are same_as_weapon type
+# so only interact if the weapon itself deals psychic damage.
+#
+# → See content/abilities/core_examples.yaml for the canonical sneak_attack definition.

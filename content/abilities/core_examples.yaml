@@ -1,0 +1,256 @@
+# core_examples.yaml
+# Canonical coverage-test abilities (design/ability_schema.md §9).
+# One example per major schema pattern. These are reference implementations —
+# the engine's first hard test suite.
+
+---
+# ─── 1. PURE PASSIVE STAT MOD ────────────────────────────────────────────────
+# Pattern: permanent modifier, no trigger, no cost.
+
+name: tough
+tags: [passive]
+trigger: null
+effect:
+  - verb: apply_modifier
+    hook: flat
+    stat: max_hp
+    value:
+      per_level: 2            # +2 HP per character level
+      level_reference: character_level
+cost: null
+duration:
+  type: permanent
+
+---
+# ─── 2. CONDITIONAL ON-HIT RIDER ────────────────────────────────────────────
+# Pattern: passive trigger on hit, nested any/all conditions, scaling dice.
+
+name: sneak_attack
+tags: [passive]
+trigger:
+  all:
+    - event: on_hit
+    - once_per_turn: true
+    - weapon: finesse_or_ranged
+    - any:
+        - ally_adjacent_to_target: true
+        - attacker_has_advantage: true
+effect:
+  - verb: apply_modifier
+    hook: dice_injection
+    phase: 1                  # injected before crit doubling
+    applies_to: sneak_attack_dice
+    dice:
+      base: "1d6"
+      increment: "1d6"
+      every_n_levels: 2
+      level_reference: rogue_level
+    type: same_as_weapon
+cost: null
+duration:
+  type: instantaneous
+
+---
+# ─── 3. PERSISTENT SAVE-BASED ZONE ──────────────────────────────────────────
+# Pattern: concentration zone, recurring trigger on entry/turn-start, upcast scaling.
+
+name: spirit_guardians
+tags: [active, spell, concentration]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: create_entity
+    entity_type: object
+    anchor: owner
+    zone_radius: 15
+    bundled_abilities:
+      - spirit_guardians_zone_effect
+cost:
+  action_economy: action
+  concentration: true
+  resource:
+    type: spell_slot
+    min_level: 3
+duration:
+  type: minutes
+  value: 10
+  anchor: concentration
+
+name: spirit_guardians_zone_effect
+tags: [passive]
+trigger:
+  any:
+    - event: entity_enters_zone
+      zone: spirit_guardians_zone
+    - event: entity_starts_turn_in_zone
+      zone: spirit_guardians_zone
+effect:
+  - verb: save
+    ability: wisdom
+    dc_reference: spell_save_dc
+  - verb: damage
+    dice:
+      base: "3d8"
+      increment: "1d8"
+      every_n_levels: 1
+      level_reference: slot_level
+    type: radiant_or_necrotic   # chosen at cast time, flavor only
+    on_save: half
+cost: null
+duration:
+  type: instantaneous
+
+---
+# ─── 4. ACTION GRANTER ───────────────────────────────────────────────────────
+# Pattern: active ability, no concentration, grants an extra action-economy resource.
+
+name: action_surge
+tags: [active]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: grant_action
+    action_type: action
+cost:
+  action_economy: null
+  resource:
+    type: action_surge
+duration:
+  type: instantaneous
+
+---
+# ─── 5. ALLY BUFF WITH CONCENTRATION ─────────────────────────────────────────
+# Pattern: applies modifier to up to N other entities, concentration.
+
+name: bless
+tags: [active, spell, concentration]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: apply_modifier
+    hook: bonus_die
+    die: "1d4"
+    applies_to: attack_rolls_and_saving_throws
+    target: up_to_3_willing_creatures   # policy layer decides which creatures
+cost:
+  action_economy: action
+  concentration: true
+  resource:
+    type: spell_slot
+    min_level: 1
+duration:
+  type: minutes
+  value: 1
+  anchor: concentration
+
+---
+# ─── 6. RESOURCE-FLEXIBLE SPELL (UPCASTING) ──────────────────────────────────
+# Pattern: typed slot cost, structured scaling, instantaneous.
+
+name: divine_smite
+tags: [active, spell]
+trigger:
+  all:
+    - event: on_hit
+    - weapon: melee
+effect:
+  - verb: damage
+    dice:
+      base: "2d8"
+      increment: "1d8"
+      every_n_levels: 1
+      level_reference: slot_level
+    type: radiant
+    phase: 1                  # smite dice injected before crit doubling
+cost:
+  action_economy: null        # no action cost — triggered on a hit
+  resource:
+    type: spell_slot
+    min_level: 1
+duration:
+  type: instantaneous
+
+---
+# ─── 7. REACTIVE INTERCEPTOR (SHIELD SPELL) ──────────────────────────────────
+# Pattern: reaction after seeing an incoming attack roll hit, modifies in-flight event.
+
+name: shield_spell
+tags: [reaction, spell]
+trigger:
+  all:
+    - event: incoming_attack_roll
+    - attacker_has_hit: true  # fires after roll is known, before damage
+effect:
+  - verb: intercept_event
+    modification: apply_modifier
+    hook: flat
+    stat: ac
+    value: 5
+    duration:
+      type: until_condition
+      condition: start_of_next_turn
+cost:
+  action_economy: reaction
+  resource:
+    type: spell_slot
+    min_level: 1
+duration:
+  type: until_condition
+  condition: start_of_next_turn
+
+---
+# ─── 8. STAT-BLOCK SWAP ──────────────────────────────────────────────────────
+# Pattern: transform_statblock with explicit carry-over rules.
+
+name: wild_shape
+tags: [active]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: transform_statblock
+    target: self
+    stat_block_reference: beast_form   # resolved by build plan at runtime
+    carry_over: [class_features, spellcasting, mental_stats, personality]
+    suppress: [equipment]
+cost:
+  action_economy: bonus_action
+  resource:
+    type: wild_shape
+duration:
+  type: hours
+  value: 1                    # or until wild shape HP drops to 0
+
+---
+# ─── 9. REST EMULATION ───────────────────────────────────────────────────────
+# Pattern: convert_resource to emulate a short rest effect; out-of-combat restriction.
+
+name: prayer_of_healing
+tags: [active, spell]
+trigger:
+  all:
+    - event: on_use
+    - out_of_combat: true
+effect:
+  - verb: heal
+    dice:
+      base: "2d8"
+      increment: "1d8"
+      every_n_levels: 1
+      level_reference: slot_level
+    modifier: spellcasting_modifier
+    target: up_to_6_creatures
+  - verb: convert_resource
+    emulate: short_rest
+    target: caster            # allows hit-die expenditure, SR-recharge resources
+cost:
+  action_economy: action
+  cast_time: 10_minutes
+  resource:
+    type: spell_slot
+    min_level: 2
+duration:
+  type: instantaneous

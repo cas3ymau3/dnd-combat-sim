@@ -1,0 +1,309 @@
+# stress_test_patterns.yaml
+# One representative ability per schema pattern first discovered during the
+# 7-build stress test (builds 24, 25, 26, 36, 43, 44, 45).
+# Each entry is annotated with the pattern it demonstrates.
+
+---
+# PATTERN: allies_within_radius target scope (aura broadcast)
+# Discovered by: Glorious Dragonrider (aura of protection), Voice of Heaven (inner radiance)
+
+name: aura_of_protection
+tags: [passive, aura]
+trigger: null                 # always active while the paladin is conscious
+effect:
+  - verb: apply_modifier
+    hook: flat
+    stat: saving_throws
+    value:
+      reference: charisma_modifier
+    target:
+      allies_within_radius: 10
+cost: null
+duration:
+  type: permanent
+
+---
+# PATTERN: event: ally_takes_damage + intercept on behalf of ally
+# Discovered by: Depth Guard (spirit shield), Glorious Dragonrider (warding bond)
+
+name: spirit_shield
+tags: [passive, reaction]
+trigger:
+  all:
+    - event: ally_takes_damage
+    - range: 30
+    - while_raging: true
+effect:
+  - verb: intercept_event
+    modification: reduce_damage
+    dice:
+      base: "2d6"             # scales with rage bonus: 2d6 → 3d6
+      level_reference: rage_bonus_tier
+    target: triggering_ally
+cost:
+  action_economy: reaction
+duration:
+  type: instantaneous
+
+---
+# PATTERN: event: creature_drops_to_zero (external death trigger)
+# Discovered by: Reanimating Bloodshot (blood curse of the fallen puppet)
+
+name: blood_curse_fallen_puppet
+tags: [passive, reaction]
+trigger:
+  all:
+    - event: creature_drops_to_zero
+    - range: 30
+effect:
+  - verb: grant_action         # allow the dying creature one weapon attack
+    action_type: action
+    target: dying_creature
+    constrained_to: weapon_attack
+    forced_target: policy_chosen_target
+cost:
+  action_economy: reaction
+  resource:
+    type: blood_maledict
+    count: 1
+duration:
+  type: instantaneous
+
+---
+# PATTERN: event: creature_casts_spell (external spell trigger, self-cast only per current scope)
+# Discovered by: Sister of the Quill (empower sneak attack)
+# Note: currently scoped to spells cast by the character themselves (see schema §10).
+
+name: empower_sneak_attack_charge
+tags: [passive, reaction]
+trigger:
+  all:
+    - event: creature_casts_spell
+    - self_only: true          # only self-cast spells (current scope limitation)
+    - range: 30
+effect:
+  - verb: apply_status
+    status: empowered_sneak_attack
+    value_ref: triggering_spell_level   # stored spell level determines bonus dice
+cost:
+  action_economy: reaction
+  resource:
+    type: empower_sneak_attack_charge
+    count: 1                   # uses INT mod charges per LR
+duration:
+  type: until_condition
+  condition: next_sneak_attack_hit
+
+name: empower_sneak_attack_rider
+tags: [passive]
+trigger:
+  all:
+    - event: on_hit
+    - requires_status: empowered_sneak_attack
+    - once_per_turn: true
+effect:
+  - verb: apply_modifier
+    hook: dice_injection
+    phase: 1
+    applies_to: sneak_attack_dice
+    dice:
+      base: "1d6"
+      scale_with: empowered_sneak_attack.value   # Xd6 where X = stored spell level
+    type: force
+  - verb: remove_status
+    status: empowered_sneak_attack
+cost: null
+duration:
+  type: instantaneous
+
+---
+# PATTERN: event: on_damage_dealt_to_adjacent (counter-damage brand)
+# Discovered by: Sister of the Quill (brand of castigation), Depth Guard
+
+name: brand_of_castigation
+tags: [passive]
+trigger:
+  all:
+    - event: ally_takes_damage       # fires when owner or adjacent ally takes damage
+    - any:
+        - target: self
+        - allies_within_radius: 5
+    - requires_status: brand_of_castigation_active
+      target: damage_source          # the branded creature must be the damage source
+effect:
+  - verb: damage
+    dice: "0"                        # flat damage only
+    modifier:
+      reference: hemocraft_modifier  # equals INT modifier
+    type: psychic
+    target: damage_source
+cost: null
+duration:
+  type: instantaneous
+
+---
+# PATTERN: category: magic_action (not a spell; usable while raging)
+# Discovered by: Depth Guard (elemental node)
+
+name: elemental_node_summon
+tags: [active, magic_action]          # NOT tagged spell — usable while raging
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: create_entity
+    entity_type: object
+    anchor: static              # placed at chosen location, then moved via BA
+    zone_radius: 2.5            # 5ft sphere = 2.5ft radius
+    bundled_abilities:
+      - elemental_node_damage
+      - elemental_node_move
+cost:
+  action_economy: magic_action
+  resource:
+    type: elemental_node_use    # first use per SR is free; subsequent uses cost pact slot
+    count: 1
+duration:
+  type: minutes
+  value: 10
+
+name: elemental_node_move
+tags: [active]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: move_entity
+    target: elemental_node
+    max_distance: 30
+cost:
+  action_economy: bonus_action
+duration:
+  type: instantaneous
+
+name: elemental_node_damage
+tags: [passive]
+trigger:
+  any:
+    - event: entity_enters_zone
+      zone: elemental_node_zone
+    - event: entity_starts_turn_in_zone
+      zone: elemental_node_zone
+effect:
+  - verb: save
+    ability: dexterity
+    dc_reference: warlock_spell_save_dc
+  - verb: damage
+    dice:
+      base: "1d6"
+      increment: "1d6"
+      every_n_levels: 5        # 1d6 at warlock-3, 2d6 at warlock-6, etc.
+      level_reference: warlock_level
+    type: cold                  # varies by elemental patron
+    on_save: none               # full damage on fail, 0 on save (per RAW)
+cost: null
+duration:
+  type: instantaneous
+
+---
+# PATTERN: choose_one construct (multi-option ability)
+# Discovered by: Depth Guard (spiritual protectors), Shadow Giant (war magic)
+
+name: spiritual_protectors_strike
+tags: [passive]
+trigger:
+  all:
+    - event: on_hit
+    - while_raging: true
+effect:
+  choose_one:
+    - label: distract
+      verbs:
+        - verb: apply_modifier
+          hook: advantage_state
+          value: disadvantage
+          applies_to: target_attack_rolls_vs_non_owner
+          duration:
+            type: until_condition
+            condition: start_of_owner_next_turn
+    - label: protect
+      verbs:
+        - verb: intercept_event
+          modification: apply_modifier
+          hook: flat
+          stat: incoming_damage
+          value: half
+          target: ally_hit_by_target
+          duration:
+            type: until_condition
+            condition: end_of_target_next_turn
+    - label: strike
+      verbs:
+        - verb: damage
+          dice: "1d6"
+          type: cold            # or other elemental type; chosen at subclass selection
+          target: target
+cost: null
+duration:
+  type: instantaneous
+
+---
+# PATTERN: action_cost_override modifier hook
+# Discovered by: Voice of Heaven (mantle of majesty), also applies to haste
+
+name: mantle_of_majesty
+tags: [active, spell, concentration]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: apply_modifier
+    hook: action_cost_override
+    target_ability: command
+    new_cost: bonus_action      # command normally costs an action; now costs a BA
+cost:
+  action_economy: bonus_action  # activating mantle of majesty itself costs a BA
+  concentration: true
+  resource:
+    type: mantle_of_majesty_use  # 1 free use per LR; restore with lvl-3 slot
+duration:
+  type: minutes
+  value: 1
+  anchor: concentration
+
+---
+# PATTERN: Lucky feat — two narrow d20-test triggers
+# Discovered by: Shadow Giant (lucky), Depth Guard (lucky via lessons of first ones)
+
+name: lucky_self_reroll
+tags: [passive, reaction]
+trigger:
+  all:
+    - event: on_roll
+    - d20_test: self            # any d20 test made by the character
+effect:
+  - verb: intercept_event
+    modification: reroll_take_either   # player chooses which result to use
+cost:
+  action_economy: null          # no action cost
+  resource:
+    type: luck_point
+    count: 1
+duration:
+  type: instantaneous
+
+name: lucky_enemy_attack_reroll
+tags: [passive, reaction]
+trigger:
+  all:
+    - event: incoming_attack_roll  # enemy making an attack roll against the character
+effect:
+  - verb: intercept_event
+    modification: force_reroll    # enemy must use the new roll
+cost:
+  action_economy: null
+  resource:
+    type: luck_point
+    count: 1
+duration:
+  type: instantaneous
