@@ -94,6 +94,45 @@ These were reached deliberately; do not silently revisit them.
 
 10. **Implementation language: Python** (numpy/pandas/pytest ecosystem).
 
+11. **Tick tuple is `(round, turn_index, sequence)`** — not a named phase enum.
+    Action economy phase (action / bonus_action / reaction) is a **cost tag**
+    on `Choice` and events, not a position in the tuple. The policy controls
+    ordering by controlling what it emits first; the scheduler assigns
+    sequence numbers in that order. Reactions slot into the current
+    (round, turn_index) at the next available sequence number.
+
+12. **Enemy policy is structurally identical to character policy** — both
+    implement `Policy.decide(snapshot) → list[Choice]`. Near-term target is a
+    `ScriptedEnemyPolicy(archetype, stats_by_level)` driven by
+    `reference/data/monster_ac_and_saves_by_level.csv`. See PROGRESS.md for
+    the full enemy-policy decision record.
+
+---
+
+## Engine implementation — what exists
+
+The "swing at the dummy" skeleton is complete and passing (29 tests, all green).
+
+```
+src/
+  rng.py        SeededRNG — single dice channel, seed-logged, reproducible
+  modifiers.py  Modifier + ModifierStack — fold-left, expiry by tick, phase filter
+  entity.py     Entity — HP + base stats + modifier stack; stat() always folds stack
+  events.py     Tick type, event dataclasses, EventQueue (heapq, tiebreak by insertion)
+  policy.py     Policy protocol, GameState (frozen), Choice (cost-as-tag), DummySwingPolicy
+  verbs.py      resolve_attack_roll + resolve_damage (phase-ordered, crit doubles die count)
+  scheduler.py  Pop-earliest loop, subscriber registry, decision-point → policy → enqueue
+tests/
+  test_rng.py / test_modifiers.py / test_scheduler.py / test_swing.py
+```
+
+Key invariants to preserve when extending:
+- All dice through `SeededRNG.roll()` — never call random directly.
+- All stat reads through `entity.stat(name, tick)` — never read `base_stats` directly.
+- Policy's `decide()` is pure read — no dice, no mutation, no queue access.
+- Verb handlers receive the queue and push follow-on events; they never call `decide()`.
+- New abilities → new content YAML + maybe a new subscriber. Not new engine verbs.
+
 ---
 
 ## Working agreements

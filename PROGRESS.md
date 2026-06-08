@@ -17,59 +17,84 @@
 - **Schema validated against the corpus** — coverage-tested against the 9 canonical
   examples, the hard psionic crit-fisher stack, and a 7-build stress test (builds
   24, 25, 26, 36, 43, 44, 45). Verb set confirmed closed; 8 trigger/predicate
-  vocabulary additions recorded (aura broadcast, ally-damage intercept, external
-  death trigger, external spell trigger, counter-damage brand, magic_action vs
-  spell tag, choose_one effect construct, action_cost_override hook). Zero new
-  engine verbs forced.
+  vocabulary additions recorded. Zero new engine verbs forced.
 - **Example content written & committed** — `content/abilities/`:
-  - `core_examples.yaml` — 9 canonical coverage tests (Tough → Prayer of Healing)
-  - `psionic_critfisher.yaml` — the hard 5-hook stack with phase annotations
-  - `stress_test_patterns.yaml` — one ability per new schema pattern
+  `core_examples.yaml`, `psionic_critfisher.yaml`, `stress_test_patterns.yaml`.
+- **Engine skeleton built & tested** — `src/` + `tests/`, 29 tests all green.
+  One fighter swings a longsword at an infinite-HP dummy for N rounds; seeded
+  dice, reproducible output, damage number comes out. All core architectural
+  invariants are live in code (see `CLAUDE.md` §"Engine implementation").
 - **Repo pushed to GitHub** — https://github.com/cas3ymau3/dnd-combat-sim
 
 ---
 
-## Next step: engine skeleton — "swing at the dummy" milestone
+## Current phase: fidelity build-up → War Angel validation
 
-Build the **smallest possible vertical slice** that proves the architecture end to
-end, then thicken it. Target:
+The skeleton proved the architecture end-to-end. Now we thicken it, in this order:
 
-> One character with a longsword swings at the infinite-HP target dummy for a few
-> rounds, with seeded dice, and we get a damage number out.
+### Step 1 — Extra Attack (start here next session)
 
-This deliberately forces us to stand up a minimal version of each core piece, and
-**nothing more** — no spells, zones, or resources yet:
+The most common action-economy pattern: two weapon attacks using the same action.
+What needs to happen:
+- The policy emits two `Choice(action_type="attack", cost="none")` after the first
+  `cost="action"` swing (cost="none" = extra attack, action already spent).
+- The scheduler enqueues them as sequential AttackRollEvents within the same turn.
+- Tests: confirm 2 attack rolls fire per turn, total damage increases roughly 2×.
 
-- **Entity** — a minimal bag of state (HP, base stats, modifier stack).
-- **Seeded RNG wrapper** — single channel for all dice; logs the seed.
-- **Modifier stack** — compute effective stats (attack bonus, AC) on demand by
-  folding modifiers over base values.
-- **Minimal scheduler** — turns and rounds only; the pop-earliest-event loop.
-- **Two verbs** — `attack_roll` and `damage`, only as deep as the swing needs.
-- **A trivial policy** — a `decide` function that always returns "swing", to make
-  the policy/resolution boundary concrete from day one.
-- **Tests (pytest)** — pin down each piece; this is also how we'll later prove the
-  engine matches the R reference.
+This also forces us to validate that the policy can correctly interleave a bonus
+action between the two swings (the policy controls sequence by emission order).
 
-The user asked (before the session break) to next see **the minimal class/file
-structure** for this milestone — what objects exist, what each owns, and exactly
-where the `decide` function plugs into the scheduler loop. Start there: propose the
-structure, get feedback, then implement incrementally.
+### Step 2 — Scripted attacker (enemy fights back)
 
-### After the skeleton breathes
+Add a `ScriptedEnemyPolicy` so the character takes damage and resource decisions
+become meaningful. Key decisions already made (see "Enemy policy" section below):
+- Structurally identical to character policy: `decide(snapshot) → list[Choice]`.
+- Stats from `reference/data/monster_ac_and_saves_by_level.csv`, matched to level.
+- Start with `archetype="melee_aggressive"` — stays adjacent, swings each turn.
 
-Per `design/design.md` §7 and `reference/README.md`: work toward reproducing the
-**War Angel DPR-by-level** output in the new architecture, validating against the R
-prototype (`reference/r-prototype/war_angel_*`) as a known-good reference. The
-War Angel combat policy (`reference/r-prototype/war_angel_combat_policies.txt`) is
-effectively a written spec for that build's `decide` function.
+### Step 3 — Resource tracking (spell slots, limited-use features)
+
+Without resources, smite/channel divinity/etc. can't be modeled. Need:
+- Per-entity resource pool (spell slots by level, ki points, superiority dice…).
+- Cost declared in ability YAML consumed by the scheduler before enqueuing.
+- Reset logic at short/long rest boundaries (simulated-day structure).
+
+### Step 4 — War Angel DPR-by-level
+
+Build the War Angel character policy (`reference/r-prototype/war_angel_combat_policies.txt`
+is the written spec) and run DPR across levels 1–20. Validate against the R
+prototype output in `reference/r-prototype/war_angel_*`. This is the first real
+regression test of engine correctness.
 
 ---
 
-## Notes / open threads
+## Enemy policy — decisions recorded
 
-- Enemy scope is still a flagged open decision (design.md §6): infinite-HP dummy by
-  default, possible optional finite-HP mode; build the enemy save math regardless
-  (needed for character-imposed conditions).
-- `reference/data/monster_ac_and_saves_by_level.csv` is the §3.5 enemy CR-scaling
-  table, already built and directly consumable by the content layer.
+1. **Same interface as character policy.** Both implement
+   `Policy.decide(snapshot) → list[Choice]`. Scheduler loop is unchanged.
+
+2. **`ScriptedEnemyPolicy(archetype, stats_by_level)`** — behavior is a
+   constructor param, not a subclass. Keeps the door open to sampling archetypes
+   across Monte Carlo runs (enemy behavioral variance as a first-class concern).
+
+3. **Stats from CR-scaling table.** `reference/data/monster_ac_and_saves_by_level.csv`
+   is the source of truth for AC, attack bonus, save DCs, damage by CR/level.
+   Enemy `Entity` is constructed from a row matched to character level at sim setup.
+
+4. **Behavioral axis for later:** melee-stays-close vs. ranged-kiter. Affects
+   opportunity attacks, forced movement, DPR for position-sensitive builds
+   (Sentinel fighter cares; ranged Ranger largely does not).
+
+---
+
+## Open threads / deferred decisions
+
+- **Initiative / turn order** — currently list order. Real sims need rolled or
+  fixed initiative. Defer until the scripted attacker step.
+- **Finite vs. infinite enemy HP** — still infinite-HP dummy by default. Finite HP
+  matters for encounter structure (enemies die, waves, action economy shifts).
+  Build the toggle when the scripted attacker lands.
+- **Advantage/disadvantage** — not yet wired. Needed soon (many abilities grant or
+  impose it). Likely a modifier that wraps the d20 roll with `roll(2,20).max()`.
+- **Saving throws** — needed for spells and conditions but not for the basic melee
+  path. Wire in when the first save-based ability is modeled.
