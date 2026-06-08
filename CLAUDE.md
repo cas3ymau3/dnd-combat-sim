@@ -111,24 +111,48 @@ These were reached deliberately; do not silently revisit them.
 
 ## Engine implementation — what exists
 
-The "swing at the dummy" skeleton is complete and passing (29 tests, all green).
+Engine fidelity build-up is well underway; **134 tests, all green**. The
+mechanical prerequisites for the War Angel validation (levels 1–13) are now in
+place. What remains for that milestone is the character policy + build plan, not
+more engine primitives.
 
 ```
 src/
   rng.py        SeededRNG — single dice channel, seed-logged, reproducible
   modifiers.py  Modifier + ModifierStack — fold-left, expiry by tick, phase filter
-  entity.py     Entity — HP + base stats + modifier stack; stat() always folds stack
-  events.py     Tick type, event dataclasses, EventQueue (heapq, tiebreak by insertion)
-  policy.py     Policy protocol, GameState (frozen), Choice (cost-as-tag), DummySwingPolicy
-  verbs.py      resolve_attack_roll + resolve_damage (phase-ordered, crit doubles die count)
-  scheduler.py  Pop-earliest loop, subscriber registry, decision-point → policy → enqueue
+  resources.py  ResourcePool + ResourceEntry — full/partial SR restore, LR restore,
+                find_spell_slot(min_level); spell slots named spell_slot_1..9
+  statuses.py   StatusSet + StatusEntry — tick-expiring flags keyed on
+                (round, turn_index); apply/has/get/consume/expire
+  entity.py     Entity — HP (tracks into negatives, threshold model) + base stats +
+                modifier stack + ResourcePool + StatusSet; stat() folds the stack
+  events.py     Tick type, event dataclasses, EventQueue (heapq, tiebreak by insertion).
+                AttackRollEvent carries masteries list
+  policy.py     Policy protocol, GameState (frozen, includes merged resources),
+                Choice (cost tag + resource_cost + extra_masteries + mastery_override).
+                DummySwingPolicy, ExtraAttackPolicy, ScriptedEnemyPolicy
+  verbs.py      resolve_attack_roll + resolve_damage (phase-ordered, crit doubles die
+                count); roll_d20 (adv/disadv w/ RAW cancellation); apply_masteries_on_hit
+                (sap/vex)
+  scheduler.py  Pop-earliest loop, subscriber registry, decision-point → policy → enqueue.
+                Validates/consumes resource_cost; sweeps status expiry at each turn start;
+                builds AttackRollEvent.masteries; exposes per-entity damage_received
+  day_runner.py DayRunner — one adventuring day: LR → 4 combats → (implicit LR). Samples
+                combat times, places the short rest by the design rule, between_combats
+                hook for out-of-combat actions (e.g. Prayer of Healing)
 tests/
-  test_rng.py / test_modifiers.py / test_scheduler.py / test_swing.py
+  test_rng / test_modifiers / test_scheduler / test_swing / test_extra_attack /
+  test_scripted_enemy / test_resources / test_day_runner / test_statuses /
+  test_weapon_mastery
 ```
 
 Key invariants to preserve when extending:
 - All dice through `SeededRNG.roll()` — never call random directly.
 - All stat reads through `entity.stat(name, tick)` — never read `base_stats` directly.
+- Persistent resources through `entity.resources` (ResourcePool); turn-level action
+  economy (action/bonus_action/reaction) is managed by the scheduler, NOT in the pool.
+- Statuses through `entity.statuses` (StatusSet); expiry is swept at turn starts only
+  (see PROGRESS.md "TurnEndEvent" note for when that lazy model needs extending).
 - Policy's `decide()` is pure read — no dice, no mutation, no queue access.
 - Verb handlers receive the queue and push follow-on events; they never call `decide()`.
 - New abilities → new content YAML + maybe a new subscriber. Not new engine verbs.

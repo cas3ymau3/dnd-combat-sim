@@ -18,6 +18,8 @@ import logging
 from dataclasses import dataclass, field
 
 from .modifiers import Modifier, ModifierStack
+from .resources import ResourcePool
+from .statuses import StatusSet
 
 log = logging.getLogger(__name__)
 
@@ -44,6 +46,11 @@ class Entity:
           "str_save"      — this entity's Strength saving throw bonus
           ... etc.
         Any key can be queried via entity.stat(); missing keys return 0.
+    resources:
+        Optional ResourcePool of persistent limited-use resources (spell slots,
+        ki, war priest charges, etc.).  Defaults to an empty pool.
+        Turn-level action economy (action, bonus_action, reaction) is managed
+        by the Scheduler and is NOT stored here.
     """
 
     def __init__(
@@ -51,6 +58,7 @@ class Entity:
         name: str,
         hp: int | float,
         base_stats: dict[str, int | float | tuple] | None = None,
+        resources: ResourcePool | None = None,
     ) -> None:
         self.id: int = next(_id_counter)
         self.name = name
@@ -58,6 +66,8 @@ class Entity:
         self.max_hp: int | float = hp
         self.base_stats: dict[str, int | float | tuple] = base_stats or {}
         self.modifiers = ModifierStack()
+        self.resources: ResourcePool = resources if resources is not None else ResourcePool()
+        self.statuses: StatusSet = StatusSet()
         log.debug("Entity created: %s (id=%d, hp=%s)", name, self.id, hp)
 
     # ------------------------------------------------------------------
@@ -85,8 +95,13 @@ class Entity:
     # ------------------------------------------------------------------
 
     def take_damage(self, amount: int | float) -> None:
-        """Reduce HP by *amount*.  Clamps at 0 (no negative HP)."""
-        self.hp = max(0, self.hp - amount)
+        """Reduce HP by *amount*.  HP can go negative (threshold model).
+
+        The sim never gates turn access on HP — entities always act for the
+        full scheduled rounds.  HP is a tracker; use is_functionally_dead to
+        detect death-proc thresholds (e.g. hungering hex on enemy kill).
+        """
+        self.hp -= amount
         log.info("%s takes %s damage → hp=%s/%s", self.name, amount, self.hp, self.max_hp)
 
     def heal(self, amount: int | float) -> None:
@@ -95,7 +110,18 @@ class Entity:
         log.info("%s heals %s → hp=%s/%s", self.name, amount, self.hp, self.max_hp)
 
     @property
+    def is_functionally_dead(self) -> bool:
+        """True when cumulative damage has met or exceeded max_hp.
+
+        Does NOT stop the entity from acting — the scheduler always runs every
+        entity for the full max_rounds.  Use this in on_kill trigger subscribers
+        to proc death effects (e.g. hungering hex, kill-conditional abilities).
+        """
+        return self.hp <= 0
+
+    @property
     def is_alive(self) -> bool:
+        """Kept for backward compatibility.  Prefer is_functionally_dead."""
         return self.hp > 0
 
     # ------------------------------------------------------------------

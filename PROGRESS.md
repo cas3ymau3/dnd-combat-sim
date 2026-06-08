@@ -25,46 +25,74 @@
   dice, reproducible output, damage number comes out. All core architectural
   invariants are live in code (see `CLAUDE.md` §"Engine implementation").
 - **Repo pushed to GitHub** — https://github.com/cas3ymau3/dnd-combat-sim
+- **Extra Attack** — `ExtraAttackPolicy` in `src/policy.py`; supports N extra
+  attacks and an optional interleaved bonus-action attack. 13 new tests, all green.
+- **Scripted enemy + threshold HP model** — `ScriptedEnemyPolicy` (melee_aggressive
+  archetype, stat-block dict interface). Entity HP now tracks into negatives; both
+  sides act for the full `max_rounds` regardless of HP. `Scheduler.damage_received`
+  exposes per-entity incoming damage per round. 20 new tests, all green.
+- **Resource tracking + DayRunner** — `src/resources.py`: `ResourcePool` /
+  `ResourceEntry` with full/partial SR restore and LR restore. `src/day_runner.py`:
+  `DayRunner` orchestrates 4 combats, non-deterministic SR placement, LR at day
+  start, `between_combats` hook for out-of-combat actions (e.g. Prayer of Healing).
+  `Choice.resource_cost` wired into scheduler validation/consumption. Entity carries
+  a `ResourcePool`. 44 new tests, all green (102 total).
+- **Advantage/disadvantage + status flags + weapon mastery (sap/vex)** —
+  `src/statuses.py`: `StatusSet` with tick-based expiry keyed on (round, turn_index),
+  swept for all entities at each TurnStartEvent. `roll_d20()` honors RAW adv/disadv
+  cancellation. `resolve_attack_roll` reads/consumes sapped & vex_advantage; masteries
+  apply on hit (sap → target disadvantage until applier's next turn; vex → applier
+  advantage vs that target). `Choice` gains `extra_masteries` (additive) and
+  `mastery_override` (replace); `AttackRollEvent.masteries` built by scheduler. Entity
+  carries a `StatusSet`. 32 new tests, all green (134 total).
 
 ---
 
 ## Current phase: fidelity build-up → War Angel validation
 
-The skeleton proved the architecture end-to-end. Now we thicken it, in this order:
+The skeleton proved the architecture end-to-end; we then thickened it through the
+engine prerequisites for the War Angel validation. **All engine prerequisites are
+now done.** What remains is the character itself (policy + build plan) and the
+validation run — not more engine primitives.
 
-### Step 1 — Extra Attack (start here next session)
+Engine prerequisites, in the order we built them:
+- ~~Extra Attack~~ ✓  — `ExtraAttackPolicy` (N extra attacks + optional interleaved BA).
+- ~~Scripted enemy + threshold HP~~ ✓  — `ScriptedEnemyPolicy`; HP tracks into negatives,
+  both sides always act the full round count.
+- ~~Resource tracking + DayRunner~~ ✓  — `ResourcePool`, full/partial SR + LR restore,
+  4-combat day with non-deterministic SR placement, `between_combats` hook for PoH.
+- ~~Advantage/disadvantage + statuses + weapon mastery (sap/vex)~~ ✓  — `StatusSet`,
+  `roll_d20`, sap/vex applied on hit and consumed on the holder's next roll.
 
-The most common action-economy pattern: two weapon attacks using the same action.
-What needs to happen:
-- The policy emits two `Choice(action_type="attack", cost="none")` after the first
-  `cost="action"` swing (cost="none" = extra attack, action already spent).
-- The scheduler enqueues them as sequential AttackRollEvents within the same turn.
-- Tests: confirm 2 attack rolls fire per turn, total damage increases roughly 2×.
+### NEXT STEP — War Angel character policy + build plan (levels 1–13)
 
-This also forces us to validate that the policy can correctly interleave a bonus
-action between the two swings (the policy controls sequence by emission order).
+This is the first concrete character. Two pieces:
 
-### Step 2 — Scripted attacker (enemy fights back)
+1. **Build plan** (data): the character's stat block at each level 1–13 — attack
+   bonus, damage dice/bonus, AC, HP, spell slots and limited-use resources, weapon
+   mastery, and which abilities are online. Derived from
+   `design/build-guides/38_the_war_angel.txt` (the detailed level-by-level notes,
+   including the per-level simulated DPR targets to validate against) and
+   `reference/r-prototype/war_angel_*` (the prototype's structure).
 
-Add a `ScriptedEnemyPolicy` so the character takes damage and resource decisions
-become meaningful. Key decisions already made (see "Enemy policy" section below):
-- Structurally identical to character policy: `decide(snapshot) → list[Choice]`.
-- Stats from `reference/data/monster_ac_and_saves_by_level.csv`, matched to level.
-- Start with `archetype="melee_aggressive"` — stays adjacent, swings each turn.
+2. **Daily plan / policy** (Python): the `decide()` logic implementing the build's
+   per-round action economy — e.g. at lvl 1 a single rapier (vex) attack + 1 AoO
+   per combat; by lvl 5+ war priest BA, true-strike, guided strike, wrathful smite;
+   by lvl 8+ brutality::bluff. The build guide spells out the exact decision rules
+   per level and per combat (see the lvl-08 and lvl-10 notes especially).
 
-### Step 3 — Resource tracking (spell slots, limited-use features)
+**Validation framing (agreed):**
+- Levels 1–4 are mechanically simple → expect a CLOSE match to the build guide's
+  simulated DPR (1: 8.32, 2: 7.39, 3: 7.39, 4: 6.81). A miss here means a basic
+  attack-math bug — find it before layering on complexity.
+- Levels 5–13 → SOFT validation. Same ballpark (±~10%), not exact. The R prototype
+  and build-guide numbers are a compass, not ground truth (policy logic differs).
+- Build the simplest level (1) first and climb the ladder.
 
-Without resources, smite/channel divinity/etc. can't be modeled. Need:
-- Per-entity resource pool (spell slots by level, ki points, superiority dice…).
-- Cost declared in ability YAML consumed by the scheduler before enqueuing.
-- Reset logic at short/long rest boundaries (simulated-day structure).
-
-### Step 4 — War Angel DPR-by-level
-
-Build the War Angel character policy (`reference/r-prototype/war_angel_combat_policies.txt`
-is the written spec) and run DPR across levels 1–20. Validate against the R
-prototype output in `reference/r-prototype/war_angel_*`. This is the first real
-regression test of engine correctness.
+**Known deferral inside this scope:** Flourish Parry (lvl 14) needs the reaction /
+`intercept_event` decision point, which we have NOT built — fine, validation stops
+at level 13. See "Open threads" for the full deferred list (TurnEndEvent, saves,
+spell-aggressive enemy, weapon slot, light/nick, etc.).
 
 ---
 
@@ -89,12 +117,69 @@ regression test of engine correctness.
 
 ## Open threads / deferred decisions
 
-- **Initiative / turn order** — currently list order. Real sims need rolled or
-  fixed initiative. Defer until the scripted attacker step.
-- **Finite vs. infinite enemy HP** — still infinite-HP dummy by default. Finite HP
-  matters for encounter structure (enemies die, waves, action economy shifts).
-  Build the toggle when the scripted attacker lands.
-- **Advantage/disadvantage** — not yet wired. Needed soon (many abilities grant or
-  impose it). Likely a modifier that wraps the d20 roll with `roll(2,20).max()`.
-- **Saving throws** — needed for spells and conditions but not for the basic melee
-  path. Wire in when the first save-based ability is modeled.
+- **Initiative / turn order** — currently list order (character first, enemy
+  second). Real sims need rolled or fixed initiative. Low priority until we have
+  multiple enemy archetypes and need to study action-order sensitivity.
+
+- **Formal weapon slot** — deferred. For now a weapon's mastery is declared via
+  `base_stats["weapon_mastery"]`, and weapon switches (e.g. War Angel longsword →
+  rapier at lvl 16) are modeled by the build plan updating base_stats at the level
+  transition. Build a proper `Weapon` dataclass (name, damage_dice, mastery,
+  `properties: list[str]`) when the first **dual-wielder** forces simultaneous
+  multi-weapon tracking. Not needed for War Angel validation.
+
+- **Light weapons / two-weapon fighting / nick mastery** — architecture is believed
+  sufficient as-is: the light-weapon BA second attack is just
+  `Choice(cost="bonus_action")`; nick mastery moves it to `cost="none"` (structurally
+  identical to Extra Attack). No engine change anticipated, but **verify against a
+  real dual-wield build** before relying on it. War Angel uses no light/nick weapons,
+  so deferred.
+
+- **Weapon mastery — remaining properties** — sap and vex are built (the only two
+  War Angel needs). topple, slow, push, nick, cleave, graze deferred until a build
+  needs them. `mastery_override` (Tactical Master, lvl 16) field stubbed on `Choice`
+  but not yet consumed by the scheduler.
+
+- **`TurnEndEvent` / end-of-turn trigger point** — the scheduler currently emits
+  only `TurnStartEvent`, and status expiry is swept lazily at each turn start.
+  This is **provably correct for the current statuses** (sap, vex) because each is
+  read only during its holder's own turn, so lazy expiry is never observable. It
+  **breaks** for: (a) statuses that gate reactions (e.g. stunned — a reaction could
+  fire in the gap between true end-of-turn expiry and the next start-of-turn sweep,
+  wrongly seeing the status as still active); (b) effects that *proc* on turn end
+  rather than expire (e.g. spirit guardians dealing damage when an entity ends its
+  turn in the emanation — must fire at that turn-end tick with correct attribution).
+  Both need an explicit `TurnEndEvent` as a symmetric counterpart to `TurnStartEvent`.
+  Deferred until the first end-of-turn proc or reaction-gating condition is modeled,
+  so its shape is driven by a real case. Not needed for War Angel validation.
+
+- **Saving throws** — needed for spells and conditions. Deferred until the first
+  save-based ability is modeled (Step 3+). Will add `SavingThrowEvent`, a
+  `spell_save_dc` stat on attackers, and save-bonus stats on defenders.
+
+- **Spell-aggressive enemy archetype** — enemies that target saving throws rather
+  than making attack rolls. Required for full defensive assessment (not just AC,
+  but also save proficiency). Deferred after `melee_aggressive` is validated.
+  Longer-term goal: run across a distribution of archetypes and aggregate, rather
+  than a single archetype.
+
+- **Monster stat table (CSV)** — `reference/data/monster_ac_and_saves_by_level.csv`
+  is read-only reference for now. Before using it as a live input, it needs
+  enrichment: number of attacks per CR, damage-per-hit, enemy HP distribution from
+  MM analysis. `ScriptedEnemyPolicy` already accepts a dict interface so swapping
+  in a CSV row later requires no policy changes.
+
+- **Grapple / shove / unarmed strike variants** — some builds (e.g. Cursed Kensei)
+  choose attack flavor per-swing. Extend `Choice` with an optional `attack_kind`
+  field when the first such build is modeled. Grappler-feat compound effects
+  (damage + condition on same hit) belong in an `on_hit` subscriber.
+
+- **War Angel validation** — treat the R prototype as a soft compass, not ground
+  truth. Per-hit damage math (smite dice, wrathful smite) should be near-exact.
+  DPR totals may diverge due to policy differences and hit-rate modeling; ±10% is
+  acceptable noise, not a regression.
+
+- **Finite HP as a toggle** — considered and deferred. The threshold model (HP
+  tracks into negatives, entities always act) is the default. If variable-length
+  encounters become a research question, revisit then — don't add the toggle
+  preemptively.

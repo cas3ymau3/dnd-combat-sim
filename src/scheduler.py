@@ -92,6 +92,14 @@ class Scheduler:
         self.queue = EventQueue()
         self._registry: dict[str, list[Handler]] = {}
         self._damage_log: list[int] = []  # total damage dealt each round
+        # Per-entity damage received log: entity_id → list[int] per round.
+        # Populated as DamageEvents resolve; callers read it after run().
+        self.damage_received: dict[int, list[int]] = {
+            e.id: [] for e in entities
+        }
+        self._round_damage_received: dict[int, int] = {
+            e.id: 0 for e in entities
+        }
 
         # Register the two milestone verb handlers
         self._subscribe("attack_roll", resolve_attack_roll)  # type: ignore[arg-type]
@@ -135,6 +143,9 @@ class Scheduler:
                 log.info("--- Round %d ended, total damage this round: %d ---", current_round, round_damage)
                 self._damage_log.append(round_damage)
                 round_damage = 0
+                for eid in self._round_damage_received:
+                    self.damage_received[eid].append(self._round_damage_received[eid])
+                    self._round_damage_received[eid] = 0
                 current_round = round_
 
             # Dispatch
@@ -150,6 +161,8 @@ class Scheduler:
                     if isinstance(result, tuple):
                         total_dmg, seq_counter = result
                         round_damage += total_dmg
+                        if event.target is not None and event.target.id in self._round_damage_received:
+                            self._round_damage_received[event.target.id] += total_dmg
                     else:
                         seq_counter = result
 
@@ -173,6 +186,8 @@ class Scheduler:
         if round_damage > 0 or current_round <= self.max_rounds:
             log.info("--- Round %d ended, total damage this round: %d ---", current_round, round_damage)
             self._damage_log.append(round_damage)
+            for eid in self._round_damage_received:
+                self.damage_received[eid].append(self._round_damage_received[eid])
 
         return self._damage_log
 
@@ -193,6 +208,13 @@ class Scheduler:
 
         log.info("=== Turn start: %s (round=%d, turn=%d) ===", actor.name, round_, turn_idx)
 
+        # Expire tick-based statuses on ALL entities at this turn boundary.
+        # (A status set to expire at the applier's next turn is keyed to that
+        # turn's (round, turn_index), which may belong to a different entity
+        # than the one acting now — so we sweep everyone.)
+        for ent in self.entities:
+            ent.statuses.expire(round_, turn_idx)
+
         policy = self.policies.get(actor.id)
         if policy is None:
             log.debug("%s has no policy, skipping turn.", actor.name)
@@ -201,7 +223,11 @@ class Scheduler:
         # Build read-only snapshot
         enemies = tuple(e for e in self.entities if e.id != actor.id)
         allies: tuple = ()  # single-actor milestone; expand later
-        resources = dict(DEFAULT_RESOURCES)  # fresh copy each turn
+
+        # Merge turn-level action economy with actor's persistent resources.
+        # Policy reads the merged dict; scheduler tracks action economy locally.
+        resources = dict(DEFAULT_RESOURCES)  # fresh per-turn action economy
+        resources.update(actor.resources.as_dict())  # persistent pool (read view)
 
         snapshot = GameState(
             actor=actor,
@@ -220,6 +246,8 @@ class Scheduler:
         seq = 1  # sequence 0 was the TurnStartEvent itself
         for choice in choices:
             cost = choice.cost
+
+            # --- Action economy check ---
             if cost in resources and resources[cost] < 1:
                 log.warning(
                     "%s tried to spend %s but none remaining — choice skipped.",
@@ -227,16 +255,45 @@ class Scheduler:
                 )
                 continue
 
+            # --- Persistent resource check ---
+            if choice.resource_cost:
+                can_afford = all(
+                    actor.resources.available(name) >= amount
+                    for name, amount in choice.resource_cost.items()
+                )
+                if not can_afford:
+                    log.warning(
+                        "%s cannot afford resource_cost %r — choice skipped.",
+                        actor.name, choice.resource_cost,
+                    )
+                    continue
+
+            # --- Consume action economy ---
             if cost in resources:
                 resources[cost] -= 1
 
+            # --- Consume persistent resources ---
+            if choice.resource_cost:
+                for name, amount in choice.resource_cost.items():
+                    actor.resources.consume(name, amount)
+
             if choice.action_type == "attack":
+                # Build the combined mastery list:
+                #   base = mastery_override if set, else weapon's natural mastery
+                #   then add any extra_masteries (Brutality, etc.) on top
+                base_mastery = choice.mastery_override or actor.base_stats.get("weapon_mastery")
+                masteries: list[str] = []
+                if base_mastery:
+                    masteries.append(base_mastery)
+                masteries.extend(choice.extra_masteries)
+
                 atk_event = AttackRollEvent(
                     tick=make_tick(round_, turn_idx, seq),
                     actor=actor,
                     target=choice.target,
                     weapon_stat=choice.weapon_stat,
                     cost=cost,
+                    masteries=masteries,
                 )
                 self.queue.push(atk_event)
                 seq += 1

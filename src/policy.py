@@ -91,12 +91,29 @@ class Choice:
         Stat key for attack bonus lookup.  Default "attack_bonus" covers
         most melee/ranged weapon attacks.  Spell attacks might use
         "spell_attack_bonus".
+    resource_cost:
+        Optional persistent resource cost, e.g. {"spell_slot_2": 1} for a
+        2nd-level spell or {"war_priest": 1} for a War Priest attack.
+        The scheduler validates and consumes these from entity.resources
+        before enqueuing the event.  None means no persistent resource cost.
+    extra_masteries:
+        Mastery properties ADDED to this attack on top of the weapon's natural
+        mastery, e.g. ["vex"] for Brutality::bluff on a longsword (sap) → the
+        attack carries both sap and vex.  Additive, not a replacement.
+    mastery_override:
+        If set, REPLACES the weapon's natural mastery for this attack (e.g.
+        Tactical Master, lvl 16: swap a weapon's mastery for push/sap/slow).
+        extra_masteries still stack on top.  None = use the weapon's natural
+        mastery unchanged.
     """
 
     action_type: str
     cost: str = "action"
     target: "Entity | None" = None
     weapon_stat: str = "attack_bonus"
+    resource_cost: dict[str, int] | None = None
+    extra_masteries: list[str] = field(default_factory=list)
+    mastery_override: "str | None" = None
 
 
 # ---------------------------------------------------------------------------
@@ -148,3 +165,141 @@ class DummySwingPolicy:
                 weapon_stat="attack_bonus",
             )
         ]
+
+
+class ScriptedEnemyPolicy:
+    """Melee-aggressive enemy: attacks the first visible character every turn.
+
+    Designed to accept a flat stat block dict so the interface is identical
+    whether the stats come from a hardcoded value or a CSV row lookup.  When
+    the monster table is ready, callers just pass ``csv_row.to_dict()`` as
+    ``stat_block`` and nothing else changes.
+
+    Parameters
+    ----------
+    stat_block:
+        Dict of the enemy's combat stats, same key conventions as Entity:
+          "attack_bonus"  — added to d20 rolls
+          "damage_dice"   — (n, sides) tuple
+          "damage_bonus"  — flat damage bonus
+        Any key not present defaults to 0 / (1, 4) via Entity.stat().
+    archetype:
+        Behavioral tag.  Currently only "melee_aggressive" is implemented:
+        spend the action on one melee attack against snapshot.enemies[0].
+        Future archetypes: "spell_aggressive" (save-targeting), "ranged", …
+    extra_attacks:
+        Number of additional no-cost attacks beyond the primary action swing.
+        Defaults to 0 (one swing per turn).  Set to 1 for multi-attack enemies.
+    """
+
+    SUPPORTED_ARCHETYPES = {"melee_aggressive"}
+
+    def __init__(
+        self,
+        stat_block: dict,
+        archetype: str = "melee_aggressive",
+        extra_attacks: int = 0,
+    ) -> None:
+        if archetype not in self.SUPPORTED_ARCHETYPES:
+            raise ValueError(
+                f"Unknown archetype {archetype!r}. "
+                f"Supported: {self.SUPPORTED_ARCHETYPES}"
+            )
+        self.stat_block = stat_block
+        self.archetype = archetype
+        self.extra_attacks = extra_attacks
+
+    def decide(self, snapshot: GameState) -> list[Choice]:
+        if not snapshot.enemies:
+            return []
+        if snapshot.resources.get("action", 0) < 1:
+            return []
+
+        target = snapshot.enemies[0]
+        choices: list[Choice] = []
+
+        choices.append(Choice(
+            action_type="attack",
+            cost="action",
+            target=target,
+            weapon_stat="attack_bonus",
+        ))
+        for _ in range(self.extra_attacks):
+            choices.append(Choice(
+                action_type="attack",
+                cost="none",
+                target=target,
+                weapon_stat="attack_bonus",
+            ))
+        return choices
+
+
+class ExtraAttackPolicy:
+    """Policy for a fighter with Extra Attack: two weapon attacks per action.
+
+    Emits the primary attack (cost="action") followed by one extra attack
+    (cost="none" — action already spent).  The scheduler enqueues them in
+    emission order so they resolve sequentially within the same turn.
+
+    An optional bonus_action_attack parameter adds a third attack charged to
+    the bonus action (e.g. Nick mastery or two-weapon fighting).  When
+    included, it is emitted between the two main swings so its sequence slot
+    falls naturally after the first hit (for policies that would smite on that
+    hit — not wired yet, but the ordering is correct).
+
+    Parameters
+    ----------
+    target:
+        Fixed target entity.  Real policies pick from snapshot.enemies.
+    extra_attacks:
+        Number of *additional* attacks beyond the primary action attack.
+        1 → two total (standard Extra Attack at level 5).
+        2 → three total (level-11 fighter, etc.).
+    bonus_action_attack:
+        If True, also emit one bonus-action attack (cost="bonus_action")
+        interleaved after the first main swing.
+    """
+
+    def __init__(
+        self,
+        target: "Entity",
+        extra_attacks: int = 1,
+        bonus_action_attack: bool = False,
+    ) -> None:
+        self._target = target
+        self._extra_attacks = extra_attacks
+        self._bonus_action_attack = bonus_action_attack
+
+    def decide(self, snapshot: GameState) -> list[Choice]:
+        if snapshot.resources.get("action", 0) < 1:
+            return []
+
+        choices: list[Choice] = []
+
+        # Primary attack spends the action.
+        choices.append(Choice(
+            action_type="attack",
+            cost="action",
+            target=self._target,
+            weapon_stat="attack_bonus",
+        ))
+
+        # Optional bonus-action attack interleaved right after the first swing.
+        if self._bonus_action_attack and snapshot.resources.get("bonus_action", 0) >= 1:
+            choices.append(Choice(
+                action_type="attack",
+                cost="bonus_action",
+                target=self._target,
+                weapon_stat="attack_bonus",
+            ))
+
+        # Extra Attack follow-ups; action already paid.
+        for _ in range(self._extra_attacks):
+            choices.append(Choice(
+                action_type="attack",
+                cost="none",
+                target=self._target,
+                weapon_stat="attack_bonus",
+            ))
+
+        return choices

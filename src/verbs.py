@@ -29,10 +29,64 @@ from typing import TYPE_CHECKING
 from .events import AttackRollEvent, DamageEvent, make_tick
 
 if TYPE_CHECKING:
+    from .entity import Entity
     from .events import Event, EventQueue, Tick
     from .rng import SeededRNG
 
 log = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# d20 roll with advantage / disadvantage
+# ---------------------------------------------------------------------------
+
+def roll_d20(rng: "SeededRNG", advantage: bool, disadvantage: bool) -> int:
+    """Roll a d20, honoring advantage/disadvantage with RAW cancellation.
+
+    Per the 2024 rules: if ANY source of advantage and ANY source of
+    disadvantage both apply, they cancel and the roll is straight — regardless
+    of how many sources are on each side.  So callers pass two booleans
+    ("is there any advantage?" / "is there any disadvantage?"), not counts.
+    """
+    if advantage and not disadvantage:
+        return max(rng.roll(2, 20))
+    if disadvantage and not advantage:
+        return min(rng.roll(2, 20))
+    return rng.roll_one(20)
+
+
+# ---------------------------------------------------------------------------
+# Mastery on-hit application
+# ---------------------------------------------------------------------------
+
+def apply_masteries_on_hit(
+    event: "AttackRollEvent",
+    actor: "Entity",
+    target: "Entity",
+) -> None:
+    """Apply each mastery property's on-hit effect.
+
+    Called only on a confirmed hit.  Each mastery sets a tick-expiring status:
+
+      sap → target has disadvantage on its next attack roll, until the START
+            of the attacker's next turn → expiry (round+1, attacker_turn_index).
+
+      vex → attacker has advantage on its next attack roll against THIS target,
+            until the END of the attacker's next turn → modeled as expiry
+            (round+2, attacker_turn_index).  (Consumed earlier on first use.)
+
+    Both statuses are also consumed by the holder's next attack roll in
+    resolve_attack_roll; the expiry tick is the backstop if no such roll occurs.
+    """
+    round_, turn_idx, _ = event.tick
+    for mastery in event.masteries:
+        if mastery == "sap":
+            target.statuses.apply("sapped", True, expiry=(round_ + 1, turn_idx))
+            log.debug("%s SAPs %s (expiry r%d t%d)", actor.name, target.name, round_ + 1, turn_idx)
+        elif mastery == "vex":
+            actor.statuses.apply("vex_advantage", target.id, expiry=(round_ + 2, turn_idx))
+            log.debug("%s gains VEX advantage vs %s", actor.name, target.name)
+        # Other masteries (topple, slow, push, nick, cleave, graze) deferred.
 
 
 # ---------------------------------------------------------------------------
@@ -68,8 +122,24 @@ def resolve_attack_roll(
     tick = event.tick
     round_, turn_idx, _ = tick
 
-    # Roll d20
-    d20 = rng.roll_one(20)
+    # --- Determine advantage / disadvantage from statuses ---
+    # These are "next attack roll" effects: consumed by making this roll,
+    # whether or not they end up cancelling each other.
+    advantage = False
+    disadvantage = False
+
+    # Vex: attacker has advantage on its next attack vs the specific vexed target.
+    if target is not None and actor.statuses.get("vex_advantage") == target.id:
+        advantage = True
+        actor.statuses.consume("vex_advantage")
+
+    # Sap: attacker has disadvantage on its next attack roll.
+    if actor.statuses.has("sapped"):
+        disadvantage = True
+        actor.statuses.consume("sapped")
+
+    # Roll d20 (with adv/disadv cancellation handled in the helper)
+    d20 = roll_d20(rng, advantage, disadvantage)
     is_crit = (d20 == 20)
     is_auto_miss = (d20 == 1)
 
@@ -80,11 +150,13 @@ def resolve_attack_roll(
     # Effective AC of target
     target_ac = target.stat("ac", tick=tick) if target is not None else 10
 
+    adv_tag = " ADV" if (advantage and not disadvantage) else (" DIS" if (disadvantage and not advantage) else "")
     log.info(
-        "%s attacks %s: d20=%d + bonus=%d = %d vs AC %d  [%s]",
+        "%s attacks %s: d20=%d%s + bonus=%d = %d vs AC %d  [%s]",
         actor.name,
         target.name if target else "??",
         d20,
+        adv_tag,
         atk_bonus,
         total_roll,
         target_ac,
@@ -92,6 +164,10 @@ def resolve_attack_roll(
     )
 
     hit = (not is_auto_miss) and (is_crit or total_roll >= target_ac)
+
+    # Apply mastery on-hit effects (sap/vex set tick-expiring statuses).
+    if hit and target is not None:
+        apply_masteries_on_hit(event, actor, target)
 
     if hit and target is not None:
         # Pull damage dice from actor stats

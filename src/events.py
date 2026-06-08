@@ -106,9 +106,15 @@ class AttackRollEvent(Event):
         One of: "action", "bonus_action", "reaction", "free", "none".
         "none" is used for Extra Attack follow-up swings within the same
         action — the action cost was already paid by the first swing.
+    masteries:
+        The combined list of mastery properties in effect for this attack,
+        e.g. ["sap"] or ["sap", "vex"] (longsword + Brutality::bluff).
+        Built by the scheduler from the weapon's natural mastery (or the
+        Choice's mastery_override) plus any extra_masteries.  Applied on hit.
     """
     weapon_stat: str = "attack_bonus"
     cost: str = "action"
+    masteries: list[str] = field(default_factory=list)
     kind: str = field(default="attack_roll", init=False)
 
 
