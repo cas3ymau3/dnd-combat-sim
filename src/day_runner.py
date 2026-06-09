@@ -132,6 +132,70 @@ BetweenCombatsHook = Callable[[BetweenCombatsContext], None]
 
 
 # ---------------------------------------------------------------------------
+# Before-combat hook context + day-clock buff duration tracking
+# ---------------------------------------------------------------------------
+
+@dataclass
+class BeforeCombatContext:
+    """Passed to the before_combat hook just before each combat starts.
+
+    This is the mirror of BetweenCombatsContext, and the home for pre-combat /
+    out-of-combat buffs whose DURATION lives on the DAY CLOCK (minutes) rather
+    than the combat clock — e.g. Magic Weapon (60 min, non-concentration).  The
+    hook decides whether to (re)cast such buffs and syncs the entities' modifier
+    stacks to whatever is active at this combat's start-minute.  See PROGRESS.md
+    "Out-of-combat buffs via the DAY CLOCK".
+
+    Fields
+    ------
+    combat_num:
+        Which combat is about to run (1–4).
+    combat_start_minute:
+        This combat's start time on the day clock (minutes since long rest).
+        A day-clock buff covers this combat iff it is active at this minute.
+    combat_times:
+        All four sampled combat start-minutes — lets the hook reason about
+        whether a buff cast now will persist into later combats.
+    entities:
+        The full entity list — hook applies/removes modifiers directly.
+    rng:
+        The shared RNG (for any randomized pre-combat choice).
+    """
+    combat_num: int
+    combat_start_minute: int
+    combat_times: list[int]
+    entities: list["Entity"]
+    rng: "SeededRNG"
+
+
+BeforeCombatHook = Callable[[BeforeCombatContext], None]
+
+
+class DurationBuffTracker:
+    """Records day-clock buff casts and answers "is it active at minute t?".
+
+    A buff is active in the half-open-ish window [cast_minute, cast_minute +
+    duration] (inclusive on both ends — the boundary case is immaterial at
+    minute granularity).  Reusable for any timed out-of-combat buff; it holds
+    no entity reference and applies no modifiers itself — the daily plan owns
+    that, so one tracker can model one buff (e.g. magic_weapon) across a day.
+    """
+
+    def __init__(self) -> None:
+        self._casts: list[tuple[int, int]] = []  # (cast_minute, duration_min)
+
+    def cast(self, minute: int, duration_min: int) -> None:
+        self._casts.append((minute, duration_min))
+
+    def active_at(self, minute: int) -> bool:
+        return any(c <= minute <= c + dur for c, dur in self._casts)
+
+    def reset(self) -> None:
+        """Clear all recorded casts (call at long rest / day start)."""
+        self._casts.clear()
+
+
+# ---------------------------------------------------------------------------
 # DayRunner
 # ---------------------------------------------------------------------------
 
@@ -163,12 +227,14 @@ class DayRunner:
         policies: dict[int, "Policy"],
         rounds_per_combat: int = 4,
         between_combats: BetweenCombatsHook | None = None,
+        before_combat: BeforeCombatHook | None = None,
     ) -> None:
         self.rng = rng
         self.entities = entities
         self.policies = policies
         self.rounds_per_combat = rounds_per_combat
         self.between_combats = between_combats
+        self.before_combat = before_combat
 
     # ------------------------------------------------------------------
     # Public API
@@ -198,6 +264,18 @@ class DayRunner:
         combats: list[CombatResult] = []
         for i in range(4):
             combat_num = i + 1
+
+            # Pre-combat / day-clock buff setup (Magic Weapon, etc.).
+            if self.before_combat is not None:
+                ctx = BeforeCombatContext(
+                    combat_num=combat_num,
+                    combat_start_minute=combat_times[i],
+                    combat_times=combat_times,
+                    entities=self.entities,
+                    rng=self.rng,
+                )
+                self.before_combat(ctx)
+
             result = self._run_combat(combat_num)
             combats.append(result)
 
@@ -280,6 +358,20 @@ class DayRunner:
     def _run_combat(self, combat_num: int) -> CombatResult:
         """Run a single combat encounter and return its results."""
         log.info("=== Combat %d start ===", combat_num)
+
+        # Combat boundary: clear tick-expiring statuses (vex, sap, …) so nothing
+        # leaks across encounters.  Each combat restarts the round counter at 1,
+        # so a carried-over status would never be swept (see StatusSet.clear).
+        for entity in self.entities:
+            entity.statuses.clear()
+
+        # Optional per-combat policy setup (AoO slot, enemy archetype, …).
+        # combat_num is 1-based; hand policies a 0-based index.
+        for policy in self.policies.values():
+            hook = getattr(policy, "on_combat_start", None)
+            if callable(hook):
+                hook(combat_num - 1, self.rng)
+
         scheduler = Scheduler(
             rng=self.rng,
             entities=self.entities,

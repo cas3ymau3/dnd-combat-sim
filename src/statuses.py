@@ -100,6 +100,18 @@ class StatusSet:
         """Remove a status if present (no error if absent)."""
         self._entries.pop(name, None)
 
+    def clear(self) -> None:
+        """Remove all statuses.
+
+        Used at combat boundaries: tick-expiring statuses (vex, sap) are keyed
+        on (round, turn_index), and each combat restarts the round counter at 1,
+        so a status carried over from a previous fight would never be swept and
+        would leak (e.g. a free vex advantage on the next combat's first attack).
+        Encounters are minutes/hours apart, so clearing between them is also
+        semantically correct.
+        """
+        self._entries.clear()
+
     def consume(self, name: str) -> Any:
         """Remove a status and return its value (None if it wasn't present).
 

@@ -24,6 +24,7 @@ from typing import Protocol, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .entity import Entity
+    from .rng import SeededRNG
 
 
 # ---------------------------------------------------------------------------
@@ -105,6 +106,12 @@ class Choice:
         Tactical Master, lvl 16: swap a weapon's mastery for push/sap/slow).
         extra_masteries still stack on top.  None = use the weapon's natural
         mastery unchanged.
+    extra_damage_dice:
+        Additional dice added to this attack's damage ON HIT, beyond the
+        weapon's own dice — e.g. [(1, 6)] for the True Strike cantrip's radiant
+        rider (and, later, Wrathful Smite).  Each (n, sides) tuple is rolled
+        into the damage pool and, like the weapon dice, has its die count
+        doubled on a crit (CLAUDE.md §8).  Empty = a plain weapon attack.
     """
 
     action_type: str
@@ -114,6 +121,106 @@ class Choice:
     resource_cost: dict[str, int] | None = None
     extra_masteries: list[str] = field(default_factory=list)
     mastery_override: "str | None" = None
+    extra_damage_dice: list[tuple[int, int]] = field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
+# Post-roll decision point: a MISS the policy may respond to (Guided Strike)
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class MissContext:
+    """Read-only context handed to Policy.on_miss when one of the actor's
+    attacks misses.  The policy inspects it and decides whether to spend a
+    resource to add to the roll (e.g. War Cleric's Guided Strike: +10).
+
+    Fields
+    ------
+    actor / target:
+        The attacker and its target.
+    missed_by:
+        How far the roll fell short: target_ac - total_roll (> 0 on a miss).
+        Guided Strike (+10) flips the miss iff missed_by <= 10.
+    is_aoo:
+        True if the missed attack was an opportunity attack (cost="reaction").
+        (At level 5 the build forbids Guided Strike on AoOs.)
+    resources:
+        Flat {name: current} view of the actor's persistent resources.
+    round_number:
+        Current combat round (1-based) — lets the policy apply per-combat caps.
+    """
+    actor: "Entity"
+    target: "Entity | None"
+    missed_by: int
+    is_aoo: bool
+    resources: dict[str, int]
+    round_number: int
+
+
+@dataclass(frozen=True)
+class MissResponse:
+    """The policy's answer to a MissContext: spend `resource_cost` to add
+    `bonus` to the attack roll.  Return None from on_miss to decline.
+
+    The scheduler validates the resource is affordable, consumes it, and adds
+    `bonus` to the roll; if that turns the miss into a hit, damage resolves
+    normally (a Guided-Strike-rescued hit is NOT a crit — the d20 wasn't 20).
+    """
+    resource_cost: dict[str, int]
+    bonus: int
+
+
+# ---------------------------------------------------------------------------
+# Post-roll decision point: a HIT the policy may respond to (Wrathful Smite)
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class HitContext:
+    """Read-only context handed to Policy.on_hit when one of the actor's
+    attacks hits, BEFORE the DamageEvent is built.  The policy may choose to
+    spend a resource (and an action-economy slot) to add damage dice to this
+    hit — e.g. a smite spell adding 1d6, doubled on a crit.
+
+    Fields
+    ------
+    actor / target:
+        The attacker and its target.
+    is_crit:
+        Whether the hit was a crit (so the policy knows the extra dice double).
+    cost:
+        The action-economy tag of the HITTING attack ("action", "bonus_action",
+        "reaction", "none").  A bonus-action response (smite) may NOT ride a
+        reaction/AoO — 2024 bonus actions only happen on your own turn.
+    bonus_action_available:
+        Whether the current turn's bonus action is still unspent (e.g. it was
+        already used on a War Priest attack this turn).
+    resources:
+        Flat {name: current} view of the actor's persistent resources.
+    round_number:
+        Current combat round (1-based).
+    """
+    actor: "Entity"
+    target: "Entity | None"
+    is_crit: bool
+    cost: str
+    bonus_action_available: bool
+    resources: dict[str, int]
+    round_number: int
+
+
+@dataclass(frozen=True)
+class HitResponse:
+    """The policy's answer to a HitContext: spend `resource_cost` and an
+    action-economy slot (`action_cost`) to add `extra_damage_dice` to this hit.
+    Return None from on_hit to decline.
+
+    The scheduler validates affordability (both the persistent resource AND the
+    action-economy slot in the current turn), consumes them, and folds the dice
+    into this hit's DamageEvent (where they double on a crit like any dice).
+    """
+    resource_cost: dict[str, int]
+    extra_damage_dice: list[tuple[int, int]]
+    action_cost: str = "bonus_action"
 
 
 # ---------------------------------------------------------------------------
@@ -127,9 +234,40 @@ class Policy(Protocol):
       - read only (no dice, no state mutation)
       - return a list of Choices in the order they should be executed
       - respect the resources dict in snapshot (don't spend what isn't there)
+
+    on_combat_start() is OPTIONAL.  DayRunner calls it (if defined) before each
+    combat so a policy can reconfigure its per-combat internal state using the
+    shared seeded RNG.  Two intended uses:
+      - a character policy pre-rolls a per-combat random choice (e.g. the War
+        Angel's single attack-of-opportunity slot);
+      - an enemy meta-policy rolls to pick its archetype for the upcoming combat
+        (e.g. melee_aggressive vs. ranged_kiter), which decide() then reads.
+    The contract is the same in both cases: receive the combat index and the
+    RNG, mutate the policy's own state, return nothing.  decide() stays
+    dice-free; any per-combat randomness is drawn here instead.
     """
 
     def decide(self, snapshot: GameState) -> list[Choice]:
+        ...
+
+    # Optional — not all policies implement it; DayRunner checks with hasattr.
+    def on_combat_start(self, combat_index: int, rng: "SeededRNG") -> None:
+        ...
+
+    # Optional post-roll decision point.  The scheduler calls it (if defined)
+    # when one of the actor's attacks misses, BEFORE finalizing the roll, so the
+    # policy may spend a resource to add to the roll (Guided Strike).  Return a
+    # MissResponse to spend, or None to decline.  This is a *commit* point, so —
+    # unlike decide() — the policy may update its own per-combat bookkeeping
+    # (e.g. a Guided-Strike-per-combat counter) when it returns a response.
+    def on_miss(self, ctx: MissContext) -> "MissResponse | None":
+        ...
+
+    # Optional post-roll decision point on a HIT, BEFORE the DamageEvent is
+    # built, so the policy may spend a resource + action-economy slot to add
+    # damage dice to this hit (Wrathful Smite / Divine Smite).  Return a
+    # HitResponse to spend, or None to decline.  Also a commit point.
+    def on_hit(self, ctx: HitContext) -> "HitResponse | None":
         ...
 
 

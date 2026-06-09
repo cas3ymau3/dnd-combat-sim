@@ -115,6 +115,7 @@ class AttackRollEvent(Event):
     weapon_stat: str = "attack_bonus"
     cost: str = "action"
     masteries: list[str] = field(default_factory=list)
+    extra_damage_dice: list[tuple[int, int]] = field(default_factory=list)
     kind: str = field(default="attack_roll", init=False)
 
 
@@ -140,6 +141,7 @@ class DamageEvent(Event):
     is_crit: bool = False
     damage_dice: tuple[int, int] = (1, 6)  # (n, sides)
     damage_bonus: int = 0
+    extra_damage_dice: list[tuple[int, int]] = field(default_factory=list)
     cost: str = "action"
     kind: str = field(default="damage", init=False)
 

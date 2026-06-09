@@ -24,7 +24,7 @@ Handlers NEVER call policy.decide().  They resolve what the policy decided.
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import Callable, TYPE_CHECKING
 
 from .events import AttackRollEvent, DamageEvent, make_tick
 
@@ -98,12 +98,15 @@ def resolve_attack_roll(
     rng: "SeededRNG",
     queue: "EventQueue",
     next_sequence: int,
+    decider: "Callable[[int], int] | None" = None,
+    hit_decider: "Callable[[bool], list[tuple[int, int]]] | None" = None,
 ) -> int:
     """Resolve one attack roll.  Returns the next available sequence number.
 
     Rolls 1d20 + actor's attack_bonus vs target's AC.
     On a hit (or crit) enqueues a DamageEvent.
-    On a miss, logs and does nothing.
+    On a miss, optionally consults `decider` (a post-roll decision point — e.g.
+    Guided Strike) which may add to the roll and turn the miss into a hit.
 
     Parameters
     ----------
@@ -116,6 +119,19 @@ def resolve_attack_roll(
     next_sequence:
         The next available sequence number within this turn.  Returned
         (possibly incremented) so the scheduler can track the counter.
+    decider:
+        Optional callable `(missed_by) -> bonus`.  Called only on a non-auto
+        miss; returns a positive bonus if the policy chose to spend a resource
+        (the scheduler-side closure already validated/consumed it), else 0.
+        A bonus that lifts the total to >= AC converts the miss to a (non-crit)
+        hit.  None = no post-roll decision available.
+    hit_decider:
+        Optional callable `(is_crit) -> list[(n, sides)]`.  Called on a hit
+        (including a Guided-Strike-rescued hit), BEFORE the DamageEvent is built;
+        returns extra damage dice to fold into this hit (the scheduler-side
+        closure already validated/consumed the resource + action economy).  The
+        returned dice double on a crit like any others.  None = no on-hit
+        decision available.
     """
     actor = event.actor
     target = event.target
@@ -165,6 +181,19 @@ def resolve_attack_roll(
 
     hit = (not is_auto_miss) and (is_crit or total_roll >= target_ac)
 
+    # Post-roll decision point (Guided Strike): on a genuine miss, let the
+    # policy add to the roll.  A nat-1 auto-miss can't be rescued.
+    if (not hit) and (not is_auto_miss) and decider is not None:
+        missed_by = int(target_ac) - int(total_roll)
+        bonus = decider(missed_by)
+        if bonus > 0 and (total_roll + bonus) >= target_ac:
+            total_roll += bonus
+            hit = True  # rescued hit — NOT a crit (the d20 was not a 20)
+            log.info(
+                "  post-roll boost +%d -> %d vs AC %d  [RESCUED HIT]",
+                bonus, total_roll, target_ac,
+            )
+
     # Apply mastery on-hit effects (sap/vex set tick-expiring statuses).
     if hit and target is not None:
         apply_masteries_on_hit(event, actor, target)
@@ -174,6 +203,13 @@ def resolve_attack_roll(
         damage_dice: tuple[int, int] = actor.stat("damage_dice", tick=tick)  # type: ignore[assignment]
         damage_bonus = int(actor.stat("damage_bonus", tick=tick))
 
+        # On-hit decision point (Wrathful/Divine Smite): the policy may add dice
+        # to this hit, spending a resource + the bonus action (handled in the
+        # scheduler-side closure).  These dice double on a crit like any others.
+        extra_dice = list(event.extra_damage_dice)
+        if hit_decider is not None:
+            extra_dice.extend(hit_decider(is_crit))
+
         damage_event = DamageEvent(
             tick=make_tick(round_, turn_idx, next_sequence),
             actor=actor,
@@ -181,6 +217,7 @@ def resolve_attack_roll(
             is_crit=is_crit,
             damage_dice=damage_dice,
             damage_bonus=damage_bonus,
+            extra_damage_dice=extra_dice,
             cost=event.cost,
         )
         queue.push(damage_event)
@@ -226,23 +263,28 @@ def resolve_damage(
     target = event.target
     n_dice, sides = event.damage_dice
 
-    # Phase 1: determine dice pool (crits double die count)
+    # Phase 1: determine dice pool (crits double die count) — for the weapon
+    # dice AND every extra-damage source (True Strike rider, Wrathful Smite).
     pool_size = n_dice * 2 if event.is_crit else n_dice
 
-    # Phase 2: roll the pool
+    # Phase 2: roll the pool (weapon dice first, then each extra source)
     rolls = rng.roll(pool_size, sides)
+    extra_rolls: list[int] = []
+    for n_extra, extra_sides in event.extra_damage_dice:
+        count = n_extra * 2 if event.is_crit else n_extra
+        extra_rolls.extend(rng.roll(count, extra_sides))
 
     # Phase 3: per-die mods — placeholder, nothing wired yet
     # (reroll-once, replace-with-floor, etc. will hook in here)
 
-    # Phase 4: sum
-    subtotal = sum(rolls)
+    # Phase 4: sum (weapon dice + extra dice)
+    subtotal = sum(rolls) + sum(extra_rolls)
 
     # Phase 5: flat bonus
     total = subtotal + event.damage_bonus
 
     log.info(
-        "%s deals %d damage to %s  [%dd%d%s rolls=%s bonus=%d%s]",
+        "%s deals %d damage to %s  [%dd%d%s rolls=%s%s bonus=%d%s]",
         actor.name,
         total,
         target.name if target else "??",
@@ -250,6 +292,7 @@ def resolve_damage(
         sides,
         " (CRIT)" if event.is_crit else "",
         rolls,
+        f" extra={extra_rolls}" if extra_rolls else "",
         event.damage_bonus,
         f" subtotal={subtotal}" if event.damage_bonus else "",
     )

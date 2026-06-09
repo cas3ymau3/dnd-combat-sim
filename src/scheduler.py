@@ -91,6 +91,10 @@ class Scheduler:
 
         self.queue = EventQueue()
         self._registry: dict[str, list[Handler]] = {}
+        # Current turn's action economy; (re)set at each TurnStartEvent.  Lives
+        # here (not as a local in _handle_turn_start) so mid-turn decision points
+        # during resolution can read/consume it (e.g. smite spending the BA).
+        self._turn_economy: dict[str, int] = dict(DEFAULT_RESOURCES)
         self._damage_log: list[int] = []  # total damage dealt each round
         # Per-entity damage received log: entity_id → list[int] per round.
         # Populated as DamageEvents resolve; callers read it after run().
@@ -169,8 +173,10 @@ class Scheduler:
             elif isinstance(event, AttackRollEvent):
                 handlers = self._registry.get("attack_roll", [])
                 seq_counter = seq + 1
+                decider = self._make_miss_decider(event)
+                hit_decider = self._make_hit_decider(event)
                 for handler in handlers:
-                    seq_counter = handler(event, self.rng, self.queue, seq_counter)  # type: ignore[call-arg]
+                    seq_counter = handler(event, self.rng, self.queue, seq_counter, decider, hit_decider)  # type: ignore[call-arg]
 
             elif isinstance(event, RoundEndEvent):
                 log.debug("RoundEndEvent fired, round=%d", round_)
@@ -190,6 +196,103 @@ class Scheduler:
                 self.damage_received[eid].append(self._round_damage_received[eid])
 
         return self._damage_log
+
+    # ------------------------------------------------------------------
+    # Post-roll decision point: build a miss-decider for one attack
+    # ------------------------------------------------------------------
+
+    def _make_miss_decider(self, event: "AttackRollEvent"):
+        """Return a `(missed_by) -> bonus` callable for this attack's actor.
+
+        The closure mediates the policy/resolution boundary: resolve_attack_roll
+        (resolution) never calls the policy directly — it calls this closure,
+        which the scheduler owns.  The closure consults policy.on_miss (if any),
+        validates and CONSUMES the resource the policy asked to spend, and
+        returns the roll bonus to apply (0 if the policy declines or can't pay).
+        """
+        from .policy import MissContext
+
+        policy = self.policies.get(event.actor.id)
+        on_miss = getattr(policy, "on_miss", None) if policy is not None else None
+        if not callable(on_miss):
+            return None
+
+        actor = event.actor
+        round_ = event.tick[0]
+        is_aoo = (event.cost == "reaction")
+
+        def decider(missed_by: int) -> int:
+            ctx = MissContext(
+                actor=actor,
+                target=event.target,
+                missed_by=missed_by,
+                is_aoo=is_aoo,
+                resources=actor.resources.as_dict(),
+                round_number=round_,
+            )
+            response = on_miss(ctx)
+            if response is None:
+                return 0
+            # Validate affordability, then consume.
+            if any(actor.resources.available(n) < a
+                   for n, a in response.resource_cost.items()):
+                return 0
+            for n, a in response.resource_cost.items():
+                actor.resources.consume(n, a)
+            return response.bonus
+
+        return decider
+
+    def _make_hit_decider(self, event: "AttackRollEvent"):
+        """Return an `(is_crit) -> list[(n, sides)]` callable for this attack.
+
+        Mirror of `_make_miss_decider` for the on-HIT decision point (Wrathful /
+        Divine Smite).  Consults policy.on_hit; validates and consumes BOTH the
+        persistent resource (slot) AND the action-economy slot (the bonus action,
+        read from the current turn's economy hung on the scheduler); returns the
+        extra damage dice to fold into this hit (empty if declined / unaffordable).
+        """
+        from .policy import HitContext
+
+        policy = self.policies.get(event.actor.id)
+        on_hit = getattr(policy, "on_hit", None) if policy is not None else None
+        if not callable(on_hit):
+            return None
+
+        actor = event.actor
+        round_ = event.tick[0]
+        cost = event.cost
+
+        def hit_decider(is_crit: bool) -> list[tuple[int, int]]:
+            ba_available = self._turn_economy.get("bonus_action", 0) >= 1
+            ctx = HitContext(
+                actor=actor,
+                target=event.target,
+                is_crit=is_crit,
+                cost=cost,
+                bonus_action_available=ba_available,
+                resources=actor.resources.as_dict(),
+                round_number=round_,
+            )
+            response = on_hit(ctx)
+            if response is None:
+                return []
+            # Validate the action-economy slot (e.g. bonus action) is free...
+            ac = response.action_cost
+            if ac in self._turn_economy and self._turn_economy[ac] < 1:
+                return []
+            # ...and the persistent resource is affordable.
+            if any(actor.resources.available(n) < a
+                   for n, a in response.resource_cost.items()):
+                return []
+            # Consume both, then hand back the dice.
+            if ac in self._turn_economy:
+                self._turn_economy[ac] -= 1
+            for n, a in response.resource_cost.items():
+                actor.resources.consume(n, a)
+            return list(response.extra_damage_dice)
+
+        return hit_decider
 
     # ------------------------------------------------------------------
     # Decision point: TurnStartEvent handling
@@ -224,10 +327,17 @@ class Scheduler:
         enemies = tuple(e for e in self.entities if e.id != actor.id)
         allies: tuple = ()  # single-actor milestone; expand later
 
-        # Merge turn-level action economy with actor's persistent resources.
-        # Policy reads the merged dict; scheduler tracks action economy locally.
-        resources = dict(DEFAULT_RESOURCES)  # fresh per-turn action economy
-        resources.update(actor.resources.as_dict())  # persistent pool (read view)
+        # Turn-level action economy (action / bonus_action / reaction).  Stored
+        # on the scheduler for the duration of this turn so mid-turn decision
+        # points (e.g. a smite-on-hit deciding whether the bonus action is still
+        # free) can read and consume it during attack RESOLUTION, not just here
+        # at decision time.  Reset fresh every turn.
+        econ = dict(DEFAULT_RESOURCES)
+        self._turn_economy = econ
+
+        # Policy reads a merged view (action economy + persistent pool snapshot).
+        resources = dict(econ)
+        resources.update(actor.resources.as_dict())
 
         snapshot = GameState(
             actor=actor,
@@ -248,7 +358,7 @@ class Scheduler:
             cost = choice.cost
 
             # --- Action economy check ---
-            if cost in resources and resources[cost] < 1:
+            if cost in econ and econ[cost] < 1:
                 log.warning(
                     "%s tried to spend %s but none remaining — choice skipped.",
                     actor.name, cost,
@@ -269,8 +379,8 @@ class Scheduler:
                     continue
 
             # --- Consume action economy ---
-            if cost in resources:
-                resources[cost] -= 1
+            if cost in econ:
+                econ[cost] -= 1
 
             # --- Consume persistent resources ---
             if choice.resource_cost:
@@ -294,6 +404,7 @@ class Scheduler:
                     weapon_stat=choice.weapon_stat,
                     cost=cost,
                     masteries=masteries,
+                    extra_damage_dice=list(choice.extra_damage_dice),
                 )
                 self.queue.push(atk_event)
                 seq += 1
