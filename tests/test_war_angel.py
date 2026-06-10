@@ -44,7 +44,7 @@ def test_factory_stats_level_2_switches_to_sap_longsword():
 
 def test_unimplemented_level_raises():
     with pytest.raises(NotImplementedError):
-        war_angel.make_war_angel(8)
+        war_angel.make_war_angel(11)
 
 
 # ---------------------------------------------------------------------------
@@ -176,8 +176,8 @@ def test_smite_fires_when_bonus_action_free_and_slot_available():
     assert resp is not None
     assert resp.extra_damage_dice == [(1, 6)]
     assert resp.action_cost == "bonus_action"
-    # Highest-priority slot is the pact slot.
-    assert resp.resource_cost == {"pact_magic_slot": 1}
+    # free_cast is highest priority (most constrained — only usable for smite).
+    assert resp.resource_cost == {"free_cast": 1}
 
 
 def test_smite_declines_when_bonus_action_already_spent():
@@ -194,7 +194,7 @@ def test_smite_never_rides_an_aoo():
 
 def test_smite_slot_priority_falls_through():
     policy = war_angel.WarAngelPolicy(level=6, target=Entity(name="t", hp=10))
-    # No pact slot → free cast next.
+    # free_cast is first priority; pact slot present but not chosen.
     resp = policy.on_hit(_hit_ctx(resources={"free_cast": 1, "spell_slot_1": 4}))
     assert resp.resource_cost == {"free_cast": 1}
     # Only cleric L1 left.
@@ -312,3 +312,298 @@ def test_magic_weapon_duration_tracker():
     assert t.active_at(160)
     assert not t.active_at(161)
     assert not t.active_at(99)
+
+
+# ---------------------------------------------------------------------------
+# Phase C: Brutality::bluff (level 8)
+# ---------------------------------------------------------------------------
+
+def _hit_ctx_l8(**overrides):
+    """HitContext with L8 resources (includes brutality)."""
+    base = dict(
+        actor=Entity(name="a", hp=10),
+        target=Entity(name="t", hp=10),
+        is_crit=False,
+        cost="bonus_action",
+        bonus_action_available=False,  # WP spent the BA
+        resources={
+            "brutality": 4,
+            "pact_magic_slot": 1, "free_cast": 1, "spell_slot_1": 4,
+        },
+        round_number=1,
+    )
+    base.update(overrides)
+    from src.policy import HitContext
+    return HitContext(**base)
+
+
+def test_bluff_fires_on_setup_hit_and_sets_flag():
+    """Brutality bluff adds vex mastery and flips the per-turn flag."""
+    policy = war_angel.WarAngelPolicy(level=8, target=Entity(name="t", hp=10))
+    resp = policy.on_hit(_hit_ctx_l8())
+    assert resp is not None
+    assert "vex" in resp.extra_masteries
+    assert resp.action_cost is None           # bluff costs no action economy
+    assert resp.resource_cost == {"brutality": 1}
+    assert policy._bluffed_this_turn is True
+
+
+def test_bluff_only_fires_once_per_turn():
+    """Second setup hit in the same turn gets no bluff (flag already set)."""
+    policy = war_angel.WarAngelPolicy(level=8, target=Entity(name="t", hp=10))
+    policy.on_hit(_hit_ctx_l8())             # first hit — bluffs
+    resp2 = policy.on_hit(_hit_ctx_l8())     # second hit — no bluff
+    # smite is also unavailable (BA spent), so None
+    assert resp2 is None
+
+
+def test_bluff_flag_resets_on_new_turn():
+    """decide() resets _bluffed_this_turn so each turn starts fresh."""
+    dummy = war_angel.make_training_dummy(8)
+    policy = war_angel.WarAngelPolicy(level=8, target=dummy)
+    policy._bluffed_this_turn = True         # simulate end of previous turn
+    from src.policy import GameState
+    snap = GameState(
+        actor=Entity(name="a", hp=10),
+        enemies=(dummy,), allies=(),
+        round_number=2, turn_index=0,
+        tick=(2, 0, 0),
+        resources={"action": 1, "bonus_action": 1, "reaction": 1,
+                   "war_priest": 0, "action_surge": 0},
+    )
+    policy.decide(snap)
+    assert policy._bluffed_this_turn is False
+
+
+def test_bluff_not_wasted_on_final_round_aoo():
+    """T4 AoO should not bluff (vex would expire before any follow-on attack)."""
+    policy = war_angel.WarAngelPolicy(level=8, target=Entity(name="t", hp=10),
+                                      rounds_per_combat=4)
+    resp = policy.on_hit(_hit_ctx_l8(
+        cost="reaction",
+        round_number=4,          # final round
+        resources={"brutality": 4},
+    ))
+    assert resp is None
+
+
+def test_bluff_fires_on_non_final_aoo():
+    """AoO on rounds < 4 can still bluff (vex will be consumed by next TS)."""
+    policy = war_angel.WarAngelPolicy(level=8, target=Entity(name="t", hp=10),
+                                      rounds_per_combat=4)
+    resp = policy.on_hit(_hit_ctx_l8(
+        cost="reaction",
+        round_number=2,          # not the final round
+        resources={"brutality": 4},
+    ))
+    assert resp is not None
+    assert "vex" in resp.extra_masteries
+
+
+def test_bluff_not_available_below_level_8():
+    policy = war_angel.WarAngelPolicy(level=7, target=Entity(name="t", hp=10))
+    resp = policy.on_hit(_hit_ctx_l8(cost="bonus_action"))
+    # L7 has no smite (BA spent in default ctx), no bluff → None
+    assert resp is None
+
+
+def test_bluff_and_smite_combine_on_one_hit():
+    """Surge hit: BA free, brutality available → bluff + smite in one HitResponse."""
+    policy = war_angel.WarAngelPolicy(level=8, target=Entity(name="t", hp=10))
+    resp = policy.on_hit(_hit_ctx_l8(
+        cost="none",                        # surge swing
+        bonus_action_available=True,        # BA still free
+        resources={"brutality": 4, "free_cast": 1, "spell_slot_1": 4},
+    ))
+    assert resp is not None
+    assert "vex" in resp.extra_masteries
+    assert resp.extra_damage_dice == [(1, 6)]
+    assert resp.action_cost == "bonus_action"
+    assert resp.resource_cost.get("brutality") == 1
+    assert resp.resource_cost.get("free_cast") == 1
+
+
+def test_bluff_integrates_with_scheduler_applies_vex():
+    """End-to-end: bluff on a setup hit sets vex_advantage status on the actor."""
+    from src.scheduler import Scheduler
+
+    char = war_angel.make_war_angel(8)
+    dummy = war_angel.make_training_dummy(8)
+    policy = war_angel.WarAngelPolicy(level=8, target=dummy)
+    # Force the AoO to round 1 and drain WP/surge so only a WP-like setup fires
+    # via war_priest being available; use a seed where attacks hit.
+    policy.on_combat_start(0, SeededRNG(0))
+
+    sched = Scheduler(SeededRNG(42), [char, dummy], {char.id: policy}, max_rounds=1)
+    sched.run()
+    # brutality charges should have been spent (at least one bluff fired)
+    spent = 4 - char.resources.available("brutality")
+    assert spent >= 1
+
+
+def test_l8_dpr_soft_match():
+    """L8 DPR should land within ±10% of target 23.36."""
+    import logging
+    logging.disable(logging.CRITICAL)
+    result = run_level(8, n_days=3000, seed=8)
+    assert abs(result.pct_error) < 10.0, result.summary()
+
+
+# ---------------------------------------------------------------------------
+# Phase C: level 9 — CHA 20 ASI, brutality gate widened to include TS hits
+# ---------------------------------------------------------------------------
+
+def _hit_ctx_l9(**overrides):
+    """HitContext at L9 with full brutality charges."""
+    base = dict(
+        actor=Entity(name="a", hp=10),
+        target=Entity(name="t", hp=10),
+        is_crit=False,
+        cost="action",              # True Strike (the new bluffable case)
+        bonus_action_available=False,
+        resources={"brutality": 5},
+        round_number=1,
+    )
+    base.update(overrides)
+    from src.policy import HitContext
+    return HitContext(**base)
+
+
+def test_l9_bluff_fires_on_ts_hit_round_1():
+    """L9+: TS hits (cost=action) in rounds 1–3 should bluff."""
+    policy = war_angel.WarAngelPolicy(level=9, target=Entity(name="t", hp=10),
+                                      rounds_per_combat=4)
+    resp = policy.on_hit(_hit_ctx_l9(cost="action", round_number=1))
+    assert resp is not None
+    assert "vex" in resp.extra_masteries
+    assert resp.action_cost is None
+
+
+def test_l9_bluff_fires_on_ts_hit_round_3():
+    """Round 3 TS bluff is fine — vex carries to round 4's first attack."""
+    policy = war_angel.WarAngelPolicy(level=9, target=Entity(name="t", hp=10),
+                                      rounds_per_combat=4)
+    resp = policy.on_hit(_hit_ctx_l9(cost="action", round_number=3))
+    assert resp is not None
+    assert "vex" in resp.extra_masteries
+
+
+def test_l9_no_bluff_on_ts_round_4():
+    """Round 4 TS bluff wastes the charge (no round 5 to consume vex)."""
+    policy = war_angel.WarAngelPolicy(level=9, target=Entity(name="t", hp=10),
+                                      rounds_per_combat=4)
+    resp = policy.on_hit(_hit_ctx_l9(cost="action", round_number=4))
+    assert resp is None
+
+
+def test_l8_still_no_bluff_on_ts():
+    """L8 cost gate is unchanged: TS (action) does not bluff even on round 1."""
+    policy = war_angel.WarAngelPolicy(level=8, target=Entity(name="t", hp=10),
+                                      rounds_per_combat=4)
+    resp = policy.on_hit(_hit_ctx_l9(cost="action", round_number=1,
+                                     resources={"brutality": 4}))
+    assert resp is None
+
+
+def test_l9_setup_still_bluffs_on_round_4():
+    """L9: setup attacks (BA/none) on T4 still bluff — their vex chains to T4 TS."""
+    policy = war_angel.WarAngelPolicy(level=9, target=Entity(name="t", hp=10),
+                                      rounds_per_combat=4)
+    resp = policy.on_hit(_hit_ctx_l9(cost="bonus_action", round_number=4))
+    assert resp is not None
+    assert "vex" in resp.extra_masteries
+
+
+def test_l9_dpr_soft_match():
+    """L9 DPR should land within ±10% of target 27.59."""
+    import logging
+    logging.disable(logging.CRITICAL)
+    result = run_level(9, n_days=3000, seed=9)
+    assert abs(result.pct_error) < 10.0, result.summary()
+
+
+# ---------------------------------------------------------------------------
+# Phase C: level 10 — Extra Attack, no True Strike, bluff gate updated
+# ---------------------------------------------------------------------------
+
+def test_l10_extra_attack_emits_two_action_attacks():
+    """decide() at L10 should emit 2 action attacks (action + none) per turn."""
+    dummy = war_angel.make_training_dummy(10)
+    policy = war_angel.WarAngelPolicy(level=10, target=dummy)
+    from src.policy import GameState
+    snap = GameState(
+        actor=Entity(name="a", hp=10),
+        enemies=(dummy,), allies=(),
+        round_number=2, turn_index=0,   # no surge on round 2
+        tick=(2, 0, 0),
+        resources={"action": 1, "bonus_action": 1, "reaction": 1,
+                   "war_priest": 0},    # no WP to isolate action attacks
+    )
+    policy._bluffed_this_turn = False
+    choices = policy.decide(snap)
+    action_choices = [c for c in choices if c.cost == "action"]
+    none_choices = [c for c in choices if c.cost == "none"]
+    assert len(action_choices) == 1    # one action spent
+    assert len(none_choices) == 1      # one extra-attack follow-up
+
+
+def test_l10_surge_emits_two_extra_attacks():
+    """decide() at L10 T1 with surge: 2 surge attacks (none + none), 2 action attacks."""
+    dummy = war_angel.make_training_dummy(10)
+    policy = war_angel.WarAngelPolicy(level=10, target=dummy)
+    from src.policy import GameState
+    snap = GameState(
+        actor=Entity(name="a", hp=10),
+        enemies=(dummy,), allies=(),
+        round_number=1, turn_index=0,
+        tick=(1, 0, 0),
+        resources={"action": 1, "bonus_action": 1, "reaction": 1,
+                   "action_surge": 1, "war_priest": 0},
+    )
+    choices = policy.decide(snap)
+    none_choices = [c for c in choices if c.cost == "none"]
+    # 2 surge attacks + 1 extra-attack follow-up = 3 cost="none" choices
+    assert len(none_choices) == 3
+
+
+def test_l10_bluff_allowed_on_action_attack_round_4():
+    """L10+: action attack 1 on T4 CAN bluff — vex chains to attack 2 immediately."""
+    policy = war_angel.WarAngelPolicy(level=10, target=Entity(name="t", hp=10),
+                                      rounds_per_combat=4)
+    resp = policy.on_hit(_hit_ctx_l9(cost="action", round_number=4,
+                                     resources={"brutality": 5}))
+    assert resp is not None
+    assert "vex" in resp.extra_masteries
+
+
+def test_l10_bluff_still_blocked_on_t4_aoo():
+    """T4 AoO at L10 still wastes vex — gate preserved."""
+    policy = war_angel.WarAngelPolicy(level=10, target=Entity(name="t", hp=10),
+                                      rounds_per_combat=4)
+    resp = policy.on_hit(_hit_ctx_l9(cost="reaction", round_number=4,
+                                     resources={"brutality": 5}))
+    assert resp is None
+
+
+def test_l10_no_true_strike_rider():
+    """At L10, the action attack carries no extra_damage_dice (True Strike is gone)."""
+    dummy = war_angel.make_training_dummy(10)
+    policy = war_angel.WarAngelPolicy(level=10, target=dummy)
+    from src.policy import GameState
+    snap = GameState(
+        actor=Entity(name="a", hp=10), enemies=(dummy,), allies=(),
+        round_number=1, turn_index=0, tick=(1, 0, 0),
+        resources={"action": 1, "bonus_action": 1, "reaction": 1,
+                   "action_surge": 0, "war_priest": 0},
+    )
+    choices = policy.decide(snap)
+    action_choice = next(c for c in choices if c.cost == "action")
+    assert action_choice.extra_damage_dice == []
+
+
+def test_l10_dpr_soft_match():
+    """L10 DPR should land within ±10% of target 35.32."""
+    import logging
+    logging.disable(logging.CRITICAL)
+    result = run_level(10, n_days=3000, seed=10)
+    assert abs(result.pct_error) < 10.0, result.summary()

@@ -6,6 +6,40 @@
 
 ---
 
+## Session startup & config ritual (do this first, every session)
+
+At the start of every session, before diving into the work:
+
+1. **Review upcoming tasks.** Read the **NEXT STEP** below plus the phase plan, and
+   form a view of what's likely in scope.
+2. **Recommend MCP toggles for agility, with how-to.** Identify which MCP connectors
+   are irrelevant to the likely tasks and recommend the user disable them for the
+   session. For this Python/CLI project that's typically all of: **computer-use,
+   Claude-in-Chrome, Claude_Preview, scheduled-tasks, mcp-registry, Google Drive.**
+   Tell the user *how*: these are **account/app-level connectors, NOT file-config** —
+   Claude CANNOT disable them by editing settings (verified: no `.mcp.json`, empty
+   `mcpServers`/`disabledMcpjsonServers`). The user flips them via `/mcp` in-session,
+   or the Claude app → Settings → Connectors. Claude proposes the list + steps; the
+   user toggles.
+   - **Confirmed working on this machine (2026-06-10):** `/mcp` did NOT expose a
+     disable control — use the app. Path: **Claude app → Settings → Connectors**, and
+     check the **Customize** tab (some connectors live there). Only **Google Drive**
+     (action: *Disconnect*) and **Claude-in-Chrome** (action: *Disable*) appeared as
+     toggleable; **computer-use, Claude_Preview, scheduled-tasks, mcp-registry did NOT
+     surface** as options (platform-managed — don't over-promise their removal).
+3. **Ask the user to define session scope + a stopping point.** Get an explicit
+   milestone/stopping point for the session. Record which connectors the user
+   disabled in the "Currently disabled" line below. As the session nears that
+   stopping point — or on end-of-session signals ("let's end here", "good place to
+   stop"), or when Claude recognizes the milestone is complete — **prompt the user to
+   re-enable** the disabled connectors, and clear the line.
+
+> **Currently disabled this session (re-enable before exit):** Google Drive
+> (reconnect via app → Settings → Connectors → Customize) and Claude-in-Chrome
+> (re-enable same path). Session milestone: **build + validate War Angel Phase D.**
+
+---
+
 ## Done
 
 - **Design contract captured** — `design/design.md` (entity model, simulated-day
@@ -64,22 +98,27 @@ Engine prerequisites, in the order we built them:
 - ~~Advantage/disadvantage + statuses + weapon mastery (sap/vex)~~ ✓  — `StatusSet`,
   `roll_d20`, sap/vex applied on hit and consumed on the holder's next roll.
 
-### NEXT STEP — War Angel level 8 (Phase C: brutality)
+### NEXT STEP — War Angel level 11 (Phase D begins)
 
-**Levels 1–7 are DONE & VALIDATED** (Phases A + B; see the dated entries below).
-The next level is **8 = Phase C (brutality / gladiator subclass)** — the first level
-where attack *order* starts to matter (vex chaining), bringing:
-- **Brutality** (xCHA/SR resource): `bleed` = add sap + CHA-mod damage; `bluff` = add
-  vex + advantage on the next save (the save-advantage side is DPR-irrelevant until
-  L13, so model only the vex effect now); applied via the existing `extra_masteries`
-  on a Choice / the on-hit decision point.
-- **Guided-strike prioritization** finally earns its keep: prefer high-value
-  (true-strike / "setup") misses over plain swings (deferred from L5–7 deliberately).
-- The build guide's L8 note is the longest in the doc — work the policy up in readable
-  form against that prose BEFORE coding, per the standing process.
-Still deferred past here: the on-hit *crit-redirect* / smite-on-crit selection (lands
-at L10 with Extra Attack), and all defensive machinery (saves, frightened,
-concentration, bless) → Phase D (L11–13).
+**Phase C (levels 8–10) is DONE & VALIDATED.**
+
+| Level | DPR (30k days) | Target | Error |
+|-------|---------------|--------|-------|
+| 8     | 23.48         | 23.36  | +0.5% |
+| 9     | 27.60         | 27.59  | +0.0% |
+| 10    | 35.34         | 35.32  | +0.1% |
+
+**L8 engine widening:** `HitResponse` gains `extra_masteries` + optional `action_cost`;
+hit_decider returns `(dice, masteries)`; hit_decider fires before `apply_masteries_on_hit`.
+**L8 policy:** setup-first emit, bluff+smite compose in one `HitResponse`, `_bluffed_this_turn` flag.
+**L9 policy:** TS bluff unlocked for rounds 1-3 (L9+ gate); T4 waste check extended.
+**L10 policy:** Extra Attack — 2 attacks per action and surge; True Strike dropped;
+T4 action bluff unblocked (attack 2 immediately consumes vex). **180 tests green.**
+
+**Phase D (L11-13)** — defensive bundle: saves (`SavingThrowEvent`), frightened
+condition, concentration, bless, war god's blessing. This is the first level where
+incoming damage feeds back into DPR (concentration checks → bless uptime). Significant
+new engine work. Read CLAUDE.md §"Phase D" and the Open Threads before starting.
 
 ---
 
@@ -143,6 +182,17 @@ defensive machinery.
   pact/free-cast/cleric-L1 resources, and magic_weapon_casts_per_day=2. 7 new tests, 158
   total green. Decisions that drove this design are recorded below.
 
+- **Phase C — levels 8–10. ✓ DONE & VALIDATED.** Results (30k days, soft ±10%):
+  L8 23.48/23.36 (+0.5%), L9 27.60/27.59 (+0.0%), L10 35.34/35.32 (+0.1%).
+  L1–9 unchanged. **180 tests green.**
+  *L8:* engine widening — `HitResponse` gains `extra_masteries` + optional `action_cost`;
+  hit_decider returns `(dice, masteries)` tuple; hit_decider fires before
+  `apply_masteries_on_hit`. Policy: setup-first emit (vex chaining); bluff+smite compose
+  in one `HitResponse`; `_bluffed_this_turn` flag; smite priority free_cast→pact→L1.
+  *L9:* TS hits bluffable at rounds 1-3 (L9+ gate); T4 waste check extended to include
+  action cost.
+  *L10:* Extra Attack — 2 attacks per action and surge; True Strike dropped; T4 action
+  bluff allowed (attack 2 immediately consumes vex in same turn).
 - **Phase B — levels 5–7. ✓ DONE & VALIDATED.** Final DPR vs. target (30k days,
   soft ±10%): **L5 16.55/16.73 (−1.1%), L6 20.88/21.03 (−0.7%), L7 21.01/21.26
   (−1.2%)**; L1–4 unchanged and still exact. **159 tests green.** All offense
@@ -274,6 +324,22 @@ defensive machinery.
 prototype policy as a statement of *intent*, then write readable Python and check it
 together against that prose before moving on. The prototype's R control flow is not
 ported verbatim — its value is the DPR target, not its structure.
+
+**Per-level EV re-examination (agreed — do this BEFORE coding each new level).**
+When we move to a new level, an early step is to re-examine the prototype/build-guide
+combat policy through two lenses, and reformulate it as needed:
+  1. **EV maximization** — does the prototype's plan actually maximize expected DPR,
+     or is some of it transcription / suboptimal husbanding? Cost out the marginal
+     value of each resource use (advantage on which attack, which slot, which target)
+     before accepting the prototype's sequencing.
+  2. **Our modified day model** — the prototype assumes a fixed schedule (e.g. "PoH
+     after combat 1, SR after combat 3" and a per-combat MW coin-flip). Our DayRunner
+     instead uses **rng-driven SR/PoH placement** and a **day-clock MW duration model**,
+     and our policies are **greedy + rest-timing-agnostic** (spend a resource whenever
+     a charge exists; "mode" is emergent from what's available, never a combat index).
+     Re-derive the plan under our model — it often *collapses* the prototype's
+     per-combat branching (see the L8 worked example: combat-index branching and the
+     "husband" flag fell out entirely). Match OUR formulation over the prototype's.
 
 ---
 

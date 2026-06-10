@@ -210,17 +210,22 @@ class HitContext:
 
 @dataclass(frozen=True)
 class HitResponse:
-    """The policy's answer to a HitContext: spend `resource_cost` and an
-    action-economy slot (`action_cost`) to add `extra_damage_dice` to this hit.
-    Return None from on_hit to decline.
+    """The policy's answer to a HitContext: spend `resource_cost` and optionally
+    an action-economy slot (`action_cost`) to add `extra_damage_dice` and/or
+    `extra_masteries` to this hit.  Return None from on_hit to decline.
 
-    The scheduler validates affordability (both the persistent resource AND the
-    action-economy slot in the current turn), consumes them, and folds the dice
-    into this hit's DamageEvent (where they double on a crit like any dice).
+    The scheduler validates affordability (both the persistent resource AND, if
+    action_cost is not None, the action-economy slot in the current turn),
+    consumes them, and folds the dice + masteries into this hit's DamageEvent
+    (dice double on a crit like any others; masteries are applied on the hit).
+
+    action_cost=None means no action-economy slot is consumed (e.g. Brutality::
+    bluff — it costs only a brutality charge, not a bonus action).
     """
     resource_cost: dict[str, int]
     extra_damage_dice: list[tuple[int, int]]
-    action_cost: str = "bonus_action"
+    extra_masteries: list[str] = field(default_factory=list)
+    action_cost: "str | None" = "bonus_action"
 
 
 # ---------------------------------------------------------------------------

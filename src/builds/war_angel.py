@@ -180,6 +180,72 @@ LEVELS: dict[int, dict] = {
         },
         "magic_weapon_casts_per_day": 2,
     },
+    8: {
+        "weapon": "longsword",
+        "attack_bonus": 7,          # unchanged (no ASI this level)
+        "damage_dice": (1, 8),
+        "damage_bonus": 6,
+        "weapon_mastery": "sap",
+        "enemy_ac": 16,
+        "char_hp": 59,              # build guide: 59.5
+        "target_dpr": 23.36,
+        "true_strike_dice": [(1, 6)],
+        "resources": {
+            "war_priest": (3, "full"),
+            "channel_divinity": (2, 1),
+            "spell_slot_2": (3, 0),
+            "pact_magic_slot": (1, "full"),
+            "free_cast": (1, 0),
+            "spell_slot_1": (4, 0),
+            "action_surge": (1, "full"),
+            "brutality": (4, "full"),           # Gladiator: CHA mod (4) charges / SR
+        },
+        "magic_weapon_casts_per_day": 2,
+    },
+    9: {
+        "weapon": "longsword",
+        "attack_bonus": 9,          # PB 4 + CHA 5  (fighter-04: PB ↑; ASI: CHA 20)
+        "damage_dice": (1, 8),
+        "damage_bonus": 7,          # CHA 5 + dueling 2
+        "weapon_mastery": "sap",
+        "enemy_ac": 16,
+        "char_hp": 67,
+        "target_dpr": 27.59,
+        "true_strike_dice": [(1, 6)],
+        "resources": {
+            "war_priest": (3, "full"),
+            "channel_divinity": (2, 1),
+            "spell_slot_2": (3, 0),
+            "pact_magic_slot": (1, "full"),
+            "free_cast": (1, 0),
+            "spell_slot_1": (4, 0),
+            "action_surge": (1, "full"),
+            "brutality": (5, "full"),           # CHA mod 5 now
+        },
+        "magic_weapon_casts_per_day": 2,
+    },
+    10: {
+        "weapon": "longsword",
+        "attack_bonus": 9,          # unchanged (fighter-05: Extra Attack, no stat change)
+        "damage_dice": (1, 8),
+        "damage_bonus": 7,
+        "weapon_mastery": "sap",
+        "enemy_ac": 16,
+        "char_hp": 74,              # build guide: 74.5
+        "target_dpr": 35.32,
+        # No true_strike_dice: True Strike is dropped; action = 2 plain weapon attacks
+        "resources": {
+            "war_priest": (3, "full"),
+            "channel_divinity": (2, 1),
+            "spell_slot_2": (3, 0),
+            "pact_magic_slot": (1, "full"),
+            "free_cast": (1, 0),
+            "spell_slot_1": (4, 0),
+            "action_surge": (1, "full"),        # surge now also gives 2 attacks
+            "brutality": (5, "full"),
+        },
+        "magic_weapon_casts_per_day": 2,
+    },
 }
 
 # Phase A is exact-match; later phases are soft (±10%).  Recorded here so the
@@ -275,13 +341,13 @@ class WarAngelPolicy:
         self._true_strike_dice = list(LEVELS[level].get("true_strike_dice", []))
         # Per-combat state, (re)initialised by on_combat_start.
         self._aoo_round: int = 1
-        self._combat_index: int = 0   # kept for L8 combat-aware husbanding
+        # Per-turn state, reset at the start of each decide() call.
+        self._bluffed_this_turn: bool = False
 
     # -- per-combat setup -------------------------------------------------
 
     def on_combat_start(self, combat_index: int, rng: "SeededRNG") -> None:
-        """Pre-roll which round carries this combat's single AoO, and record the
-        combat index for any combat-aware logic.
+        """Pre-roll which round carries this combat's single AoO.
 
         The build guide models 5 AoO timing slots (before turn 1, between each
         pair of turns, after turn 4).  Since at these levels an AoO is just one
@@ -289,19 +355,58 @@ class WarAngelPolicy:
         a uniformly random round in [1, rounds_per_combat] and emit it that round.
         """
         self._aoo_round = rng.roll_one(self._rounds_per_combat)
-        self._combat_index = combat_index
 
     # -- decision point ---------------------------------------------------
 
     def decide(self, snapshot: GameState) -> list[Choice]:
-        # Pure read: no dice, no mutation.  decide() runs exactly once per round,
-        # so the round check alone fires the AoO on exactly one round per combat
-        # (no "already used" flag needed).
+        # decide() is the turn-start commit point: reset per-turn flags here.
+        self._bluffed_this_turn = False
         choices: list[Choice] = []
 
-        # Action attack.  At level 5 this is a True Strike cast — a weapon
-        # attack carrying the cantrip's +1d6 radiant rider.  At 1–4 the rider
-        # list is empty, so it's a plain weapon attack.
+        # Setup attacks are emitted BEFORE True Strike so any bluff-applied vex
+        # (L8+) is consumed by the TS rather than expiring unused.
+
+        # Action Surge (L7+): extra weapon attack(s) on round 1, greedily.
+        # At L8+: taking the surge swing means skipping War Priest this turn so
+        # the BA stays free for a smite on the first hit.
+        # At L10+: surge gives 2 attacks (Extra Attack applies to the surged action).
+        has_surge = (
+            snapshot.round_number == 1
+            and snapshot.resources.get("action_surge", 0) >= 1
+        )
+        if has_surge:
+            choices.append(Choice(
+                action_type="attack",
+                cost="none",
+                target=self._target,
+                weapon_stat="attack_bonus",
+                resource_cost={"action_surge": 1},
+            ))
+            if self.level >= 10:
+                choices.append(Choice(
+                    action_type="attack",
+                    cost="none",
+                    target=self._target,
+                    weapon_stat="attack_bonus",
+                ))
+
+        # War Priest BA swing: use whenever a charge remains, EXCEPT on round 1
+        # at L8+ when the surge is taken (BA stays free for smite on TS hit).
+        skip_wp = self.level >= 8 and has_surge
+        if not skip_wp and snapshot.resources.get("war_priest", 0) >= 1:
+            choices.append(Choice(
+                action_type="attack",
+                cost="bonus_action",
+                target=self._target,
+                weapon_stat="attack_bonus",
+                resource_cost={"war_priest": 1},
+            ))
+
+        # Action: True Strike cast (L5-L9) or plain Attack action (L10+).
+        # Levels 1–4: no rider (empty list) → plain weapon attack.
+        # Levels 5–9: True Strike carries a +1d6 radiant rider.
+        # Level 10+: Extra Attack replaces True Strike — emit 2 plain weapon attacks.
+        #   The extra_damage_dice list is empty at L10+ (no true_strike_dice in data).
         if snapshot.resources.get("action", 0) >= 1:
             choices.append(Choice(
                 action_type="attack",
@@ -310,32 +415,13 @@ class WarAngelPolicy:
                 weapon_stat="attack_bonus",
                 extra_damage_dice=list(self._true_strike_dice),
             ))
-
-        # Action Surge (L7+): one extra weapon attack, greedily on turn 1 of each
-        # combat while a charge remains.  A PLAIN swing — no True Strike rider:
-        # 2024 forbids the Magic action on the surged action, so it can't be a
-        # True Strike cast.  cost="none" leaves the regular action untouched; the
-        # action_surge resource is what's spent.
-        if (snapshot.round_number == 1
-                and snapshot.resources.get("action_surge", 0) >= 1):
-            choices.append(Choice(
-                action_type="attack",
-                cost="none",
-                target=self._target,
-                weapon_stat="attack_bonus",
-                resource_cost={"action_surge": 1},
-            ))
-
-        # Bonus action: War Priest weapon attack while a charge remains (L5+).
-        # A plain weapon swing — no True Strike rider on the BA attack.
-        if snapshot.resources.get("war_priest", 0) >= 1:
-            choices.append(Choice(
-                action_type="attack",
-                cost="bonus_action",
-                target=self._target,
-                weapon_stat="attack_bonus",
-                resource_cost={"war_priest": 1},
-            ))
+            if self.level >= 10:
+                choices.append(Choice(
+                    action_type="attack",
+                    cost="none",
+                    target=self._target,
+                    weapon_stat="attack_bonus",
+                ))
 
         # One AoO per combat, on the pre-rolled round (reaction cost).
         if (
@@ -383,43 +469,82 @@ class WarAngelPolicy:
 
     # -- post-roll decision point: Wrathful Smite (level 6+) --------------
 
-    # Slot priority for casting wrathful smite (cheapest-to-recover first):
-    # the pact slot (back on a short rest), then the free shadow-touched cast,
-    # then cleric level-1 slots.
-    _SMITE_SLOT_PRIORITY = ("pact_magic_slot", "free_cast", "spell_slot_1")
+    # Slot priority for casting wrathful smite: free_cast first (can ONLY be
+    # used for wrathful smite — most constrained), then pact slot (SR-recharge,
+    # but theoretically fungible for other utility spells), then cleric L1 slots.
+    _SMITE_SLOT_PRIORITY = ("free_cast", "pact_magic_slot", "spell_slot_1")
 
     def on_hit(self, ctx: HitContext) -> "HitResponse | None":
-        """Wrathful Smite (2024): cast as a bonus action immediately after a hit
-        to add 1d6 (doubled on a crit).
+        """Brutality::bluff (L8+) and Wrathful Smite (L6+).
 
-        EV result (see PROGRESS): a war-priest swing dominates wrathful smite in
-        every case, so war priest is the unconditional top bonus-action use and
-        is already spent in decide() when a charge remains.  Smite therefore only
-        fires when the bonus action is STILL FREE — i.e. on turns we had no war
-        priest charge — weaponizing the bonus action instead of wasting it.
+        Both can fire on the same hit.  The combined HitResponse is built and
+        returned as one; the scheduler validates and consumes all costs together.
 
-        Gates:
-          - level 6+ only (the spell isn't available earlier);
-          - never on a reaction/AoO (2024: bonus actions only on your own turn —
-            our AoO is collapsed onto our turn, so the engine can't tell; we must);
-          - only if the bonus action is unspent this turn (no war priest taken);
-          - only if a smite slot remains.
+        Brutality::bluff: spend 1 brutality charge to add vex mastery to this
+        attack (applied on-hit; gives attacker advantage on the next attack vs
+        this target).  No action-economy cost.  Only on the first setup hit per
+        turn (BA/none/reaction).  Skipped on the final round's AoO (vex would
+        expire before any follow-on attack could use it).
+
+        Wrathful Smite: spend a spell slot + bonus action to add 1d6 (doubled on
+        a crit).  Never on a reaction; only when the BA is still unspent.
+        War Priest is the top BA priority and is already spent in decide(), so
+        smite fires on turns where the BA stayed free.
         """
-        if self.level < 6:
+        # L8: setup attacks only (BA/none/reaction); vex chains to same-turn TS.
+        # L9+: any attack type; TS hits carry vex to the *next* turn's first attack.
+        bluff_cost_ok = (
+            self.level >= 9
+            or ctx.cost in ("bonus_action", "none", "reaction")
+        )
+        # Waste gate: don't bluff when vex would expire before any follow-on.
+        # L8-L9: action (TS) and reaction (AoO) on the final round have no
+        #   follow-on to consume vex (no round 5 / no further own-turn attacks).
+        # L10+: action attack 1's vex chains to action attack 2 in the same turn
+        #   (Extra Attack follow-up); only the T4 AoO still wastes.
+        last_round = ctx.round_number == self._rounds_per_combat
+        if self.level >= 10:
+            bluff_no_waste = not (ctx.cost == "reaction" and last_round)
+        else:
+            bluff_no_waste = not (last_round and ctx.cost in ("action", "reaction"))
+        want_bluff = (
+            self.level >= 8
+            and bluff_cost_ok
+            and bluff_no_waste
+            and ctx.resources.get("brutality", 0) >= 1
+            and not self._bluffed_this_turn
+        )
+        want_smite = (
+            self.level >= 6
+            and ctx.cost != "reaction"
+            and ctx.bonus_action_available
+            and self._next_smite_slot(ctx.resources) is not None
+        )
+
+        if not want_bluff and not want_smite:
             return None
-        if ctx.cost == "reaction":
-            return None
-        if not ctx.bonus_action_available:
-            return None
-        slot = self._next_smite_slot(ctx.resources)
-        if slot is None:
-            return None
-        # +1d6 necrotic; doubles on a crit automatically (the DamageEvent carries
-        # is_crit, and extra dice double like any others).
+
+        resource_cost: dict[str, int] = {}
+        extra_masteries: list[str] = []
+        extra_dice: list[tuple[int, int]] = []
+        action_cost: "str | None" = None
+
+        if want_bluff:
+            resource_cost["brutality"] = 1
+            extra_masteries = ["vex"]
+            self._bluffed_this_turn = True  # commit: prevent a second bluff this turn
+
+        if want_smite:
+            slot = self._next_smite_slot(ctx.resources)
+            resource_cost[slot] = resource_cost.get(slot, 0) + 1
+            extra_dice = [(1, 6)]
+            action_cost = "bonus_action"
+
         return HitResponse(
-            resource_cost={slot: 1},
-            extra_damage_dice=[(1, 6)],
-            action_cost="bonus_action",
+            resource_cost=resource_cost,
+            extra_damage_dice=extra_dice,
+            extra_masteries=extra_masteries,
+            action_cost=action_cost,
         )
 
     def _next_smite_slot(self, resources: dict) -> "str | None":

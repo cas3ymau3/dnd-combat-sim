@@ -263,7 +263,7 @@ class Scheduler:
         round_ = event.tick[0]
         cost = event.cost
 
-        def hit_decider(is_crit: bool) -> list[tuple[int, int]]:
+        def hit_decider(is_crit: bool) -> tuple[list[tuple[int, int]], list[str]]:
             ba_available = self._turn_economy.get("bonus_action", 0) >= 1
             ctx = HitContext(
                 actor=actor,
@@ -276,21 +276,21 @@ class Scheduler:
             )
             response = on_hit(ctx)
             if response is None:
-                return []
-            # Validate the action-economy slot (e.g. bonus action) is free...
+                return [], []
+            # Validate action-economy slot; None means no economy cost (e.g. bluff).
             ac = response.action_cost
-            if ac in self._turn_economy and self._turn_economy[ac] < 1:
-                return []
+            if ac is not None and ac in self._turn_economy and self._turn_economy[ac] < 1:
+                return [], []
             # ...and the persistent resource is affordable.
             if any(actor.resources.available(n) < a
                    for n, a in response.resource_cost.items()):
-                return []
-            # Consume both, then hand back the dice.
-            if ac in self._turn_economy:
+                return [], []
+            # Consume action economy (if any), then persistent resources.
+            if ac is not None and ac in self._turn_economy:
                 self._turn_economy[ac] -= 1
             for n, a in response.resource_cost.items():
                 actor.resources.consume(n, a)
-            return list(response.extra_damage_dice)
+            return list(response.extra_damage_dice), list(response.extra_masteries)
 
         return hit_decider
 

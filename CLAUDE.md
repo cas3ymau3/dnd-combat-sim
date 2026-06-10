@@ -111,40 +111,22 @@ These were reached deliberately; do not silently revisit them.
 
 ## Engine implementation — what exists
 
-Engine fidelity build-up is well underway; **134 tests, all green**. The
-mechanical prerequisites for the War Angel validation (levels 1–13) are now in
-place. What remains for that milestone is the character policy + build plan, not
-more engine primitives.
+Engine fidelity build-up is well underway (live test count + current milestone:
+see PROGRESS.md). The mechanical prerequisites for the War Angel validation
+(levels 1–13) are in place; what remains is per-build policy + data, not new
+engine primitives. Module map (`src/`):
 
-```
-src/
-  rng.py        SeededRNG — single dice channel, seed-logged, reproducible
-  modifiers.py  Modifier + ModifierStack — fold-left, expiry by tick, phase filter
-  resources.py  ResourcePool + ResourceEntry — full/partial SR restore, LR restore,
-                find_spell_slot(min_level); spell slots named spell_slot_1..9
-  statuses.py   StatusSet + StatusEntry — tick-expiring flags keyed on
-                (round, turn_index); apply/has/get/consume/expire
-  entity.py     Entity — HP (tracks into negatives, threshold model) + base stats +
-                modifier stack + ResourcePool + StatusSet; stat() folds the stack
-  events.py     Tick type, event dataclasses, EventQueue (heapq, tiebreak by insertion).
-                AttackRollEvent carries masteries list
-  policy.py     Policy protocol, GameState (frozen, includes merged resources),
-                Choice (cost tag + resource_cost + extra_masteries + mastery_override).
-                DummySwingPolicy, ExtraAttackPolicy, ScriptedEnemyPolicy
-  verbs.py      resolve_attack_roll + resolve_damage (phase-ordered, crit doubles die
-                count); roll_d20 (adv/disadv w/ RAW cancellation); apply_masteries_on_hit
-                (sap/vex)
-  scheduler.py  Pop-earliest loop, subscriber registry, decision-point → policy → enqueue.
-                Validates/consumes resource_cost; sweeps status expiry at each turn start;
-                builds AttackRollEvent.masteries; exposes per-entity damage_received
-  day_runner.py DayRunner — one adventuring day: LR → 4 combats → (implicit LR). Samples
-                combat times, places the short rest by the design rule, between_combats
-                hook for out-of-combat actions (e.g. Prayer of Healing)
-tests/
-  test_rng / test_modifiers / test_scheduler / test_swing / test_extra_attack /
-  test_scripted_enemy / test_resources / test_day_runner / test_statuses /
-  test_weapon_mastery
-```
+- `rng.py` — SeededRNG, the single seed-logged dice channel.
+- `modifiers.py` — Modifier + ModifierStack (fold-left, tick expiry, phase filter).
+- `resources.py` — ResourcePool/ResourceEntry (SR/LR restore; spell_slot_1..9).
+- `statuses.py` — StatusSet (tick-expiring flags keyed on (round, turn_index)).
+- `entity.py` — Entity (threshold HP + base stats + modifier stack + pools); `stat()` folds the stack.
+- `events.py` — Tick, event dataclasses, EventQueue (heapq, insertion tiebreak).
+- `policy.py` — Policy protocol, GameState, Choice; post-roll Miss/Hit decision contexts; sample policies.
+- `verbs.py` — resolve_attack_roll + resolve_damage (phase-ordered); roll_d20; apply_masteries_on_hit.
+- `scheduler.py` — pop-earliest loop + subscriber registry; decision-point → policy → enqueue; resource validation; status sweep; per-turn economy hung for mid-turn deciders.
+- `day_runner.py` — one adventuring day (LR → 4 combats); samples combat times + SR placement; before/between-combat hooks.
+- `builds/war_angel.py` — first concrete build (per-level data + policy).
 
 Key invariants to preserve when extending:
 - All dice through `SeededRNG.roll()` — never call random directly.

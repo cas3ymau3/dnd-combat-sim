@@ -99,7 +99,7 @@ def resolve_attack_roll(
     queue: "EventQueue",
     next_sequence: int,
     decider: "Callable[[int], int] | None" = None,
-    hit_decider: "Callable[[bool], list[tuple[int, int]]] | None" = None,
+    hit_decider: "Callable[[bool], tuple[list[tuple[int, int]], list[str]]] | None" = None,
 ) -> int:
     """Resolve one attack roll.  Returns the next available sequence number.
 
@@ -194,6 +194,15 @@ def resolve_attack_roll(
                 bonus, total_roll, target_ac,
             )
 
+    # On-hit decision point: fires BEFORE apply_masteries_on_hit so any extra
+    # masteries returned by the policy (e.g. Brutality::bluff adding vex) are
+    # folded into event.masteries and applied on this same hit.
+    extra_dice = list(event.extra_damage_dice)
+    if hit and hit_decider is not None:
+        extra_dice_from_hit, extra_masteries_from_hit = hit_decider(is_crit)
+        extra_dice.extend(extra_dice_from_hit)
+        event.masteries.extend(extra_masteries_from_hit)
+
     # Apply mastery on-hit effects (sap/vex set tick-expiring statuses).
     if hit and target is not None:
         apply_masteries_on_hit(event, actor, target)
@@ -202,13 +211,6 @@ def resolve_attack_roll(
         # Pull damage dice from actor stats
         damage_dice: tuple[int, int] = actor.stat("damage_dice", tick=tick)  # type: ignore[assignment]
         damage_bonus = int(actor.stat("damage_bonus", tick=tick))
-
-        # On-hit decision point (Wrathful/Divine Smite): the policy may add dice
-        # to this hit, spending a resource + the bonus action (handled in the
-        # scheduler-side closure).  These dice double on a crit like any others.
-        extra_dice = list(event.extra_damage_dice)
-        if hit_decider is not None:
-            extra_dice.extend(hit_decider(is_crit))
 
         damage_event = DamageEvent(
             tick=make_tick(round_, turn_idx, next_sequence),
