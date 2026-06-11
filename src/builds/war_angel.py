@@ -63,9 +63,11 @@ if TYPE_CHECKING:
     from ..rng import SeededRNG
 
 
-# Magic Weapon (2024): non-concentration, 60-minute duration, +1 attack/+1 damage.
+# Magic Weapon (2024): non-concentration, 60-minute duration.  Base cast (L2
+# slot) is +1/+1; upcast with a level-3 slot (from character level 12) is +2/+2.
 MAGIC_WEAPON_DURATION_MIN = 60
-MAGIC_WEAPON_BONUS = 1
+MAGIC_WEAPON_PLUS1 = 1
+MAGIC_WEAPON_PLUS2 = 2
 # Prayer of Healing needs a 10-minute rest window to cast.
 POH_MIN_INTERVAL_MIN = 10
 
@@ -245,6 +247,65 @@ LEVELS: dict[int, dict] = {
             "brutality": (5, "full"),
         },
         "magic_weapon_casts_per_day": 2,
+    },
+    11: {
+        # Fighter-06: Mage Slayer (+1 DEX). DEX is not our attack stat (Pact of
+        # the Blade → CHA), so attack/damage are UNCHANGED from L10. The only
+        # combat-relevant change is enemy AC 16 → 17 — which is exactly why the
+        # guide's DPR drops (35.32 → 33.70). Still 2 attacks (Extra Attack x2 is
+        # L18); brutality stays 5 (CHA 20). A pure data row: no policy change,
+        # no new engine work. Validates the attack math at the new AC before
+        # Phase D's defensive bundle lands at L13.
+        "weapon": "longsword",
+        "attack_bonus": 9,          # PB 4 + CHA 5 (unchanged)
+        "damage_dice": (1, 8),
+        "damage_bonus": 7,          # CHA 5 + dueling 2 (unchanged)
+        "weapon_mastery": "sap",
+        "enemy_ac": 17,             # ↑ from 16
+        "char_hp": 82,
+        "target_dpr": 33.70,
+        "resources": {
+            "war_priest": (3, "full"),
+            "channel_divinity": (2, 1),
+            "spell_slot_2": (3, 0),
+            "pact_magic_slot": (1, "full"),
+            "free_cast": (1, 0),
+            "spell_slot_1": (4, 0),
+            "action_surge": (1, "full"),
+            "brutality": (5, "full"),
+        },
+        "magic_weapon_casts_per_day": 2,
+    },
+    12: {
+        # Cleric-05: level-3 spell slots arrive → +2 Magic Weapon.  Combat
+        # tactics are UNCHANGED from L10/L11 (Extra Attack, brutality::bluff on
+        # first hit, War Priest / smite / surge) — the only difference is MW is
+        # sometimes +2, which rides the modifier stack, not the policy.  Attack
+        # stats unchanged (PB 4 + CHA 5).  Enemy AC stays 17 (→18 at L15).
+        #
+        # MW budget: 2× +2 casts (the two L3 slots) + 2× +1 casts (two of the
+        # three L2 slots; the third is PoH) → 100% uptime, ~50/50 between tiers.
+        "weapon": "longsword",
+        "attack_bonus": 9,          # PB 4 + CHA 5
+        "damage_dice": (1, 8),
+        "damage_bonus": 7,          # CHA 5 + dueling 2
+        "weapon_mastery": "sap",
+        "enemy_ac": 17,
+        "char_hp": 88,              # build guide: 88.5
+        "target_dpr": 38.11,
+        "resources": {
+            "war_priest": (3, "full"),
+            "channel_divinity": (2, 1),
+            "spell_slot_3": (2, 0),             # both earmarked for +2 Magic Weapon
+            "spell_slot_2": (3, 0),             # 1 PoH + 2 (+1) Magic Weapon
+            "spell_slot_1": (4, 0),
+            "pact_magic_slot": (1, "full"),
+            "free_cast": (1, 0),
+            "action_surge": (1, "full"),
+            "brutality": (5, "full"),
+        },
+        "magic_weapon_casts_per_day": 2,        # +1 casts (L2 slots)
+        "magic_weapon_plus2_casts_per_day": 2,  # +2 casts (L3 slots)
     },
 }
 
@@ -576,16 +637,25 @@ class WarAngelDailyPlan:
         self.character = character
         self.level = level
         data = LEVELS[level]
-        self._mw_casts_per_day: int = data.get("magic_weapon_casts_per_day", 0)
+        # Magic Weapon cast budgets, by tier.  `magic_weapon_casts_per_day` is
+        # the +1 budget (level-2 slots, all levels); `magic_weapon_plus2_casts_
+        # per_day` is the +2 budget (level-3 slots, from level 12).  We cast +2
+        # first while those slots remain, then fall back to +1 — strictly more
+        # damage per cast, and order across statistically-identical combats does
+        # not affect mean DPR.
+        self._mw_plus1_budget: int = data.get("magic_weapon_casts_per_day", 0)
+        self._mw_plus2_budget: int = data.get("magic_weapon_plus2_casts_per_day", 0)
         self._mw = DurationBuffTracker()
-        self._mw_casts_used: int = 0
+        self._mw_plus1_used: int = 0
+        self._mw_plus2_used: int = 0
         self._poh_cast: bool = False
 
     # -- per-day reset ----------------------------------------------------
 
     def _reset_day(self) -> None:
         self._mw.reset()
-        self._mw_casts_used = 0
+        self._mw_plus1_used = 0
+        self._mw_plus2_used = 0
         self._poh_cast = False
 
     # -- Magic Weapon (before_combat) ------------------------------------
@@ -599,26 +669,38 @@ class WarAngelDailyPlan:
         # Cast schedule (stated explicitly per build, not a hidden engine rule):
         #   - cast before combat 1;
         #   - before combat N>1, cast only if Magic Weapon is currently INACTIVE
-        #     and an earmarked level-2 slot remains.
+        #     and an earmarked slot remains.
+        # Tier choice: spend a +2 (level-3) cast first while any remain, else a
+        # +1 (level-2) cast.  Each tier consumes its own slot resource.
+        budget_left = (
+            (self._mw_plus2_budget - self._mw_plus2_used)
+            + (self._mw_plus1_budget - self._mw_plus1_used)
+        )
         want_cast = (
-            self._mw_casts_used < self._mw_casts_per_day
+            budget_left > 0
             and (ctx.combat_num == 1 or not self._mw.active_at(minute))
         )
         if want_cast:
-            self._mw.cast(minute, MAGIC_WEAPON_DURATION_MIN)
-            self._mw_casts_used += 1
-            self.character.resources.consume("spell_slot_2")
+            if self._mw_plus2_used < self._mw_plus2_budget:
+                self._mw.cast(minute, MAGIC_WEAPON_DURATION_MIN, MAGIC_WEAPON_PLUS2)
+                self._mw_plus2_used += 1
+                self.character.resources.consume("spell_slot_3")
+            else:
+                self._mw.cast(minute, MAGIC_WEAPON_DURATION_MIN, MAGIC_WEAPON_PLUS1)
+                self._mw_plus1_used += 1
+                self.character.resources.consume("spell_slot_2")
 
-        # Sync the entity's modifier stack to whether MW is active this combat.
-        self._sync_magic_weapon(self._mw.active_at(minute))
+        # Sync the entity's modifier stack to the strongest MW tier active this
+        # combat (0 = inactive → no modifier).
+        self._sync_magic_weapon(self._mw.strongest_at(minute))
 
-    def _sync_magic_weapon(self, active: bool) -> None:
+    def _sync_magic_weapon(self, bonus: int) -> None:
         self.character.remove_modifier("magic_weapon")
-        if active:
+        if bonus > 0:
             self.character.add_modifier(
-                Modifier("attack_bonus", MAGIC_WEAPON_BONUS, "magic_weapon"))
+                Modifier("attack_bonus", bonus, "magic_weapon"))
             self.character.add_modifier(
-                Modifier("damage_bonus", MAGIC_WEAPON_BONUS, "magic_weapon"))
+                Modifier("damage_bonus", bonus, "magic_weapon"))
 
     # -- Prayer of Healing (between_combats) -----------------------------
 

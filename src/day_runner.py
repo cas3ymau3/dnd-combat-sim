@@ -179,16 +179,27 @@ class DurationBuffTracker:
     minute granularity).  Reusable for any timed out-of-combat buff; it holds
     no entity reference and applies no modifiers itself — the daily plan owns
     that, so one tracker can model one buff (e.g. magic_weapon) across a day.
+
+    Each cast carries an optional `value` (default 1) so a single tracker can
+    hold multiple *tiers* of the same buff — e.g. Magic Weapon cast at +1 (L2
+    slot) and +2 (L3 slot, from level 12).  `strongest_at` returns the largest
+    active value, since the highest-tier cast wins where windows overlap.
     """
 
     def __init__(self) -> None:
-        self._casts: list[tuple[int, int]] = []  # (cast_minute, duration_min)
+        # (cast_minute, duration_min, value)
+        self._casts: list[tuple[int, int, int]] = []
 
-    def cast(self, minute: int, duration_min: int) -> None:
-        self._casts.append((minute, duration_min))
+    def cast(self, minute: int, duration_min: int, value: int = 1) -> None:
+        self._casts.append((minute, duration_min, value))
 
     def active_at(self, minute: int) -> bool:
-        return any(c <= minute <= c + dur for c, dur in self._casts)
+        return any(c <= minute <= c + dur for c, dur, _ in self._casts)
+
+    def strongest_at(self, minute: int) -> int:
+        """Largest active value at `minute`, or 0 if no cast is active."""
+        active = [v for c, dur, v in self._casts if c <= minute <= c + dur]
+        return max(active) if active else 0
 
     def reset(self) -> None:
         """Clear all recorded casts (call at long rest / day start)."""

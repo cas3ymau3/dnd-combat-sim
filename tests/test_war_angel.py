@@ -44,7 +44,7 @@ def test_factory_stats_level_2_switches_to_sap_longsword():
 
 def test_unimplemented_level_raises():
     with pytest.raises(NotImplementedError):
-        war_angel.make_war_angel(11)
+        war_angel.make_war_angel(13)
 
 
 # ---------------------------------------------------------------------------

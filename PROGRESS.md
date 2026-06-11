@@ -98,15 +98,43 @@ Engine prerequisites, in the order we built them:
 - ~~Advantage/disadvantage + statuses + weapon mastery (sap/vex)~~ ✓  — `StatusSet`,
   `roll_d20`, sap/vex applied on hit and consumed on the holder's next roll.
 
-### NEXT STEP — War Angel level 11 (Phase D begins)
+### NEXT STEP — War Angel level 12 (Phase D, stage D2)
 
-**Phase C (levels 8–10) is DONE & VALIDATED.**
+**Phase C (levels 8–10) DONE & VALIDATED. Phase D stage D1 (L11) DONE & VALIDATED.**
 
 | Level | DPR (30k days) | Target | Error |
 |-------|---------------|--------|-------|
 | 8     | 23.48         | 23.36  | +0.5% |
 | 9     | 27.60         | 27.59  | +0.0% |
 | 10    | 35.34         | 35.32  | +0.1% |
+| 11    | 33.665        | 33.70  | −0.1% |
+
+**Phase D staging (agreed):** D1 = L11 (data row, ✓ done) → D2 = L12 (two-tier
+Magic Weapon, content-only) → D3 = L13 sub-staged: D3a = save machinery + Bless
+as pure offense buff (100% uptime, enemy not yet attacking) to isolate the
+bless+MW attack math; D3b = turn on the incoming-damage loop (enemy attacks,
+concentration checks, bless uptime emerges) and validate 34.68.
+
+**D1 (L11) — DONE & VALIDATED (33.665 vs 33.70, −0.1%, 30k days).** Pure data
+row: Mage Slayer's +1 DEX doesn't touch CHA-based attacks, so L11 = L10 stats
+with `enemy_ac` 16→17 (the AC bump is the whole reason DPR drops). No policy or
+engine change. `make_war_angel(12)` now the next-raises level (test updated).
+
+**Phase D design decisions (locked this session, before any L13 code):**
+- *Frightened — DEFERRED & flagged.* Wrathful Smite's WIS-save/frightened rider
+  is out of scope for L13 (guide downplays it: smite drops to 3/day, high-CR
+  immunity common; only second-order DPR effect via fewer enemy hits → fewer
+  concentration checks). **When we DO build it, model a tunable random chance
+  (default 50%, adjustable) that the enemy is frightened-immune — discuss this
+  design at that point.** See Open threads.
+- *Enemy 50%→40% targeting.* Model incoming damage with **pre-rolled per-attack
+  targeting + untracked party** (enemy makes 3 attacks/turn; at `on_combat_start`
+  pre-roll which target each — char vs party; party-aimed = no-op for our metrics;
+  keeps `decide()` dice-free, preserves per-attack discreteness for separate
+  concentration checks). **Per-attack char-target probability = 40%** (party of 4,
+  more reasonable than the guide's 50%) — flagged as tunable. **At D3b, compare
+  our actual concentration-check count/day to the guide's stated ~9–10 (and ~12
+  under the 75%-all-3-attacks sensitivity case).**
 
 **L8 engine widening:** `HitResponse` gains `extra_masteries` + optional `action_cost`;
 hit_decider returns `(dice, masteries)`; hit_decider fires before `apply_masteries_on_hit`.
@@ -427,6 +455,12 @@ combat policy through two lenses, and reformulate it as needed:
   *second-order* (fewer enemy hits → fewer concentration checks → higher bless uptime).
   Building a save system at level 6 would change no DPR number before level 13, and
   saves are needed at 13 anyway (concentration *is* a save), so they bundle cleanly.
+  **Re-confirmed deferred at Phase D L13 planning** (guide downplays it there too).
+  **Design note for when we build it:** model a *tunable random chance* that the
+  enemy is **frightened-immune** (default 50%, adjustable) — many high-CR creatures
+  are immune, and this gates whether the smite's frightened effect ever lands.
+  Discuss the exact treatment (per-combat roll? per-target archetype tag?) at that
+  point rather than baking it in now.
 
 - **Attacks of opportunity & spatial representation.** The engine has **no spatial
   model today** (no positions, distance, reach, or movement). **Decided (War Angel
