@@ -116,6 +116,16 @@ class AttackRollEvent(Event):
     cost: str = "action"
     masteries: list[str] = field(default_factory=list)
     extra_damage_dice: list[tuple[int, int]] = field(default_factory=list)
+    # Flat damage added to this attack's hit beyond the weapon's damage_bonus —
+    # e.g. Brutality::bleed's +CHA mod.  Threaded into the DamageEvent (phase 5).
+    extra_flat_damage: int = 0
+    # Whether the ACTING entity's post-roll decision points (on_miss / on_hit)
+    # may fire for this attack.  False for "rider" attacks that are themselves a
+    # reaction and must not spawn further riders — e.g. the Flourish Counter,
+    # which carries its own bleed and must NOT trigger Wrathful Smite / bluff.
+    # (on_miss is already gated off reaction-cost attacks via is_aoo; this flag
+    # generalises the suppression and covers on_hit too.)
+    policy_riders: bool = True
     kind: str = field(default="attack_roll", init=False)
 
 
@@ -142,6 +152,9 @@ class DamageEvent(Event):
     damage_dice: tuple[int, int] = (1, 6)  # (n, sides)
     damage_bonus: int = 0
     extra_damage_dice: list[tuple[int, int]] = field(default_factory=list)
+    # Extra flat damage beyond damage_bonus (e.g. Brutality::bleed's +CHA mod),
+    # added in phase 5 alongside damage_bonus.  Does NOT scale on a crit.
+    extra_flat_damage: int = 0
     cost: str = "action"
     kind: str = field(default="damage", init=False)
 

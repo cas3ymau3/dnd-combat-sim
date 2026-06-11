@@ -121,10 +121,10 @@ engine primitives. Module map (`src/`):
 - `resources.py` — ResourcePool/ResourceEntry (SR/LR restore; spell_slot_1..9).
 - `statuses.py` — StatusSet (tick-expiring flags keyed on (round, turn_index)).
 - `entity.py` — Entity (threshold HP + base stats + modifier stack + pools); `stat()` folds the stack.
-- `events.py` — Tick, event dataclasses, EventQueue (heapq, insertion tiebreak).
-- `policy.py` — Policy protocol, GameState, Choice; post-roll Miss/Hit decision contexts; sample policies.
-- `verbs.py` — resolve_attack_roll + resolve_damage (phase-ordered); roll_d20; apply_masteries_on_hit.
-- `scheduler.py` — pop-earliest loop + subscriber registry; decision-point → policy → enqueue; resource validation; status sweep; per-turn economy hung for mid-turn deciders.
+- `events.py` — Tick, event dataclasses, EventQueue (heapq, insertion tiebreak). `AttackRollEvent`/`DamageEvent` carry `extra_flat_damage` (bleed); `AttackRollEvent.policy_riders` gates the actor's post-roll deciders.
+- `policy.py` — Policy protocol, GameState, Choice; post-roll Miss/Hit decision contexts; the DEFENDER-side intercept point (`on_incoming_hit` + IncomingAttackContext / InterceptResponse / CounterSpec); sample policies.
+- `verbs.py` — resolve_attack_roll (+ on_miss/on_hit/intercept deciders) + resolve_damage (phase-ordered, sums extra_flat_damage); roll_d20; resolve_saving_throw; apply_masteries_on_hit.
+- `scheduler.py` — pop-earliest loop + subscriber registry; decision-point → policy → enqueue; resource validation; status sweep; per-turn economy hung for mid-turn deciders; miss/hit/**intercept** decider closures (intercept = `intercept_event`, design §4 #15, consults the *target's* policy).
 - `day_runner.py` — one adventuring day (LR → 4 combats); samples combat times + SR placement; before/between-combat hooks.
 - `builds/war_angel.py` — first concrete build (per-level data + policy).
 

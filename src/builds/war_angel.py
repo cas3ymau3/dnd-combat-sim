@@ -51,9 +51,12 @@ from ..entity import Entity
 from ..modifiers import Modifier
 from ..policy import (
     Choice,
+    CounterSpec,
     GameState,
     HitContext,
     HitResponse,
+    IncomingAttackContext,
+    InterceptResponse,
     MissContext,
     MissResponse,
 )
@@ -372,6 +375,76 @@ LEVELS: dict[int, dict] = {
         "bless": True,                          # concentrate on Bless each combat
         "shield_of_faith": True,                # War God's Blessing each combat
     },
+    14: {
+        # Fighter-07 (Gladiator): Flourish Parry + Flourish Counter.  No ASI/PB
+        # change → attack/damage IDENTICAL to L13 (PB 5 + CHA 5).  Enemy AC stays
+        # 17 (→18 at L15).  Everything from L13 carries over (Bless, Shield of
+        # Faith, two-tier Magic Weapon, the incoming-damage loop); the ONLY new
+        # mechanics are the defender-side reaction and its counter.
+        #
+        # Flourish Parry (intercept_event): when an enemy hits us with a melee
+        # attack we may, as a reaction, add CHA(5) to AC against that one attack
+        # — flipping it to a miss iff it hit by 0–4 (we see the roll, Shield-
+        # style, so we only react when it flips).  Free (the reaction is the only
+        # cost).  Its DPR value is INDIRECT: a flipped hit deals no damage and
+        # forces no concentration check → higher Bless uptime (guide: ~82% → 85%)
+        # → marginally better hit rate.
+        #
+        # Flourish Counter: on a parry-flip we may make a free weapon attack at
+        # the attacker carrying Brutality::bleed (sap mastery + CHA(5) flat
+        # damage) WITHOUT spending a brutality charge — direct extra DPR.  Free
+        # 1/LR, then by spending Second Wind charges.  EV-MAX MODELING DECISION:
+        # in the threshold-HP sim healing is free (HP never gates anything), so
+        # we make ALL Second Winds available for counters rather than reserving
+        # ~2–3 for healing as the guide does — flourish_counter = 6/day (1 free +
+        # 5 Second Wind, PoH-boosted).  This is non-binding anyway (parry-flip
+        # opportunities ≈ 4/day < 6), so in practice we counter EVERY flip.  May
+        # read slightly above the 37.96 target vs the guide's reserved ~3 — that
+        # is the deliberate full-EV-max choice, not a modeling error.
+        #
+        # Reaction model: the parry is gated once-per-round inside the policy
+        # (decoupled from the once-per-combat AoO, per the guide's explicit "in
+        # addition to … no other demands on our reaction" assumption).  No
+        # engine reaction-economy / TurnEndEvent — see PROGRESS Open threads.
+        "weapon": "longsword",
+        "attack_bonus": 10,         # PB 5 + CHA 5 (unchanged from L13)
+        "damage_dice": (1, 8),
+        "damage_bonus": 7,          # CHA 5 + dueling 2 (unchanged)
+        "weapon_mastery": "sap",
+        "enemy_ac": 17,             # unchanged (→18 at L15)
+        "char_hp": 102,             # build guide: 102.5 (Aid +5 is HP-only)
+        "target_dpr": 37.96,
+        "cha_mod": 5,               # Flourish Parry AC bonus & bleed flat damage
+        "flourish_parry": True,
+        "extra_base_stats": {
+            "con_save": 4,          # PB 5 + CON −1
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF)
+        },
+        "enemy_attack": {
+            "attack_bonus": 11,
+            "damage": 28,
+            "n_attacks": 3,
+            "char_target_prob": 0.40,
+        },
+        "resources": {
+            "war_priest": (3, "full"),
+            "channel_divinity": (3, 1),
+            "spell_slot_3": (3, 0),
+            "spell_slot_2": (3, 0),
+            "spell_slot_1": (4, 0),
+            "pact_magic_slot": (1, "full"),
+            "free_cast": (1, 0),
+            "action_surge": (1, "full"),
+            "brutality": (5, "full"),
+            # Flourish Counter budget: 1 free + 5 Second Wind (PoH-boosted), all
+            # available for counters (threshold HP → healing is free).  LR pool.
+            "flourish_counter": (6, 0),
+        },
+        "magic_weapon_casts_per_day": 1,        # +1 cast (one L2 slot)
+        "magic_weapon_plus2_casts_per_day": 3,  # +2 casts (three L3 slots)
+        "bless": True,
+        "shield_of_faith": True,
+    },
 }
 
 # Phase A is exact-match; later phases are soft (±10%).  Recorded here so the
@@ -478,8 +551,14 @@ class WarAngelPolicy:
         self._rounds_per_combat = rounds_per_combat
         # True Strike's bonus dice (empty before level 5).
         self._true_strike_dice = list(LEVELS[level].get("true_strike_dice", []))
+        # Flourish Parry / Counter (L14+): the AC bonus & bleed flat damage = CHA mod.
+        self._flourish_parry: bool = bool(LEVELS[level].get("flourish_parry", False))
+        self._cha_mod: int = LEVELS[level].get("cha_mod", 0)
         # Per-combat state, (re)initialised by on_combat_start.
         self._aoo_round: int = 1
+        # Last round we used Flourish Parry — the once-per-round reaction gate.
+        # Reset per combat (round numbers restart at 1 each combat).
+        self._last_parry_round: int = -1
         # Per-turn state, reset at the start of each decide() call.
         self._bluffed_this_turn: bool = False
 
@@ -494,6 +573,9 @@ class WarAngelPolicy:
         a uniformly random round in [1, rounds_per_combat] and emit it that round.
         """
         self._aoo_round = rng.roll_one(self._rounds_per_combat)
+        # Reset the once-per-round Flourish Parry gate; round numbers restart at
+        # 1 each combat, so a stale value would mis-gate the new combat.
+        self._last_parry_round = -1
 
     # -- decision point ---------------------------------------------------
 
@@ -712,6 +794,55 @@ class WarAngelPolicy:
             if resources.get(name, 0) >= 1:
                 return name
         return None
+
+    # -- in-flight interception: Flourish Parry + Flourish Counter (L14+) --
+
+    def on_incoming_hit(self, ctx: IncomingAttackContext) -> "InterceptResponse | None":
+        """Flourish Parry (intercept_event) + Flourish Counter (L14+).
+
+        Flourish Parry: when an enemy melee attack HITS us, we may react to add
+        CHA(5) to AC against that one attack.  We see the roll first (Shield-
+        style), so we react ONLY when +CHA would actually flip the hit to a miss
+        — i.e. when it hit by less than CHA (`ctx.hit_margin < cha_mod`).  Parry
+        is free; its DPR value is indirect (a flipped hit forces no concentration
+        check → higher Bless uptime).  Gated once per round (the policy is the
+        reaction economy here — decoupled from the AoO per the guide).
+
+        Flourish Counter: on a flip, if a flourish_counter charge remains, make a
+        free bleed counter (sap mastery + CHA flat damage, no brutality charge)
+        against the attacker.  We counter every flip while the budget lasts (full
+        EV-max — see the L14 data note); the budget is non-binding in practice.
+        """
+        if not self._flourish_parry:
+            return None
+        # Once-per-round reaction gate.
+        if self._last_parry_round == ctx.round_number:
+            return None
+        # Only react when +CHA AC actually flips the hit to a miss (we see the
+        # roll).  hit_margin >= 0 here; flip iff cha_mod > hit_margin.
+        if self._cha_mod <= ctx.hit_margin:
+            return None
+
+        # Commit the parry for this round (free — no engine resource).
+        self._last_parry_round = ctx.round_number
+
+        # Flourish Counter iff a charge remains.
+        counter = None
+        resource_cost: dict[str, int] = {}
+        if ctx.resources.get("flourish_counter", 0) >= 1:
+            resource_cost["flourish_counter"] = 1
+            counter = CounterSpec(
+                target=ctx.attacker,
+                weapon_stat="attack_bonus",
+                masteries=["sap"],              # bleed adds sap mastery
+                extra_flat_damage=self._cha_mod,  # bleed's +CHA mod
+            )
+
+        return InterceptResponse(
+            ac_bonus=self._cha_mod,
+            resource_cost=resource_cost,
+            counter=counter,
+        )
 
 
 # ---------------------------------------------------------------------------

@@ -122,6 +122,9 @@ class Choice:
     extra_masteries: list[str] = field(default_factory=list)
     mastery_override: "str | None" = None
     extra_damage_dice: list[tuple[int, int]] = field(default_factory=list)
+    # Flat damage added to this attack on hit beyond the weapon's damage_bonus,
+    # e.g. Brutality::bleed's +CHA mod.  Threaded to the AttackRollEvent.
+    extra_flat_damage: int = 0
 
 
 # ---------------------------------------------------------------------------
@@ -235,6 +238,89 @@ class HitResponse:
 
 
 # ---------------------------------------------------------------------------
+# In-flight interception: a DEFENDER reacting to an incoming hit (intercept_event)
+# ---------------------------------------------------------------------------
+# Design §4 #15 (intercept_event): a reaction that reaches into an in-flight
+# incoming attack and alters it — change AC after seeing the roll (Shield,
+# Defensive Duelist, Flourish Parry), force a miss, etc.  Unlike on_miss/on_hit
+# (which consult the ATTACKER's policy), this consults the DEFENDER's policy: the
+# scheduler offers it to the target of a hit BEFORE damage resolves.
+
+@dataclass(frozen=True)
+class IncomingAttackContext:
+    """Read-only context handed to the DEFENDER's Policy.on_incoming_hit when an
+    attack has hit them, BEFORE the DamageEvent is built.  The defender has seen
+    the roll (Shield-spell-style) and may spend a reaction/resource to raise AC.
+
+    Fields
+    ------
+    defender / attacker:
+        The entity that was hit (and reacts) and the entity that hit it.
+    hit_margin:
+        total_roll - target_ac (>= 0, since this fires only on a hit).  A +N AC
+        bump flips the hit to a miss iff N > hit_margin.
+    cost:
+        The action-economy tag of the INCOMING attack ("action"/"none"/...).
+        Flourish Parry only triggers on melee attacks; our only attacker is
+        melee, so the policy treats every incoming hit as meleeable.
+    resources:
+        Flat {name: current} view of the DEFENDER's persistent resources.
+    round_number:
+        Current combat round (1-based) — the policy self-gates the once-per-round
+        reaction by comparing this to the last round it parried.
+    """
+    defender: "Entity"
+    attacker: "Entity"
+    hit_margin: int
+    cost: str
+    resources: dict[str, int]
+    round_number: int
+
+
+@dataclass(frozen=True)
+class CounterSpec:
+    """A follow-up attack the defender makes AS PART OF the same reaction (e.g.
+    Flourish Counter).  Built by the policy; the scheduler turns it into an
+    AttackRollEvent with policy_riders=False (so it carries its own bleed and
+    does NOT spawn Wrathful Smite / bluff).
+
+    Fields
+    ------
+    target:
+        Whom to counter — normally the attacker (ctx.attacker).
+    weapon_stat:
+        Attack-bonus stat key (default "attack_bonus").
+    masteries:
+        Mastery properties applied on the counter's hit, e.g. ["sap"] (bleed).
+    extra_flat_damage:
+        Flat bonus damage on the counter's hit, e.g. +CHA mod (bleed).
+    """
+    target: "Entity"
+    weapon_stat: str = "attack_bonus"
+    masteries: list[str] = field(default_factory=list)
+    extra_flat_damage: int = 0
+
+
+@dataclass(frozen=True)
+class InterceptResponse:
+    """The defender's answer to an IncomingAttackContext: spend `resource_cost`
+    to add `ac_bonus` to AC against this one attack (potentially flipping it to a
+    miss), and optionally make a `counter` attack.  Return None to decline.
+
+    The scheduler validates affordability against the DEFENDER's resources,
+    consumes them, applies the AC bump in resolve_attack_roll, and — if the bump
+    flips the hit to a miss and a counter is present — enqueues the counter.
+
+    The reaction itself is NOT modeled as an engine resource here: the policy
+    self-gates it (once per round), decoupled from the opportunity-attack
+    reaction per the build guide's explicit assumption.
+    """
+    ac_bonus: int
+    resource_cost: dict[str, int] = field(default_factory=dict)
+    counter: "CounterSpec | None" = None
+
+
+# ---------------------------------------------------------------------------
 # Policy protocol
 # ---------------------------------------------------------------------------
 
@@ -279,6 +365,15 @@ class Policy(Protocol):
     # damage dice to this hit (Wrathful Smite / Divine Smite).  Return a
     # HitResponse to spend, or None to decline.  Also a commit point.
     def on_hit(self, ctx: HitContext) -> "HitResponse | None":
+        ...
+
+    # Optional in-flight interception (intercept_event).  The scheduler calls it
+    # (if defined) on the DEFENDER's policy when an attack HITS this entity,
+    # BEFORE the DamageEvent is built, so the defender may spend a reaction/
+    # resource to raise AC (Shield, Flourish Parry) and possibly counter.  Return
+    # an InterceptResponse to react, or None to decline.  A commit point: the
+    # policy may update its own bookkeeping (e.g. the once-per-round parry gate).
+    def on_incoming_hit(self, ctx: IncomingAttackContext) -> "InterceptResponse | None":
         ...
 
 

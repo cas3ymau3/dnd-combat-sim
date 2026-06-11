@@ -173,10 +173,22 @@ class Scheduler:
             elif isinstance(event, AttackRollEvent):
                 handlers = self._registry.get("attack_roll", [])
                 seq_counter = seq + 1
-                decider = self._make_miss_decider(event)
-                hit_decider = self._make_hit_decider(event)
+                # The ACTING entity's post-roll riders (Guided Strike / Wrathful
+                # Smite / bluff) are suppressed for rider attacks (policy_riders
+                # =False) such as the Flourish Counter, which carries its own
+                # bleed and must not spawn further riders.
+                if event.policy_riders:
+                    decider = self._make_miss_decider(event)
+                    hit_decider = self._make_hit_decider(event)
+                else:
+                    decider = None
+                    hit_decider = None
+                # The DEFENDER's in-flight interceptor (Flourish Parry / Shield)
+                # is always offered — it consults the TARGET's policy, orthogonal
+                # to the attacker's riders.
+                intercept_decider = self._make_intercept_decider(event)
                 for handler in handlers:
-                    seq_counter = handler(event, self.rng, self.queue, seq_counter, decider, hit_decider)  # type: ignore[call-arg]
+                    seq_counter = handler(event, self.rng, self.queue, seq_counter, decider, hit_decider, intercept_decider)  # type: ignore[call-arg]
 
             elif isinstance(event, RoundEndEvent):
                 log.debug("RoundEndEvent fired, round=%d", round_)
@@ -300,6 +312,55 @@ class Scheduler:
 
         return hit_decider
 
+    def _make_intercept_decider(self, event: "AttackRollEvent"):
+        """Return a `(hit_margin) -> (ac_bonus, counter_spec | None)` callable for
+        the TARGET's in-flight reaction (intercept_event — Flourish Parry, Shield).
+
+        Mirror of the miss/hit deciders, but it consults the DEFENDER's policy
+        (event.target), not the attacker's.  The closure calls
+        policy.on_incoming_hit; validates and consumes the DEFENDER's resources;
+        returns the AC bonus to apply and an optional counter spec.  resolve_
+        attack_roll applies the bonus (flipping the hit to a miss if it exceeds
+        the margin) and enqueues the counter on a flip.  None = no interceptor.
+        """
+        from .policy import IncomingAttackContext
+
+        target = event.target
+        if target is None:
+            return None
+        policy = self.policies.get(target.id)
+        on_incoming = getattr(policy, "on_incoming_hit", None) if policy is not None else None
+        if not callable(on_incoming):
+            return None
+
+        attacker = event.actor
+        round_ = event.tick[0]
+        cost = event.cost
+
+        def intercept_decider(hit_margin: int):
+            ctx = IncomingAttackContext(
+                defender=target,
+                attacker=attacker,
+                hit_margin=hit_margin,
+                cost=cost,
+                resources=target.resources.as_dict(),
+                round_number=round_,
+            )
+            response = on_incoming(ctx)
+            if response is None:
+                return 0, None
+            # Validate affordability against the DEFENDER's resources, then
+            # consume.  (The reaction itself is the policy's once-per-round gate,
+            # not an engine resource — see InterceptResponse.)
+            if any(target.resources.available(n) < a
+                   for n, a in response.resource_cost.items()):
+                return 0, None
+            for n, a in response.resource_cost.items():
+                target.resources.consume(n, a)
+            return response.ac_bonus, response.counter
+
+        return intercept_decider
+
     # ------------------------------------------------------------------
     # Decision point: TurnStartEvent handling
     # ------------------------------------------------------------------
@@ -411,6 +472,7 @@ class Scheduler:
                     cost=cost,
                     masteries=masteries,
                     extra_damage_dice=list(choice.extra_damage_dice),
+                    extra_flat_damage=choice.extra_flat_damage,
                 )
                 self.queue.push(atk_event)
                 seq += 1

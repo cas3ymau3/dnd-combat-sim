@@ -128,6 +128,7 @@ def resolve_attack_roll(
     next_sequence: int,
     decider: "Callable[[int], int] | None" = None,
     hit_decider: "Callable[[bool], tuple[list[tuple[int, int]], list[str]]] | None" = None,
+    intercept_decider: "Callable[[int], tuple[int, object]] | None" = None,
 ) -> int:
     """Resolve one attack roll.  Returns the next available sequence number.
 
@@ -160,6 +161,15 @@ def resolve_attack_roll(
         closure already validated/consumed the resource + action economy).  The
         returned dice double on a crit like any others.  None = no on-hit
         decision available.
+    intercept_decider:
+        Optional callable `(hit_margin) -> (ac_bonus, counter_spec | None)` for
+        the DEFENDER's in-flight reaction (intercept_event — e.g. Flourish Parry
+        / Shield).  Called on a confirmed hit, AFTER any Guided-Strike rescue and
+        BEFORE the attacker's on-hit rider.  `hit_margin = total_roll - AC`
+        (>= 0).  If the returned `ac_bonus` exceeds it, the hit flips to a miss
+        (no damage, no concentration check); if a `counter_spec` accompanies a
+        flip, a counter attack is enqueued.  The scheduler-side closure already
+        validated/consumed the defender's resources.  None = no interceptor.
     """
     actor = event.actor
     target = event.target
@@ -225,6 +235,35 @@ def resolve_attack_roll(
                 bonus, total_roll, target_ac,
             )
 
+    # In-flight interception (intercept_event): on a confirmed hit, let the
+    # DEFENDER react (Flourish Parry / Shield) — raise AC after seeing the roll
+    # and potentially flip the hit to a miss.  Runs AFTER any Guided-Strike
+    # rescue (a rescued hit is still parryable) and BEFORE the attacker's on-hit
+    # rider / masteries / damage (a parried hit deals nothing, forces no
+    # concentration check).  On a flip with a counter, enqueue the counter.
+    if hit and intercept_decider is not None:
+        hit_margin = int(total_roll) - int(target_ac)
+        ac_bonus, counter_spec = intercept_decider(hit_margin)
+        if ac_bonus > 0 and total_roll < int(target_ac) + ac_bonus:
+            hit = False
+            log.info(
+                "  defender +%d AC -> %d vs roll %d  [INTERCEPTED -> MISS]",
+                ac_bonus, int(target_ac) + ac_bonus, total_roll,
+            )
+            if counter_spec is not None and target is not None:
+                counter_event = AttackRollEvent(
+                    tick=make_tick(round_, turn_idx, next_sequence),
+                    actor=target,                       # the defender counters
+                    target=counter_spec.target,         # ...the attacker
+                    weapon_stat=counter_spec.weapon_stat,
+                    cost="reaction",
+                    masteries=list(counter_spec.masteries),
+                    extra_flat_damage=counter_spec.extra_flat_damage,
+                    policy_riders=False,                # carries its own bleed
+                )
+                queue.push(counter_event)
+                next_sequence += 1
+
     # On-hit decision point: fires BEFORE apply_masteries_on_hit so any extra
     # masteries returned by the policy (e.g. Brutality::bluff adding vex) are
     # folded into event.masteries and applied on this same hit.
@@ -251,6 +290,7 @@ def resolve_attack_roll(
             damage_dice=damage_dice,
             damage_bonus=damage_bonus,
             extra_damage_dice=extra_dice,
+            extra_flat_damage=event.extra_flat_damage,
             cost=event.cost,
         )
         queue.push(damage_event)
@@ -316,8 +356,9 @@ def resolve_damage(
     # Phase 4: sum (weapon dice + extra dice)
     subtotal = sum(rolls) + sum(extra_rolls)
 
-    # Phase 5: flat bonus
-    total = subtotal + event.damage_bonus
+    # Phase 5: flat bonuses (weapon damage_bonus + any extra flat damage, e.g.
+    # Brutality::bleed's +CHA mod; neither scales on a crit).
+    total = subtotal + event.damage_bonus + event.extra_flat_damage
 
     log.info(
         "%s deals %d damage to %s  [%dd%d%s rolls=%s%s bonus=%d%s]",
@@ -329,8 +370,8 @@ def resolve_damage(
         " (CRIT)" if event.is_crit else "",
         rolls,
         f" extra={extra_rolls}" if extra_rolls else "",
-        event.damage_bonus,
-        f" subtotal={subtotal}" if event.damage_bonus else "",
+        event.damage_bonus + event.extra_flat_damage,
+        f" subtotal={subtotal}" if (event.damage_bonus or event.extra_flat_damage) else "",
     )
 
     if target is not None:

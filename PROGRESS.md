@@ -36,9 +36,9 @@ At the start of every session, before diving into the work:
 
 > **Currently disabled this session (re-enable before exit):** Google Drive
 > (reconnect via app → Settings → Connectors → Customize) and Claude-in-Chrome
-> (re-enable same path). Session milestone: **build + validate War Angel Phase D
-> — ✅ COMPLETE (L11–13 validated, 200 tests green).** Re-enable the two
-> connectors when you wrap up.
+> (re-enable same path). Session milestone: **build + validate War Angel Phase E
+> stage E1 — L14 Flourish Parry/Counter — ✅ COMPLETE (39.543 vs 37.96, +4.2%,
+> 214 tests green).** Re-enable the two connectors when you wrap up.
 
 ---
 
@@ -100,11 +100,12 @@ Engine prerequisites, in the order we built them:
 - ~~Advantage/disadvantage + statuses + weapon mastery (sap/vex)~~ ✓  — `StatusSet`,
   `roll_d20`, sap/vex applied on hit and consumed on the holder's next roll.
 
-### NEXT STEP — War Angel validation COMPLETE through level 13 (Phase D done)
+### NEXT STEP — War Angel validation COMPLETE through level 14 (Phase E stage E1 done)
 
-**Phases A–D all DONE & VALIDATED. Validation stops at L13 as agreed** (L14
-Flourish Parry needs the reaction / `intercept_event` decision point — not built;
-see "Known deferral" below and Open threads). **200 tests green.**
+**Phases A–D done & validated; Phase E stage E1 (L14) DONE & VALIDATED.** The
+`intercept_event` primitive is now built (Flourish Parry), so the L13 deferral is
+lifted. `make_war_angel(15)` is the next-raises level (Resilient DEX). **214 tests
+green.**
 
 | Level | DPR        | Target | Error  | Days |
 |-------|------------|--------|--------|------|
@@ -114,6 +115,50 @@ see "Known deferral" below and Open threads). **200 tests green.**
 | 11    | 33.665     | 33.70  | −0.1%  | 30k  |
 | 12    | 38.074     | 38.11  | −0.1%  | 30k  |
 | 13    | 35.145     | 34.68  | +1.3%  | 30k  |
+| 14    | 39.543     | 37.96  | +4.2%  | 30k  |
+
+**E1 (L14) — DONE & VALIDATED (39.543 vs 37.96, +4.2%, within soft ±10%).** The
+first reaction decision point on the enemy's turn. New engine primitives (all
+backward-compatible — L1–13 DPR unchanged):
+- **`intercept_event` (design §4 #15), AC-bump form** — a new DEFENDER-side
+  decision point. `Policy.on_incoming_hit(ctx) → InterceptResponse | None`
+  (optional hook); scheduler `_make_intercept_decider(event)` looks up the
+  *target's* policy, validates/consumes the *defender's* resources, returns
+  `(ac_bonus, counter_spec | None)`. `resolve_attack_roll` calls it on a hit
+  AFTER any Guided-Strike rescue and BEFORE the attacker's on-hit rider: if
+  `total_roll < AC + ac_bonus` the hit flips to a miss (→ no DamageEvent → no
+  concentration check, automatically). Mirrors the on_miss/on_hit closure
+  pattern. Generalizes to Shield / Defensive Duelist now, and to Uncanny Dodge
+  once a damage-side hook is added in `resolve_damage`.
+- **Flourish Counter** — on a parry-flip, `resolve_attack_roll` enqueues a
+  counter `AttackRollEvent` (actor=defender, target=attacker, `cost="reaction"`,
+  `policy_riders=False`, `masteries=["sap"]`, `extra_flat_damage`=CHA). Reuses
+  normal attack resolution; the counter's damage counts as our DPR.
+- **`extra_flat_damage`** — new field threaded `Choice → AttackRollEvent →
+  DamageEvent`, summed in phase 5 (does NOT scale on a crit). Implements
+  Brutality::bleed's +CHA flat damage.
+- **`policy_riders: bool` on `AttackRollEvent`** (default True) — when False the
+  scheduler passes `decider=None, hit_decider=None`, so a rider attack (the
+  counter) carries its own bleed and never spawns Wrathful Smite / bluff.
+  (on_miss was already gated off reaction-cost attacks via `is_aoo`.)
+
+*Reaction model (locked):* the parry's once-per-round limit is **policy-gated**
+(`WarAngelPolicy._last_parry_round`, reset in `on_combat_start`), **decoupled
+from the once-per-combat AoO** per the guide's explicit "in addition to … no
+other demands on our reaction" assumption. **No `TurnEndEvent` / engine
+reaction-economy was built** — that stays deferred until a reaction-*gating*
+status forces its shape (see Open threads). The "no-smite-on-AoO" gate
+(`cost=="reaction"`) is also unchanged; the counter relies on `policy_riders`,
+not on that gate.
+
+*Validation story (+4.2% overshoot is intentional).* Two user-approved EV-max
+choices push us above the guide's 37.96, both within tolerance and documented:
+(i) **full-EV-max counter budget** — in the threshold-HP model healing is free,
+so ALL 5 Second Winds (+ the free 1/LR) are available for counters
+(`flourish_counter = 6/day`), and we counter on **every** parry-flip (~4/day
+opportunity < 6 budget → non-binding) rather than reserving ~3 as the guide does;
+(ii) the gentler **40% targeting** (vs the guide's 50%) already in play since L13,
+which lifts Bless uptime. No hidden modeling error.
 
 **Phase D was staged:** D1 = L11 (data row) → D2 = L12 (two-tier Magic Weapon,
 content-only) → D3 = L13 sub-staged (D3a = save machinery + Bless as pure
@@ -232,10 +277,11 @@ This is the first concrete character. Two pieces:
   and build-guide numbers are a compass, not ground truth (policy logic differs).
 - Build the simplest level (1) first and climb the ladder.
 
-**Known deferral inside this scope:** Flourish Parry (lvl 14) needs the reaction /
-`intercept_event` decision point, which we have NOT built — fine, validation stops
-at level 13. See "Open threads" for the full deferred list (TurnEndEvent, saves,
-spell-aggressive enemy, weapon slot, light/nick, etc.).
+**~~Known deferral inside this scope: Flourish Parry (lvl 14)~~ — LIFTED.** The
+`intercept_event` decision point is built (Phase E stage E1, L14); validation now
+extends through L14. See "Open threads" for the remaining deferred list
+(TurnEndEvent / enemy reaction-economy, scheduled saves, spell-aggressive enemy,
+weapon slot, light/nick, etc.).
 
 **Agreed build sequence (phased — discussed & locked).** The organizing principle:
 *everything that only affects INCOMING damage is deferred to level 13*, because
@@ -484,6 +530,13 @@ combat policy through two lenses, and reformulate it as needed:
   Both need an explicit `TurnEndEvent` as a symmetric counterpart to `TurnStartEvent`.
   Deferred until the first end-of-turn proc or reaction-gating condition is modeled,
   so its shape is driven by a real case. Not needed for War Angel validation.
+  - **Still deferred after L14 (deliberately).** L14's Flourish Parry is the first
+    reaction on the *enemy's* turn, but it did NOT force a `TurnEndEvent` or an
+    engine reaction-economy: the parry's once-per-round limit is **policy-gated**
+    (`WarAngelPolicy._last_parry_round`), decoupled from the AoO per the guide. A
+    real per-entity reaction resource + `TurnEndEvent` is still only forced by a
+    reaction-*gating status* (stunned) or an end-of-turn proc — neither is in the
+    War Angel arc. Revisit then.
 
 - **Concentration — BUILT (Phase D), with a simplification.** Concentration lives
   on `Entity.concentration` (a dedicated field, since it is global-per-entity and
@@ -542,6 +595,12 @@ combat policy through two lenses, and reformulate it as needed:
     should enforce "no bonus action off-turn" — at which point this policy-level gate
     should be revisited and likely replaced by an engine-level rule. Do NOT treat the
     current `cost == "reaction"` check as permanent.
+  - **L14 update:** the Flourish Counter is a reaction-cost attack that must NOT
+    spawn riders, but rather than lean on this `cost=="reaction"` gate (which the
+    AoO still relies on for bluff/smite suppression) it uses the new
+    `AttackRollEvent.policy_riders=False` flag — the scheduler skips building the
+    actor's on_miss/on_hit deciders entirely for that attack. The two mechanisms
+    are complementary; the gate is still in place and still non-permanent.
 
 - **Spell-aggressive enemy archetype** — enemies that target saving throws rather
   than making attack rolls. Required for full defensive assessment (not just AC,
