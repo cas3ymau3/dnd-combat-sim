@@ -71,6 +71,13 @@ MAGIC_WEAPON_PLUS2 = 2
 # Prayer of Healing needs a 10-minute rest window to cast.
 POH_MIN_INTERVAL_MIN = 10
 
+# Bless (L13): concentration, +1d4 to attack rolls AND saving throws (modeled on
+# attack_bonus + con_save; only those two affect DPR).  A rolled-dice modifier.
+BLESS_DICE = (1, 4)
+# Shield of Faith via War God's Blessing (L13): non-concentration +2 AC, cast as
+# a bonus action at combat start with a Channel Divinity charge.
+SHIELD_OF_FAITH_AC = 2
+
 
 # ---------------------------------------------------------------------------
 # Per-level build data
@@ -307,6 +314,64 @@ LEVELS: dict[int, dict] = {
         "magic_weapon_casts_per_day": 2,        # +1 casts (L2 slots)
         "magic_weapon_plus2_casts_per_day": 2,  # +2 casts (L3 slots)
     },
+    13: {
+        # Cleric-06: the defensive bundle. PB → +5 (attack +10). We now
+        # concentrate on BLESS (+1d4 to attack rolls & saves) and open every
+        # combat by casting Bless (action) + Shield of Faith (BA via War God's
+        # Blessing, +2 AC, 1 Channel Divinity) — sacrificing round-1 attacks
+        # (Action Surge attacks on round 1 are still allowed, per design).
+        #
+        # Magic Weapon: 3× +2 (L3 slots) + 1× +1 (one L2 slot) → ~100% uptime,
+        # 75% at +2.  The freed L2 slot is Aid (HP only, DPR-irrelevant).
+        #
+        # Slot competition: Bless is cast 4×/day (one per combat) from cleric L1
+        # slots, draining the pool Wrathful Smite also draws on → smite drops to
+        # the handful of L1-equivalent slots left (free_cast + pact recoveries).
+        # Channel Divinity (5/day: 3 base +1 SR +1 PoH) is reserved 1/combat for
+        # Shield of Faith → ~1/day left for Guided Strike.
+        #
+        # D3a scope: Bless + Shield of Faith applied as combat-start buffs with
+        # the enemy NOT yet attacking → 100% Bless uptime. This isolates the
+        # offense math; it reads HIGH vs the 34.68 target (which bakes in ~82%
+        # uptime from concentration loss). D3b adds the incoming-damage loop.
+        "weapon": "longsword",
+        "attack_bonus": 10,         # PB 5 + CHA 5
+        "damage_dice": (1, 8),
+        "damage_bonus": 7,          # CHA 5 + dueling 2
+        "weapon_mastery": "sap",
+        "enemy_ac": 17,             # unchanged (→18 at L15)
+        "char_hp": 95,              # build guide: 95 (Aid +5 is HP-only)
+        "target_dpr": 34.68,
+        "extra_base_stats": {
+            "con_save": 4,          # PB 5 + CON −1 (proficient via Fighter-01)
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF buff)
+        },
+        # Enemy profile for the incoming-damage loop (D3b): a CR-appropriate
+        # attacker so concentration on Bless can break.  Per the build guide:
+        # +11 to hit, 3 attacks, 28 damage on hit, 40% chance to target us per
+        # attack (party of 4 — guide uses 50%, we use a more conservative 40%).
+        "enemy_attack": {
+            "attack_bonus": 11,
+            "damage": 28,
+            "n_attacks": 3,
+            "char_target_prob": 0.40,
+        },
+        "resources": {
+            "war_priest": (3, "full"),
+            "channel_divinity": (3, 1),         # 3 base, +1 SR → 5/LR with PoH
+            "spell_slot_3": (3, 0),             # 3× +2 Magic Weapon
+            "spell_slot_2": (3, 0),             # 1 PoH + 1 (+1) Magic Weapon + 1 Aid
+            "spell_slot_1": (4, 0),             # cleric L1: Bless ×4/day + smites
+            "pact_magic_slot": (1, "full"),
+            "free_cast": (1, 0),
+            "action_surge": (1, "full"),
+            "brutality": (5, "full"),
+        },
+        "magic_weapon_casts_per_day": 1,        # +1 cast (one L2 slot)
+        "magic_weapon_plus2_casts_per_day": 3,  # +2 casts (three L3 slots)
+        "bless": True,                          # concentrate on Bless each combat
+        "shield_of_faith": True,                # War God's Blessing each combat
+    },
 }
 
 # Phase A is exact-match; later phases are soft (±10%).  Recorded here so the
@@ -343,21 +408,34 @@ def make_war_angel(level: int) -> Entity:
             "damage_dice": data["damage_dice"],
             "damage_bonus": data["damage_bonus"],
             "weapon_mastery": data["weapon_mastery"],
+            # Save bonuses etc. that only some levels need (e.g. con_save for
+            # concentration checks at L13).
+            **data.get("extra_base_stats", {}),
         },
         resources=_make_resources(data),
     )
 
 
 def make_training_dummy(level: int) -> Entity:
-    """Build the AC-only target for the given level.
+    """Build the target for the given level.
 
     HP is effectively infinite: in the threshold model the dummy never gates
-    turns, and it has no policy so it never acts.  We only ever read its AC.
+    turns.  Through L12 it has no policy and never acts — we only read its AC.
+    From L13 it also carries an attack profile (see the level's "enemy_attack")
+    so it can strike the character and force concentration checks; the attack is
+    flat damage (damage_dice (0, …) → no roll, just the flat bonus).
     """
+    data = LEVELS[level]
+    base_stats: dict = {"ac": data["enemy_ac"]}
+    ea = data.get("enemy_attack")
+    if ea:
+        base_stats["attack_bonus"] = ea["attack_bonus"]
+        base_stats["damage_dice"] = (0, 6)      # flat-only (no dice rolled)
+        base_stats["damage_bonus"] = ea["damage"]
     return Entity(
-        name=f"Dummy-AC{LEVELS[level]['enemy_ac']}",
+        name=f"Dummy-AC{data['enemy_ac']}",
         hp=10**9,
-        base_stats={"ac": LEVELS[level]["enemy_ac"]},
+        base_stats=base_stats,
     )
 
 
@@ -424,6 +502,14 @@ class WarAngelPolicy:
         self._bluffed_this_turn = False
         choices: list[Choice] = []
 
+        # L13 round 1: the action goes to casting Bless and the bonus action to
+        # Shield of Faith (War God's Blessing) — both applied as combat-start
+        # buffs in the daily plan, so the policy just suppresses the normal
+        # action attack and the War Priest BA this round.  Action Surge attacks
+        # are still allowed (design decision), as is the AoO; Wrathful Smite is
+        # suppressed in on_hit (the BA is spent on Shield of Faith).
+        bless_turn = self.level >= 13 and snapshot.round_number == 1
+
         # Setup attacks are emitted BEFORE True Strike so any bluff-applied vex
         # (L8+) is consumed by the TS rather than expiring unused.
 
@@ -452,8 +538,9 @@ class WarAngelPolicy:
                 ))
 
         # War Priest BA swing: use whenever a charge remains, EXCEPT on round 1
-        # at L8+ when the surge is taken (BA stays free for smite on TS hit).
-        skip_wp = self.level >= 8 and has_surge
+        # at L8+ when the surge is taken (BA stays free for smite on TS hit), or
+        # on an L13 bless turn (BA spent on Shield of Faith).
+        skip_wp = (self.level >= 8 and has_surge) or bless_turn
         if not skip_wp and snapshot.resources.get("war_priest", 0) >= 1:
             choices.append(Choice(
                 action_type="attack",
@@ -468,7 +555,8 @@ class WarAngelPolicy:
         # Levels 5–9: True Strike carries a +1d6 radiant rider.
         # Level 10+: Extra Attack replaces True Strike — emit 2 plain weapon attacks.
         #   The extra_damage_dice list is empty at L10+ (no true_strike_dice in data).
-        if snapshot.resources.get("action", 0) >= 1:
+        # On an L13 bless turn the action is spent casting Bless → no attack.
+        if not bless_turn and snapshot.resources.get("action", 0) >= 1:
             choices.append(Choice(
                 action_type="attack",
                 cost="action",
@@ -575,8 +663,13 @@ class WarAngelPolicy:
             and ctx.resources.get("brutality", 0) >= 1
             and not self._bluffed_this_turn
         )
+        # Suppress Wrathful Smite on an L13 bless turn: the bonus action is spent
+        # on Shield of Faith (applied as a combat-start buff), so although the
+        # scheduler's turn economy still shows the BA free, it is not ours to use.
+        bless_turn = self.level >= 13 and ctx.round_number == 1
         want_smite = (
             self.level >= 6
+            and not bless_turn
             and ctx.cost != "reaction"
             and ctx.bonus_action_available
             and self._next_smite_slot(ctx.resources) is not None
@@ -589,10 +682,15 @@ class WarAngelPolicy:
         extra_masteries: list[str] = []
         extra_dice: list[tuple[int, int]] = []
         action_cost: "str | None" = None
+        self_status: "str | None" = None
 
         if want_bluff:
             resource_cost["brutality"] = 1
             extra_masteries = ["vex"]
+            # Bluff's second half (unlocked at L13 with concentration): advantage
+            # on our next saving throw before our next turn — i.e. the next
+            # concentration check.  Modeled as a self-status the CON save reads.
+            self_status = "advantage_next_save"
             self._bluffed_this_turn = True  # commit: prevent a second bluff this turn
 
         if want_smite:
@@ -606,6 +704,7 @@ class WarAngelPolicy:
             extra_damage_dice=extra_dice,
             extra_masteries=extra_masteries,
             action_cost=action_cost,
+            self_status_on_hit=self_status,
         )
 
     def _next_smite_slot(self, resources: dict) -> "str | None":
@@ -649,6 +748,12 @@ class WarAngelDailyPlan:
         self._mw_plus1_used: int = 0
         self._mw_plus2_used: int = 0
         self._poh_cast: bool = False
+        # Combat-clock buffs cast at the start of every combat (L13): Bless
+        # (concentration, +1d4 attack/saves, from a cleric L1 slot) and Shield
+        # of Faith (War God's Blessing, +2 AC, non-concentration, 1 Channel
+        # Divinity).  Greedy: cast each whenever its resource is available.
+        self._cast_bless: bool = bool(data.get("bless", False))
+        self._cast_shield_of_faith: bool = bool(data.get("shield_of_faith", False))
 
     # -- per-day reset ----------------------------------------------------
 
@@ -694,6 +799,14 @@ class WarAngelDailyPlan:
         # combat (0 = inactive → no modifier).
         self._sync_magic_weapon(self._mw.strongest_at(minute))
 
+        # Combat-clock buffs (L13): Bless (concentration) + Shield of Faith.
+        # Applied AFTER the per-combat status clear (which runs inside
+        # _run_combat, after this hook) is irrelevant for these because Bless
+        # rides the modifier stack and concentration lives in a dedicated
+        # Entity field — neither is touched by StatusSet.clear().
+        self._sync_bless()
+        self._sync_shield_of_faith()
+
     def _sync_magic_weapon(self, bonus: int) -> None:
         self.character.remove_modifier("magic_weapon")
         if bonus > 0:
@@ -701,6 +814,43 @@ class WarAngelDailyPlan:
                 Modifier("attack_bonus", bonus, "magic_weapon"))
             self.character.add_modifier(
                 Modifier("damage_bonus", bonus, "magic_weapon"))
+
+    def _sync_bless(self) -> None:
+        """Re-cast Bless for this combat if a cleric L1 slot remains.
+
+        Bless is a rolled-dice modifier (+1d4) on both attack rolls and CON
+        saves (the only stats that affect DPR), under source "bless".  We remove
+        the prior combat's copy and re-add if a slot is available — greedy and
+        rest-agnostic.  Concentration is recorded on the Entity so the D3b
+        incoming-damage loop knows what to drop on a failed save.
+        """
+        if not self._cast_bless:
+            return
+        self.character.remove_modifier("bless")
+        self.character.concentration = None
+        if self.character.resources.available("spell_slot_1") >= 1:
+            self.character.resources.consume("spell_slot_1")
+            self.character.add_modifier(
+                Modifier("attack_bonus", 0, "bless", dice=BLESS_DICE))
+            self.character.add_modifier(
+                Modifier("con_save", 0, "bless", dice=BLESS_DICE))
+            self.character.concentration = "bless"
+
+    def _sync_shield_of_faith(self) -> None:
+        """Re-cast Shield of Faith (War God's Blessing) for this combat if a
+        Channel Divinity charge remains: +2 AC, non-concentration, whole combat.
+
+        Spending CD here (greedily, once per combat) reserves it ahead of Guided
+        Strike (which draws the same pool via on_miss) → ~1 CD/day left for
+        Guided Strike, matching the build guide.
+        """
+        if not self._cast_shield_of_faith:
+            return
+        self.character.remove_modifier("shield_of_faith")
+        if self.character.resources.available("channel_divinity") >= 1:
+            self.character.resources.consume("channel_divinity")
+            self.character.add_modifier(
+                Modifier("ac", SHIELD_OF_FAITH_AC, "shield_of_faith"))
 
     # -- Prayer of Healing (between_combats) -----------------------------
 
@@ -723,19 +873,89 @@ class WarAngelDailyPlan:
 
 
 # ---------------------------------------------------------------------------
+# Enemy policy — strikes the character to force concentration checks (L13+)
+# ---------------------------------------------------------------------------
+
+class WarAngelEnemyPolicy:
+    """Enemy that strikes the War Angel so concentration on Bless can break.
+
+    Makes `n_attacks` attacks per turn; each independently targets the character
+    with probability `char_target_prob` (else a party member — not modeled, so a
+    no-op for our metrics).  Targeting is PRE-ROLLED per (round, attack slot) at
+    on_combat_start so decide() stays dice-free, mirroring the character policy's
+    AoO pre-roll.
+
+    Sap disadvantage on the enemy's first attack each turn is applied by the
+    character's longsword via the existing `sapped` status, read in
+    resolve_attack_roll — nothing to do here.  The enemy makes no decisions
+    beyond targeting (flat damage, no riders), so this stays minimal.
+    """
+
+    def __init__(
+        self,
+        target: Entity,
+        n_attacks: int = 3,
+        char_target_prob: float = 0.40,
+        rounds_per_combat: int = 4,
+    ) -> None:
+        self._target = target
+        self._n_attacks = n_attacks
+        self._p_pct = int(round(char_target_prob * 100))
+        self._rounds = rounds_per_combat
+        self._targets_char: dict[int, list[bool]] = {}
+
+    def on_combat_start(self, combat_index: int, rng: "SeededRNG") -> None:
+        # Pre-roll, per round and attack slot, whether it lands on the character.
+        self._targets_char = {
+            r: [rng.roll_one(100) <= self._p_pct for _ in range(self._n_attacks)]
+            for r in range(1, self._rounds + 1)
+        }
+
+    def decide(self, snapshot: GameState) -> list[Choice]:
+        if snapshot.resources.get("action", 0) < 1:
+            return []
+        choices: list[Choice] = []
+        for targets_char in self._targets_char.get(snapshot.round_number, []):
+            if not targets_char:
+                continue  # party-aimed: unmodeled → no-op for our metrics
+            # First attack at the character spends the action; the rest are
+            # free multiattack swings (cost "none").
+            choices.append(Choice(
+                action_type="attack",
+                cost="action" if not choices else "none",
+                target=self._target,
+                weapon_stat="attack_bonus",
+            ))
+        return choices
+
+
+# ---------------------------------------------------------------------------
 # Full day-runner assembly (used by the validation harness)
 # ---------------------------------------------------------------------------
 
 def make_day_runner(level: int, rng: "SeededRNG", rounds_per_combat: int = 4):
     """Assemble (DayRunner, character, dummy) for the given level.
 
-    Wires the policy plus, for level 5+, the daily-plan hooks (Magic Weapon /
-    Prayer of Healing).  Keeps the validation harness build-agnostic.
+    Wires the character policy plus, for level 5+, the daily-plan hooks (Magic
+    Weapon / Prayer of Healing).  From the level where the enemy carries an
+    attack profile (L13), it also gets a policy so it strikes the character and
+    forces concentration checks.  Keeps the validation harness build-agnostic.
     """
     char = make_war_angel(level)
     dummy = make_training_dummy(level)
     policy = WarAngelPolicy(level=level, target=dummy,
                             rounds_per_combat=rounds_per_combat)
+    policies: dict[int, object] = {char.id: policy}
+
+    # Enemy strikes back once it has an attack profile (L13+).
+    ea = LEVELS[level].get("enemy_attack")
+    if ea:
+        policies[dummy.id] = WarAngelEnemyPolicy(
+            target=char,
+            n_attacks=ea["n_attacks"],
+            char_target_prob=ea["char_target_prob"],
+            rounds_per_combat=rounds_per_combat,
+        )
 
     before_combat = None
     between_combats = None
@@ -747,7 +967,7 @@ def make_day_runner(level: int, rng: "SeededRNG", rounds_per_combat: int = 4):
     runner = DayRunner(
         rng=rng,
         entities=[char, dummy],
-        policies={char.id: policy},
+        policies=policies,
         rounds_per_combat=rounds_per_combat,
         before_combat=before_combat,
         between_combats=between_combats,

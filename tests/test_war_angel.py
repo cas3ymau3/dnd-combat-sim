@@ -44,7 +44,7 @@ def test_factory_stats_level_2_switches_to_sap_longsword():
 
 def test_unimplemented_level_raises():
     with pytest.raises(NotImplementedError):
-        war_angel.make_war_angel(13)
+        war_angel.make_war_angel(14)
 
 
 # ---------------------------------------------------------------------------
@@ -606,4 +606,107 @@ def test_l10_dpr_soft_match():
     import logging
     logging.disable(logging.CRITICAL)
     result = run_level(10, n_days=3000, seed=10)
+    assert abs(result.pct_error) < 10.0, result.summary()
+
+
+# ---------------------------------------------------------------------------
+# Phase D — level 13 (Bless, Shield of Faith, enemy, concentration)
+# ---------------------------------------------------------------------------
+
+def _l13_snapshot(round_number: int, **resource_overrides):
+    from src.policy import GameState
+    dummy = war_angel.make_training_dummy(13)
+    resources = {"action": 1, "bonus_action": 1, "reaction": 1,
+                 "action_surge": 1, "war_priest": 3}
+    resources.update(resource_overrides)
+    return GameState(
+        actor=Entity(name="a", hp=10), enemies=(dummy,), allies=(),
+        round_number=round_number, turn_index=0, tick=(round_number, 0, 0),
+        resources=resources,
+    )
+
+
+def test_l13_factory_char_and_enemy_stats():
+    char = war_angel.make_war_angel(13)
+    assert char.stat("attack_bonus") == 10        # PB 5 + CHA 5
+    assert char.stat("ac") == 18                  # before Shield of Faith
+    assert char.stat("con_save") == 4
+    dummy = war_angel.make_training_dummy(13)
+    assert dummy.stat("attack_bonus") == 11
+    assert dummy.stat("damage_bonus") == 28
+
+
+def test_l13_round1_suppresses_action_and_war_priest_keeps_surge():
+    """Round 1 spends the action on Bless and the BA on Shield of Faith, so no
+    normal action attack and no War Priest BA — but Action Surge attacks remain."""
+    policy = war_angel.WarAngelPolicy(level=13, target=war_angel.make_training_dummy(13))
+    policy.on_combat_start(0, SeededRNG(0))
+    choices = policy.decide(_l13_snapshot(1))
+    assert not any(c.cost == "action" for c in choices)        # no Bless-turn attack
+    assert not any(c.resource_cost and "war_priest" in c.resource_cost for c in choices)
+    surge = [c for c in choices if c.resource_cost and "action_surge" in c.resource_cost]
+    assert len(surge) == 1                                     # surge swing allowed
+    assert sum(1 for c in choices if c.cost == "none"
+               and not c.resource_cost) >= 1                   # its Extra-Attack follow-up
+
+
+def test_l13_round2_is_normal():
+    """From round 2 the bless-turn suppression lifts: action attack + War Priest BA."""
+    policy = war_angel.WarAngelPolicy(level=13, target=war_angel.make_training_dummy(13))
+    policy.on_combat_start(0, SeededRNG(0))
+    choices = policy.decide(_l13_snapshot(2))
+    assert any(c.cost == "action" for c in choices)
+    assert any(c.resource_cost and "war_priest" in c.resource_cost for c in choices)
+
+
+def test_l13_bluff_grants_save_advantage():
+    """Brutality::bluff at L13 sets advantage_next_save on the HitResponse."""
+    policy = war_angel.WarAngelPolicy(level=13, target=Entity(name="t", hp=10))
+    # A setup hit on round 2 with brutality available → bluff fires.
+    ctx_kwargs = dict(
+        actor=Entity(name="a", hp=10), target=Entity(name="t", hp=10),
+        is_crit=False, cost="bonus_action", bonus_action_available=False,
+        resources={"brutality": 5}, round_number=2,
+    )
+    from src.policy import HitContext
+    resp = policy.on_hit(HitContext(**ctx_kwargs))
+    assert resp is not None
+    assert "vex" in resp.extra_masteries
+    assert resp.self_status_on_hit == "advantage_next_save"
+
+
+def test_l13_bluff_suppressed_on_round1_smite():
+    """Wrathful Smite is suppressed on the L13 bless turn (BA spent on SoF)."""
+    policy = war_angel.WarAngelPolicy(level=13, target=Entity(name="t", hp=10))
+    from src.policy import HitContext
+    ctx = HitContext(
+        actor=Entity(name="a", hp=10), target=Entity(name="t", hp=10),
+        is_crit=False, cost="none", bonus_action_available=True,
+        resources={"free_cast": 1, "brutality": 0}, round_number=1,
+    )
+    resp = policy.on_hit(ctx)
+    # No brutality and smite suppressed on the bless turn → nothing to do.
+    assert resp is None
+
+
+def test_l13_enemy_policy_targeting_extremes():
+    char = war_angel.make_war_angel(13)
+    # Always target the character → 3 attacks, first costs the action.
+    always = war_angel.WarAngelEnemyPolicy(target=char, n_attacks=3, char_target_prob=1.0)
+    always.on_combat_start(0, SeededRNG(0))
+    choices = always.decide(_l13_snapshot(1))
+    assert len(choices) == 3
+    assert choices[0].cost == "action"
+    assert all(c.cost == "none" for c in choices[1:])
+    # Never target the character → no attacks.
+    never = war_angel.WarAngelEnemyPolicy(target=char, n_attacks=3, char_target_prob=0.0)
+    never.on_combat_start(0, SeededRNG(0))
+    assert never.decide(_l13_snapshot(1)) == []
+
+
+def test_l13_dpr_soft_match():
+    """L13 DPR within ±10% of 34.68 (the +1.3% bias is the 40% targeting + R1 surge)."""
+    import logging
+    logging.disable(logging.CRITICAL)
+    result = run_level(13, n_days=2000, seed=13)
     assert abs(result.pct_error) < 10.0, result.summary()

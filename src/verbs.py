@@ -40,6 +40,34 @@ log = logging.getLogger(__name__)
 # d20 roll with advantage / disadvantage
 # ---------------------------------------------------------------------------
 
+def resolve_saving_throw(
+    entity: "Entity",
+    save_stat: str,
+    dc: int,
+    rng: "SeededRNG",
+    advantage: bool = False,
+    disadvantage: bool = False,
+) -> bool:
+    """Resolve one saving throw: d20 + save bonus vs DC → True on success.
+
+    The save bonus is the flat folded stat PLUS any rolled-dice modifiers on it
+    (Bless's +1d4 to saves), rolled here on the resolution path.  Advantage /
+    disadvantage cancel per RAW (handled in roll_d20).  This is the save verb
+    (design §4 #3); concentration checks call it inline, and a SavingThrowEvent
+    can wrap it later for scheduled saves (frightened, enemy save-spells).
+    """
+    d20 = roll_d20(rng, advantage, disadvantage)
+    bonus = int(entity.stat(save_stat)) + entity.roll_bonus(save_stat, rng)
+    total = d20 + bonus
+    success = total >= dc
+    log.info(
+        "%s %s save: d20=%d + %d = %d vs DC %d → %s",
+        entity.name, save_stat, d20, bonus, total, dc,
+        "PASS" if success else "FAIL",
+    )
+    return success
+
+
 def roll_d20(rng: "SeededRNG", advantage: bool, disadvantage: bool) -> int:
     """Roll a d20, honoring advantage/disadvantage with RAW cancellation.
 
@@ -159,8 +187,11 @@ def resolve_attack_roll(
     is_crit = (d20 == 20)
     is_auto_miss = (d20 == 1)
 
-    # Effective attack bonus (modifiers folded in)
+    # Effective attack bonus (flat modifiers folded in) PLUS any rolled-dice
+    # modifiers (Bless +1d4) on this stat — rolled fresh per attack here, on the
+    # resolution path, never via the pure stat() the policy reads.
     atk_bonus = actor.stat(event.weapon_stat, tick=tick)
+    atk_bonus += actor.roll_bonus(event.weapon_stat, rng, tick=tick)
     total_roll = d20 + atk_bonus
 
     # Effective AC of target
@@ -269,12 +300,15 @@ def resolve_damage(
     # dice AND every extra-damage source (True Strike rider, Wrathful Smite).
     pool_size = n_dice * 2 if event.is_crit else n_dice
 
-    # Phase 2: roll the pool (weapon dice first, then each extra source)
-    rolls = rng.roll(pool_size, sides)
+    # Phase 2: roll the pool (weapon dice first, then each extra source).
+    # A source with zero dice (pool_size 0) is a flat-only hit (e.g. the enemy's
+    # fixed 28 damage) — skip the roll rather than calling rng.roll(0, …).
+    rolls = rng.roll(pool_size, sides) if pool_size >= 1 else []
     extra_rolls: list[int] = []
     for n_extra, extra_sides in event.extra_damage_dice:
         count = n_extra * 2 if event.is_crit else n_extra
-        extra_rolls.extend(rng.roll(count, extra_sides))
+        if count >= 1:
+            extra_rolls.extend(rng.roll(count, extra_sides))
 
     # Phase 3: per-die mods — placeholder, nothing wired yet
     # (reroll-once, replace-with-floor, etc. will hook in here)
@@ -301,5 +335,29 @@ def resolve_damage(
 
     if target is not None:
         target.take_damage(total)
+        _check_concentration(target, total, rng)
 
     return total, next_sequence
+
+
+def _check_concentration(entity: "Entity", damage: int, rng: "SeededRNG") -> None:
+    """Force a concentration save when a concentrating entity takes damage.
+
+    DC = max(10, ⌊damage/2⌋).  The save is a CON save (con_save), boosted by
+    Bless's +1d4 if active (folded via roll_bonus inside resolve_saving_throw),
+    and made at advantage if Brutality::bluff set `advantage_next_save` this
+    round (consumed here).  On a failure, the concentrated spell's modifiers are
+    dropped and concentration clears.
+    """
+    if entity.concentration is None or damage <= 0:
+        return
+    dc = max(10, damage // 2)
+    advantage = entity.statuses.has("advantage_next_save")
+    if advantage:
+        entity.statuses.consume("advantage_next_save")
+    entity.concentration_checks += 1
+    if not resolve_saving_throw(entity, "con_save", dc, rng, advantage=advantage):
+        log.info("%s LOSES concentration on %s", entity.name, entity.concentration)
+        entity.remove_modifier(entity.concentration)
+        entity.concentration = None
+        entity.concentration_breaks += 1

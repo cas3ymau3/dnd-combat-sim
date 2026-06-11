@@ -68,6 +68,17 @@ class Entity:
         self.modifiers = ModifierStack()
         self.resources: ResourcePool = resources if resources is not None else ResourcePool()
         self.statuses: StatusSet = StatusSet()
+        # Concentration is global-per-entity (only one effect at a time), and it
+        # is NOT tick-expiring — it lasts until the spell ends or a failed save
+        # drops it — so it lives here as a dedicated first-class field rather
+        # than in the tick-expiring StatusSet.  Value is the modifier source to
+        # drop when concentration breaks (e.g. "bless"), or None.
+        self.concentration: str | None = None
+        # Cumulative telemetry (design §8 outputs): concentration checks forced
+        # by incoming damage and how many broke a spell.  Never auto-reset;
+        # callers diff or average across runs.
+        self.concentration_checks: int = 0
+        self.concentration_breaks: int = 0
         log.debug("Entity created: %s (id=%d, hp=%s)", name, self.id, hp)
 
     # ------------------------------------------------------------------
@@ -89,6 +100,15 @@ class Entity:
             # Tuple or other non-numeric — return raw, no modifier folding
             return base
         return self.modifiers.compute(name, base, tick=tick, phase=phase)
+
+    def roll_bonus(self, name: str, rng, tick: tuple | None = None) -> int:
+        """Rolled contribution to *name* from dice-modifiers (e.g. Bless +1d4).
+
+        Resolution-only: this rolls dice via the RNG, so it must be called from
+        the attack/save resolvers, NEVER from policy.decide().  The pure stat()
+        above stays dice-free.  Returns 0 if no dice-modifiers apply.
+        """
+        return self.modifiers.roll_dice(name, rng, tick=tick)
 
     # ------------------------------------------------------------------
     # HP tracking

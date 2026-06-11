@@ -61,6 +61,14 @@ class Modifier:
         Tick at or after which this modifier is inactive.  None means it
         never expires (e.g. a class feature like Rage must be removed
         explicitly via ModifierStack.remove()).
+    dice:
+        Optional (n, sides) of a ROLLED contribution to the stat — e.g.
+        Bless's +1d4 to attack rolls and saves.  This part is NEVER folded by
+        compute() (which must stay pure/dice-free, since the policy reads it);
+        it is summed only on a resolution-only path via ModifierStack.roll_dice
+        / Entity.roll_bonus, called by the attack/save resolvers with the RNG.
+        A modifier may carry both `value` (flat) and `dice` (rolled); Bless
+        carries value=0 + dice=(1, 4).  None = no rolled contribution.
     """
 
     stat: str
@@ -68,6 +76,7 @@ class Modifier:
     source: str
     phase: str | None = None
     expires_at: tuple | None = None  # Tick tuple (round, turn_index, sequence)
+    dice: tuple[int, int] | None = None  # (n, sides) of a rolled contribution
 
     def is_active(self, tick: tuple | None) -> bool:
         """Return True if this modifier should be applied at *tick*.
@@ -160,6 +169,23 @@ class ModifierStack:
             stat, base, tick, phase, result, len(active),
         )
         return result
+
+    def roll_dice(self, stat: str, rng, tick: tuple | None = None) -> int:
+        """Sum the ROLLED contribution of all active dice-modifiers for *stat*.
+
+        This is the resolution-only counterpart to compute(): it rolls each
+        active modifier's `dice` (via the seeded RNG) and returns the total.
+        Kept SEPARATE from compute() so the pure stat() the policy reads never
+        rolls a die.  Called by the attack/save resolvers, never by decide().
+
+        Returns 0 if no dice-modifiers are active for this stat.
+        """
+        total = 0
+        for m in self._modifiers:
+            if m.stat == stat and m.dice is not None and m.is_active(tick):
+                n, sides = m.dice
+                total += sum(rng.roll(n, sides))
+        return total
 
     def active_modifiers(self, tick: tuple | None = None) -> list[Modifier]:
         """Return all currently active modifiers (for inspection/debugging)."""

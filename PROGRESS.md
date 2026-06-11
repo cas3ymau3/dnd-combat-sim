@@ -36,7 +36,9 @@ At the start of every session, before diving into the work:
 
 > **Currently disabled this session (re-enable before exit):** Google Drive
 > (reconnect via app → Settings → Connectors → Customize) and Claude-in-Chrome
-> (re-enable same path). Session milestone: **build + validate War Angel Phase D.**
+> (re-enable same path). Session milestone: **build + validate War Angel Phase D
+> — ✅ COMPLETE (L11–13 validated, 200 tests green).** Re-enable the two
+> connectors when you wrap up.
 
 ---
 
@@ -98,27 +100,70 @@ Engine prerequisites, in the order we built them:
 - ~~Advantage/disadvantage + statuses + weapon mastery (sap/vex)~~ ✓  — `StatusSet`,
   `roll_d20`, sap/vex applied on hit and consumed on the holder's next roll.
 
-### NEXT STEP — War Angel level 12 (Phase D, stage D2)
+### NEXT STEP — War Angel validation COMPLETE through level 13 (Phase D done)
 
-**Phase C (levels 8–10) DONE & VALIDATED. Phase D stage D1 (L11) DONE & VALIDATED.**
+**Phases A–D all DONE & VALIDATED. Validation stops at L13 as agreed** (L14
+Flourish Parry needs the reaction / `intercept_event` decision point — not built;
+see "Known deferral" below and Open threads). **200 tests green.**
 
-| Level | DPR (30k days) | Target | Error |
-|-------|---------------|--------|-------|
-| 8     | 23.48         | 23.36  | +0.5% |
-| 9     | 27.60         | 27.59  | +0.0% |
-| 10    | 35.34         | 35.32  | +0.1% |
-| 11    | 33.665        | 33.70  | −0.1% |
+| Level | DPR        | Target | Error  | Days |
+|-------|------------|--------|--------|------|
+| 8     | 23.48      | 23.36  | +0.5%  | 30k  |
+| 9     | 27.60      | 27.59  | +0.0%  | 30k  |
+| 10    | 35.34      | 35.32  | +0.1%  | 30k  |
+| 11    | 33.665     | 33.70  | −0.1%  | 30k  |
+| 12    | 38.074     | 38.11  | −0.1%  | 30k  |
+| 13    | 35.145     | 34.68  | +1.3%  | 30k  |
 
-**Phase D staging (agreed):** D1 = L11 (data row, ✓ done) → D2 = L12 (two-tier
-Magic Weapon, content-only) → D3 = L13 sub-staged: D3a = save machinery + Bless
-as pure offense buff (100% uptime, enemy not yet attacking) to isolate the
-bless+MW attack math; D3b = turn on the incoming-damage loop (enemy attacks,
-concentration checks, bless uptime emerges) and validate 34.68.
+**Phase D was staged:** D1 = L11 (data row) → D2 = L12 (two-tier Magic Weapon,
+content-only) → D3 = L13 sub-staged (D3a = save machinery + Bless as pure
+offense buff with the enemy not yet attacking; D3b = the incoming-damage loop).
 
-**D1 (L11) — DONE & VALIDATED (33.665 vs 33.70, −0.1%, 30k days).** Pure data
-row: Mage Slayer's +1 DEX doesn't touch CHA-based attacks, so L11 = L10 stats
-with `enemy_ac` 16→17 (the AC bump is the whole reason DPR drops). No policy or
-engine change. `make_war_angel(12)` now the next-raises level (test updated).
+**D1 (L11) — DONE & VALIDATED (33.665 vs 33.70, −0.1%).** Pure data row: Mage
+Slayer's +1 DEX doesn't touch CHA-based attacks, so L11 = L10 stats with
+`enemy_ac` 16→17 (the AC bump is the whole reason DPR drops). No policy/engine.
+
+**D2 (L12) — DONE & VALIDATED (38.074 vs 38.11, −0.1%).** Two-tier Magic Weapon:
+`DurationBuffTracker` carries a per-cast value; `WarAngelDailyPlan` casts +2
+(L3 slots) first while they last, else +1 (L2 slots), syncing the strongest
+active tier. Content-only; combat tactics unchanged → no policy edits.
+
+**D3 (L13) — DONE & VALIDATED (35.145 vs 34.68, +1.3%, within soft ±10%).**
+The defensive bundle. New engine primitives (all backward-compatible — L1–12
+unchanged):
+- **Rolled-dice modifier** — `Modifier.dice` + `ModifierStack.roll_dice` +
+  `Entity.roll_bonus`, folded into `resolve_attack_roll`/saves on the resolution
+  path only; the pure `stat()` the policy reads stays dice-free. (Bless +1d4.)
+- **Saving-throw verb** — `resolve_saving_throw(entity, save_stat, dc, rng, adv)`
+  = d20 + flat save + rolled-dice bonus vs DC. Called inline for concentration;
+  a `SavingThrowEvent` wrapper is deferred until scheduled saves are needed
+  (frightened / enemy save-spells) — see Open threads.
+- **Concentration** — a dedicated `Entity.concentration` field (NOT a tick-status;
+  it's not tick-expiring and is global-per-entity). In `resolve_damage`, a
+  concentrating entity taking damage forces a CON save (DC = max(10, dmg//2));
+  failure drops the spell's modifiers + clears the field. `concentration_checks`
+  / `concentration_breaks` telemetry counters added (design §8).
+- **Enemy strikes back** — `WarAngelEnemyPolicy` (+11, 3 attacks, 28 flat dmg)
+  with pre-rolled per-attack targeting; flat damage via `damage_dice (0, …)`
+  (resolve_damage now skips a zero-die pool). Sap disadvantage on its attacks
+  reuses the existing `sapped` status. `make_training_dummy` gives the dummy the
+  attack profile and `make_day_runner` a policy from L13.
+- **Brutality::bluff save-advantage half** (deferred since L8) — bluff now also
+  sets `advantage_next_save` via `HitResponse.self_status_on_hit`, consumed by
+  the concentration save.
+- **DPR source fix** — validation now reads damage dealt TO THE DUMMY
+  (`DayResult.damage_received_by`), not all-sources total, so the enemy's damage
+  to us no longer inflates DPR. Equivalent for L1–12 (only the char dealt damage).
+
+*Validation story (per the agreed concentration-check comparison):* at the
+guide's own **50% targeting we make 9.06 concentration checks/day** — squarely
+in the guide's stated ~9–10 — confirming the loop is calibrated. We operate at
+**40%** (party of 4; 7.48 checks/day, ≈9.06×40/50). The +1.3% DPR bias vs 34.68
+is fully explained by two user-approved choices: **allowing Action Surge attacks
+on round 1** (the guide assumes a full round-1 sacrifice) and the gentler 40%
+targeting (higher Bless uptime). No hidden modeling error.
+
+`make_war_angel(14)` is the next-raises level.
 
 **Phase D design decisions (locked this session, before any L13 code):**
 - *Frightened — DEFERRED & flagged.* Wrathful Smite's WIS-save/frightened rider
@@ -428,23 +473,27 @@ combat policy through two lenses, and reformulate it as needed:
   Deferred until the first end-of-turn proc or reaction-gating condition is modeled,
   so its shape is driven by a real case. Not needed for War Angel validation.
 
-- **Concentration spells live on BOTH clocks (deferred to Phase D).** The day-clock
-  duration model built in Phase B handles *non-concentration* out-of-combat buffs
-  (magic weapon). Concentration spells are harder because they exist on both clocks
-  simultaneously: a day-clock *duration cap* (bless 1 min, shield of faith 10 min —
-  though War God's Blessing makes the cleric's shield of faith non-concentration) AND
-  a combat-clock *concentration check* that can drop them mid-combat on a failed save
-  when the caster takes damage. Phase B's duration tracker supplies the day-clock half
-  and is reused as-is at Phase D; the combat-clock half (a concentration-check decision
-  point keyed on incoming damage, plus the save machinery) is the new Phase D work.
-  No Phase B rework anticipated.
+- **Concentration — BUILT (Phase D), with a simplification.** Concentration lives
+  on `Entity.concentration` (a dedicated field, since it is global-per-entity and
+  NOT tick-expiring) and is dropped by `_check_concentration` in `resolve_damage`
+  on a failed CON save. **Simplification taken at L13:** bless is modeled as a
+  *combat-clock* buff applied fresh at each combat start (cast in the daily plan's
+  `before_combat`, dropped only by a failed save), NOT on the day clock — bless's
+  1-min duration never spans two of our 1-min combats anyway, so the day-clock
+  half was unnecessary. If a *longer* concentration spell (10 min, e.g. a future
+  spirit guardians / shield-of-faith-as-concentration build) needs to persist
+  across combats, add the day-clock duration half then (the `DurationBuffTracker`
+  is ready). Shield of Faith here is non-concentration (War God's Blessing).
 
-- **Saving throws** — needed for spells and conditions. Deferred until the first
-  save-based ability is modeled. **Decided (War Angel planning):** this lands in
-  **Phase D (levels 11–13)**, bundled with the frightened condition, concentration,
-  and rolled-dice modifiers (bless), because that's the first point where incoming
-  damage feeds back into our own DPR via concentration. Will add `SavingThrowEvent`,
-  a `spell_save_dc` stat on attackers, and save-bonus stats on defenders.
+- **Saving throws — BUILT (Phase D).** `resolve_saving_throw(entity, save_stat,
+  dc, rng, adv/disadv)` in `verbs.py` = d20 + flat save + rolled-dice bonus vs DC.
+  Used inline for the concentration check. **Still deferred:** a `SavingThrowEvent`
+  *event* (the verb is currently called directly, not scheduled) and a
+  `spell_save_dc` stat on attackers — neither was needed for L13 (concentration
+  DC comes from incoming damage, not a caster's DC). Add the event + spell_save_dc
+  when the first *scheduled* save lands (frightened on Wrathful Smite, or a
+  spell-aggressive enemy targeting our saves). `con_save` is the only save-bonus
+  stat modeled so far (on the L13 character).
 
 - **Wrathful smite — frightened/save half (deferred to Phase D).** Wrathful smite
   also forces a WIS save vs. our spell DC; on a failure the target is frightened

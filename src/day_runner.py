@@ -92,6 +92,19 @@ class DayResult:
             rounds.extend(c.damage_log)
         return rounds
 
+    def damage_received_by(self, entity_id: int) -> int:
+        """Total damage dealt TO a specific entity across the day.
+
+        For DPR we want the character's output = damage taken by the dummy.
+        Through L12 this equals total_damage (only the character deals damage);
+        from L13 the enemy strikes back, so DPR must read the dummy's column
+        specifically rather than the all-sources total.
+        """
+        return sum(
+            sum(c.damage_received.get(entity_id, []))
+            for c in self.combats
+        )
+
 
 # ---------------------------------------------------------------------------
 # Between-combats hook context

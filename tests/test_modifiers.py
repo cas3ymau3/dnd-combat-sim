@@ -2,6 +2,7 @@
 
 import pytest
 from src.modifiers import Modifier, ModifierStack
+from src.rng import SeededRNG
 
 
 def test_compute_no_modifiers_returns_base():
@@ -81,3 +82,45 @@ def test_stat_mismatch_ignored():
     stack = ModifierStack()
     stack.add(Modifier(stat="ac", value=5, source="shield"))
     assert stack.compute("attack_bonus", base=3) == 3
+
+
+# ---------------------------------------------------------------------------
+# Rolled-dice modifiers (Bless +1d4) — the resolution-only fold path
+# ---------------------------------------------------------------------------
+
+def test_dice_modifier_not_folded_by_compute():
+    """A dice modifier (value 0 + dice) contributes nothing to the pure compute()."""
+    stack = ModifierStack()
+    stack.add(Modifier(stat="attack_bonus", value=0, source="bless", dice=(1, 4)))
+    # compute() must stay dice-free (the policy reads it) — only the flat 0 counts.
+    assert stack.compute("attack_bonus", base=7) == 7
+
+
+def test_roll_dice_sums_active_dice_in_range():
+    stack = ModifierStack()
+    stack.add(Modifier(stat="attack_bonus", value=0, source="bless", dice=(1, 4)))
+    rng = SeededRNG(0)
+    for _ in range(50):
+        rolled = stack.roll_dice("attack_bonus", rng)
+        assert 1 <= rolled <= 4
+
+
+def test_roll_dice_zero_without_dice_modifiers():
+    stack = ModifierStack()
+    stack.add(Modifier(stat="attack_bonus", value=3, source="flat"))  # flat only
+    assert stack.roll_dice("attack_bonus", SeededRNG(0)) == 0
+
+
+def test_roll_dice_respects_stat_and_expiry():
+    stack = ModifierStack()
+    stack.add(Modifier(stat="con_save", value=0, source="bless", dice=(1, 4)))
+    rng = SeededRNG(1)
+    # Wrong stat → 0.
+    assert stack.roll_dice("attack_bonus", rng) == 0
+    # Right stat → rolled.
+    assert stack.roll_dice("con_save", rng) >= 1
+    # Expired dice modifier → 0.
+    stack2 = ModifierStack()
+    stack2.add(Modifier(stat="con_save", value=0, source="bless",
+                        dice=(1, 4), expires_at=(1, 0, 0)))
+    assert stack2.roll_dice("con_save", SeededRNG(1), tick=(2, 0, 0)) == 0

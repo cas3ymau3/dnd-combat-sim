@@ -290,6 +290,12 @@ class Scheduler:
                 self._turn_economy[ac] -= 1
             for n, a in response.resource_cost.items():
                 actor.resources.consume(n, a)
+            # Apply any self-status (e.g. Brutality::bluff's save advantage),
+            # lasting until the end of the actor's next turn (mirrors vex), and
+            # consumed earlier by the next qualifying save.
+            if response.self_status_on_hit is not None:
+                r, t, _ = event.tick
+                actor.statuses.apply(response.self_status_on_hit, True, expiry=(r + 2, t))
             return list(response.extra_damage_dice), list(response.extra_masteries)
 
         return hit_decider

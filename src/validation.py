@@ -74,10 +74,13 @@ def run_level(level: int, n_days: int, seed: int, rounds_per_combat: int = 4) ->
 
     # Welford-free: collect per-day DPR, then mean/stderr.  n_days is modest
     # enough that holding the list is fine, and it keeps the math obvious.
+    # DPR = the CHARACTER's output = damage dealt to the dummy.  Through L12 this
+    # equals total_damage; from L13 the enemy strikes back, so we must read the
+    # dummy's received-damage column rather than the all-sources total.
     day_dprs: list[float] = []
     for _ in range(n_days):
         result = runner.run_day()
-        day_dprs.append(result.total_damage / rounds_per_day)
+        day_dprs.append(result.damage_received_by(dummy.id) / rounds_per_day)
 
     n = len(day_dprs)
     mean = sum(day_dprs) / n

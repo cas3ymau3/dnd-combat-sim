@@ -221,11 +221,17 @@ class HitResponse:
 
     action_cost=None means no action-economy slot is consumed (e.g. Brutality::
     bluff — it costs only a brutality charge, not a bonus action).
+
+    self_status_on_hit, if set, is a status applied to the ATTACKER on this hit,
+    lasting until the end of its next turn (consumed earlier on first use) — e.g.
+    Brutality::bluff's "advantage on your next saving throw", which the
+    concentration save reads.  None = no self-status.
     """
     resource_cost: dict[str, int]
     extra_damage_dice: list[tuple[int, int]]
     extra_masteries: list[str] = field(default_factory=list)
     action_cost: "str | None" = "bonus_action"
+    self_status_on_hit: "str | None" = None
 
 
 # ---------------------------------------------------------------------------
