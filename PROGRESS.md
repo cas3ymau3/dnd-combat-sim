@@ -163,6 +163,18 @@ is fully explained by two user-approved choices: **allowing Action Surge attacks
 on round 1** (the guide assumes a full round-1 sacrifice) and the gentler 40%
 targeting (higher Bless uptime). No hidden modeling error.
 
+*L1 spell-slot audit (verified, 8k days).* Bless (cast at each combat start) and
+Wrathful Smite both draw on the level-1 pool, so we checked for overuse. Result:
+**no overuse is possible or observed.** `spell_slot_1` consumes exactly 4.000/day
+(its cap); zero blocked-consume attempts and zero "consume failed" warnings —
+the `available()>=1` guard in `_sync_bless` and the scheduler's pre-consume
+validation hold. free_cast (1.0/day) and pact (~1.0/day) are consumed by smite
+only, per the `free_cast→pact→spell_slot_1` priority. The flagged smite-steals-a-
+Bless-slot interaction is real but negligible: Bless is skipped ~0.019×/day (≈once
+per 53 days). The model is in fact *conservative* — total L1-equiv ~6.0/day vs an
+~8 ceiling, and smite fires ~2.0/day (vs the guide's assumed ~3) because War
+Priest + Shield of Faith dominate the bonus action. No reservation logic needed.
+
 `make_war_angel(14)` is the next-raises level.
 
 **Phase D design decisions (locked this session, before any L13 code):**
