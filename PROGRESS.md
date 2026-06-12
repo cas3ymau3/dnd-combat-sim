@@ -34,11 +34,10 @@ At the start of every session, before diving into the work:
    stop"), or when Claude recognizes the milestone is complete — **prompt the user to
    re-enable** the disabled connectors, and clear the line.
 
-> **Currently disabled this session (re-enable before exit):** Google Drive
-> (reconnect via app → Settings → Connectors → Customize) and Claude-in-Chrome
-> (re-enable same path). Session milestone: **build + validate War Angel Phase E
-> stage E1 — L14 Flourish Parry/Counter — ✅ COMPLETE (39.543 vs 37.96, +4.2%,
-> 214 tests green).** Re-enable the two connectors when you wrap up.
+> **Currently disabled (re-enable before exit):** none — Google Drive and
+> Claude-in-Chrome were re-enabled at the end of the L14 session. At the start of
+> the next session, set scope + disable the irrelevant connectors again per the
+> ritual above.
 
 ---
 
@@ -104,8 +103,20 @@ Engine prerequisites, in the order we built them:
 
 **Phases A–D done & validated; Phase E stage E1 (L14) DONE & VALIDATED.** The
 `intercept_event` primitive is now built (Flourish Parry), so the L13 deferral is
-lifted. `make_war_angel(15)` is the next-raises level (Resilient DEX). **214 tests
-green.**
+lifted. **214 tests green.**
+
+**→ Next: Phase E stage E2 — L15 (Resilient DEX).** Expected to be a near-pure
+**data row** against the now-built machinery (no new engine primitives, likely no
+policy change): Fighter-08 gives the Resilient (DEX) feat — +1 DEX (→17, but DEX
+is not our CHA-based attack stat, so attack/damage are UNCHANGED) and DEX-save
+proficiency (a `dex_save` stat, DPR-irrelevant in the threshold model). The real
+movers are the **monster bumps**: enemy AC 17→**18**, enemy to-hit +11→**+12**,
+enemy damage 28→**32** on hit (→ DC-16 concentration checks). Target DPR **36.59**
+(guide: −1.4 vs L14 from the harder monster; combat tactics identical to L14 —
+still bleed on flourish counters, the guide confirms bluff is ~0.5 DPR worse).
+Just add the `LEVELS[15]` row (copy L14; bump `enemy_ac`, `enemy_attack`,
+`target_dpr`; DEX/dex_save are cosmetic) and validate. `make_war_angel(15)` is the
+next-raises level.
 
 | Level | DPR        | Target | Error  | Days |
 |-------|------------|--------|--------|------|
