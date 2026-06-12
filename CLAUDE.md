@@ -145,12 +145,20 @@ Key invariants to preserve when extending:
 
 - The user reviews decisions iteratively — present design choices and trade-offs,
   invite feedback, don't barrel ahead on consequential structure.
-- Commit to git when the user asks (the chat is scratch; git + files are the real
-  save). Remote is `origin` → https://github.com/cas3ymau3/dnd-combat-sim.
-- Co-author trailer on commits per the user's harness settings.
-- `gh` CLI is installed at `/c/Program Files/GitHub CLI/gh.exe` but its auth isn't
-  visible to the sandboxed bash shell — the user runs `gh`/`git push` from their
-  own terminal when a push is needed.
+- Co-author trailer on commits per the user's harness settings. Remote is
+  `origin` → https://github.com/cas3ymau3/dnd-combat-sim.
+- **GitHub ops work in-shell (verified 2026-06-12).** `gh` 2.93 is on PATH and
+  authenticated as `cas3ymau3` via the system keyring (token scopes `repo` +
+  `workflow`); git uses the `manager` credential helper over the HTTPS `origin`
+  remote. Claude can push, open/merge PRs, and delete branches directly. (The
+  prior note that auth "isn't visible to the sandboxed shell" was stale.)
+- **Agreed git/GitHub autonomy (2026-06-12, updated): manage git on your own.**
+  Claude commits changes as it makes them (no need to be told), branches off
+  `main` for new work, pushes feature branches, and opens PRs autonomously.
+  Claude CONFIRMS with the user ONLY before: merging to `main`, pushing to
+  `main` directly, force-pushing, or deleting branches. (`git + files are the
+  real save`; the chat is scratch — so commit early rather than hoarding
+  working-tree changes.)
 
 ---
 
