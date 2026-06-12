@@ -41,6 +41,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..content import (
+    interpret_hit_rider,
+    interpret_modifiers,
+    load_abilities,
+)
 from ..day_runner import (
     BeforeCombatContext,
     BetweenCombatsContext,
@@ -76,9 +81,15 @@ MAGIC_WEAPON_PLUS2 = 2
 # Prayer of Healing needs a 10-minute rest window to cast.
 POH_MIN_INTERVAL_MIN = 10
 
-# Bless (L13): concentration, +1d4 to attack rolls AND saving throws (modeled on
-# attack_bonus + con_save; only those two affect DPR).  A rolled-dice modifier.
-BLESS_DICE = (1, 4)
+# Declarative ability layer (src/content.py): the abilities below are loaded
+# FROM DATA (content/abilities/*.yaml) and translated into engine objects by the
+# effect-interpreter, rather than hand-built in this module.  This realizes the
+# project's #1 architectural bet (CLAUDE.md #1/#2) for these abilities; the
+# build's POLICY (which ability fires, slot priority, sequencing) stays Python.
+_ABILITIES = load_abilities()
+BLESS = _ABILITIES["bless"]                  # core_examples.yaml (+1d4 bonus_die)
+WRATHFUL_SMITE = _ABILITIES["wrathful_smite"]  # war_angel.yaml (1d6 on-hit rider)
+
 # Shield of Faith via War God's Blessing (L13): non-concentration +2 AC, cast as
 # a bonus action at combat start with a Channel Divinity charge.
 SHIELD_OF_FAITH_AC = 2
@@ -933,10 +944,14 @@ class WarAngelPolicy:
             self._bluffed_this_turn = True  # commit: prevent a second bluff this turn
 
         if want_smite:
+            # The slot PRIORITY (free_cast → pact → cleric L1) is build-specific
+            # arbitration → stays here; the rider's dice + action economy come
+            # from the Wrathful Smite DATA via the effect-interpreter.
             slot = self._next_smite_slot(ctx.resources)
             resource_cost[slot] = resource_cost.get(slot, 0) + 1
-            extra_dice = [(1, 6)]
-            action_cost = "bonus_action"
+            rider = interpret_hit_rider(WRATHFUL_SMITE)
+            extra_dice = list(rider.extra_damage_dice)
+            action_cost = rider.action_cost
 
         return HitResponse(
             resource_cost=resource_cost,
@@ -1167,10 +1182,10 @@ class WarAngelDailyPlan:
         self.character.concentration = None
         if self.character.resources.available("spell_slot_1") >= 1:
             self.character.resources.consume("spell_slot_1")
-            self.character.add_modifier(
-                Modifier("attack_bonus", 0, "bless", dice=BLESS_DICE))
-            self.character.add_modifier(
-                Modifier("con_save", 0, "bless", dice=BLESS_DICE))
+            # Bless's modifiers (+1d4 on attack_bonus + con_save) come FROM DATA
+            # via the effect-interpreter, replacing the hand-built Modifiers.
+            for mod in interpret_modifiers(BLESS, source="bless"):
+                self.character.add_modifier(mod)
             self.character.concentration = "bless"
 
     def _sync_shield_of_faith(self) -> None:
