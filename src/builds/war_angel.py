@@ -52,6 +52,7 @@ from ..modifiers import Modifier
 from ..policy import (
     Choice,
     CounterSpec,
+    FailedSaveContext,
     GameState,
     HitContext,
     HitResponse,
@@ -59,6 +60,7 @@ from ..policy import (
     InterceptResponse,
     MissContext,
     MissResponse,
+    SaveRerollResponse,
 )
 from ..resources import ResourceEntry, ResourcePool
 
@@ -80,6 +82,15 @@ BLESS_DICE = (1, 4)
 # Shield of Faith via War God's Blessing (L13): non-concentration +2 AC, cast as
 # a bonus action at combat start with a Channel Divinity charge.
 SHIELD_OF_FAITH_AC = 2
+
+# Indomitable (Fighter, L16 = fighter-09): 1/LR, reroll a failed save with a flat
+# bonus equal to fighter level.  We only model concentration checks, so the
+# policy applies it there.  INDOMITABLE_MIN_SUCCESS is the DC-assessment cutoff:
+# only spend the 1/LR reroll if its success probability (using the FLAT save
+# bonus, ignoring Bless) clears this.  Inert at the current uniform DC-16 (always
+# ~90%+); it becomes load-bearing once we model weaker/variable-DC saves.
+INDOMITABLE_BONUS = 9          # fighter level at character level 16
+INDOMITABLE_MIN_SUCCESS = 0.5
 
 
 # ---------------------------------------------------------------------------
@@ -505,6 +516,74 @@ LEVELS: dict[int, dict] = {
         "bless": True,
         "shield_of_faith": True,
     },
+    16: {
+        # Fighter-09: Tactical Master + Indomitable.  The DPR mover is the WEAPON
+        # SWITCH, longsword → RAPIER, exploiting the difference between the two
+        # masteries:
+        #   - sap (longsword) only matters ONCE per turn (enemy disadvantage on
+        #     its next attack; reapplying is wasted).
+        #   - vex (rapier) reapplies EVERY attack (advantage on our next attack
+        #     vs the target), so the advantage chain now runs ~100% instead of
+        #     the ~1/3 we got from spending a bluff for vex each turn.
+        # Tactical Master then lets us, once per turn, override the rapier's vex
+        # with SAP on one attack (mastery_override="sap") to keep sap's defensive
+        # value; we bluff on that same attack to re-add vex (so it carries both)
+        # and to keep the save-advantage.  See WarAngelPolicy.decide / on_hit.
+        #
+        # Indomitable (engine: failed-save reroll decision point): 1/LR, reroll a
+        # failed save with +9 (fighter level).  We only model concentration
+        # checks; the policy spends it greedily on the first failed check that a
+        # reroll is likely to clear AND that still has rounds left to protect
+        # (see on_failed_save).  DPR impact is tiny (~0.05 — prevents ~one Bless
+        # drop/day); modeled for fidelity, per the guide's "cherry on top".
+        #
+        # NO GUIDE DPR TARGET: the guide's L16 figure is a literal XXXX
+        # placeholder and the R prototype stops at L10, so L16 is validated for
+        # CONSISTENCY (DPR > L15, telemetry sanity, no L1–15 regression), not
+        # against an external number.  The enemy is UNCHANGED from L15 (the L17
+        # guide section confirms Monster AC stays 18, +12 to-hit, 32 damage / DC-
+        # 16) — the entire L16 gain is on our side.
+        "weapon": "rapier",
+        "attack_bonus": 10,         # PB 5 + CHA 5 (unchanged from L15)
+        "damage_dice": (1, 8),      # rapier = 1d8 piercing (same dice as longsword)
+        "damage_bonus": 7,          # CHA 5 + dueling 2 (unchanged)
+        "weapon_mastery": "vex",    # ← rapier (was sap); vex on every attack
+        "tactical_master": True,    # 1 attack/turn overridden vex → sap
+        "enemy_ac": 18,             # unchanged from L15 (L17 guide confirms AC 18)
+        "char_hp": 102,
+        "target_dpr": None,         # no guide target — consistency-only validation
+        "cha_mod": 5,               # Flourish Parry AC bonus & bleed flat damage
+        "flourish_parry": True,
+        "indomitable_bonus": INDOMITABLE_BONUS,  # +9 reroll (fighter level)
+        "extra_base_stats": {
+            "con_save": 4,          # PB 5 + CON −1
+            "dex_save": 8,          # PB 5 + DEX 3 (Resilient) — cosmetic
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF)
+        },
+        "enemy_attack": {
+            "attack_bonus": 12,     # unchanged from L15
+            "damage": 32,           # unchanged from L15 → DC-16 concentration
+            "n_attacks": 3,
+            "char_target_prob": 0.40,
+        },
+        "resources": {
+            "war_priest": (3, "full"),
+            "channel_divinity": (3, 1),
+            "spell_slot_3": (3, 0),
+            "spell_slot_2": (3, 0),
+            "spell_slot_1": (4, 0),
+            "pact_magic_slot": (1, "full"),
+            "free_cast": (1, 0),
+            "action_surge": (1, "full"),
+            "brutality": (5, "full"),
+            "flourish_counter": (6, 0),
+            "indomitable": (1, 0),  # 1/LR (LR-only restore)
+        },
+        "magic_weapon_casts_per_day": 1,        # +1 cast (one L2 slot)
+        "magic_weapon_plus2_casts_per_day": 3,  # +2 casts (three L3 slots)
+        "bless": True,
+        "shield_of_faith": True,
+    },
 }
 
 # Phase A is exact-match; later phases are soft (±10%).  Recorded here so the
@@ -614,6 +693,11 @@ class WarAngelPolicy:
         # Flourish Parry / Counter (L14+): the AC bonus & bleed flat damage = CHA mod.
         self._flourish_parry: bool = bool(LEVELS[level].get("flourish_parry", False))
         self._cha_mod: int = LEVELS[level].get("cha_mod", 0)
+        # Tactical Master (L16+): once per turn, override the rapier's native vex
+        # with sap on one attack (we then bluff on it to re-add vex).
+        self._tactical_master: bool = bool(LEVELS[level].get("tactical_master", False))
+        # Indomitable (L16+): the +bonus on the 1/LR failed-save reroll (0 = off).
+        self._indomitable_bonus: int = LEVELS[level].get("indomitable_bonus", 0)
         # Per-combat state, (re)initialised by on_combat_start.
         self._aoo_round: int = 1
         # Last round we used Flourish Parry — the once-per-round reaction gate.
@@ -725,6 +809,19 @@ class WarAngelPolicy:
                 target=self._target,
                 weapon_stat="attack_bonus",
             ))
+
+        # Tactical Master (L16+): override the first ON-TURN attack's native vex
+        # (rapier) with sap, applying sap's once-per-turn defensive value while
+        # the rest of our attacks keep vexing.  The on_hit bluff fires on this
+        # same attack (first hit) to re-add vex — so it carries both sap AND vex
+        # — and to grant the concentration save-advantage.  (We skip the AoO: its
+        # reaction-cost slot is the once-per-combat opportunity attack, not part
+        # of our action sequence.)
+        if self._tactical_master:
+            for ch in choices:
+                if ch.action_type == "attack" and ch.cost != "reaction":
+                    ch.mastery_override = "sap"
+                    break
 
         return choices
 
@@ -902,6 +999,55 @@ class WarAngelPolicy:
             ac_bonus=self._cha_mod,
             resource_cost=resource_cost,
             counter=counter,
+        )
+
+    # -- failed-save rescue: Indomitable (level 16+) ----------------------
+
+    def on_failed_save(self, ctx: FailedSaveContext) -> "SaveRerollResponse | None":
+        """Indomitable: spend the 1/LR reroll on a failed save.
+
+        Policy = "greedy among positive-value failures".  Why greedy is (near-)
+        optimal in our current model:
+          - Every concentration check is the SAME DC (16), and the reroll
+            (fresh d20 + con_save + Bless + 9) clears it with ~100% probability,
+            so there is no "save it for a check we're likelier to win".
+          - Failures are scarce (~1–2/day) vs a 1/day resource, so husbanding
+            risks never using it; expected regret from waiting > expected gain.
+          - The only thing that varies is how many Bless-rounds the rescue
+            protects (∝ rounds left in the combat), which we cannot predict.
+        So we spend it on the FIRST failed check that (a) a reroll is likely to
+        clear and (b) still has a round of the combat left to protect.
+
+        Gates:
+          - off below L16 (no Indomitable);
+          - concentration checks only (the only save we model);
+          - 1/LR resource must be available;
+          - DC-ASSESSMENT: only spend if the reroll's success probability —
+            computed from the FLAT save bonus (Bless ignored → conservative) —
+            clears INDOMITABLE_MIN_SUCCESS.  Inert at the uniform DC-16 (always
+            ~90%+); becomes load-bearing once we model weaker/variable-DC saves;
+          - LAST-ROUND FLOOR: decline on the final round, where a saved Bless
+            has no future rounds of this combat to protect (Bless is recast
+            fresh each combat, so a rescue's value is bounded by the rounds
+            remaining here).
+        """
+        if self._indomitable_bonus <= 0:
+            return None
+        if ctx.save_kind != "concentration":
+            return None
+        if ctx.resources.get("indomitable", 0) < 1:
+            return None
+        # Last-round floor: no remaining rounds for Bless to protect.
+        if ctx.round_number >= self._rounds_per_combat:
+            return None
+        # DC-assessment: P(reroll clears DC) using the flat save bonus only.
+        needed = ctx.dc - ctx.save_bonus - self._indomitable_bonus
+        success_prob = (21 - min(20, max(1, needed))) / 20 if needed <= 20 else 0.0
+        if success_prob < INDOMITABLE_MIN_SUCCESS:
+            return None
+        return SaveRerollResponse(
+            bonus=self._indomitable_bonus,
+            resource_cost={"indomitable": 1},
         )
 
 

@@ -321,6 +321,71 @@ class InterceptResponse:
 
 
 # ---------------------------------------------------------------------------
+# Failed-save rescue: rerolling a save you just failed (Indomitable / Luck)
+# ---------------------------------------------------------------------------
+# The symmetric analog of Guided Strike (which rescues a missed ATTACK): a
+# resource that lets you reroll a save you just FAILED.  The scheduler offers it
+# (if the policy implements on_failed_save) at the moment a save fails, BEFORE
+# the failure's consequences land (e.g. before concentration drops).  Like the
+# other post-roll deciders it consults the policy, which alone decides whether
+# the rescue is worth spending the resource on.
+
+@dataclass(frozen=True)
+class FailedSaveContext:
+    """Read-only context handed to Policy.on_failed_save the instant a save
+    fails, so the policy may spend a resource to reroll it.
+
+    Fields
+    ------
+    entity:
+        The entity that failed the save (and would reroll).
+    save_kind:
+        What the save was for, so the policy can scope its rescue rule.  The
+        only scheduled save today is "concentration"; future kinds (e.g.
+        "frightened") will flow through here unchanged.
+    save_stat:
+        The save's stat key (e.g. "con_save") — lets the policy reason about
+        which saves it is weak at once multiple kinds exist.
+    dc:
+        The save DC.  Together with `save_bonus` this is the policy's
+        DC-assessment input: "can a reroll plausibly clear this?"
+    save_bonus:
+        The entity's FLAT save bonus on this stat (no rolled-dice buffs like
+        Bless folded in), so the assessment is deterministic and conservative.
+    failed_total:
+        What the failed roll totaled (d20 + bonus) — how close the miss was.
+    resources:
+        Flat {name: current} view of the entity's persistent resources.
+    round_number:
+        Current combat round (1-based).  Lets the policy decline a rescue with
+        no remaining value (e.g. a concentration check on the final round, with
+        no future rounds for the spell to protect).
+    """
+    entity: "Entity"
+    save_kind: str
+    save_stat: str
+    dc: int
+    save_bonus: int
+    failed_total: int
+    resources: dict[str, int]
+    round_number: int
+
+
+@dataclass(frozen=True)
+class SaveRerollResponse:
+    """The policy's answer to a FailedSaveContext: spend `resource_cost` to
+    reroll the save with a flat `bonus` added to the new roll (Indomitable adds
+    the fighter level).  Return None to accept the failure.
+
+    The scheduler validates affordability and consumes the resource; the verb
+    rerolls a fresh d20 (+ the entity's save bonus + this `bonus`) and the new
+    result stands, per RAW (you must use the reroll).
+    """
+    bonus: int
+    resource_cost: dict[str, int] = field(default_factory=dict)
+
+
+# ---------------------------------------------------------------------------
 # Policy protocol
 # ---------------------------------------------------------------------------
 
@@ -374,6 +439,14 @@ class Policy(Protocol):
     # an InterceptResponse to react, or None to decline.  A commit point: the
     # policy may update its own bookkeeping (e.g. the once-per-round parry gate).
     def on_incoming_hit(self, ctx: IncomingAttackContext) -> "InterceptResponse | None":
+        ...
+
+    # Optional failed-save rescue (Indomitable / Luck).  The scheduler calls it
+    # (if defined) the instant one of this entity's saves FAILS, BEFORE the
+    # failure's consequences land, so the policy may spend a resource to reroll
+    # with a bonus.  Return a SaveRerollResponse to spend, or None to accept the
+    # failure.  A commit point: the policy may update its own bookkeeping.
+    def on_failed_save(self, ctx: FailedSaveContext) -> "SaveRerollResponse | None":
         ...
 
 

@@ -44,7 +44,7 @@ def test_factory_stats_level_2_switches_to_sap_longsword():
 
 def test_unimplemented_level_raises():
     with pytest.raises(NotImplementedError):
-        war_angel.make_war_angel(16)
+        war_angel.make_war_angel(17)
 
 
 # ---------------------------------------------------------------------------
@@ -710,3 +710,119 @@ def test_l13_dpr_soft_match():
     logging.disable(logging.CRITICAL)
     result = run_level(13, n_days=2000, seed=13)
     assert abs(result.pct_error) < 10.0, result.summary()
+
+
+# ---------------------------------------------------------------------------
+# Level 16 — rapier + Tactical Master + Indomitable
+# ---------------------------------------------------------------------------
+
+def _l16_snapshot(round_number: int, **resource_overrides):
+    dummy = war_angel.make_training_dummy(16)
+    resources = {"action": 1, "bonus_action": 1, "reaction": 1,
+                 "action_surge": 1, "war_priest": 3}
+    resources.update(resource_overrides)
+    return GameState(
+        actor=Entity(name="a", hp=10), enemies=(dummy,), allies=(),
+        round_number=round_number, turn_index=0, tick=(round_number, 0, 0),
+        resources=resources,
+    )
+
+
+def test_l16_factory_switches_to_rapier_vex():
+    """L16 swaps longsword(sap) → rapier(vex); attack/damage math is unchanged."""
+    char = war_angel.make_war_angel(16)
+    assert char.base_stats["weapon_mastery"] == "vex"   # rapier
+    assert char.stat("attack_bonus") == 10              # PB 5 + CHA 5, unchanged
+    assert char.stat("damage_dice") == (1, 8)
+    assert char.stat("damage_bonus") == 7               # CHA 5 + dueling 2, unchanged
+
+
+def test_l16_tactical_master_overrides_first_attack_to_sap():
+    """Exactly one on-turn attack carries mastery_override='sap'; the rest keep
+    the rapier's native vex (mastery_override=None)."""
+    policy = war_angel.WarAngelPolicy(level=16, target=war_angel.make_training_dummy(16))
+    policy.on_combat_start(0, SeededRNG(0))
+    # Round 2 (no Bless-turn suppression, no AoO unless rolled): action + WP + extra.
+    choices = policy.decide(_l16_snapshot(2))
+    attacks = [c for c in choices if c.action_type == "attack" and c.cost != "reaction"]
+    overridden = [c for c in attacks if c.mastery_override == "sap"]
+    assert len(overridden) == 1, [c.mastery_override for c in attacks]
+    # It is the FIRST on-turn attack; all others keep native vex (None).
+    assert attacks[0].mastery_override == "sap"
+    assert all(c.mastery_override is None for c in attacks[1:])
+
+
+def test_l15_has_no_tactical_master_override():
+    """L15 (longsword) sets no mastery_override — sap is the base weapon mastery."""
+    policy = war_angel.WarAngelPolicy(level=15, target=war_angel.make_training_dummy(15))
+    policy.on_combat_start(0, SeededRNG(0))
+    choices = policy.decide(_l16_snapshot(2))  # snapshot shape is level-agnostic
+    assert all(c.mastery_override is None for c in choices)
+
+
+def test_l16_indomitable_rerolls_flippable_concentration_check():
+    """on_failed_save spends Indomitable on a non-last-round concentration check
+    whose DC a +9 reroll can clear."""
+    from src.policy import FailedSaveContext, SaveRerollResponse
+    policy = war_angel.WarAngelPolicy(level=16, target=war_angel.make_training_dummy(16))
+    ctx = FailedSaveContext(
+        entity=Entity(name="a", hp=10), save_kind="concentration",
+        save_stat="con_save", dc=16, save_bonus=4, failed_total=12,
+        resources={"indomitable": 1}, round_number=2,
+    )
+    resp = policy.on_failed_save(ctx)
+    assert isinstance(resp, SaveRerollResponse)
+    assert resp.bonus == 9
+    assert resp.resource_cost == {"indomitable": 1}
+
+
+def test_l16_indomitable_gates():
+    """on_failed_save declines: no resource, last round, wrong save kind."""
+    from src.policy import FailedSaveContext
+    policy = war_angel.WarAngelPolicy(level=16, target=war_angel.make_training_dummy(16))
+    base = dict(entity=Entity(name="a", hp=10), save_kind="concentration",
+                save_stat="con_save", dc=16, save_bonus=4, failed_total=12,
+                resources={"indomitable": 1}, round_number=2)
+    # No charge left.
+    assert policy.on_failed_save(FailedSaveContext(**{**base, "resources": {"indomitable": 0}})) is None
+    # Last round (round 4 of 4) — nothing left to protect.
+    assert policy.on_failed_save(FailedSaveContext(**{**base, "round_number": 4})) is None
+    # A non-concentration save (not modeled here).
+    assert policy.on_failed_save(FailedSaveContext(**{**base, "save_kind": "frightened"})) is None
+
+
+def test_l15_policy_has_no_indomitable():
+    """Below L16 the failed-save hook always declines (Indomitable not online)."""
+    from src.policy import FailedSaveContext
+    policy = war_angel.WarAngelPolicy(level=15, target=war_angel.make_training_dummy(15))
+    ctx = FailedSaveContext(
+        entity=Entity(name="a", hp=10), save_kind="concentration",
+        save_stat="con_save", dc=16, save_bonus=4, failed_total=12,
+        resources={"indomitable": 1}, round_number=2,
+    )
+    assert policy.on_failed_save(ctx) is None
+
+
+def test_save_reroll_decider_flips_failed_save_in_verb():
+    """resolve_saving_throw offers a failed save to the reroll decider; a large
+    enough bonus flips it, and a None response leaves it failed."""
+    from src.verbs import resolve_saving_throw
+    e = Entity(name="a", hp=10, base_stats={"con_save": 0})
+    rng = SeededRNG(3)
+    # DC 25 with con_save 0 → a straight d20 (max 20) can NEVER pass.
+    assert resolve_saving_throw(e, "con_save", 25, rng) is False
+    # A reroll with +100 always clears it.
+    assert resolve_saving_throw(e, "con_save", 25, rng,
+                                reroll_decider=lambda dc, total: 100) is True
+    # A decider that declines (None) leaves the failure standing.
+    assert resolve_saving_throw(e, "con_save", 25, rng,
+                                reroll_decider=lambda dc, total: None) is False
+
+
+def test_l16_dpr_exceeds_l15():
+    """Consistency check (no guide target): vex-on-every-attack lifts L16 above L15."""
+    import logging
+    logging.disable(logging.CRITICAL)
+    l15 = run_level(15, n_days=2000, seed=16)
+    l16 = run_level(16, n_days=2000, seed=16)
+    assert l16.mean_dpr > l15.mean_dpr, (l15.summary(), l16.summary())

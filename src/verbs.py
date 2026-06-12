@@ -47,6 +47,7 @@ def resolve_saving_throw(
     rng: "SeededRNG",
     advantage: bool = False,
     disadvantage: bool = False,
+    reroll_decider: "Callable[[int, int], int | None] | None" = None,
 ) -> bool:
     """Resolve one saving throw: d20 + save bonus vs DC → True on success.
 
@@ -55,6 +56,13 @@ def resolve_saving_throw(
     disadvantage cancel per RAW (handled in roll_d20).  This is the save verb
     (design §4 #3); concentration checks call it inline, and a SavingThrowEvent
     can wrap it later for scheduled saves (frightened, enemy save-spells).
+
+    `reroll_decider` is the failed-save rescue hook (Indomitable / Luck): a
+    `(dc, failed_total) -> bonus | None` callable.  On a FAILURE it is offered
+    the result; if it returns a flat bonus, the save is rerolled (fresh d20 +
+    the entity's save bonus + that bonus) and the new result stands, per RAW.
+    The scheduler builds it from the entity's Policy.on_failed_save and has
+    already validated/consumed the resource by the time the bonus comes back.
     """
     d20 = roll_d20(rng, advantage, disadvantage)
     bonus = int(entity.stat(save_stat)) + entity.roll_bonus(save_stat, rng)
@@ -65,6 +73,18 @@ def resolve_saving_throw(
         entity.name, save_stat, d20, bonus, total, dc,
         "PASS" if success else "FAIL",
     )
+    if not success and reroll_decider is not None:
+        extra = reroll_decider(dc, total)
+        if extra is not None:
+            d20b = roll_d20(rng, advantage, disadvantage)
+            bonusb = int(entity.stat(save_stat)) + entity.roll_bonus(save_stat, rng) + extra
+            totalb = d20b + bonusb
+            success = totalb >= dc
+            log.info(
+                "%s REROLLS %s save (+%d): d20=%d + %d = %d vs DC %d → %s",
+                entity.name, save_stat, extra, d20b, bonusb, totalb, dc,
+                "PASS" if success else "FAIL",
+            )
     return success
 
 
@@ -308,6 +328,7 @@ def resolve_damage(
     rng: "SeededRNG",
     queue: "EventQueue",
     next_sequence: int,
+    save_reroll_decider: "Callable[[int, int], int | None] | None" = None,
 ) -> tuple[int, int]:
     """Resolve damage for a confirmed hit.  Returns (total_damage, next_sequence).
 
@@ -376,19 +397,25 @@ def resolve_damage(
 
     if target is not None:
         target.take_damage(total)
-        _check_concentration(target, total, rng)
+        _check_concentration(target, total, rng, save_reroll_decider)
 
     return total, next_sequence
 
 
-def _check_concentration(entity: "Entity", damage: int, rng: "SeededRNG") -> None:
+def _check_concentration(
+    entity: "Entity",
+    damage: int,
+    rng: "SeededRNG",
+    save_reroll_decider: "Callable[[int, int], int | None] | None" = None,
+) -> None:
     """Force a concentration save when a concentrating entity takes damage.
 
     DC = max(10, ⌊damage/2⌋).  The save is a CON save (con_save), boosted by
     Bless's +1d4 if active (folded via roll_bonus inside resolve_saving_throw),
     and made at advantage if Brutality::bluff set `advantage_next_save` this
-    round (consumed here).  On a failure, the concentrated spell's modifiers are
-    dropped and concentration clears.
+    round (consumed here).  A failed save may be rerolled via `save_reroll_
+    decider` (Indomitable) before concentration drops.  On a (final) failure,
+    the concentrated spell's modifiers are dropped and concentration clears.
     """
     if entity.concentration is None or damage <= 0:
         return
@@ -397,7 +424,10 @@ def _check_concentration(entity: "Entity", damage: int, rng: "SeededRNG") -> Non
     if advantage:
         entity.statuses.consume("advantage_next_save")
     entity.concentration_checks += 1
-    if not resolve_saving_throw(entity, "con_save", dc, rng, advantage=advantage):
+    if not resolve_saving_throw(
+        entity, "con_save", dc, rng, advantage=advantage,
+        reroll_decider=save_reroll_decider,
+    ):
         log.info("%s LOSES concentration on %s", entity.name, entity.concentration)
         entity.remove_modifier(entity.concentration)
         entity.concentration = None

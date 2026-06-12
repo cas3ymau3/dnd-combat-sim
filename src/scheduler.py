@@ -157,11 +157,14 @@ class Scheduler:
                 round_damage += self._handle_turn_start(event)
 
             elif isinstance(event, DamageEvent):
-                # resolve_damage returns (total_damage, next_seq)
+                # resolve_damage returns (total_damage, next_seq).  The TARGET's
+                # failed-save rescue (Indomitable) is offered if a concentration
+                # check this damage triggers fails — consults the target's policy.
                 handlers = self._registry.get("damage", [])
                 seq_counter = seq + 1
+                save_decider = self._make_save_reroll_decider(event)
                 for handler in handlers:
-                    result = handler(event, self.rng, self.queue, seq_counter)  # type: ignore[call-arg]
+                    result = handler(event, self.rng, self.queue, seq_counter, save_decider)  # type: ignore[call-arg]
                     if isinstance(result, tuple):
                         total_dmg, seq_counter = result
                         round_damage += total_dmg
@@ -360,6 +363,53 @@ class Scheduler:
             return response.ac_bonus, response.counter
 
         return intercept_decider
+
+    def _make_save_reroll_decider(self, event: "DamageEvent"):
+        """Return a `(dc, failed_total) -> bonus | None` callable for the failed-
+        save rescue (Indomitable), or None if the damage target has no such hook.
+
+        Consults the TARGET's policy (the entity that may have to make a
+        concentration save from this damage), mirroring the intercept decider.
+        The closure bakes in `save_kind="concentration"` and the round number:
+        this damage→concentration path is the only scheduled save today, so the
+        D&D specifics live here while resolve_saving_throw stays generic.  When
+        scheduled saves arrive (frightened, enemy save-spells) they will build
+        their own deciders with their own save_kind.
+        """
+        from .policy import FailedSaveContext
+
+        target = event.target
+        if target is None:
+            return None
+        policy = self.policies.get(target.id)
+        on_failed = getattr(policy, "on_failed_save", None) if policy is not None else None
+        if not callable(on_failed):
+            return None
+
+        round_ = event.tick[0]
+
+        def save_reroll_decider(dc: int, failed_total: int):
+            ctx = FailedSaveContext(
+                entity=target,
+                save_kind="concentration",
+                save_stat="con_save",
+                dc=dc,
+                save_bonus=int(target.stat("con_save")),
+                failed_total=failed_total,
+                resources=target.resources.as_dict(),
+                round_number=round_,
+            )
+            response = on_failed(ctx)
+            if response is None:
+                return None
+            if any(target.resources.available(n) < a
+                   for n, a in response.resource_cost.items()):
+                return None
+            for n, a in response.resource_cost.items():
+                target.resources.consume(n, a)
+            return response.bonus
+
+        return save_reroll_decider
 
     # ------------------------------------------------------------------
     # Decision point: TurnStartEvent handling

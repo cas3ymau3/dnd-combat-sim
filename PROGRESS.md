@@ -99,20 +99,23 @@ Engine prerequisites, in the order we built them:
 - ~~Advantage/disadvantage + statuses + weapon mastery (sap/vex)~~ ✓  — `StatusSet`,
   `roll_d20`, sap/vex applied on hit and consumed on the holder's next roll.
 
-### NEXT STEP — War Angel validation COMPLETE through level 15 (Phase E stage E2 done)
+### NEXT STEP — War Angel validation COMPLETE through level 16 (Phase E stage E3 done)
 
-**Phases A–D done & validated; Phase E stages E1 (L14) + E2 (L15) DONE &
-VALIDATED.** The `intercept_event` primitive (Flourish Parry) is built. **214
-tests green** (the `test_unimplemented_level_raises` sentinel now points at L16).
+**Phases A–D done & validated; Phase E stages E1 (L14) + E2 (L15) + E3 (L16)
+DONE & VALIDATED.** The `intercept_event` (Flourish Parry) and the new
+**failed-save reroll decision point** (Indomitable) primitives are built. **222
+tests green** (the `test_unimplemented_level_raises` sentinel now points at L17).
 
-**→ Next: Phase E stage E3 — L16 (rapier switch + Tactical Master).** This is the
-first level needing real engine work since L14: the **rapier switch** (update
-`base_stats` at the level transition — weapon stays 1d8 so damage dice unchanged,
-but it's the weapon-slot transition point) plus **Tactical Master** —
-`mastery_override` is already STUBBED on `Choice` but **not yet consumed by the
-scheduler**, so this is where it gets wired. Read the L16 section of
-`design/build-guides/38_the_war_angel.txt` and re-derive under the EV-max lens
-before coding. `make_war_angel(16)` is the next-raises level.
+**→ Next: Phase E stage E4 — L17 (Fighter-10).** PB → +6; cantrip scaling
+(true-strike 3d6 — but True Strike was dropped at L10, so check whether it
+returns to the rotation or stays out); the enemy gets harder (the L17 guide
+section: Monster AC stays **18** but to-hit → **+13** and damage → **36** →
+**DC-18** concentration checks, where the Bless/Indomitable save stack starts to
+matter more). **The L17 guide section has detailed hit/concentration tables but
+NO final DPR total** — so, like L16, expect **consistency-only validation**
+(confirm with the user). Read the L17 block of
+`design/build-guides/38_the_war_angel.txt` and re-derive under the EV-max lens.
+`make_war_angel(17)` is the next-raises level.
 
 | Level | DPR        | Target | Error  | Days |
 |-------|------------|--------|--------|------|
@@ -124,6 +127,43 @@ before coding. `make_war_angel(16)` is the next-raises level.
 | 13    | 35.145     | 34.68  | +1.3%  | 30k  |
 | 14    | 39.543     | 37.96  | +4.2%  | 30k  |
 | 15    | 38.675     | 36.59  | +5.7%  | 30k  |
+| 16    | 41.247     | —      | n/a    | 30k  |
+
+**E3 (L16) — DONE & VALIDATED (41.247, consistency-only — no guide target).**
+The guide's L16 DPR is a literal `XXXX` placeholder and the R prototype stops at
+L10, so L16 is validated for **consistency**, not against a number: L16 (41.247)
+> L15 (38.675) by +6.6%, telemetry sanity holds, and L1–15 re-ran bit-identical.
+The enemy is **unchanged from L15** (the L17 guide section confirms Monster AC
+stays 18, +12, 32 dmg / DC-16) — the entire L16 gain is on our side. Two pieces:
+- **Rapier switch + Tactical Master (data + policy; NO new primitive — the
+  `mastery_override` field on `Choice` was ALREADY consumed by the scheduler at
+  scheduler.py:461, so the old "stubbed, not wired" note was stale).** Longsword
+  (sap) → rapier (vex): vex reapplies every attack, so the advantage chain runs
+  ~100% instead of the ~1/3 we got from spending a bluff for vex each turn. The
+  policy then sets `mastery_override="sap"` on the first on-turn attack
+  (Tactical Master, 1/turn) and the existing on_hit bluff fires on it to re-add
+  vex + grant the concentration save-advantage. Telemetry confirms the swap: the
+  per-day vex/sap application ratio FLIPPED (L15 sap-dominant 130k:39k → L16
+  vex-dominant 121k:55k).
+- **Indomitable — NEW engine primitive: the failed-save reroll decision point.**
+  `Policy.on_failed_save(ctx) → SaveRerollResponse | None` (optional hook);
+  `resolve_saving_throw` gains a `reroll_decider` that, on a FAILURE, may reroll
+  a fresh d20 + save bonus + flat bonus (the new result stands, per RAW). The
+  scheduler's `_make_save_reroll_decider(event)` builds it from the damage
+  TARGET's policy and threads it `resolve_damage → _check_concentration →
+  resolve_saving_throw` (mirrors the intercept decider; backward-compatible —
+  the decider is built for every DamageEvent but draws no RNG unless a reroll
+  fires, so L1–15 are bit-identical). The symmetric analog of Guided Strike
+  (which rescues a missed *attack*). Generalizes to any future save-reroll
+  (Luck, Portent-style) and any scheduled save (frightened, enemy save-spells).
+  *Indomitable policy = "greedy among positive-value failures"* (1/LR): spend on
+  the first failed concentration check that (a) a +9 reroll is likely to clear
+  (the **DC-assessment** gate, using the flat save bonus — inert at the uniform
+  DC-16 where it always says yes, load-bearing once weaker/variable-DC saves
+  exist) and (b) still has a round of the combat left to protect (last-round
+  floor). Telemetry: ~0.64 rerolls/day, cutting concentration breaks ~in half
+  (1.14 → 0.65/day). DPR impact is tiny (~the breaks it prevents lift Bless
+  uptime slightly) — modeled for fidelity per the guide's "cherry on top".
 
 **E2 (L15) — DONE & VALIDATED (38.675 vs 36.59, +5.7%, within soft ±10%).** A
 pure **data row** — no new engine primitives, no policy change, exactly as
@@ -572,8 +612,9 @@ combat policy through two lenses, and reformulate it as needed:
 
 - **Weapon mastery — remaining properties** — sap and vex are built (the only two
   War Angel needs). topple, slow, push, nick, cleave, graze deferred until a build
-  needs them. `mastery_override` (Tactical Master, lvl 16) field stubbed on `Choice`
-  but not yet consumed by the scheduler.
+  needs them. `mastery_override` (Tactical Master, lvl 16) is **WIRED** — consumed
+  by the scheduler (scheduler.py:461) and used by the L16 policy to override the
+  rapier's vex with sap on one attack/turn.
 
 - **`TurnEndEvent` / end-of-turn trigger point** — the scheduler currently emits
   only `TurnStartEvent`, and status expiry is swept lazily at each turn start.
@@ -608,14 +649,17 @@ combat policy through two lenses, and reformulate it as needed:
   is ready). Shield of Faith here is non-concentration (War God's Blessing).
 
 - **Saving throws — BUILT (Phase D).** `resolve_saving_throw(entity, save_stat,
-  dc, rng, adv/disadv)` in `verbs.py` = d20 + flat save + rolled-dice bonus vs DC.
-  Used inline for the concentration check. **Still deferred:** a `SavingThrowEvent`
-  *event* (the verb is currently called directly, not scheduled) and a
-  `spell_save_dc` stat on attackers — neither was needed for L13 (concentration
-  DC comes from incoming damage, not a caster's DC). Add the event + spell_save_dc
-  when the first *scheduled* save lands (frightened on Wrathful Smite, or a
-  spell-aggressive enemy targeting our saves). `con_save` is the only save-bonus
-  stat modeled so far (on the L13 character).
+  dc, rng, adv/disadv, reroll_decider=None)` in `verbs.py` = d20 + flat save +
+  rolled-dice bonus vs DC. Used inline for the concentration check. **Failed-save
+  reroll BUILT (L16, Indomitable):** the `reroll_decider` hook + `Policy.
+  on_failed_save` + `Scheduler._make_save_reroll_decider` let a policy reroll a
+  failed save with a bonus (the new result stands, RAW). `dex_save` is now also
+  modeled (cosmetic, on the L15+ character) alongside `con_save`. **Still
+  deferred:** a `SavingThrowEvent` *event* (the verb is still called directly,
+  not scheduled) and a `spell_save_dc` stat on attackers — neither is needed yet
+  (concentration DC comes from incoming damage, not a caster's DC). Add the event
+  + spell_save_dc when the first *scheduled* save lands (frightened on Wrathful
+  Smite, or a spell-aggressive enemy targeting our saves).
 
 - **Wrathful smite — frightened/save half (deferred to Phase D).** Wrathful smite
   also forces a WIS save vs. our spell DC; on a failure the target is frightened

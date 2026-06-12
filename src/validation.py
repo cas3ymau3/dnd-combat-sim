@@ -38,7 +38,7 @@ class ValidationResult:
     rounds_per_day: int
     mean_dpr: float
     stderr: float            # standard error of the mean DPR
-    target_dpr: float
+    target_dpr: "float | None"   # None = no guide target → consistency-only level
     exact: bool              # True if this level expects an exact match
 
     @property
@@ -52,9 +52,16 @@ class ValidationResult:
         return 100.0 * self.delta / self.target_dpr
 
     def summary(self) -> str:
-        kind = "exact" if self.exact else "soft ±10%"
         # 95% CI half-width on the mean.
         ci = 1.96 * self.stderr
+        if self.target_dpr is None:
+            # No guide target (e.g. L16): report DPR only — validated for
+            # consistency (monotonic vs the prior level + telemetry), not error.
+            return (
+                f"L{self.level:>2}  DPR {self.mean_dpr:6.3f} ± {ci:.3f}  "
+                f"(no guide target — consistency-only)  [{self.n_days} days]"
+            )
+        kind = "exact" if self.exact else "soft ±10%"
         return (
             f"L{self.level:>2}  DPR {self.mean_dpr:6.3f} ± {ci:.3f}  "
             f"(target {self.target_dpr:5.2f}, {kind})  "
