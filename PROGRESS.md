@@ -526,6 +526,32 @@ combat policy through two lenses, and reformulate it as needed:
 
 ## Open threads / deferred decisions
 
+- **Idle Aid L2 slot → upcast Wrathful Smite — MEASURED, deliberately NOT
+  implemented (known conservatism).** Spell-slot audit at L15 (5000 days,
+  consume-counting): `spell_slot_3` 2.999/3 (MW eats all 3 ~every day),
+  `spell_slot_2` 1.911/3, `spell_slot_1` 4.000/4 (all → Bless), free_cast 1.0,
+  pact 0.996. Two findings:
+  - *The "overlapping combats free a residual L3 slot" effect is negligible* —
+    only **5/5000 days (0.1%)** used <3 L3 slots. Combat windows are 240 min wide
+    but Magic Weapon lasts 60, so combats almost never fall within 60 min of each
+    other → MW lapses and is recast each combat, burning all 3 L3 slots.
+  - *But there is a structural ~1.09 residual L2 slot/day* — the **Aid slot** the
+    guide earmarks, which we model as HP-only → **zero DPR in the threshold
+    model, every day.** It could become **one extra 2d6 upcast Wrathful Smite**
+    (L2 → 2d6), and there's bonus-action room: **1.468 "slot-starved smite
+    opportunities"/day** (BA free + we hit, but no smite slot left). free_cast and
+    pact are *fixed* level-1 (Shadow-Touched / warlock-01) so they can't upcast —
+    the residual L2 is the only fungible higher slot.
+  - *Estimated gain ≈ +0.5 DPR* (~1.09 conversions × ~7 dmg ÷ 16 rounds).
+    **Decision (user, this session): DOCUMENT, don't implement.** It would (a)
+    widen an already-positive bias (L15 +5.7% → ~+7%), (b) retroactively touch
+    L13/L14 (same idle Aid slot) and reopen two validated levels, and (c) need a
+    reservation mechanism (cleanest: a dedicated `smite_upcast_slot: (1, 0)`
+    resource so the in-combat policy can't starve the daily plan's later MW +1
+    cast). The audit's real value was confirming **no large unmodeled DPR source
+    is hiding** — the gap is ~0.5 DPR. Revisit only if a later level's validation
+    runs LOW and needs the headroom, or if we do a final EV-max purity pass.
+
 - **Initiative / turn order** — currently list order (character first, enemy
   second). Real sims need rolled or fixed initiative. Low priority until we have
   multiple enemy archetypes and need to study action-order sensitivity.
