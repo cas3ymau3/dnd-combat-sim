@@ -445,6 +445,66 @@ LEVELS: dict[int, dict] = {
         "bless": True,
         "shield_of_faith": True,
     },
+    15: {
+        # Fighter-08: Resilient (DEX) feat.  A near-pure DATA ROW against the
+        # L14 machinery — no new engine primitives, no policy change.  Resilient
+        # gives +1 DEX (→17) and DEX-save proficiency, but DEX is NOT our
+        # CHA-based attack stat (Pact of the Blade), so attack/damage are
+        # UNCHANGED, and medium armor already caps DEX-to-AC at +2 so AC is
+        # unchanged too.  The dex_save bonus (PB 5 + DEX 3 = +8) is
+        # DPR-IRRELEVANT in the threshold-HP model — added below for completeness
+        # only.
+        #
+        # The real movers are all on the MONSTER side (CR-15): enemy AC 17→18
+        # (the main DPR drop — harder for us to hit), enemy to-hit +11→+12 (more
+        # enemy hits → more concentration checks → lower Bless uptime), and enemy
+        # damage 28→32 on hit (→ DC-16 concentration checks: max(10, 32//2)=16).
+        # All three flow through the existing Bless-uptime / Flourish-Parry loop
+        # with zero code change.
+        #
+        # Combat tactics are IDENTICAL to L14: bleed (not bluff) on every
+        # flourish counter — the guide confirms bleed still beats bluff (~0.5
+        # DPR) even at the higher monster AC — and the full-EV-max counter budget
+        # (all 5 Second Winds → flourish_counter = 6/day, non-binding since
+        # parry-flip opportunities ≈ 4/day).
+        "weapon": "longsword",
+        "attack_bonus": 10,         # PB 5 + CHA 5 (unchanged from L14)
+        "damage_dice": (1, 8),
+        "damage_bonus": 7,          # CHA 5 + dueling 2 (unchanged)
+        "weapon_mastery": "sap",
+        "enemy_ac": 18,             # ↑ from 17 — the main DPR mover
+        "char_hp": 102,             # unchanged (Resilient adds no HP)
+        "target_dpr": 36.59,
+        "cha_mod": 5,               # Flourish Parry AC bonus & bleed flat damage
+        "flourish_parry": True,
+        "extra_base_stats": {
+            "con_save": 4,          # PB 5 + CON −1
+            "dex_save": 8,          # PB 5 + DEX 3 (Resilient) — cosmetic, DPR-irrelevant
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF)
+        },
+        "enemy_attack": {
+            "attack_bonus": 12,     # ↑ from 11
+            "damage": 32,           # ↑ from 28 → DC-16 concentration checks
+            "n_attacks": 3,
+            "char_target_prob": 0.40,
+        },
+        "resources": {
+            "war_priest": (3, "full"),
+            "channel_divinity": (3, 1),
+            "spell_slot_3": (3, 0),
+            "spell_slot_2": (3, 0),
+            "spell_slot_1": (4, 0),
+            "pact_magic_slot": (1, "full"),
+            "free_cast": (1, 0),
+            "action_surge": (1, "full"),
+            "brutality": (5, "full"),
+            "flourish_counter": (6, 0),
+        },
+        "magic_weapon_casts_per_day": 1,        # +1 cast (one L2 slot)
+        "magic_weapon_plus2_casts_per_day": 3,  # +2 casts (three L3 slots)
+        "bless": True,
+        "shield_of_faith": True,
+    },
 }
 
 # Phase A is exact-match; later phases are soft (±10%).  Recorded here so the

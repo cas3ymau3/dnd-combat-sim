@@ -99,24 +99,20 @@ Engine prerequisites, in the order we built them:
 - ~~Advantage/disadvantage + statuses + weapon mastery (sap/vex)~~ ✓  — `StatusSet`,
   `roll_d20`, sap/vex applied on hit and consumed on the holder's next roll.
 
-### NEXT STEP — War Angel validation COMPLETE through level 14 (Phase E stage E1 done)
+### NEXT STEP — War Angel validation COMPLETE through level 15 (Phase E stage E2 done)
 
-**Phases A–D done & validated; Phase E stage E1 (L14) DONE & VALIDATED.** The
-`intercept_event` primitive is now built (Flourish Parry), so the L13 deferral is
-lifted. **214 tests green.**
+**Phases A–D done & validated; Phase E stages E1 (L14) + E2 (L15) DONE &
+VALIDATED.** The `intercept_event` primitive (Flourish Parry) is built. **214
+tests green** (the `test_unimplemented_level_raises` sentinel now points at L16).
 
-**→ Next: Phase E stage E2 — L15 (Resilient DEX).** Expected to be a near-pure
-**data row** against the now-built machinery (no new engine primitives, likely no
-policy change): Fighter-08 gives the Resilient (DEX) feat — +1 DEX (→17, but DEX
-is not our CHA-based attack stat, so attack/damage are UNCHANGED) and DEX-save
-proficiency (a `dex_save` stat, DPR-irrelevant in the threshold model). The real
-movers are the **monster bumps**: enemy AC 17→**18**, enemy to-hit +11→**+12**,
-enemy damage 28→**32** on hit (→ DC-16 concentration checks). Target DPR **36.59**
-(guide: −1.4 vs L14 from the harder monster; combat tactics identical to L14 —
-still bleed on flourish counters, the guide confirms bluff is ~0.5 DPR worse).
-Just add the `LEVELS[15]` row (copy L14; bump `enemy_ac`, `enemy_attack`,
-`target_dpr`; DEX/dex_save are cosmetic) and validate. `make_war_angel(15)` is the
-next-raises level.
+**→ Next: Phase E stage E3 — L16 (rapier switch + Tactical Master).** This is the
+first level needing real engine work since L14: the **rapier switch** (update
+`base_stats` at the level transition — weapon stays 1d8 so damage dice unchanged,
+but it's the weapon-slot transition point) plus **Tactical Master** —
+`mastery_override` is already STUBBED on `Choice` but **not yet consumed by the
+scheduler**, so this is where it gets wired. Read the L16 section of
+`design/build-guides/38_the_war_angel.txt` and re-derive under the EV-max lens
+before coding. `make_war_angel(16)` is the next-raises level.
 
 | Level | DPR        | Target | Error  | Days |
 |-------|------------|--------|--------|------|
@@ -127,6 +123,30 @@ next-raises level.
 | 12    | 38.074     | 38.11  | −0.1%  | 30k  |
 | 13    | 35.145     | 34.68  | +1.3%  | 30k  |
 | 14    | 39.543     | 37.96  | +4.2%  | 30k  |
+| 15    | 38.675     | 36.59  | +5.7%  | 30k  |
+
+**E2 (L15) — DONE & VALIDATED (38.675 vs 36.59, +5.7%, within soft ±10%).** A
+pure **data row** — no new engine primitives, no policy change, exactly as
+predicted. Fighter-08 → Resilient (DEX): +1 DEX (→17) + DEX-save proficiency, but
+DEX is not our CHA attack stat (attack/damage UNCHANGED) and medium armor caps
+DEX-to-AC at +2 (AC unchanged); the added `dex_save: 8` is cosmetic
+(DPR-irrelevant in the threshold model). All movers are monster-side: enemy AC
+17→**18** (main DPR drop), enemy to-hit +11→**+12**, enemy damage 28→**32**
+(→ DC-16 concentration checks, `max(10, 32//2)=16`). Combat tactics identical to
+L14 (bleed on every flourish counter; guide confirms bleed beats bluff by ~0.5
+DPR even at AC 18). L13 (35.145) and L14 (39.543) re-ran bit-identical → no
+regression.
+
+*Validation story (+5.7% overshoot, larger than L14's +4.2%, explained).* Same
+two user-approved EV-max choices as L14 (full counter budget + 40% targeting vs
+the guide's 50%). The overshoot *grows* because the harder monster's higher
+to-hit creates **more parry-flip opportunities** → more Flourish-Counter bleed
+DPR, which partially offsets the AC-18 hit-rate loss (our DPR drops only 0.87,
+39.543→38.675, vs the guide's target dropping 1.37). **Correction to the L14
+"non-binding" prior:** at L15 the `flourish_counter`=6/day budget is now **mildly
+binding** — mean 4.30 counters used/day, and **~27% of days hit the cap of 6**
+(measured, 2k days). The binding *restrains* DPR on those days, so it makes the
+overshoot conservative (not inflated). No hidden modeling error.
 
 **E1 (L14) — DONE & VALIDATED (39.543 vs 37.96, +4.2%, within soft ±10%).** The
 first reaction decision point on the enemy's turn. New engine primitives (all
