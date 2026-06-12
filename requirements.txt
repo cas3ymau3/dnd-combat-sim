@@ -1,0 +1,5 @@
+# Runtime + dev dependencies for the D&D 5.5e combat simulator.
+# Install: pip install -r requirements.txt
+PyYAML>=6.0        # content layer: load declarative abilities (content/abilities/*.yaml)
+numpy>=2.0         # Monte Carlo aggregation
+pytest>=8.0        # test suite

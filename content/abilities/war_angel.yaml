@@ -1,0 +1,39 @@
+# war_angel.yaml
+# Build-specific abilities for the War Angel (design/build-guides/38_the_war_angel.txt).
+# The build's generic abilities (Bless, etc.) live in core_examples.yaml and are
+# reused from there; this file holds only what is specific to this build.
+#
+# These are the first abilities to drive the engine FROM DATA (src/content.py).
+# Each is diffed against the hand-coded War Angel oracle in src/builds/war_angel.py.
+
+---
+# ─── WRATHFUL SMITE (the damage half) ────────────────────────────────────────
+# 2024 RAW: cast as a bonus action immediately AFTER a melee hit (like Divine
+# Smite), adding 1d6 radiant (doubled on a crit).  The WIS-save/frightened half
+# is deferred (PROGRESS "Open threads") — only the on-hit damage rider is modeled.
+#
+# Note the strict layer separation pays off here: the slot PRIORITY
+# (free_cast → pact_magic_slot → spell_slot_1) is NOT in this data — that is
+# build-specific resource arbitration and stays in WarAngelPolicy.  The cost
+# layer states only the ABSTRACT resource (a level-1+ spell slot); the policy
+# resolves which concrete pool to spend.
+
+name: wrathful_smite
+tags: [active, spell]
+trigger:
+  all:
+    - event: on_hit
+    - weapon: melee
+effect:
+  - verb: damage
+    dice:
+      base: "1d6"
+    type: radiant
+    phase: 1                  # smite dice injected before crit doubling
+cost:
+  action_economy: bonus_action
+  resource:
+    type: spell_slot
+    min_level: 1
+duration:
+  type: instantaneous

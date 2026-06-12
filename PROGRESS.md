@@ -35,9 +35,9 @@ At the start of every session, before diving into the work:
    re-enable** the disabled connectors, and clear the line.
 
 > **Currently disabled (re-enable before exit):** none — no connectors were
-> disabled during the L15/L16 session (we jumped straight into the work). User
-> re-initializes connectors manually. At the start of the next session, set
-> scope + disable the irrelevant connectors again per the ritual above.
+> disabled during the declarative-ability-layer session (we jumped straight into
+> the work). Nothing to re-enable. At the start of the next session, set scope +
+> disable the irrelevant connectors again per the ritual above.
 
 ---
 
@@ -80,6 +80,29 @@ At the start of every session, before diving into the work:
   advantage vs that target). `Choice` gains `extra_masteries` (additive) and
   `mastery_override` (replace); `AttackRollEvent.masteries` built by scheduler. Entity
   carries a `StatusSet`. 32 new tests, all green (134 total).
+- **Declarative ability layer — BOOTSTRAPPED (Slices 1+2).** `src/content.py`:
+  a YAML loader (`load_abilities` → name→`Ability` library) + an **effect-
+  interpreter** that translates ONE ability's effect/cost block into the engine
+  objects the existing typed decision points already consume. NOT a verb VM —
+  an *adapter* ("effect compiler"); the engine never built a generic verb
+  executor, only typed seams (`decide`/`on_hit`/`on_miss`/`on_incoming_hit`/
+  `on_failed_save` → `Choice`/`HitResponse`/`Modifier`/…). Confirmed boundary
+  (this session): interpreter does effect→response translation; the Python
+  policy keeps WHICH-ability/ordering/slot-arbitration. Two slices, both diffed
+  bit-identical against the War Angel oracle (A/B at seed 1: L13 35.183, L16
+  41.237 — identical before/after):
+  - **Slice 1 — Bless** (`interpret_modifiers`, `bonus_die`+`flat` hooks):
+    reads `core_examples.yaml`'s `bless` → the same two `Modifier(+1d4 on
+    attack_bonus/con_save)` `_sync_bless` hand-built. Reuses the canonical
+    example content (proves it's interpretable).
+  - **Slice 2 — Wrathful Smite** (`interpret_hit_rider`, `damage` rider):
+    new `content/abilities/war_angel.yaml` → `HitRiderSpec(1d6,
+    bonus_action, spell_slot≥1)`; the policy's `on_hit` smite branch now takes
+    its dice + action economy from data (slot PRIORITY stays Python).
+  - `parse_dice` ("NdM"→(n,sides)); `DEFAULT_SCOPE_MAP` resolves the abstract
+    `applies_to: attack_rolls_and_saving_throws` → the only two stats the engine
+    rolls dice for (attack_bonus, con_save), injectable. 10 new tests (incl.
+    loud-failure pins), **232 total green**. `requirements.txt` added (PyYAML).
 
 ---
 
@@ -123,17 +146,53 @@ this session) and the rationale:
 **→ NEXT MAJOR FOCUS (agreed): build the declarative ability layer — the
 project's #1 architectural bet (CLAUDE.md #1/#2), still UNBUILT in running
 code.** Two architecture gaps War Angel left open (neither forced by it):
-  1. **Abilities-as-data is unrealized.** Nothing in `src/` loads
-     `content/abilities/*.yaml`; War Angel's abilities (Wrathful Smite, Bless,
-     Brutality, Flourish, Indomitable) are *hand-coded Python* in `war_angel.py`.
-     We proved the engine primitives are *sufficient* (zero new verbs) but NOT
-     that "adding an ability = writing data, not code." Today adding an ability =
-     writing Python. **Plan:** build a thin YAML ability loader + generic effect
-     interpreter; re-express a slice of War Angel's abilities as data; **diff the
-     results against the Python version (War Angel is now a known-good oracle).**
-     This de-risks the central bet at the cheapest possible moment — if the
-     abstraction leaks or the schema needs rework, we learn it now against a
-     validated reference, not after build #5.
+  1. **Abilities-as-data — BOOTSTRAPPED, partial (see Done "Declarative ability
+     layer").** `src/content.py` loads `content/abilities/*.yaml` and an
+     effect-interpreter now drives Bless + Wrathful Smite FROM DATA in
+     `war_angel.py` (bit-identical to the oracle). The central bet is de-risked:
+     the effect-compiler abstraction holds against a validated build. **What's
+     left to fully realize "adding an ability = data":**
+     - **Harder abilities as data**: Brutality::bluff (`apply_status`/vex +
+       self-status), Brutality::bleed (sap mastery + flat CHA dmg via
+       `extra_flat_damage`), Flourish Parry/Counter (`intercept_event` +
+       `CounterSpec`), Indomitable (`on_failed_save` reroll). Each exercises a
+       different decision-point seam — climb these next, diffing each.
+     - **Gaps the thin slice surfaced (interpreter raises LOUDLY on these
+       today, by design):** (a) **scaling/upcast** dice (`increment`/
+       `every_n_levels`/`level_reference`) — needed for a real Divine Smite, not
+       for War Angel's flat 1d6; (b) **`choose_one`** effect blocks (Flourish's
+       distract/protect/strike); (c) **trigger/predicate evaluation** is NOT yet
+       data-driven — the policy still hand-codes `once_per_turn`, weapon type,
+       bless-turn gating (the confirmed "effect-compiler first" scope; grow
+       trigger-dispatch only when a build needs it); (d) **resource-type→slot**
+       resolution stays in the policy (correct per the boundary).
+     - The interpreter is intentionally narrow (apply_modifier bonus_die/flat +
+       damage rider). Widen it ability-by-ability against the oracle.
+
+     **Architecture clarification (decided this session — "interpreter" vs
+     "compiler").** Worth pinning so it isn't re-litigated: the design's word
+     "interpreter" pins ONE axis — *D&D knowledge lives in data, not engine
+     code* (CLAUDE.md #1). It is SILENT on the runtime *mechanism* (tree-walking
+     evaluator vs. translate-to-engine-objects). So `content.py` being an
+     effect-COMPILER/adapter does not violate the contract. Two clarifying
+     points: (a) the "compiler" feel of Slice 1 is partly because Bless is
+     *context-free* (`+1d4 always` → a static `Modifier`); the moment an ability
+     has runtime-dependent values (scaling by slot, fire-time target, conditional
+     value) the same functions evaluate at fire-time *with a context* = genuinely
+     interpretive — we're at the static end of the SAME path, not a different one
+     (this is also why the interpreter RAISES on `increment` today). (b) The
+     destination is NOT "everything is data": cross-ability strategy (sequencing,
+     slot arbitration) stays Python policy (CLAUDE.md #2); only ability INTRINSICS
+     (trigger/effect/cost) become data. The real remaining Axis-1 debt is
+     **trigger/predicate DISPATCH** — making an ability *fire* without the policy
+     naming it (gap (c) above). It stacks cleanly ABOVE the effect-interpreter
+     and calls it, so building effect-eval first does not lock it out — **as long
+     as the interpreter stays PURE (data in → engine objects out, no policy state
+     leaking in).** Guard that purity; it's what keeps the dispatch seam open.
+     **Decision: proceed with the original plan** (widen effect-eval
+     ability-by-ability against the oracle); build trigger-dispatch when a build
+     makes the policy-side gating painful enough to warrant it, or as a
+     deliberate slice if we want to prove the interpretive half early.
   2. **Outputs layer is ~10% built.** design §8 lists a rich set (hit/crit/adv
      rates, saves forced/failed by type, resource usage per day/combat, status
      uptimes, per-ability damage breakdown, damage taken/reduced/healed). We emit
