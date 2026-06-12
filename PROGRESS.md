@@ -34,10 +34,10 @@ At the start of every session, before diving into the work:
    stop"), or when Claude recognizes the milestone is complete — **prompt the user to
    re-enable** the disabled connectors, and clear the line.
 
-> **Currently disabled (re-enable before exit):** none — Google Drive and
-> Claude-in-Chrome were re-enabled at the end of the L14 session. At the start of
-> the next session, set scope + disable the irrelevant connectors again per the
-> ritual above.
+> **Currently disabled (re-enable before exit):** none — no connectors were
+> disabled during the L15/L16 session (we jumped straight into the work). User
+> re-initializes connectors manually. At the start of the next session, set
+> scope + disable the irrelevant connectors again per the ritual above.
 
 ---
 
@@ -99,23 +99,61 @@ Engine prerequisites, in the order we built them:
 - ~~Advantage/disadvantage + statuses + weapon mastery (sap/vex)~~ ✓  — `StatusSet`,
   `roll_d20`, sap/vex applied on hit and consumed on the holder's next roll.
 
-### NEXT STEP — War Angel validation COMPLETE through level 16 (Phase E stage E3 done)
+### NEXT STEP — NEW PHASE: declarative ability layer (War Angel validation CONCLUDED at L16)
 
-**Phases A–D done & validated; Phase E stages E1 (L14) + E2 (L15) + E3 (L16)
-DONE & VALIDATED.** The `intercept_event` (Flourish Parry) and the new
-**failed-save reroll decision point** (Indomitable) primitives are built. **222
-tests green** (the `test_unimplemented_level_raises` sentinel now points at L17).
+**War Angel validation is deliberately CONCLUDED at L16 (not abandoned — it did
+its job).** Phases A–E (L1–16) are done & validated; the engine-primitive
+build-up is complete. **222 tests green.** The decision to stop (user + Claude,
+this session) and the rationale:
+- **No remaining benchmark.** The guide's DPR is a literal `XXXX` placeholder
+  from L16 on, and the R prototype ended at L10. So L17–20 would produce DPR
+  numbers with nothing to validate them against — the whole point of the
+  exercise (check the engine against an objective benchmark) no longer applies.
+- **No new engine primitives in L17–20** (analyzed): L17 = data (PB +6; enemy
+  hardens to +13 / 36 dmg → DC-18 concentration — exercises the *already-built*
+  save stack); L18 Extra Attack ×2 = a 2→3 attack-count change in `decide()`;
+  L19 boon = passive data; L20 **Blessed Strikes** = a 1/turn on-hit +1d8 rider
+  that *reuses the existing `on_hit` decision point* + a per-turn gate (no new
+  verb), and a L4 slot = more upcast fuel. Marginal engine learning ≈ zero.
+- **Headline validation result:** across all of War Angel, **zero new verbs were
+  forced.** Everything new was a *decision point* (miss / hit / intercept /
+  save-reroll) — exactly the extensible seam the design predicted. The engine
+  PRIMITIVES are validated.
 
-**→ Next: Phase E stage E4 — L17 (Fighter-10).** PB → +6; cantrip scaling
-(true-strike 3d6 — but True Strike was dropped at L10, so check whether it
-returns to the rotation or stays out); the enemy gets harder (the L17 guide
-section: Monster AC stays **18** but to-hit → **+13** and damage → **36** →
-**DC-18** concentration checks, where the Bless/Indomitable save stack starts to
-matter more). **The L17 guide section has detailed hit/concentration tables but
-NO final DPR total** — so, like L16, expect **consistency-only validation**
-(confirm with the user). Read the L17 block of
-`design/build-guides/38_the_war_angel.txt` and re-derive under the EV-max lens.
-`make_war_angel(17)` is the next-raises level.
+**→ NEXT MAJOR FOCUS (agreed): build the declarative ability layer — the
+project's #1 architectural bet (CLAUDE.md #1/#2), still UNBUILT in running
+code.** Two architecture gaps War Angel left open (neither forced by it):
+  1. **Abilities-as-data is unrealized.** Nothing in `src/` loads
+     `content/abilities/*.yaml`; War Angel's abilities (Wrathful Smite, Bless,
+     Brutality, Flourish, Indomitable) are *hand-coded Python* in `war_angel.py`.
+     We proved the engine primitives are *sufficient* (zero new verbs) but NOT
+     that "adding an ability = writing data, not code." Today adding an ability =
+     writing Python. **Plan:** build a thin YAML ability loader + generic effect
+     interpreter; re-express a slice of War Angel's abilities as data; **diff the
+     results against the Python version (War Angel is now a known-good oracle).**
+     This de-risks the central bet at the cheapest possible moment — if the
+     abstraction leaks or the schema needs rework, we learn it now against a
+     validated reference, not after build #5.
+  2. **Outputs layer is ~10% built.** design §8 lists a rich set (hit/crit/adv
+     rates, saves forced/failed by type, resource usage per day/combat, status
+     uptimes, per-ability damage breakdown, damage taken/reduced/healed). We emit
+     DPR + CI + a couple of internal counters. We kept *hand-rolling* telemetry
+     by monkeypatching (the slot audit, parry-budget check, concentration count)
+     — evidence the first-class layer is missing and wanted. **Slot this in
+     alongside the ability-layer work** (it partly falls out of doing it well);
+     it is lower-risk, high compounding payoff.
+
+**Intended sequence after the ability layer:** then a **second, very different
+archetype** (spellcaster / save-based / ranged / multi-target) — written *as
+data* through the new loader, simultaneously testing the loader AND forcing the
+breadth War Angel never did (enemy saves, AoE, the deferred spell-aggressive
+enemy, maybe spatial). Richer enemy model + finite-HP toggle are real but later
+("extension", not "core-thesis test"). See "Open threads" for the full deferred
+list (spatial, spell-aggressive enemy, TurnEndEvent/reaction-economy, scheduled
+saves + spell_save_dc, weapon slot, light/nick, frightened condition).
+
+*(War Angel L17–20, if ever resumed: `make_war_angel(17)` is the next-raises
+level; all four are consistency-only, no primitives. Low priority.)*
 
 | Level | DPR        | Target | Error  | Days |
 |-------|------------|--------|--------|------|
