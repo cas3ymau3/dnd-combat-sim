@@ -34,10 +34,13 @@ At the start of every session, before diving into the work:
    stop"), or when Claude recognizes the milestone is complete — **prompt the user to
    re-enable** the disabled connectors, and clear the line.
 
-> **Currently disabled (re-enable before exit):** none — no connectors were
-> disabled during the declarative-ability-layer session (we jumped straight into
-> the work). Nothing to re-enable. At the start of the next session, set scope +
-> disable the irrelevant connectors again per the ritual above.
+> **Currently disabled (re-enable before exit):** none reported. **Session scope
+> (2026-06-12):** start the second archetype — *pick the build + write the plan
+> only* (no engine/interpreter changes). Stopping point = build selected, first
+> gap-to-force identified, plan + data scaffolding recorded. MCP-toggle
+> recommendation was made (disable computer-use / Claude-in-Chrome /
+> Claude_Preview / scheduled-tasks / mcp-registry / Google Drive); user did not
+> report disabling any. Nothing to re-enable.
 
 ---
 
@@ -265,6 +268,88 @@ enemy, maybe spatial). Richer enemy model + finite-HP toggle are real but later
 ("extension", not "core-thesis test"). See "Open threads" for the full deferred
 list (spatial, spell-aggressive enemy, TurnEndEvent/reaction-economy, scheduled
 saves + spell_save_dc, weapon slot, light/nick, frightened condition).
+
+#### Second archetype — STARFIRE SCION (selected 2026-06-12; plan recorded, UNBUILT)
+
+The second build is **The Starfire Scion** (`design/build-guides/41_spellfire_scion.txt`)
+— **Monk-08 (Sun-Soul) / Druid-12 (Circle of Stars)**, a WIS-based spellfire
+"blaster" gish. Scaffold: `src/builds/starfire_scion.py` (data + plan docstring
+only so far). Chosen over the other save/AoE candidates (Voice of Heaven, Tech
+War Priest, Reanimating Bloodshot) for a *capacity* reason, recorded so it isn't
+re-litigated:
+
+- **Why it maximizes model-capacity expansion.** It forces the two highest-value
+  untouched gaps cleanly: (1) **save-FOR-DAMAGE resolution** — a save whose
+  *result determines damage dealt* (Sacred Flame: DEX save, save-*negates*;
+  Burning Hands / Searing Arc Strike: DEX save, save-*for-half*). This is new: our
+  only save today is concentration (incoming-damage-driven, binary drop/keep), and
+  no attacker has ever carried a `spell_save_dc`. (2) **upcast / `level_reference`
+  scaling** — cantrip scaling (Sacred Flame 1d8→2d8→3d8→4d8 at char L5/11/17) and
+  Searing Arc Strike (upcast Burning Hands, +1d6/slot level, from L10) — the
+  `increment`/`level_reference` cases `content.py` currently raises LOUDLY on.
+- **Crucially, it forces both via SINGLE-TARGET deliveries** (Sacred Flame /
+  Guiding Bolt are single-target; Burning Hands modeled single-target for now). So
+  it expands capacity on the axes we're ready for while **cleanly deferring the
+  multi-enemy / spatial axis** (decided with user: that axis is the hardest, least
+  isolated, and not yet touched — see the rejected candidates below).
+- **Bonus capability it activates:** enemy saves now need the enemy's save bonus,
+  so `reference/data/monster_ac_and_saves_by_level.csv` (per-level AC + all six
+  `*.save.mod`, keyed by char level) becomes a **live input** — it has been
+  read-only until now. Also exercises **concentration from the OFFENSE side**
+  (Flame Blade; we only built it for defensive Bless), and adds **Fueled
+  Spellfire** (≤2 hit dice added to a radiant damage roll, 1/turn) — a
+  "smite-on-radiant-damage" rider that reuses the existing decision-point pattern
+  (expected: no new verb).
+- **Candidates rejected (with reasons, user-confirmed):**
+  - *Voice of Heaven (25, Celestial Warlock / Glamour Bard)* — core loop bakes in
+    **multi-enemy + spatial dynamics** (BA Command to herd enemies into AoE; spirit
+    guardians ticking on several enemies). That's the one axis we have zero
+    machinery for; forcing it first = the hardest, least-isolated bite.
+  - *Tech War Priest (30, Artillerist / War Cleric)* — uses an **outdated 2024
+    Artificer chassis** (guide itself would need correcting as we model, muddying
+    validation) and is **L12-only** (no long-arc ladder).
+  - *Reanimating Bloodshot (36)* — keep on the shelf as the future **separate
+    on-field entity / summon** forcing build (reanimated minion), but it's
+    **primarily our own weapon attacks** → structurally close to War Angel's
+    attack-roll martial archetype, low novelty on the save/AoE/upcast axis.
+
+**Two corrections folded into the plan (user, 2026-06-12):**
+1. *Guiding Bolt is an ATTACK-ROLL spell in 2024*, not save-for-damage: 4d6 radiant
+   on hit **+ a grant-advantage status** on the target (until end of our next
+   turn). The attack half reuses existing machinery. The advantage grant
+   realistically benefits an **ally** (we rarely consume it) → pokes the unmodeled
+   **"allies in combat"** dimension. **Deferred sub-decision:** initially model
+   Guiding Bolt as a plain 4d6 attack (advantage-grant ignored or self-consumed);
+   do NOT build an ally model now (minor DPR effect, off critical path).
+2. *The guide's per-level DPR numbers are "all-hit CEILINGS," not real targets* —
+   they assume every attack hits and the enemy always fails its save (no AC, no
+   misses, no successful saves, no stunning-strike resistance). Unlike War Angel
+   (which had genuine R-prototype simulated DPR to match ±10%), Starfire Scion has
+   **no ground-truth DPR ladder** — producing honest DPR for this build is itself a
+   *goal* of the model, not an input. **Validation framing flips to
+   consistency + sanity** (like War Angel L16): per-hit / per-save *damage math*
+   exact; DPR grows monotonically; DPR is a *plausible fraction* of the ceiling
+   given that level's hit / save-fail rates. The ceiling table is a loose upper
+   bound only.
+
+**First gap to force (agreed): save-FOR-DAMAGE resolution.** Foundational (appears
+at L1 via Sacred Flame), and a prerequisite for Fueled Spellfire and Searing Arc
+Strike. Upcast scaling comes later up the ladder.
+
+**Engine-capacity build order (for future sessions — NONE built this session):**
+1. `spell_save_dc` on the attacker + a **save-for-damage** resolution path: target
+   rolls d20 + `dex.save.mod` (from the monster CSV) vs the DC; damage scales on
+   the result — supporting both *save-negates* (Sacred Flame) and *save-for-half*
+   (Burning Hands). The first attacker-side save primitive (vs. concentration,
+   which is target-side). Likely a `SavingThrowEvent` + the deferred `spell_save_dc`
+   from Open threads.
+2. Cantrip / `level_reference` dice scaling (Sacred Flame by character level).
+3. Upcast `increment` scaling (Searing Arc Strike = upcast Burning Hands).
+
+**Explicitly deferred (unchanged):** multi-enemy AoE + spatial (Burning Hands
+modeled single-target until a multi-enemy model exists); separate-entity / summons
+(→ Reanimating Bloodshot later); the allies dimension (Guiding Bolt advantage
+grant). Validation = consistency/sanity, not number-matching.
 
 *(War Angel L17–20, if ever resumed: `make_war_angel(17)` is the next-raises
 level; all four are consistency-only, no primitives. Low priority.)*
