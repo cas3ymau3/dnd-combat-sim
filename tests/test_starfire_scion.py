@@ -1,0 +1,347 @@
+"""test_starfire_scion.py — the Starfire Scion build (L1, L4, L5) + the
+per-attack damage override primitive (#4) it forced.
+
+Validation framing (PROGRESS "STARFIRE SCION"): consistency + sanity, NOT
+number-matching.  The guide's per-level DPR are ALL-HIT CEILINGS (every attack
+hits, the enemy always fails its save), so there is no ground-truth ladder.  We
+check:
+  - factory stats + Sacred Flame dice pulled FROM DATA (interpret_save_spell);
+  - the per-attack override delivers each weapon/spell's OWN dice (the primitive);
+  - the policy's rotation / BA priority / Starry-Form gating;
+  - per-hit and per-save DAMAGE MATH exactly (deterministic FakeRNG);
+  - DPR is a plausible FRACTION of the ceiling, and grows monotonically when the
+    enemy is held FIXED (L4 vs L5 share enemy AC 15 / DEX +2) — raw cross-level
+    DPR is NOT expected monotonic, since the enemy hardens with level.
+"""
+
+import csv
+import logging
+from pathlib import Path
+
+import pytest
+
+from src.builds import starfire_scion as ss
+from src.content import interpret_save_spell, load_abilities
+from src.entity import Entity
+from src.events import AttackRollEvent, EventQueue, SaveDamageEvent
+from src.policy import Choice, GameState
+from src.rng import SeededRNG
+from src.verbs import resolve_attack_roll, resolve_damage, resolve_save_damage
+
+logging.disable(logging.CRITICAL)
+
+_CSV = Path(__file__).resolve().parents[1] / "reference" / "data" / "monster_ac_and_saves_by_level.csv"
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+class FakeRNG:
+    """Pops preloaded values; records (n, sides) per call (same shape as the
+    stub in test_save_for_damage.py)."""
+
+    def __init__(self, values):
+        self._values = list(values)
+        self.roll_calls = []
+
+    def roll(self, n, sides):
+        self.roll_calls.append((n, sides))
+        return [self._values.pop(0) for _ in range(n)]
+
+    def roll_one(self, sides):
+        return self.roll(1, sides)[0]
+
+
+def _resolve_attack(actor, target, weapon_stat, dice, bonus, rng) -> int:
+    """Resolve one attack with a per-attack damage override end to end; return
+    the damage dealt (0 on a miss)."""
+    q = EventQueue()
+    ev = AttackRollEvent(
+        tick=(1, 0, 1), actor=actor, target=target,
+        weapon_stat=weapon_stat,
+        damage_dice_override=dice, damage_bonus_override=bonus,
+    )
+    resolve_attack_roll(ev, rng, q, 2)
+    if len(q) == 0:
+        return 0
+    dmg_ev = q.pop()
+    total, _ = resolve_damage(dmg_ev, rng, q, 3)
+    return total
+
+
+def _resolve_sacred_flame(caster, enemy, dice, rng) -> int:
+    """One Sacred Flame (save-NEGATES) cast end to end; return damage dealt."""
+    q = EventQueue()
+    ev = SaveDamageEvent(
+        tick=(1, 0, 1), actor=caster, target=enemy,
+        save_stat="dex_save", damage_dice=dice, on_save="none",
+    )
+    resolve_save_damage(ev, rng, q, 2)
+    if len(q) == 0:
+        return 0
+    dmg_ev = q.pop()
+    total, _ = resolve_damage(dmg_ev, rng, q, 3)
+    return total
+
+
+def _snapshot(round_number: int, resources: dict) -> GameState:
+    """Minimal snapshot for poking decide() directly (resources merges the action
+    economy with the persistent pools, as the scheduler would)."""
+    target = Entity(name="t", hp=10, base_stats={"ac": 15})
+    return GameState(
+        actor=Entity(name="a", hp=10),
+        enemies=(target,),
+        allies=(),
+        round_number=round_number,
+        turn_index=0,
+        tick=(round_number, 0, 0),
+        resources=resources,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Build data / factory
+# ---------------------------------------------------------------------------
+
+def test_factory_stats():
+    expected = {
+        1: {"attack_bonus": 5, "spell_attack_bonus": 5, "spell_save_dc": 13},
+        4: {"attack_bonus": 5, "spell_attack_bonus": 5, "spell_save_dc": 13},
+        5: {"attack_bonus": 6, "spell_attack_bonus": 7, "spell_save_dc": 15},
+    }
+    for level, want in expected.items():
+        char = ss.make_starfire_scion(level)
+        for stat, value in want.items():
+            assert char.stat(stat) == value, f"L{level} {stat}"
+
+
+def test_sacred_flame_dice_come_from_data():
+    """The policy resolves Sacred Flame's dice via interpret_save_spell (cantrip
+    scaling), NOT a literal tuple: 1d8 at L1/L4, 2d8 at L5 (Spellfire Adept)."""
+    for level, dice in ((1, (1, 8)), (4, (1, 8)), (5, (2, 8))):
+        char = ss.make_starfire_scion(level)
+        policy = ss.StarfireScionPolicy(level, char, ss.make_training_dummy(level))
+        assert policy._sacred_flame_dice == dice
+
+
+def test_unimplemented_level_raises():
+    with pytest.raises(NotImplementedError):
+        ss.make_starfire_scion(2)
+
+
+def test_enemy_stats_are_live_from_the_monster_csv():
+    """enemy_ac / enemy_dex_save are the csv's ac + dex.save.mod at cr == level."""
+    rows = {int(r["level"]): r for r in csv.DictReader(_CSV.open())}
+    for level in (1, 4, 5):
+        data = ss.LEVELS[level]
+        assert data["enemy_ac"] == int(rows[level]["ac"])
+        assert data["enemy_dex_save"] == int(rows[level]["dex.save.mod"])
+
+
+# ---------------------------------------------------------------------------
+# Per-attack damage override — the primitive this build forced (#4)
+# ---------------------------------------------------------------------------
+
+def test_override_delivers_the_choices_own_dice():
+    """One entity, two attacks with DIFFERENT overrides → different dice rolled.
+    This is the whole point: a single actor.stat("damage_dice") no longer binds."""
+    actor = Entity(name="scion", hp=20, base_stats={
+        "attack_bonus": 10, "damage_dice": (1, 8), "damage_bonus": 3,
+    })
+    target = Entity(name="t", hp=10_000, base_stats={"ac": 1})  # always hit
+    # Quarterstaff 1d8+3: d20=15 (hits, no crit), die=8 → 11.
+    q = _resolve_attack(actor, target, "attack_bonus", (1, 8), 3, FakeRNG([15, 8]))
+    # Unarmed 1d6+3: d20=15, die=6 → 9.
+    u = _resolve_attack(actor, target, "attack_bonus", (1, 6), 3, FakeRNG([15, 6]))
+    # Guiding Bolt 4d6+0: d20=15, four d6 → 24.
+    g = _resolve_attack(actor, target, "attack_bonus", (4, 6), 0, FakeRNG([15, 6, 6, 6, 6]))
+    assert (q, u, g) == (11, 9, 24)
+    # The recorded die calls prove each pulled its OWN pool, not the entity's 1d8.
+    rng = FakeRNG([15, 6, 6, 6, 6])
+    _resolve_attack(actor, target, "attack_bonus", (4, 6), 0, rng)
+    assert (4, 6) in rng.roll_calls
+
+
+def test_no_override_falls_back_to_entity_weapon():
+    """Backward-compat: an attack with no override reads actor.stat (the path
+    every single-weapon build, incl. War Angel, relies on)."""
+    actor = Entity(name="a", hp=20, base_stats={
+        "attack_bonus": 10, "damage_dice": (1, 8), "damage_bonus": 5,
+    })
+    target = Entity(name="t", hp=10_000, base_stats={"ac": 1})
+    q = EventQueue()
+    ev = AttackRollEvent(tick=(1, 0, 1), actor=actor, target=target)
+    resolve_attack_roll(ev, FakeRNG([15, 8]), q, 2)
+    dmg_ev = q.pop()
+    total, _ = resolve_damage(dmg_ev, FakeRNG([8]), q, 3)
+    assert total == 13  # 1d8(8) + 5, from the entity stat
+
+
+def test_override_bonus_zero_is_honored_not_entity_bonus():
+    """Guiding Bolt has +0 damage; the override's 0 must win over the entity's
+    damage_bonus (the 'override present iff damage_dice set' rule)."""
+    actor = Entity(name="a", hp=20, base_stats={
+        "attack_bonus": 10, "damage_dice": (1, 8), "damage_bonus": 5,
+    })
+    target = Entity(name="t", hp=10_000, base_stats={"ac": 1})
+    dmg = _resolve_attack(actor, target, "attack_bonus", (4, 6), 0, FakeRNG([15, 6, 6, 6, 6]))
+    assert dmg == 24  # 4d6, NO +5
+
+
+def test_override_dice_double_on_a_crit():
+    """The override rides the normal DamageEvent.damage_dice, so a nat-20 doubles
+    its die COUNT (quarterstaff 1d8 → 2d8) while the flat bonus does not."""
+    actor = Entity(name="a", hp=20, base_stats={
+        "attack_bonus": 10, "damage_dice": (1, 6), "damage_bonus": 0,
+    })
+    target = Entity(name="t", hp=10_000, base_stats={"ac": 1})
+    # d20=20 crit → 2d8 (both 8) + 3 → 19.  (Entity's fallback 1d6 is NOT used.)
+    dmg = _resolve_attack(actor, target, "attack_bonus", (1, 8), 3, FakeRNG([20, 8, 8]))
+    assert dmg == 19
+
+
+# ---------------------------------------------------------------------------
+# Policy structure / rotation
+# ---------------------------------------------------------------------------
+
+def _full_resources(level: int, **overrides) -> dict:
+    """action+bonus_action plus this level's persistent pools at full, with
+    optional overrides (e.g. spellfire_spark=0 to model exhaustion)."""
+    res = {"action": 1, "bonus_action": 1, "reaction": 1}
+    for name, (maximum, _sr) in ss.LEVELS[level].get("resources", {}).items():
+        res[name] = maximum
+    res.update(overrides)
+    return res
+
+
+def test_policy_emits_action_and_bonus_each_round():
+    char = ss.make_starfire_scion(1)
+    policy = ss.StarfireScionPolicy(1, char, ss.make_training_dummy(1))
+    choices = policy.decide(_snapshot(1, _full_resources(1)))
+    assert any(c.cost == "action" for c in choices)
+    assert any(c.cost == "bonus_action" for c in choices)
+
+
+def test_l1_bonus_priority_sacred_flame_then_unarmed():
+    char = ss.make_starfire_scion(1)
+    policy = ss.StarfireScionPolicy(1, char, ss.make_training_dummy(1))
+    # Spellfire Spark available → BA is Sacred Flame (save_spell).
+    ba = [c for c in policy.decide(_snapshot(1, _full_resources(1))) if c.cost == "bonus_action"]
+    assert len(ba) == 1 and ba[0].action_type == "save_spell"
+    assert ba[0].damage_dice == (1, 8) and ba[0].on_save == "none"
+    # Exhausted → BA falls back to an unarmed strike (1d6+3, DEX to-hit).
+    ba = [c for c in policy.decide(_snapshot(1, _full_resources(1, spellfire_spark=0)))
+          if c.cost == "bonus_action"]
+    assert len(ba) == 1 and ba[0].action_type == "attack"
+    assert ba[0].damage_dice == (1, 6) and ba[0].weapon_stat == "attack_bonus"
+
+
+def test_l4_action_guiding_bolt_then_quarterstaff():
+    char = ss.make_starfire_scion(4)
+    policy = ss.StarfireScionPolicy(4, char, ss.make_training_dummy(4))
+    act = [c for c in policy.decide(_snapshot(1, _full_resources(4))) if c.cost == "action"]
+    assert len(act) == 1 and act[0].damage_dice == (4, 6)             # Guiding Bolt
+    assert act[0].weapon_stat == "spell_attack_bonus"
+    act = [c for c in policy.decide(_snapshot(1, _full_resources(4, guiding_bolt_free=0)))
+           if c.cost == "action"]
+    assert len(act) == 1 and act[0].damage_dice == (1, 8)             # quarterstaff
+    assert act[0].weapon_stat == "attack_bonus"
+
+
+def test_l4_archer_only_when_starry_form_active():
+    char = ss.make_starfire_scion(4)
+    dummy = ss.make_training_dummy(4)
+    policy = ss.StarfireScionPolicy(4, char, dummy)
+    res = _full_resources(4, spellfire_spark=0)        # force the BA past Sacred Flame
+    # Not activated yet → unarmed.
+    ba = [c for c in policy.decide(_snapshot(1, res)) if c.cost == "bonus_action"][0]
+    assert ba.damage_dice == (1, 6)
+    # Activate Starry Form (consumes a Wild Shape charge) → Archer (1d8, WIS).
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy._starry_form_active
+    ba = [c for c in policy.decide(_snapshot(1, res)) if c.cost == "bonus_action"][0]
+    assert ba.damage_dice == (1, 8) and ba.weapon_stat == "spell_attack_bonus"
+
+
+def test_on_combat_start_consumes_wild_shape_and_runs_out():
+    char = ss.make_starfire_scion(4)              # wild_shape (2, +1 SR)
+    policy = ss.StarfireScionPolicy(4, char, ss.make_training_dummy(4))
+    assert char.resources.available("wild_shape") == 2
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy._starry_form_active and char.resources.available("wild_shape") == 1
+    policy.on_combat_start(1, SeededRNG(0))
+    assert policy._starry_form_active and char.resources.available("wild_shape") == 0
+    # Pool empty → form down this combat (BA will fall back to unarmed).
+    policy.on_combat_start(2, SeededRNG(0))
+    assert not policy._starry_form_active
+
+
+# ---------------------------------------------------------------------------
+# Exact per-hit / per-save damage math (deterministic)
+# ---------------------------------------------------------------------------
+
+def test_quarterstaff_and_unarmed_hit_math_l1():
+    char = ss.make_starfire_scion(1)
+    target = ss.make_training_dummy(1)            # AC 13
+    # Quarterstaff 1d8+3: d20=15 hits (no crit), die=5 → 8.
+    assert _resolve_attack(char, target, "attack_bonus", (1, 8), 3, FakeRNG([15, 5])) == 8
+    # Unarmed 1d6+3: d20=15, die=4 → 7.
+    assert _resolve_attack(char, target, "attack_bonus", (1, 6), 3, FakeRNG([15, 4])) == 7
+    # A miss deals nothing (d20=1 vs AC 13).
+    assert _resolve_attack(char, target, "attack_bonus", (1, 8), 3, FakeRNG([1])) == 0
+
+
+def test_archer_and_guiding_bolt_hit_math_l5():
+    char = ss.make_starfire_scion(5)
+    target = ss.make_training_dummy(5)            # AC 15
+    # Archer 1d8 + WIS(4): d20=15 (hits, no crit), die=6 → 10.
+    assert _resolve_attack(char, target, "spell_attack_bonus", (1, 8), 4, FakeRNG([15, 6])) == 10
+    # Guiding Bolt 4d6 + 0: d20=15, dice all 5 → 20.
+    assert _resolve_attack(char, target, "spell_attack_bonus", (4, 6), 0,
+                           FakeRNG([15, 5, 5, 5, 5])) == 20
+
+
+def test_sacred_flame_save_negates_from_data_l5():
+    """Sacred Flame at L5 (2d8 from data, DC 15) — full on a failed DEX save,
+    nothing on a made one.  Dice come from interpret_save_spell, not a literal."""
+    char = ss.make_starfire_scion(5)              # spell_save_dc 15
+    target = ss.make_training_dummy(5)            # dex_save +2
+    dice = interpret_save_spell(load_abilities()["sacred_flame"],
+                                {"character_level": 5}).damage_dice
+    assert dice == (2, 8)
+    # Failed save (d20=2 → 4 < 15): full 2d8, both max → 16.
+    assert _resolve_sacred_flame(char, target, dice, FakeRNG([2, 8, 8])) == 16
+    # Made save (d20=20 → 22 >= 15): negated → 0.
+    assert _resolve_sacred_flame(char, target, dice, FakeRNG([20])) == 0
+
+
+# ---------------------------------------------------------------------------
+# DPR sanity — plausible fraction of the ceiling; monotonic at a FIXED enemy
+# ---------------------------------------------------------------------------
+
+def _mean_dpr(level: int, n_days: int, seed: int = 0, rounds_per_combat: int = 4) -> float:
+    rng = SeededRNG(seed)
+    runner, char, dummy = ss.make_day_runner(level, rng, rounds_per_combat)
+    rounds_per_day = 4 * rounds_per_combat
+    total = sum(runner.run_day().damage_received_by(dummy.id) for _ in range(n_days))
+    return total / (n_days * rounds_per_day)
+
+
+def test_dpr_is_a_plausible_fraction_of_the_ceiling():
+    """Each level: 0 < DPR < ceiling (every attack can miss / every save can
+    succeed, so the all-hit ceiling is a strict upper bound)."""
+    for level in (1, 4, 5):
+        dpr = _mean_dpr(level, n_days=400)
+        ceiling = ss.LEVELS[level]["ceiling_dpr"]
+        assert 0 < dpr < ceiling, f"L{level}: {dpr:.2f} not in (0, {ceiling})"
+
+
+def test_l5_outdamages_l4_against_the_same_enemy():
+    """The monotonic consistency check, with the enemy held FIXED: L4 and L5 face
+    the same monster (AC 15 / DEX +2), so L5's gains (PB +1, WIS +1, Sacred Flame
+    1d8→2d8) must lift DPR.  (Raw cross-level DPR is NOT expected monotonic — the
+    enemy hardens with level, exactly as War Angel's targets do.)"""
+    assert ss.LEVELS[4]["enemy_ac"] == ss.LEVELS[5]["enemy_ac"] == 15
+    assert ss.LEVELS[4]["enemy_dex_save"] == ss.LEVELS[5]["enemy_dex_save"] == 2
+    assert _mean_dpr(5, n_days=600) > _mean_dpr(4, n_days=600)

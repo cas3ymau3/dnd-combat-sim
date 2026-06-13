@@ -119,6 +119,17 @@ class AttackRollEvent(Event):
     # Flat damage added to this attack's hit beyond the weapon's damage_bonus —
     # e.g. Brutality::bleed's +CHA mod.  Threaded into the DamageEvent (phase 5).
     extra_flat_damage: int = 0
+    # Per-attack damage PROFILE override (the multi-weapon gish primitive).  When
+    # an entity makes attacks with DIFFERENT dice (quarterstaff 1d8 vs unarmed 1d6
+    # vs an Archer-form spell attack 1d8+WIS vs Guiding Bolt 4d6), one
+    # actor.stat("damage_dice") no longer suffices.  A Choice may carry its own
+    # damage_dice/damage_bonus; the scheduler threads them here.  None → fall back
+    # to the actor's weapon stat (every single-weapon build, incl. War Angel, is
+    # unchanged — they leave these None).  damage_bonus_override is only consulted
+    # when damage_dice_override is set, so an override of +0 (Guiding Bolt) is
+    # distinguishable from "no override".
+    damage_dice_override: "tuple[int, int] | None" = None
+    damage_bonus_override: "int | None" = None
     # Whether the ACTING entity's post-roll decision points (on_miss / on_hit)
     # may fire for this attack.  False for "rider" attacks that are themselves a
     # reaction and must not spawn further riders — e.g. the Flourish Counter,

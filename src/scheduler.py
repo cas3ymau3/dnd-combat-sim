@@ -518,6 +518,14 @@ class Scheduler:
                     masteries.append(base_mastery)
                 masteries.extend(choice.extra_masteries)
 
+                # Per-attack damage override (multi-weapon gish): when the Choice
+                # carries its own damage_dice, that attack uses it (with its own
+                # damage_bonus, defaulting to 0); otherwise both stay None and the
+                # resolver reads the actor's single weapon stat as before.
+                dmg_dice_override = choice.damage_dice
+                dmg_bonus_override = (
+                    choice.damage_bonus if choice.damage_dice is not None else None
+                )
                 atk_event = AttackRollEvent(
                     tick=make_tick(round_, turn_idx, seq),
                     actor=actor,
@@ -527,6 +535,8 @@ class Scheduler:
                     masteries=masteries,
                     extra_damage_dice=list(choice.extra_damage_dice),
                     extra_flat_damage=choice.extra_flat_damage,
+                    damage_dice_override=dmg_dice_override,
+                    damage_bonus_override=dmg_bonus_override,
                 )
                 self.queue.push(atk_event)
                 seq += 1

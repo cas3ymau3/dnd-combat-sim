@@ -54,21 +54,84 @@ When wrapping up a session (the milestone is complete, or the user signals an en
    This is the project's handoff mechanism — never skip it.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-12, session 4) — DONE:** build engine primitive #3 for Starfire Scion —
-> uniform upcast `increment`/`every_n_levels` dice scaling in `_resolve_scaling_dice`
-> + a Searing Arc Strike (upcast Burning Hands) save-for-half delivery. The
-> uniform branch (was stubbed to raise) now folds `{base, increment,
-> every_n_levels, level_reference, base_level}` to concrete dice; offset semantics
-> = **explicit `base_level`, default 1** (decided with user). Stopping point
-> reached: primitive built, upcast dice pinned exact per slot level + monotonic
-> growth + save-for-half mean a plausible fraction of the ceiling; **284 tests
-> green (+11).** Full Starfire Scion policy/build wiring still deferred. MCP-toggle
+> (2026-06-13, session 5) — DONE:** turn `src/builds/starfire_scion.py` from
+> scaffold into a real build (L1, L4, L5) — `make_starfire_scion`,
+> `make_training_dummy`, `StarfireScionPolicy`, `make_day_runner`. Sacred Flame
+> dice are pulled FROM DATA via `interpret_save_spell({"character_level": L})`
+> (1d8→2d8 at L5), not a literal. The build forced ONE not-anticipated engine
+> primitive (**#4: per-attack damage override** — a multi-weapon gish needs
+> distinct dice per attack: quarterstaff 1d8+DEX / unarmed 1d6+DEX / Archer 1d8+WIS
+> / Guiding Bolt 4d6 on ONE body, where the engine read a single
+> `actor.stat("damage_dice")`); added deliberately, backward-compatible (War Angel
+> bit-identical). Fueled Spellfire confirmed DEFERRED (needs a post-save caster
+> decision point — a future primitive). **302 tests green (+18).** MCP-toggle
 > recommendation re-made (computer-use / Claude-in-Chrome / Claude_Preview /
 > scheduled-tasks / mcp-registry / Google Drive).
 
 ---
 
 ## Done
+
+- **Starfire Scion BUILD WIRED (L1, L4, L5) + per-attack damage override
+  primitive (#4) — BUILT & VALIDATED (2026-06-13, session 5).** The second
+  archetype is now a real build, not a scaffold: `make_starfire_scion`,
+  `make_training_dummy`, `StarfireScionPolicy.decide` (pure read), and
+  `make_day_runner` in `src/builds/starfire_scion.py`. **302 tests green (+18).**
+  - **Engine primitive #4 — per-attack damage override (the multi-weapon gish
+    primitive; NOT anticipated in the "no engine code" session framing).** The
+    engine read ONE `actor.stat("damage_dice")` for every attack (fine for the
+    single-weapon War Angel). The Scion mixes FOUR attack profiles with different
+    dice on one body — quarterstaff (1d8+DEX), unarmed (1d6+DEX), Starry-Form
+    Archer (1d8+WIS), Guiding Bolt (4d6) — so an override was forced. Decided with
+    the user (over a no-engine "null-weapon via extra_damage_dice" trick, which
+    was the abstraction leak CLAUDE.md #1 warns against): add it deliberately.
+    Shape: `Choice.damage_dice`/`damage_bonus` (reused — they already existed for
+    `save_spell`) → `AttackRollEvent.damage_dice_override`/`damage_bonus_override`
+    → `DamageEvent.damage_dice`. `resolve_attack_roll` uses the override when
+    present, else `actor.stat()`. **Override-present iff `damage_dice` is set**, so
+    an override of +0 (Guiding Bolt) is distinguishable from "no override". Fully
+    backward-compatible — every prior build leaves the fields None and is
+    bit-identical (the 284 War Angel/save tests stayed green). Rides the normal
+    DamageEvent path, so override dice crit-double like any weapon dice.
+  - **Build wiring.** Rotation (a single representative blaster loop; the guide's
+    full play splits melee/ranged combats + leans on deferred Flame Blade/forms):
+    ACTION = Guiding Bolt (Star Map free cast, xWIS/LR) while charges remain, else
+    quarterstaff; BONUS ACTION = **Sacred Flame** (Spellfire Spark, xPB/LR,
+    save-NEGATES — the save-for-damage core) > Archer (if Starry Form active this
+    combat) > unarmed. Sacred Flame dice come FROM DATA via `interpret_save_spell`
+    (1d8 at L1/L4, 2d8 at L5 — cantrip scaling in content, not the policy). Slot/
+    charge arbitration + the BA priority ladder stay Python. `decide()` is a pure
+    read; the one per-combat resource decision (Starry Form activation, consuming a
+    `wild_shape` charge: 2/LR +1 SR → ~3 of 4 combats) lives in `on_combat_start`.
+  - **L2/L3 intentionally skipped** (no DPR-relevant mechanics — Druid
+    spellcasting / wild-shape utility); easy to backfill for a continuous ladder.
+  - **Starry Form engine assessment (user asked):** *Archer* = a BA WIS spell
+    attack → reuses attack-roll machinery (delivered via primitive #4, no new
+    verb). *Chalice* = extra healing → DPR-irrelevant in the threshold model
+    (ignored). *Dragon* = a min-roll-10 floor on concentration saves → MOOT here
+    (no offensive-concentration + incoming-damage loop at L1–L5, exactly like War
+    Angel before L13); when it matters it's a small `floor` hook on
+    `resolve_saving_throw`, not a new primitive.
+  - **Enemy is a live CSV input.** `enemy_ac` + `enemy_dex_save` per level are the
+    `ac` + `dex.save.mod` rows of `reference/data/monster_ac_and_saves_by_level.csv`
+    (asserted against the CSV in the tests). The enemy does NOT strike back yet.
+  - **Validation (consistency/sanity, per the Starfire framing — NOT
+    number-matching):** `tests/test_starfire_scion.py` pins per-hit math exactly
+    (quarterstaff 1d8+3, unarmed 1d6+3, Archer 1d8+WIS, Guiding Bolt 4d6 — each its
+    OWN dice, proving the override; +0 bonus honored; crit-doubling), per-save math
+    (Sacred Flame 2d8 from data, full on a failed DEX save / negated on a made
+    one), the policy's rotation + BA priority + Wild-Shape gating, and that DPR is a
+    plausible FRACTION of the ceiling. **Monotonicity is checked at a FIXED enemy**:
+    L4 and L5 share the monster (AC 15 / DEX +2), so L5 (~11.15) > L4 (~9.08) cleanly
+    isolates our-side scaling (PB+1, WIS+1, 1d8→2d8). Raw cross-level DPR is NOT
+    expected monotonic — the enemy hardens (AC 13→15), so L1 (~9.27) ≈ L4 (~9.08),
+    exactly as War Angel's own targets dip (L1 8.32 > L2 7.39).
+  - **Deferred (in scope, with reasons):** Fueled Spellfire (needs a NEW post-save
+    caster decision point — the on_hit analog on the save-damage path; a
+    cast-time approximation would burn scarce hit dice on saved casts); Searing Arc
+    Strike at L10 (primitive #3 + data ready, policy waits for the level); Flame
+    Blade / Stunning Strike / Guiding Bolt's ally advantage-grant / multi-enemy AoE
+    (unchanged deferrals).
 
 - **Uniform upcast `increment` dice scaling — BUILT & VALIDATED (2026-06-12,
   session 4; Starfire Scion engine primitive #3).** The uniform branch of the
@@ -519,9 +582,24 @@ Strike. Upcast scaling comes later up the ladder.
    level_reference, base_level}` to concrete dice keyed on `slot_level`; offset =
    explicit `base_level` (default 1). `searing_arc_strike` (save-for-half, upcast
    3d6+1d6/slot) drives FROM DATA through `interpret_save_spell`. See the Done
-   entry above. **No remaining engine primitive is blocking the build** — what's
-   left for Starfire Scion is per-level data + the policy/`make_starfire_scion`
-   wiring.
+   entry above.
+4. ~~Per-attack damage override (the multi-weapon gish primitive).~~ ✓ **DONE &
+   VALIDATED (2026-06-13, session 5).** Surfaced when wiring the build, NOT
+   anticipated by the "save-for-damage primitives are all the engine needs"
+   framing: the Scion swings several attack profiles with different dice on one
+   body (quarterstaff / unarmed / Archer / Guiding Bolt), but the engine read a
+   single `actor.stat("damage_dice")`. `Choice.damage_dice`/`damage_bonus` →
+   `AttackRollEvent.*_override` → `DamageEvent`, defaulting to the entity stat
+   (backward-compatible). See the Done entry above. **The L1/L4/L5 build is now
+   wired** (`make_starfire_scion` + `StarfireScionPolicy` + `make_day_runner`); the
+   climb to L6+ is per-level data + policy from here.
+
+**Next engine primitive the build will force (NOT yet built):** Fueled Spellfire
+(L5) = a **post-save caster decision point** — the on_hit analog on the
+save-damage path (after a Sacred Flame save FAILS, the caster may expend ≤2 Hit
+Dice into that damage roll, 1/turn). Deferred this session rather than approximated
+at cast-time (which burns scarce hit dice on saved casts). Build it before/at the
+L5 fidelity pass; Searing Arc Strike (L10) needs no new primitive (data + #3 ready).
 
 **Explicitly deferred (unchanged):** multi-enemy AoE + spatial (Burning Hands
 modeled single-target until a multi-enemy model exists); separate-entity / summons

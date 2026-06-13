@@ -125,12 +125,18 @@ class Choice:
     # Flat damage added to this attack on hit beyond the weapon's damage_bonus,
     # e.g. Brutality::bleed's +CHA mod.  Threaded to the AttackRollEvent.
     extra_flat_damage: int = 0
-    # --- Save-FOR-damage spells (action_type="save_spell"): Sacred Flame, etc. ---
-    # The TARGET rolls `save_stat` (e.g. "dex_save") vs the actor's `dc_stat`
-    # (spell save DC); the result determines damage.  `damage_dice`/`damage_bonus`
-    # are the spell's own dice (carried here, NOT the weapon's).  `on_save` is
-    # "none" (save negates — Sacred Flame) or "half" (save for half — Burning
-    # Hands).  Only read when action_type == "save_spell".
+    # --- Per-attack damage profile / save-FOR-damage dice ---
+    # `damage_dice`/`damage_bonus` carry this Choice's OWN damage, used in two
+    # ways depending on action_type:
+    #   - action_type == "attack": a PER-ATTACK OVERRIDE of the actor's weapon
+    #     (the multi-weapon gish primitive — quarterstaff 1d8 vs unarmed 1d6 vs an
+    #     Archer spell attack 1d8+WIS vs Guiding Bolt 4d6).  Left None for a
+    #     single-weapon build → the resolver reads actor.stat("damage_dice").
+    #   - action_type == "save_spell": the SPELL's own dice (Sacred Flame, Burning
+    #     Hands), carried here rather than pulled from the weapon stat.
+    # For save_spell the TARGET rolls `save_stat` (e.g. "dex_save") vs the actor's
+    # `dc_stat` (spell save DC) and `on_save` decides the result — "none" (save
+    # negates — Sacred Flame) or "half" (save for half — Burning Hands).
     save_stat: "str | None" = None
     dc_stat: str = "spell_save_dc"
     damage_dice: "tuple[int, int] | None" = None
