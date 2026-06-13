@@ -53,6 +53,24 @@ When wrapping up a session (the milestone is complete, or the user signals an en
    point) BEFORE coding. Mirror the style of the prompt that started *this* session.
    This is the project's handoff mechanism — never skip it.
 
+## Per-feature ritual (when building a new game mechanic)
+
+Whenever a feature introduces a new game mechanic (a new ability, spell, attack
+type, condition, resource, …):
+
+1. **Verify the rules text FIRST — do NOT model from memory.** Before interpreting
+   a mechanic, look up its ACTUAL language: the build-guide section AND/OR the web
+   (official 2024 rules). Confirm the reading, and cite the source (guide line /
+   URL) in the code or commit. (Fueled Spellfire, session 6: the guide's "expend
+   up to 2 Hit Dice and add the total" + its worked `4d6+2d8 (23)` example
+   confirmed the rider adds N d8 with NO ability modifier — easy to get wrong from
+   memory.)
+2. **Reflect after building — STOP and ask.** Once the feature is built and green,
+   pause and ask the user whether building it surfaced any open questions OR any
+   updates to how we work (this ritual, the validation framing, the schema, the
+   decision-record conventions). Capture the answers before moving on; process
+   improvements compound and are cheapest to make while the context is fresh.
+
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
 > (2026-06-13, session 6) — DONE:** built **Fueled Spellfire (engine primitive
 > #5)** — a CASTER-side post-damage decision point — and wired it into the
