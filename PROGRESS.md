@@ -601,6 +601,33 @@ Dice into that damage roll, 1/turn). Deferred this session rather than approxima
 at cast-time (which burns scarce hit dice on saved casts). Build it before/at the
 L5 fidelity pass; Searing Arc Strike (L10) needs no new primitive (data + #3 ready).
 
+**die-size scaling — the next unbuilt SCALED-QUANTITY (flagged, first consumer
+SHILLELAGH at L9; recorded with user 2026-06-13).** 2024 Shillelagh has cantrip
+scaling like any damaging cantrip, but it grows the **die SIZE** — and its top
+step changes the COUNT too: **1d8 → 1d10 (L5) → 1d12 (L11) → 2d6 (L17)**. That is
+NOT the uniform die-COUNT walk `_resolve_scaling_dice` handles (it holds size
+fixed: `return base_count + steps, sides`), and NOT a pure die-size walk either
+(the 2d6 step). The right primitive is an **enumerated DICE LADDER**: a break list
+paired with an arbitrary `(count, sides)` per step (e.g. `scaling: ladder`,
+`breaks: [5,11,17]`, `dice: ["1d8","1d10","1d12","2d6"]`) — a NEW scaled-quantity
+in the §4.5 typology (the uniform die-count form is built; the dice ladder and
+target-count are the unbuilt axes). It is a pure scaling-helper addition, small
+and isolated — NOT blocked on any other model (unlike target-count, which waits on
+multi-enemy). **The build can DODGE it** by baking the resolved die into each
+LEVELS row (Shillelagh = (1,10) at char L9–10, (1,12) at L11–16, (2,6) at L17+),
+exactly as weapon dice are already per-level data — so wiring L9 needs only
+primitive #4 + a policy flag + this per-level die. Build the data-driven ladder
+only when a die-size feature should resolve from YAML by character level. The
+attack-profile half of Shillelagh (STR/DEX → WIS swap + d-size weapon) is already
+covered by primitive #4. **And it is a GENERAL phenomenon, not a Shillelagh quirk
+— bardic inspiration (d6→d8→d10→d12), battlemaster superiority die (d8→d10→d12),
+psionic / psi-energy dice all scale their die by class level, and some are
+`bonus_die` modifiers rather than damage pools** → build the dice LADDER ONCE as a
+first-class shape (per-feature break list → per-step `(count, sides)`, which
+covers pure die-size growth and Shillelagh's mixed 2d6 step alike), reused across
+all of them, not re-solved per ability. See `design/ability_schema.md` §4.5
+"Scaled quantity".
+
 **Explicitly deferred (unchanged):** multi-enemy AoE + spatial (Burning Hands
 modeled single-target until a multi-enemy model exists); separate-entity / summons
 (→ Reanimating Bloodshot later); the allies dimension (Guiding Bolt advantage
