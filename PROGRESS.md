@@ -980,6 +980,31 @@ combat policy through two lenses, and reformulate it as needed:
 
 ## Open threads / deferred decisions
 
+- **Scaling typology — RECORDED (2026-06-12, session 4); framework deliberately
+  NOT generalized yet.** Discussed with the user after primitive #3: rather than
+  treat the two dice-scaling "modes" (cantrip / uniform) as two kinds of ability,
+  they decompose into three INDEPENDENT axes — **driver** (`level_reference`:
+  slot/character/class level or a spent-resource count), **step function**
+  (linear `increment`/`every_n_levels`/`base_level`, or a threshold list like
+  cantrip's `[5,11,17]`), and **scaled quantity** (dice count / target count /
+  #beams / duration). Full typology written up in `design/ability_schema.md` §4.5
+  ("Scaling typology"). **Decision: keep building forcing-function-driven** — the
+  current `_resolve_scaling_dice` (dice count × linear-or-threshold × any driver)
+  is the right amount of machinery for every selected build; a generic framework
+  would generalize 2 cases into a framework with 2 cases and unblock nothing. The
+  typology confirmed the policy/resolution boundary is correctly placed (the
+  driver value is always policy-supplied via context; "how much to spend" stays
+  Python, "value → dice" stays data — so `base_level` belongs in the dice block).
+  **Two cheap generalizations it surfaced, each forced only when a build needs
+  it:** (a) lift the cantrip threshold list from the hardcoded
+  `_CANTRIP_THRESHOLDS` to data (`scaling: thresholds`, `breaks: [...]`) when the
+  first non-cantrip threshold scaler (Rage-style) appears; (b) **target-count
+  scaling** (upcast Command / Charm Person) is blocked on the unbuilt multi-enemy
+  / spatial model, NOT on scaling design — and is rare in the current build corpus
+  (Voice of Heaven, the one build that leans on it, is itself deferred for the
+  same multi-enemy reason). Cost-driven drivers (focus/ki/sorcery points) already
+  work for free — they're just another `level_reference` key in `context`.
+
 - **Idle Aid L2 slot → upcast Wrathful Smite — MEASURED, deliberately NOT
   implemented (known conservatism).** Spell-slot audit at L15 (5000 days,
   consume-counting): `spell_slot_3` 2.999/3 (MW eats all 3 ~every day),

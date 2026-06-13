@@ -287,6 +287,45 @@ at fire-time; only the die *count* changes, never the size):
 
   (Sacred Flame: 1d8 → 2d8 → 3d8 → 4d8.)
 
+##### Scaling typology (the map behind the two shapes)
+
+The two `dice` shapes above are not two *kinds of ability* — they are two
+**step functions** over a shared structure. Every scaling rule in 5.5e factors
+into three INDEPENDENT axes; naming them keeps future additions coherent and
+tells us exactly what each new build will force:
+
+1. **Driver** (`level_reference`) — the integer that drives the scaling:
+   `slot_level`, `character_level`, a class level (`rogue_level`, …), or a
+   spent-resource count (focus/ki/sorcery points). All arrive the same way: an
+   int the **policy** supplies at fire-time via `context` (`_level_from_context`).
+   This is where the *cost-driven vs level-driven* distinction lives: cost-driven
+   drivers (upcast slot, points spent) are a policy ARBITRATION choice; level
+   drivers are a fixed lookup. Either way the interpreter just reads an int — so
+   "how much to spend" stays Python policy (§decisions, CLAUDE.md #2) and
+   "value → dice" stays data. Adding a new driver needs NO engine change.
+2. **Step function** — how the driver maps to a step count:
+   - **linear** (`increment` / `every_n_levels` / `base_level`):
+     `steps = max(0, driver − base_level) // every_n_levels`. (Divine Smite,
+     Sneak Attack, upcast spells.)
+   - **threshold list** (`scaling: cantrip`): `steps = #{breaks ≤ driver}` for a
+     fixed list. Cantrips use `[5, 11, 17]`; Rage-style features would use a
+     different list. The list is hardcoded (`_CANTRIP_THRESHOLDS`) today —
+     **lift it to data (`scaling: thresholds`, `breaks: [...]`) when the first
+     non-cantrip threshold scaler appears.**
+3. **Scaled quantity** — what the steps grow. Only **dice count** is built.
+   Other quantities are real in 5.5e but each is blocked on a DIFFERENT
+   primitive, not on scaling design:
+   - **target count** (upcast Command / Charm Person hitting more creatures) —
+     blocked on the multi-enemy / spatial model (deferred; see PROGRESS). Rare in
+     the current build corpus.
+   - **#beams / #attacks** (Eldritch Blast), **duration** — add when a build
+     forces them.
+
+Current code (`_resolve_scaling_dice`) sits at the narrow, correct corner:
+**dice count**, scaled by **linear OR threshold-list** step functions, over **any
+driver**. The decomposition is the map; we expand a single axis only when a
+selected build makes that axis load-bearing.
+
 #### `apply_modifier`
 ```yaml
 - verb: apply_modifier
