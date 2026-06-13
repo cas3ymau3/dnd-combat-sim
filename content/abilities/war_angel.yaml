@@ -200,3 +200,33 @@ cost:
 duration:
   type: minutes
   value: 60
+
+---
+# ─── GUIDED STRIKE (War Cleric Channel Divinity) ─────────────────────────────
+# After seeing an attack roll, spend a Channel Divinity charge to add +10 to it.
+# We model it at the engine's on_miss decision point (flip a miss to a hit).  A
+# flat +10 to the attack roll — a literal `apply_modifier flat`.  The STRATEGY
+# (greedy, never on an AoO, only when +10 actually flips the miss) stays policy.
+#
+# Trigger uses the `on_miss` event (added to the vocabulary, §3.1 — the mirror
+# of on_hit; a cheap predicate addition, not a new verb).  The interpreter does
+# not read the trigger here — the policy owns WHEN via the on_miss seam — but the
+# data states it for schema completeness.
+
+name: guided_strike
+tags: [active]
+trigger:
+  all:
+    - event: on_miss
+effect:
+  - verb: apply_modifier
+    hook: flat
+    stat: attack_roll
+    value: 10
+cost:
+  action_economy: null         # free action (Channel Divinity), no economy slot
+  resource:
+    type: channel_divinity
+    count: 1
+duration:
+  type: instantaneous

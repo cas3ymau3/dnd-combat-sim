@@ -46,6 +46,7 @@ from ..content import (
     interpret_intercept,
     interpret_modifiers,
     interpret_on_hit_effects,
+    interpret_roll_bonus,
     load_abilities,
 )
 from ..day_runner import (
@@ -95,6 +96,7 @@ BRUTALITY_BLEED = _ABILITIES["brutality_bleed"]  # war_angel.yaml (sap + CHA fla
 FLOURISH_PARRY = _ABILITIES["flourish_parry"]    # war_angel.yaml (intercept: +CHA AC)
 WAR_GODS_BLESSING = _ABILITIES["war_gods_blessing"]  # war_angel.yaml (flat +2 AC)
 MAGIC_WEAPON = _ABILITIES["magic_weapon"]        # war_angel.yaml (flat +1/+2 atk+dmg)
+GUIDED_STRIKE = _ABILITIES["guided_strike"]      # war_angel.yaml (on_miss +10 flip)
 # Shield of Faith / War God's Blessing (L13, non-conc. +2 AC) and Magic Weapon
 # (+1/+2 atk+dmg) are both driven from the data above via interpret_modifiers.
 
@@ -864,11 +866,17 @@ class WarAngelPolicy:
             return None
         if ctx.is_aoo:
             return None
-        if ctx.resources.get("channel_divinity", 0) < 1:
+        # The +10 bonus and the channel_divinity cost come FROM DATA
+        # (guided_strike); the gates (no AoO, only when it flips) stay policy.
+        rescue = interpret_roll_bonus(GUIDED_STRIKE)
+        if ctx.resources.get(rescue.resource_type, 0) < rescue.count:
             return None
-        if ctx.missed_by > 10:                      # +10 wouldn't flip it
+        if ctx.missed_by > rescue.bonus:            # the bonus wouldn't flip it
             return None
-        return MissResponse(resource_cost={"channel_divinity": 1}, bonus=10)
+        return MissResponse(
+            resource_cost={rescue.resource_type: rescue.count},
+            bonus=rescue.bonus,
+        )
 
     # -- post-roll decision point: Wrathful Smite (level 6+) --------------
 

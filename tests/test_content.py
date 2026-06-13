@@ -20,10 +20,12 @@ from src.content import (
     HitRiderSpec,
     InterceptSpec,
     OnHitEffectSpec,
+    RollBonusSpec,
     interpret_hit_rider,
     interpret_intercept,
     interpret_modifiers,
     interpret_on_hit_effects,
+    interpret_roll_bonus,
     load_abilities,
     parse_dice,
 )
@@ -294,3 +296,32 @@ def test_interpret_intercept_rejects_non_intercept_verb():
     bless = load_abilities()["bless"]
     with pytest.raises(NotImplementedError):
         interpret_intercept(bless)
+
+
+# ---------------------------------------------------------------------------
+# interpret_roll_bonus — Guided Strike (Slice 6)
+# ---------------------------------------------------------------------------
+
+def test_guided_strike_matches_the_handcoded_oracle():
+    """The data-driven Guided Strike must produce the same rescue the build
+    hand-coded: +10 to the attack roll, costing one channel_divinity."""
+    gs = load_abilities()["guided_strike"]
+    assert interpret_roll_bonus(gs) == RollBonusSpec(
+        bonus=10, resource_type="channel_divinity", count=1
+    )
+
+
+def test_interpret_roll_bonus_rejects_non_attack_roll_stat():
+    ability = Ability.from_dict({
+        "name": "ac_bumper",
+        "effect": [{"verb": "apply_modifier", "hook": "flat",
+                    "stat": "ac", "value": 10}],
+    })
+    with pytest.raises(NotImplementedError):
+        interpret_roll_bonus(ability)
+
+
+def test_interpret_roll_bonus_rejects_non_flat_verb():
+    smite = load_abilities()["wrathful_smite"]   # a damage rider, not a flat bonus
+    with pytest.raises(NotImplementedError):
+        interpret_roll_bonus(smite)

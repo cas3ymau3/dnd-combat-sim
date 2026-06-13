@@ -30,6 +30,7 @@ Coverage so far (intentionally narrow — grown against the War Angel oracle):
   - `apply_status` (target mastery / self status) + flat `damage`     → OnHitEffectSpec
     (Brutality bluff = vex + advantage_next_save; bleed = sap + CHA flat)
   - `intercept_event` flat AC bump (Flourish Parry +CHA)              → InterceptSpec
+  - flat attack-roll rescue (Guided Strike +10, on_miss)              → RollBonusSpec
 Anything outside this raises NotImplementedError LOUDLY rather than silently
 dropping it — surfacing schema/engine gaps cheaply is the whole point of doing
 this against a validated build.
@@ -372,6 +373,72 @@ def interpret_on_hit_effects(
         target_masteries=target_masteries,
         self_statuses=self_statuses,
         extra_flat_damage=extra_flat_damage,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Effect interpreter — flat attack-roll rescue → RollBonusSpec
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class RollBonusSpec:
+    """The data-derived pieces of a flat attack-roll-bonus rescue (Guided Strike).
+
+    The policy keeps the decision (greedy, never on an AoO, only when the bonus
+    actually flips the miss) and maps the abstract resource to a concrete pool;
+    the interpreter states WHAT — the flat bonus added to the roll and its cost.
+
+    Fields
+    ------
+    bonus:
+        Flat bonus added to the attack roll (Guided Strike = +10).
+    resource_type / count:
+        The resource the rescue consumes (channel_divinity, 1).
+    """
+
+    bonus: int
+    resource_type: str | None = None
+    count: int = 1
+
+
+def interpret_roll_bonus(ability: Ability) -> RollBonusSpec:
+    """Translate a flat attack-roll-bonus ability (Guided Strike) into a spec.
+
+    Reads a single `apply_modifier flat` block targeting `attack_roll` (the +10)
+    and the cost block's resource.  Raises loudly on anything else (a non-flat
+    hook, a different stat, multiple blocks).
+    """
+    if not isinstance(ability.effect, list):
+        raise NotImplementedError(
+            f"interpret_roll_bonus({ability.name}): expected an effect list"
+        )
+
+    bonuses: list[int] = []
+    for block in ability.effect:
+        if block.get("verb") != "apply_modifier" or block.get("hook") != "flat":
+            raise NotImplementedError(
+                f"interpret_roll_bonus({ability.name}): only an apply_modifier "
+                f"flat bonus is modeled (got verb={block.get('verb')!r}, "
+                f"hook={block.get('hook')!r})"
+            )
+        if block.get("stat") != "attack_roll":
+            raise NotImplementedError(
+                f"interpret_roll_bonus({ability.name}): only an attack_roll bonus "
+                f"is modeled (got stat={block.get('stat')!r})"
+            )
+        bonuses.append(block["value"])
+
+    if len(bonuses) != 1:
+        raise NotImplementedError(
+            f"interpret_roll_bonus({ability.name}): expected exactly one flat "
+            f"block, got {len(bonuses)}"
+        )
+    cost = ability.cost or {}
+    resource = cost.get("resource") or {}
+    return RollBonusSpec(
+        bonus=bonuses[0],
+        resource_type=resource.get("type"),
+        count=resource.get("count", 1),
     )
 
 
