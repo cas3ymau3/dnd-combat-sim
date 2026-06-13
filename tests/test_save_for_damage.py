@@ -14,6 +14,7 @@ fail-rate fraction of the all-hit ceiling at the L1 and L5 data points.
 
 import logging
 
+from src.content import interpret_save_spell, load_abilities
 from src.entity import Entity
 from src.events import DamageEvent, EventQueue, SaveDamageEvent
 from src.policy import Choice, GameState
@@ -237,3 +238,57 @@ def test_dpr_grows_with_cantrip_scaling():
     _, mean_1d8 = _monte_carlo(dc=15, dex_save=2, dice=(1, 8), on_save="none", n=n)
     _, mean_2d8 = _monte_carlo(dc=15, dex_save=2, dice=(2, 8), on_save="none", n=n)
     assert mean_2d8 > mean_1d8
+
+
+# ---------------------------------------------------------------------------
+# Primitive #2 — data-driven cantrip scaling end to end
+# ---------------------------------------------------------------------------
+# The dice are no longer a literal fed into the test: interpret_save_spell reads
+# Sacred Flame's YAML and resolves `scaling: cantrip` against the character level.
+# We validate the SAME resolution path (save → spawned DamageEvent), now with the
+# scaled dice coming from data.
+
+def _sacred_flame_dice(level: int) -> tuple[int, int]:
+    sf = load_abilities()["sacred_flame"]
+    return interpret_save_spell(sf, {"character_level": level}).damage_dice
+
+
+def test_scaled_sacred_flame_damage_math_is_exact_at_each_tier():
+    """At each scaling tier the per-cast damage math is exact: a failed DEX save
+    takes the full scaled dice (deterministic FakeRNG: save d20=2 fails at DC 15,
+    then every damage die rolls its max)."""
+    caster, enemy = _caster(15), _enemy(2)
+    # L1 1d8, L5 2d8, L11 3d8, L17 4d8 — all dice roll 8 → full = 8 * count.
+    for level, (count, sides) in (
+        (1, (1, 8)), (5, (2, 8)), (11, (3, 8)), (17, (4, 8)),
+    ):
+        dice = _sacred_flame_dice(level)
+        assert dice == (count, sides)                      # scaling from data
+        rng = FakeRNG([2] + [8] * count)                   # fail, then max dice
+        dmg = _resolve_one_cast(caster, enemy, dice, "none", rng)
+        assert dmg == 8 * count
+
+
+def test_scaled_sacred_flame_mean_damage_is_plausible_fraction_of_ceiling():
+    """Monte-Carlo SANITY at L11 (3d8): DC drives the fail rate, mean damage = the
+    fail-rate fraction of the all-hit ceiling, and stays below it.  Same DC 15 /
+    DEX +2 profile as the L5 sanity check → P(fail)=0.60; ceiling=E[3d8]=13.5."""
+    n = 20_000
+    rate, mean = _monte_carlo(
+        dc=15, dex_save=2, dice=_sacred_flame_dice(11), on_save="none", n=n
+    )
+    assert abs(rate - 0.60) < 0.02
+    assert mean < 13.5                                     # below the all-hit ceiling
+    assert abs(mean - 0.60 * 13.5) < 0.4                   # = fail-rate fraction
+
+
+def test_scaled_sacred_flame_dpr_grows_monotonically_up_the_ladder():
+    """The consistency check across the FULL ladder: mean damage strictly
+    increases L1 < L5 < L11 < L17 at a fixed hit/save profile."""
+    n = 8_000
+    means = [
+        _monte_carlo(dc=15, dex_save=2, dice=_sacred_flame_dice(lv),
+                     on_save="none", n=n)[1]
+        for lv in (1, 5, 11, 17)
+    ]
+    assert means[0] < means[1] < means[2] < means[3]

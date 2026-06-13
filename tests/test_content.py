@@ -21,11 +21,14 @@ from src.content import (
     InterceptSpec,
     OnHitEffectSpec,
     RollBonusSpec,
+    SaveSpellSpec,
+    _resolve_scaling_dice,
     interpret_hit_rider,
     interpret_intercept,
     interpret_modifiers,
     interpret_on_hit_effects,
     interpret_roll_bonus,
+    interpret_save_spell,
     load_abilities,
     parse_dice,
 )
@@ -170,6 +173,99 @@ def test_interpret_hit_rider_rejects_unmodeled_scaling():
     divine = load_abilities()["divine_smite"]
     with pytest.raises(NotImplementedError):
         interpret_hit_rider(divine)
+
+
+# ---------------------------------------------------------------------------
+# _resolve_scaling_dice — the shared dice-scaling seam (primitive #2)
+# ---------------------------------------------------------------------------
+
+def test_scaling_dice_literal_forms_are_level_independent():
+    """A bare string or a `{base: ...}` block with no scaling keys is a literal —
+    it resolves the same at any level (and needs no context)."""
+    assert _resolve_scaling_dice("1d6") == (1, 6)
+    assert _resolve_scaling_dice("2d8") == (2, 8)
+    assert _resolve_scaling_dice({"base": "1d6"}) == (1, 6)
+    # Extra non-scaling keys (type, etc.) are ignored by the dice resolver.
+    assert _resolve_scaling_dice({"base": "3d6", "type": "radiant"}) == (3, 6)
+
+
+def test_scaling_dice_cantrip_steps_at_5_11_17():
+    """The canonical cantrip rule: 1d8 at L1–4, 2d8 at L5–10, 3d8 at L11–16,
+    4d8 at L17+ — pinned at every threshold and boundary."""
+    spec = {"base": "1d8", "scaling": "cantrip", "level_reference": "character_level"}
+
+    def dice_at(level: int) -> tuple[int, int]:
+        return _resolve_scaling_dice(spec, {"character_level": level}, "sacred_flame")
+
+    # die count steps up exactly at 5 / 11 / 17; die SIZE is always d8.
+    assert [dice_at(lv) for lv in (1, 4)] == [(1, 8), (1, 8)]
+    assert [dice_at(lv) for lv in (5, 10)] == [(2, 8), (2, 8)]
+    assert [dice_at(lv) for lv in (11, 16)] == [(3, 8), (3, 8)]
+    assert [dice_at(lv) for lv in (17, 20)] == [(4, 8), (4, 8)]
+
+
+def test_scaling_dice_cantrip_needs_the_level_in_context():
+    """`scaling: cantrip` is interpretive — it needs the level at fire-time;
+    a missing context value raises (not a silent default)."""
+    spec = {"base": "1d8", "scaling": "cantrip", "level_reference": "character_level"}
+    with pytest.raises(ValueError):
+        _resolve_scaling_dice(spec, None, "sacred_flame")
+    with pytest.raises(ValueError):
+        _resolve_scaling_dice(spec, {"slot_level": 3}, "sacred_flame")
+
+
+def test_scaling_dice_cantrip_requires_character_level_reference():
+    """Cantrip scaling is by character level only; a different reference raises."""
+    spec = {"base": "1d8", "scaling": "cantrip", "level_reference": "slot_level"}
+    with pytest.raises(NotImplementedError):
+        _resolve_scaling_dice(spec, {"slot_level": 3}, "sacred_flame")
+
+
+def test_scaling_dice_uniform_increment_deferred_to_primitive_3():
+    """The uniform `increment`/`every_n_levels` (upcast) form raises — it is
+    primitive #3, not modeled here — rather than silently dropping the dice."""
+    spec = {
+        "base": "2d8", "increment": "1d8",
+        "every_n_levels": 1, "level_reference": "slot_level",
+    }
+    with pytest.raises(NotImplementedError):
+        _resolve_scaling_dice(spec, {"slot_level": 3}, "divine_smite")
+
+
+# ---------------------------------------------------------------------------
+# interpret_save_spell — Sacred Flame (primitive #2)
+# ---------------------------------------------------------------------------
+
+def test_sacred_flame_save_spell_spec_at_l1():
+    """Sacred Flame FROM DATA at L1: DEX save vs spell_save_dc, 1d8, negates."""
+    sf = load_abilities()["sacred_flame"]
+    spec = interpret_save_spell(sf, {"character_level": 1})
+    assert spec == SaveSpellSpec(
+        save_stat="dex_save",
+        dc_stat="spell_save_dc",
+        damage_dice=(1, 8),
+        on_save="none",
+        damage_bonus=0,
+    )
+
+
+def test_sacred_flame_dice_scale_with_character_level():
+    """The same Sacred Flame data yields 1d8 / 2d8 / 3d8 / 4d8 at L1 / 5 / 11 / 17
+    — the cantrip-scaling primitive driving a save-for-damage spell from data."""
+    sf = load_abilities()["sacred_flame"]
+    by_level = {
+        lv: interpret_save_spell(sf, {"character_level": lv}).damage_dice
+        for lv in (1, 5, 11, 17)
+    }
+    assert by_level == {1: (1, 8), 5: (2, 8), 11: (3, 8), 17: (4, 8)}
+
+
+def test_interpret_save_spell_rejects_a_non_save_damage_shape():
+    """An ability without the `save` + `damage` pair raises (loud gap)."""
+    # Wrathful Smite is a bare damage rider — no `save` block.
+    smite = load_abilities()["wrathful_smite"]
+    with pytest.raises(NotImplementedError):
+        interpret_save_spell(smite, {"character_level": 5})
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,47 @@
+# starfire_scion.yaml
+# Build-specific abilities for The Starfire Scion
+# (design/build-guides/41_spellfire_scion.txt) — a Monk-08 (Sun-Soul) /
+# Druid-12 (Circle of Stars) WIS-based spellfire gish.
+#
+# These drive the engine FROM DATA (src/content.py).  The Starfire Scion is the
+# second archetype; it forces the save-FOR-damage and dice-scaling primitives the
+# attack-roll War Angel never did (see PROGRESS.md "Second archetype").
+
+---
+# ─── SACRED FLAME (Spellfire Spark) ──────────────────────────────────────────
+# 2024 cantrip: the target makes a DEX saving throw vs our spell save DC; on a
+# FAIL it takes radiant damage, on a SAVE nothing (save-NEGATES).  The damage die
+# COUNT scales with character level by the canonical cantrip rule (1 die, +1 at
+# L5 / L11 / L17): 1d8 → 2d8 → 3d8 → 4d8.
+#
+# This is the schema's save-for-damage shape (core_examples #4): a `save` block
+# (which ability, vs which DC) + a `damage` block (scaled dice, on_save).  The
+# interpreter (interpret_save_spell) resolves the `scaling: cantrip` dice against
+# the caster's character level — primitive #2.  WHICH save stat / DC are DATA
+# here; the cantrip SCALING RULE is data; the policy keeps WHEN to cast and the
+# Spellfire-Spark per-LR limit (resource arbitration).
+
+name: sacred_flame
+tags: [active, spell, cantrip]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: save
+    ability: dexterity
+    dc_reference: spell_save_dc
+  - verb: damage
+    dice:
+      base: "1d8"
+      scaling: cantrip            # canonical 5.5e cantrip rule: +1 die at L5/11/17
+      level_reference: character_level
+    type: radiant
+    on_save: none                 # save NEGATES (full on fail, nothing on a save)
+    target: target
+cost:
+  # Sacred Flame itself is a free cantrip; Spellfire Spark lets it be cast as a
+  # bonus action a limited number of times per long rest.  The per-LR LIMIT is
+  # policy/resource arbitration, left out of the intrinsic for now.
+  action_economy: bonus_action
+duration:
+  type: instantaneous

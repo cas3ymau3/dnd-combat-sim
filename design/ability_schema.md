@@ -262,6 +262,24 @@ mode: minimum_floor         # treat any result below N as N
   target: self               # "self" | "target" | "ally" | "all_in_zone" | "allies_within_radius"
 ```
 
+The `dice` block has two scaling shapes (both fold to a concrete `(count, sides)`
+at fire-time; only the die *count* changes, never the size):
+
+- **uniform** (`increment` / `every_n_levels`) — +N dice per `every_n_levels` of
+  the `level_reference` value, e.g. Divine Smite / Burning-Hands upcast (+1d8 per
+  slot level). The example above.
+- **cantrip** — the canonical 5.5e cantrip rule (1 die, +1 at character level
+  5 / 11 / 17), which is NON-uniform from level 1 so it gets its own named mode:
+
+  ```yaml
+  dice:
+    base: "1d8"
+    scaling: cantrip         # +1 die at character level 5 / 11 / 17
+    level_reference: character_level
+  ```
+
+  (Sacred Flame: 1d8 → 2d8 → 3d8 → 4d8.)
+
 #### `apply_modifier`
 ```yaml
 - verb: apply_modifier
