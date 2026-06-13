@@ -104,3 +104,41 @@ cost:
     count: 1
 duration:
   type: instantaneous
+
+---
+# ─── FLOURISH PARRY (Gladiator) ──────────────────────────────────────────────
+# Reaction to a melee attack that HITS us: add CHA to AC against that one attack,
+# potentially flipping the hit to a miss (Shield-spell-style, single attack —
+# unlike Defensive Duelist it does not persist).  The schema's `intercept_event`
+# (design §4 #15): reach into the in-flight incoming attack and bump our AC.
+#
+# Note this is NOT the schema's choose_one Flourish (distract/protect/strike) —
+# that example is a DIFFERENT ability.  War Angel's flourish is just parry (this)
+# + counter (a weapon attack carrying brutality_bleed, built in the policy from
+# the bleed data).  choose_one is therefore NOT needed here and remains an
+# unbuilt gap until a build actually uses the distract/protect/strike modes.
+#
+# WHEN to react (only when +CHA would actually flip the hit), the once-per-round
+# reaction gate, and whether to attach a counter all stay in the POLICY — the
+# data states only WHAT the parry does (how much AC it adds).
+
+name: flourish_parry
+tags: [reaction]
+trigger:
+  all:
+    - event: incoming_attack_roll
+    - weapon: melee
+effect:
+  - verb: intercept_event
+    modification: apply_modifier
+    hook: flat
+    stat: ac
+    amount:
+      ability_modifier: charisma  # +CHA to AC against the triggering attack
+    duration:
+      type: until_condition
+      condition: triggering_attack
+cost:
+  action_economy: reaction
+duration:
+  type: instantaneous

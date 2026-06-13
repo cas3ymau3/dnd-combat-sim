@@ -18,8 +18,10 @@ import pytest
 from src.content import (
     Ability,
     HitRiderSpec,
+    InterceptSpec,
     OnHitEffectSpec,
     interpret_hit_rider,
+    interpret_intercept,
     interpret_modifiers,
     interpret_on_hit_effects,
     load_abilities,
@@ -215,3 +217,47 @@ def test_interpret_on_hit_effects_rejects_choose_one():
     })
     with pytest.raises(NotImplementedError):
         interpret_on_hit_effects(choose_one)
+
+
+# ---------------------------------------------------------------------------
+# interpret_intercept — Flourish Parry (Slice 4)
+# ---------------------------------------------------------------------------
+
+def test_flourish_parry_matches_the_handcoded_oracle():
+    """The data-driven parry must produce the same AC bump the build hand-coded:
+    +CHA, resolved against the supplied context."""
+    parry = load_abilities()["flourish_parry"]
+    assert interpret_intercept(parry, context={"charisma": 5}) == InterceptSpec(ac_bonus=5)
+
+
+def test_flourish_parry_ac_bonus_tracks_the_context():
+    parry = load_abilities()["flourish_parry"]
+    assert interpret_intercept(parry, context={"charisma": 4}).ac_bonus == 4
+
+
+def test_interpret_intercept_supports_a_literal_ac_value():
+    """A literal `value` AC bump (schema §4.5 example) needs no context."""
+    ability = Ability.from_dict({
+        "name": "shield_like",
+        "effect": [{"verb": "intercept_event", "modification": "apply_modifier",
+                    "hook": "flat", "stat": "ac", "value": 5}],
+    })
+    assert interpret_intercept(ability) == InterceptSpec(ac_bonus=5)
+
+
+def test_interpret_intercept_rejects_non_ac_bump():
+    """Only a flat AC bump is modeled; a force-miss / other-stat interception
+    must raise rather than be silently treated as an AC bump."""
+    ability = Ability.from_dict({
+        "name": "weird",
+        "effect": [{"verb": "intercept_event", "modification": "apply_modifier",
+                    "hook": "flat", "stat": "saving_throw", "value": 5}],
+    })
+    with pytest.raises(NotImplementedError):
+        interpret_intercept(ability)
+
+
+def test_interpret_intercept_rejects_non_intercept_verb():
+    bless = load_abilities()["bless"]
+    with pytest.raises(NotImplementedError):
+        interpret_intercept(bless)

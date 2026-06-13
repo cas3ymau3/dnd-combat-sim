@@ -43,6 +43,7 @@ from typing import TYPE_CHECKING
 
 from ..content import (
     interpret_hit_rider,
+    interpret_intercept,
     interpret_modifiers,
     interpret_on_hit_effects,
     load_abilities,
@@ -92,6 +93,7 @@ BLESS = _ABILITIES["bless"]                  # core_examples.yaml (+1d4 bonus_di
 WRATHFUL_SMITE = _ABILITIES["wrathful_smite"]  # war_angel.yaml (1d6 on-hit rider)
 BRUTALITY_BLUFF = _ABILITIES["brutality_bluff"]  # war_angel.yaml (vex + adv-next-save)
 BRUTALITY_BLEED = _ABILITIES["brutality_bleed"]  # war_angel.yaml (sap + CHA flat dmg)
+FLOURISH_PARRY = _ABILITIES["flourish_parry"]    # war_angel.yaml (intercept: +CHA AC)
 
 # Shield of Faith via War God's Blessing (L13): non-concentration +2 AC, cast as
 # a bonus action at combat start with a Channel Divinity charge.
@@ -996,9 +998,13 @@ class WarAngelPolicy:
         # Once-per-round reaction gate.
         if self._last_parry_round == ctx.round_number:
             return None
-        # Only react when +CHA AC actually flips the hit to a miss (we see the
-        # roll).  hit_margin >= 0 here; flip iff cha_mod > hit_margin.
-        if self._cha_mod <= ctx.hit_margin:
+        # The parry's AC bonus comes FROM DATA (flourish_parry: an intercept_event
+        # flat AC bump), resolved against our CHA mod.  The DECISION to react —
+        # only when the bump actually flips the hit to a miss (we see the roll;
+        # hit_margin >= 0, flip iff ac_bonus > hit_margin) — stays policy.
+        parry = interpret_intercept(FLOURISH_PARRY, context={"charisma": self._cha_mod})
+        ac_bonus = parry.ac_bonus
+        if ac_bonus <= ctx.hit_margin:
             return None
 
         # Commit the parry for this round (free — no engine resource).
@@ -1025,7 +1031,7 @@ class WarAngelPolicy:
             )
 
         return InterceptResponse(
-            ac_bonus=self._cha_mod,
+            ac_bonus=ac_bonus,
             resource_cost=resource_cost,
             counter=counter,
         )

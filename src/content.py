@@ -29,6 +29,7 @@ Coverage so far (intentionally narrow — grown against the War Angel oracle):
   - `damage` on-hit rider (Wrathful Smite 1d6)                        → HitRiderSpec
   - `apply_status` (target mastery / self status) + flat `damage`     → OnHitEffectSpec
     (Brutality bluff = vex + advantage_next_save; bleed = sap + CHA flat)
+  - `intercept_event` flat AC bump (Flourish Parry +CHA)              → InterceptSpec
 Anything outside this raises NotImplementedError LOUDLY rather than silently
 dropping it — surfacing schema/engine gaps cheaply is the whole point of doing
 this against a validated build.
@@ -357,6 +358,76 @@ def interpret_on_hit_effects(
         self_statuses=self_statuses,
         extra_flat_damage=extra_flat_damage,
     )
+
+
+# ---------------------------------------------------------------------------
+# Effect interpreter — intercept_event (AC bump) → InterceptSpec
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class InterceptSpec:
+    """The data-derived pieces of an `intercept_event` ability (Flourish Parry).
+
+    The policy keeps ALL the decision logic — whether to react at all (only when
+    the AC bump would flip the hit to a miss), the once-per-round reaction gate,
+    and whether to attach a counter.  The interpreter only states WHAT the
+    interception does.
+
+    Fields
+    ------
+    ac_bonus:
+        AC added against the intercepted attack (Flourish Parry = +CHA).
+    """
+
+    ac_bonus: int
+
+
+def interpret_intercept(
+    ability: Ability,
+    context: dict[str, int] | None = None,
+) -> InterceptSpec:
+    """Translate an `intercept_event` AC-bump ability into an InterceptSpec.
+
+    Models the one form the build needs: a single `intercept_event` whose
+    `modification` is an `apply_modifier` flat AC bump.  The AC amount may be a
+    literal (`value: 5`) or a runtime `amount: {ability_modifier: <stat>}`
+    resolved against `context` (Flourish Parry = +CHA).  Anything else (a
+    force-miss interception, a non-AC stat, multiple blocks) raises loudly.
+    """
+    if not isinstance(ability.effect, list):
+        raise NotImplementedError(
+            f"interpret_intercept({ability.name}): expected an effect list"
+        )
+
+    ac_bonuses: list[int] = []
+    for block in ability.effect:
+        verb = block.get("verb")
+        if verb != "intercept_event":
+            raise NotImplementedError(
+                f"interpret_intercept({ability.name}): verb {verb!r} is not an "
+                f"intercept_event"
+            )
+        if block.get("modification") != "apply_modifier":
+            raise NotImplementedError(
+                f"interpret_intercept({ability.name}): only an apply_modifier "
+                f"interception is modeled (got {block.get('modification')!r})"
+            )
+        if block.get("hook") != "flat" or block.get("stat") != "ac":
+            raise NotImplementedError(
+                f"interpret_intercept({ability.name}): only a flat AC bump is "
+                f"modeled (hook={block.get('hook')!r}, stat={block.get('stat')!r})"
+            )
+        if "value" in block:
+            ac_bonuses.append(block["value"])
+        else:
+            ac_bonuses.append(_resolve_amount(block, context, ability.name))
+
+    if len(ac_bonuses) != 1:
+        raise NotImplementedError(
+            f"interpret_intercept({ability.name}): expected exactly one "
+            f"intercept_event block, got {len(ac_bonuses)}"
+        )
+    return InterceptSpec(ac_bonus=ac_bonuses[0])
 
 
 def interpret_hit_rider(ability: Ability) -> HitRiderSpec:
