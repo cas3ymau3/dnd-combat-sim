@@ -298,9 +298,17 @@ def resolve_attack_roll(
         apply_masteries_on_hit(event, actor, target)
 
     if hit and target is not None:
-        # Pull damage dice from actor stats
-        damage_dice: tuple[int, int] = actor.stat("damage_dice", tick=tick)  # type: ignore[assignment]
-        damage_bonus = int(actor.stat("damage_bonus", tick=tick))
+        # Damage profile: a per-attack override (the multi-weapon gish primitive)
+        # if the Choice supplied one, else the actor's single weapon stat.  The
+        # override lets one entity swing several distinct profiles (quarterstaff /
+        # unarmed / Archer spell attack / Guiding Bolt); None preserves the
+        # single-weapon path every prior build relies on.
+        if event.damage_dice_override is not None:
+            damage_dice: tuple[int, int] = event.damage_dice_override
+            damage_bonus = int(event.damage_bonus_override or 0)
+        else:
+            damage_dice = actor.stat("damage_dice", tick=tick)  # type: ignore[assignment]
+            damage_bonus = int(actor.stat("damage_bonus", tick=tick))
 
         damage_event = DamageEvent(
             tick=make_tick(round_, turn_idx, next_sequence),

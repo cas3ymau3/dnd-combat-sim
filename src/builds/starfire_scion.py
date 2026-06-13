@@ -1,173 +1,412 @@
 """
-starfire_scion.py — The Starfire Scion build: per-level stat blocks + (eventually)
-a daily-plan policy.  SCAFFOLD ONLY for now: per-level *data* + this plan
-docstring.  No policy, no engine calls, no `make_*` assembly yet — those wait on
-the first new engine primitive this build forces (save-FOR-damage resolution).
+starfire_scion.py — The Starfire Scion build: per-level stat blocks + daily-plan
+policy.  The project's SECOND archetype — a WIS-based spellfire "blaster" gish
+(Monk-08 Sun-Soul / Druid-12 Circle of Stars), chosen to force the save-FOR-damage
+and dice-scaling axes the attack-roll War Angel never exercised.
 
 Source of truth for intent:
   - design/build-guides/41_spellfire_scion.txt  (level-by-level notes + DPR
     *ceilings* — see the validation-framing note below)
 
+This module covers L1, L4, L5 (the slice wired the first build session): the
+melee baseline (L1), the level Starry Form + Star Map come online (L4), and the
+first "interesting" level where the blaster identity converges (L5: Spellfire
+Adept → cantrip-scaled 2d8 Sacred Flame).  L2/L3 are intentionally SKIPPED — they
+add no DPR-relevant mechanics (Druid spellcasting / wild-shape utility) — and are
+easy to backfill if a continuous ladder is ever wanted.  L6+ extend both LEVELS
+and the policy as the ladder is climbed.
+
 The build (see PROGRESS.md "Second archetype — STARFIRE SCION")
 ---------------------------------------------------------------
-**Monk-08 (Sun-Soul) / Druid-12 (Circle of Stars)** — a WIS-based spellfire
-"blaster" gish.  Point-buy DEX 16 (+3), CON 14, WIS 17 (+2, → 20 by L12), STR 8.
-Selected as the second archetype because it forces the two highest-value untouched
-model gaps via SINGLE-TARGET deliveries (so it sidesteps the unbuilt multi-enemy /
-spatial axis):
+Point-buy DEX 16 (+3), CON 14 (+2), WIS 17 (+3 → 18 at L5), STR 8.  WIS is the
+spell stat (Sacred Flame / Guiding Bolt / Starry-Form Archer); DEX is the
+martial-arts melee stat (quarterstaff / unarmed).  It forces:
 
-  1. **Save-FOR-DAMAGE resolution** — a save whose *result determines damage
-     dealt*.  Sacred Flame (DEX save, save-*negates*: full 2d8 on fail, nothing on
-     success) and Burning Hands / Searing Arc Strike (DEX save, save-*for-half*).
-     New: our only save today is concentration (target-side, incoming-damage-
-     driven, binary drop/keep); no attacker has ever carried a `spell_save_dc`.
-  2. **Upcast / `level_reference` scaling** — cantrip scaling (Sacred Flame
-     1d8→2d8→3d8→4d8 at char L5/11/17) and Searing Arc Strike (upcast Burning
-     Hands, +1d6/slot level, from L10).  These are the `increment`/`level_reference`
-     cases `src/content.py` currently raises LOUDLY on.
+  1. **Save-FOR-DAMAGE** — Sacred Flame (DEX save-NEGATES) is the recurring
+     bonus-action spell.  Its dice are pulled FROM DATA via
+     ``interpret_save_spell(sacred_flame, {"character_level": L})`` — not a literal
+     tuple — so the cantrip scaling (1d8 → 2d8 at L5) is data-driven (primitive #2).
+  2. **Multiple attack PROFILES on one body** — quarterstaff (1d8+DEX), unarmed
+     (1d6+DEX), Archer-form spell attack (1d8+WIS), Guiding Bolt (4d6).  The engine
+     read a single ``actor.stat("damage_dice")`` for every attack (fine for the
+     one-weapon War Angel); this build forced **per-attack damage override**
+     (primitive #4 — a ``damage_dice``/``damage_bonus`` on the ``Choice``, threaded
+     ``Choice → AttackRollEvent → DamageEvent``, defaulting to the entity stat).
 
 VALIDATION FRAMING (important — differs from War Angel)
 -------------------------------------------------------
-The guide's per-level DPR numbers are **"all-hit CEILINGS,"  not targets**: they
+The guide's per-level DPR numbers are **"all-hit CEILINGS," not targets**: they
 assume every attack hits and the enemy always fails its save (no AC, no misses, no
-successful saves, no stunning-strike resistance).  This build has **no ground-truth
-DPR ladder** — producing honest DPR for it is itself a goal of the model.  So
-validation is **consistency + sanity** (like War Angel L16), NOT number-matching:
-per-hit / per-save *damage math* exact; DPR grows monotonically; computed DPR is a
-*plausible fraction* of the ceiling given that level's hit / save-fail rates.  The
-`ceiling_dpr` field below is a loose UPPER BOUND, never a target.
+successful saves).  This build has **no ground-truth DPR ladder** — producing
+honest DPR for it is itself a goal of the model.  So validation is **consistency +
+sanity** (like War Angel L16), NOT number-matching: per-hit / per-save damage math
+exact; DPR grows monotonically up the ladder; computed DPR is a *plausible
+fraction* of the ceiling given that level's hit / save-fail rates.  The
+``ceiling_dpr`` field below is a loose UPPER BOUND, never a target.
 
-Enemy model: because we now force enemy saves, the enemy's save bonus is a live
-input — sourced per character level from
-`reference/data/monster_ac_and_saves_by_level.csv` (`ac` + `dex.save.mod`), which
-has been read-only until this build.  `enemy_ac` / `enemy_dex_save` below are
-copied from that table (level == cr row).
+Enemy model: the enemy save bonus + AC are live inputs sourced per character level
+from ``reference/data/monster_ac_and_saves_by_level.csv`` (level == cr row; ``ac``
++ ``dex.save.mod``).  The enemy does NOT yet strike back (no incoming-damage loop
+at these levels — exactly like War Angel before L13), so concentration is never
+checked here and the Starry-Form/Flame-Blade concentration axis stays deferred.
 
 What is NOT modeled here (deferred — see PROGRESS "Open threads")
 ----------------------------------------------------------------
-  - **Multi-enemy AoE / spatial** — Burning Hands is an AoE save spell; modeled
-    SINGLE-TARGET until a multi-enemy model exists.
-  - **Guiding Bolt's advantage grant → allies** — Guiding Bolt is an ATTACK-ROLL
-    spell (2024): 4d6 radiant on hit + grant-advantage on the target until end of
-    our next turn.  That advantage realistically benefits an ALLY (we rarely
-    consume it).  We have no ally model; initially treat Guiding Bolt as a plain
-    4d6 attack (advantage grant ignored or self-consumed).  Decide when we get
-    there; do NOT build an ally model now.
-  - **Stunning Strike, wild-shape beast forms, healing** — out of the DPR critical
-    path in the threshold model.
+  - **Fueled Spellfire** (L5 radiant rider): "x1/turn, when a spell DEALS radiant
+    damage, expend ≤2 Hit Dice, add to one damage roll."  Faithfully this is a
+    POST-SAVE caster decision point (the symmetric analog of on_hit, on the
+    save-damage path) — a NEW engine primitive that does not exist yet.  Deferred
+    to its own slice rather than approximated at cast-time (which would burn the
+    scarce hit dice on saved casts).
+  - **Searing Arc Strike** (L10 upcast Burning Hands, save-for-half): the
+    primitive (#3) is built and data exists; the policy wiring waits for L10.
+  - **Starry Form: Chalice** (extra healing — DPR-irrelevant) and **Dragon** (a
+    concentration-save floor — moot without the incoming-damage loop).
+  - **Flame Blade** (concentration L2 spell — the melee-rotation alternative),
+    **Stunning Strike**, **Guiding Bolt's advantage grant → allies** (modeled as a
+    plain 4d6 attack), multi-enemy AoE / spatial, wild-shape beast forms, healing.
 
-Ability-online timeline (from the progression summary; drives where each gap
-first becomes load-bearing)
+Ability-online timeline (abridged; full version in git history / the guide)
 ---------------------------------------------------------------------------
-  L1  Monk-1.  Unarmored defense (AC 16).  Martial arts (1d6): quarterstaff action
-        + BA unarmed strike.  Spellfire Spark → Sacred Flame (1d8) castable as a BA
-        xPB/LR.  [First save-for-damage delivery, but melee is the bread-and-butter.]
-  L2  +Druid-1.  Spellcasting (L1 slots), cantrips (produce flame, etc.).
-  L3  +Druid-2.  Wild shape (utility).
-  L4  +Druid-3 (Stars).  Star Map → free Guiding Bolt xWIS/LR (ATTACK roll).
-        Starry Form (archer = BA ranged spell attack; dragon = concentration aid).
-        L2 spells: Flame Blade (concentration melee), Prayer of Healing.
-  L5  +Druid-4.  **Spellfire Adept**: +1 WIS (→18); **Fueled Spellfire** (≤2 hit
-        dice added to one radiant damage roll, 1/turn — the "smite-on-radiant"
-        rider); Searing Spellfire (radiant ignores resistance).  **Cantrip scaling**
-        → Sacred Flame 2d8.  [Blaster identity online: save-for-damage + scaling +
-        radiant rider all converge here — the first "interesting" level.]
-  L6  +Monk-2.  Focus points / unarmored movement.
-  L7  +Monk-3 (Sun-Soul).  Radiant sun-bolt (backup), deflect attacks.
-  L8  +Monk-4.  Elemental Adept (fire): +1 WIS (→19).
-  L9  +Monk-5.  Extra Attack; martial arts 1d8.
-  L10 +Monk-6.  **Searing Arc Strike** = cast (upcast) Burning Hands as a BA after
-        the Attack action.  [First UPCAST `increment` scaling.]
-  L11 +Monk-7.  Evasion.
-  L12 +Monk-8.  Resilient (WIS → 20, WIS-save prof).  Burning Hands upcast to L3
-        (5d6) via BA.
-  L13 +Druid-5.  L3 spells (Elemental Weapon — flat radiant weapon buff).
-  L14 +Druid-6.  Cosmic Omen.
-  L15 +Druid-7.  Primal Strikes (flat melee radiant boost); L4 spells (Fount of
-        Moonlight, Fire Shield).
-  L16 +Druid-8.  ASI: +2 DEX (→18).
-  L17 +Druid-9.  L5 spells.  Cantrip scaling → Sacred Flame 3d8... (4d8 at L17).
-  L18 +Druid-10.  Twinkling Constellations.
-  L19 +Druid-11.  L6 spells (Sunbeam — a real AoE line, save-for-half).
-  L20 +Druid-12.  ASI: +2 DEX (→20); WIS/DEX attack modes equivalent.
+  L1  Monk-1.  Unarmored defense.  Martial arts (1d6): quarterstaff action + BA
+        unarmed strike.  Spellfire Spark → Sacred Flame (1d8), castable as a BA
+        xPB/LR.  [Melee bread-and-butter; first save-for-damage delivery.]
+  L4  +Druid-3 (Stars).  Star Map → free Guiding Bolt xWIS/LR (ATTACK roll, 4d6).
+        Starry Form (Archer = BA ranged spell attack 1d8+WIS).  L2 spells.
+  L5  +Druid-4.  Spellfire Adept: +1 WIS (→18); Fueled Spellfire (deferred);
+        cantrip scaling → Sacred Flame 2d8.  [Blaster identity online.]
+  L9  Extra Attack; martial arts 1d8.    L10 Searing Arc Strike (upcast Burning
+        Hands, BA).    L12 WIS 20.    L17 Sacred Flame 4d8.    (see the guide)
 
 Engine-capacity build order (see PROGRESS):
-  1. [DONE] `spell_save_dc` on the attacker + save-FOR-damage resolution path
-     (negates + for-half).  Built & validated on Sacred Flame (L1/L5 data) via a
-     `SaveDamageEvent` + `resolve_save_damage`; the policy emits a
-     `Choice(action_type="save_spell", save_stat=..., damage_dice=..., on_save=...)`.
-  2. [DONE] Cantrip / `level_reference` dice scaling.  Sacred Flame's dice are now
-     DATA-DRIVEN: `content/abilities/starfire_scion.yaml` carries
-     `dice: {base: 1d8, scaling: cantrip, level_reference: character_level}`, and
-     `content.interpret_save_spell` resolves it against the character level via the
-     shared `_resolve_scaling_dice` helper (1d8→2d8→3d8→4d8 at L1/5/11/17).  The
-     policy supplies `damage_dice` from that spec instead of a literal tuple.
-  3. [DONE] Upcast `increment` scaling (Searing Arc Strike = upcast Burning
-     Hands).  The SAME `_resolve_scaling_dice` seam, now keyed on
-     `level_reference: slot_level`: base 3d6 at slot 1, +1d6 per slot level above
-     an optional `base_level` (default 1).  `content/abilities/starfire_scion.yaml`
-     carries a `searing_arc_strike` ability (DEX save FOR HALF, upcast dice), and
-     `interpret_save_spell` folds the slot into concrete dice via the helper.  The
-     policy supplies `{"slot_level": N}` for whichever slot it chose to spend.
+  1. [DONE] save-FOR-damage resolution path (negates + for-half).
+  2. [DONE] cantrip / level_reference dice scaling (Sacred Flame by char level).
+  3. [DONE] upcast `increment` scaling (Searing Arc Strike) — data ready, policy
+     wiring waits for L10.
+  4. [DONE, this session] per-attack damage override (the multi-weapon gish
+     primitive) — Choice.damage_dice/damage_bonus → AttackRollEvent → DamageEvent.
 """
 
 from __future__ import annotations
 
-# Spellfire Spark grants Sacred Flame, castable as a bonus action PB times per LR.
-# (At higher levels the action economy is dominated by Sacred Flame / Searing Arc
-# Strike / archer-form BA attacks — captured per level once the policy is built.)
+from typing import TYPE_CHECKING
 
-# Spell save DC = 8 + PB + WIS mod.  Recorded per level below (`spell_save_dc`).
+from ..content import interpret_save_spell, load_abilities
+from ..day_runner import DayRunner
+from ..entity import Entity
+from ..policy import Choice, GameState
+from ..resources import ResourceEntry, ResourcePool
+
+if TYPE_CHECKING:
+    from ..rng import SeededRNG
+
+
+# Declarative ability layer: Sacred Flame's dice are read FROM DATA
+# (content/abilities/starfire_scion.yaml) and resolved against the character level
+# by interpret_save_spell — NOT a literal tuple on the LEVELS row.  This is the
+# whole reason the build was chosen (the data-driven save-spell scaling axis).
+_ABILITIES = load_abilities()
+SACRED_FLAME = _ABILITIES["sacred_flame"]   # DEX save-negates, cantrip-scaling dice
+
 
 # ---------------------------------------------------------------------------
-# Per-level build data — SCAFFOLD
+# Per-level build data
 # ---------------------------------------------------------------------------
-# Mirrors war_angel.py's LEVELS convention, with build-specific additions for the
-# new save-for-damage dimension:
-#   spell_save_dc   — our DC for Sacred Flame / Burning Hands (8 + PB + WIS).
-#   enemy_dex_save  — enemy d20 save BONUS, from monster_ac_and_saves_by_level.csv.
-#   ceiling_dpr     — the guide's ALL-HIT upper bound (NOT a target; see docstring).
-#   ba_*            — the bonus-action attack (monk martial-arts unarmed strike).
-# Only L1 is filled in (well-understood melee baseline, already engine-supportable);
-# L2+ are stubbed until we climb the ladder.  Sacred Flame as a save-for-damage
-# delivery is the FIRST new primitive — validated at the level it becomes
-# load-bearing (~L5, cantrip scaling), not necessarily L1.
+# Each entry carries:
+#   attack_bonus        — DEX-based martial-arts attack bonus (quarterstaff/unarmed)
+#   spell_attack_bonus  — WIS-based spell-attack bonus (Archer / Guiding Bolt)
+#   spell_save_dc       — our DC for Sacred Flame (8 + PB + WIS)
+#   <weapon profiles>   — per-attack (dice, bonus, weapon_stat) for the override
+#   enemy_ac/enemy_dex_save — live from monster_ac_and_saves_by_level.csv (cr==level)
+#   ceiling_dpr         — guide all-hit UPPER BOUND (NOT a target; see docstring)
+#   resources           — name → (maximum, sr_restore) for the ResourcePool
+#
+# Sacred Flame's dice are deliberately ABSENT here — they come from the YAML via
+# interpret_save_spell(character_level), so the cantrip scaling lives in data.
 LEVELS: dict[int, dict] = {
     1: {
-        # Action: quarterstaff (versatile 1d8), DEX-based via monk martial arts.
-        "weapon": "quarterstaff",
-        "attack_bonus": 5,            # PB 2 + DEX 3
-        "damage_dice": (1, 8),        # quarterstaff versatile die ≥ martial-arts 1d6
-        "damage_bonus": 3,            # DEX
-        # Bonus action: monk unarmed strike (martial-arts die 1d6 + DEX).
-        "ba_attack_dice": (1, 6),
-        "ba_attack_bonus": 5,         # PB 2 + DEX 3
-        "ba_damage_bonus": 3,         # DEX
-        # Sacred Flame (Spellfire Spark): BA cantrip, 1d8, DEX save-NEGATES, 2/LR.
-        "sacred_flame_dice": (1, 8),
-        "spell_save_dc": 13,          # 8 + PB 2 + WIS 3
-        "char_ac": 16,                # 10 + DEX 3 + WIS 3 (unarmored defense)
-        "char_hp": 8,                 # monk-1 d8 + CON 2 (DPR-irrelevant; threshold)
-        # Enemy (monster_ac_and_saves_by_level.csv, level 1 / cr 1):
+        # Monk-1, PB 2, WIS 17 (+3), DEX 16 (+3).
+        "attack_bonus": 5,                 # PB 2 + DEX 3 (martial-arts melee)
+        "spell_attack_bonus": 5,           # PB 2 + WIS 3 (unused at L1 — no WIS attacks)
+        "spell_save_dc": 13,               # 8 + PB 2 + WIS 3
+        "char_ac": 16,                     # 10 + DEX 3 + WIS 3 (unarmored defense)
+        "char_hp": 8,                      # DPR-irrelevant (threshold model)
+        "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "starry_form": False,
+        "guiding_bolt": False,
+        "resources": {
+            "spellfire_spark": (2, 0),     # Sacred Flame as a BA, x PB / LR (LR-only)
+        },
         "enemy_ac": 13,
-        "enemy_dex_save": 1,
-        "ceiling_dpr": 14.0,          # guide all-hit melee (1d8+3 + 1d6+3); NOT a target
+        "enemy_dex_save": 1,               # csv level 1
+        "ceiling_dpr": 14.0,               # loose: quarterstaff 7.5 + unarmed 6.5
     },
-    # L2–L20: TODO — fill per level as we climb the validation ladder.  The first
-    # "interesting" level is L5 (Spellfire Adept: cantrip scaling + Fueled Spellfire
-    # converge — save-for-damage becomes the primary damage source there).
+    4: {
+        # Monk-1/Druid-3 (Stars), PB 2, WIS 17 (+3).  Star Map (free Guiding Bolt
+        # xWIS/LR) + Starry Form (Archer) come online — both delivered via the
+        # per-attack damage override (primitive #4).
+        "attack_bonus": 5,                 # PB 2 + DEX 3
+        "spell_attack_bonus": 5,           # PB 2 + WIS 3
+        "spell_save_dc": 13,               # 8 + PB 2 + WIS 3
+        "char_ac": 16,
+        "char_hp": 22,
+        "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus"},
+        # Archer form: BA ranged spell attack 1d8 + WIS, WIS-based to-hit.
+        "archer":       {"dice": (1, 8), "bonus": 3, "weapon_stat": "spell_attack_bonus"},
+        # Guiding Bolt: 4d6 radiant, ranged spell attack, no damage modifier.
+        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus"},
+        "starry_form": True,
+        "resources": {
+            "spellfire_spark": (2, 0),     # x PB / LR
+            "guiding_bolt_free": (3, 0),   # Star Map: free Guiding Bolt x WIS / LR
+            "wild_shape": (2, 1),          # 2 / LR, +1 on SR → Starry Form ~3 of 4 combats
+        },
+        "enemy_ac": 15,
+        "enemy_dex_save": 2,               # csv level 4
+        "ceiling_dpr": 21.5,               # loose: Guiding Bolt 14 + Archer 7.5
+    },
+    5: {
+        # Monk-1/Druid-4 (Stars), PB 3, WIS 18 (+4, Spellfire Adept).  Cantrip
+        # scaling lifts Sacred Flame to 2d8 (resolved from data).  Fueled Spellfire
+        # also unlocks here but is DEFERRED (see docstring).
+        "attack_bonus": 6,                 # PB 3 + DEX 3
+        "spell_attack_bonus": 7,           # PB 3 + WIS 4
+        "spell_save_dc": 15,               # 8 + PB 3 + WIS 4
+        "char_ac": 17,                     # 10 + DEX 3 + WIS 4
+        "char_hp": 30,
+        "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "archer":       {"dice": (1, 8), "bonus": 4, "weapon_stat": "spell_attack_bonus"},
+        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus"},
+        "starry_form": True,
+        "resources": {
+            "spellfire_spark": (3, 0),     # x PB / LR (PB 3 now)
+            "guiding_bolt_free": (4, 0),   # x WIS / LR (WIS 4 now)
+            "wild_shape": (2, 1),
+        },
+        "enemy_ac": 15,
+        "enemy_dex_save": 2,               # csv level 5
+        "ceiling_dpr": 23.0,               # loose: Guiding Bolt 14 + Sacred Flame 2d8 9
+    },
 }
 
 
-def make_starfire_scion(level: int):  # noqa: ANN201 — return type TBD with engine
-    """Placeholder.  Returns the Entity for `level` once the build is implemented.
+# ---------------------------------------------------------------------------
+# Entity factories
+# ---------------------------------------------------------------------------
 
-    Not built yet: this build needs the save-FOR-damage engine primitive (and
-    `spell_save_dc` on the attacker) before its policy can be written.  See the
-    module docstring's "Engine-capacity build order".
-    """
-    raise NotImplementedError(
-        "starfire_scion is a scaffold (data + plan only); the save-for-damage "
-        "engine primitive must be built first — see PROGRESS.md and the module "
-        "docstring."
+def _make_resources(data: dict) -> ResourcePool:
+    """Build the ResourcePool from a level's "resources" spec (may be absent)."""
+    spec = data.get("resources", {})
+    entries = {
+        name: ResourceEntry(current=maximum, maximum=maximum, sr_restore=sr)
+        for name, (maximum, sr) in spec.items()
+    }
+    return ResourcePool(entries)
+
+
+def make_starfire_scion(level: int) -> Entity:
+    """Build the Starfire Scion Entity for the given level (1, 4, 5 for now)."""
+    if level not in LEVELS:
+        raise NotImplementedError(
+            f"Starfire Scion level {level} not yet implemented (have {sorted(LEVELS)})."
+        )
+    data = LEVELS[level]
+    return Entity(
+        name=f"StarfireScion-L{level}",
+        hp=data["char_hp"],
+        base_stats={
+            "attack_bonus": data["attack_bonus"],          # DEX martial-arts melee
+            "spell_attack_bonus": data["spell_attack_bonus"],  # WIS spell attacks
+            "spell_save_dc": data["spell_save_dc"],        # Sacred Flame DC
+            # Fallback weapon profile — every attack the policy emits carries its
+            # own damage override, so these are only read if a future Choice omits
+            # one.  Default to the quarterstaff so the fallback is sensible.
+            "damage_dice": data["quarterstaff"]["dice"],
+            "damage_bonus": data["quarterstaff"]["bonus"],
+        },
+        resources=_make_resources(data),
     )
+
+
+def make_training_dummy(level: int) -> Entity:
+    """Build the target for the given level.
+
+    HP is effectively infinite (threshold model).  The dummy carries the enemy AC
+    (for attack rolls) and the DEX save bonus (for Sacred Flame's save) — both
+    live from monster_ac_and_saves_by_level.csv.  It has no policy and never acts
+    (the enemy does not strike back at these levels).
+    """
+    data = LEVELS[level]
+    return Entity(
+        name=f"Dummy-AC{data['enemy_ac']}",
+        hp=10**9,
+        base_stats={
+            "ac": data["enemy_ac"],
+            "dex_save": data["enemy_dex_save"],
+        },
+    )
+
+
+# ---------------------------------------------------------------------------
+# Daily-plan policy
+# ---------------------------------------------------------------------------
+
+class StarfireScionPolicy:
+    """Starfire Scion daily plan (L1, L4, L5).
+
+    Per-turn rotation (a single representative blaster loop — the guide's full
+    optimal play splits melee vs ranged combats and leans on Flame Blade / Starry
+    Form forms we defer; validation is consistency/sanity, not number-matching):
+
+      ACTION:        Guiding Bolt (Star Map free cast, while charges remain; L4+)
+                     else a quarterstaff attack.
+      BONUS ACTION:  Sacred Flame (Spellfire Spark, while charges remain) — the
+                     save-FOR-damage core; else an Archer spell attack (if Starry
+                     Form is active this combat); else an unarmed strike.
+
+    Sacred Flame's dice are pulled FROM DATA (interpret_save_spell, by character
+    level), so cantrip scaling (1d8 → 2d8 at L5) lives in content, not here.  WHICH
+    slot/charge to spend, and the BA priority ladder, are policy (Python).
+
+    decide() stays a pure read (no dice, no mutation, no queue).  Starry Form
+    activation — the one per-combat resource decision — happens in on_combat_start,
+    where it consumes a Wild Shape charge and sets the form active for the combat.
+    """
+
+    def __init__(
+        self,
+        level: int,
+        character: Entity,
+        target: Entity,
+        rounds_per_combat: int = 4,
+    ) -> None:
+        if level not in LEVELS:
+            raise NotImplementedError(
+                f"StarfireScionPolicy does not yet support level {level}."
+            )
+        self.level = level
+        self._character = character
+        self._target = target
+        self._rounds = rounds_per_combat
+        data = LEVELS[level]
+        # Per-attack profiles available at this level (the override fields).
+        self._profiles: dict[str, dict] = {
+            "quarterstaff": data["quarterstaff"],
+            "unarmed": data["unarmed"],
+        }
+        self._has_starry_form: bool = bool(data.get("starry_form"))
+        self._has_guiding_bolt: bool = "guiding_bolt" in data
+        if self._has_starry_form:
+            self._profiles["archer"] = data["archer"]
+        if self._has_guiding_bolt:
+            self._profiles["guiding_bolt"] = data["guiding_bolt"]
+        # Sacred Flame dice FROM DATA — resolved once for this character level.
+        self._sacred_flame_dice = interpret_save_spell(
+            SACRED_FLAME, {"character_level": level}
+        ).damage_dice
+        # Per-combat state, (re)set by on_combat_start.
+        self._starry_form_active: bool = False
+
+    # -- per-combat setup -------------------------------------------------
+
+    def on_combat_start(self, combat_index: int, rng: "SeededRNG") -> None:
+        """Activate Starry Form (Archer) for this combat if a Wild Shape charge
+        remains.  Wild Shape is 2/LR + 1 on a short rest, so across a day the form
+        is up in roughly 3 of the 4 combats; when it is down the BA falls back to
+        an unarmed strike.  (rng is unused — activation is deterministic given the
+        resource pool; the parameter matches the on_combat_start hook signature.)
+        """
+        self._starry_form_active = False
+        if (
+            self._has_starry_form
+            and self._character.resources.available("wild_shape") >= 1
+        ):
+            self._character.resources.consume("wild_shape")
+            self._starry_form_active = True
+
+    # -- decision point ---------------------------------------------------
+
+    def decide(self, snapshot: GameState) -> list[Choice]:
+        res = snapshot.resources
+        choices: list[Choice] = []
+
+        # ACTION: Guiding Bolt (free Star Map cast) while charges remain, else a
+        # quarterstaff attack.  Greedy on the free casts — across statistically
+        # identical combats, when they fire does not change mean DPR.
+        if res.get("action", 0) >= 1:
+            if self._has_guiding_bolt and res.get("guiding_bolt_free", 0) >= 1:
+                choices.append(self._attack_choice(
+                    "guiding_bolt", "action",
+                    resource_cost={"guiding_bolt_free": 1},
+                ))
+            else:
+                choices.append(self._attack_choice("quarterstaff", "action"))
+
+        # BONUS ACTION: Sacred Flame (the save-FOR-damage core) while a Spellfire
+        # Spark charge remains; else an Archer attack (Starry Form active); else
+        # an unarmed strike.
+        if res.get("bonus_action", 0) >= 1:
+            if res.get("spellfire_spark", 0) >= 1:
+                choices.append(Choice(
+                    action_type="save_spell",
+                    cost="bonus_action",
+                    target=self._target,
+                    save_stat="dex_save",
+                    dc_stat="spell_save_dc",
+                    damage_dice=self._sacred_flame_dice,   # FROM DATA
+                    on_save="none",                        # save NEGATES
+                    resource_cost={"spellfire_spark": 1},
+                ))
+            elif self._starry_form_active:
+                choices.append(self._attack_choice("archer", "bonus_action"))
+            else:
+                choices.append(self._attack_choice("unarmed", "bonus_action"))
+
+        return choices
+
+    def _attack_choice(
+        self,
+        profile: str,
+        cost: str,
+        resource_cost: "dict[str, int] | None" = None,
+    ) -> Choice:
+        """Build an attack Choice carrying a per-attack damage override (the
+        multi-weapon primitive): its own dice/bonus and the WIS-or-DEX to-hit stat.
+        """
+        p = self._profiles[profile]
+        return Choice(
+            action_type="attack",
+            cost=cost,
+            target=self._target,
+            weapon_stat=p["weapon_stat"],
+            damage_dice=p["dice"],
+            damage_bonus=p["bonus"],
+            resource_cost=resource_cost or {},
+        )
+
+
+# ---------------------------------------------------------------------------
+# Full day-runner assembly (used by the validation harness / tests)
+# ---------------------------------------------------------------------------
+
+def make_day_runner(level: int, rng: "SeededRNG", rounds_per_combat: int = 4):
+    """Assemble (DayRunner, character, dummy) for the given level.
+
+    The enemy carries no attack profile at these levels, so it gets no policy and
+    never acts; DPR = damage dealt to the dummy = the character's whole output.
+    """
+    char = make_starfire_scion(level)
+    dummy = make_training_dummy(level)
+    policy = StarfireScionPolicy(
+        level=level, character=char, target=dummy, rounds_per_combat=rounds_per_combat
+    )
+    runner = DayRunner(
+        rng=rng,
+        entities=[char, dummy],
+        policies={char.id: policy},
+        rounds_per_combat=rounds_per_combat,
+    )
+    return runner, char, dummy
