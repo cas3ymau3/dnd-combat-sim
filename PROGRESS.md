@@ -104,6 +104,56 @@ At the start of every session, before diving into the work:
     rolls dice for (attack_bonus, con_save), injectable. 10 new tests (incl.
     loud-failure pins), **232 total green**. `requirements.txt` added (PyYAML).
 
+- **Declarative ability layer — WIDENED (Slices 3–6, branch
+  `declarative/brutality`).** Four more abilities now drive the War Angel FROM
+  DATA, each diffed bit-identical against the oracle at seed 1 (L5/L7/L12–L16,
+  no DPR change anywhere). Every slice climbed a *different* decision-point seam,
+  and **zero new engine verbs were forced** — confirming again that "new ability
+  = data + maybe a subscriber", not engine code. **250 total green** (+18).
+  - **Slice 3 — Brutality bluff + bleed** (`interpret_on_hit_effects` →
+    `OnHitEffectSpec`): `apply_status` routed by target (a TARGET status that
+    names a known mastery → `extra_masteries`/`CounterSpec.masteries`; a SELF
+    status → `self_status_on_hit`) + flat `damage`. bluff = vex +
+    advantage_next_save (on_hit/HitResponse); bleed = sap + CHA flat (Flourish
+    Counter/CounterSpec). **First runtime-dependent value**: bleed's +CHA is
+    resolved against a policy-supplied `context` ({"charisma": cha_mod}) — the
+    interpreter EVALUATES, not just compiles (the static-vs-interpretive line
+    from gap #1). Interpreter kept PURE (data + context in → spec out).
+  - **Slice 4 — Flourish Parry** (`interpret_intercept` → `InterceptSpec`): the
+    `intercept_event` seam (design §4 #15) — a flat AC bump (+CHA, runtime), or a
+    literal `value`. **Scoping finding (build guide):** War Angel's Flourish is
+    parry (this) + counter (a bleed attack), NOT the schema's `choose_one`
+    Flourish (distract/protect/strike) — that example is a *different* ability.
+    So `choose_one` is NOT needed here and remains an unbuilt gap until a build
+    uses those modes.
+  - **Slice 5 — flat buffs** (`interpret_modifiers` flat hook, now literal-or-
+    runtime): War God's Blessing (free Shield of Faith, literal +2 AC) and Magic
+    Weapon (+1/+2 atk+dmg). MW's two flat mods (same value, both stats) is the
+    ability intrinsic; the +1-vs-+2 cast TIER is policy arbitration, passed as a
+    runtime `context` value (`amount: {context: magic_weapon_bonus}`).
+    `_resolve_amount` now accepts `{ability_modifier: <stat>}` or
+    `{context: <key>}`. Removed the now-dead `SHIELD_OF_FAITH_AC` const + direct
+    `Modifier` import from war_angel.py.
+  - **Slice 6 — Guided Strike** (`interpret_roll_bonus` → `RollBonusSpec`): the
+    `on_miss` seam — a flat +10 attack-roll rescue + channel_divinity cost. Added
+    an **`on_miss` event predicate** to the schema vocabulary (§3.1, the mirror of
+    on_hit) — a cheap PREDICATE addition, not a verb (§9). The interpreter does
+    not read the trigger; the policy owns WHEN.
+  - **Indomitable — DELIBERATELY DEFERRED (decided with user this session).** It
+    does NOT land cleanly: (a) the closed verb set has no save-reroll verb
+    (`reroll_take_better` is dice-pool take-better, wrong — Indomitable's reroll
+    *stands*), and (b) its bonus is a `level_reference` (the known scaling gap).
+    Data-fying it honestly means inventing schema structure, which we won't do
+    unilaterally. Left as a documented gap; `on_failed_save` stays hand-coded.
+  - **Interpreter coverage now:** `apply_modifier` (bonus_die + flat, literal &
+    runtime), `damage` rider (HitRiderSpec), on-hit `apply_status` + flat damage
+    (OnHitEffectSpec), `intercept_event` flat AC bump (InterceptSpec), flat
+    attack-roll rescue (RollBonusSpec). **Still-open gaps (interpreter raises
+    LOUDLY):** scaling/upcast dice (`increment`/`level_reference` — real Divine
+    Smite, Indomitable bonus), `choose_one` blocks, data-driven trigger/predicate
+    dispatch (still Python — grow when a build makes policy-side gating painful),
+    and a save-reroll representation.
+
 ---
 
 ## Current phase: fidelity build-up → War Angel validation
@@ -146,28 +196,33 @@ this session) and the rationale:
 **→ NEXT MAJOR FOCUS (agreed): build the declarative ability layer — the
 project's #1 architectural bet (CLAUDE.md #1/#2), still UNBUILT in running
 code.** Two architecture gaps War Angel left open (neither forced by it):
-  1. **Abilities-as-data — BOOTSTRAPPED, partial (see Done "Declarative ability
-     layer").** `src/content.py` loads `content/abilities/*.yaml` and an
-     effect-interpreter now drives Bless + Wrathful Smite FROM DATA in
-     `war_angel.py` (bit-identical to the oracle). The central bet is de-risked:
-     the effect-compiler abstraction holds against a validated build. **What's
-     left to fully realize "adding an ability = data":**
-     - **Harder abilities as data**: Brutality::bluff (`apply_status`/vex +
-       self-status), Brutality::bleed (sap mastery + flat CHA dmg via
-       `extra_flat_damage`), Flourish Parry/Counter (`intercept_event` +
-       `CounterSpec`), Indomitable (`on_failed_save` reroll). Each exercises a
-       different decision-point seam — climb these next, diffing each.
-     - **Gaps the thin slice surfaced (interpreter raises LOUDLY on these
-       today, by design):** (a) **scaling/upcast** dice (`increment`/
-       `every_n_levels`/`level_reference`) — needed for a real Divine Smite, not
-       for War Angel's flat 1d6; (b) **`choose_one`** effect blocks (Flourish's
-       distract/protect/strike); (c) **trigger/predicate evaluation** is NOT yet
-       data-driven — the policy still hand-codes `once_per_turn`, weapon type,
-       bless-turn gating (the confirmed "effect-compiler first" scope; grow
-       trigger-dispatch only when a build needs it); (d) **resource-type→slot**
+  1. **Abilities-as-data — WIDENED, most War Angel intrinsics now data (see Done
+     "Declarative ability layer" Slices 1–6).** `src/content.py` loads
+     `content/abilities/*.yaml` and the effect-interpreter now drives Bless,
+     Wrathful Smite, **Brutality bluff+bleed, Flourish Parry, War God's Blessing,
+     Magic Weapon, and Guided Strike** FROM DATA in `war_angel.py` (all
+     bit-identical to the oracle). The central bet is de-risked across SIX
+     decision-point seams (decide-buff / on_hit / intercept / on_miss) with zero
+     new verbs forced. **What's left to fully realize "adding an ability = data":**
+     - **Remaining hand-coded intrinsics**: Indomitable (`on_failed_save` reroll —
+       DEFERRED this session, needs a save-reroll schema rep + level_reference;
+       see Done). True Strike (1d6 cantrip rider applied in `decide()`, L5–9) and
+       War Priest (a bonus-action weapon *attack* Choice) are more decide()-level
+       action-economy than effect-intrinsics — lower-value to data-fy.
+     - **Gaps the slices surfaced (interpreter raises LOUDLY on these today, by
+       design):** (a) **scaling/upcast** dice (`increment`/`every_n_levels`/
+       `level_reference`) — real Divine Smite, the Indomitable bonus; (b)
+       **`choose_one`** effect blocks (a real distract/protect/strike Flourish on
+       another build — War Angel does NOT use it, see Slice 4); (c) **a
+       save-reroll representation** (Indomitable); (d) **trigger/predicate
+       evaluation** is NOT yet data-driven — the policy still hand-codes
+       `once_per_turn`, weapon type, bless-turn gating, and every slice's WHEN
+       (the confirmed "effect-compiler first" scope; grow trigger-dispatch only
+       when a build makes policy-side gating painful); (e) **resource-type→slot**
        resolution stays in the policy (correct per the boundary).
-     - The interpreter is intentionally narrow (apply_modifier bonus_die/flat +
-       damage rider). Widen it ability-by-ability against the oracle.
+     - Vocabulary additions recorded this session: **`on_miss` event predicate**
+       (§3.1, mirror of on_hit — Guided Strike); the runtime-`amount` forms
+       `{ability_modifier: <stat>}` and `{context: <key>}`.
 
      **Architecture clarification (decided this session — "interpreter" vs
      "compiler").** Worth pinning so it isn't re-litigated: the design's word
