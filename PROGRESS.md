@@ -773,6 +773,41 @@ covers pure die-size growth and Shillelagh's mixed 2d6 step alike), reused acros
 all of them, not re-solved per ability. See `design/ability_schema.md` §4.5
 "Scaled quantity".
 
+**ATTACK TAXONOMY — engine-vocabulary gap (flagged, surfaced session 7; FUTURE
+work, discuss before any engine change).** Searing Arc Strike keys on the *Attack
+action*, which forced disambiguating it from Guiding Bolt (a spell delivered via an
+attack roll). The proxy used (`is_spell == False`) works, but it exposed that the
+engine conflates three *distinct* rules axes the user wants cleanly mapped across
+the whole model. The user's rules framing (2024), recorded verbatim so it isn't
+re-derived:
+  - An **attack** = anything requiring an **attack roll**. Exactly three KINDS:
+    **weapon attack**, **unarmed strike**, **spell attack** (that's the full set).
+  - The **Attack action** = specifically using your *action* to attack with a
+    weapon or unarmed strike (Extra Attack scales this). It does NOT include
+    casting a spell.
+  - **Casting a spell** uses the **Magic action** (and some non-spell features also
+    cost the Magic action).
+  - Spells/features can grant attacks at OTHER action-economy costs: a **bonus
+    action** (Starry-Form *Archer* = a ranged *spell attack* as a BA; *Spiritual
+    Weapon* = a spell attack delivered by a separate summoned entity as a BA) or a
+    **reaction**. A separate entity / companion can also attack (Beastmaster Primal
+    Companion's *strike* ≈ an unarmed strike as a BA).
+  The three axes the engine currently collapses into `Choice.action_type="attack"`
+  + `cost` + `is_spell`: (1) the attack **KIND** (weapon / unarmed / spell attack —
+  governs which dice/mods/feats apply); (2) the **action taken** (Attack action /
+  Magic action / other — governs gating like "did you take the Attack action?");
+  (3) the **economy cost** (action / bonus_action / reaction). A clean typology
+  separates all three. Building it is FUTURE work (NOT done in session 7 — only
+  flagged). The user offered to elaborate further on the rules distinctions when we
+  take it up.
+
+**VALIDATION TOOL — the ablation (adopted session 7).** When adjacent ladder levels
+do NOT share an enemy (so the existing "fixed-enemy monotonic" check, e.g. L4 vs L5,
+doesn't apply), isolate a feature's contribution by an **on-vs-off ablation at a
+single fixed enemy**: run the level with the feature enabled vs. disabled (e.g.
+`policy._has_searing_arc = False`) and assert the enabled DPR is strictly higher.
+This is now a standard consistency tool alongside the fixed-enemy monotonic compare.
+
 **Explicitly deferred (unchanged):** multi-enemy AoE + spatial (Burning Hands
 modeled single-target until a multi-enemy model exists); separate-entity / summons
 (→ Reanimating Bloodshot later); the allies dimension (Guiding Bolt advantage
