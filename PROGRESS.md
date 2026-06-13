@@ -54,19 +54,69 @@ When wrapping up a session (the milestone is complete, or the user signals an en
    This is the project's handoff mechanism — never skip it.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-12, session 3) — DONE:** build engine primitive #2 for Starfire Scion —
-> cantrip / `level_reference` dice scaling (Option B, data-driven in `content.py`).
-> Sacred Flame's dice are now resolved from data by character level
-> (1d8→2d8→3d8→4d8 at L1/5/11/17) via `_resolve_scaling_dice` +
-> `interpret_save_spell`. Stopping point reached: primitive built + cantrip math
-> pinned exact at each tier + the save-for-damage Monte-Carlo extended to drive
-> dice from the interpreter; **273 tests green.** Full Starfire Scion policy/build
-> wiring still deferred. MCP-toggle recommendation re-made (computer-use /
-> Claude-in-Chrome / Claude_Preview / scheduled-tasks / mcp-registry / Google Drive).
+> (2026-06-12, session 4) — DONE:** build engine primitive #3 for Starfire Scion —
+> uniform upcast `increment`/`every_n_levels` dice scaling in `_resolve_scaling_dice`
+> + a Searing Arc Strike (upcast Burning Hands) save-for-half delivery. The
+> uniform branch (was stubbed to raise) now folds `{base, increment,
+> every_n_levels, level_reference, base_level}` to concrete dice; offset semantics
+> = **explicit `base_level`, default 1** (decided with user). Stopping point
+> reached: primitive built, upcast dice pinned exact per slot level + monotonic
+> growth + save-for-half mean a plausible fraction of the ceiling; **284 tests
+> green (+11).** Full Starfire Scion policy/build wiring still deferred. MCP-toggle
+> recommendation re-made (computer-use / Claude-in-Chrome / Claude_Preview /
+> scheduled-tasks / mcp-registry / Google Drive).
 
 ---
 
 ## Done
+
+- **Uniform upcast `increment` dice scaling — BUILT & VALIDATED (2026-06-12,
+  session 4; Starfire Scion engine primitive #3).** The uniform branch of the
+  shared `_resolve_scaling_dice` seam (was stubbed to RAISE, deferred from #2)
+  now folds the schema's `dice: {base, increment, every_n_levels,
+  level_reference, base_level}` form to concrete `(count, sides)` at fire-time —
+  +`increment` dice per `every_n_levels` of the referenced level. Same machinery
+  as #2 but keyed on **`level_reference: slot_level`** (upcast) instead of
+  character_level. **284 tests green (+11).**
+  - **Offset semantics (decided with user): explicit `base_level`, default 1.**
+    The level at which `base` dice apply with zero increments is an optional
+    `base_level` field on the dice block; omitted → 1 (the natural floor of
+    character / rogue / minimum-slot levels). So Divine Smite (2d8 at slot 1),
+    Searing Arc / Burning Hands (3d6 at slot 1) and Sneak Attack (1d6 at rogue 1)
+    need NO new field; only a spell whose base lands higher (Spirit Guardians:
+    3d8 at slot 3) sets `base_level: 3`. Chosen over deriving from
+    `cost.resource.min_level` (which would couple the pure `_resolve_scaling_dice`
+    helper to the cost block and not generalize to non-slot references) and over
+    a hardcoded floor-of-1 (which would silently mis-scale Spirit Guardians).
+    `steps = max(0, level - base_level) // every_n_levels` (clamped so a level
+    below the base never shrinks the pool); `count = base_count + steps *
+    increment_count`. The die SIZE never changes — a base/increment die-size
+    mismatch raises loudly (`2d8` + `1d6` can't fold into one pool).
+  - **`content.py`:** `_resolve_scaling_dice`'s `increment` branch implemented;
+    `interpret_hit_rider` gained a `context` param so the canonical upcast hit
+    rider (Divine Smite) resolves from data given the chosen slot — backward-
+    compatible (Wrathful Smite is literal, needs no context). The two divine_smite
+    "raises" tests FLIPPED from raise → resolve (per plan).
+  - **`content/abilities/starfire_scion.yaml`:** new `searing_arc_strike` ability
+    — upcast Burning Hands, DEX save vs `spell_save_dc` **FOR HALF**, base 3d6
+    +1d6/slot (`level_reference: slot_level`), cast as a **bonus action**, modeled
+    single-target (multi-enemy AoE still deferred).
+  - **Validation (consistency/sanity, per the Starfire framing):**
+    `test_content.py` pins the uniform steps exactly — per-slot-level for Divine
+    Smite (2d8→6d8 at slots 1–5), the explicit `base_level: 3` offset (Spirit
+    Guardians 3d8 at slot 3, clamp below base), the `every_n_levels: 2` step
+    (Sneak Attack 1d6→10d6), missing-level / die-size-mismatch loud failures, and
+    `interpret_hit_rider` resolving upcast Divine Smite. `test_save_for_damage.py`
+    drives Searing Arc Strike FROM DATA: upcast dice exact per slot (3d6→7d6 at
+    slots 1–5), save-for-half per-cast math exact at each slot (full on fail =
+    6×count, half rounded down on a made save), the L10 slot-3 (5d6) Monte-Carlo
+    mean a plausible fraction of the all-hit ceiling (DC 16, DEX +3 → P(fail)=0.60,
+    mean≈13.9 between the save-negates 10.5 and the ceiling 17.5), strictly
+    monotonic growth with slot level, and a BONUS-ACTION save-for-half delivery
+    end to end through the scheduler.
+  - **Deferred (in scope):** full Starfire Scion policy/build wiring
+    (`make_starfire_scion` still raises) — it will read `damage_dice` from
+    `interpret_save_spell({"slot_level": N})` and arbitrate which slot to spend.
 
 - **Cantrip / `level_reference` dice scaling — BUILT & VALIDATED (2026-06-12,
   session 3; Starfire Scion engine primitive #2).** Sacred Flame's damage dice
@@ -463,10 +513,15 @@ Strike. Upcast scaling comes later up the ladder.
    Flame's dice are resolved from `content/abilities/starfire_scion.yaml`
    (`scaling: cantrip`) by character level via `content._resolve_scaling_dice` +
    `interpret_save_spell`. See the Done entry above.
-3. Upcast `increment` scaling (Searing Arc Strike = upcast Burning Hands).
-   **← NEXT.** Reuses the SAME `_resolve_scaling_dice` seam with
-   `level_reference: slot_level`; the uniform `increment`/`every_n_levels` branch
-   is already stubbed there to raise — primitive #3 implements it.
+3. ~~Upcast `increment` scaling (Searing Arc Strike = upcast Burning Hands).~~ ✓
+   **DONE & VALIDATED (2026-06-12, session 4).** The uniform branch of
+   `_resolve_scaling_dice` now folds `{base, increment, every_n_levels,
+   level_reference, base_level}` to concrete dice keyed on `slot_level`; offset =
+   explicit `base_level` (default 1). `searing_arc_strike` (save-for-half, upcast
+   3d6+1d6/slot) drives FROM DATA through `interpret_save_spell`. See the Done
+   entry above. **No remaining engine primitive is blocking the build** — what's
+   left for Starfire Scion is per-level data + the policy/`make_starfire_scion`
+   wiring.
 
 **Explicitly deferred (unchanged):** multi-enemy AoE + spatial (Burning Hands
 modeled single-target until a multi-enemy model exists); separate-entity / summons
@@ -924,6 +979,31 @@ combat policy through two lenses, and reformulate it as needed:
 ---
 
 ## Open threads / deferred decisions
+
+- **Scaling typology — RECORDED (2026-06-12, session 4); framework deliberately
+  NOT generalized yet.** Discussed with the user after primitive #3: rather than
+  treat the two dice-scaling "modes" (cantrip / uniform) as two kinds of ability,
+  they decompose into three INDEPENDENT axes — **driver** (`level_reference`:
+  slot/character/class level or a spent-resource count), **step function**
+  (linear `increment`/`every_n_levels`/`base_level`, or a threshold list like
+  cantrip's `[5,11,17]`), and **scaled quantity** (dice count / target count /
+  #beams / duration). Full typology written up in `design/ability_schema.md` §4.5
+  ("Scaling typology"). **Decision: keep building forcing-function-driven** — the
+  current `_resolve_scaling_dice` (dice count × linear-or-threshold × any driver)
+  is the right amount of machinery for every selected build; a generic framework
+  would generalize 2 cases into a framework with 2 cases and unblock nothing. The
+  typology confirmed the policy/resolution boundary is correctly placed (the
+  driver value is always policy-supplied via context; "how much to spend" stays
+  Python, "value → dice" stays data — so `base_level` belongs in the dice block).
+  **Two cheap generalizations it surfaced, each forced only when a build needs
+  it:** (a) lift the cantrip threshold list from the hardcoded
+  `_CANTRIP_THRESHOLDS` to data (`scaling: thresholds`, `breaks: [...]`) when the
+  first non-cantrip threshold scaler (Rage-style) appears; (b) **target-count
+  scaling** (upcast Command / Charm Person) is blocked on the unbuilt multi-enemy
+  / spatial model, NOT on scaling design — and is rare in the current build corpus
+  (Voice of Heaven, the one build that leans on it, is itself deferred for the
+  same multi-enemy reason). Cost-driven drivers (focus/ki/sorcery points) already
+  work for free — they're just another `level_reference` key in `context`.
 
 - **Idle Aid L2 slot → upcast Wrathful Smite — MEASURED, deliberately NOT
   implemented (known conservatism).** Spell-slot audit at L15 (5000 days,

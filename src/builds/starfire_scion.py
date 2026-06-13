@@ -102,9 +102,13 @@ Engine-capacity build order (see PROGRESS):
      `content.interpret_save_spell` resolves it against the character level via the
      shared `_resolve_scaling_dice` helper (1d8→2d8→3d8→4d8 at L1/5/11/17).  The
      policy supplies `damage_dice` from that spec instead of a literal tuple.
-  3. Upcast `increment` scaling (Searing Arc Strike) — the SAME `_resolve_scaling_dice`
-     seam, `level_reference: slot_level`; the uniform `increment`/`every_n_levels`
-     branch is stubbed to raise (primitive #3).
+  3. [DONE] Upcast `increment` scaling (Searing Arc Strike = upcast Burning
+     Hands).  The SAME `_resolve_scaling_dice` seam, now keyed on
+     `level_reference: slot_level`: base 3d6 at slot 1, +1d6 per slot level above
+     an optional `base_level` (default 1).  `content/abilities/starfire_scion.yaml`
+     carries a `searing_arc_strike` ability (DEX save FOR HALF, upcast dice), and
+     `interpret_save_spell` folds the slot into concrete dice via the helper.  The
+     policy supplies `{"slot_level": N}` for whichever slot it chose to spend.
 """
 
 from __future__ import annotations

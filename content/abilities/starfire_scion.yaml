@@ -45,3 +45,43 @@ cost:
   action_economy: bonus_action
 duration:
   type: instantaneous
+
+---
+# ─── SEARING ARC STRIKE (upcast Burning Hands) ───────────────────────────────
+# Monk-6 feature (char L10+): after the Attack action, cast (an upcast) Burning
+# Hands as a BONUS ACTION.  2024 Burning Hands: a DEX saving throw vs our spell
+# save DC for HALF damage (full on a fail) — base 3d6 at slot level 1, +1d6 per
+# slot level above 1 (uniform `increment` scaling keyed on slot_level).  Modeled
+# SINGLE-TARGET for now (the multi-enemy AoE axis is deferred — see PROGRESS).
+#
+# This is the schema's save-FOR-HALF shape (interpret_save_spell, on_save: half)
+# carried on top of primitive #3's upcast dice: `_resolve_scaling_dice` folds the
+# `increment`/`level_reference: slot_level` block to (count, sides) at fire-time,
+# given the slot the policy chose.  base_level defaults to 1 (Burning Hands's
+# minimum slot), so it is omitted.  WHICH slot is spent stays policy arbitration.
+
+name: searing_arc_strike
+tags: [active, spell]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: save
+    ability: dexterity
+    dc_reference: spell_save_dc
+  - verb: damage
+    dice:
+      base: "3d6"
+      increment: "1d6"            # +1d6 per slot level above the base slot
+      every_n_levels: 1
+      level_reference: slot_level
+    type: fire
+    on_save: half                 # save FOR HALF (full on fail, half on a save)
+    target: target
+cost:
+  action_economy: bonus_action
+  resource:
+    type: spell_slot
+    min_level: 1
+duration:
+  type: instantaneous
