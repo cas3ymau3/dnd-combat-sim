@@ -328,6 +328,19 @@ tells us exactly what each new build will force:
      (1,12) at L11+), exactly as weapon dice already are; build the data-driven
      scaler only when Shillelagh (or another die-size cantrip) should resolve from
      YAML by character level. See PROGRESS "die-size scaling".
+     *This is a GENERAL, recurring pattern, not a Shillelagh quirk* — die size
+     grows with level all over the corpus: **bardic inspiration** (d6 → d8 → d10
+     → d12 at bard 5/10/15), **battlemaster superiority die** (d8 → d10 → d12 at
+     fighter 10/18), **psionic / psi-energy dice** (d6 → … → d12), Martial Arts,
+     etc. They all share the same factoring — **driver** = a class/character
+     level, **step** = a threshold list (a PER-FEATURE break list — which is
+     exactly why `_CANTRIP_THRESHOLDS` must be lifted to data, see the
+     step-function note above), **quantity** = die size — and their consumers span
+     BEYOND damage pools: inspiration/superiority dice are a `bonus_die` modifier
+     added to a d20 test / save, psi dice fuel assorted effects. So die size is
+     worth building ONCE as a first-class scaled-quantity (a size ladder + a
+     per-feature break list, returning a `(count, sides)` any consumer can use),
+     reused by all of them — not re-solved per ability.
    - **target count** (upcast Command / Charm Person hitting more creatures) —
      blocked on the multi-enemy / spatial model (deferred; see PROGRESS). Rare in
      the current build corpus.

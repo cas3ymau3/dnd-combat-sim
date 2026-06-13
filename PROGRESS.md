@@ -616,7 +616,13 @@ already per-level data — so wiring L9 needs only primitive #4 + a policy flag 
 this per-level die. Build the data-driven die-size scaler only when Shillelagh (or
 another die-size cantrip) should resolve from YAML by character level. The
 attack-profile half of Shillelagh (STR/DEX → WIS swap + d-size weapon) is already
-covered by primitive #4. See `design/ability_schema.md` §4.5 "Scaled quantity".
+covered by primitive #4. **And it is a GENERAL phenomenon, not a Shillelagh quirk
+— bardic inspiration (d6→d8→d10→d12), battlemaster superiority die (d8→d10→d12),
+psionic / psi-energy dice all scale die SIZE by class level, and some are
+`bonus_die` modifiers rather than damage pools** → build die-size ONCE as a
+first-class scaled-quantity (size ladder + per-feature break list → `(count,
+sides)`), reused across all of them, not re-solved per ability. See
+`design/ability_schema.md` §4.5 "Scaled quantity".
 
 **Explicitly deferred (unchanged):** multi-enemy AoE + spatial (Burning Hands
 modeled single-target until a multi-enemy model exists); separate-entity / summons
