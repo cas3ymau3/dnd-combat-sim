@@ -125,6 +125,17 @@ class Choice:
     # Flat damage added to this attack on hit beyond the weapon's damage_bonus,
     # e.g. Brutality::bleed's +CHA mod.  Threaded to the AttackRollEvent.
     extra_flat_damage: int = 0
+    # --- Save-FOR-damage spells (action_type="save_spell"): Sacred Flame, etc. ---
+    # The TARGET rolls `save_stat` (e.g. "dex_save") vs the actor's `dc_stat`
+    # (spell save DC); the result determines damage.  `damage_dice`/`damage_bonus`
+    # are the spell's own dice (carried here, NOT the weapon's).  `on_save` is
+    # "none" (save negates — Sacred Flame) or "half" (save for half — Burning
+    # Hands).  Only read when action_type == "save_spell".
+    save_stat: "str | None" = None
+    dc_stat: str = "spell_save_dc"
+    damage_dice: "tuple[int, int] | None" = None
+    damage_bonus: int = 0
+    on_save: str = "none"
 
 
 # ---------------------------------------------------------------------------

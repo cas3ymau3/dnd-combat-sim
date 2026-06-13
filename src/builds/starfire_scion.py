@@ -92,9 +92,11 @@ first becomes load-bearing)
   L20 +Druid-12.  ASI: +2 DEX (→20); WIS/DEX attack modes equivalent.
 
 Engine-capacity build order (NONE built yet — see PROGRESS):
-  1. `spell_save_dc` on the attacker + save-FOR-damage resolution path (negates +
-     for-half).  Validate first on Sacred Flame.
-  2. Cantrip / `level_reference` dice scaling.
+  1. [DONE] `spell_save_dc` on the attacker + save-FOR-damage resolution path
+     (negates + for-half).  Built & validated on Sacred Flame (L1/L5 data) via a
+     `SaveDamageEvent` + `resolve_save_damage`; the policy emits a
+     `Choice(action_type="save_spell", save_stat=..., damage_dice=..., on_save=...)`.
+  2. [NEXT] Cantrip / `level_reference` dice scaling.
   3. Upcast `increment` scaling (Searing Arc Strike).
 """
 

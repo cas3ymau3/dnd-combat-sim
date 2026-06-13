@@ -155,8 +155,53 @@ class DamageEvent(Event):
     # Extra flat damage beyond damage_bonus (e.g. Brutality::bleed's +CHA mod),
     # added in phase 5 alongside damage_bonus.  Does NOT scale on a crit.
     extra_flat_damage: int = 0
+    # Save-for-half: when True, resolve_damage halves the post-phase-5 total
+    # (rounded down) — the 2024 "half damage on a successful save" rule (Burning
+    # Hands).  Set by resolve_save_damage when a target SAVES against a half-on-
+    # save spell; left False for every attack-roll hit and every failed save.
+    halved: bool = False
     cost: str = "action"
     kind: str = field(default="damage", init=False)
+
+
+@dataclass
+class SaveDamageEvent(Event):
+    """A save-FOR-DAMAGE spell delivery (Sacred Flame, Burning Hands).
+
+    The mirror of AttackRollEvent: instead of the ACTOR rolling d20 vs the
+    target's AC, the TARGET rolls a saving throw vs the actor's spell save DC,
+    and the save result determines damage.  resolve_save_damage resolves the
+    save and (on the appropriate result) enqueues a normal DamageEvent — so the
+    entire phase-ordered damage path, concentration check, and save-reroll
+    machinery are reused untouched.
+
+    Fields
+    ------
+    save_stat:
+        The TARGET's saving-throw stat, e.g. "dex_save" (Sacred Flame / Burning
+        Hands are DEX saves).  Looked up on the target via resolve_saving_throw.
+    dc_stat:
+        The ACTOR's stat that supplies the save DC — "spell_save_dc" (= 8 + PB +
+        casting-mod, stored on the caster's base_stats).
+    damage_dice / damage_bonus:
+        The spell's damage on a full hit, e.g. (1, 8) for Sacred Flame at L1.
+        Carried on the event (NOT pulled from actor.stat("damage_dice"), which is
+        the weapon) because a spell's dice differ from the caster's weapon dice.
+    on_save:
+        "none"  → save NEGATES (Sacred Flame): a successful save deals nothing.
+        "half"  → save FOR HALF (Burning Hands): a successful save deals half
+                  (the spawned DamageEvent carries halved=True).
+        A FAILED save always deals full damage regardless.
+    cost:
+        Action-economy tag of the cast, for traceability (mirrors AttackRollEvent).
+    """
+    save_stat: str = "dex_save"
+    dc_stat: str = "spell_save_dc"
+    damage_dice: tuple[int, int] = (1, 8)
+    damage_bonus: int = 0
+    on_save: str = "none"
+    cost: str = "action"
+    kind: str = field(default="save_damage", init=False)
 
 
 @dataclass
