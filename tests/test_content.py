@@ -167,11 +167,22 @@ def test_interpret_hit_rider_rejects_non_damage_verb():
         interpret_hit_rider(bless)
 
 
-def test_interpret_hit_rider_rejects_unmodeled_scaling():
-    """Divine Smite carries upcast scaling (`increment`) we don't model yet —
-    it must raise, not silently drop the extra dice."""
+def test_interpret_hit_rider_resolves_upcast_divine_smite():
+    """Divine Smite carries upcast scaling (`increment`, +1d8 per slot level) —
+    primitive #3 resolves it from data given the chosen slot in context.
+    base 2d8 at slot 1; slot 3 → 4d8."""
     divine = load_abilities()["divine_smite"]
-    with pytest.raises(NotImplementedError):
+    rider = interpret_hit_rider(divine, {"slot_level": 3})
+    assert rider.extra_damage_dice == [(4, 8)]
+    assert rider.resource_type == "spell_slot"
+    assert rider.min_level == 1
+
+
+def test_interpret_hit_rider_upcast_needs_the_slot_level_in_context():
+    """An upcast rider is interpretive — without the slot level it fails loudly
+    (a missing context value, not a silent default)."""
+    divine = load_abilities()["divine_smite"]
+    with pytest.raises(ValueError):
         interpret_hit_rider(divine)
 
 
@@ -221,15 +232,76 @@ def test_scaling_dice_cantrip_requires_character_level_reference():
         _resolve_scaling_dice(spec, {"slot_level": 3}, "sacred_flame")
 
 
-def test_scaling_dice_uniform_increment_deferred_to_primitive_3():
-    """The uniform `increment`/`every_n_levels` (upcast) form raises — it is
-    primitive #3, not modeled here — rather than silently dropping the dice."""
+def test_scaling_dice_uniform_increment_scales_per_slot_level():
+    """The uniform upcast form (primitive #3): base 2d8 at slot 1, +1d8 per slot
+    level.  base_level defaults to 1, so slot N → (1 + N) d8."""
     spec = {
         "base": "2d8", "increment": "1d8",
         "every_n_levels": 1, "level_reference": "slot_level",
     }
+
+    def dice_at(slot: int) -> tuple[int, int]:
+        return _resolve_scaling_dice(spec, {"slot_level": slot}, "divine_smite")
+
+    assert [dice_at(s) for s in (1, 2, 3, 4, 5)] == [
+        (2, 8), (3, 8), (4, 8), (5, 8), (6, 8)
+    ]
+
+
+def test_scaling_dice_uniform_explicit_base_level_offset():
+    """A spell whose base lands above slot 1 sets `base_level` (Spirit Guardians:
+    3d8 at slot 3, +1d8 per slot level).  Steps are measured ABOVE base_level, and
+    a slot below it clamps to the base pool (never shrinks)."""
+    spec = {
+        "base": "3d8", "increment": "1d8", "every_n_levels": 1,
+        "level_reference": "slot_level", "base_level": 3,
+    }
+
+    def dice_at(slot: int) -> tuple[int, int]:
+        return _resolve_scaling_dice(spec, {"slot_level": slot}, "spirit_guardians")
+
+    assert [dice_at(s) for s in (3, 4, 5, 9)] == [(3, 8), (4, 8), (5, 8), (9, 8)]
+    assert dice_at(2) == (3, 8)        # below base level → clamps to base, no shrink
+
+
+def test_scaling_dice_uniform_every_n_levels_step():
+    """`every_n_levels: 2` adds the increment once per two reference levels
+    (Sneak Attack: 1d6 at rogue 1, +1d6 every 2 → 2d6 at L3, 3d6 at L5)."""
+    spec = {
+        "base": "1d6", "increment": "1d6",
+        "every_n_levels": 2, "level_reference": "rogue_level",
+    }
+
+    def dice_at(level: int) -> tuple[int, int]:
+        return _resolve_scaling_dice(spec, {"rogue_level": level}, "sneak_attack")
+
+    assert [dice_at(lv) for lv in (1, 2, 3, 5, 20)] == [
+        (1, 6), (1, 6), (2, 6), (3, 6), (10, 6)
+    ]
+
+
+def test_scaling_dice_uniform_needs_the_level_in_context():
+    """Uniform scaling is interpretive — a missing reference level raises (no
+    silent default), mirroring the cantrip case."""
+    spec = {
+        "base": "2d8", "increment": "1d8",
+        "every_n_levels": 1, "level_reference": "slot_level",
+    }
+    with pytest.raises(ValueError):
+        _resolve_scaling_dice(spec, None, "divine_smite")
+    with pytest.raises(ValueError):
+        _resolve_scaling_dice(spec, {"character_level": 5}, "divine_smite")
+
+
+def test_scaling_dice_uniform_rejects_mismatched_die_size():
+    """Only the die COUNT scales, never the size — a base/increment die-size
+    mismatch can't fold into one (count, sides) and raises loudly."""
+    spec = {
+        "base": "2d8", "increment": "1d6",
+        "every_n_levels": 1, "level_reference": "slot_level",
+    }
     with pytest.raises(NotImplementedError):
-        _resolve_scaling_dice(spec, {"slot_level": 3}, "divine_smite")
+        _resolve_scaling_dice(spec, {"slot_level": 3}, "frankenspell")
 
 
 # ---------------------------------------------------------------------------

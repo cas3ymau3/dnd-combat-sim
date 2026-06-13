@@ -292,3 +292,135 @@ def test_scaled_sacred_flame_dpr_grows_monotonically_up_the_ladder():
         for lv in (1, 5, 11, 17)
     ]
     assert means[0] < means[1] < means[2] < means[3]
+
+
+# ---------------------------------------------------------------------------
+# Primitive #3 — Searing Arc Strike (upcast Burning Hands), save FOR HALF
+# ---------------------------------------------------------------------------
+# Monk-6 (char L10+): cast an upcast Burning Hands as a BONUS ACTION after the
+# Attack action.  This stacks primitive #3's UNIFORM upcast dice
+# (`increment`/`level_reference: slot_level`) onto the already-built save-for-half
+# path: interpret_save_spell reads searing_arc_strike's YAML and folds the
+# upcast dice against the chosen slot level (base 3d6 at slot 1, +1d6 per slot).
+
+def _searing_arc_spec(slot_level: int):
+    sas = load_abilities()["searing_arc_strike"]
+    return interpret_save_spell(sas, {"slot_level": slot_level})
+
+
+def test_searing_arc_dice_scale_with_slot_level():
+    """Upcast FROM DATA: Burning Hands base 3d6 at slot 1, +1d6 per slot level.
+    The die SIZE stays d6; only the COUNT grows.  on_save is read as 'half'."""
+    specs = {s: _searing_arc_spec(s) for s in (1, 2, 3, 4, 5)}
+    assert {s: spec.damage_dice for s, spec in specs.items()} == {
+        1: (3, 6), 2: (4, 6), 3: (5, 6), 4: (6, 6), 5: (7, 6)
+    }
+    assert all(spec.on_save == "half" for spec in specs.values())
+    assert all(spec.save_stat == "dex_save" for spec in specs.values())
+
+
+def test_searing_arc_save_for_half_math_is_exact_at_each_slot():
+    """At each slot the per-cast math is exact (deterministic FakeRNG): a failed
+    DEX save takes the FULL upcast dice (all max → 6*count); a made save takes
+    HALF, rounded down ((6*count)//2).  Both dice + on_save come from data."""
+    caster, enemy = _caster(16), _enemy(3)         # L10 profile: DC 16, DEX +3
+    for slot, (count, sides) in (
+        (1, (3, 6)), (2, (4, 6)), (3, (5, 6)), (4, (6, 6)), (5, (7, 6)),
+    ):
+        spec = _searing_arc_spec(slot)
+        assert spec.damage_dice == (count, sides)  # upcast scaling from data
+        # failed save (d20=2 → 5 < 16): full, every die max.
+        full = _resolve_one_cast(
+            caster, enemy, spec.damage_dice, spec.on_save, FakeRNG([2] + [6] * count)
+        )
+        assert full == 6 * count
+        # made save (d20=20 → 23 >= 16): half rounded down.
+        half = _resolve_one_cast(
+            caster, enemy, spec.damage_dice, spec.on_save, FakeRNG([20] + [6] * count)
+        )
+        assert half == (6 * count) // 2
+
+
+def test_searing_arc_mean_is_a_plausible_fraction_of_ceiling():
+    """Monte-Carlo SANITY at the L10 slot-3 cast (5d6), save FOR HALF.  DC 16,
+    enemy DEX +3 → P(fail)=12/20=0.60; ceiling (all-hit, all-fail) = E[5d6]=17.5.
+    A made save still deals half, so the mean MUST exceed the save-NEGATES mean
+    (0.60*17.5=10.5) and stay below the ceiling; analytically
+    ≈ 0.60*17.5 + 0.40*E[⌊5d6/2⌋] ≈ 13.9."""
+    n = 20_000
+    rate, mean = _monte_carlo(
+        dc=16, dex_save=3, dice=_searing_arc_spec(3).damage_dice, on_save="half", n=n
+    )
+    assert abs(rate - 0.60) < 0.02
+    assert 0.60 * 17.5 < mean < 17.5               # above save-negates, below ceiling
+    assert abs(mean - 13.9) < 0.6                  # ≈ the analytic for-half mean
+
+
+def test_searing_arc_dpr_grows_monotonically_with_slot_level():
+    """The consistency check: upcasting strictly increases mean damage
+    (slot 1 < 2 < 3 < 4 < 5) at a fixed save profile."""
+    n = 8_000
+    means = [
+        _monte_carlo(dc=16, dex_save=3, dice=_searing_arc_spec(s).damage_dice,
+                     on_save="half", n=n)[1]
+        for s in (1, 2, 3, 4, 5)
+    ]
+    assert all(a < b for a, b in zip(means, means[1:]))
+
+
+# ---------------------------------------------------------------------------
+# Scheduler integration — a BONUS-ACTION save-for-half Searing Arc flows through
+# ---------------------------------------------------------------------------
+
+class _SearingArcPolicy:
+    """Casts Searing Arc Strike as a BONUS ACTION (Monk-6).  The upcast dice +
+    save-for-half are pulled FROM DATA via interpret_save_spell, exactly as the
+    eventual build policy will (which slot to spend stays policy arbitration)."""
+
+    def __init__(self, target, slot_level):
+        self._target = target
+        self._spec = _searing_arc_spec(slot_level)
+        self._cast = False
+
+    def decide(self, snapshot: GameState):
+        if self._cast or snapshot.resources.get("bonus_action", 0) < 1:
+            return []
+        self._cast = True
+        return [Choice(
+            action_type="save_spell",
+            cost="bonus_action",
+            target=self._target,
+            save_stat=self._spec.save_stat,
+            dc_stat=self._spec.dc_stat,
+            damage_dice=self._spec.damage_dice,
+            on_save=self._spec.on_save,
+        )]
+
+
+def test_scheduler_runs_searing_arc_made_save_deals_half():
+    caster, enemy = _caster(16), _enemy(3)
+    # slot 3 → 5d6; save d20=20 → 23 >= 16 PASS; for-half → 5d6=[6,6,6,6,6]=30 → 15.
+    sched = Scheduler(
+        rng=FakeRNG([20, 6, 6, 6, 6, 6]),
+        entities=[caster, enemy],
+        policies={caster.id: _SearingArcPolicy(enemy, slot_level=3)},
+        max_rounds=1,
+    )
+    log = sched.run()
+    assert sum(log) == 15                          # 30 // 2, the made-save half
+    assert enemy.saving_throws_made == 1
+    assert enemy.saving_throws_failed == 0
+
+
+def test_scheduler_runs_searing_arc_failed_save_deals_full():
+    caster, enemy = _caster(16), _enemy(3)
+    # slot 3 → 5d6; save d20=3 → 6 < 16 FAIL; full 5d6=[6,6,6,6,6]=30.
+    sched = Scheduler(
+        rng=FakeRNG([3, 6, 6, 6, 6, 6]),
+        entities=[caster, enemy],
+        policies={caster.id: _SearingArcPolicy(enemy, slot_level=3)},
+        max_rounds=1,
+    )
+    log = sched.run()
+    assert sum(log) == 30
+    assert enemy.saving_throws_failed == 1

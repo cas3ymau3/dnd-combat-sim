@@ -257,6 +257,7 @@ mode: minimum_floor         # treat any result below N as N
     increment: "1d8"         # added per scaling step
     every_n_levels: 1        # how many levels per increment (omit if per-level)
     level_reference: slot_level  # what level value to use for scaling
+    base_level: 1            # level at which `base` applies, 0 increments (default 1; omit)
   type: radiant
   on_save: half              # "half" | "none" (default: "none")
   target: self               # "self" | "target" | "ally" | "all_in_zone" | "allies_within_radius"
@@ -265,9 +266,15 @@ mode: minimum_floor         # treat any result below N as N
 The `dice` block has two scaling shapes (both fold to a concrete `(count, sides)`
 at fire-time; only the die *count* changes, never the size):
 
-- **uniform** (`increment` / `every_n_levels`) — +N dice per `every_n_levels` of
-  the `level_reference` value, e.g. Divine Smite / Burning-Hands upcast (+1d8 per
-  slot level). The example above.
+- **uniform** (`increment` / `every_n_levels`) — +`increment` dice per
+  `every_n_levels` of the `level_reference` value, measured *above* `base_level`:
+  `count = base + max(0, level − base_level) // every_n_levels × increment`. The
+  `base_level` is the level at which the base dice apply with zero increments;
+  it **defaults to 1** (the natural floor of character / rogue / minimum-slot
+  levels) and is omitted in the common case. e.g. Divine Smite / Burning-Hands
+  upcast (base at slot 1, +1d8 per slot level — `base_level` omitted); Spirit
+  Guardians (3d8 at slot **3**, so `base_level: 3`). The `increment` die size
+  must equal the `base` die size (only the count scales).
 - **cantrip** — the canonical 5.5e cantrip rule (1 die, +1 at character level
   5 / 11 / 17), which is NON-uniform from level 1 so it gets its own named mode:
 

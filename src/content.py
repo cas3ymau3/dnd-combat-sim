@@ -565,11 +565,14 @@ def _resolve_scaling_dice(
         +1 die at character level 5 / 11 / 17 (Sacred Flame 1d8→2d8→3d8→4d8).
         The thresholds are NON-uniform from level 1, so this is its own named
         mode rather than the uniform `every_n_levels` form below.
-      - **uniform** (``increment`` / ``every_n_levels``) — +N dice per
-        ``every_n_levels`` of the referenced level (Divine Smite / Searing Arc
-        Strike upcast: +1d8 per slot level).  **Deferred to primitive #3** — it
-        raises here so the gap surfaces loudly rather than silently dropping
-        upcast dice.
+      - **uniform** (``increment`` / ``every_n_levels``) — +``increment`` dice
+        per ``every_n_levels`` of the ``level_reference`` value, measured above an
+        optional ``base_level`` (default 1 — the natural floor of character /
+        rogue / minimum-slot levels).  Divine Smite (base 2d8 at slot 1, +1d8 per
+        slot level) and Searing Arc Strike (upcast Burning Hands: base 3d6 at slot
+        1, +1d6 per slot level) both default ``base_level`` to 1; a spell whose
+        base lands higher (Spirit Guardians: 3d8 at slot 3) sets ``base_level: 3``.
+        Steps below the base level clamp to zero (the base never shrinks).
 
     Returns a single (count, sides); the die SIZE never changes, only the count.
     """
@@ -590,23 +593,43 @@ def _resolve_scaling_dice(
         steps = sum(1 for t in _CANTRIP_THRESHOLDS if level >= t)
         return base_count + steps, sides
 
-    if "increment" in spec or "every_n_levels" in spec:
+    if "increment" in spec:
+        inc_count, inc_sides = parse_dice(spec["increment"])
+        if inc_sides != sides:
+            raise NotImplementedError(
+                f"{ability_name}: increment die size d{inc_sides} != base die "
+                f"size d{sides} — only the die COUNT scales, never the size, so "
+                f"the engine can't fold a mixed pool into one (count, sides)"
+            )
+        level = _level_from_context(level_reference, context, ability_name)
+        base_level = spec.get("base_level", 1)
+        every_n_levels = spec.get("every_n_levels", 1)
+        # Steps accrue per `every_n_levels` ABOVE base_level; clamp at zero so a
+        # level below the base (shouldn't happen) never shrinks the base pool.
+        steps = max(0, level - base_level) // every_n_levels
+        return base_count + steps * inc_count, sides
+
+    if "every_n_levels" in spec:
         raise NotImplementedError(
-            f"{ability_name}: uniform `increment`/`every_n_levels` scaling is "
-            f"primitive #3 (upcast) — not modeled yet"
+            f"{ability_name}: `every_n_levels` without an `increment` die — "
+            f"uniform scaling needs the increment dice to add per step"
         )
 
     # A `{base: ...}` block with no scaling keys is just a literal.
     return base_count, sides
 
 
-def interpret_hit_rider(ability: Ability) -> HitRiderSpec:
+def interpret_hit_rider(
+    ability: Ability,
+    context: dict[str, int] | None = None,
+) -> HitRiderSpec:
     """Translate an on-hit `damage` rider ability into a HitRiderSpec.
 
-    Reads the `damage` verb's dice (literal form only for now, via
-    `_resolve_scaling_dice`) and the cost block's action economy + resource type.
-    Uniform `increment`/upcast scaling is not yet modeled — the shared dice helper
-    raises so the gap surfaces loudly rather than silently dropping upcast dice.
+    Reads the `damage` verb's dice (via `_resolve_scaling_dice`) and the cost
+    block's action economy + resource type.  Literal riders (Wrathful Smite's
+    fixed 1d6) need no context; an upcast rider (Divine Smite, +1d8 per slot
+    level) carries uniform `increment` scaling, so pass the chosen slot in
+    `context` (e.g. {"slot_level": 3}) — the shared dice helper folds it.
     """
     if not isinstance(ability.effect, list):
         raise NotImplementedError(
@@ -621,7 +644,7 @@ def interpret_hit_rider(ability: Ability) -> HitRiderSpec:
                 f"interpret_hit_rider({ability.name}): verb {verb!r} not "
                 f"supported (this interpreter only builds damage riders)"
             )
-        dice.append(_resolve_scaling_dice(block.get("dice"), ability_name=ability.name))
+        dice.append(_resolve_scaling_dice(block.get("dice"), context, ability.name))
 
     cost = ability.cost or {}
     resource = cost.get("resource") or {}
