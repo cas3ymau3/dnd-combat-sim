@@ -315,19 +315,26 @@ tells us exactly what each new build will force:
 3. **Scaled quantity** — what the steps grow. Only **dice count** is built.
    Other quantities are real in 5.5e but each is blocked on a DIFFERENT
    primitive, not on scaling design:
-   - **die size** (the die GROWS rather than multiplies: 1d8 → 1d10 → 1d12 …) —
-     the **next unbuilt quantity, first consumer Shillelagh**. 2024 Shillelagh is
-     a threshold-list scaler (cantrip breaks `[5, 11, 17]`) whose scaled quantity
-     is the die SIZE, not the count: d8 → d10 (L5) → d12 (L11) → up at L17. The
-     current helper explicitly holds size fixed (`return base_count + steps,
-     sides`), so it CANNOT express this — a die-size scaler needs its own branch
-     that walks a size ladder (`d8 → d10 → d12 → …`) by step count. NOT blocked on
-     any other model (unlike target count) — it is a pure scaling-helper addition,
-     small and isolated. **A per-level build can dodge it entirely** by baking the
-     resolved die into each level's data (Shillelagh = (1,10) at char L9–10,
-     (1,12) at L11+), exactly as weapon dice already are; build the data-driven
-     scaler only when Shillelagh (or another die-size cantrip) should resolve from
-     YAML by character level. See PROGRESS "die-size scaling".
+   - **die size — really an enumerated DICE LADDER** (the die GROWS, and may even
+     change count, rather than multiplying uniformly) — the **next unbuilt
+     quantity, first consumer Shillelagh**. 2024 Shillelagh is a threshold-list
+     scaler (cantrip breaks `[5, 11, 17]`) whose result is a per-break die:
+     **1d8 → 1d10 (L5) → 1d12 (L11) → 2d6 (L17)**. Note the top step changes BOTH
+     the size AND the count (d12 → 2d6), so this is NOT a pure size walk and NOT
+     the uniform `increment` count walk either — it is an **explicit ladder**: a
+     break list paired with an arbitrary `(count, sides)` per step. That ladder
+     SUBSUMES pure die-size growth (inspiration/superiority, below) and the mixed
+     Shillelagh case in one mechanism. The current helper can express neither (it
+     holds size fixed: `return base_count + steps, sides`), so this is a new branch
+     — e.g. `scaling: ladder`, `breaks: [5, 11, 17]`, `dice: ["1d8", "1d10",
+     "1d12", "2d6"]` (the value at/after each break, index 0 below the first
+     break), resolved to a `(count, sides)` like every other shape. NOT blocked on
+     any other model (unlike target count) — a pure, isolated scaling-helper
+     addition. **A per-level build can dodge it entirely** by baking the resolved
+     die into each level's data (Shillelagh = (1,10) at char L9–10, (1,12) at
+     L11–16, (2,6) at L17+), exactly as weapon dice already are; build the
+     data-driven ladder only when a die-size feature should resolve from YAML by
+     level. See PROGRESS "die-size scaling".
      *This is a GENERAL, recurring pattern, not a Shillelagh quirk* — die size
      grows with level all over the corpus: **bardic inspiration** (d6 → d8 → d10
      → d12 at bard 5/10/15), **battlemaster superiority die** (d8 → d10 → d12 at
@@ -335,12 +342,12 @@ tells us exactly what each new build will force:
      etc. They all share the same factoring — **driver** = a class/character
      level, **step** = a threshold list (a PER-FEATURE break list — which is
      exactly why `_CANTRIP_THRESHOLDS` must be lifted to data, see the
-     step-function note above), **quantity** = die size — and their consumers span
-     BEYOND damage pools: inspiration/superiority dice are a `bonus_die` modifier
-     added to a d20 test / save, psi dice fuel assorted effects. So die size is
-     worth building ONCE as a first-class scaled-quantity (a size ladder + a
-     per-feature break list, returning a `(count, sides)` any consumer can use),
-     reused by all of them — not re-solved per ability.
+     step-function note above), **quantity** = the enumerated dice ladder — and
+     their consumers span BEYOND damage pools: inspiration/superiority dice are a
+     `bonus_die` modifier added to a d20 test / save, psi dice fuel assorted
+     effects. So the dice ladder is worth building ONCE as a first-class shape
+     (per-feature break list → per-step `(count, sides)`), reused by all of them —
+     not re-solved per ability.
    - **target count** (upcast Command / Charm Person hitting more creatures) —
      blocked on the multi-enemy / spatial model (deferred; see PROGRESS). Rare in
      the current build corpus.
