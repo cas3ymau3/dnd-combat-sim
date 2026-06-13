@@ -72,27 +72,82 @@ type, condition, resource, …):
    improvements compound and are cheapest to make while the context is fresh.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-13, session 6) — DONE:** built **Fueled Spellfire (engine primitive
-> #5)** — a CASTER-side post-damage decision point — and wired it into the
-> Starfire Scion at L5. Per the user it is a GENERAL radiant rider (must work with
-> Guiding Bolt AND Sacred Flame now, Sunbeam / Fount of Moonlight later), so it
-> hooks the **DamageEvent** (the single chokepoint both the attack-roll and
-> save-for-damage paths funnel through), NOT the save path alone:
-> `Policy.on_deal_damage(ctx) → DamageRiderResponse` consulted from
-> `Scheduler._make_deal_damage_decider` (mirrors `_make_save_reroll_decider`),
-> threaded into `resolve_damage` as `rider_decider`. Gated on "spell radiant
-> damage" via NEW `damage_type` + `is_spell` fields threaded
-> `Choice → AttackRoll/SaveDamage → DamageEvent → context` (so Starry-Form Archer
-> — radiant, but a FEATURE — is correctly NOT fuelable). Hit dice = a scarce
-> per-day pool (5 at L5, no SR restore); rider dice NOT crit-doubled, added before
-> phase-6 halving. **320 tests green (+18).** L5 DPR 11.28 (no fuel) → 12.61
-> (fuel), > L4 9.08 at the shared enemy, < 23.0 ceiling. MCP-toggle recommendation
+> (2026-06-13, session 7) — DONE:** wired **Searing Arc Strike at L10** (thread A,
+> NO new engine primitive — pure data + policy on the ready primitive #3). Added
+> the **L10 LEVELS row** (PB 4, WIS 19/+4, DC 16, enemy AC 16 / DEX +3 from the
+> monster CSV at cr==10; L6–L9 SKIPPED — L5–L8 are identical on our side, L9's
+> Extra Attack + Shillelagh are the separate martial thread B). Searing Arc Strike
+> = a BA upcast **Burning Hands** (FIRE save-FOR-HALF, base 3d6 +1d6/slot resolved
+> FROM DATA via `interpret_save_spell({"slot_level": 2})` → 4d6 at monk-6, FP cap
+> ⌊monk/2⌋=3), gated on having taken a **weapon Attack action** (so a Guiding-Bolt
+> spell turn does NOT enable it). New `focus_points` resource (6 at monk-6, refilled
+> per combat in on_combat_start = Uncanny Metabolism). **The cross-check it
+> validates:** Searing Arc is `is_spell=True` but `damage_type="fire"`, so Fueled
+> Spellfire DECLINES it — proving the `damage_type` gate (not just `is_spell`) does
+> real work. **326 tests green (+6).** L10 DPR 14.85 (> L5 12.59, < 28.0 ceiling);
+> searing-arc-on > searing-arc-off at the fixed L10 enemy. MCP-toggle recommendation
 > re-made (computer-use / Claude-in-Chrome / Claude_Preview / scheduled-tasks /
 > mcp-registry / Google Drive).
 
 ---
 
 ## Done
+
+- **Searing Arc Strike wired at L10 (thread A) — BUILT & VALIDATED (2026-06-13,
+  session 7).** NO new engine primitive — pure DATA + POLICY on the already-built
+  primitive #3 (upcast `increment` scaling) + the existing `searing_arc_strike`
+  YAML. **326 tests green (+6).** Branch `feature/searing-arc-strike`.
+  - **What it is** (guide 41, lines 561–563, 575). Sun-Soul Monk-6 (char L10):
+    immediately after the **Attack action**, spend **2 FP** to cast **Burning Hands
+    as a BA**; spend more FP to upcast, capped at **⌊monk level ÷ 2⌋** FP. At monk-6
+    → max 3 FP → upcast to **slot 2 = 4d6**. Burning Hands = **DEX save FOR HALF**,
+    type **fire**. (Verified against the guide per the per-feature ritual; the
+    guide's 11.73 figure also folds in Elemental Adept fire high-grading — deferred.)
+  - **L10 LEVELS row** (PB 4, WIS 19/+4, DC 16, enemy AC 16 / DEX-save +3 live from
+    `monster_ac_and_saves_by_level.csv` at cr==10). **L6–L9 SKIPPED** (like L2/L3):
+    L5–L8 are mechanically identical on our side (PB stays 3, WIS mod stays +4
+    through L8 — only the enemy hardens), and **L9's Extra Attack + martial-arts-1d8
+    + Shillelagh are the separate martial thread B** (deferred, with the user). So
+    L10 here models the searing-arc/fire-gate axis ONLY — quarterstaff stays a
+    single 1d8+3 attack, no Shillelagh. Thread B will later add Extra Attack +
+    Shillelagh to both L9 and L10.
+  - **Shape (all reused seams, zero engine change).** Searing Arc Strike is a
+    `Choice(action_type="save_spell", on_save="half", damage_type="fire",
+    is_spell=True)` — the SAME save-for-damage path Sacred Flame uses; its dice come
+    FROM DATA via `interpret_save_spell(SEARING_ARC_STRIKE, {"slot_level": 2})` →
+    (4,6) (primitive #3's `slot_level` upcast). Policy: `_searing_arc_choice()`;
+    `_has_searing_arc` is the data-driven gate (level carries a `searing_arc_strike`
+    block). FP cost (3) is the Choice's `resource_cost={"focus_points": 3}`; WHICH
+    slot to spend (= how many FP) is policy arbitration.
+  - **The Attack-action gate (user-clarified).** Searing Arc requires the **Attack
+    action** — any *weapon* attack (quarterstaff or unarmed), but NOT casting a
+    spell. Guiding Bolt is `action_type="attack"` in the engine yet is mechanically
+    the Magic action, so it must NOT enable it. `decide()` tracks
+    `action_is_weapon_attack` (true for quarterstaff, false for Guiding Bolt) and
+    only offers Searing Arc on a weapon-attack turn. BA ladder at L10: Searing Arc
+    (weapon-attack turn, FP≥3) > Sacred Flame (Spellfire Spark) > unarmed.
+  - **`focus_points` resource** (6 at monk-6). Uncanny Metabolism + Prayer of
+    Healing recharge FP fully between combats (guide), modeled by refilling the
+    (LR-only) pool in `on_combat_start`. 3 FP/cast → 2 Searing Arc casts/combat.
+  - **The cross-check this FIRE feature validates (the point of doing A first).**
+    Searing Arc is `is_spell=True` but `damage_type="fire"`, so Fueled Spellfire —
+    which gates on `damage_type == "radiant" AND is_spell` — **declines it**. Proves
+    the `damage_type` gate, not just `is_spell`, does real work (a radiant spell of
+    the same shape IS fueled). The engine offers `on_deal_damage` on every
+    Searing-Arc DamageEvent; the policy returns None.
+  - **Validation (consistency/sanity, per the Starfire framing — NOT
+    number-matching).** `tests/test_starfire_scion.py` (+6): Searing Arc dice/on_save/
+    type FROM DATA (4d6 / half / fire); per-cast Burning Hands math exact (full on a
+    failed save / half ROUNDED DOWN on a made one, deterministic FakeRNG); the BA
+    Attack-action gate (Guiding-Bolt turn → Sacred Flame, weapon-attack turn →
+    Searing Arc, FP-out → Sacred Flame); the fire-not-fueled / radiant-fueled
+    cross-check on `on_deal_damage`; per-combat FP refill; DPR 14.85 a plausible
+    fraction of the 28.0 ceiling; and an our-side ABLATION at the fixed L10 enemy
+    (searing-arc-on > searing-arc-off — the clean isolation, since L5 and L10 do not
+    share an enemy).
+  - **Deferred (unchanged):** Extra Attack + Shillelagh + martial-arts-1d8 (thread
+    B, L9); Elemental Adept fire (resistance bypass — moot vs the dummy — + 1→2 die
+    high-grading, a per-die `replace` modifier); die-size ladder; multi-enemy AoE.
 
 - **Fueled Spellfire — engine primitive #5: a CASTER-side post-damage decision
   point — BUILT & VALIDATED (2026-06-13, session 6).** The last engine primitive
@@ -682,12 +737,14 @@ Strike. Upcast scaling comes later up the ladder.
    threaded `Choice → events → DamageEvent`). Hit dice = scarce per-day pool; rider
    NOT crit-doubled. See the Done entry above.
 
-**Next on the Scion's ladder (NO new engine primitive needed):** climb L6–L10 as
-DATA + POLICY. Searing Arc Strike (L10) reuses primitive #3 + existing data
-(`searing_arc_strike` YAML); slot arbitration is policy. L9 = Extra Attack +
-martial-arts 1d8 (a 1→2 attack-count change in `decide()`) + first Shillelagh
-(attack-profile half = primitive #4 + a per-combat policy flag; its die SIZE
-ladder is DODGED by baking the resolved die into the LEVELS row — see below).
+**Next on the Scion's ladder (NO new engine primitive needed) — THREAD B, L9.**
+Searing Arc Strike (L10, thread A) is DONE (see the session-7 Done entry). The
+remaining L6–L10 climb is **thread B: L9 = Extra Attack + martial-arts 1d8 (a 1→2
+attack-count change in `decide()`) + first Shillelagh** (attack-profile half =
+primitive #4 + a per-combat policy flag; its die SIZE ladder is DODGED by baking
+the resolved die into the LEVELS row — see below). Thread B also upgrades the
+existing L10 row's quarterstaff to Extra Attack + Shillelagh (L10 currently models
+a single 1d8+3 quarterstaff, the searing-arc axis in isolation).
 
 **die-size scaling — the next unbuilt SCALED-QUANTITY (flagged, first consumer
 SHILLELAGH at L9; recorded with user 2026-06-13).** 2024 Shillelagh has cantrip
@@ -715,6 +772,41 @@ first-class shape (per-feature break list → per-step `(count, sides)`, which
 covers pure die-size growth and Shillelagh's mixed 2d6 step alike), reused across
 all of them, not re-solved per ability. See `design/ability_schema.md` §4.5
 "Scaled quantity".
+
+**ATTACK TAXONOMY — engine-vocabulary gap (flagged, surfaced session 7; FUTURE
+work, discuss before any engine change).** Searing Arc Strike keys on the *Attack
+action*, which forced disambiguating it from Guiding Bolt (a spell delivered via an
+attack roll). The proxy used (`is_spell == False`) works, but it exposed that the
+engine conflates three *distinct* rules axes the user wants cleanly mapped across
+the whole model. The user's rules framing (2024), recorded verbatim so it isn't
+re-derived:
+  - An **attack** = anything requiring an **attack roll**. Exactly three KINDS:
+    **weapon attack**, **unarmed strike**, **spell attack** (that's the full set).
+  - The **Attack action** = specifically using your *action* to attack with a
+    weapon or unarmed strike (Extra Attack scales this). It does NOT include
+    casting a spell.
+  - **Casting a spell** uses the **Magic action** (and some non-spell features also
+    cost the Magic action).
+  - Spells/features can grant attacks at OTHER action-economy costs: a **bonus
+    action** (Starry-Form *Archer* = a ranged *spell attack* as a BA; *Spiritual
+    Weapon* = a spell attack delivered by a separate summoned entity as a BA) or a
+    **reaction**. A separate entity / companion can also attack (Beastmaster Primal
+    Companion's *strike* ≈ an unarmed strike as a BA).
+  The three axes the engine currently collapses into `Choice.action_type="attack"`
+  + `cost` + `is_spell`: (1) the attack **KIND** (weapon / unarmed / spell attack —
+  governs which dice/mods/feats apply); (2) the **action taken** (Attack action /
+  Magic action / other — governs gating like "did you take the Attack action?");
+  (3) the **economy cost** (action / bonus_action / reaction). A clean typology
+  separates all three. Building it is FUTURE work (NOT done in session 7 — only
+  flagged). The user offered to elaborate further on the rules distinctions when we
+  take it up.
+
+**VALIDATION TOOL — the ablation (adopted session 7).** When adjacent ladder levels
+do NOT share an enemy (so the existing "fixed-enemy monotonic" check, e.g. L4 vs L5,
+doesn't apply), isolate a feature's contribution by an **on-vs-off ablation at a
+single fixed enemy**: run the level with the feature enabled vs. disabled (e.g.
+`policy._has_searing_arc = False`) and assert the enabled DPR is strictly higher.
+This is now a standard consistency tool alongside the fixed-enemy monotonic compare.
 
 **Explicitly deferred (unchanged):** multi-enemy AoE + spatial (Burning Hands
 modeled single-target until a multi-enemy model exists); separate-entity / summons

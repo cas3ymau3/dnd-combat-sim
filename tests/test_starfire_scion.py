@@ -22,9 +22,10 @@ import pytest
 
 from src.builds import starfire_scion as ss
 from src.content import interpret_save_spell, load_abilities
+from src.day_runner import DayRunner
 from src.entity import Entity
 from src.events import AttackRollEvent, EventQueue, SaveDamageEvent
-from src.policy import Choice, GameState
+from src.policy import Choice, DealDamageContext, GameState
 from src.rng import SeededRNG
 from src.verbs import resolve_attack_roll, resolve_damage, resolve_save_damage
 
@@ -85,6 +86,23 @@ def _resolve_sacred_flame(caster, enemy, dice, rng) -> int:
     return total
 
 
+def _resolve_burning_hands(caster, enemy, dice, rng) -> int:
+    """One Searing Arc Strike / Burning Hands (save-FOR-HALF, FIRE) cast end to end;
+    return damage dealt (full on a failed save, half-rounded-down on a made one)."""
+    q = EventQueue()
+    ev = SaveDamageEvent(
+        tick=(1, 0, 1), actor=caster, target=enemy,
+        save_stat="dex_save", damage_dice=dice, on_save="half",
+        damage_type="fire", is_spell=True,
+    )
+    resolve_save_damage(ev, rng, q, 2)
+    if len(q) == 0:
+        return 0
+    dmg_ev = q.pop()
+    total, _ = resolve_damage(dmg_ev, rng, q, 3)
+    return total
+
+
 def _snapshot(round_number: int, resources: dict) -> GameState:
     """Minimal snapshot for poking decide() directly (resources merges the action
     economy with the persistent pools, as the scheduler would)."""
@@ -109,6 +127,7 @@ def test_factory_stats():
         1: {"attack_bonus": 5, "spell_attack_bonus": 5, "spell_save_dc": 13},
         4: {"attack_bonus": 5, "spell_attack_bonus": 5, "spell_save_dc": 13},
         5: {"attack_bonus": 6, "spell_attack_bonus": 7, "spell_save_dc": 15},
+        10: {"attack_bonus": 7, "spell_attack_bonus": 8, "spell_save_dc": 16},
     }
     for level, want in expected.items():
         char = ss.make_starfire_scion(level)
@@ -133,7 +152,7 @@ def test_unimplemented_level_raises():
 def test_enemy_stats_are_live_from_the_monster_csv():
     """enemy_ac / enemy_dex_save are the csv's ac + dex.save.mod at cr == level."""
     rows = {int(r["level"]): r for r in csv.DictReader(_CSV.open())}
-    for level in (1, 4, 5):
+    for level in (1, 4, 5, 10):
         data = ss.LEVELS[level]
         assert data["enemy_ac"] == int(rows[level]["ac"])
         assert data["enemy_dex_save"] == int(rows[level]["dex.save.mod"])
@@ -317,6 +336,98 @@ def test_sacred_flame_save_negates_from_data_l5():
 
 
 # ---------------------------------------------------------------------------
+# Searing Arc Strike (L10) — upcast Burning Hands, FIRE save-FOR-HALF (NOT fueled)
+# ---------------------------------------------------------------------------
+
+def test_searing_arc_dice_come_from_data():
+    """Searing Arc Strike upcast to slot 2 = 4d6, save-FOR-HALF, FIRE — all FROM
+    DATA (interpret_save_spell with `slot_level`, primitive #3), and the policy
+    resolves the same."""
+    spec = interpret_save_spell(load_abilities()["searing_arc_strike"], {"slot_level": 2})
+    assert spec.damage_dice == (4, 6)
+    assert spec.on_save == "half"
+    assert spec.damage_type == "fire"
+    policy = ss.StarfireScionPolicy(10, ss.make_starfire_scion(10), ss.make_training_dummy(10))
+    assert policy._sas_dice == (4, 6)
+    assert policy._sas_on_save == "half"
+    assert policy._sas_type == "fire"
+    assert policy._sas_fp_cost == 3                  # floor(monk-6 / 2) FP → slot 2
+
+
+def test_searing_arc_save_for_half_math_l10():
+    """Burning Hands save-FOR-HALF at L10 (4d6, DC 16, enemy DEX +3): full on a
+    failed save, half ROUNDED DOWN on a made one (deterministic FakeRNG)."""
+    char = ss.make_starfire_scion(10)               # spell_save_dc 16
+    target = ss.make_training_dummy(10)             # dex_save +3
+    dice = (4, 6)
+    # Failed save (d20=2 → 5 < 16): full 4d6 = 6+5+5+5 → 21.
+    assert _resolve_burning_hands(char, target, dice, FakeRNG([2, 6, 5, 5, 5])) == 21
+    # Made save (d20=20 → 23 >= 16): half of 21 = 10 (rounded DOWN, not 10.5).
+    assert _resolve_burning_hands(char, target, dice, FakeRNG([20, 6, 5, 5, 5])) == 10
+
+
+def test_l10_searing_arc_only_after_a_weapon_attack():
+    """The BA gate: Searing Arc Strike requires the *Attack action*.  On a
+    Guiding-Bolt turn (a spell action) it is unavailable → Sacred Flame fires; on a
+    quarterstaff (weapon-attack) turn it leads the BA ladder; with FP spent it
+    falls back to Sacred Flame."""
+    char = ss.make_starfire_scion(10)
+    dummy = ss.make_training_dummy(10)
+    policy = ss.StarfireScionPolicy(10, char, dummy)
+    policy.on_combat_start(0, SeededRNG(0))
+    # Guiding Bolt available → the action is a spell, NOT the Attack action → the BA
+    # is Sacred Flame (radiant), never Searing Arc.
+    ba = [c for c in policy.decide(_snapshot(1, _full_resources(10))) if c.cost == "bonus_action"][0]
+    assert ba.action_type == "save_spell" and ba.damage_type == "radiant"
+    # Guiding Bolt exhausted → the action is a quarterstaff weapon attack → the BA is
+    # Searing Arc Strike (FIRE, 4d6, save-for-half, 3 FP).
+    ba = [c for c in policy.decide(_snapshot(1, _full_resources(10, guiding_bolt_free=0)))
+          if c.cost == "bonus_action"][0]
+    assert ba.action_type == "save_spell" and ba.damage_type == "fire"
+    assert ba.damage_dice == (4, 6) and ba.on_save == "half"
+    assert ba.resource_cost == {"focus_points": 3} and ba.is_spell is True
+    # Weapon-attack turn but FP exhausted → falls back to Sacred Flame (radiant).
+    ba = [c for c in policy.decide(_snapshot(1, _full_resources(10, guiding_bolt_free=0, focus_points=0)))
+          if c.cost == "bonus_action"][0]
+    assert ba.action_type == "save_spell" and ba.damage_type == "radiant"
+
+
+def test_searing_arc_fire_is_not_fueled_but_radiant_is():
+    """The cross-check the FIRE Searing Arc Strike validates: Fueled Spellfire gates
+    on `damage_type == radiant AND is_spell`, so a FIRE spell is declined even
+    though it IS a spell — proving the damage_type gate, not just is_spell, does
+    real work.  A RADIANT spell of the same shape is fueled."""
+    char = ss.make_starfire_scion(10)
+    dummy = ss.make_training_dummy(10)
+    policy = ss.StarfireScionPolicy(10, char, dummy)
+
+    def ctx(dtype):
+        return DealDamageContext(
+            actor=char, target=dummy, damage_type=dtype, is_spell=True,
+            is_crit=False, base_damage_dice=(4, 6),
+            round_number=1, turn_index=0, resources={"hit_dice": 10},
+        )
+
+    # FIRE spell (Searing Arc / Burning Hands): NOT fueled.
+    assert policy.on_deal_damage(ctx("fire")) is None
+    # RADIANT spell (Guiding Bolt / Sacred Flame): fueled with 2 Hit Dice.
+    resp = policy.on_deal_damage(ctx("radiant"))
+    assert resp is not None and resp.extra_damage_dice == [(2, 8)]
+
+
+def test_focus_points_refill_between_combats():
+    """Uncanny Metabolism + Prayer of Healing recharge focus points fully between
+    combats (guide), modeled by on_combat_start refilling the (LR-only) pool."""
+    char = ss.make_starfire_scion(10)
+    policy = ss.StarfireScionPolicy(10, char, ss.make_training_dummy(10))
+    assert char.resources.available("focus_points") == 6
+    char.resources.consume("focus_points", 6)
+    assert char.resources.available("focus_points") == 0
+    policy.on_combat_start(1, SeededRNG(0))
+    assert char.resources.available("focus_points") == 6
+
+
+# ---------------------------------------------------------------------------
 # DPR sanity — plausible fraction of the ceiling; monotonic at a FIXED enemy
 # ---------------------------------------------------------------------------
 
@@ -331,7 +442,7 @@ def _mean_dpr(level: int, n_days: int, seed: int = 0, rounds_per_combat: int = 4
 def test_dpr_is_a_plausible_fraction_of_the_ceiling():
     """Each level: 0 < DPR < ceiling (every attack can miss / every save can
     succeed, so the all-hit ceiling is a strict upper bound)."""
-    for level in (1, 4, 5):
+    for level in (1, 4, 5, 10):
         dpr = _mean_dpr(level, n_days=400)
         ceiling = ss.LEVELS[level]["ceiling_dpr"]
         assert 0 < dpr < ceiling, f"L{level}: {dpr:.2f} not in (0, {ceiling})"
@@ -345,3 +456,31 @@ def test_l5_outdamages_l4_against_the_same_enemy():
     assert ss.LEVELS[4]["enemy_ac"] == ss.LEVELS[5]["enemy_ac"] == 15
     assert ss.LEVELS[4]["enemy_dex_save"] == ss.LEVELS[5]["enemy_dex_save"] == 2
     assert _mean_dpr(5, n_days=600) > _mean_dpr(4, n_days=600)
+
+
+def _mean_dpr_l10(searing_arc: bool, n_days: int, seed: int = 0, rounds_per_combat: int = 4) -> float:
+    """L10 DPR with Searing Arc Strike enabled or ABLATED (the feature switched off
+    so the BA falls back to Sacred Flame / unarmed) — same enemy either way."""
+    rng = SeededRNG(seed)
+    char = ss.make_starfire_scion(10)
+    dummy = ss.make_training_dummy(10)
+    policy = ss.StarfireScionPolicy(10, char, dummy, rounds_per_combat)
+    if not searing_arc:
+        policy._has_searing_arc = False             # ablate the feature
+    runner = DayRunner(
+        rng=rng, entities=[char, dummy],
+        policies={char.id: policy}, rounds_per_combat=rounds_per_combat,
+    )
+    rounds_per_day = 4 * rounds_per_combat
+    total = sum(runner.run_day().damage_received_by(dummy.id) for _ in range(n_days))
+    return total / (n_days * rounds_per_day)
+
+
+def test_searing_arc_strike_lifts_l10_dpr_at_a_fixed_enemy():
+    """Our-side consistency check with the enemy held FIXED (the same L10 monster
+    both ways): enabling Searing Arc Strike strictly raises DPR over the ablated
+    build, isolating the feature's contribution.  (L5 and L10 do NOT share an enemy,
+    so this within-L10 ablation — not a cross-level compare — is the clean isolation.)"""
+    on = _mean_dpr_l10(searing_arc=True, n_days=600)
+    off = _mean_dpr_l10(searing_arc=False, n_days=600)
+    assert on > off, f"searing arc on {on:.2f} !> off {off:.2f}"

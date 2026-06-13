@@ -8,13 +8,15 @@ Source of truth for intent:
   - design/build-guides/41_spellfire_scion.txt  (level-by-level notes + DPR
     *ceilings* — see the validation-framing note below)
 
-This module covers L1, L4, L5 (the slice wired the first build session): the
-melee baseline (L1), the level Starry Form + Star Map come online (L4), and the
-first "interesting" level where the blaster identity converges (L5: Spellfire
-Adept → cantrip-scaled 2d8 Sacred Flame).  L2/L3 are intentionally SKIPPED — they
-add no DPR-relevant mechanics (Druid spellcasting / wild-shape utility) — and are
-easy to backfill if a continuous ladder is ever wanted.  L6+ extend both LEVELS
-and the policy as the ladder is climbed.
+This module covers L1, L4, L5, L10: the melee baseline (L1), the level Starry Form
++ Star Map come online (L4), the first "interesting" level where the blaster
+identity converges (L5: Spellfire Adept → cantrip-scaled 2d8 Sacred Flame), and the
+Sun-Soul Monk-6 spike (L10: SEARING ARC STRIKE — upcast Burning Hands as a BA).
+L2/L3 are intentionally SKIPPED (no DPR-relevant mechanics — Druid spellcasting /
+wild-shape utility), and so are L6-L9: L5-L8 are mechanically IDENTICAL on our side
+(PB stays 3, WIS mod stays +4 through L8 — only the enemy hardens), and L9's Extra
+Attack + martial-arts-1d8 + Shillelagh are the SEPARATE martial thread (deferred).
+All skips are easy to backfill if a continuous ladder is ever wanted.
 
 The build (see PROGRESS.md "Second archetype — STARFIRE SCION")
 ---------------------------------------------------------------
@@ -62,10 +64,23 @@ What IS modeled here beyond the per-attack profiles
      ``Scheduler._make_deal_damage_decider``.  Hit dice are a scarce per-day pool
      (5 at L5); the rider dice are NOT crit-doubled (a fixed expenditure).
 
+What IS modeled at L10 (beyond the L1-L5 mechanics above)
+--------------------------------------------------------
+  4. **Searing Arc Strike** (Sun-Soul Monk-6) — upcast Burning Hands as a BONUS
+     ACTION: a FIRE save-FOR-HALF spell (DEX save, full on fail / half on a save),
+     base 3d6 + 1d6/slot-level resolved FROM DATA (interpret_save_spell, primitive
+     #3) at the slot the policy chooses.  FP cost = 2 + 1/upcast-level, capped at
+     floor(monk/2) = 3 FP at monk-6 → upcast to slot 2 (4d6).  Gated on having taken
+     a weapon Attack action this turn (NOT a Guiding-Bolt/spell turn).  Because it is
+     FIRE (not radiant), Fueled Spellfire does NOT fuel it — the cross-check that the
+     damage_type gate, not just is_spell, does real work.
+
 What is NOT modeled here (deferred — see PROGRESS "Open threads")
 ----------------------------------------------------------------
-  - **Searing Arc Strike** (L10 upcast Burning Hands, save-for-half): the
-    primitive (#3) is built and data exists; the policy wiring waits for L10.
+  - **Extra Attack + martial-arts 1d8 + Shillelagh** (L9 martial thread): the
+    separate build thread; L10 here keeps a single 1d8+3 quarterstaff attack.
+  - **Elemental Adept (fire)** (L8): fire-resistance bypass (moot — the dummy has
+    no resistances) + 1->2 die high-grading (a small per-die `replace` modifier).
   - **Starry Form: Chalice** (extra healing — DPR-irrelevant) and **Dragon** (a
     concentration-save floor — moot without the incoming-damage loop).
   - **Flame Blade** (concentration L2 spell — the melee-rotation alternative),
@@ -87,8 +102,8 @@ Ability-online timeline (abridged; full version in git history / the guide)
 Engine-capacity build order (see PROGRESS):
   1. [DONE] save-FOR-damage resolution path (negates + for-half).
   2. [DONE] cantrip / level_reference dice scaling (Sacred Flame by char level).
-  3. [DONE] upcast `increment` scaling (Searing Arc Strike) — data ready, policy
-     wiring waits for L10.
+  3. [DONE] upcast `increment` scaling (Searing Arc Strike) — wired at L10 (BA,
+     FIRE save-for-half, upcast Burning Hands to slot 2 = 4d6 via interpret_save_spell).
   4. [DONE] per-attack damage override (the multi-weapon gish primitive) —
      Choice.damage_dice/damage_bonus → AttackRollEvent → DamageEvent.
   5. [DONE, this session] Fueled Spellfire — a caster-side post-damage decision
@@ -117,6 +132,12 @@ if TYPE_CHECKING:
 # whole reason the build was chosen (the data-driven save-spell scaling axis).
 _ABILITIES = load_abilities()
 SACRED_FLAME = _ABILITIES["sacred_flame"]   # DEX save-negates, cantrip-scaling dice
+# Searing Arc Strike (Sun-Soul Monk-6, char L10+): upcast Burning Hands as a BA —
+# DEX save FOR HALF, FIRE, base 3d6 + 1d6/slot-level (upcast `increment` scaling,
+# primitive #3).  Its dice resolve from data via interpret_save_spell against the
+# chosen slot level.  type: fire (NOT radiant) — so Fueled Spellfire does NOT fuel
+# it (the cross-check that the damage_type gate, not just is_spell, does real work).
+SEARING_ARC_STRIKE = _ABILITIES["searing_arc_strike"]
 
 
 # ---------------------------------------------------------------------------
@@ -212,6 +233,52 @@ LEVELS: dict[int, dict] = {
         "enemy_dex_save": 2,               # csv level 5
         "ceiling_dpr": 23.0,               # loose: Guiding Bolt 14 + Sacred Flame 2d8 9
     },
+    10: {
+        # Monk-6 (Sun-Soul)/Druid-4 (Stars), PB 4, WIS 19 (+4, +1 from Elemental
+        # Adept at L8).  Headline: SEARING ARC STRIKE (upcast Burning Hands as a BA).
+        # L6-L9 are intentionally SKIPPED here (like L2/L3): L5-L8 are mechanically
+        # IDENTICAL on our side (PB stays 3, WIS mod stays +4 through L8 — only the
+        # enemy hardens), and L9's Extra Attack + martial-arts-1d8 + Shillelagh are
+        # the SEPARATE martial thread (deferred).  So this row models the searing-arc
+        # / fire-gate axis ONLY; the quarterstaff is still a single 1d8+3 attack and
+        # there is no Shillelagh.  (Elemental Adept's fire-resistance bypass + 1->2
+        # die high-grading are also deferred — see PROGRESS; both are small DPR.)
+        "attack_bonus": 7,                 # PB 4 + DEX 3 (martial-arts melee)
+        "spell_attack_bonus": 8,           # PB 4 + WIS 4 (Guiding Bolt)
+        "spell_save_dc": 16,               # 8 + PB 4 + WIS 4 (Sacred Flame + Burning Hands)
+        "char_ac": 17,                     # 10 + DEX 3 + WIS 4
+        "char_hp": 64,                     # DPR-irrelevant (threshold model)
+        "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus"},
+        # Guiding Bolt: 4d6 radiant SPELL (Star Map free cast) — a Fueled-Spellfire
+        # target.  Starry Form (Archer) is DROPPED in combat from L9 (guide), so no
+        # archer profile here; the BA falls back to an unarmed strike.
+        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
+                          "damage_type": "radiant", "is_spell": True},
+        "starry_form": False,
+        # Searing Arc Strike (Sun-Soul Monk-6): upcast Burning Hands.  FP cost = 2
+        # base + 1 per upcast slot level, capped at floor(monk_level / 2) = 3 FP at
+        # monk-6.  Spending the max (3 FP) upcasts to slot level 2 = 4d6.  slot_level
+        # = fp_cost - 1.  Dice resolve from the YAML via interpret_save_spell.
+        "searing_arc_strike": {"slot_level": 2, "fp_cost": 3},
+        "resources": {
+            "spellfire_spark":  (4, 0),    # Sacred Flame as a BA, x PB / LR
+            "guiding_bolt_free": (4, 0),   # Star Map: free Guiding Bolt x WIS / LR
+            # Hit Dice (Fueled Spellfire): character-level d8, all spent on radiant
+            # spell damage.  10 at L10 (vs 5 at L5) — fuels more combats per day.
+            "hit_dice": (10, 0),
+            # Monk focus points (monk-6 = 6).  Searing Arc Strike costs 3 FP/cast →
+            # 2 casts/combat.  Uncanny Metabolism + Prayer of Healing recharge them
+            # fully between combats (guide), modeled by a per-combat refill in
+            # on_combat_start; LR at day start also refills (sr_restore=0).
+            "focus_points": (6, 0),
+        },
+        "enemy_ac": 16,
+        "enemy_dex_save": 3,               # csv level 10
+        # Loose all-hit/all-fail upper bound: turn-1 Guiding Bolt 14 + fuel 2d8 9 = 23;
+        # other turns quarterstaff 11.5 + Searing Arc full 4d6 14 = 25.5.  ~26 max.
+        "ceiling_dpr": 28.0,
+    },
 }
 
 
@@ -230,7 +297,7 @@ def _make_resources(data: dict) -> ResourcePool:
 
 
 def make_starfire_scion(level: int) -> Entity:
-    """Build the Starfire Scion Entity for the given level (1, 4, 5 for now)."""
+    """Build the Starfire Scion Entity for the given level (1, 4, 5, 10 for now)."""
     if level not in LEVELS:
         raise NotImplementedError(
             f"Starfire Scion level {level} not yet implemented (have {sorted(LEVELS)})."
@@ -277,7 +344,7 @@ def make_training_dummy(level: int) -> Entity:
 # ---------------------------------------------------------------------------
 
 class StarfireScionPolicy:
-    """Starfire Scion daily plan (L1, L4, L5).
+    """Starfire Scion daily plan (L1, L4, L5, L10).
 
     Per-turn rotation (a single representative blaster loop — the guide's full
     optimal play splits melee vs ranged combats and leans on Flame Blade / Starry
@@ -334,6 +401,21 @@ class StarfireScionPolicy:
         # Hit-Dice pool (data-driven gate — see LEVELS[5]["resources"]).  1/turn,
         # when a SPELL deals RADIANT damage, expend up to 2 Hit Dice into it.
         self._fueled_spellfire: bool = "hit_dice" in data.get("resources", {})
+        # Searing Arc Strike (Sun-Soul Monk-6, L10+): present iff this level carries
+        # a "searing_arc_strike" block (data-driven gate).  Its FIRE damage dice are
+        # resolved FROM DATA via interpret_save_spell against the chosen slot level
+        # (upcast Burning Hands, +1d6/slot — primitive #3).  WHICH slot (= how many
+        # FP to burn) is policy; here we always burn the cap (floor(monk/2) FP).
+        sas = data.get("searing_arc_strike")
+        self._has_searing_arc: bool = sas is not None
+        if self._has_searing_arc:
+            self._sas_fp_cost: int = sas["fp_cost"]
+            _sas = interpret_save_spell(
+                SEARING_ARC_STRIKE, {"slot_level": sas["slot_level"]}
+            )
+            self._sas_dice = _sas.damage_dice          # FROM DATA (4d6 at slot 2)
+            self._sas_on_save = _sas.on_save           # "half"
+            self._sas_type = _sas.damage_type          # "fire" (NOT fuelable)
         # Per-combat state, (re)set by on_combat_start.
         self._starry_form_active: bool = False
         # 1/turn Fueled-Spellfire gate: the (round, turn_index) we last fueled on,
@@ -355,6 +437,11 @@ class StarfireScionPolicy:
         # Clear the per-turn Fueled-Spellfire gate (round numbers restart at 1 each
         # combat, so a stale (round, turn) would mis-gate the new combat).
         self._fueled_turn = None
+        # Uncanny Metabolism + Prayer of Healing recharge focus points fully between
+        # combats (guide), so the Scion starts every combat at full FP — model that
+        # by refilling the pool here (the resource itself is LR-only, sr_restore=0).
+        if self._has_searing_arc:
+            self._character.resources.restore("focus_points", "full")
         if (
             self._has_starry_form
             and self._character.resources.available("wild_shape") >= 1
@@ -371,6 +458,13 @@ class StarfireScionPolicy:
         # ACTION: Guiding Bolt (free Star Map cast) while charges remain, else a
         # quarterstaff attack.  Greedy on the free casts — across statistically
         # identical combats, when they fire does not change mean DPR.
+        #
+        # Track whether this turn's action is a WEAPON attack (quarterstaff/unarmed)
+        # vs. casting a spell (Guiding Bolt): Searing Arc Strike requires the *Attack
+        # action*, which Guiding Bolt — though delivered via an attack roll in the
+        # engine — does NOT count as (it is the Magic action).  So the gate is "a
+        # weapon attack was the action", true for quarterstaff, false for Guiding Bolt.
+        action_is_weapon_attack = False
         if res.get("action", 0) >= 1:
             if self._has_guiding_bolt and res.get("guiding_bolt_free", 0) >= 1:
                 choices.append(self._attack_choice(
@@ -379,12 +473,24 @@ class StarfireScionPolicy:
                 ))
             else:
                 choices.append(self._attack_choice("quarterstaff", "action"))
+                action_is_weapon_attack = True
 
-        # BONUS ACTION: Sacred Flame (the save-FOR-damage core) while a Spellfire
-        # Spark charge remains; else an Archer attack (Starry Form active); else
-        # an unarmed strike.
+        # BONUS ACTION priority ladder:
+        #   1. Searing Arc Strike (L10+) — only after a weapon Attack action, and
+        #      while focus points remain.  Upcast Burning Hands, FIRE save-for-half;
+        #      the level's headline BA damage option, so it leads on attack turns.
+        #   2. Sacred Flame (Spellfire Spark) — the radiant, FUELABLE save-negates
+        #      core; fires on Guiding-Bolt turns (where Searing Arc is unavailable).
+        #   3. Archer attack (if Starry Form active — dropped in combat from L9).
+        #   4. Unarmed strike.
         if res.get("bonus_action", 0) >= 1:
-            if res.get("spellfire_spark", 0) >= 1:
+            if (
+                self._has_searing_arc
+                and action_is_weapon_attack
+                and res.get("focus_points", 0) >= self._sas_fp_cost
+            ):
+                choices.append(self._searing_arc_choice())
+            elif res.get("spellfire_spark", 0) >= 1:
                 choices.append(Choice(
                     action_type="save_spell",
                     cost="bonus_action",
@@ -403,6 +509,26 @@ class StarfireScionPolicy:
                 choices.append(self._attack_choice("unarmed", "bonus_action"))
 
         return choices
+
+    def _searing_arc_choice(self) -> Choice:
+        """Searing Arc Strike: upcast Burning Hands as a BA — a FIRE save-FOR-HALF
+        save_spell.  Dice + on_save + type come FROM DATA (interpret_save_spell, at
+        the chosen slot level); FP cost is policy arbitration.  is_spell=True (it IS
+        a spell) but damage_type="fire", so Fueled Spellfire declines it — the
+        cross-check that the damage_type gate, not just is_spell, does real work.
+        """
+        return Choice(
+            action_type="save_spell",
+            cost="bonus_action",
+            target=self._target,
+            save_stat="dex_save",
+            dc_stat="spell_save_dc",
+            damage_dice=self._sas_dice,                # FROM DATA (4d6 at slot 2)
+            on_save=self._sas_on_save,                 # "half" (save-for-half)
+            damage_type=self._sas_type,                # "fire" (NOT fuelable)
+            is_spell=True,
+            resource_cost={"focus_points": self._sas_fp_cost},
+        )
 
     def _attack_choice(
         self,
