@@ -34,6 +34,25 @@ At the start of every session, before diving into the work:
    stop"), or when Claude recognizes the milestone is complete — **prompt the user to
    re-enable** the disabled connectors, and clear the line.
 
+## Session close-out ritual (do this last, every session)
+
+When wrapping up a session (the milestone is complete, or the user signals an end):
+
+1. **Land the work.** Make sure PROGRESS.md is updated (Done entry + the NEXT-STEP
+   markers flipped), tests are green, and everything is committed and pushed. Confirm
+   before merging to `main` / deleting branches (per CLAUDE.md git autonomy).
+2. **Re-enable MCP connectors.** Prompt the user to re-enable anything in the
+   "Currently disabled" line, then clear it.
+3. **ALWAYS end with a copyable next-session starting prompt.** The last thing every
+   session produces is a ready-to-paste prompt for the *next* session — fenced as a
+   copyable block, written in the imperative to the next Claude. It must: name the
+   exact next task (the NEXT-STEP item), point at the files/sections to re-read first
+   (PROGRESS Done entries, the relevant `src/`/`content/` files, schema sections),
+   recall any scoping decisions already made or still open, restate the validation
+   framing, and remind it to run the startup ritual (MCP toggles + scope/stopping
+   point) BEFORE coding. Mirror the style of the prompt that started *this* session.
+   This is the project's handoff mechanism — never skip it.
+
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
 > (2026-06-12, session 3) — DONE:** build engine primitive #2 for Starfire Scion —
 > cantrip / `level_reference` dice scaling (Option B, data-driven in `content.py`).
