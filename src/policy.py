@@ -142,6 +142,13 @@ class Choice:
     damage_dice: "tuple[int, int] | None" = None
     damage_bonus: int = 0
     on_save: str = "none"
+    # Damage type + spell-source flag, threaded to the spawned event → DamageEvent.
+    # The caster-side Fueled-Spellfire decision point gates on "spell radiant
+    # damage" (damage_type == "radiant" and is_spell).  So Guiding Bolt / Sacred
+    # Flame set damage_type="radiant", is_spell=True; Starry-Form Archer is
+    # radiant but a feature (is_spell=False); plain weapon attacks leave both unset.
+    damage_type: "str | None" = None
+    is_spell: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -403,6 +410,72 @@ class SaveRerollResponse:
 
 
 # ---------------------------------------------------------------------------
+# Post-damage caster decision point: a damage roll the caster may augment
+# (Fueled Spellfire — the on_hit analog on the *damage* side)
+# ---------------------------------------------------------------------------
+# Unlike on_hit (which fires before the DamageEvent is built and only on the
+# attack-roll path), this fires AS a DamageEvent resolves — the one chokepoint
+# every damage delivery funnels through — so a single hook covers attack-roll
+# spells (Guiding Bolt) and save-for-damage spells (Sacred Flame) alike, and any
+# future radiant spell (Sunbeam, Fount of Moonlight) for free.  It consults the
+# CASTER's policy (the entity dealing the damage).
+
+@dataclass(frozen=True)
+class DealDamageContext:
+    """Read-only context handed to the CASTER's Policy.on_deal_damage as one of
+    its damage rolls resolves, so the policy may spend a resource to add dice to
+    that roll (Fueled Spellfire: expend Hit Dice into a radiant spell's damage).
+
+    Fields
+    ------
+    actor / target:
+        The entity dealing the damage (the caster) and the entity taking it.
+    damage_type:
+        The damage's type, e.g. "radiant" (None = untyped).  Fueled Spellfire
+        fires only on radiant damage.
+    is_spell:
+        Whether the damage is from a SPELL (vs a weapon/feature).  Fueled
+        Spellfire requires a spell — so Starry-Form Archer (radiant, but a
+        feature) is correctly excluded.
+    is_crit:
+        Whether the hitting attack was a crit.  Informational: the engine does
+        NOT crit-double the rider dice (they are a fixed Hit-Dice expenditure).
+    base_damage_dice:
+        The spell's own (count, sides) for this roll — lets the policy gauge how
+        much the rider adds relative to the base.
+    resources:
+        Flat {name: current} view of the caster's persistent resources.
+    round_number / turn_index:
+        The current (round, turn) — lets the policy enforce a per-turn cap
+        (Fueled Spellfire is 1/turn) across multiple radiant rolls in one turn.
+    """
+    actor: "Entity"
+    target: "Entity | None"
+    damage_type: "str | None"
+    is_spell: bool
+    is_crit: bool
+    base_damage_dice: tuple[int, int]
+    resources: dict[str, int]
+    round_number: int
+    turn_index: int
+
+
+@dataclass(frozen=True)
+class DamageRiderResponse:
+    """The caster's answer to a DealDamageContext: spend `resource_cost` to add
+    `extra_damage_dice` to this damage roll (Fueled Spellfire = up to 2 Hit Dice
+    → [(n, 8)]).  Return None to decline.
+
+    The scheduler validates affordability and consumes the resource; the verb
+    rolls the dice and adds them to the damage total.  Per the design decision the
+    rider dice are NOT crit-doubled (a fixed expenditure, not the spell's own
+    dice) and are added before save-for-half halving (sharing the spell's fate).
+    """
+    extra_damage_dice: list[tuple[int, int]]
+    resource_cost: dict[str, int] = field(default_factory=dict)
+
+
+# ---------------------------------------------------------------------------
 # Policy protocol
 # ---------------------------------------------------------------------------
 
@@ -464,6 +537,14 @@ class Policy(Protocol):
     # with a bonus.  Return a SaveRerollResponse to spend, or None to accept the
     # failure.  A commit point: the policy may update its own bookkeeping.
     def on_failed_save(self, ctx: FailedSaveContext) -> "SaveRerollResponse | None":
+        ...
+
+    # Optional post-damage CASTER decision point.  The scheduler calls it (if
+    # defined) as one of this entity's damage rolls resolves, so the policy may
+    # spend a resource to add dice to that roll (Fueled Spellfire).  Return a
+    # DamageRiderResponse to spend, or None to decline.  A commit point: the
+    # policy may update its own bookkeeping (e.g. the 1/turn fuel gate).
+    def on_deal_damage(self, ctx: DealDamageContext) -> "DamageRiderResponse | None":
         ...
 
 

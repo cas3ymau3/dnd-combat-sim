@@ -50,14 +50,20 @@ from ``reference/data/monster_ac_and_saves_by_level.csv`` (level == cr row; ``ac
 at these levels — exactly like War Angel before L13), so concentration is never
 checked here and the Starry-Form/Flame-Blade concentration axis stays deferred.
 
+What IS modeled here beyond the per-attack profiles
+---------------------------------------------------
+  3. **Fueled Spellfire** (Spellfire Adept, L5; engine primitive #5) — a
+     CASTER-side POST-DAMAGE decision point: ×1/turn, when a SPELL deals RADIANT
+     damage, expend up to 2 Hit Dice (d8) and add them to that damage roll.  Built
+     as a general radiant rider hooked on the DamageEvent (the chokepoint BOTH
+     the attack-roll path — Guiding Bolt — and the save-for-damage path — Sacred
+     Flame — funnel through), so future radiant spells (Sunbeam, Fount of
+     Moonlight) get it for free.  See ``StarfireScionPolicy.on_deal_damage`` and
+     ``Scheduler._make_deal_damage_decider``.  Hit dice are a scarce per-day pool
+     (5 at L5); the rider dice are NOT crit-doubled (a fixed expenditure).
+
 What is NOT modeled here (deferred — see PROGRESS "Open threads")
 ----------------------------------------------------------------
-  - **Fueled Spellfire** (L5 radiant rider): "x1/turn, when a spell DEALS radiant
-    damage, expend ≤2 Hit Dice, add to one damage roll."  Faithfully this is a
-    POST-SAVE caster decision point (the symmetric analog of on_hit, on the
-    save-damage path) — a NEW engine primitive that does not exist yet.  Deferred
-    to its own slice rather than approximated at cast-time (which would burn the
-    scarce hit dice on saved casts).
   - **Searing Arc Strike** (L10 upcast Burning Hands, save-for-half): the
     primitive (#3) is built and data exists; the policy wiring waits for L10.
   - **Starry Form: Chalice** (extra healing — DPR-irrelevant) and **Dragon** (a
@@ -83,8 +89,12 @@ Engine-capacity build order (see PROGRESS):
   2. [DONE] cantrip / level_reference dice scaling (Sacred Flame by char level).
   3. [DONE] upcast `increment` scaling (Searing Arc Strike) — data ready, policy
      wiring waits for L10.
-  4. [DONE, this session] per-attack damage override (the multi-weapon gish
-     primitive) — Choice.damage_dice/damage_bonus → AttackRollEvent → DamageEvent.
+  4. [DONE] per-attack damage override (the multi-weapon gish primitive) —
+     Choice.damage_dice/damage_bonus → AttackRollEvent → DamageEvent.
+  5. [DONE, this session] Fueled Spellfire — a caster-side post-damage decision
+     point (Policy.on_deal_damage → DamageRiderResponse), threaded through
+     resolve_damage as `rider_decider`; gated on "spell radiant damage" via
+     damage_type + is_spell threaded Choice → events → DamageEvent.
 """
 
 from __future__ import annotations
@@ -94,7 +104,7 @@ from typing import TYPE_CHECKING
 from ..content import interpret_save_spell, load_abilities
 from ..day_runner import DayRunner
 from ..entity import Entity
-from ..policy import Choice, GameState
+from ..policy import Choice, DamageRiderResponse, DealDamageContext, GameState
 from ..resources import ResourceEntry, ResourcePool
 
 if TYPE_CHECKING:
@@ -153,10 +163,15 @@ LEVELS: dict[int, dict] = {
         "char_hp": 22,
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus"},
-        # Archer form: BA ranged spell attack 1d8 + WIS, WIS-based to-hit.
-        "archer":       {"dice": (1, 8), "bonus": 3, "weapon_stat": "spell_attack_bonus"},
-        # Guiding Bolt: 4d6 radiant, ranged spell attack, no damage modifier.
-        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus"},
+        # Archer form: BA ranged spell attack 1d8 + WIS, WIS-based to-hit.  It
+        # deals RADIANT damage, but it is a starry-form FEATURE, not a spell — so
+        # is_spell stays False and Fueled Spellfire (L5+) does NOT fuel it.
+        "archer":       {"dice": (1, 8), "bonus": 3, "weapon_stat": "spell_attack_bonus",
+                          "damage_type": "radiant"},
+        # Guiding Bolt: 4d6 radiant SPELL, ranged spell attack, no damage modifier.
+        # radiant + is_spell → a Fueled-Spellfire target at L5+.
+        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
+                          "damage_type": "radiant", "is_spell": True},
         "starry_form": True,
         "resources": {
             "spellfire_spark": (2, 0),     # x PB / LR
@@ -170,7 +185,7 @@ LEVELS: dict[int, dict] = {
     5: {
         # Monk-1/Druid-4 (Stars), PB 3, WIS 18 (+4, Spellfire Adept).  Cantrip
         # scaling lifts Sacred Flame to 2d8 (resolved from data).  Fueled Spellfire
-        # also unlocks here but is DEFERRED (see docstring).
+        # unlocks here (the hit_dice pool below + on_deal_damage) — primitive #5.
         "attack_bonus": 6,                 # PB 3 + DEX 3
         "spell_attack_bonus": 7,           # PB 3 + WIS 4
         "spell_save_dc": 15,               # 8 + PB 3 + WIS 4
@@ -178,13 +193,20 @@ LEVELS: dict[int, dict] = {
         "char_hp": 30,
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus"},
-        "archer":       {"dice": (1, 8), "bonus": 4, "weapon_stat": "spell_attack_bonus"},
-        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus"},
+        "archer":       {"dice": (1, 8), "bonus": 4, "weapon_stat": "spell_attack_bonus",
+                          "damage_type": "radiant"},  # radiant FEATURE (not a spell)
+        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
+                          "damage_type": "radiant", "is_spell": True},
         "starry_form": True,
         "resources": {
             "spellfire_spark": (3, 0),     # x PB / LR (PB 3 now)
             "guiding_bolt_free": (4, 0),   # x WIS / LR (WIS 4 now)
             "wild_shape": (2, 1),
+            # Fueled Spellfire (Spellfire Adept, L5): the per-day Hit-Dice pool
+            # (character level d8, all 5 spent on radiant spell damage; no SR
+            # restore — a long rest at day start refills).  Its PRESENCE here is
+            # what turns Fueled Spellfire on in the policy (data-driven gate).
+            "hit_dice": (5, 0),
         },
         "enemy_ac": 15,
         "enemy_dex_save": 2,               # csv level 5
@@ -303,12 +325,22 @@ class StarfireScionPolicy:
             self._profiles["archer"] = data["archer"]
         if self._has_guiding_bolt:
             self._profiles["guiding_bolt"] = data["guiding_bolt"]
-        # Sacred Flame dice FROM DATA — resolved once for this character level.
-        self._sacred_flame_dice = interpret_save_spell(
-            SACRED_FLAME, {"character_level": level}
-        ).damage_dice
+        # Sacred Flame dice + damage TYPE FROM DATA — resolved once for this
+        # character level.  The type ("radiant") drives Fueled Spellfire gating.
+        _sf = interpret_save_spell(SACRED_FLAME, {"character_level": level})
+        self._sacred_flame_dice = _sf.damage_dice
+        self._sacred_flame_type = _sf.damage_type
+        # Fueled Spellfire (Spellfire Adept, L5+): enabled iff the level carries a
+        # Hit-Dice pool (data-driven gate — see LEVELS[5]["resources"]).  1/turn,
+        # when a SPELL deals RADIANT damage, expend up to 2 Hit Dice into it.
+        self._fueled_spellfire: bool = "hit_dice" in data.get("resources", {})
         # Per-combat state, (re)set by on_combat_start.
         self._starry_form_active: bool = False
+        # 1/turn Fueled-Spellfire gate: the (round, turn_index) we last fueled on,
+        # so a turn that deals radiant damage twice (Guiding Bolt + Sacred Flame)
+        # fuels only once.  Keyed by turn → auto-resets across turns; cleared per
+        # combat (round numbers restart at 1) in on_combat_start.
+        self._fueled_turn: "tuple[int, int] | None" = None
 
     # -- per-combat setup -------------------------------------------------
 
@@ -320,6 +352,9 @@ class StarfireScionPolicy:
         resource pool; the parameter matches the on_combat_start hook signature.)
         """
         self._starry_form_active = False
+        # Clear the per-turn Fueled-Spellfire gate (round numbers restart at 1 each
+        # combat, so a stale (round, turn) would mis-gate the new combat).
+        self._fueled_turn = None
         if (
             self._has_starry_form
             and self._character.resources.available("wild_shape") >= 1
@@ -358,6 +393,8 @@ class StarfireScionPolicy:
                     dc_stat="spell_save_dc",
                     damage_dice=self._sacred_flame_dice,   # FROM DATA
                     on_save="none",                        # save NEGATES
+                    damage_type=self._sacred_flame_type,   # "radiant" (FROM DATA)
+                    is_spell=True,                         # a cantrip → fuelable
                     resource_cost={"spellfire_spark": 1},
                 ))
             elif self._starry_form_active:
@@ -384,7 +421,50 @@ class StarfireScionPolicy:
             weapon_stat=p["weapon_stat"],
             damage_dice=p["dice"],
             damage_bonus=p["bonus"],
+            damage_type=p.get("damage_type"),       # "radiant" for GB/Archer
+            is_spell=p.get("is_spell", False),       # only Guiding Bolt is a spell
             resource_cost=resource_cost or {},
+        )
+
+    # -- post-damage decision point: Fueled Spellfire (level 5+) ----------
+
+    def on_deal_damage(self, ctx: DealDamageContext) -> "DamageRiderResponse | None":
+        """Fueled Spellfire (Spellfire Adept, L5): ×1/turn, when a SPELL we cast
+        deals RADIANT damage, expend up to 2 Hit Dice (d8) and add them to that
+        damage roll.
+
+        Policy = "greedy on the first qualifying radiant spell each turn, spend up
+        to 2 HD while any remain".  The build's whole concept is to burn ALL the
+        Hit Dice this way (5 at L5), so there is nothing to husband: the pool is
+        the binding constraint (it empties in the first combat or two, exactly as
+        the guide describes ~1-3 fueled combats/day).  Because the action (Guiding
+        Bolt) resolves before the bonus action (Sacred Flame), the fuel naturally
+        lands on Guiding Bolt while charges last — matching the guide's turn-1
+        `guiding-bolt_{fueled-spellfire(2)}`.
+
+        Gates (all policy-side; the engine just offers the seam on every DamageEvent
+        we deal):
+          - off unless Fueled Spellfire is online (Hit-Dice pool present, L5+);
+          - SPELL radiant damage only (so Starry-Form Archer — radiant, but a
+            feature — and our weapon strikes are excluded);
+          - 1/turn (a turn dealing radiant damage twice fuels only the first);
+          - a Hit Die must remain.
+        """
+        if not self._fueled_spellfire:
+            return None
+        if ctx.damage_type != "radiant" or not ctx.is_spell:
+            return None
+        turn = (ctx.round_number, ctx.turn_index)
+        if self._fueled_turn == turn:                  # already fueled this turn
+            return None
+        available = ctx.resources.get("hit_dice", 0)
+        if available < 1:
+            return None
+        n = min(2, available)                          # expend up to 2 Hit Dice
+        self._fueled_turn = turn                       # commit the 1/turn use
+        return DamageRiderResponse(
+            extra_damage_dice=[(n, 8)],                # Nd8 added (no CON mod)
+            resource_cost={"hit_dice": n},
         )
 
 

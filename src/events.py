@@ -130,6 +130,12 @@ class AttackRollEvent(Event):
     # distinguishable from "no override".
     damage_dice_override: "tuple[int, int] | None" = None
     damage_bonus_override: "int | None" = None
+    # Damage type (e.g. "radiant") and whether this attack's damage is from a
+    # SPELL (vs a weapon/feature).  Threaded to the spawned DamageEvent so the
+    # caster-side post-damage decision point can gate on "spell radiant damage"
+    # (Fueled Spellfire).  Default (None, False) = an untyped weapon attack.
+    damage_type: "str | None" = None
+    is_spell: bool = False
     # Whether the ACTING entity's post-roll decision points (on_miss / on_hit)
     # may fire for this attack.  False for "rider" attacks that are themselves a
     # reaction and must not spawn further riders — e.g. the Flourish Counter,
@@ -171,6 +177,12 @@ class DamageEvent(Event):
     # Hands).  Set by resolve_save_damage when a target SAVES against a half-on-
     # save spell; left False for every attack-roll hit and every failed save.
     halved: bool = False
+    # Damage type (e.g. "radiant") and whether this damage is from a SPELL (vs a
+    # weapon/feature).  Threaded from the source event.  Read by the caster-side
+    # post-damage decision point (Fueled Spellfire fires only on SPELL radiant
+    # damage) and available for future resistance modeling.
+    damage_type: "str | None" = None
+    is_spell: bool = False
     cost: str = "action"
     kind: str = field(default="damage", init=False)
 
@@ -211,6 +223,10 @@ class SaveDamageEvent(Event):
     damage_dice: tuple[int, int] = (1, 8)
     damage_bonus: int = 0
     on_save: str = "none"
+    # Damage type + spell-source flag, threaded to the spawned DamageEvent (a
+    # save spell's damage is a spell's — set is_spell=True when delivering one).
+    damage_type: "str | None" = None
+    is_spell: bool = False
     cost: str = "action"
     kind: str = field(default="save_damage", init=False)
 

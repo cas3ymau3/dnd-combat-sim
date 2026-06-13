@@ -319,6 +319,8 @@ def resolve_attack_roll(
             damage_bonus=damage_bonus,
             extra_damage_dice=extra_dice,
             extra_flat_damage=event.extra_flat_damage,
+            damage_type=event.damage_type,
+            is_spell=event.is_spell,
             cost=event.cost,
         )
         queue.push(damage_event)
@@ -387,6 +389,8 @@ def resolve_save_damage(
         damage_dice=event.damage_dice,
         damage_bonus=event.damage_bonus,
         halved=(saved and event.on_save == "half"),
+        damage_type=event.damage_type,
+        is_spell=event.is_spell,
         cost=event.cost,
     )
     queue.push(damage_event)
@@ -404,6 +408,7 @@ def resolve_damage(
     queue: "EventQueue",
     next_sequence: int,
     save_reroll_decider: "Callable[[int, int], int | None] | None" = None,
+    rider_decider: "Callable[[str | None, bool, bool], list[tuple[int, int]]] | None" = None,
 ) -> tuple[int, int]:
     """Resolve damage for a confirmed hit.  Returns (total_damage, next_sequence).
 
@@ -413,6 +418,7 @@ def resolve_damage(
       3. Per-die mods — not implemented yet (milestone placeholder)
       4. Sum
       5. Flat bonus
+      6. Save-for-half halving
 
     Parameters
     ----------
@@ -420,6 +426,14 @@ def resolve_damage(
         The DamageEvent being resolved.
     rng, queue, next_sequence:
         Standard handler args.
+    rider_decider:
+        Optional `(damage_type, is_spell, is_crit) -> list[(n, sides)]` callable
+        for the CASTER's post-damage rider (Fueled Spellfire).  Called as this
+        damage resolves — the on_hit analog on the *damage* side, reachable from
+        BOTH the attack-roll and save-for-damage paths (this verb is the single
+        chokepoint both funnel through).  The scheduler-side closure has already
+        consulted the caster's policy and validated/consumed the resource; it
+        returns the dice to fold in.  None = no rider available.
 
     Returns
     -------
@@ -456,6 +470,22 @@ def resolve_damage(
     # Brutality::bleed's +CHA mod; neither scales on a crit).
     total = subtotal + event.damage_bonus + event.extra_flat_damage
 
+    # Phase 5.5: caster post-damage rider (Fueled Spellfire) — a CASTER decision
+    # point offered as this damage resolves, the on_hit analog on the *damage*
+    # side.  The scheduler-side closure already consulted the caster's policy
+    # (which gates on "spell radiant damage") and validated/consumed the resource;
+    # it returns the dice to fold in.  Per the design decision these rider dice are
+    # NOT crit-doubled (a fixed Hit-Dice expenditure, not the spell's own dice) and
+    # are added BEFORE phase-6 halving so they share a save-for-half spell's fate.
+    rider_total = 0
+    if rider_decider is not None:
+        for n_rider, sides_rider in rider_decider(
+            event.damage_type, event.is_spell, event.is_crit
+        ):
+            if n_rider >= 1:
+                rider_total += sum(rng.roll(n_rider, sides_rider))
+    total += rider_total
+
     # Phase 6: save-for-half halving (2024 RAW — a successful save against a
     # half-on-save spell takes half the TOTAL damage, rounded down).  Set only
     # by resolve_save_damage on a saved half-on-save spell; full hits and failed
@@ -476,6 +506,8 @@ def resolve_damage(
         event.damage_bonus + event.extra_flat_damage,
         f" subtotal={subtotal}" if (event.damage_bonus or event.extra_flat_damage) else "",
     )
+    if rider_total:
+        log.info("  + fueled rider %d (spell radiant damage)", rider_total)
 
     if target is not None:
         target.take_damage(total)

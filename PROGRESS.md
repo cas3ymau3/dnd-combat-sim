@@ -54,23 +54,83 @@ When wrapping up a session (the milestone is complete, or the user signals an en
    This is the project's handoff mechanism — never skip it.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-13, session 5) — DONE:** turn `src/builds/starfire_scion.py` from
-> scaffold into a real build (L1, L4, L5) — `make_starfire_scion`,
-> `make_training_dummy`, `StarfireScionPolicy`, `make_day_runner`. Sacred Flame
-> dice are pulled FROM DATA via `interpret_save_spell({"character_level": L})`
-> (1d8→2d8 at L5), not a literal. The build forced ONE not-anticipated engine
-> primitive (**#4: per-attack damage override** — a multi-weapon gish needs
-> distinct dice per attack: quarterstaff 1d8+DEX / unarmed 1d6+DEX / Archer 1d8+WIS
-> / Guiding Bolt 4d6 on ONE body, where the engine read a single
-> `actor.stat("damage_dice")`); added deliberately, backward-compatible (War Angel
-> bit-identical). Fueled Spellfire confirmed DEFERRED (needs a post-save caster
-> decision point — a future primitive). **302 tests green (+18).** MCP-toggle
-> recommendation re-made (computer-use / Claude-in-Chrome / Claude_Preview /
-> scheduled-tasks / mcp-registry / Google Drive).
+> (2026-06-13, session 6) — DONE:** built **Fueled Spellfire (engine primitive
+> #5)** — a CASTER-side post-damage decision point — and wired it into the
+> Starfire Scion at L5. Per the user it is a GENERAL radiant rider (must work with
+> Guiding Bolt AND Sacred Flame now, Sunbeam / Fount of Moonlight later), so it
+> hooks the **DamageEvent** (the single chokepoint both the attack-roll and
+> save-for-damage paths funnel through), NOT the save path alone:
+> `Policy.on_deal_damage(ctx) → DamageRiderResponse` consulted from
+> `Scheduler._make_deal_damage_decider` (mirrors `_make_save_reroll_decider`),
+> threaded into `resolve_damage` as `rider_decider`. Gated on "spell radiant
+> damage" via NEW `damage_type` + `is_spell` fields threaded
+> `Choice → AttackRoll/SaveDamage → DamageEvent → context` (so Starry-Form Archer
+> — radiant, but a FEATURE — is correctly NOT fuelable). Hit dice = a scarce
+> per-day pool (5 at L5, no SR restore); rider dice NOT crit-doubled, added before
+> phase-6 halving. **320 tests green (+18).** L5 DPR 11.28 (no fuel) → 12.61
+> (fuel), > L4 9.08 at the shared enemy, < 23.0 ceiling. MCP-toggle recommendation
+> re-made (computer-use / Claude-in-Chrome / Claude_Preview / scheduled-tasks /
+> mcp-registry / Google Drive).
 
 ---
 
 ## Done
+
+- **Fueled Spellfire — engine primitive #5: a CASTER-side post-damage decision
+  point — BUILT & VALIDATED (2026-06-13, session 6).** The last engine primitive
+  on the Starfire Scion's critical path; completes L5's blaster convergence.
+  **320 tests green (+18).** Branch `feature/fueled-spellfire`.
+  - **What it is.** Spellfire Adept's Fueled Spellfire (guide line 357): ×1/turn,
+    when a SPELL the caster casts deals RADIANT damage, expend up to 2 Hit Dice
+    (d8) and add them to that damage roll. The on_hit analog on the *damage* side.
+  - **Generalized per the user (key scoping refinement).** It must attach to ANY
+    radiant SPELL damage instance, not just the save path — at L5 both Guiding
+    Bolt (attack-roll) AND Sacred Flame (save-for-damage); later Sunbeam / Fount
+    of Moonlight. So it hooks the **DamageEvent** — the single chokepoint
+    `resolve_attack_roll` and `resolve_save_damage` BOTH funnel through — rather
+    than `resolve_save_damage` alone. Future radiant spells get fueling for free.
+  - **Shape (mirrors the existing decider closures).** `Policy.on_deal_damage(ctx)
+    → DamageRiderResponse | None` (optional hook); `Scheduler._make_deal_damage_
+    decider(event)` looks up the ACTOR's (caster's) policy, builds a
+    `DealDamageContext`, validates/consumes the caster's resource, returns the
+    dice; threaded into `resolve_damage` as `rider_decider` (phase 5.5). Built for
+    every DamageEvent but draws no RNG unless a rider fires → every prior build is
+    bit-identical (the 302 War Angel/save tests stayed green).
+  - **Spell-radiant gating (the one architectural addition, user-approved).** NEW
+    `damage_type` + `is_spell` fields threaded `Choice → AttackRollEvent /
+    SaveDamageEvent → DamageEvent → DealDamageContext`. Fuel gate (policy-side) =
+    `damage_type == "radiant" AND is_spell`. So Starry-Form Archer (radiant, but a
+    FEATURE — `is_spell=False`) is correctly NOT fuelable, while Guiding Bolt /
+    Sacred Flame (radiant spells) are. `SaveSpellSpec.damage_type` now surfaces the
+    YAML `type:` field (Sacred Flame "radiant"). The engine stays D&D-agnostic —
+    "radiant" lives in the policy, not verbs/scheduler.
+  - **Dice semantics (user-approved).** Hit dice add just Nd8 (no CON mod — guide
+    `4d6+2d8 (23)` confirms). NOT crit-doubled (a fixed expenditure, not the
+    spell's own dice). Added BEFORE phase-6 halving (shares a save-for-half spell's
+    fate; moot in current scope — Sacred Flame negates, Guiding Bolt doesn't halve).
+  - **Hit-Dice pool.** `hit_dice: (5, 0)` at L5 (character-level d8, no SR restore;
+    LR at day start refills). Its PRESENCE is the data-driven on/off gate for the
+    feature in the policy (`self._fueled_spellfire`). Policy is greedy: fuel the
+    first qualifying radiant spell each turn with up to 2 HD while any remain —
+    the pool binds (drains in combat 1–2), exactly as the guide describes (~1–3
+    fueled combats/day, all 5 HD spent). Because the action (Guiding Bolt) resolves
+    before the BA (Sacred Flame), the fuel lands on Guiding Bolt while charges
+    last, matching the guide's turn-1 `guiding-bolt_{fueled-spellfire(2)}`. The
+    1/turn cap lives in the policy (a `(round, turn_index)` gate, cleared per
+    combat in `on_combat_start`).
+  - **Validation (consistency/sanity, per the Starfire framing — NOT
+    number-matching).** `tests/test_fueled_spellfire.py` (18 tests): the rider
+    MATH exact (deterministic FakeRNG) — dice rolled + added, NOT crit-doubled
+    (2d8 not 4d8 on a Guiding Bolt crit), shared with save-for-half halving, inert
+    when no rider is offered; the POLICY gating (spell+radiant only; Archer
+    excluded; non-radiant excluded; 1/turn; per-combat reset; budget binds; off
+    below L5); the scheduler closure consults the caster's policy and consumes Hit
+    Dice; and end to end — fuel lifts L5 DPR (11.28 → 12.61), drains the pool over
+    a day, stays < the no-fuel ceiling (23.0). `test_content.py` updated for the
+    new `SaveSpellSpec.damage_type`.
+  - **Deferred (unchanged):** Searing Arc Strike at L10 (primitive #3 + data
+    ready, policy waits for the level); die-size ladder (Shillelagh at L9); Flame
+    Blade / multi-enemy AoE / allies dimension.
 
 - **Starfire Scion BUILD WIRED (L1, L4, L5) + per-attack damage override
   primitive (#4) — BUILT & VALIDATED (2026-06-13, session 5).** The second
@@ -593,13 +653,23 @@ Strike. Upcast scaling comes later up the ladder.
    (backward-compatible). See the Done entry above. **The L1/L4/L5 build is now
    wired** (`make_starfire_scion` + `StarfireScionPolicy` + `make_day_runner`); the
    climb to L6+ is per-level data + policy from here.
+5. ~~Fueled Spellfire (the post-damage caster decision point; completes L5).~~ ✓
+   **DONE & VALIDATED (2026-06-13, session 6; branch `feature/fueled-spellfire`).**
+   A CASTER-side post-damage decision point hooked on the **DamageEvent** (the
+   chokepoint BOTH the attack-roll and save-for-damage paths funnel through), so
+   it's a general radiant rider covering Guiding Bolt + Sacred Flame now and any
+   future radiant spell. `Policy.on_deal_damage → DamageRiderResponse` via
+   `Scheduler._make_deal_damage_decider`, threaded into `resolve_damage` as
+   `rider_decider`; gated on "spell radiant damage" (NEW `damage_type` + `is_spell`
+   threaded `Choice → events → DamageEvent`). Hit dice = scarce per-day pool; rider
+   NOT crit-doubled. See the Done entry above.
 
-**Next engine primitive the build will force (NOT yet built):** Fueled Spellfire
-(L5) = a **post-save caster decision point** — the on_hit analog on the
-save-damage path (after a Sacred Flame save FAILS, the caster may expend ≤2 Hit
-Dice into that damage roll, 1/turn). Deferred this session rather than approximated
-at cast-time (which burns scarce hit dice on saved casts). Build it before/at the
-L5 fidelity pass; Searing Arc Strike (L10) needs no new primitive (data + #3 ready).
+**Next on the Scion's ladder (NO new engine primitive needed):** climb L6–L10 as
+DATA + POLICY. Searing Arc Strike (L10) reuses primitive #3 + existing data
+(`searing_arc_strike` YAML); slot arbitration is policy. L9 = Extra Attack +
+martial-arts 1d8 (a 1→2 attack-count change in `decide()`) + first Shillelagh
+(attack-profile half = primitive #4 + a per-combat policy flag; its die SIZE
+ladder is DODGED by baking the resolved die into the LEVELS row — see below).
 
 **die-size scaling — the next unbuilt SCALED-QUANTITY (flagged, first consumer
 SHILLELAGH at L9; recorded with user 2026-06-13).** 2024 Shillelagh has cantrip
