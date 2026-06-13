@@ -698,6 +698,11 @@ class SaveSpellSpec:
         Hands).  Defaults to "none".
     damage_bonus:
         Flat damage added to the spell's dice (0 for these cantrips).
+    damage_type:
+        The spell's damage type from the YAML `type` field (e.g. "radiant" for
+        Sacred Flame, "fire" for Searing Arc Strike); None if untyped.  The policy
+        threads it onto the Choice so the caster-side Fueled-Spellfire decision
+        point can gate on radiant.
     """
 
     save_stat: str
@@ -705,6 +710,7 @@ class SaveSpellSpec:
     damage_dice: tuple[int, int]
     on_save: str = "none"
     damage_bonus: int = 0
+    damage_type: str | None = None
 
 
 def interpret_save_spell(
@@ -791,4 +797,5 @@ def interpret_save_spell(
         dc_stat=dc_stat,
         damage_dice=damage_dice,
         on_save=on_save,
+        damage_type=damage_block.get("type"),
     )

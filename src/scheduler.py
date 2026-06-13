@@ -167,8 +167,11 @@ class Scheduler:
                 handlers = self._registry.get("damage", [])
                 seq_counter = seq + 1
                 save_decider = self._make_save_reroll_decider(event)
+                # The CASTER's post-damage rider (Fueled Spellfire) — consults the
+                # ACTOR's policy as this damage resolves.
+                rider_decider = self._make_deal_damage_decider(event)
                 for handler in handlers:
-                    result = handler(event, self.rng, self.queue, seq_counter, save_decider)  # type: ignore[call-arg]
+                    result = handler(event, self.rng, self.queue, seq_counter, save_decider, rider_decider)  # type: ignore[call-arg]
                     if isinstance(result, tuple):
                         total_dmg, seq_counter = result
                         round_damage += total_dmg
@@ -415,6 +418,52 @@ class Scheduler:
 
         return save_reroll_decider
 
+    def _make_deal_damage_decider(self, event: "DamageEvent"):
+        """Return a `(damage_type, is_spell, is_crit) -> list[(n, sides)]` callable
+        for the CASTER's post-damage rider (Fueled Spellfire), or None if the
+        actor's policy has no such hook.
+
+        Consults the ACTOR's policy (the entity DEALING the damage), mirroring the
+        other deciders.  The closure builds the context, calls
+        policy.on_deal_damage; validates and consumes the caster's resources;
+        returns the dice to fold into this damage roll.  The policy owns the
+        gating ("spell radiant damage", 1/turn); the engine stays D&D-agnostic and
+        simply offers the seam.  None = no rider for this caster.
+        """
+        from .policy import DealDamageContext
+
+        actor = event.actor
+        policy = self.policies.get(actor.id)
+        on_deal = getattr(policy, "on_deal_damage", None) if policy is not None else None
+        if not callable(on_deal):
+            return None
+
+        round_, turn_idx, _ = event.tick
+
+        def rider_decider(damage_type, is_spell, is_crit):
+            ctx = DealDamageContext(
+                actor=actor,
+                target=event.target,
+                damage_type=damage_type,
+                is_spell=is_spell,
+                is_crit=is_crit,
+                base_damage_dice=event.damage_dice,
+                resources=actor.resources.as_dict(),
+                round_number=round_,
+                turn_index=turn_idx,
+            )
+            response = on_deal(ctx)
+            if response is None:
+                return []
+            if any(actor.resources.available(n) < a
+                   for n, a in response.resource_cost.items()):
+                return []
+            for n, a in response.resource_cost.items():
+                actor.resources.consume(n, a)
+            return list(response.extra_damage_dice)
+
+        return rider_decider
+
     # ------------------------------------------------------------------
     # Decision point: TurnStartEvent handling
     # ------------------------------------------------------------------
@@ -537,6 +586,8 @@ class Scheduler:
                     extra_flat_damage=choice.extra_flat_damage,
                     damage_dice_override=dmg_dice_override,
                     damage_bonus_override=dmg_bonus_override,
+                    damage_type=choice.damage_type,
+                    is_spell=choice.is_spell,
                 )
                 self.queue.push(atk_event)
                 seq += 1
@@ -553,6 +604,8 @@ class Scheduler:
                     damage_dice=choice.damage_dice or (1, 8),
                     damage_bonus=choice.damage_bonus,
                     on_save=choice.on_save,
+                    damage_type=choice.damage_type,
+                    is_spell=choice.is_spell,
                     cost=cost,
                 )
                 self.queue.push(save_event)

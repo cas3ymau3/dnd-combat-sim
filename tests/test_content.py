@@ -309,7 +309,9 @@ def test_scaling_dice_uniform_rejects_mismatched_die_size():
 # ---------------------------------------------------------------------------
 
 def test_sacred_flame_save_spell_spec_at_l1():
-    """Sacred Flame FROM DATA at L1: DEX save vs spell_save_dc, 1d8, negates."""
+    """Sacred Flame FROM DATA at L1: DEX save vs spell_save_dc, 1d8, negates,
+    radiant.  The `type: radiant` from the YAML now surfaces on the spec — it
+    drives the caster-side Fueled-Spellfire gate (spell radiant damage)."""
     sf = load_abilities()["sacred_flame"]
     spec = interpret_save_spell(sf, {"character_level": 1})
     assert spec == SaveSpellSpec(
@@ -318,6 +320,7 @@ def test_sacred_flame_save_spell_spec_at_l1():
         damage_dice=(1, 8),
         on_save="none",
         damage_bonus=0,
+        damage_type="radiant",
     )
 
 
