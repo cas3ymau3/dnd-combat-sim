@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 from typing import Callable, TYPE_CHECKING
 
-from .events import AttackRollEvent, DamageEvent, make_tick
+from .events import AttackRollEvent, DamageEvent, SaveDamageEvent, make_tick
 
 if TYPE_CHECKING:
     from .entity import Entity
@@ -320,6 +320,73 @@ def resolve_attack_roll(
 
 
 # ---------------------------------------------------------------------------
+# Save-for-damage resolution (Sacred Flame, Burning Hands)
+# ---------------------------------------------------------------------------
+
+def resolve_save_damage(
+    event: "SaveDamageEvent",
+    rng: "SeededRNG",
+    queue: "EventQueue",
+    next_sequence: int,
+) -> int:
+    """Resolve a save-FOR-damage spell.  Returns the next available sequence.
+
+    The mirror of resolve_attack_roll: the TARGET rolls a saving throw vs the
+    ACTOR's spell save DC, and the result determines damage.  On the
+    damage-dealing branch this enqueues a normal DamageEvent — so the phase-
+    ordered damage roll, concentration check, and save-reroll machinery in
+    resolve_damage / the scheduler are reused untouched (this verb never rolls a
+    damage die itself).
+
+      - save FAILS                  → full DamageEvent (halved=False)
+      - save SUCCEEDS, on_save=none  → no damage (the missed-attack analog)
+      - save SUCCEEDS, on_save=half  → DamageEvent(halved=True)
+
+    The save itself goes through resolve_saving_throw with no reroll_decider:
+    enemy targets carry no failed-save rescue, and an attacker-imposed save is
+    not the kind of save Indomitable/Luck protect (those rescue the SAVER's own
+    concentration / effects, handled on the spawned DamageEvent if relevant).
+    """
+    actor = event.actor
+    target = event.target
+    if target is None:
+        return next_sequence
+
+    round_, turn_idx, _ = event.tick
+    dc = int(actor.stat(event.dc_stat, tick=event.tick))
+
+    saved = resolve_saving_throw(target, event.save_stat, dc, rng)
+
+    # Telemetry (design §8: saves forced / failed by type) — tracked on the
+    # entity that MADE the save, mirroring concentration_checks on the saver.
+    target.saving_throws_made += 1
+    if not saved:
+        target.saving_throws_failed += 1
+
+    deals_damage = (not saved) or (event.on_save == "half")
+    if not deals_damage:
+        log.info(
+            "%s SAVES vs %s's %s (DC %d) — negated, no damage",
+            target.name, actor.name, event.save_stat, dc,
+        )
+        return next_sequence
+
+    damage_event = DamageEvent(
+        tick=make_tick(round_, turn_idx, next_sequence),
+        actor=actor,
+        target=target,
+        is_crit=False,                 # saving-throw spells never crit
+        damage_dice=event.damage_dice,
+        damage_bonus=event.damage_bonus,
+        halved=(saved and event.on_save == "half"),
+        cost=event.cost,
+    )
+    queue.push(damage_event)
+    next_sequence += 1
+    return next_sequence
+
+
+# ---------------------------------------------------------------------------
 # Damage resolution
 # ---------------------------------------------------------------------------
 
@@ -380,6 +447,13 @@ def resolve_damage(
     # Phase 5: flat bonuses (weapon damage_bonus + any extra flat damage, e.g.
     # Brutality::bleed's +CHA mod; neither scales on a crit).
     total = subtotal + event.damage_bonus + event.extra_flat_damage
+
+    # Phase 6: save-for-half halving (2024 RAW — a successful save against a
+    # half-on-save spell takes half the TOTAL damage, rounded down).  Set only
+    # by resolve_save_damage on a saved half-on-save spell; full hits and failed
+    # saves never set it, so this is inert on every existing damage path.
+    if event.halved:
+        total //= 2
 
     log.info(
         "%s deals %d damage to %s  [%dd%d%s rolls=%s%s bonus=%d%s]",

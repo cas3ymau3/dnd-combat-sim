@@ -34,10 +34,11 @@ from .events import (
     DamageEvent,
     EventQueue,
     RoundEndEvent,
+    SaveDamageEvent,
     TurnStartEvent,
     make_tick,
 )
-from .verbs import resolve_attack_roll, resolve_damage
+from .verbs import resolve_attack_roll, resolve_damage, resolve_save_damage
 
 if TYPE_CHECKING:
     from .entity import Entity
@@ -105,9 +106,12 @@ class Scheduler:
             e.id: 0 for e in entities
         }
 
-        # Register the two milestone verb handlers
+        # Register the verb handlers.  save_damage uses the plain 4-arg Handler
+        # signature, so the generic dispatch branch in run() drives it — it
+        # enqueues a DamageEvent that is accounted when that event resolves.
         self._subscribe("attack_roll", resolve_attack_roll)  # type: ignore[arg-type]
         self._subscribe("damage", resolve_damage)            # type: ignore[arg-type]
+        self._subscribe("save_damage", resolve_save_damage)  # type: ignore[arg-type]
 
         # Seed the queue with Round 1 turn starts
         self._enqueue_round(round_=1)
@@ -525,6 +529,23 @@ class Scheduler:
                     extra_flat_damage=choice.extra_flat_damage,
                 )
                 self.queue.push(atk_event)
+                seq += 1
+            elif choice.action_type == "save_spell":
+                # Save-FOR-damage delivery (Sacred Flame, Burning Hands): the
+                # target rolls a save vs our spell DC; resolve_save_damage decides
+                # full / half / none and enqueues the DamageEvent.
+                save_event = SaveDamageEvent(
+                    tick=make_tick(round_, turn_idx, seq),
+                    actor=actor,
+                    target=choice.target,
+                    save_stat=choice.save_stat or "dex_save",
+                    dc_stat=choice.dc_stat,
+                    damage_dice=choice.damage_dice or (1, 8),
+                    damage_bonus=choice.damage_bonus,
+                    on_save=choice.on_save,
+                    cost=cost,
+                )
+                self.queue.push(save_event)
                 seq += 1
             else:
                 log.warning("Unknown action_type %r — skipped.", choice.action_type)

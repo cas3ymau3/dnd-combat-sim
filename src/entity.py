@@ -79,6 +79,12 @@ class Entity:
         # callers diff or average across runs.
         self.concentration_checks: int = 0
         self.concentration_breaks: int = 0
+        # Saving throws this entity was forced to MAKE and how many it FAILED
+        # (design §8 outputs — "saves forced / failed by type").  Incremented by
+        # resolve_save_damage when this entity is the target of a save-for-damage
+        # spell.  Never auto-reset; callers diff or average across runs.
+        self.saving_throws_made: int = 0
+        self.saving_throws_failed: int = 0
         log.debug("Entity created: %s (id=%d, hp=%s)", name, self.id, hp)
 
     # ------------------------------------------------------------------

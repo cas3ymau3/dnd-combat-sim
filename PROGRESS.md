@@ -35,16 +35,64 @@ At the start of every session, before diving into the work:
    re-enable** the disabled connectors, and clear the line.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-12):** start the second archetype — *pick the build + write the plan
-> only* (no engine/interpreter changes). Stopping point = build selected, first
-> gap-to-force identified, plan + data scaffolding recorded. MCP-toggle
-> recommendation was made (disable computer-use / Claude-in-Chrome /
-> Claude_Preview / scheduled-tasks / mcp-registry / Google Drive); user did not
-> report disabling any. Nothing to re-enable.
+> (2026-06-12, session 2):** build engine primitive #1 for Starfire Scion —
+> `spell_save_dc` on the attacker + a save-FOR-DAMAGE resolution path (specialized
+> `SaveDamageEvent`, save-negates + save-for-half), validated on Sacred Flame at
+> the L1/L5 data (consistency/sanity, not number-matching). Stopping point =
+> primitive built + a minimal hand-coded Sacred Flame delivery + damage-math /
+> save-fail-rate validation green; full Starfire Scion policy and YAML
+> `interpret_save_spell` deferred to later slices. MCP-toggle recommendation
+> re-made (computer-use / Claude-in-Chrome / Claude_Preview / scheduled-tasks /
+> mcp-registry / Google Drive).
 
 ---
 
 ## Done
+
+- **Save-FOR-damage resolution — BUILT & VALIDATED (2026-06-12, session 2;
+  Starfire Scion engine primitive #1).** The first attacker-side save: the
+  TARGET rolls a saving throw vs the caster's `spell_save_dc`, and the result
+  determines damage. Supports both *save-negates* (Sacred Flame: full on fail,
+  nothing on success) and *save-for-half* (Burning Hands: full on fail, half —
+  rounded down — on success). **262 tests green (+12).** Shape (decided with
+  user, both the recommended options): a **damage-specialized `SaveDamageEvent`**
+  (NOT a generic `SavingThrowEvent` — generalize when a non-damage payload like
+  frightened forces it), mirroring the `AttackRollEvent → DamageEvent` split:
+  - `events.py`: `SaveDamageEvent` (kind `"save_damage"`) carries `save_stat`
+    (target's, e.g. `dex_save`), `dc_stat` (caster's, `spell_save_dc`),
+    `damage_dice`/`damage_bonus` (the SPELL's own dice — carried on the event,
+    not pulled from `actor.stat("damage_dice")` which is the weapon), and
+    `on_save` ("none"|"half"). `DamageEvent` gains `halved: bool=False`.
+  - `verbs.py`: `resolve_save_damage` calls `resolve_saving_throw` (REUSED
+    unchanged, no reroll decider — enemies have no Indomitable) and, on the
+    damage branch, **enqueues a normal `DamageEvent`** — so the phase-ordered
+    damage roll, concentration check, and save-reroll machinery are reused
+    untouched (the save verb never rolls a damage die itself). A made
+    save-negates enqueues nothing (the missed-attack analog). `resolve_damage`
+    gains **phase 6**: halve the post-phase-5 total when `halved` (inert on every
+    existing path). Halving is applied before `take_damage`/`_check_concentration`
+    so the halved amount drives any concentration DC.
+  - `scheduler.py`: registers `resolve_save_damage` under `"save_damage"` (plain
+    4-arg Handler → driven by the generic dispatch `else` branch, **no new
+    `isinstance` branch in `run()`**; damage is accounted when the spawned
+    DamageEvent resolves). New `action_type="save_spell"` branch in
+    `_handle_turn_start` builds the event from a `Choice`.
+  - `policy.py`: `Choice` gains `save_stat`/`dc_stat`/`damage_dice`/`damage_bonus`/
+    `on_save` (read only for `action_type="save_spell"`).
+  - `entity.py`: telemetry `saving_throws_made`/`saving_throws_failed` on the
+    saver (mirrors `concentration_checks`; design §8 "saves forced/failed").
+  - **Validation (consistency/sanity, per the Starfire framing — NOT number-
+    matching):** deterministic FakeRNG pins the per-save damage math exactly
+    (full / negated / half-rounded-down / nat-1-is-not-auto-fail); a Monte-Carlo
+    check (`tests/test_save_for_damage.py`, 20k casts) confirms mean damage = the
+    analytic fail-rate fraction of the all-hit ceiling at **L1** (DC 13, enemy
+    DEX +1, 1d8 → P(fail)=0.55, mean≈2.475 < ceiling 4.5) and the **L5** Sacred
+    Flame shape (DC 15, enemy DEX +2, 2d8 → P(fail)=0.60, mean≈5.40 < 9.0), and
+    that 2d8 > 1d8 (monotonic growth). The enemy DEX save bonus is now a **live
+    input** from `monster_ac_and_saves_by_level.csv`.
+  - **Deferred (in scope):** the full Starfire Scion policy/build wiring
+    (`make_starfire_scion` still raises) and a YAML `interpret_save_spell` in
+    `content.py` — both later slices. Data-driven cantrip scaling is primitive #2.
 
 - **Design contract captured** — `design/design.md` (entity model, simulated-day
   structure, verb engine spec, content schema, open decisions).
@@ -336,14 +384,15 @@ re-litigated:
 at L1 via Sacred Flame), and a prerequisite for Fueled Spellfire and Searing Arc
 Strike. Upcast scaling comes later up the ladder.
 
-**Engine-capacity build order (for future sessions — NONE built this session):**
-1. `spell_save_dc` on the attacker + a **save-for-damage** resolution path: target
-   rolls d20 + `dex.save.mod` (from the monster CSV) vs the DC; damage scales on
-   the result — supporting both *save-negates* (Sacred Flame) and *save-for-half*
-   (Burning Hands). The first attacker-side save primitive (vs. concentration,
-   which is target-side). Likely a `SavingThrowEvent` + the deferred `spell_save_dc`
-   from Open threads.
+**Engine-capacity build order:**
+1. ~~`spell_save_dc` on the attacker + a **save-for-damage** resolution path~~ ✓
+   **DONE & VALIDATED (2026-06-12, session 2; branch `feature/save-for-damage`).**
+   The target rolls d20 + its save bonus (e.g. `dex_save`, from the monster CSV)
+   vs the caster's `spell_save_dc`; the save result determines damage — *negates*
+   (Sacred Flame) or *for-half* (Burning Hands). The first attacker-side save
+   primitive (vs. concentration, which is target-side). See the Done entry below.
 2. Cantrip / `level_reference` dice scaling (Sacred Flame by character level).
+   **← NEXT.**
 3. Upcast `increment` scaling (Searing Arc Strike = upcast Burning Hands).
 
 **Explicitly deferred (unchanged):** multi-enemy AoE + spatial (Burning Hands
@@ -892,11 +941,13 @@ combat policy through two lenses, and reformulate it as needed:
   on_failed_save` + `Scheduler._make_save_reroll_decider` let a policy reroll a
   failed save with a bonus (the new result stands, RAW). `dex_save` is now also
   modeled (cosmetic, on the L15+ character) alongside `con_save`. **Still
-  deferred:** a `SavingThrowEvent` *event* (the verb is still called directly,
-  not scheduled) and a `spell_save_dc` stat on attackers — neither is needed yet
-  (concentration DC comes from incoming damage, not a caster's DC). Add the event
-  + spell_save_dc when the first *scheduled* save lands (frightened on Wrathful
-  Smite, or a spell-aggressive enemy targeting our saves).
+  deferred:** a *generic* `SavingThrowEvent` with an arbitrary on-fail payload
+  (frightened, enemy save-spells) — its shape waits on a real non-damage case.
+  **UPDATE (2026-06-12, session 2): the attacker-side save IS now built** — see
+  the "Save-FOR-damage" Done entry. `spell_save_dc` is a live attacker stat and
+  `SaveDamageEvent` is the first *scheduled* save event (damage-specialized on
+  purpose; generalize when frightened / enemy-save-spells force a non-damage
+  payload). `resolve_saving_throw` is reused unchanged.
 
 - **Wrathful smite — frightened/save half (deferred to Phase D).** Wrathful smite
   also forces a WIS save vs. our spell DC; on a failure the target is frightened
