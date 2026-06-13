@@ -142,3 +142,61 @@ cost:
   action_economy: reaction
 duration:
   type: instantaneous
+
+---
+# ─── WAR GOD'S BLESSING (free Shield of Faith) ───────────────────────────────
+# War domain feature: a non-concentration Shield of Faith (+2 AC) maintained for
+# the whole combat.  A pure `apply_modifier flat` — the simplest data form, on
+# the already-tested flat hook.  WHEN/whether to cast (greedy, one Channel
+# Divinity per combat, reserved ahead of Guided Strike) stays policy.
+
+name: war_gods_blessing
+tags: [active]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: apply_modifier
+    hook: flat
+    stat: ac
+    value: 2
+cost:
+  action_economy: bonus_action
+  resource:
+    type: channel_divinity
+    count: 1
+duration:
+  type: minutes
+  value: 10
+
+---
+# ─── MAGIC WEAPON ────────────────────────────────────────────────────────────
+# 2024: non-concentration, 60-minute, +1/+1 (level-2 slot) or +2/+2 (level-3,
+# upcast).  Two flat modifiers — attack AND damage by the SAME amount — is the
+# ability intrinsic (data).  The +1-vs-+2 cast TIER is policy arbitration (which
+# slot tier was spent), supplied to the interpreter as a runtime `context` value.
+
+name: magic_weapon
+tags: [active, spell]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: apply_modifier
+    hook: flat
+    stat: attack_bonus
+    amount:
+      context: magic_weapon_bonus   # +1 or +2 per the cast tier (policy decides)
+  - verb: apply_modifier
+    hook: flat
+    stat: damage_bonus
+    amount:
+      context: magic_weapon_bonus
+cost:
+  action_economy: action
+  resource:
+    type: spell_slot
+    min_level: 2
+duration:
+  type: minutes
+  value: 60

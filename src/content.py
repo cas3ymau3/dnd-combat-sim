@@ -159,12 +159,17 @@ def interpret_modifiers(
     ability: Ability,
     source: str | None = None,
     scope_map: dict[str, tuple[str, ...]] | None = None,
+    context: dict[str, int] | None = None,
 ) -> list[Modifier]:
     """Translate an ability's `apply_modifier` effect block(s) into Modifiers.
 
     Supports the two hooks the current builds need:
       - `bonus_die` → Modifier(stat, value=0, source, dice=(n, sides))   (Bless)
       - `flat`      → Modifier(stat, value=N, source)                    (SoF, MW)
+
+    A `flat` block's value is either a literal `value: N` (Shield of Faith +2 AC)
+    or a runtime `amount:` resolved against `context` (Magic Weapon's +1/+2 cast
+    tier, supplied by the policy that decided which slot to spend).
 
     `source` defaults to the ability name; pass it explicitly when the engine
     removes the modifier by a different key (e.g. "bless").  One Modifier is
@@ -194,7 +199,11 @@ def interpret_modifiers(
                     Modifier(stat, 0, source, dice=parse_dice(block["die"]))
                 )
             elif hook == "flat":
-                mods.append(Modifier(stat, block["value"], source))
+                value = (
+                    block["value"] if "value" in block
+                    else _resolve_amount(block, context, ability.name)
+                )
+                mods.append(Modifier(stat, value, source))
             else:
                 raise NotImplementedError(
                     f"interpret_modifiers({ability.name}): modifier hook "
@@ -275,27 +284,33 @@ class OnHitEffectSpec:
 
 
 def _resolve_amount(block: dict, context: dict[str, int] | None, ability_name: str) -> int:
-    """Resolve a `damage` verb's flat `amount` against a runtime context.
+    """Resolve a block's runtime `amount` against a policy-supplied context.
 
-    The data states an ABSTRACT amount (`amount: {ability_modifier: charisma}`);
-    the policy supplies the concrete value via `context` (e.g. {"charisma": 5}).
-    This is the first runtime-dependent value the interpreter evaluates — it is
-    pure (data + context in → int out; no policy state leaks in).
+    The data states an ABSTRACT amount whose concrete value the policy provides
+    at fire-time via `context`.  Two forms, both a lookup into `context`:
+      - `amount: {ability_modifier: charisma}`  → context["charisma"]  (bleed +CHA)
+      - `amount: {context: magic_weapon_bonus}` → context["magic_weapon_bonus"]
+        (Magic Weapon's +1/+2 cast tier — which tier was cast is policy arbitration)
+
+    This is the interpreter's runtime-dependent path: it EVALUATES against a
+    context rather than compiling a constant, yet stays pure (data + context in →
+    int out; no policy state leaks in).
     """
     amount = block.get("amount")
-    if not isinstance(amount, dict) or "ability_modifier" not in amount:
+    if isinstance(amount, dict) and "ability_modifier" in amount:
+        key = amount["ability_modifier"]
+    elif isinstance(amount, dict) and "context" in amount:
+        key = amount["context"]
+    else:
         raise NotImplementedError(
-            f"interpret_on_hit_effects({ability_name}): damage verb needs a flat "
-            f"`amount: {{ability_modifier: <stat>}}` (dice riders go through "
-            f"interpret_hit_rider); got {amount!r}"
+            f"{ability_name}: runtime amount needs `{{ability_modifier: <stat>}}` "
+            f"or `{{context: <key>}}`; got {amount!r}"
         )
-    stat = amount["ability_modifier"]
-    if context is None or stat not in context:
+    if context is None or key not in context:
         raise ValueError(
-            f"interpret_on_hit_effects({ability_name}): no value for "
-            f"ability_modifier {stat!r} in context {context!r}"
+            f"{ability_name}: no value for amount key {key!r} in context {context!r}"
         )
-    return context[stat]
+    return context[key]
 
 
 def interpret_on_hit_effects(

@@ -104,6 +104,39 @@ def test_interpret_modifiers_flat_hook():
     assert interpret_modifiers(ability, source="sof") == [Modifier("ac", 2, "sof")]
 
 
+def test_war_gods_blessing_matches_the_handcoded_oracle():
+    """War God's Blessing (free Shield of Faith) must produce the same +2 AC
+    Modifier the build hand-built, under the 'shield_of_faith' source."""
+    sof = load_abilities()["war_gods_blessing"]
+    assert interpret_modifiers(sof, source="shield_of_faith") == [
+        Modifier("ac", 2, "shield_of_faith")
+    ]
+
+
+def test_magic_weapon_flat_buff_tracks_the_cast_tier():
+    """Magic Weapon's two flat modifiers (attack + damage) take the SAME value
+    from the runtime cast tier the policy supplies — +1 and +2 in turn, matching
+    the hand-built pair."""
+    mw = load_abilities()["magic_weapon"]
+    assert interpret_modifiers(mw, source="magic_weapon",
+                               context={"magic_weapon_bonus": 1}) == [
+        Modifier("attack_bonus", 1, "magic_weapon"),
+        Modifier("damage_bonus", 1, "magic_weapon"),
+    ]
+    assert interpret_modifiers(mw, source="magic_weapon",
+                               context={"magic_weapon_bonus": 2}) == [
+        Modifier("attack_bonus", 2, "magic_weapon"),
+        Modifier("damage_bonus", 2, "magic_weapon"),
+    ]
+
+
+def test_magic_weapon_requires_a_cast_tier_context():
+    """The runtime tier is mandatory — no context is a loud error, not a +0 buff."""
+    mw = load_abilities()["magic_weapon"]
+    with pytest.raises(ValueError):
+        interpret_modifiers(mw, source="magic_weapon")
+
+
 # ---------------------------------------------------------------------------
 # interpret_hit_rider — Wrathful Smite (Slice 2)
 # ---------------------------------------------------------------------------

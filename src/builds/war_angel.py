@@ -55,7 +55,6 @@ from ..day_runner import (
     DurationBuffTracker,
 )
 from ..entity import Entity
-from ..modifiers import Modifier
 from ..policy import (
     Choice,
     CounterSpec,
@@ -94,10 +93,10 @@ WRATHFUL_SMITE = _ABILITIES["wrathful_smite"]  # war_angel.yaml (1d6 on-hit ride
 BRUTALITY_BLUFF = _ABILITIES["brutality_bluff"]  # war_angel.yaml (vex + adv-next-save)
 BRUTALITY_BLEED = _ABILITIES["brutality_bleed"]  # war_angel.yaml (sap + CHA flat dmg)
 FLOURISH_PARRY = _ABILITIES["flourish_parry"]    # war_angel.yaml (intercept: +CHA AC)
-
-# Shield of Faith via War God's Blessing (L13): non-concentration +2 AC, cast as
-# a bonus action at combat start with a Channel Divinity charge.
-SHIELD_OF_FAITH_AC = 2
+WAR_GODS_BLESSING = _ABILITIES["war_gods_blessing"]  # war_angel.yaml (flat +2 AC)
+MAGIC_WEAPON = _ABILITIES["magic_weapon"]        # war_angel.yaml (flat +1/+2 atk+dmg)
+# Shield of Faith / War God's Blessing (L13, non-conc. +2 AC) and Magic Weapon
+# (+1/+2 atk+dmg) are both driven from the data above via interpret_modifiers.
 
 # Indomitable (Fighter, L16 = fighter-09): 1/LR, reroll a failed save with a flat
 # bonus equal to fighter level.  We only model concentration checks, so the
@@ -1182,10 +1181,13 @@ class WarAngelDailyPlan:
     def _sync_magic_weapon(self, bonus: int) -> None:
         self.character.remove_modifier("magic_weapon")
         if bonus > 0:
-            self.character.add_modifier(
-                Modifier("attack_bonus", bonus, "magic_weapon"))
-            self.character.add_modifier(
-                Modifier("damage_bonus", bonus, "magic_weapon"))
+            # Magic Weapon's flat attack+damage buff comes FROM DATA; the cast
+            # TIER (+1 vs +2) is policy arbitration, passed in as a context value.
+            for mod in interpret_modifiers(
+                MAGIC_WEAPON, source="magic_weapon",
+                context={"magic_weapon_bonus": bonus},
+            ):
+                self.character.add_modifier(mod)
 
     def _sync_bless(self) -> None:
         """Re-cast Bless for this combat if a cleric L1 slot remains.
@@ -1221,8 +1223,11 @@ class WarAngelDailyPlan:
         self.character.remove_modifier("shield_of_faith")
         if self.character.resources.available("channel_divinity") >= 1:
             self.character.resources.consume("channel_divinity")
-            self.character.add_modifier(
-                Modifier("ac", SHIELD_OF_FAITH_AC, "shield_of_faith"))
+            # +2 AC comes FROM DATA (war_gods_blessing, a flat apply_modifier).
+            for mod in interpret_modifiers(
+                WAR_GODS_BLESSING, source="shield_of_faith"
+            ):
+                self.character.add_modifier(mod)
 
     # -- Prayer of Healing (between_combats) -----------------------------
 
