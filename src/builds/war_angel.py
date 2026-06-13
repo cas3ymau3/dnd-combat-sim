@@ -44,6 +44,7 @@ from typing import TYPE_CHECKING
 from ..content import (
     interpret_hit_rider,
     interpret_modifiers,
+    interpret_on_hit_effects,
     load_abilities,
 )
 from ..day_runner import (
@@ -89,6 +90,8 @@ POH_MIN_INTERVAL_MIN = 10
 _ABILITIES = load_abilities()
 BLESS = _ABILITIES["bless"]                  # core_examples.yaml (+1d4 bonus_die)
 WRATHFUL_SMITE = _ABILITIES["wrathful_smite"]  # war_angel.yaml (1d6 on-hit rider)
+BRUTALITY_BLUFF = _ABILITIES["brutality_bluff"]  # war_angel.yaml (vex + adv-next-save)
+BRUTALITY_BLEED = _ABILITIES["brutality_bleed"]  # war_angel.yaml (sap + CHA flat dmg)
 
 # Shield of Faith via War God's Blessing (L13): non-concentration +2 AC, cast as
 # a bonus action at combat start with a Channel Divinity charge.
@@ -935,12 +938,15 @@ class WarAngelPolicy:
         self_status: "str | None" = None
 
         if want_bluff:
+            # Bluff's effects come FROM DATA (brutality_bluff): vex applied to the
+            # target + the save-advantage self-status (unlocked at L13 with
+            # concentration: advantage on our next CON save, which the
+            # concentration check reads).  The brutality CHARGE is policy
+            # arbitration → stays here.
             resource_cost["brutality"] = 1
-            extra_masteries = ["vex"]
-            # Bluff's second half (unlocked at L13 with concentration): advantage
-            # on our next saving throw before our next turn — i.e. the next
-            # concentration check.  Modeled as a self-status the CON save reads.
-            self_status = "advantage_next_save"
+            bluff = interpret_on_hit_effects(BRUTALITY_BLUFF)
+            extra_masteries = list(bluff.target_masteries)
+            self_status = bluff.self_statuses[0] if bluff.self_statuses else None
             self._bluffed_this_turn = True  # commit: prevent a second bluff this turn
 
         if want_smite:
@@ -1003,11 +1009,19 @@ class WarAngelPolicy:
         resource_cost: dict[str, int] = {}
         if ctx.resources.get("flourish_counter", 0) >= 1:
             resource_cost["flourish_counter"] = 1
+            # Bleed's effects come FROM DATA (brutality_bleed): sap mastery + the
+            # +CHA flat damage, the latter resolved against the policy's CHA mod
+            # (the interpreter's first runtime-dependent value).  The counter
+            # grants bleed for FREE (no brutality charge) — that cost override is
+            # policy arbitration, so only flourish_counter is spent here.
+            bleed = interpret_on_hit_effects(
+                BRUTALITY_BLEED, context={"charisma": self._cha_mod}
+            )
             counter = CounterSpec(
                 target=ctx.attacker,
                 weapon_stat="attack_bonus",
-                masteries=["sap"],              # bleed adds sap mastery
-                extra_flat_damage=self._cha_mod,  # bleed's +CHA mod
+                masteries=list(bleed.target_masteries),
+                extra_flat_damage=bleed.extra_flat_damage,
             )
 
         return InterceptResponse(

@@ -37,3 +37,70 @@ cost:
     min_level: 1
 duration:
   type: instantaneous
+
+---
+# ─── BRUTALITY (Gladiator) — bluff / bleed modes ─────────────────────────────
+# An on-hit feature with two mutually exclusive modes the build calls "bluff"
+# and "bleed".  Schema-wise this is one feature with a choice; we model the two
+# modes as two ability docs and let the POLICY pick which fires (choose_one is
+# deferred to the Flourish slice — see PROGRESS gap #1).
+#
+# Layer-separation notes that matter here:
+#   - `apply_status` is routed by `target`: a TARGET status whose name is a
+#     weapon mastery (vex/sap) becomes the hit's extra mastery; a SELF status
+#     (advantage_next_save) is applied to the attacker.  The interpreter raises
+#     loudly on a target status that is NOT a known mastery (the engine has no
+#     field for a generic on-hit target status yet — e.g. frightened).
+#   - bleed's +CHA flat damage is the first RUNTIME-DEPENDENT value: the data
+#     says `ability_modifier: charisma`, the interpreter resolves it against a
+#     context the policy supplies ({"charisma": cha_mod}).  It is phase-5 flat,
+#     so it does NOT scale on a crit (matches extra_flat_damage).
+#   - The brutality CHARGE is in the cost layer, but WHETHER it is spent is
+#     policy arbitration: the Flourish Counter grants bleed for free, so the
+#     policy overrides the cost there (the data states the default; the policy
+#     decides the context — exactly the locked boundary).
+
+name: brutality_bluff
+tags: [active]
+trigger:
+  all:
+    - event: on_hit
+    - weapon: melee
+effect:
+  - verb: apply_status
+    status: vex                   # weapon mastery applied to the creature hit
+    target: target
+  - verb: apply_status
+    status: advantage_next_save   # the next CON (concentration) save reads this
+    target: self
+cost:
+  action_economy: null            # bluff costs only a brutality charge
+  resource:
+    type: brutality
+    count: 1
+duration:
+  type: instantaneous
+
+---
+name: brutality_bleed
+tags: [active]
+trigger:
+  all:
+    - event: on_hit
+    - weapon: melee
+effect:
+  - verb: apply_status
+    status: sap                   # weapon mastery applied to the creature hit
+    target: target
+  - verb: damage
+    amount:
+      ability_modifier: charisma  # +CHA flat; phase 5 → does NOT scale on a crit
+    phase: 5
+    type: physical
+cost:
+  action_economy: null
+  resource:
+    type: brutality
+    count: 1
+duration:
+  type: instantaneous

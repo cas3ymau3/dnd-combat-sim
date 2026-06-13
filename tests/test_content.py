@@ -18,8 +18,10 @@ import pytest
 from src.content import (
     Ability,
     HitRiderSpec,
+    OnHitEffectSpec,
     interpret_hit_rider,
     interpret_modifiers,
+    interpret_on_hit_effects,
     load_abilities,
     parse_dice,
 )
@@ -131,3 +133,85 @@ def test_interpret_hit_rider_rejects_unmodeled_scaling():
     divine = load_abilities()["divine_smite"]
     with pytest.raises(NotImplementedError):
         interpret_hit_rider(divine)
+
+
+# ---------------------------------------------------------------------------
+# interpret_on_hit_effects — Brutality bluff / bleed (Slice 3)
+# ---------------------------------------------------------------------------
+
+def test_brutality_bluff_matches_the_handcoded_oracle():
+    """The data-driven bluff must produce what the build hand-coded: vex on the
+    target (extra mastery) + the advantage_next_save self-status.  No damage."""
+    bluff = load_abilities()["brutality_bluff"]
+    spec = interpret_on_hit_effects(bluff)
+
+    assert spec == OnHitEffectSpec(
+        target_masteries=["vex"],
+        self_statuses=["advantage_next_save"],
+        extra_flat_damage=0,
+    )
+
+
+def test_brutality_bleed_matches_the_handcoded_oracle():
+    """The data-driven bleed must produce what the counter hand-coded: sap on the
+    target + the +CHA flat damage, resolved against the supplied context."""
+    bleed = load_abilities()["brutality_bleed"]
+    spec = interpret_on_hit_effects(bleed, context={"charisma": 5})
+
+    assert spec == OnHitEffectSpec(
+        target_masteries=["sap"],
+        self_statuses=[],
+        extra_flat_damage=5,
+    )
+
+
+def test_brutality_bleed_flat_damage_tracks_the_context():
+    """The flat amount is runtime-dependent — a different CHA mod yields a
+    different value (the interpreter is genuinely evaluating, not compiling)."""
+    bleed = load_abilities()["brutality_bleed"]
+    assert interpret_on_hit_effects(bleed, context={"charisma": 3}).extra_flat_damage == 3
+
+
+def test_interpret_on_hit_effects_requires_context_for_runtime_amount():
+    """A flat ability-modifier amount with no context value is a loud error,
+    not a silent zero."""
+    bleed = load_abilities()["brutality_bleed"]
+    with pytest.raises(ValueError):
+        interpret_on_hit_effects(bleed)            # context omitted
+    with pytest.raises(ValueError):
+        interpret_on_hit_effects(bleed, context={})  # wrong key
+
+
+def test_interpret_on_hit_effects_rejects_non_mastery_target_status():
+    """A TARGET status that is not a known weapon mastery has no engine field —
+    it must raise rather than be silently routed into masteries."""
+    ability = Ability.from_dict({
+        "name": "frightener",
+        "effect": [{"verb": "apply_status", "status": "frightened",
+                    "target": "target"}],
+    })
+    with pytest.raises(NotImplementedError):
+        interpret_on_hit_effects(ability)
+
+
+def test_interpret_on_hit_effects_rejects_damage_without_flat_amount():
+    """A damage verb here must carry a flat `amount` (dice riders go through
+    interpret_hit_rider) — otherwise loud failure."""
+    ability = Ability.from_dict({
+        "name": "dicey",
+        "effect": [{"verb": "damage", "dice": {"base": "1d6"}}],
+    })
+    with pytest.raises(NotImplementedError):
+        interpret_on_hit_effects(ability)
+
+
+def test_interpret_on_hit_effects_rejects_choose_one():
+    """choose_one (a dict effect, not a list) is the Flourish slice's gap — it
+    must raise here, not be silently mishandled."""
+    bleed = load_abilities()["brutality_bleed"]
+    choose_one = Ability.from_dict({
+        "name": "modal",
+        "effect": {"choose_one": []},
+    })
+    with pytest.raises(NotImplementedError):
+        interpret_on_hit_effects(choose_one)

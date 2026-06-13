@@ -27,6 +27,8 @@ abstract resource type to a concrete slot (e.g. spell_slot → free_cast).
 Coverage so far (intentionally narrow — grown against the War Angel oracle):
   - `apply_modifier`  with hooks `bonus_die` (Bless +1d4) and `flat`  → Modifier
   - `damage` on-hit rider (Wrathful Smite 1d6)                        → HitRiderSpec
+  - `apply_status` (target mastery / self status) + flat `damage`     → OnHitEffectSpec
+    (Brutality bluff = vex + advantage_next_save; bleed = sap + CHA flat)
 Anything outside this raises NotImplementedError LOUDLY rather than silently
 dropping it — surfacing schema/engine gaps cheaply is the whole point of doing
 this against a validated build.
@@ -230,6 +232,131 @@ class HitRiderSpec:
     action_cost: str | None
     resource_type: str | None = None
     min_level: int | None = None
+
+
+# ---------------------------------------------------------------------------
+# Effect interpreter — on-hit statuses + flat damage → OnHitEffectSpec
+# ---------------------------------------------------------------------------
+
+# The weapon masteries the engine actually implements (apply_masteries_on_hit).
+# A TARGET-applied `apply_status` whose name is one of these becomes the hit's
+# extra mastery; anything else routed at the target raises (the engine has no
+# field for a generic on-hit target status yet — surfacing that gap is the point).
+ENGINE_MASTERIES: frozenset[str] = frozenset({"sap", "vex"})
+
+
+@dataclass(frozen=True)
+class OnHitEffectSpec:
+    """The data-derived pieces of an on-hit status/flat-damage effect (Brutality).
+
+    The policy combines this with its own arbitration (which mode fires, whether
+    the brutality charge is actually spent) and maps the fields onto whichever
+    engine seam is in play — a `HitResponse` (bluff, on our own hit) or a
+    `CounterSpec` (bleed, on the Flourish Counter).
+
+    Fields
+    ------
+    target_masteries:
+        Weapon masteries applied to the creature hit, e.g. ["vex"] (bluff) or
+        ["sap"] (bleed) — fold into HitResponse.extra_masteries or
+        CounterSpec.masteries.
+    self_statuses:
+        Statuses applied to the ATTACKER on this hit, e.g. ["advantage_next_save"]
+        (bluff's save-advantage half) — map to HitResponse.self_status_on_hit.
+    extra_flat_damage:
+        Flat phase-5 damage added on the hit, e.g. +CHA mod (bleed).  Does NOT
+        scale on a crit — fold into HitResponse/CounterSpec.extra_flat_damage.
+    """
+
+    target_masteries: list[str]
+    self_statuses: list[str]
+    extra_flat_damage: int = 0
+
+
+def _resolve_amount(block: dict, context: dict[str, int] | None, ability_name: str) -> int:
+    """Resolve a `damage` verb's flat `amount` against a runtime context.
+
+    The data states an ABSTRACT amount (`amount: {ability_modifier: charisma}`);
+    the policy supplies the concrete value via `context` (e.g. {"charisma": 5}).
+    This is the first runtime-dependent value the interpreter evaluates — it is
+    pure (data + context in → int out; no policy state leaks in).
+    """
+    amount = block.get("amount")
+    if not isinstance(amount, dict) or "ability_modifier" not in amount:
+        raise NotImplementedError(
+            f"interpret_on_hit_effects({ability_name}): damage verb needs a flat "
+            f"`amount: {{ability_modifier: <stat>}}` (dice riders go through "
+            f"interpret_hit_rider); got {amount!r}"
+        )
+    stat = amount["ability_modifier"]
+    if context is None or stat not in context:
+        raise ValueError(
+            f"interpret_on_hit_effects({ability_name}): no value for "
+            f"ability_modifier {stat!r} in context {context!r}"
+        )
+    return context[stat]
+
+
+def interpret_on_hit_effects(
+    ability: Ability,
+    context: dict[str, int] | None = None,
+) -> OnHitEffectSpec:
+    """Translate an on-hit `apply_status` + flat-`damage` ability into a spec.
+
+    Handles the two Brutality modes:
+      - `apply_status` routed by `target`: a TARGET status that names a known
+        weapon mastery → `target_masteries`; a SELF status → `self_statuses`.
+      - flat `damage` (`amount: {ability_modifier: <stat>}`) → `extra_flat_damage`,
+        resolved against `context` (e.g. {"charisma": cha_mod}).
+
+    Raises loudly on anything outside this (a target status that is not a known
+    mastery, a damage verb without a flat `amount`, an unknown verb) so the
+    schema/engine gap surfaces rather than being silently dropped.
+    """
+    if not isinstance(ability.effect, list):
+        raise NotImplementedError(
+            f"interpret_on_hit_effects({ability.name}): expected an effect list "
+            f"(choose_one not supported here)"
+        )
+
+    target_masteries: list[str] = []
+    self_statuses: list[str] = []
+    extra_flat_damage = 0
+
+    for block in ability.effect:
+        verb = block.get("verb")
+        if verb == "apply_status":
+            status = block["status"]
+            target = block.get("target")
+            if target == "self":
+                self_statuses.append(status)
+            elif target == "target":
+                if status not in ENGINE_MASTERIES:
+                    raise NotImplementedError(
+                        f"interpret_on_hit_effects({ability.name}): target status "
+                        f"{status!r} is not a known weapon mastery "
+                        f"{sorted(ENGINE_MASTERIES)} — the engine has no field for "
+                        f"a generic on-hit target status yet"
+                    )
+                target_masteries.append(status)
+            else:
+                raise NotImplementedError(
+                    f"interpret_on_hit_effects({ability.name}): apply_status needs "
+                    f"target 'self' or 'target'; got {target!r}"
+                )
+        elif verb == "damage":
+            extra_flat_damage += _resolve_amount(block, context, ability.name)
+        else:
+            raise NotImplementedError(
+                f"interpret_on_hit_effects({ability.name}): verb {verb!r} not "
+                f"supported by this interpreter"
+            )
+
+    return OnHitEffectSpec(
+        target_masteries=target_masteries,
+        self_statuses=self_statuses,
+        extra_flat_damage=extra_flat_damage,
+    )
 
 
 def interpret_hit_rider(ability: Ability) -> HitRiderSpec:
