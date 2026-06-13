@@ -601,6 +601,23 @@ Dice into that damage roll, 1/turn). Deferred this session rather than approxima
 at cast-time (which burns scarce hit dice on saved casts). Build it before/at the
 L5 fidelity pass; Searing Arc Strike (L10) needs no new primitive (data + #3 ready).
 
+**die-size scaling — the next unbuilt SCALED-QUANTITY (flagged, first consumer
+SHILLELAGH at L9; recorded with user 2026-06-13).** 2024 Shillelagh has cantrip
+scaling like any damaging cantrip, but it grows the **die SIZE** (1d8 → 1d10 at
+L5 → 1d12 at L11 → up at L17), NOT the die COUNT that `_resolve_scaling_dice`
+handles (it explicitly holds size fixed: `return base_count + steps, sides`). So
+Shillelagh's scaling is a NEW scaled-quantity in the §4.5 typology (the die-count
+quantity is built; die-size and target-count are the unbuilt axes). It is a pure
+scaling-helper addition (a die-size-ladder branch), small and isolated — NOT
+blocked on any other model (unlike target-count, which waits on multi-enemy).
+**The build can DODGE it** by baking the resolved die into each LEVELS row
+(Shillelagh = (1,10) at char L9–10, (1,12) at L11+), exactly as weapon dice are
+already per-level data — so wiring L9 needs only primitive #4 + a policy flag +
+this per-level die. Build the data-driven die-size scaler only when Shillelagh (or
+another die-size cantrip) should resolve from YAML by character level. The
+attack-profile half of Shillelagh (STR/DEX → WIS swap + d-size weapon) is already
+covered by primitive #4. See `design/ability_schema.md` §4.5 "Scaled quantity".
+
 **Explicitly deferred (unchanged):** multi-enemy AoE + spatial (Burning Hands
 modeled single-target until a multi-enemy model exists); separate-entity / summons
 (→ Reanimating Bloodshot later); the allies dimension (Guiding Bolt advantage

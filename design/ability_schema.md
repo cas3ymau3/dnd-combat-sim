@@ -315,6 +315,19 @@ tells us exactly what each new build will force:
 3. **Scaled quantity** — what the steps grow. Only **dice count** is built.
    Other quantities are real in 5.5e but each is blocked on a DIFFERENT
    primitive, not on scaling design:
+   - **die size** (the die GROWS rather than multiplies: 1d8 → 1d10 → 1d12 …) —
+     the **next unbuilt quantity, first consumer Shillelagh**. 2024 Shillelagh is
+     a threshold-list scaler (cantrip breaks `[5, 11, 17]`) whose scaled quantity
+     is the die SIZE, not the count: d8 → d10 (L5) → d12 (L11) → up at L17. The
+     current helper explicitly holds size fixed (`return base_count + steps,
+     sides`), so it CANNOT express this — a die-size scaler needs its own branch
+     that walks a size ladder (`d8 → d10 → d12 → …`) by step count. NOT blocked on
+     any other model (unlike target count) — it is a pure scaling-helper addition,
+     small and isolated. **A per-level build can dodge it entirely** by baking the
+     resolved die into each level's data (Shillelagh = (1,10) at char L9–10,
+     (1,12) at L11+), exactly as weapon dice already are; build the data-driven
+     scaler only when Shillelagh (or another die-size cantrip) should resolve from
+     YAML by character level. See PROGRESS "die-size scaling".
    - **target count** (upcast Command / Charm Person hitting more creatures) —
      blocked on the multi-enemy / spatial model (deferred; see PROGRESS). Rare in
      the current build corpus.
@@ -324,7 +337,8 @@ tells us exactly what each new build will force:
 Current code (`_resolve_scaling_dice`) sits at the narrow, correct corner:
 **dice count**, scaled by **linear OR threshold-list** step functions, over **any
 driver**. The decomposition is the map; we expand a single axis only when a
-selected build makes that axis load-bearing.
+selected build makes that axis load-bearing — and die size is the axis Shillelagh
+(L9) will make load-bearing next.
 
 #### `apply_modifier`
 ```yaml
