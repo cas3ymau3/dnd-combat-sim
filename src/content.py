@@ -27,6 +27,10 @@ abstract resource type to a concrete slot (e.g. spell_slot → free_cast).
 Coverage so far (intentionally narrow — grown against the War Angel oracle):
   - `apply_modifier`  with hooks `bonus_die` (Bless +1d4) and `flat`  → Modifier
   - `damage` on-hit rider (Wrathful Smite 1d6)                        → HitRiderSpec
+  - `apply_status` (target mastery / self status) + flat `damage`     → OnHitEffectSpec
+    (Brutality bluff = vex + advantage_next_save; bleed = sap + CHA flat)
+  - `intercept_event` flat AC bump (Flourish Parry +CHA)              → InterceptSpec
+  - flat attack-roll rescue (Guided Strike +10, on_miss)              → RollBonusSpec
 Anything outside this raises NotImplementedError LOUDLY rather than silently
 dropping it — surfacing schema/engine gaps cheaply is the whole point of doing
 this against a validated build.
@@ -156,12 +160,17 @@ def interpret_modifiers(
     ability: Ability,
     source: str | None = None,
     scope_map: dict[str, tuple[str, ...]] | None = None,
+    context: dict[str, int] | None = None,
 ) -> list[Modifier]:
     """Translate an ability's `apply_modifier` effect block(s) into Modifiers.
 
     Supports the two hooks the current builds need:
       - `bonus_die` → Modifier(stat, value=0, source, dice=(n, sides))   (Bless)
       - `flat`      → Modifier(stat, value=N, source)                    (SoF, MW)
+
+    A `flat` block's value is either a literal `value: N` (Shield of Faith +2 AC)
+    or a runtime `amount:` resolved against `context` (Magic Weapon's +1/+2 cast
+    tier, supplied by the policy that decided which slot to spend).
 
     `source` defaults to the ability name; pass it explicitly when the engine
     removes the modifier by a different key (e.g. "bless").  One Modifier is
@@ -191,7 +200,11 @@ def interpret_modifiers(
                     Modifier(stat, 0, source, dice=parse_dice(block["die"]))
                 )
             elif hook == "flat":
-                mods.append(Modifier(stat, block["value"], source))
+                value = (
+                    block["value"] if "value" in block
+                    else _resolve_amount(block, context, ability.name)
+                )
+                mods.append(Modifier(stat, value, source))
             else:
                 raise NotImplementedError(
                     f"interpret_modifiers({ability.name}): modifier hook "
@@ -230,6 +243,273 @@ class HitRiderSpec:
     action_cost: str | None
     resource_type: str | None = None
     min_level: int | None = None
+
+
+# ---------------------------------------------------------------------------
+# Effect interpreter — on-hit statuses + flat damage → OnHitEffectSpec
+# ---------------------------------------------------------------------------
+
+# The weapon masteries the engine actually implements (apply_masteries_on_hit).
+# A TARGET-applied `apply_status` whose name is one of these becomes the hit's
+# extra mastery; anything else routed at the target raises (the engine has no
+# field for a generic on-hit target status yet — surfacing that gap is the point).
+ENGINE_MASTERIES: frozenset[str] = frozenset({"sap", "vex"})
+
+
+@dataclass(frozen=True)
+class OnHitEffectSpec:
+    """The data-derived pieces of an on-hit status/flat-damage effect (Brutality).
+
+    The policy combines this with its own arbitration (which mode fires, whether
+    the brutality charge is actually spent) and maps the fields onto whichever
+    engine seam is in play — a `HitResponse` (bluff, on our own hit) or a
+    `CounterSpec` (bleed, on the Flourish Counter).
+
+    Fields
+    ------
+    target_masteries:
+        Weapon masteries applied to the creature hit, e.g. ["vex"] (bluff) or
+        ["sap"] (bleed) — fold into HitResponse.extra_masteries or
+        CounterSpec.masteries.
+    self_statuses:
+        Statuses applied to the ATTACKER on this hit, e.g. ["advantage_next_save"]
+        (bluff's save-advantage half) — map to HitResponse.self_status_on_hit.
+    extra_flat_damage:
+        Flat phase-5 damage added on the hit, e.g. +CHA mod (bleed).  Does NOT
+        scale on a crit — fold into HitResponse/CounterSpec.extra_flat_damage.
+    """
+
+    target_masteries: list[str]
+    self_statuses: list[str]
+    extra_flat_damage: int = 0
+
+
+def _resolve_amount(block: dict, context: dict[str, int] | None, ability_name: str) -> int:
+    """Resolve a block's runtime `amount` against a policy-supplied context.
+
+    The data states an ABSTRACT amount whose concrete value the policy provides
+    at fire-time via `context`.  Two forms, both a lookup into `context`:
+      - `amount: {ability_modifier: charisma}`  → context["charisma"]  (bleed +CHA)
+      - `amount: {context: magic_weapon_bonus}` → context["magic_weapon_bonus"]
+        (Magic Weapon's +1/+2 cast tier — which tier was cast is policy arbitration)
+
+    This is the interpreter's runtime-dependent path: it EVALUATES against a
+    context rather than compiling a constant, yet stays pure (data + context in →
+    int out; no policy state leaks in).
+    """
+    amount = block.get("amount")
+    if isinstance(amount, dict) and "ability_modifier" in amount:
+        key = amount["ability_modifier"]
+    elif isinstance(amount, dict) and "context" in amount:
+        key = amount["context"]
+    else:
+        raise NotImplementedError(
+            f"{ability_name}: runtime amount needs `{{ability_modifier: <stat>}}` "
+            f"or `{{context: <key>}}`; got {amount!r}"
+        )
+    if context is None or key not in context:
+        raise ValueError(
+            f"{ability_name}: no value for amount key {key!r} in context {context!r}"
+        )
+    return context[key]
+
+
+def interpret_on_hit_effects(
+    ability: Ability,
+    context: dict[str, int] | None = None,
+) -> OnHitEffectSpec:
+    """Translate an on-hit `apply_status` + flat-`damage` ability into a spec.
+
+    Handles the two Brutality modes:
+      - `apply_status` routed by `target`: a TARGET status that names a known
+        weapon mastery → `target_masteries`; a SELF status → `self_statuses`.
+      - flat `damage` (`amount: {ability_modifier: <stat>}`) → `extra_flat_damage`,
+        resolved against `context` (e.g. {"charisma": cha_mod}).
+
+    Raises loudly on anything outside this (a target status that is not a known
+    mastery, a damage verb without a flat `amount`, an unknown verb) so the
+    schema/engine gap surfaces rather than being silently dropped.
+    """
+    if not isinstance(ability.effect, list):
+        raise NotImplementedError(
+            f"interpret_on_hit_effects({ability.name}): expected an effect list "
+            f"(choose_one not supported here)"
+        )
+
+    target_masteries: list[str] = []
+    self_statuses: list[str] = []
+    extra_flat_damage = 0
+
+    for block in ability.effect:
+        verb = block.get("verb")
+        if verb == "apply_status":
+            status = block["status"]
+            target = block.get("target")
+            if target == "self":
+                self_statuses.append(status)
+            elif target == "target":
+                if status not in ENGINE_MASTERIES:
+                    raise NotImplementedError(
+                        f"interpret_on_hit_effects({ability.name}): target status "
+                        f"{status!r} is not a known weapon mastery "
+                        f"{sorted(ENGINE_MASTERIES)} — the engine has no field for "
+                        f"a generic on-hit target status yet"
+                    )
+                target_masteries.append(status)
+            else:
+                raise NotImplementedError(
+                    f"interpret_on_hit_effects({ability.name}): apply_status needs "
+                    f"target 'self' or 'target'; got {target!r}"
+                )
+        elif verb == "damage":
+            extra_flat_damage += _resolve_amount(block, context, ability.name)
+        else:
+            raise NotImplementedError(
+                f"interpret_on_hit_effects({ability.name}): verb {verb!r} not "
+                f"supported by this interpreter"
+            )
+
+    return OnHitEffectSpec(
+        target_masteries=target_masteries,
+        self_statuses=self_statuses,
+        extra_flat_damage=extra_flat_damage,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Effect interpreter — flat attack-roll rescue → RollBonusSpec
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class RollBonusSpec:
+    """The data-derived pieces of a flat attack-roll-bonus rescue (Guided Strike).
+
+    The policy keeps the decision (greedy, never on an AoO, only when the bonus
+    actually flips the miss) and maps the abstract resource to a concrete pool;
+    the interpreter states WHAT — the flat bonus added to the roll and its cost.
+
+    Fields
+    ------
+    bonus:
+        Flat bonus added to the attack roll (Guided Strike = +10).
+    resource_type / count:
+        The resource the rescue consumes (channel_divinity, 1).
+    """
+
+    bonus: int
+    resource_type: str | None = None
+    count: int = 1
+
+
+def interpret_roll_bonus(ability: Ability) -> RollBonusSpec:
+    """Translate a flat attack-roll-bonus ability (Guided Strike) into a spec.
+
+    Reads a single `apply_modifier flat` block targeting `attack_roll` (the +10)
+    and the cost block's resource.  Raises loudly on anything else (a non-flat
+    hook, a different stat, multiple blocks).
+    """
+    if not isinstance(ability.effect, list):
+        raise NotImplementedError(
+            f"interpret_roll_bonus({ability.name}): expected an effect list"
+        )
+
+    bonuses: list[int] = []
+    for block in ability.effect:
+        if block.get("verb") != "apply_modifier" or block.get("hook") != "flat":
+            raise NotImplementedError(
+                f"interpret_roll_bonus({ability.name}): only an apply_modifier "
+                f"flat bonus is modeled (got verb={block.get('verb')!r}, "
+                f"hook={block.get('hook')!r})"
+            )
+        if block.get("stat") != "attack_roll":
+            raise NotImplementedError(
+                f"interpret_roll_bonus({ability.name}): only an attack_roll bonus "
+                f"is modeled (got stat={block.get('stat')!r})"
+            )
+        bonuses.append(block["value"])
+
+    if len(bonuses) != 1:
+        raise NotImplementedError(
+            f"interpret_roll_bonus({ability.name}): expected exactly one flat "
+            f"block, got {len(bonuses)}"
+        )
+    cost = ability.cost or {}
+    resource = cost.get("resource") or {}
+    return RollBonusSpec(
+        bonus=bonuses[0],
+        resource_type=resource.get("type"),
+        count=resource.get("count", 1),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Effect interpreter — intercept_event (AC bump) → InterceptSpec
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class InterceptSpec:
+    """The data-derived pieces of an `intercept_event` ability (Flourish Parry).
+
+    The policy keeps ALL the decision logic — whether to react at all (only when
+    the AC bump would flip the hit to a miss), the once-per-round reaction gate,
+    and whether to attach a counter.  The interpreter only states WHAT the
+    interception does.
+
+    Fields
+    ------
+    ac_bonus:
+        AC added against the intercepted attack (Flourish Parry = +CHA).
+    """
+
+    ac_bonus: int
+
+
+def interpret_intercept(
+    ability: Ability,
+    context: dict[str, int] | None = None,
+) -> InterceptSpec:
+    """Translate an `intercept_event` AC-bump ability into an InterceptSpec.
+
+    Models the one form the build needs: a single `intercept_event` whose
+    `modification` is an `apply_modifier` flat AC bump.  The AC amount may be a
+    literal (`value: 5`) or a runtime `amount: {ability_modifier: <stat>}`
+    resolved against `context` (Flourish Parry = +CHA).  Anything else (a
+    force-miss interception, a non-AC stat, multiple blocks) raises loudly.
+    """
+    if not isinstance(ability.effect, list):
+        raise NotImplementedError(
+            f"interpret_intercept({ability.name}): expected an effect list"
+        )
+
+    ac_bonuses: list[int] = []
+    for block in ability.effect:
+        verb = block.get("verb")
+        if verb != "intercept_event":
+            raise NotImplementedError(
+                f"interpret_intercept({ability.name}): verb {verb!r} is not an "
+                f"intercept_event"
+            )
+        if block.get("modification") != "apply_modifier":
+            raise NotImplementedError(
+                f"interpret_intercept({ability.name}): only an apply_modifier "
+                f"interception is modeled (got {block.get('modification')!r})"
+            )
+        if block.get("hook") != "flat" or block.get("stat") != "ac":
+            raise NotImplementedError(
+                f"interpret_intercept({ability.name}): only a flat AC bump is "
+                f"modeled (hook={block.get('hook')!r}, stat={block.get('stat')!r})"
+            )
+        if "value" in block:
+            ac_bonuses.append(block["value"])
+        else:
+            ac_bonuses.append(_resolve_amount(block, context, ability.name))
+
+    if len(ac_bonuses) != 1:
+        raise NotImplementedError(
+            f"interpret_intercept({ability.name}): expected exactly one "
+            f"intercept_event block, got {len(ac_bonuses)}"
+        )
+    return InterceptSpec(ac_bonus=ac_bonuses[0])
 
 
 def interpret_hit_rider(ability: Ability) -> HitRiderSpec:

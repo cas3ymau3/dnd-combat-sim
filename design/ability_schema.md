@@ -82,6 +82,7 @@ These match named points in the simulation's discrete-event schedule:
 |---|---|
 | `event: on_use` | The ability is deliberately activated |
 | `event: on_hit` | An attack roll by the ability's owner results in a hit |
+| `event: on_miss` | An attack roll by the ability's owner results in a miss (mirror of `on_hit`; the post-roll rescue point — Guided Strike) |
 | `event: on_damage_roll` | Damage dice are being rolled for an attack or spell |
 | `event: on_roll` | Any single die or dice pool is being rolled (with `die_type` filter) |
 | `event: turn_start` | The owner's turn begins |

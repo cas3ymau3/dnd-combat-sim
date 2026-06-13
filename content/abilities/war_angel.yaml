@@ -37,3 +37,196 @@ cost:
     min_level: 1
 duration:
   type: instantaneous
+
+---
+# ─── BRUTALITY (Gladiator) — bluff / bleed modes ─────────────────────────────
+# An on-hit feature with two mutually exclusive modes the build calls "bluff"
+# and "bleed".  Schema-wise this is one feature with a choice; we model the two
+# modes as two ability docs and let the POLICY pick which fires (choose_one is
+# deferred to the Flourish slice — see PROGRESS gap #1).
+#
+# Layer-separation notes that matter here:
+#   - `apply_status` is routed by `target`: a TARGET status whose name is a
+#     weapon mastery (vex/sap) becomes the hit's extra mastery; a SELF status
+#     (advantage_next_save) is applied to the attacker.  The interpreter raises
+#     loudly on a target status that is NOT a known mastery (the engine has no
+#     field for a generic on-hit target status yet — e.g. frightened).
+#   - bleed's +CHA flat damage is the first RUNTIME-DEPENDENT value: the data
+#     says `ability_modifier: charisma`, the interpreter resolves it against a
+#     context the policy supplies ({"charisma": cha_mod}).  It is phase-5 flat,
+#     so it does NOT scale on a crit (matches extra_flat_damage).
+#   - The brutality CHARGE is in the cost layer, but WHETHER it is spent is
+#     policy arbitration: the Flourish Counter grants bleed for free, so the
+#     policy overrides the cost there (the data states the default; the policy
+#     decides the context — exactly the locked boundary).
+
+name: brutality_bluff
+tags: [active]
+trigger:
+  all:
+    - event: on_hit
+    - weapon: melee
+effect:
+  - verb: apply_status
+    status: vex                   # weapon mastery applied to the creature hit
+    target: target
+  - verb: apply_status
+    status: advantage_next_save   # the next CON (concentration) save reads this
+    target: self
+cost:
+  action_economy: null            # bluff costs only a brutality charge
+  resource:
+    type: brutality
+    count: 1
+duration:
+  type: instantaneous
+
+---
+name: brutality_bleed
+tags: [active]
+trigger:
+  all:
+    - event: on_hit
+    - weapon: melee
+effect:
+  - verb: apply_status
+    status: sap                   # weapon mastery applied to the creature hit
+    target: target
+  - verb: damage
+    amount:
+      ability_modifier: charisma  # +CHA flat; phase 5 → does NOT scale on a crit
+    phase: 5
+    type: physical
+cost:
+  action_economy: null
+  resource:
+    type: brutality
+    count: 1
+duration:
+  type: instantaneous
+
+---
+# ─── FLOURISH PARRY (Gladiator) ──────────────────────────────────────────────
+# Reaction to a melee attack that HITS us: add CHA to AC against that one attack,
+# potentially flipping the hit to a miss (Shield-spell-style, single attack —
+# unlike Defensive Duelist it does not persist).  The schema's `intercept_event`
+# (design §4 #15): reach into the in-flight incoming attack and bump our AC.
+#
+# Note this is NOT the schema's choose_one Flourish (distract/protect/strike) —
+# that example is a DIFFERENT ability.  War Angel's flourish is just parry (this)
+# + counter (a weapon attack carrying brutality_bleed, built in the policy from
+# the bleed data).  choose_one is therefore NOT needed here and remains an
+# unbuilt gap until a build actually uses the distract/protect/strike modes.
+#
+# WHEN to react (only when +CHA would actually flip the hit), the once-per-round
+# reaction gate, and whether to attach a counter all stay in the POLICY — the
+# data states only WHAT the parry does (how much AC it adds).
+
+name: flourish_parry
+tags: [reaction]
+trigger:
+  all:
+    - event: incoming_attack_roll
+    - weapon: melee
+effect:
+  - verb: intercept_event
+    modification: apply_modifier
+    hook: flat
+    stat: ac
+    amount:
+      ability_modifier: charisma  # +CHA to AC against the triggering attack
+    duration:
+      type: until_condition
+      condition: triggering_attack
+cost:
+  action_economy: reaction
+duration:
+  type: instantaneous
+
+---
+# ─── WAR GOD'S BLESSING (free Shield of Faith) ───────────────────────────────
+# War domain feature: a non-concentration Shield of Faith (+2 AC) maintained for
+# the whole combat.  A pure `apply_modifier flat` — the simplest data form, on
+# the already-tested flat hook.  WHEN/whether to cast (greedy, one Channel
+# Divinity per combat, reserved ahead of Guided Strike) stays policy.
+
+name: war_gods_blessing
+tags: [active]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: apply_modifier
+    hook: flat
+    stat: ac
+    value: 2
+cost:
+  action_economy: bonus_action
+  resource:
+    type: channel_divinity
+    count: 1
+duration:
+  type: minutes
+  value: 10
+
+---
+# ─── MAGIC WEAPON ────────────────────────────────────────────────────────────
+# 2024: non-concentration, 60-minute, +1/+1 (level-2 slot) or +2/+2 (level-3,
+# upcast).  Two flat modifiers — attack AND damage by the SAME amount — is the
+# ability intrinsic (data).  The +1-vs-+2 cast TIER is policy arbitration (which
+# slot tier was spent), supplied to the interpreter as a runtime `context` value.
+
+name: magic_weapon
+tags: [active, spell]
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: apply_modifier
+    hook: flat
+    stat: attack_bonus
+    amount:
+      context: magic_weapon_bonus   # +1 or +2 per the cast tier (policy decides)
+  - verb: apply_modifier
+    hook: flat
+    stat: damage_bonus
+    amount:
+      context: magic_weapon_bonus
+cost:
+  action_economy: action
+  resource:
+    type: spell_slot
+    min_level: 2
+duration:
+  type: minutes
+  value: 60
+
+---
+# ─── GUIDED STRIKE (War Cleric Channel Divinity) ─────────────────────────────
+# After seeing an attack roll, spend a Channel Divinity charge to add +10 to it.
+# We model it at the engine's on_miss decision point (flip a miss to a hit).  A
+# flat +10 to the attack roll — a literal `apply_modifier flat`.  The STRATEGY
+# (greedy, never on an AoO, only when +10 actually flips the miss) stays policy.
+#
+# Trigger uses the `on_miss` event (added to the vocabulary, §3.1 — the mirror
+# of on_hit; a cheap predicate addition, not a new verb).  The interpreter does
+# not read the trigger here — the policy owns WHEN via the on_miss seam — but the
+# data states it for schema completeness.
+
+name: guided_strike
+tags: [active]
+trigger:
+  all:
+    - event: on_miss
+effect:
+  - verb: apply_modifier
+    hook: flat
+    stat: attack_roll
+    value: 10
+cost:
+  action_economy: null         # free action (Channel Divinity), no economy slot
+  resource:
+    type: channel_divinity
+    count: 1
+duration:
+  type: instantaneous

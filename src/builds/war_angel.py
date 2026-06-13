@@ -43,7 +43,10 @@ from typing import TYPE_CHECKING
 
 from ..content import (
     interpret_hit_rider,
+    interpret_intercept,
     interpret_modifiers,
+    interpret_on_hit_effects,
+    interpret_roll_bonus,
     load_abilities,
 )
 from ..day_runner import (
@@ -53,7 +56,6 @@ from ..day_runner import (
     DurationBuffTracker,
 )
 from ..entity import Entity
-from ..modifiers import Modifier
 from ..policy import (
     Choice,
     CounterSpec,
@@ -89,10 +91,14 @@ POH_MIN_INTERVAL_MIN = 10
 _ABILITIES = load_abilities()
 BLESS = _ABILITIES["bless"]                  # core_examples.yaml (+1d4 bonus_die)
 WRATHFUL_SMITE = _ABILITIES["wrathful_smite"]  # war_angel.yaml (1d6 on-hit rider)
-
-# Shield of Faith via War God's Blessing (L13): non-concentration +2 AC, cast as
-# a bonus action at combat start with a Channel Divinity charge.
-SHIELD_OF_FAITH_AC = 2
+BRUTALITY_BLUFF = _ABILITIES["brutality_bluff"]  # war_angel.yaml (vex + adv-next-save)
+BRUTALITY_BLEED = _ABILITIES["brutality_bleed"]  # war_angel.yaml (sap + CHA flat dmg)
+FLOURISH_PARRY = _ABILITIES["flourish_parry"]    # war_angel.yaml (intercept: +CHA AC)
+WAR_GODS_BLESSING = _ABILITIES["war_gods_blessing"]  # war_angel.yaml (flat +2 AC)
+MAGIC_WEAPON = _ABILITIES["magic_weapon"]        # war_angel.yaml (flat +1/+2 atk+dmg)
+GUIDED_STRIKE = _ABILITIES["guided_strike"]      # war_angel.yaml (on_miss +10 flip)
+# Shield of Faith / War God's Blessing (L13, non-conc. +2 AC) and Magic Weapon
+# (+1/+2 atk+dmg) are both driven from the data above via interpret_modifiers.
 
 # Indomitable (Fighter, L16 = fighter-09): 1/LR, reroll a failed save with a flat
 # bonus equal to fighter level.  We only model concentration checks, so the
@@ -860,11 +866,17 @@ class WarAngelPolicy:
             return None
         if ctx.is_aoo:
             return None
-        if ctx.resources.get("channel_divinity", 0) < 1:
+        # The +10 bonus and the channel_divinity cost come FROM DATA
+        # (guided_strike); the gates (no AoO, only when it flips) stay policy.
+        rescue = interpret_roll_bonus(GUIDED_STRIKE)
+        if ctx.resources.get(rescue.resource_type, 0) < rescue.count:
             return None
-        if ctx.missed_by > 10:                      # +10 wouldn't flip it
+        if ctx.missed_by > rescue.bonus:            # the bonus wouldn't flip it
             return None
-        return MissResponse(resource_cost={"channel_divinity": 1}, bonus=10)
+        return MissResponse(
+            resource_cost={rescue.resource_type: rescue.count},
+            bonus=rescue.bonus,
+        )
 
     # -- post-roll decision point: Wrathful Smite (level 6+) --------------
 
@@ -935,12 +947,15 @@ class WarAngelPolicy:
         self_status: "str | None" = None
 
         if want_bluff:
+            # Bluff's effects come FROM DATA (brutality_bluff): vex applied to the
+            # target + the save-advantage self-status (unlocked at L13 with
+            # concentration: advantage on our next CON save, which the
+            # concentration check reads).  The brutality CHARGE is policy
+            # arbitration → stays here.
             resource_cost["brutality"] = 1
-            extra_masteries = ["vex"]
-            # Bluff's second half (unlocked at L13 with concentration): advantage
-            # on our next saving throw before our next turn — i.e. the next
-            # concentration check.  Modeled as a self-status the CON save reads.
-            self_status = "advantage_next_save"
+            bluff = interpret_on_hit_effects(BRUTALITY_BLUFF)
+            extra_masteries = list(bluff.target_masteries)
+            self_status = bluff.self_statuses[0] if bluff.self_statuses else None
             self._bluffed_this_turn = True  # commit: prevent a second bluff this turn
 
         if want_smite:
@@ -990,9 +1005,13 @@ class WarAngelPolicy:
         # Once-per-round reaction gate.
         if self._last_parry_round == ctx.round_number:
             return None
-        # Only react when +CHA AC actually flips the hit to a miss (we see the
-        # roll).  hit_margin >= 0 here; flip iff cha_mod > hit_margin.
-        if self._cha_mod <= ctx.hit_margin:
+        # The parry's AC bonus comes FROM DATA (flourish_parry: an intercept_event
+        # flat AC bump), resolved against our CHA mod.  The DECISION to react —
+        # only when the bump actually flips the hit to a miss (we see the roll;
+        # hit_margin >= 0, flip iff ac_bonus > hit_margin) — stays policy.
+        parry = interpret_intercept(FLOURISH_PARRY, context={"charisma": self._cha_mod})
+        ac_bonus = parry.ac_bonus
+        if ac_bonus <= ctx.hit_margin:
             return None
 
         # Commit the parry for this round (free — no engine resource).
@@ -1003,15 +1022,23 @@ class WarAngelPolicy:
         resource_cost: dict[str, int] = {}
         if ctx.resources.get("flourish_counter", 0) >= 1:
             resource_cost["flourish_counter"] = 1
+            # Bleed's effects come FROM DATA (brutality_bleed): sap mastery + the
+            # +CHA flat damage, the latter resolved against the policy's CHA mod
+            # (the interpreter's first runtime-dependent value).  The counter
+            # grants bleed for FREE (no brutality charge) — that cost override is
+            # policy arbitration, so only flourish_counter is spent here.
+            bleed = interpret_on_hit_effects(
+                BRUTALITY_BLEED, context={"charisma": self._cha_mod}
+            )
             counter = CounterSpec(
                 target=ctx.attacker,
                 weapon_stat="attack_bonus",
-                masteries=["sap"],              # bleed adds sap mastery
-                extra_flat_damage=self._cha_mod,  # bleed's +CHA mod
+                masteries=list(bleed.target_masteries),
+                extra_flat_damage=bleed.extra_flat_damage,
             )
 
         return InterceptResponse(
-            ac_bonus=self._cha_mod,
+            ac_bonus=ac_bonus,
             resource_cost=resource_cost,
             counter=counter,
         )
@@ -1162,10 +1189,13 @@ class WarAngelDailyPlan:
     def _sync_magic_weapon(self, bonus: int) -> None:
         self.character.remove_modifier("magic_weapon")
         if bonus > 0:
-            self.character.add_modifier(
-                Modifier("attack_bonus", bonus, "magic_weapon"))
-            self.character.add_modifier(
-                Modifier("damage_bonus", bonus, "magic_weapon"))
+            # Magic Weapon's flat attack+damage buff comes FROM DATA; the cast
+            # TIER (+1 vs +2) is policy arbitration, passed in as a context value.
+            for mod in interpret_modifiers(
+                MAGIC_WEAPON, source="magic_weapon",
+                context={"magic_weapon_bonus": bonus},
+            ):
+                self.character.add_modifier(mod)
 
     def _sync_bless(self) -> None:
         """Re-cast Bless for this combat if a cleric L1 slot remains.
@@ -1201,8 +1231,11 @@ class WarAngelDailyPlan:
         self.character.remove_modifier("shield_of_faith")
         if self.character.resources.available("channel_divinity") >= 1:
             self.character.resources.consume("channel_divinity")
-            self.character.add_modifier(
-                Modifier("ac", SHIELD_OF_FAITH_AC, "shield_of_faith"))
+            # +2 AC comes FROM DATA (war_gods_blessing, a flat apply_modifier).
+            for mod in interpret_modifiers(
+                WAR_GODS_BLESSING, source="shield_of_faith"
+            ):
+                self.character.add_modifier(mod)
 
     # -- Prayer of Healing (between_combats) -----------------------------
 

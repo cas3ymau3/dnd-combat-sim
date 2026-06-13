@@ -18,8 +18,14 @@ import pytest
 from src.content import (
     Ability,
     HitRiderSpec,
+    InterceptSpec,
+    OnHitEffectSpec,
+    RollBonusSpec,
     interpret_hit_rider,
+    interpret_intercept,
     interpret_modifiers,
+    interpret_on_hit_effects,
+    interpret_roll_bonus,
     load_abilities,
     parse_dice,
 )
@@ -100,6 +106,39 @@ def test_interpret_modifiers_flat_hook():
     assert interpret_modifiers(ability, source="sof") == [Modifier("ac", 2, "sof")]
 
 
+def test_war_gods_blessing_matches_the_handcoded_oracle():
+    """War God's Blessing (free Shield of Faith) must produce the same +2 AC
+    Modifier the build hand-built, under the 'shield_of_faith' source."""
+    sof = load_abilities()["war_gods_blessing"]
+    assert interpret_modifiers(sof, source="shield_of_faith") == [
+        Modifier("ac", 2, "shield_of_faith")
+    ]
+
+
+def test_magic_weapon_flat_buff_tracks_the_cast_tier():
+    """Magic Weapon's two flat modifiers (attack + damage) take the SAME value
+    from the runtime cast tier the policy supplies — +1 and +2 in turn, matching
+    the hand-built pair."""
+    mw = load_abilities()["magic_weapon"]
+    assert interpret_modifiers(mw, source="magic_weapon",
+                               context={"magic_weapon_bonus": 1}) == [
+        Modifier("attack_bonus", 1, "magic_weapon"),
+        Modifier("damage_bonus", 1, "magic_weapon"),
+    ]
+    assert interpret_modifiers(mw, source="magic_weapon",
+                               context={"magic_weapon_bonus": 2}) == [
+        Modifier("attack_bonus", 2, "magic_weapon"),
+        Modifier("damage_bonus", 2, "magic_weapon"),
+    ]
+
+
+def test_magic_weapon_requires_a_cast_tier_context():
+    """The runtime tier is mandatory — no context is a loud error, not a +0 buff."""
+    mw = load_abilities()["magic_weapon"]
+    with pytest.raises(ValueError):
+        interpret_modifiers(mw, source="magic_weapon")
+
+
 # ---------------------------------------------------------------------------
 # interpret_hit_rider — Wrathful Smite (Slice 2)
 # ---------------------------------------------------------------------------
@@ -131,3 +170,158 @@ def test_interpret_hit_rider_rejects_unmodeled_scaling():
     divine = load_abilities()["divine_smite"]
     with pytest.raises(NotImplementedError):
         interpret_hit_rider(divine)
+
+
+# ---------------------------------------------------------------------------
+# interpret_on_hit_effects — Brutality bluff / bleed (Slice 3)
+# ---------------------------------------------------------------------------
+
+def test_brutality_bluff_matches_the_handcoded_oracle():
+    """The data-driven bluff must produce what the build hand-coded: vex on the
+    target (extra mastery) + the advantage_next_save self-status.  No damage."""
+    bluff = load_abilities()["brutality_bluff"]
+    spec = interpret_on_hit_effects(bluff)
+
+    assert spec == OnHitEffectSpec(
+        target_masteries=["vex"],
+        self_statuses=["advantage_next_save"],
+        extra_flat_damage=0,
+    )
+
+
+def test_brutality_bleed_matches_the_handcoded_oracle():
+    """The data-driven bleed must produce what the counter hand-coded: sap on the
+    target + the +CHA flat damage, resolved against the supplied context."""
+    bleed = load_abilities()["brutality_bleed"]
+    spec = interpret_on_hit_effects(bleed, context={"charisma": 5})
+
+    assert spec == OnHitEffectSpec(
+        target_masteries=["sap"],
+        self_statuses=[],
+        extra_flat_damage=5,
+    )
+
+
+def test_brutality_bleed_flat_damage_tracks_the_context():
+    """The flat amount is runtime-dependent — a different CHA mod yields a
+    different value (the interpreter is genuinely evaluating, not compiling)."""
+    bleed = load_abilities()["brutality_bleed"]
+    assert interpret_on_hit_effects(bleed, context={"charisma": 3}).extra_flat_damage == 3
+
+
+def test_interpret_on_hit_effects_requires_context_for_runtime_amount():
+    """A flat ability-modifier amount with no context value is a loud error,
+    not a silent zero."""
+    bleed = load_abilities()["brutality_bleed"]
+    with pytest.raises(ValueError):
+        interpret_on_hit_effects(bleed)            # context omitted
+    with pytest.raises(ValueError):
+        interpret_on_hit_effects(bleed, context={})  # wrong key
+
+
+def test_interpret_on_hit_effects_rejects_non_mastery_target_status():
+    """A TARGET status that is not a known weapon mastery has no engine field —
+    it must raise rather than be silently routed into masteries."""
+    ability = Ability.from_dict({
+        "name": "frightener",
+        "effect": [{"verb": "apply_status", "status": "frightened",
+                    "target": "target"}],
+    })
+    with pytest.raises(NotImplementedError):
+        interpret_on_hit_effects(ability)
+
+
+def test_interpret_on_hit_effects_rejects_damage_without_flat_amount():
+    """A damage verb here must carry a flat `amount` (dice riders go through
+    interpret_hit_rider) — otherwise loud failure."""
+    ability = Ability.from_dict({
+        "name": "dicey",
+        "effect": [{"verb": "damage", "dice": {"base": "1d6"}}],
+    })
+    with pytest.raises(NotImplementedError):
+        interpret_on_hit_effects(ability)
+
+
+def test_interpret_on_hit_effects_rejects_choose_one():
+    """choose_one (a dict effect, not a list) is the Flourish slice's gap — it
+    must raise here, not be silently mishandled."""
+    bleed = load_abilities()["brutality_bleed"]
+    choose_one = Ability.from_dict({
+        "name": "modal",
+        "effect": {"choose_one": []},
+    })
+    with pytest.raises(NotImplementedError):
+        interpret_on_hit_effects(choose_one)
+
+
+# ---------------------------------------------------------------------------
+# interpret_intercept — Flourish Parry (Slice 4)
+# ---------------------------------------------------------------------------
+
+def test_flourish_parry_matches_the_handcoded_oracle():
+    """The data-driven parry must produce the same AC bump the build hand-coded:
+    +CHA, resolved against the supplied context."""
+    parry = load_abilities()["flourish_parry"]
+    assert interpret_intercept(parry, context={"charisma": 5}) == InterceptSpec(ac_bonus=5)
+
+
+def test_flourish_parry_ac_bonus_tracks_the_context():
+    parry = load_abilities()["flourish_parry"]
+    assert interpret_intercept(parry, context={"charisma": 4}).ac_bonus == 4
+
+
+def test_interpret_intercept_supports_a_literal_ac_value():
+    """A literal `value` AC bump (schema §4.5 example) needs no context."""
+    ability = Ability.from_dict({
+        "name": "shield_like",
+        "effect": [{"verb": "intercept_event", "modification": "apply_modifier",
+                    "hook": "flat", "stat": "ac", "value": 5}],
+    })
+    assert interpret_intercept(ability) == InterceptSpec(ac_bonus=5)
+
+
+def test_interpret_intercept_rejects_non_ac_bump():
+    """Only a flat AC bump is modeled; a force-miss / other-stat interception
+    must raise rather than be silently treated as an AC bump."""
+    ability = Ability.from_dict({
+        "name": "weird",
+        "effect": [{"verb": "intercept_event", "modification": "apply_modifier",
+                    "hook": "flat", "stat": "saving_throw", "value": 5}],
+    })
+    with pytest.raises(NotImplementedError):
+        interpret_intercept(ability)
+
+
+def test_interpret_intercept_rejects_non_intercept_verb():
+    bless = load_abilities()["bless"]
+    with pytest.raises(NotImplementedError):
+        interpret_intercept(bless)
+
+
+# ---------------------------------------------------------------------------
+# interpret_roll_bonus — Guided Strike (Slice 6)
+# ---------------------------------------------------------------------------
+
+def test_guided_strike_matches_the_handcoded_oracle():
+    """The data-driven Guided Strike must produce the same rescue the build
+    hand-coded: +10 to the attack roll, costing one channel_divinity."""
+    gs = load_abilities()["guided_strike"]
+    assert interpret_roll_bonus(gs) == RollBonusSpec(
+        bonus=10, resource_type="channel_divinity", count=1
+    )
+
+
+def test_interpret_roll_bonus_rejects_non_attack_roll_stat():
+    ability = Ability.from_dict({
+        "name": "ac_bumper",
+        "effect": [{"verb": "apply_modifier", "hook": "flat",
+                    "stat": "ac", "value": 10}],
+    })
+    with pytest.raises(NotImplementedError):
+        interpret_roll_bonus(ability)
+
+
+def test_interpret_roll_bonus_rejects_non_flat_verb():
+    smite = load_abilities()["wrathful_smite"]   # a damage rider, not a flat bonus
+    with pytest.raises(NotImplementedError):
+        interpret_roll_bonus(smite)
