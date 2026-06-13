@@ -34,20 +34,87 @@ At the start of every session, before diving into the work:
    stop"), or when Claude recognizes the milestone is complete — **prompt the user to
    re-enable** the disabled connectors, and clear the line.
 
+## Session close-out ritual (do this last, every session)
+
+When wrapping up a session (the milestone is complete, or the user signals an end):
+
+1. **Land the work.** Make sure PROGRESS.md is updated (Done entry + the NEXT-STEP
+   markers flipped), tests are green, and everything is committed and pushed. Confirm
+   before merging to `main` / deleting branches (per CLAUDE.md git autonomy).
+2. **Re-enable MCP connectors.** Prompt the user to re-enable anything in the
+   "Currently disabled" line, then clear it.
+3. **ALWAYS end with a copyable next-session starting prompt.** The last thing every
+   session produces is a ready-to-paste prompt for the *next* session — fenced as a
+   copyable block, written in the imperative to the next Claude. It must: name the
+   exact next task (the NEXT-STEP item), point at the files/sections to re-read first
+   (PROGRESS Done entries, the relevant `src/`/`content/` files, schema sections),
+   recall any scoping decisions already made or still open, restate the validation
+   framing, and remind it to run the startup ritual (MCP toggles + scope/stopping
+   point) BEFORE coding. Mirror the style of the prompt that started *this* session.
+   This is the project's handoff mechanism — never skip it.
+
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-12, session 2):** build engine primitive #1 for Starfire Scion —
-> `spell_save_dc` on the attacker + a save-FOR-DAMAGE resolution path (specialized
-> `SaveDamageEvent`, save-negates + save-for-half), validated on Sacred Flame at
-> the L1/L5 data (consistency/sanity, not number-matching). Stopping point =
-> primitive built + a minimal hand-coded Sacred Flame delivery + damage-math /
-> save-fail-rate validation green; full Starfire Scion policy and YAML
-> `interpret_save_spell` deferred to later slices. MCP-toggle recommendation
-> re-made (computer-use / Claude-in-Chrome / Claude_Preview / scheduled-tasks /
-> mcp-registry / Google Drive).
+> (2026-06-12, session 3) — DONE:** build engine primitive #2 for Starfire Scion —
+> cantrip / `level_reference` dice scaling (Option B, data-driven in `content.py`).
+> Sacred Flame's dice are now resolved from data by character level
+> (1d8→2d8→3d8→4d8 at L1/5/11/17) via `_resolve_scaling_dice` +
+> `interpret_save_spell`. Stopping point reached: primitive built + cantrip math
+> pinned exact at each tier + the save-for-damage Monte-Carlo extended to drive
+> dice from the interpreter; **273 tests green.** Full Starfire Scion policy/build
+> wiring still deferred. MCP-toggle recommendation re-made (computer-use /
+> Claude-in-Chrome / Claude_Preview / scheduled-tasks / mcp-registry / Google Drive).
 
 ---
 
 ## Done
+
+- **Cantrip / `level_reference` dice scaling — BUILT & VALIDATED (2026-06-12,
+  session 3; Starfire Scion engine primitive #2).** Sacred Flame's damage dice
+  are now DATA-DRIVEN by character level (1d8→2d8→3d8→4d8 at L1/5/11/17) instead
+  of a literal tuple on the `Choice`. **273 tests green (+11).** Scoping decision
+  (with user): **Option B — data-driven in `content.py`** (the real Axis-1 win;
+  the build was chosen to force exactly this), over Option A (literal dice per
+  LEVELS row). Shape:
+  - **`content.py` `_resolve_scaling_dice(spec, context, name)` — the shared
+    dice-scaling seam.** Folds the schema's `dice` block to a concrete
+    `(count, sides)` at fire-time; only the die COUNT scales, never the size.
+    Three shapes: (a) **literal** (`"1d8"` / `{base: "1d8"}`, level-independent);
+    (b) **cantrip** (`{base, scaling: cantrip, level_reference: character_level}`
+    → canonical 5.5e rule: +1 die at char L5/11/17 — its own named mode because
+    the thresholds are NON-uniform from L1); (c) **uniform** (`increment` /
+    `every_n_levels`) → **raises, deferred to primitive #3** (Searing Arc Strike
+    upcast, `level_reference: slot_level`) — same seam, surfaced loudly not
+    silently dropped. `_level_from_context` mirrors `_resolve_amount` (data +
+    context in → int out, interpreter stays pure).
+  - **`content.py` `interpret_save_spell(ability, context) → SaveSpellSpec`**:
+    reads the schema's canonical save-for-damage shape (a `verb: save` block —
+    `ability` + `dc_reference` — plus a `verb: damage` block — scaled dice +
+    `on_save`), resolves the dice via `_resolve_scaling_dice`, and maps the save
+    ability → engine stat (`ABILITY_SAVE_MAP`: dexterity→`dex_save`, …). Returns
+    `SaveSpellSpec(save_stat, dc_stat, damage_dice, on_save, damage_bonus)` — the
+    fields the policy turns into a `Choice(action_type="save_spell")`. Raises
+    loudly outside the single-save/single-damage shape.
+  - **`interpret_hit_rider` refactored onto `_resolve_scaling_dice`** (DRY) — the
+    `divine_smite` `increment` loud-failure test stays green (the shared helper
+    still raises on uniform scaling).
+  - **`content/abilities/starfire_scion.yaml`** — new file; `sacred_flame` ability
+    (DEX save vs `spell_save_dc`, `scaling: cantrip` 1d8, save-negates).
+  - **Schema doc** (`ability_schema.md` §4.5): documented the two `dice` scaling
+    shapes — uniform `increment`/`every_n_levels`, and the new named **`cantrip`**
+    mode. The only schema vocabulary addition this session.
+  - **Validation (consistency/sanity, per the Starfire framing):** `test_content.py`
+    pins the cantrip steps exactly at every threshold/boundary (1d8 L1–4, 2d8
+    L5–10, 3d8 L11–16, 4d8 L17+), the missing-context / wrong-`level_reference` /
+    uniform-deferred loud failures, and `interpret_save_spell` producing the right
+    `SaveSpellSpec` at L1/5/11/17. `test_save_for_damage.py` extends the
+    Monte-Carlo path to drive the dice FROM the interpreter: per-cast damage math
+    exact at each tier (full = 8×count on a max-roll failed save), mean damage = the
+    fail-rate fraction of the all-hit ceiling at L11 (3d8, DC 15, P(fail)=0.60,
+    mean≈8.1 < 13.5), and strictly monotonic growth L1<L5<L11<L17.
+  - **Deferred (in scope):** full Starfire Scion policy/build wiring
+    (`make_starfire_scion` still raises) — it will read `damage_dice` from
+    `interpret_save_spell` instead of a literal. Primitive #3 (upcast `increment`)
+    reuses `_resolve_scaling_dice` with `level_reference: slot_level`.
 
 - **Save-FOR-damage resolution — BUILT & VALIDATED (2026-06-12, session 2;
   Starfire Scion engine primitive #1).** The first attacker-side save: the
@@ -391,9 +458,15 @@ Strike. Upcast scaling comes later up the ladder.
    vs the caster's `spell_save_dc`; the save result determines damage — *negates*
    (Sacred Flame) or *for-half* (Burning Hands). The first attacker-side save
    primitive (vs. concentration, which is target-side). See the Done entry below.
-2. Cantrip / `level_reference` dice scaling (Sacred Flame by character level).
-   **← NEXT.**
+2. ~~Cantrip / `level_reference` dice scaling (Sacred Flame by character level).~~ ✓
+   **DONE & VALIDATED (2026-06-12, session 3; Option B — data-driven).** Sacred
+   Flame's dice are resolved from `content/abilities/starfire_scion.yaml`
+   (`scaling: cantrip`) by character level via `content._resolve_scaling_dice` +
+   `interpret_save_spell`. See the Done entry above.
 3. Upcast `increment` scaling (Searing Arc Strike = upcast Burning Hands).
+   **← NEXT.** Reuses the SAME `_resolve_scaling_dice` seam with
+   `level_reference: slot_level`; the uniform `increment`/`every_n_levels` branch
+   is already stubbed there to raise — primitive #3 implements it.
 
 **Explicitly deferred (unchanged):** multi-enemy AoE + spatial (Burning Hands
 modeled single-target until a multi-enemy model exists); separate-entity / summons

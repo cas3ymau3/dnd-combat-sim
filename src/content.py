@@ -512,13 +512,101 @@ def interpret_intercept(
     return InterceptSpec(ac_bonus=ac_bonuses[0])
 
 
+# ---------------------------------------------------------------------------
+# Dice scaling — the schema's `dice: {base, increment, every_n_levels,
+# level_reference}` form → a concrete (count, sides), given the level it scales on
+# ---------------------------------------------------------------------------
+
+# The character levels at which a 2024 cantrip gains an extra damage die (the
+# canonical 5.5e rule: 1 die, +1 at 5 / 11 / 17).  Named here rather than buried
+# in a formula so the rule is legible and a future variant can override it.
+_CANTRIP_THRESHOLDS: tuple[int, ...] = (5, 11, 17)
+
+
+def _level_from_context(
+    level_reference: str | None,
+    context: dict[str, int] | None,
+    ability_name: str,
+) -> int:
+    """Resolve the level value a `level_reference` names against `context`.
+
+    The schema's dice block scales on an abstract level (`character_level`,
+    `slot_level`, …); the policy supplies the concrete value at fire-time via
+    `context` (e.g. {"character_level": 5}).  Mirrors `_resolve_amount`: data +
+    context in → int out, no policy state leaking in.
+    """
+    if level_reference is None:
+        raise NotImplementedError(
+            f"{ability_name}: scaling dice need a `level_reference` "
+            f"(e.g. character_level, slot_level)"
+        )
+    if context is None or level_reference not in context:
+        raise ValueError(
+            f"{ability_name}: no value for level_reference {level_reference!r} "
+            f"in context {context!r}"
+        )
+    return context[level_reference]
+
+
+def _resolve_scaling_dice(
+    spec: "str | dict",
+    context: dict[str, int] | None = None,
+    ability_name: str = "?",
+) -> tuple[int, int]:
+    """Translate one `dice` spec into a concrete (count, sides) at the given level.
+
+    The shared seam for every dice-scaling form (CLAUDE.md #1 — D&D scaling rules
+    live in DATA, the engine just folds them).  Three shapes:
+
+      - **literal** — ``"1d8"`` or ``{base: "1d8"}`` with no scaling keys →
+        (1, 8), level-independent.  (Wrathful Smite, every fixed rider.)
+      - **cantrip** — ``{base: "1d8", scaling: cantrip,
+        level_reference: character_level}`` → the canonical 5.5e cantrip rule:
+        +1 die at character level 5 / 11 / 17 (Sacred Flame 1d8→2d8→3d8→4d8).
+        The thresholds are NON-uniform from level 1, so this is its own named
+        mode rather than the uniform `every_n_levels` form below.
+      - **uniform** (``increment`` / ``every_n_levels``) — +N dice per
+        ``every_n_levels`` of the referenced level (Divine Smite / Searing Arc
+        Strike upcast: +1d8 per slot level).  **Deferred to primitive #3** — it
+        raises here so the gap surfaces loudly rather than silently dropping
+        upcast dice.
+
+    Returns a single (count, sides); the die SIZE never changes, only the count.
+    """
+    if isinstance(spec, str):
+        return parse_dice(spec)
+
+    base_count, sides = parse_dice(spec["base"])
+    scaling = spec.get("scaling")
+    level_reference = spec.get("level_reference")
+
+    if scaling == "cantrip":
+        if level_reference != "character_level":
+            raise NotImplementedError(
+                f"{ability_name}: cantrip scaling is by character_level "
+                f"(got level_reference={level_reference!r})"
+            )
+        level = _level_from_context(level_reference, context, ability_name)
+        steps = sum(1 for t in _CANTRIP_THRESHOLDS if level >= t)
+        return base_count + steps, sides
+
+    if "increment" in spec or "every_n_levels" in spec:
+        raise NotImplementedError(
+            f"{ability_name}: uniform `increment`/`every_n_levels` scaling is "
+            f"primitive #3 (upcast) — not modeled yet"
+        )
+
+    # A `{base: ...}` block with no scaling keys is just a literal.
+    return base_count, sides
+
+
 def interpret_hit_rider(ability: Ability) -> HitRiderSpec:
     """Translate an on-hit `damage` rider ability into a HitRiderSpec.
 
-    Reads the `damage` verb's dice (base form only for now) and the cost block's
-    action economy + resource type.  Scaling (`increment`/upcast) is not yet
-    modeled — it raises so the gap surfaces loudly rather than silently dropping
-    upcast dice.
+    Reads the `damage` verb's dice (literal form only for now, via
+    `_resolve_scaling_dice`) and the cost block's action economy + resource type.
+    Uniform `increment`/upcast scaling is not yet modeled — the shared dice helper
+    raises so the gap surfaces loudly rather than silently dropping upcast dice.
     """
     if not isinstance(ability.effect, list):
         raise NotImplementedError(
@@ -533,17 +621,7 @@ def interpret_hit_rider(ability: Ability) -> HitRiderSpec:
                 f"interpret_hit_rider({ability.name}): verb {verb!r} not "
                 f"supported (this interpreter only builds damage riders)"
             )
-        spec = block.get("dice")
-        if isinstance(spec, dict):
-            if "increment" in spec:
-                raise NotImplementedError(
-                    f"interpret_hit_rider({ability.name}): scaling/upcast dice "
-                    f"('increment') not yet modeled"
-                )
-            base = spec["base"]
-        else:
-            base = spec
-        dice.append(parse_dice(base))
+        dice.append(_resolve_scaling_dice(block.get("dice"), ability_name=ability.name))
 
     cost = ability.cost or {}
     resource = cost.get("resource") or {}
@@ -552,4 +630,142 @@ def interpret_hit_rider(ability: Ability) -> HitRiderSpec:
         action_cost=cost.get("action_economy"),
         resource_type=resource.get("type"),
         min_level=resource.get("min_level"),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Effect interpreter — save-FOR-damage spell → SaveSpellSpec
+# ---------------------------------------------------------------------------
+
+# The schema's `save` verb names an ABILITY (dexterity, …); the engine rolls a
+# concrete save stat (`dex_save`, …).  This maps the schema vocabulary onto the
+# stat keys resolve_saving_throw reads.
+ABILITY_SAVE_MAP: dict[str, str] = {
+    "strength": "str_save",
+    "dexterity": "dex_save",
+    "constitution": "con_save",
+    "intelligence": "int_save",
+    "wisdom": "wis_save",
+    "charisma": "cha_save",
+}
+
+
+@dataclass(frozen=True)
+class SaveSpellSpec:
+    """The data-derived pieces of a save-FOR-damage spell (Sacred Flame, Burning
+    Hands) — the fields the policy turns into a `Choice(action_type="save_spell")`
+    / `SaveDamageEvent`.
+
+    The interpreter states only WHAT the spell does at this character level — which
+    save the target rolls, against which DC stat, the (already scaled) damage dice,
+    and how a made save is handled.  WHEN/whether to cast and which resource it
+    spends stay in the policy.
+
+    Fields
+    ------
+    save_stat:
+        The TARGET's saving-throw stat, e.g. "dex_save" (Sacred Flame).
+    dc_stat:
+        The CASTER's DC stat the save is rolled against, e.g. "spell_save_dc".
+    damage_dice:
+        The (count, sides) for this cast, already resolved for the supplied
+        character level via `_resolve_scaling_dice` (Sacred Flame 1d8→4d8).
+    on_save:
+        "none" (save negates — Sacred Flame) or "half" (save-for-half — Burning
+        Hands).  Defaults to "none".
+    damage_bonus:
+        Flat damage added to the spell's dice (0 for these cantrips).
+    """
+
+    save_stat: str
+    dc_stat: str
+    damage_dice: tuple[int, int]
+    on_save: str = "none"
+    damage_bonus: int = 0
+
+
+def interpret_save_spell(
+    ability: Ability,
+    context: dict[str, int] | None = None,
+) -> SaveSpellSpec:
+    """Translate a save-FOR-damage spell (`save` + `damage` effect blocks) into a
+    SaveSpellSpec, resolving scaled dice against `context` (e.g. the char level).
+
+    The schema's canonical save-for-damage shape (core_examples #4, divine-save
+    cantrips) is two effect blocks: a ``verb: save`` (which ability, vs which DC)
+    followed by a ``verb: damage`` (dice + on_save).  Sacred Flame's damage dice
+    carry ``scaling: cantrip`` → the dice grow with character level via
+    `_resolve_scaling_dice`; pass the level in ``context``
+    (e.g. {"character_level": 5}).
+
+    Raises loudly on anything outside this single-save / single-damage shape so
+    the schema/engine gap surfaces rather than being silently dropped.
+    """
+    if not isinstance(ability.effect, list):
+        raise NotImplementedError(
+            f"interpret_save_spell({ability.name}): expected an effect list "
+            f"(choose_one not supported here)"
+        )
+
+    save_block: dict | None = None
+    damage_block: dict | None = None
+    for block in ability.effect:
+        verb = block.get("verb")
+        if verb == "save":
+            if save_block is not None:
+                raise NotImplementedError(
+                    f"interpret_save_spell({ability.name}): more than one `save` "
+                    f"block is not modeled"
+                )
+            save_block = block
+        elif verb == "damage":
+            if damage_block is not None:
+                raise NotImplementedError(
+                    f"interpret_save_spell({ability.name}): more than one `damage` "
+                    f"block is not modeled"
+                )
+            damage_block = block
+        else:
+            raise NotImplementedError(
+                f"interpret_save_spell({ability.name}): verb {verb!r} not "
+                f"supported (expected `save` + `damage`)"
+            )
+
+    if save_block is None or damage_block is None:
+        raise NotImplementedError(
+            f"interpret_save_spell({ability.name}): expected both a `save` and a "
+            f"`damage` block (got save={save_block is not None}, "
+            f"damage={damage_block is not None})"
+        )
+
+    ability_name = save_block.get("ability")
+    if ability_name not in ABILITY_SAVE_MAP:
+        raise NotImplementedError(
+            f"interpret_save_spell({ability.name}): unknown save ability "
+            f"{ability_name!r} (expected one of {sorted(ABILITY_SAVE_MAP)})"
+        )
+    save_stat = ABILITY_SAVE_MAP[ability_name]
+
+    dc_stat = save_block.get("dc_reference")
+    if not dc_stat:
+        raise NotImplementedError(
+            f"interpret_save_spell({ability.name}): `save` block needs a "
+            f"`dc_reference` (e.g. spell_save_dc)"
+        )
+
+    damage_dice = _resolve_scaling_dice(
+        damage_block.get("dice"), context, ability.name
+    )
+    on_save = damage_block.get("on_save", "none")
+    if on_save not in ("none", "half"):
+        raise NotImplementedError(
+            f"interpret_save_spell({ability.name}): on_save {on_save!r} not "
+            f"modeled (expected 'none' or 'half')"
+        )
+
+    return SaveSpellSpec(
+        save_stat=save_stat,
+        dc_stat=dc_stat,
+        damage_dice=damage_dice,
+        on_save=on_save,
     )

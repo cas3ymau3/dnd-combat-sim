@@ -91,13 +91,20 @@ first becomes load-bearing)
   L19 +Druid-11.  L6 spells (Sunbeam — a real AoE line, save-for-half).
   L20 +Druid-12.  ASI: +2 DEX (→20); WIS/DEX attack modes equivalent.
 
-Engine-capacity build order (NONE built yet — see PROGRESS):
+Engine-capacity build order (see PROGRESS):
   1. [DONE] `spell_save_dc` on the attacker + save-FOR-damage resolution path
      (negates + for-half).  Built & validated on Sacred Flame (L1/L5 data) via a
      `SaveDamageEvent` + `resolve_save_damage`; the policy emits a
      `Choice(action_type="save_spell", save_stat=..., damage_dice=..., on_save=...)`.
-  2. [NEXT] Cantrip / `level_reference` dice scaling.
-  3. Upcast `increment` scaling (Searing Arc Strike).
+  2. [DONE] Cantrip / `level_reference` dice scaling.  Sacred Flame's dice are now
+     DATA-DRIVEN: `content/abilities/starfire_scion.yaml` carries
+     `dice: {base: 1d8, scaling: cantrip, level_reference: character_level}`, and
+     `content.interpret_save_spell` resolves it against the character level via the
+     shared `_resolve_scaling_dice` helper (1d8→2d8→3d8→4d8 at L1/5/11/17).  The
+     policy supplies `damage_dice` from that spec instead of a literal tuple.
+  3. Upcast `increment` scaling (Searing Arc Strike) — the SAME `_resolve_scaling_dice`
+     seam, `level_reference: slot_level`; the uniform `increment`/`every_n_levels`
+     branch is stubbed to raise (primitive #3).
 """
 
 from __future__ import annotations
