@@ -29,6 +29,7 @@ from src.content import (
     interpret_on_hit_effects,
     interpret_roll_bonus,
     interpret_save_spell,
+    interpret_scaled_dice,
     load_abilities,
     parse_dice,
 )
@@ -302,6 +303,118 @@ def test_scaling_dice_uniform_rejects_mismatched_die_size():
     }
     with pytest.raises(NotImplementedError):
         _resolve_scaling_dice(spec, {"slot_level": 3}, "frankenspell")
+
+
+# ---------------------------------------------------------------------------
+# _resolve_scaling_dice — the enumerated DICE LADDER (the die-size quantity)
+# ---------------------------------------------------------------------------
+
+def _shillelagh_ladder() -> dict:
+    """The 2024 Shillelagh ladder spec (size grows, and the top step also changes
+    the count): 1d8 / 1d10 / 1d12 / 2d6 at character levels 5 / 11 / 17."""
+    return {
+        "scaling": "ladder",
+        "breaks": [5, 11, 17],
+        "dice": ["1d8", "1d10", "1d12", "2d6"],
+        "level_reference": "character_level",
+    }
+
+
+def test_scaling_dice_ladder_steps_at_5_11_17_including_count_change():
+    """The ladder grows the die SIZE at each break and CHANGES THE COUNT at the
+    top step (1d12 -> 2d6) — the case neither the cantrip nor the increment form
+    can express.  Boundaries on both sides of every break are pinned."""
+    spec = _shillelagh_ladder()
+
+    def at(level: int) -> tuple[int, int]:
+        return _resolve_scaling_dice(spec, {"character_level": level}, "shillelagh")
+
+    assert at(1) == (1, 8) and at(4) == (1, 8)      # below the first break
+    assert at(5) == (1, 10) and at(10) == (1, 10)   # first step
+    assert at(11) == (1, 12) and at(16) == (1, 12)  # second step
+    assert at(17) == (2, 6) and at(20) == (2, 6)    # top step: size AND count
+
+
+def test_scaling_dice_ladder_is_general_across_drivers_and_breaks():
+    """The ladder is a GENERAL shape, not a Shillelagh quirk — a pure die-SIZE
+    walk on a CLASS-level driver with different breaks (bardic inspiration
+    d6/d8/d10/d12 at bard 5/10/15; battlemaster superiority d8/d10/d12 at
+    fighter 10/18).  Same mechanism, no per-feature code."""
+    bardic = {
+        "scaling": "ladder",
+        "breaks": [5, 10, 15],
+        "dice": ["1d6", "1d8", "1d10", "1d12"],
+        "level_reference": "bard_level",
+    }
+    got = {lv: _resolve_scaling_dice(bardic, {"bard_level": lv}, "bardic_inspiration")
+           for lv in (1, 5, 10, 15)}
+    assert got == {1: (1, 6), 5: (1, 8), 10: (1, 10), 15: (1, 12)}
+
+    superiority = {
+        "scaling": "ladder",
+        "breaks": [10, 18],
+        "dice": ["1d8", "1d10", "1d12"],
+        "level_reference": "fighter_level",
+    }
+    got2 = {lv: _resolve_scaling_dice(superiority, {"fighter_level": lv}, "superiority")
+            for lv in (3, 10, 18)}
+    assert got2 == {3: (1, 8), 10: (1, 10), 18: (1, 12)}
+
+
+def test_scaling_dice_ladder_needs_the_level_in_context():
+    """No driver value (or the wrong key) in context → loud failure, like every
+    other scaling shape."""
+    spec = _shillelagh_ladder()
+    with pytest.raises(ValueError):
+        _resolve_scaling_dice(spec, None, "shillelagh")
+    with pytest.raises(ValueError):
+        _resolve_scaling_dice(spec, {"slot_level": 11}, "shillelagh")
+
+
+def test_scaling_dice_ladder_rejects_malformed_tables():
+    """The break/dice lists must be coherent: present, ascending breaks, and
+    exactly one more die than breaks (one die per step).  Each raises loudly."""
+    base = {"level_reference": "character_level"}
+    # Missing `dice`.
+    with pytest.raises(NotImplementedError):
+        _resolve_scaling_dice({**base, "scaling": "ladder", "breaks": [5]}, {"character_level": 5}, "x")
+    # Missing `breaks`.
+    with pytest.raises(NotImplementedError):
+        _resolve_scaling_dice({**base, "scaling": "ladder", "dice": ["1d8", "1d10"]}, {"character_level": 5}, "x")
+    # dice/breaks length mismatch (2 breaks need 3 dice, got 2).
+    with pytest.raises(NotImplementedError):
+        _resolve_scaling_dice(
+            {**base, "scaling": "ladder", "breaks": [5, 11], "dice": ["1d8", "1d10"]},
+            {"character_level": 11}, "x",
+        )
+    # Non-ascending breaks.
+    with pytest.raises(NotImplementedError):
+        _resolve_scaling_dice(
+            {**base, "scaling": "ladder", "breaks": [11, 5], "dice": ["1d8", "1d10", "1d12"]},
+            {"character_level": 11}, "x",
+        )
+
+
+# ---------------------------------------------------------------------------
+# interpret_scaled_dice — the dice ladder driving an ability (Shillelagh)
+# ---------------------------------------------------------------------------
+
+def test_shillelagh_die_scales_on_the_ladder_from_data():
+    """Shillelagh FROM DATA: the cantrip's force die climbs 1d8 / 1d10 / 1d12 /
+    2d6 by character level — the first consumer of `scaling: ladder`."""
+    sh = load_abilities()["shillelagh"]
+    by_level = {
+        lv: interpret_scaled_dice(sh, {"character_level": lv})
+        for lv in (1, 5, 11, 17)
+    }
+    assert by_level == {1: (1, 8), 5: (1, 10), 11: (1, 12), 17: (2, 6)}
+
+
+def test_interpret_scaled_dice_rejects_non_damage_shapes():
+    """The reader resolves a single `damage` die only; anything else raises."""
+    save_spell = load_abilities()["sacred_flame"]  # has a `save` block too
+    with pytest.raises(NotImplementedError):
+        interpret_scaled_dice(save_spell, {"character_level": 5})
 
 
 # ---------------------------------------------------------------------------

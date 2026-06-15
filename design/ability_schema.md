@@ -263,8 +263,9 @@ mode: minimum_floor         # treat any result below N as N
   target: self               # "self" | "target" | "ally" | "all_in_zone" | "allies_within_radius"
 ```
 
-The `dice` block has two scaling shapes (both fold to a concrete `(count, sides)`
-at fire-time; only the die *count* changes, never the size):
+The `dice` block has three scaling shapes (all fold to a concrete `(count, sides)`
+at fire-time; the uniform and cantrip shapes change only the die *count*, the
+ladder enumerates a full die per step):
 
 - **uniform** (`increment` / `every_n_levels`) — +`increment` dice per
   `every_n_levels` of the `level_reference` value, measured *above* `base_level`:
@@ -286,10 +287,26 @@ at fire-time; only the die *count* changes, never the size):
   ```
 
   (Sacred Flame: 1d8 → 2d8 → 3d8 → 4d8.)
+- **ladder** (`scaling: ladder`, `breaks` + `dice`) — an enumerated dice ladder:
+  the result at/after each (ascending) breakpoint is an arbitrary `(count, sides)`,
+  so BOTH the size and the count may change per step. Index 0 applies below the
+  first break, index *k* at/after the *k*-th break (one more `dice` entry than
+  `breaks`). The driver is any `level_reference` (character / class level).
 
-##### Scaling typology (the map behind the two shapes)
+  ```yaml
+  dice:
+    scaling: ladder          # 2024 Shillelagh die: size grows, top step adds a die
+    breaks: [5, 11, 17]      # character-level breaks (the cantrip threshold list)
+    dice: ["1d8", "1d10", "1d12", "2d6"]
+    level_reference: character_level
+  ```
 
-The two `dice` shapes above are not two *kinds of ability* — they are two
+  (Shillelagh: 1d8 → 1d10 → 1d12 → 2d6 at character levels 5 / 11 / 17. Resolved by
+  `interpret_scaled_dice`; first **built** consumer 2026-06-15, Starfire Scion L11.)
+
+##### Scaling typology (the map behind the three shapes)
+
+The three `dice` shapes above are not three *kinds of ability* — they are
 **step functions** over a shared structure. Every scaling rule in 5.5e factors
 into three INDEPENDENT axes; naming them keeps future additions coherent and
 tells us exactly what each new build will force:
@@ -312,29 +329,30 @@ tells us exactly what each new build will force:
      different list. The list is hardcoded (`_CANTRIP_THRESHOLDS`) today —
      **lift it to data (`scaling: thresholds`, `breaks: [...]`) when the first
      non-cantrip threshold scaler appears.**
-3. **Scaled quantity** — what the steps grow. Only **dice count** is built.
-   Other quantities are real in 5.5e but each is blocked on a DIFFERENT
-   primitive, not on scaling design:
-   - **die size — really an enumerated DICE LADDER** (the die GROWS, and may even
-     change count, rather than multiplying uniformly) — the **next unbuilt
-     quantity, first consumer Shillelagh**. 2024 Shillelagh is a threshold-list
-     scaler (cantrip breaks `[5, 11, 17]`) whose result is a per-break die:
-     **1d8 → 1d10 (L5) → 1d12 (L11) → 2d6 (L17)**. Note the top step changes BOTH
-     the size AND the count (d12 → 2d6), so this is NOT a pure size walk and NOT
-     the uniform `increment` count walk either — it is an **explicit ladder**: a
-     break list paired with an arbitrary `(count, sides)` per step. That ladder
-     SUBSUMES pure die-size growth (inspiration/superiority, below) and the mixed
-     Shillelagh case in one mechanism. The current helper can express neither (it
-     holds size fixed: `return base_count + steps, sides`), so this is a new branch
-     — e.g. `scaling: ladder`, `breaks: [5, 11, 17]`, `dice: ["1d8", "1d10",
-     "1d12", "2d6"]` (the value at/after each break, index 0 below the first
-     break), resolved to a `(count, sides)` like every other shape. NOT blocked on
-     any other model (unlike target count) — a pure, isolated scaling-helper
-     addition. **A per-level build can dodge it entirely** by baking the resolved
-     die into each level's data (Shillelagh = (1,10) at char L9–10, (1,12) at
-     L11–16, (2,6) at L17+), exactly as weapon dice already are; build the
-     data-driven ladder only when a die-size feature should resolve from YAML by
-     level. See PROGRESS "die-size scaling".
+3. **Scaled quantity** — what the steps grow. **Dice count** (uniform/cantrip) and
+   **die size — the enumerated DICE LADDER** are now built; the remaining
+   quantities below are each blocked on a DIFFERENT primitive, not on scaling
+   design:
+   - **die size — an enumerated DICE LADDER** (the die GROWS, and may even change
+     count, rather than multiplying uniformly) — **BUILT 2026-06-15**
+     (`scaling: ladder` in `_resolve_scaling_dice` / `_resolve_ladder`; read via
+     `interpret_scaled_dice`), first consumer Shillelagh at Starfire Scion L11.
+     2024 Shillelagh is a threshold-list scaler (cantrip breaks `[5, 11, 17]`)
+     whose result is a per-break die: **1d8 → 1d10 (L5) → 1d12 (L11) → 2d6 (L17)**.
+     The top step changes BOTH the size AND the count (d12 → 2d6), so this is NOT a
+     pure size walk and NOT the uniform `increment` count walk either — it is an
+     **explicit ladder**: a break list paired with an arbitrary `(count, sides)`
+     per step. That ladder SUBSUMES pure die-size growth (inspiration/superiority,
+     below) and the mixed Shillelagh case in one mechanism. The count-scaling
+     branches can express neither (they hold size fixed: `base_count + steps,
+     sides`), so the ladder is its own branch — `scaling: ladder`,
+     `breaks: [5, 11, 17]`, `dice: ["1d8", "1d10", "1d12", "2d6"]` (the value
+     at/after each break, index 0 below the first break), resolved to a
+     `(count, sides)` like every other shape. The threshold-list **step function**
+     (`_threshold_index`) is shared with the cantrip count rule; `breaks` is the
+     per-feature list `_CANTRIP_THRESHOLDS` was always implicitly an instance of.
+     (A per-level build can still *dodge* it by baking the resolved die per level,
+     as L9/L10 did before this — but Shillelagh L11 now resolves from YAML.)
      *This is a GENERAL, recurring pattern, not a Shillelagh quirk* — die size
      grows with level all over the corpus: **bardic inspiration** (d6 → d8 → d10
      → d12 at bard 5/10/15), **battlemaster superiority die** (d8 → d10 → d12 at
@@ -354,11 +372,12 @@ tells us exactly what each new build will force:
    - **#beams / #attacks** (Eldritch Blast), **duration** — add when a build
      forces them.
 
-Current code (`_resolve_scaling_dice`) sits at the narrow, correct corner:
-**dice count**, scaled by **linear OR threshold-list** step functions, over **any
-driver**. The decomposition is the map; we expand a single axis only when a
-selected build makes that axis load-bearing — and die size is the axis Shillelagh
-(L9) will make load-bearing next.
+Current code (`_resolve_scaling_dice`) now covers **dice count** (linear or
+threshold-list step functions) AND **die size** (the enumerated ladder), over
+**any driver**. The decomposition is the map; we expand a single axis only when a
+selected build makes that axis load-bearing — die size was the axis Shillelagh
+(L11) made load-bearing. The remaining unbuilt axes (target count, #beams,
+duration) wait on their own builds / the multi-enemy model.
 
 #### `apply_modifier`
 ```yaml

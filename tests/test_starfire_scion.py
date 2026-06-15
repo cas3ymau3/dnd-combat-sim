@@ -153,7 +153,7 @@ def test_unimplemented_level_raises():
 def test_enemy_stats_are_live_from_the_monster_csv():
     """enemy_ac / enemy_dex_save are the csv's ac + dex.save.mod at cr == level."""
     rows = {int(r["level"]): r for r in csv.DictReader(_CSV.open())}
-    for level in (1, 4, 5, 9, 10):
+    for level in (1, 4, 5, 9, 10, 11, 12):
         data = ss.LEVELS[level]
         assert data["enemy_ac"] == int(rows[level]["ac"])
         assert data["enemy_dex_save"] == int(rows[level]["dex.save.mod"])
@@ -473,6 +473,23 @@ def test_shillelagh_uses_higher_modifier_default_spellcasting_on_tie():
     assert c.weapon_stat == "attack_bonus" and c.damage_bonus == 3 and c.damage_dice == (1, 10)
 
 
+def test_shillelagh_die_resolves_off_the_ladder_by_character_level():
+    """The Shillelagh die is FROM DATA on the dice ladder (interpret_scaled_dice),
+    NOT baked per LEVELS row: 1d10 at char L9-10 (retrofit — DPR-neutral vs the
+    formerly baked die) and 1d12 at char L11-16 (the [5,11,17] cantrip break).  The
+    WIS modifier still rides the row (+4 through L11, +5 at L12)."""
+    expected = {9: ((1, 10), 4), 10: ((1, 10), 4), 11: ((1, 12), 4), 12: ((1, 12), 5)}
+    for level, (die, bonus) in expected.items():
+        policy = ss.StarfireScionPolicy(
+            level, ss.make_starfire_scion(level), ss.make_training_dummy(level))
+        assert policy._shillelagh_wis["dice"] == die, f"L{level} die"
+        assert policy._shillelagh_wis["bonus"] == bonus, f"L{level} bonus"
+        # And it reaches the actual swing.
+        policy.on_combat_start(0, SeededRNG(0))
+        c = policy._shillelagh_attack_choice("action")
+        assert c.damage_dice == die and c.damage_bonus == bonus
+
+
 def test_unarmed_die_is_1d8_at_l9_and_l10():
     """Martial-arts die bumps 1d6 -> 1d8 at monk-5 (char L9) and holds at L10."""
     for level in (9, 10):
@@ -546,7 +563,7 @@ def _mean_dpr(level: int, n_days: int, seed: int = 0, rounds_per_combat: int = 4
 def test_dpr_is_a_plausible_fraction_of_the_ceiling():
     """Each level: 0 < DPR < ceiling (every attack can miss / every save can
     succeed, so the all-hit ceiling is a strict upper bound)."""
-    for level in (1, 4, 5, 9, 10):
+    for level in (1, 4, 5, 9, 10, 11, 12):
         dpr = _mean_dpr(level, n_days=400)
         ceiling = ss.LEVELS[level]["ceiling_dpr"]
         assert 0 < dpr < ceiling, f"L{level}: {dpr:.2f} not in (0, {ceiling})"
@@ -619,3 +636,42 @@ def test_thread_b_lifts_l9_dpr_at_a_fixed_enemy():
     on = _mean_dpr_l9(thread_b=True, n_days=600)
     off = _mean_dpr_l9(thread_b=False, n_days=600)
     assert on > off, f"thread B on {on:.2f} !> off {off:.2f}"
+
+
+def _mean_dpr_l11(shillelagh_die: tuple[int, int], n_days: int,
+                  seed: int = 0, rounds_per_combat: int = 4) -> float:
+    """L11 DPR with the Shillelagh die forced to a given value — same enemy either
+    way.  Used to ablate the ladder's L11 step (1d12) against the prior step (1d10),
+    isolating the die-size growth's contribution."""
+    rng = SeededRNG(seed)
+    char = ss.make_starfire_scion(11)
+    dummy = ss.make_training_dummy(11)
+    policy = ss.StarfireScionPolicy(11, char, dummy, rounds_per_combat)
+    policy._shillelagh_wis = {**policy._shillelagh_wis, "dice": shillelagh_die}
+    runner = DayRunner(
+        rng=rng, entities=[char, dummy],
+        policies={char.id: policy}, rounds_per_combat=rounds_per_combat,
+    )
+    rounds_per_day = 4 * rounds_per_combat
+    total = sum(runner.run_day().damage_received_by(dummy.id) for _ in range(n_days))
+    return total / (n_days * rounds_per_day)
+
+
+def test_shillelagh_d12_lifts_l11_dpr_over_d10_at_a_fixed_enemy():
+    """The dice ladder's payoff, isolated: at the fixed L11 enemy, the L11 step
+    (Shillelagh 1d12) strictly out-damages the prior step (1d10).  (L10 and L11 do
+    NOT share an enemy — the enemy hardens AC 16 -> 17 — so this within-L11 die
+    ablation, not a cross-level compare, is the clean isolation of the ladder step.)"""
+    bigger = _mean_dpr_l11(shillelagh_die=(1, 12), n_days=600)
+    smaller = _mean_dpr_l11(shillelagh_die=(1, 10), n_days=600)
+    assert bigger > smaller, f"1d12 {bigger:.2f} !> 1d10 {smaller:.2f}"
+
+
+def test_l12_outdamages_l11_against_the_same_enemy():
+    """The monotonic consistency check with the enemy held FIXED: cr 11 and cr 12
+    are the SAME monster (AC 17 / DEX +3), so L12's gains (WIS 19 -> 20: +1 spell
+    to-hit / DC / damage, and Searing Arc 4d6 -> 5d6) must lift DPR over L11.  The
+    Shillelagh die is 1d12 at both, so this isolates the WIS-20 + upcast scaling."""
+    assert ss.LEVELS[11]["enemy_ac"] == ss.LEVELS[12]["enemy_ac"] == 17
+    assert ss.LEVELS[11]["enemy_dex_save"] == ss.LEVELS[12]["enemy_dex_save"] == 3
+    assert _mean_dpr(12, n_days=600) > _mean_dpr(11, n_days=600)

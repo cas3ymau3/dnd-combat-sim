@@ -133,6 +133,57 @@ type, condition, resource, …):
 
 ## Done
 
+- **Enumerated DICE LADDER (`scaling: ladder`) — the die-SIZE scaled quantity —
+  BUILT & VALIDATED (2026-06-15, session 10).** The §4.5 scaling typology's
+  next axis after dice-count: a break list paired with an arbitrary `(count,
+  sides)` per step, so BOTH size and count can change per break. GENERAL by
+  design (build once, reuse) — Shillelagh now, bardic inspiration / superiority /
+  psi dice later. **347 tests green (+9).** Branch `feature/dice-size-ladder`.
+  - **The shape.** `_resolve_scaling_dice` gains a `scaling: ladder` branch
+    (`_resolve_ladder`): reads `breaks` (ascending) + `dice` (one entry per step,
+    = len(breaks)+1), resolves the driver via the existing `_level_from_context`
+    (any `level_reference`), and indexes with the shared **threshold-list step
+    function** `_threshold_index` (factored out, now used by BOTH the cantrip
+    count rule and the ladder — `_CANTRIP_THRESHOLDS` is the cantrip's instance of
+    the per-feature `breaks` the schema flagged). The ladder resolves BEFORE the
+    `base`-parsing the count shapes share (it has no `base`, enumerating a full
+    die per step). Loud failures on missing/non-ascending `breaks`, missing
+    `dice`, or a length mismatch. Public reader `interpret_scaled_dice(ability,
+    context)` folds an ability's single `damage` die (Shillelagh's force die;
+    later feeds a `bonus_die` for inspiration/superiority — same scaled quantity).
+  - **First consumer — Shillelagh, Starfire Scion L11 (with L11 + L12 rows).**
+    Verified vs the 2024 spell (D&D Beyond / Roll20 / dnd2024.wikidot.com +
+    build-guide 41:353) per the per-feature ritual: the die scales on the cantrip
+    threshold list `[5, 11, 17]` BY CHARACTER LEVEL — **1d8 / 1d10 / 1d12 / 2d6**.
+    New `content/abilities/starfire_scion.yaml` `shillelagh` ability carries the
+    ladder; the build resolves the die via `interpret_scaled_dice({"character_
+    level": L})` at policy init and injects it into `_shillelagh_wis["dice"]`. The
+    baked `(1,10)` was REMOVED from the L9/L10 rows (the WIS attack OPTION —
+    bonus + which to-hit stat — stays row data; only the DIE is now data-driven).
+    L9/L10 retrofit is **DPR-neutral** (ladder yields the same 1d10 — all prior
+    L9/L10 tests stayed green). New **L11** (monk-7/druid-4, WIS 19 +4: only
+    offense change vs L10 is the 1d10→**1d12** step; monk-7 = Evasion, DPR-inert)
+    and **L12** (monk-8/druid-4, **WIS 20** via Resilient → +1 spell to-hit/DC/
+    damage; Searing Arc 4d6→**5d6** at slot 3, guide 41:106). Enemy AC/saves live
+    from the monster CSV at cr==level (cr11 & cr12 are BOTH AC17/DEX+3).
+  - **Validation (consistency/sanity — NOT number-matching).** `test_content.py`
+    (+6): ladder steps exact at every break boundary incl. the count-changing top
+    step (1d12→2d6); GENERAL across drivers/breaks (a bardic d6→d12 @5/10/15 and a
+    superiority d8→d12 @10/18); loud failures (missing level, malformed tables);
+    Shillelagh FROM DATA (1d8/1d10/1d12/2d6 @1/5/11/17); `interpret_scaled_dice`
+    rejects non-damage shapes. `test_starfire_scion.py` (+3): the die resolves off
+    the ladder by character level (1d10 @L9/10, 1d12 @L11/12) and reaches the
+    swing; an **L11 die ablation** at the fixed L11 enemy (1d12 20.85 > 1d10 19.89,
+    isolating the ladder step — L10/L11 don't share an enemy, AC 16→17); and a
+    **fixed-enemy monotonic** L12 > L11 (both AC17/DEX+3, isolating WIS-20 + the
+    4d6→5d6 upcast). DPR ladder L9 18.04 / L10 20.41 / L11 20.85 / L12 24.34, all
+    under their ceilings (32/36/38/44).
+  - **Deferred (unchanged):** the 2d6 L17+ step is in the ladder data but no L17
+    row is wired yet; `_CANTRIP_THRESHOLDS`-as-literal stays (the cantrip count
+    rule doesn't need a per-feature `breaks` until a non-`[5,11,17]` count scaler
+    appears); inspiration/superiority `bonus_die` consumers; ATTACK-TAXONOMY
+    typology; Elemental Adept fire; outputs layer.
+
 - **`cast_effect` combat-effect PRIMITIVE — a first-class NON-DAMAGING cast (buffs
   & debuffs) — BUILT & VALIDATED (2026-06-15, session 9).** The first engine
   primitive built design-first against the WHOLE corpus rather than one build's
@@ -905,22 +956,24 @@ Strike. Upcast scaling comes later up the ladder.
 (session 8)** — see the session-8 Done entry; NO new engine primitive, as predicted.
 The L1/L4/L5/L9/L10 ladder is now wired. **The `cast_effect` combat-buff/debuff
 PRIMITIVE is DONE (session 9)** — see its Done entry + `design/buff_primitive.md`;
-Shillelagh + Starry Form now raise their buffs through it (DPR-neutral). **Open next
-steps (pick with the user):** (0) **next buff-substrates** — StatusSet payload +
-`application_save` (advantage/condition/immunity + debuff resist), then
-incoming-damage resistance + defender thorns (Fire Shield / Rage); the sequenced
-plan in `design/buff_primitive.md` "Next-steps sequence";
-(a) **L12** — WIS → 20 (a data row; +1 to-hit/DC/damage, Shillelagh die unchanged at
-char L11+ would be 1d12 — note the die-size step at L11); (b) **L11+ Shillelagh die
-→ 1d12** (still bake-able, or finally build the data-driven `scaling: ladder` if a
-continuous ladder past L10 is wanted — see "die-size scaling" below); (c) the
-**ATTACK-TAXONOMY** typology (engine-vocabulary work — discuss first); (d) the
+Shillelagh + Starry Form now raise their buffs through it (DPR-neutral). **The
+DICE LADDER (`scaling: ladder`) is DONE (session 10)** — see its Done entry; the
+Shillelagh die now resolves from YAML by character level (1d8/1d10/1d12/2d6), and
+the **L11 + L12 rows are wired** (L11 = the 1d10→1d12 step; L12 = WIS 20 + Searing
+Arc 5d6). **Open next steps (pick with the user):** (0) **next buff-substrates** —
+StatusSet payload + `application_save` (advantage/condition/immunity + debuff
+resist), then incoming-damage resistance + defender thorns (Fire Shield / Rage);
+the sequenced plan in `design/buff_primitive.md` "Next-steps sequence";
+(a) **L13+** — continue the Scion ladder past L12 (data rows; next die-size step is
+L17 Shillelagh → 2d6, already in the ladder data); (b) the
+**ATTACK-TAXONOMY** typology (engine-vocabulary work — discuss first); (c) the
 **outputs layer** (still ~10% built — design §8). No remaining engine primitive is
-forced by the Scion's offense axis; what's left is data rows, the deferred die-size
-ladder, and the two cross-cutting investments (taxonomy, outputs).
+forced by the Scion's offense axis; what's left is data rows and the two
+cross-cutting investments (taxonomy, outputs).
 
-**die-size scaling — the next unbuilt SCALED-QUANTITY (flagged, first consumer
-SHILLELAGH at L9; recorded with user 2026-06-13).** 2024 Shillelagh has cantrip
+**die-size scaling — BUILT 2026-06-15 (session 10; `scaling: ladder`), first
+consumer Shillelagh at Starfire Scion L11.** See the session-10 Done entry. The
+original flag (kept for the rationale) follows. 2024 Shillelagh has cantrip
 scaling like any damaging cantrip, but it grows the **die SIZE** — and its top
 step changes the COUNT too: **1d8 → 1d10 (L5) → 1d12 (L11) → 2d6 (L17)**. That is
 NOT the uniform die-COUNT walk `_resolve_scaling_dice` handles (it holds size
