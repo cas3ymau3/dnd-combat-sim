@@ -149,6 +149,23 @@ class Choice:
     # radiant but a feature (is_spell=False); plain weapon attacks leave both unset.
     damage_type: "str | None" = None
     is_spell: bool = False
+    # --- cast_effect: a first-class non-damaging cast (buff/debuff) ---
+    # action_type="cast_effect" installs a PERSISTING effect and pushes NO
+    # DamageEvent (the honest model for raising a combat-long buff, or a debuff on
+    # an enemy — see design/buff_primitive.md).  The scheduler drains `cost` +
+    # `resource_cost` generically (as for any Choice), then routes the payload:
+    #   - `modifiers`: pushed onto the BEARER's ModifierStack under `effect_source`
+    #     (bearer = `target` if set — a debuff — else the actor — a self-buff);
+    #   - `concentration`: when True, sets the ACTOR's concentration = effect_source;
+    #   - capability buffs carry NO payload — the policy reads its own flag; the
+    #     cast_effect exists only to consume the action economy honestly.
+    # `duration="combat"` modifiers are swept at the combat boundary; "day" (10-min/
+    # 1-hr buffs spanning combats) is reserved for the DurationBuffTracker path.
+    # `modifiers` holds Modifier instances (typed loosely to avoid an import cycle).
+    effect_source: "str | None" = None
+    modifiers: list = field(default_factory=list)
+    concentration: bool = False
+    duration: str = "combat"
 
 
 # ---------------------------------------------------------------------------

@@ -549,6 +549,21 @@ class StarfireScionPolicy:
         res = snapshot.resources
         choices: list[Choice] = []
 
+        # Starry Form (L4/L5) activation as a first-class cast_effect on turn 1
+        # (design/buff_primitive.md): the Star Druid activates the form, which then
+        # grants its special ability.  For the ARCHER form the activation is BUNDLED
+        # with its bonus-action archer attack, so the cast costs NO separate economy
+        # (cost="none") and the archer BA still fires — DPR-neutral.  Chalice/Dragon
+        # (later) would activate with a real cost="bonus_action".  Availability (a
+        # Wild Shape charge) is decided + consumed in on_combat_start, which sets
+        # _starry_form_active; decide() only emits the activation event.
+        if self._starry_form_active and snapshot.round_number == 1:
+            choices.append(Choice(
+                action_type="cast_effect",
+                cost="none",
+                effect_source="starry_form",
+            ))
+
         # ACTION: Guiding Bolt (free Star Map cast) while charges remain, else a
         # quarterstaff attack.  Greedy on the free casts — across statistically
         # identical combats, when they fire does not change mean DPR.
@@ -585,13 +600,22 @@ class StarfireScionPolicy:
         #   4. Unarmed strike.
         #
         # EXCEPT turn 1 of each combat, when the bonus action is spent CASTING
-        # Shillelagh (guide 41:539 — "BA:shillelagh") — modeled by withholding the
-        # turn-1 BA damage option.  Shillelagh then persists and buffs every
-        # quarterstaff swing for the rest of the combat.  (Pure read: the cantrip
-        # was flagged active in on_combat_start; here we only consult round_number.)
-        casting_shillelagh = self._shillelagh_active and snapshot.round_number == 1
-        if res.get("bonus_action", 0) >= 1 and not casting_shillelagh:
-            if (
+        # Shillelagh (guide 41:539 — "BA:shillelagh").  This is now a first-class
+        # cast_effect that CONSUMES the bonus action (no damage) — the honest model,
+        # replacing the former "withhold the BA option" suppression (DPR-identical:
+        # the BA is consumed either way).  Shillelagh then persists and buffs every
+        # quarterstaff swing for the rest of the combat (the weapon swings read
+        # _shillelagh_active), so the BA damage ladder runs from round 2.  (Pure
+        # read: the cantrip was flagged active in on_combat_start; here we only
+        # consult round_number.)  See design/buff_primitive.md.
+        if res.get("bonus_action", 0) >= 1:
+            if self._shillelagh_active and snapshot.round_number == 1:
+                choices.append(Choice(
+                    action_type="cast_effect",
+                    cost="bonus_action",
+                    effect_source="shillelagh",
+                ))
+            elif (
                 self._has_searing_arc
                 and action_is_weapon_attack
                 and res.get("focus_points", 0) >= self._sas_fp_cost

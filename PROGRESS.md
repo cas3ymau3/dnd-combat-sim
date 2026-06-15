@@ -72,7 +72,27 @@ type, condition, resource, …):
    improvements compound and are cheapest to make while the context is fresh.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-15, session 8) — DONE:** wired **THREAD B at L9 + L10** (Extra Attack +
+> (2026-06-15, session 9) — DONE:** built the **`cast_effect` combat-effect
+> PRIMITIVE** — a first-class NON-DAMAGING cast (buffs AND debuffs) the scheduler
+> spends action economy + resources on and that pushes NO DamageEvent. Surveyed the
+> build-guide corpus for buffs/debuffs FIRST (user-directed) and locked the design in
+> `design/buff_primitive.md`: a general **envelope** (cost / resource / target /
+> duration+clock / concentration / source-labelled payload + optional debuff
+> application-save) over a **7-substrate payload registry** (ModifierStack /
+> policy-flag / StatusSet / incoming-damage-mod / defender-rider / outgoing-rider /
+> zone), where ONE cast installs a SET of labelled payloads across substrates (forced
+> by the **Fire Shield** stress test = resistance + thorns + mode-choice). **Debuffs
+> are the SAME primitive, target-parameterised** (not a parallel one). NOW-SCOPE
+> built: ModifierStack + policy-flag payloads, concentration, and a combat-boundary
+> sweep (`Entity.clear_combat_buffs`). Retrofitted **Shillelagh** (turn-1 BA
+> `cast_effect`, replacing the suppression hack — DPR-identical) and **Starry Form**
+> activation (a `cost="none"` BUNDLED cast_effect — DPR-neutral; the same shape will
+> carry a real BA for Chalice/Dragon). **338 tests green (+7).** DESIGNED-IN &
+> sequenced for next sessions: StatusSet payload + application-save
+> (advantage/condition/immunity + debuff resist), then incoming-damage resistance +
+> defender thorns (Fire Shield / Rage). MCP-toggle recommendation re-made.
+>
+> **Session scope (2026-06-15, session 8) — DONE:** wired **THREAD B at L9 + L10** (Extra Attack +
 > martial-arts 1d8 + first Shillelagh) as pure DATA + POLICY — NO new engine
 > primitive, as predicted. New **L9 LEVELS row** (Monk-5/Druid-4; stats identical to
 > L10 — PB 4, WIS 19/+4; enemy AC 16 / DEX +2 from the monster CSV at cr==9; hit
@@ -112,6 +132,68 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **`cast_effect` combat-effect PRIMITIVE — a first-class NON-DAMAGING cast (buffs
+  & debuffs) — BUILT & VALIDATED (2026-06-15, session 9).** The first engine
+  primitive built design-first against the WHOLE corpus rather than one build's
+  immediate need. **338 tests green (+7).** Branch
+  `feature/cast-effect-buff-primitive`. Design contract: `design/buff_primitive.md`.
+  - **Why / how it was scoped.** The model raised "a combat-long buff" three ad-hoc
+    ways (Bless = modifier-stack + `before_combat` sync with round-1 *suppression*;
+    Starry Form = free flag in `on_combat_start`; Shillelagh = turn-1 BA
+    *suppression*), each faking a different part of the cast. User directed a
+    corpus-wide survey of buffs/debuffs BEFORE locking the Choice shape (Rage,
+    Sacred Weapon's +CHA-on-attacks, Innate Sorcery's spell-class gating, the auras /
+    Gnome Cunning advantage-grants, Fire Shield, the Depth Guard elemental node, …).
+  - **The locked design (`design/buff_primitive.md`).** A general **envelope** —
+    `Choice(action_type="cast_effect", cost, resource_cost, target, effect_source,
+    concentration, duration)` — over a **7-substrate payload registry**:
+    (1) ModifierStack [numeric], (2) policy-flag [capability], (3) StatusSet
+    [advantage/condition/immunity], (4) incoming-damage modifier [resistance/vuln],
+    (5) defender-side reactive rider [thorns], (6) outgoing predicate rider [Rage,
+    Hunter's Mark], (7) zone/summon [deferred — multi-enemy/spatial]. Two findings
+    fixed the shape: **(a)** ONE cast installs a *set* of labelled payloads across
+    substrates — forced by the **Fire Shield** stress test (resistance + thorns +
+    warm/chill mode-choice); **(b)** **debuffs are the same primitive,
+    target-parameterised** (ModifierStack/StatusSet act on whichever entity holds
+    them), needing only an optional `application_save` (reuses the save machinery).
+    The `effect_source` label is the thread that makes the whole bundle removable
+    (sweep / failed-conc drop) and, later, attachable (riders/zones).
+  - **Now-scope built (substrates 1 + 2).** `Choice` gains `effect_source`,
+    `modifiers`, `concentration`, `duration`; scheduler `cast_effect` branch
+    (`scheduler.py`) installs `modifiers` on the bearer (`target or actor`) under
+    `effect_source`, sets the actor's concentration if asked, and pushes NO event —
+    action economy + `resource_cost` are drained by the SAME generic code every
+    Choice uses. `Entity.note_combat_buff`/`clear_combat_buffs` + a `day_runner`
+    combat-boundary sweep remove combat-clock buffs (mirrors `StatusSet.clear()`),
+    so a combat-long cast does not leak. War Angel's Bless/MW/Shield are untouched
+    (they keep their own `before_combat` sync — not routed through `cast_effect`).
+  - **Retrofits (both DPR-neutral, per the build finding).** **Shillelagh** — the
+    turn-1 BA is now an honest `cast_effect(cost="bonus_action")` that consumes the
+    BA, replacing the "withhold the BA option" suppression (DPR-identical: the BA is
+    spent either way; the weapon swings still read `_shillelagh_active`). **Starry
+    Form** — activation is a `cast_effect(cost="none")` emitted on turn 1 (the Archer
+    form's activation is BUNDLED with its BA attack, so it consumes no separate
+    economy — DPR-neutral); the Wild-Shape availability decision stays in
+    `on_combat_start`. The same activation shape will carry `cost="bonus_action"` for
+    the bare-BA Chalice/Dragon forms when modelled (user's consistency rationale).
+  - **Validation (consistency, not number-matching).** `tests/test_cast_effect.py`
+    (+6): the self-buff installs a modifier with NO DamageEvent; concentration is set
+    on the actor; a `target`ed debuff lands on the enemy not the caster; economy +
+    resources are consumed; a capability (no-payload) cast runs clean and is not
+    tracked for sweep; `clear_combat_buffs` removes the combat-clock modifier + its
+    concentration. `tests/test_starfire_scion.py` (+1, 1 rewritten): the turn-1
+    Shillelagh BA is now a `cast_effect` (not a damage option), the BA ladder runs
+    from round 2, L1 (no Shillelagh) never casts it; Starry Form activation emits a
+    bundled `cost="none"` cast_effect only on round 1 when the form is active. The
+    L4/L5/L9/L10 DPR + ablation tests stayed green unchanged → the retrofits are
+    DPR-neutral as designed.
+  - **DESIGNED-IN, sequenced (not built):** StatusSet payload (3) + `application_save`
+    (advantage/condition/immunity + debuff resist — first consumer Innate Sorcery /
+    Faerie Fire / Bane); then incoming-damage resistance (4) + defender thorns (5)
+    (Fire Shield / Rage, lands with the enemy-strikes-back loop); then outgoing
+    riders (6), `choose_one` modes, source-gating tags; zones (7) gated on
+    multi-enemy/spatial. See `design/buff_primitive.md` "Next-steps sequence".
 
 - **THREAD B wired at L9 + L10 (Extra Attack + martial-arts 1d8 + first Shillelagh)
   — BUILT & VALIDATED (2026-06-15, session 8).** NO new engine primitive — pure
@@ -821,7 +903,13 @@ Strike. Upcast scaling comes later up the ladder.
 **Next on the Scion's ladder.** Thread A (Searing Arc Strike, L10) is DONE (session
 7). **Thread B (L9 + L10: Extra Attack + martial-arts 1d8 + Shillelagh) is DONE
 (session 8)** — see the session-8 Done entry; NO new engine primitive, as predicted.
-The L1/L4/L5/L9/L10 ladder is now wired. **Open next steps (pick with the user):**
+The L1/L4/L5/L9/L10 ladder is now wired. **The `cast_effect` combat-buff/debuff
+PRIMITIVE is DONE (session 9)** — see its Done entry + `design/buff_primitive.md`;
+Shillelagh + Starry Form now raise their buffs through it (DPR-neutral). **Open next
+steps (pick with the user):** (0) **next buff-substrates** — StatusSet payload +
+`application_save` (advantage/condition/immunity + debuff resist), then
+incoming-damage resistance + defender thorns (Fire Shield / Rage); the sequenced
+plan in `design/buff_primitive.md` "Next-steps sequence";
 (a) **L12** — WIS → 20 (a data row; +1 to-hit/DC/damage, Shillelagh die unchanged at
 char L11+ would be 1d12 — note the die-size step at L11); (b) **L11+ Shillelagh die
 → 1d12** (still bake-able, or finally build the data-driven `scaling: ladder` if a
