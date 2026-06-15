@@ -481,17 +481,29 @@ def make_training_dummy(level: int) -> Entity:
 
     HP is effectively infinite (threshold model).  The dummy carries the enemy AC
     (for attack rolls) and the DEX save bonus (for Sacred Flame's save) — both
-    live from monster_ac_and_saves_by_level.csv.  It has no policy and never acts
-    (the enemy does not strike back at these levels).
+    live from monster_ac_and_saves_by_level.csv.  Through L12 it has no policy and
+    never acts; if the level carries an ``enemy_attack`` profile it also gets an
+    ``attack_bonus`` + a flat melee damage profile so a ScriptedEnemyPolicy can
+    strike the character (the enemy-strikes-back loop — needed once defender-side
+    effects like Fire Shield's thorns come online; see make_day_runner).  An
+    ``enemy_resist`` block installs an INTRINSIC damage-type response (e.g. a
+    fire-resistant enemy that halves Searing Arc — substrate #4).
     """
     data = LEVELS[level]
+    base_stats: dict = {
+        "ac": data["enemy_ac"],
+        "dex_save": data["enemy_dex_save"],
+    }
+    ea = data.get("enemy_attack")
+    if ea:
+        base_stats["attack_bonus"] = ea["attack_bonus"]
+        base_stats["damage_dice"] = ea.get("damage_dice", (1, 8))
+        base_stats["damage_bonus"] = ea.get("damage_bonus", 0)
     return Entity(
         name=f"Dummy-AC{data['enemy_ac']}",
         hp=10**9,
-        base_stats={
-            "ac": data["enemy_ac"],
-            "dex_save": data["enemy_dex_save"],
-        },
+        base_stats=base_stats,
+        damage_response=data.get("enemy_resist"),
     )
 
 
@@ -852,24 +864,98 @@ class StarfireScionPolicy:
 
 
 # ---------------------------------------------------------------------------
+# Enemy-strikes-back loop
+# ---------------------------------------------------------------------------
+
+class ScriptedEnemyPolicy:
+    """Minimal enemy that strikes the character so DEFENDER-side effects do real
+    work (Fire Shield thorns — substrate #5; incoming-damage resistance easing
+    concentration — substrate #4).  Structurally identical to War Angel's enemy
+    policy (CLAUDE.md decision #12): makes ``n_attacks`` melee attacks per turn,
+    each (pre-rolled at on_combat_start so decide() stays dice-free) targeting the
+    character with probability ``char_target_prob`` — else a party member, which
+    we don't model, so a no-op for our metrics.
+
+    The enemy makes no decisions beyond targeting (flat damage, no riders); its
+    damage TO the character is irrelevant in the threshold model (it lands in the
+    character's own damage_received column, never the dummy's, so it never
+    pollutes DPR).  What matters is that a landed melee hit opens the character's
+    on_incoming_hit seam, where the thorns rider fires back at the enemy.
+    """
+
+    def __init__(
+        self,
+        target: Entity,
+        n_attacks: int = 2,
+        char_target_prob: float = 1.0,
+        rounds_per_combat: int = 4,
+    ) -> None:
+        self._target = target
+        self._n_attacks = n_attacks
+        self._p_pct = int(round(char_target_prob * 100))
+        self._rounds = rounds_per_combat
+        self._targets_char: dict[int, list[bool]] = {}
+
+    def on_combat_start(self, combat_index: int, rng: "SeededRNG") -> None:
+        # Pre-roll, per round and attack slot, whether it lands on the character.
+        self._targets_char = {
+            r: [rng.roll_one(100) <= self._p_pct for _ in range(self._n_attacks)]
+            for r in range(1, self._rounds + 1)
+        }
+
+    def decide(self, snapshot: GameState) -> list[Choice]:
+        if snapshot.resources.get("action", 0) < 1:
+            return []
+        choices: list[Choice] = []
+        for targets_char in self._targets_char.get(snapshot.round_number, []):
+            if not targets_char:
+                continue  # party-aimed: unmodeled → no-op for our metrics
+            # The first attack at the character spends the action; the rest are
+            # free multiattack swings (cost "none").
+            choices.append(Choice(
+                action_type="attack",
+                cost="action" if not choices else "none",
+                target=self._target,
+                weapon_stat="attack_bonus",
+            ))
+        return choices
+
+
+# ---------------------------------------------------------------------------
 # Full day-runner assembly (used by the validation harness / tests)
 # ---------------------------------------------------------------------------
 
 def make_day_runner(level: int, rng: "SeededRNG", rounds_per_combat: int = 4):
     """Assemble (DayRunner, character, dummy) for the given level.
 
-    The enemy carries no attack profile at these levels, so it gets no policy and
+    Through L12 the enemy carries no attack profile, so it gets no policy and
     never acts; DPR = damage dealt to the dummy = the character's whole output.
+    From the level where the row carries an ``enemy_attack`` profile, the enemy
+    also gets a ScriptedEnemyPolicy so it strikes the character — the
+    enemy-strikes-back loop that makes Fire Shield thorns (#5) and incoming-damage
+    resistance (#4) do real work.  DPR still reads the dummy's column, so the
+    enemy's own damage to the character never pollutes it.
     """
     char = make_starfire_scion(level)
     dummy = make_training_dummy(level)
     policy = StarfireScionPolicy(
         level=level, character=char, target=dummy, rounds_per_combat=rounds_per_combat
     )
+    policies: dict[int, object] = {char.id: policy}
+
+    ea = LEVELS[level].get("enemy_attack")
+    if ea:
+        policies[dummy.id] = ScriptedEnemyPolicy(
+            target=char,
+            n_attacks=ea.get("n_attacks", 2),
+            char_target_prob=ea.get("char_target_prob", 1.0),
+            rounds_per_combat=rounds_per_combat,
+        )
+
     runner = DayRunner(
         rng=rng,
         entities=[char, dummy],
-        policies={char.id: policy},
+        policies=policies,
         rounds_per_combat=rounds_per_combat,
     )
     return runner, char, dummy

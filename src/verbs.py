@@ -148,7 +148,7 @@ def resolve_attack_roll(
     next_sequence: int,
     decider: "Callable[[int], int] | None" = None,
     hit_decider: "Callable[[bool], tuple[list[tuple[int, int]], list[str]]] | None" = None,
-    intercept_decider: "Callable[[int], tuple[int, object]] | None" = None,
+    intercept_decider: "Callable[[int], tuple[int, object, object]] | None" = None,
 ) -> int:
     """Resolve one attack roll.  Returns the next available sequence number.
 
@@ -182,14 +182,17 @@ def resolve_attack_roll(
         returned dice double on a crit like any others.  None = no on-hit
         decision available.
     intercept_decider:
-        Optional callable `(hit_margin) -> (ac_bonus, counter_spec | None)` for
-        the DEFENDER's in-flight reaction (intercept_event — e.g. Flourish Parry
-        / Shield).  Called on a confirmed hit, AFTER any Guided-Strike rescue and
-        BEFORE the attacker's on-hit rider.  `hit_margin = total_roll - AC`
-        (>= 0).  If the returned `ac_bonus` exceeds it, the hit flips to a miss
-        (no damage, no concentration check); if a `counter_spec` accompanies a
-        flip, a counter attack is enqueued.  The scheduler-side closure already
-        validated/consumed the defender's resources.  None = no interceptor.
+        Optional callable `(hit_margin) -> (ac_bonus, counter_spec | None,
+        reactive_damage | None)` for the DEFENDER's in-flight reaction
+        (intercept_event — e.g. Flourish Parry / Shield / Fire Shield thorns).
+        Called on a confirmed hit, AFTER any Guided-Strike rescue and BEFORE the
+        attacker's on-hit rider.  `hit_margin = total_roll - AC` (>= 0).  If the
+        returned `ac_bonus` exceeds it, the hit flips to a miss (no damage, no
+        concentration check); if a `counter_spec` accompanies a flip, a counter
+        attack is enqueued.  If the hit STILL lands and `reactive_damage` is
+        present, automatic thorns damage is enqueued against the attacker.  The
+        scheduler-side closure already validated/consumed the defender's
+        resources.  None = no interceptor.
     """
     actor = event.actor
     target = event.target
@@ -276,7 +279,7 @@ def resolve_attack_roll(
     # concentration check).  On a flip with a counter, enqueue the counter.
     if hit and intercept_decider is not None:
         hit_margin = int(total_roll) - int(target_ac)
-        ac_bonus, counter_spec = intercept_decider(hit_margin)
+        ac_bonus, counter_spec, reactive_damage = intercept_decider(hit_margin)
         if ac_bonus > 0 and total_roll < int(target_ac) + ac_bonus:
             hit = False
             log.info(
@@ -296,6 +299,32 @@ def resolve_attack_roll(
                 )
                 queue.push(counter_event)
                 next_sequence += 1
+        # Thorns (Fire Shield, substrate #5): when the melee hit LANDS (not
+        # flipped to a miss above), the bearer deals automatic damage to the
+        # attacker — no attack roll.  Enqueued as a DamageEvent FROM the bearer
+        # (the defender = this event's target) TO the attacker (this event's
+        # actor), so it routes through the attacker's own damage-type response
+        # and counts as the bearer's outgoing damage.
+        if hit and reactive_damage is not None and target is not None:
+            thorns_event = DamageEvent(
+                tick=make_tick(round_, turn_idx, next_sequence),
+                actor=target,                       # the bearer deals the thorns
+                target=actor,                       # ...to the attacker
+                is_crit=False,
+                damage_dice=reactive_damage.damage_dice,
+                damage_bonus=0,
+                damage_type=reactive_damage.damage_type,
+                is_spell=False,
+                cost="none",
+            )
+            queue.push(thorns_event)
+            next_sequence += 1
+            log.info(
+                "  %s thorns -> %s  [%dd%d %s]",
+                target.name, actor.name,
+                reactive_damage.damage_dice[0], reactive_damage.damage_dice[1],
+                reactive_damage.damage_type,
+            )
 
     # On-hit decision point: fires BEFORE apply_masteries_on_hit so any extra
     # masteries returned by the policy (e.g. Brutality::bluff adding vex) are
@@ -506,6 +535,23 @@ def resolve_damage(
     if event.halved:
         total //= 2
 
+    # Phase 7: defender damage-type RESPONSE (substrate #4 — resistance /
+    # vulnerability / immunity by type).  Applied AFTER all other modifiers
+    # (2024 RAW), so it stacks after phase-6 halving, and BEFORE take_damage so
+    # the post-response amount is what drives any concentration save.  Resistance
+    # halves (rounded down), vulnerability doubles, immunity zeroes.  An untyped
+    # hit (damage_type None) or a target with no matching response is unchanged,
+    # so this is inert on every existing damage path.
+    damage_response = (
+        target.damage_response_for(event.damage_type) if target is not None else None
+    )
+    if damage_response == "resistance":
+        total //= 2
+    elif damage_response == "vulnerability":
+        total *= 2
+    elif damage_response == "immunity":
+        total = 0
+
     log.info(
         "%s deals %d damage to %s  [%dd%d%s rolls=%s%s bonus=%d%s]",
         actor.name,
@@ -521,6 +567,8 @@ def resolve_damage(
     )
     if rider_total:
         log.info("  + fueled rider %d (spell radiant damage)", rider_total)
+    if damage_response is not None:
+        log.info("  %s applied %s to %s damage", target.name, damage_response, event.damage_type)
 
     if target is not None:
         target.take_damage(total)

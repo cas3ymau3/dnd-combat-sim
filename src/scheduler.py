@@ -323,15 +323,18 @@ class Scheduler:
         return hit_decider
 
     def _make_intercept_decider(self, event: "AttackRollEvent"):
-        """Return a `(hit_margin) -> (ac_bonus, counter_spec | None)` callable for
-        the TARGET's in-flight reaction (intercept_event — Flourish Parry, Shield).
+        """Return a `(hit_margin) -> (ac_bonus, counter_spec | None, reactive_damage
+        | None)` callable for the TARGET's in-flight reaction (intercept_event —
+        Flourish Parry, Shield, Fire Shield thorns).
 
         Mirror of the miss/hit deciders, but it consults the DEFENDER's policy
         (event.target), not the attacker's.  The closure calls
         policy.on_incoming_hit; validates and consumes the DEFENDER's resources;
-        returns the AC bonus to apply and an optional counter spec.  resolve_
-        attack_roll applies the bonus (flipping the hit to a miss if it exceeds
-        the margin) and enqueues the counter on a flip.  None = no interceptor.
+        returns the AC bonus to apply, an optional counter spec, and optional
+        thorns (reactive) damage.  resolve_attack_roll applies the bonus (flipping
+        the hit to a miss if it exceeds the margin), enqueues the counter on a
+        flip, and enqueues the thorns damage when the hit still lands.  None = no
+        interceptor.
         """
         from .policy import IncomingAttackContext
 
@@ -358,16 +361,16 @@ class Scheduler:
             )
             response = on_incoming(ctx)
             if response is None:
-                return 0, None
+                return 0, None, None
             # Validate affordability against the DEFENDER's resources, then
             # consume.  (The reaction itself is the policy's once-per-round gate,
             # not an engine resource — see InterceptResponse.)
             if any(target.resources.available(n) < a
                    for n, a in response.resource_cost.items()):
-                return 0, None
+                return 0, None, None
             for n, a in response.resource_cost.items():
                 target.resources.consume(n, a)
-            return response.ac_bonus, response.counter
+            return response.ac_bonus, response.counter, response.reactive_damage
 
         return intercept_decider
 
@@ -641,6 +644,11 @@ class Scheduler:
                         bearer.add_modifier(mod)
                     for spec in choice.statuses:
                         bearer.statuses.apply(spec.name, spec.value, spec.expiry)
+                    # Damage-type responses (substrate #4 — Fire Shield resist):
+                    # installed on the bearer under effect_source; add_damage_response
+                    # notes the source so the boundary sweep clears it.
+                    if choice.damage_response and choice.effect_source:
+                        bearer.add_damage_response(choice.effect_source, choice.damage_response)
                     # Modifiers are not auto-swept (statuses are) → note the source
                     # on the bearer so its modifiers clear at the combat boundary.
                     if choice.modifiers and choice.effect_source and choice.duration == "combat":
