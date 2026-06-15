@@ -692,14 +692,14 @@ def test_l13_bluff_suppressed_on_round1_smite():
 def test_l13_enemy_policy_targeting_extremes():
     char = war_angel.make_war_angel(13)
     # Always target the character → 3 attacks, first costs the action.
-    always = war_angel.WarAngelEnemyPolicy(target=char, n_attacks=3, char_target_prob=1.0)
+    always = war_angel.ScriptedEnemyPolicy(target=char, n_attacks=3, char_target_prob=1.0)
     always.on_combat_start(0, SeededRNG(0))
     choices = always.decide(_l13_snapshot(1))
     assert len(choices) == 3
     assert choices[0].cost == "action"
     assert all(c.cost == "none" for c in choices[1:])
     # Never target the character → no attacks.
-    never = war_angel.WarAngelEnemyPolicy(target=char, n_attacks=3, char_target_prob=0.0)
+    never = war_angel.ScriptedEnemyPolicy(target=char, n_attacks=3, char_target_prob=0.0)
     never.on_combat_start(0, SeededRNG(0))
     assert never.decide(_l13_snapshot(1)) == []
 
