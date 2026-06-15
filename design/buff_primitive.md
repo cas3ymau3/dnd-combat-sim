@@ -3,7 +3,8 @@
 > Design note for the first-class **non-damaging cast** action. Read alongside
 > `design/design.md` (§4 decision points, §6 modifier stack) and
 > `ability_schema.md` (§4.5 scaling, the trigger/effect/cost layers). Status:
-> **design locked 2026-06-15**; now-scope = modifier + capability-flag payloads.
+> **design locked 2026-06-15**; built so far = substrates (1) ModifierStack,
+> (2) policy-flag (session 9), and (3) StatusSet + `application_save` (session 11).
 
 ---
 
@@ -75,7 +76,7 @@ addition); `cast_effect` just installs a labeled payload into the matching one.
 |---|---|---|---|---|
 | 1 | **ModifierStack** | `modifiers.py`, folded by `entity.stat()` | flat / rolled / stat-derived / additive numeric on a rolled stat (attack, damage, AC, save) | **BUILD NOW** |
 | 2 | **policy-flag** | the build's policy (read in `decide`) | a new attack option / capability becomes available | **BUILD NOW** |
-| 3 | **StatusSet** | `statuses.py`, consumed by `roll_d20` (+ saves) | advantage / disadvantage grant; condition; immunity; save floor | designed-in |
+| 3 | **StatusSet** | `statuses.py`, consumed by `roll_d20` (+ saves) | advantage / disadvantage grant; condition; immunity; save floor | **BUILT** (session 11) |
 | 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | designed-in (Fire Shield) |
 | 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | designed-in (Fire Shield) |
 | 6 | **outgoing rider** | `on_hit` / `on_deal_damage` seams | predicate-gated extra damage (Rage melee-STR, Hunter's Mark vs-target, Divine Favor per-hit) | designed-in |
@@ -125,9 +126,23 @@ validated — they keep their own `before_combat` sync; not routed through
 
 ## Next-steps sequence (subsequent sessions, in order)
 
-1. **StatusSet payload (3) + `application_save`** — first consumer e.g. a sorcerer
-   build's Innate Sorcery, Faerie Fire, or Bane. Wires advantage/condition/immunity
-   grants + the debuff resist roll. (Both speculative today — no L9/L10 consumer.)
+1. ~~**StatusSet payload (3) + `application_save`**~~ ✓ **BUILT (session 11).**
+   `Choice` gained a `statuses` (list of `StatusSpec`) payload and an optional
+   `application_save` (`ApplicationSave(save_stat, dc_stat, on_success)`); the
+   scheduler `cast_effect` branch rolls the bearer's resist save vs the caster's
+   DC (reusing `resolve_saving_throw`), and on no-resist installs the statuses on
+   the bearer's StatusSet (a made save negates the WHOLE payload — modifiers +
+   statuses). `resolve_attack_roll` now reads two PERSISTENT (read-not-consumed)
+   advantage grants: `attack_advantage_against` on the target (Faerie Fire — any
+   attacker) and `spell_attack_advantage` on the actor (Innate Sorcery — gated on
+   `is_spell`). Consumers Innate Sorcery (self-grant, no save) + Faerie Fire
+   (debuff, DEX save) validated via test policies (both speculative — no Scion
+   consumer). Status-only concentration buffs now note their source on the ACTOR
+   so the combat-boundary sweep drops the caster's concentration even when the
+   bearer is the enemy. **Still designed-in for (3): conditions (frightened, etc.),
+   immunity/save-floor grants, and the sorcerer-class source-gating tag** (Innate
+   Sorcery's "Sorcerer spells only" — modeled here as the simpler `is_spell` gate,
+   correct for a pure-caster build; a multiclass needs a class-of-origin tag).
 2. **Incoming-damage modifier (4) + defender-side thorns rider (5)** — first
    consumer Fire Shield (and Rage's resistances). Couples to the incoming-damage
    loop (enemy strikes back), so it lands naturally when a Scion level faces an

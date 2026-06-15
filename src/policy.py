@@ -68,6 +68,30 @@ class GameState:
 
 
 # ---------------------------------------------------------------------------
+# ApplicationSave — the optional debuff resist roll on a cast_effect
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class ApplicationSave:
+    """A target's saving throw to resist a debuff cast (cast_effect only).
+
+    When a `cast_effect` Choice carries one, the BEARER (the debuff's target)
+    rolls `save_stat` (e.g. "dex_save") vs the CASTER's `dc_stat` (the actor's
+    spell save DC) before the payload installs.  This reuses the exact save
+    machinery (`resolve_saving_throw`) the save-for-damage path uses — debuffs
+    are the same primitive, target-parameterised (design/buff_primitive.md).
+
+    `on_success` decides what a made save does to the WHOLE payload (modifiers
+    and statuses both): "negate" — the only mode built — means a successful save
+    blocks the entire effect (Faerie Fire, Bane).  A lesser-effect-on-success
+    debuff would be a new mode added when a consumer needs it.
+    """
+    save_stat: str
+    dc_stat: str = "spell_save_dc"
+    on_success: str = "negate"
+
+
+# ---------------------------------------------------------------------------
 # Choice — what the policy wants to do
 # ---------------------------------------------------------------------------
 
@@ -156,16 +180,26 @@ class Choice:
     # `resource_cost` generically (as for any Choice), then routes the payload:
     #   - `modifiers`: pushed onto the BEARER's ModifierStack under `effect_source`
     #     (bearer = `target` if set — a debuff — else the actor — a self-buff);
+    #   - `statuses`: applied to the BEARER's StatusSet under the same bearer rule
+    #     (substrate #3 — advantage/condition/immunity grants, e.g. Faerie Fire on
+    #     a target or Innate Sorcery on self);
     #   - `concentration`: when True, sets the ACTOR's concentration = effect_source;
+    #   - `application_save`: debuff-only — the bearer rolls to resist; a made save
+    #     negates the WHOLE payload (modifiers + statuses).  None = it always lands.
     #   - capability buffs carry NO payload — the policy reads its own flag; the
     #     cast_effect exists only to consume the action economy honestly.
     # `duration="combat"` modifiers are swept at the combat boundary; "day" (10-min/
     # 1-hr buffs spanning combats) is reserved for the DurationBuffTracker path.
-    # `modifiers` holds Modifier instances (typed loosely to avoid an import cycle).
+    # (Combat-clock STATUSES are swept unconditionally by StatusSet.clear, so they
+    # need no duration bookkeeping.)
+    # `modifiers`/`statuses` hold Modifier/StatusSpec instances (typed loosely to
+    # avoid an import cycle); `application_save` holds an ApplicationSave.
     effect_source: "str | None" = None
     modifiers: list = field(default_factory=list)
+    statuses: list = field(default_factory=list)
     concentration: bool = False
     duration: str = "combat"
+    application_save: "ApplicationSave | None" = None
 
 
 # ---------------------------------------------------------------------------

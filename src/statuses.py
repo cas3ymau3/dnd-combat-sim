@@ -47,6 +47,28 @@ log = logging.getLogger(__name__)
 # StatusEntry
 # ---------------------------------------------------------------------------
 
+@dataclass(frozen=True)
+class StatusSpec:
+    """A status to GRANT, carried as a cast_effect payload (substrate #3).
+
+    The declarative twin of `Modifier` (the modifier payload): a `cast_effect`
+    Choice lists the statuses it installs, and the scheduler applies each onto
+    the bearer's StatusSet under the cast's `effect_source`.  See
+    design/buff_primitive.md substrate (3) — advantage / condition / immunity
+    grants.
+
+    Fields mirror StatusSet.apply: `name` (the status key the engine reads —
+    e.g. "attack_advantage_against" on a Faerie-Fire'd target, or
+    "spell_attack_advantage" on an Innate-Sorcery caster), `value` (payload —
+    True for a plain flag, or e.g. a target id), and `expiry` (None for a
+    combat-clock status that the combat-boundary StatusSet.clear() sweeps, since
+    a 1-minute buff spans the whole encounter and never tick-expires mid-combat).
+    """
+    name: str
+    value: Any = True
+    expiry: tuple[int, int] | None = None
+
+
 @dataclass
 class StatusEntry:
     """One active status.
