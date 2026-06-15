@@ -51,6 +51,13 @@ class Entity:
         ki, war priest charges, etc.).  Defaults to an empty pool.
         Turn-level action economy (action, bonus_action, reaction) is managed
         by the Scheduler and is NOT stored here.
+    damage_response:
+        Optional INTRINSIC damage-type responses (a monster trait) — a
+        {damage_type: kind} dict where kind is "resistance" / "vulnerability" /
+        "immunity", e.g. {"fire": "resistance"} for a fire-resistant enemy.
+        Read defender-side in resolve_damage (substrate #4).  Cast-installed
+        responses (Fire Shield's resist-cold/fire) are added separately via
+        add_damage_response and swept at the combat boundary.
     """
 
     def __init__(
@@ -59,6 +66,7 @@ class Entity:
         hp: int | float,
         base_stats: dict[str, int | float | tuple] | None = None,
         resources: ResourcePool | None = None,
+        damage_response: dict[str, str] | None = None,
     ) -> None:
         self.id: int = next(_id_counter)
         self.name = name
@@ -80,6 +88,16 @@ class Entity:
         # clear_combat_buffs (mirrors StatusSet.clear).  Capability buffs carry no
         # modifier and are not tracked here (the policy resets its own flag).
         self._combat_buff_sources: set[str] = set()
+        # Damage-type responses (substrate #4 — design/buff_primitive.md): how this
+        # entity reacts to INCOMING damage of a given type, read defender-side in
+        # resolve_damage.  Two layers, combined by damage_response_for:
+        #   - `damage_response`: INTRINSIC (a monster trait, e.g. fire resistance),
+        #     set at construction and never swept.
+        #   - `_effect_damage_response`: source → {type: kind} payloads installed by
+        #     the cast_effect primitive (Fire Shield's resist-cold/fire), labelled
+        #     by effect_source and swept at the combat boundary like the modifiers.
+        self.damage_response: dict[str, str] = dict(damage_response or {})
+        self._effect_damage_response: dict[str, dict[str, str]] = {}
         # Cumulative telemetry (design §8 outputs): concentration checks forced
         # by incoming damage and how many broke a spell.  Never auto-reset;
         # callers diff or average across runs.
@@ -178,9 +196,57 @@ class Entity:
         because each combat restarts the round counter."""
         for source in self._combat_buff_sources:
             self.remove_modifier(source)
+            self._effect_damage_response.pop(source, None)
             if self.concentration == source:
                 self.concentration = None
         self._combat_buff_sources.clear()
+
+    # ------------------------------------------------------------------
+    # Damage-type responses (substrate #4 — resistance / vuln / immunity)
+    # ------------------------------------------------------------------
+
+    def add_damage_response(self, source: str, responses: dict[str, str]) -> None:
+        """Install a cast_effect damage-type response payload under *source*.
+
+        `responses` is a {damage_type: kind} dict (kind ∈ resistance /
+        vulnerability / immunity), e.g. {"fire": "resistance"} for Fire Shield's
+        chill mode.  Labelled by `source` (the effect_source) and noted for the
+        combat-boundary sweep, so it clears with the rest of the cast's payload.
+        """
+        self._effect_damage_response[source] = dict(responses)
+        self.note_combat_buff(source)
+
+    def damage_response_for(self, damage_type: str | None) -> str | None:
+        """The effective response to *damage_type* — "resistance" / "vulnerability"
+        / "immunity" / None — combining the intrinsic trait and every installed
+        cast_effect payload.
+
+        2024 RAW combination: immunity dominates; resistance and vulnerability to
+        the same type CANCEL (net no change → None); otherwise whichever is
+        present.  Multiple instances of the same kind don't stack (resistance
+        halves once).  None damage_type (untyped weapon hits) → no response.
+        """
+        if damage_type is None:
+            return None
+        kinds: set[str] = set()
+        intrinsic = self.damage_response.get(damage_type)
+        if intrinsic:
+            kinds.add(intrinsic)
+        for responses in self._effect_damage_response.values():
+            kind = responses.get(damage_type)
+            if kind:
+                kinds.add(kind)
+        if "immunity" in kinds:
+            return "immunity"
+        has_res = "resistance" in kinds
+        has_vuln = "vulnerability" in kinds
+        if has_res and has_vuln:
+            return None  # cancel (2024 RAW)
+        if has_res:
+            return "resistance"
+        if has_vuln:
+            return "vulnerability"
+        return None
 
     # ------------------------------------------------------------------
     # Repr

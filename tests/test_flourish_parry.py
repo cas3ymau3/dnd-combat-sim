@@ -101,7 +101,7 @@ def test_parry_flips_marginal_hit_to_miss():
     # d20=13 vs AC 10 → hit by 3. +5 AC → AC 15 > 13 → flips to a miss.
     resolve_attack_roll(a_ev := AttackRollEvent(tick=make_tick(1, 0, 1), actor=a, target=d),
                         FakeRNG([13]), q, next_sequence=2,
-                        intercept_decider=lambda margin: (5, None))
+                        intercept_decider=lambda margin: (5, None, None))
     assert len(q) == 0  # no DamageEvent — the hit became a miss
 
 
@@ -112,7 +112,7 @@ def test_intercept_guard_rejects_insufficient_bonus():
     # own guard: total 18 >= AC+bonus 15), so the hit stands and damage is pushed.
     resolve_attack_roll(AttackRollEvent(tick=make_tick(1, 0, 1), actor=a, target=d),
                         FakeRNG([18]), q, next_sequence=2,
-                        intercept_decider=lambda margin: (5, None))
+                        intercept_decider=lambda margin: (5, None, None))
     assert len(q) == 1
     assert isinstance(q.pop(), DamageEvent)
 
@@ -124,7 +124,7 @@ def test_intercept_not_consulted_on_a_miss():
     # d20=3 vs AC 20 → a real miss; the interceptor must never be offered.
     resolve_attack_roll(AttackRollEvent(tick=make_tick(1, 0, 1), actor=a, target=d),
                         FakeRNG([3]), q, next_sequence=2,
-                        intercept_decider=lambda margin: called.append(margin) or (5, None))
+                        intercept_decider=lambda margin: called.append(margin) or (5, None, None))
     assert called == []
     assert len(q) == 0
 
@@ -137,7 +137,7 @@ def test_counter_enqueued_on_flip():
     next_seq = resolve_attack_roll(
         AttackRollEvent(tick=make_tick(1, 1, 1), actor=a, target=d),
         FakeRNG([12]), q, next_sequence=2,
-        intercept_decider=lambda margin: (5, counter),
+        intercept_decider=lambda margin: (5, counter, None),
     )
     assert len(q) == 1
     ev = q.pop()
@@ -156,7 +156,7 @@ def test_no_counter_when_spec_absent():
     q = EventQueue()
     resolve_attack_roll(AttackRollEvent(tick=make_tick(1, 1, 1), actor=a, target=d),
                         FakeRNG([12]), q, next_sequence=2,
-                        intercept_decider=lambda margin: (5, None))
+                        intercept_decider=lambda margin: (5, None, None))
     assert len(q) == 0  # parried, but no counter spec → nothing enqueued
 
 

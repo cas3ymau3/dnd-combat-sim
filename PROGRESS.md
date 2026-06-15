@@ -72,7 +72,29 @@ type, condition, resource, …):
    improvements compound and are cheapest to make while the context is fresh.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-15, session 11) — DONE:** built **`cast_effect` substrate #3 — the
+> (2026-06-15, session 12) — DONE:** built **`cast_effect` substrates #4
+> (incoming-damage response) + #5 (defender thorns rider)** + the **Starfire Scion
+> enemy-strikes-back loop** (step 2 of the buff-primitive "Next-steps sequence").
+> Substrate #4 = a defender-side phase-7 step in `resolve_damage`
+> (`Entity.damage_response_for` folds an intrinsic trait + cast-installed payloads:
+> 2024 RAW immunity/resistance/vulnerability, res+vuln cancel; applied after the
+> save-for-half halving, before `take_damage`). Substrate #5 rides the existing
+> `on_incoming_hit` intercept seam: `InterceptResponse` gained `reactive_damage`
+> (`ReactiveDamageSpec`), and on a LANDED melee hit `resolve_attack_roll` enqueues
+> an automatic thorns `DamageEvent` bearer→attacker (routes through the attacker's
+> own #4 response; counts as the bearer's outgoing DPR). `ScriptedEnemyPolicy`
+> (structurally identical to War Angel's, wired in `make_day_runner` on an
+> `enemy_attack` row) is the loop that makes both do real work. **Per-feature
+> verification (Option B, user-chosen):** Fire Shield is 4th-level → char **L15**
+> for this build (Druid-7; guide 41:48), OUTSIDE the L1–L12 ladder — so #4's real
+> in-scope consumer is a **fire-resistant enemy halving Searing Arc** (sets up the
+> deferred Elemental Adept fire-bypass) and #5 is loop-validated via a Fire-Shield
+> test policy; Fire-Shield-on-Scion build-wiring deferred to a tier-4 row.
+> **371 tests green (+17;** 4 Flourish-Parry tests updated for the intercept
+> closure's new 3-tuple). Branch `feature/cast-effect-incoming-damage-thorns` →
+> confirm before merging to main. MCP-toggle recommendation re-made.
+>
+> **Session scope (2026-06-15, session 11) — DONE:** built **`cast_effect` substrate #3 — the
 > StatusSet payload + the debuff `application_save`** (step 1 of the buff-primitive
 > "Next-steps sequence"). `Choice` gained a `statuses` (list of `StatusSpec`)
 > payload + an optional `application_save` (`ApplicationSave`); the scheduler
@@ -148,6 +170,79 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **`cast_effect` substrates #4 (incoming-damage response) + #5 (defender thorns
+  rider) + the Starfire Scion enemy-strikes-back loop — BUILT & VALIDATED
+  (2026-06-15, session 12).** Step 2 of `design/buff_primitive.md` "Next-steps
+  sequence": resistance/vulnerability/immunity on incoming damage, and "deal
+  damage to whoever melee-hits the bearer" (Fire Shield thorns). **371 tests
+  green (+17).** Branch `feature/cast-effect-incoming-damage-thorns`. Design
+  contract: `design/buff_primitive.md` (registry rows 4 + 5 flipped to BUILT).
+  - **Order chosen with the user — Option (a) then Option B.** (a) Wire the loop
+    FIRST so #4/#5 have a real incoming-attack path (the speculative test-policy
+    validation of #3 left verification debt; building two MORE defender mechanics
+    with no real loop would compound it). Then, per the per-feature ritual, Fire
+    Shield's rules + ACCESS were verified BEFORE modeling: it is **4th-level →
+    char L15** for this build (Druid-7; guide 41:48), OUTSIDE the modeled L1–L12
+    ladder. So **Option B**: ship #4/#5 as engine substrates; give #4 a REAL
+    in-scope consumer (fire-resistant enemy vs Searing Arc) and #5 a loop-
+    validated Fire-Shield test policy; defer Fire-Shield-on-Scion build-wiring to
+    a tier-4 row (dragging in Sunbeam / Fount of Moonlight / Primal Strikes is a
+    separate session).
+  - **#4 — incoming-damage response (`resolve_damage` phase 7).**
+    `Entity.damage_response_for(type)` folds an INTRINSIC trait (`damage_response`
+    ctor arg — a monster's fire resistance) + cast-installed payloads
+    (`add_damage_response`, swept at the combat boundary like the modifiers).
+    2024 RAW combination: immunity dominates; resistance halves (rounded down);
+    vulnerability doubles; resistance + vulnerability of the SAME type cancel.
+    Applied AFTER phase-6 save-for-half halving and BEFORE `take_damage`, so the
+    post-response amount drives any concentration save. Inert on every existing
+    path (untyped hits → `damage_type` None → no response). `Choice` gained a
+    `damage_response` payload; the scheduler `cast_effect` branch installs it on
+    the bearer under `effect_source` (Fire Shield's resist-cold/fire).
+  - **#5 — defender thorns rider (the `on_incoming_hit` intercept seam).**
+    `InterceptResponse` (whose `ac_bonus` now defaults to 0) gained a
+    `reactive_damage` (`ReactiveDamageSpec(damage_dice, damage_type)`); the
+    scheduler intercept closure now returns a 3-tuple `(ac_bonus, counter,
+    reactive_damage)`. On a LANDED melee hit (NOT one parried to a miss),
+    `resolve_attack_roll` enqueues an automatic thorns `DamageEvent` FROM the
+    bearer (the attack's target) TO the attacker (the attack's actor) — no roll —
+    so it (a) routes through the attacker's own #4 response (a fire-resistant
+    attacker halves fire thorns) and (b) counts as the bearer's OUTGOING DPR
+    (lands in the attacker's damage_received column). Melee-only follows the
+    existing Flourish-Parry convention (our only attacker is melee).
+  - **The enemy-strikes-back loop (the headline of (a)).** `ScriptedEnemyPolicy`
+    in `starfire_scion.py` — structurally identical to `WarAngelEnemyPolicy`
+    (CLAUDE.md #12): n melee attacks/turn, targeting pre-rolled at on_combat_start
+    so `decide()` stays dice-free. `make_training_dummy` gains an `attack_bonus` +
+    flat damage profile (and an optional intrinsic `enemy_resist`) when the row
+    carries an `enemy_attack` block; `make_day_runner` attaches the enemy policy
+    then. **No shipped L1–L12 row turns it on** (which keeps the existing Scion
+    RNG stream — and all prior DPR/ablation tests — bit-identical); it is ready
+    machinery for the L15 Fire Shield row, exercised end-to-end by the tests. DPR
+    still reads the DUMMY's column (`damage_received_by`), so the enemy's own
+    damage to the character can never pollute it.
+  - **Validation (consistency/sanity, FakeRNG — NOT number-matching).**
+    `tests/test_incoming_damage_thorns.py` (+17): #4 resistance halves the
+    matching type only / immunity zeroes / vulnerability doubles / res+vuln cancel
+    / untyped unaffected / resistance applies AFTER save-for-half (¼ total); the
+    real consumer (Searing Arc fire FROM DATA halved, radiant untouched); the
+    cast_effect install + boundary sweep of a resistance. #5 thorns lands on the
+    attacker on a hit / never fires on a real miss / is suppressed when the hit is
+    parried to a miss / routes through the attacker's fire resistance; the loop
+    end-to-end (thorns counts as the bearer's DPR in the enemy's column, the
+    enemy's own hit stays in the bearer's column); `ScriptedEnemyPolicy` emits
+    action+none swings and honors `char_target_prob`; and `make_day_runner` wires
+    the enemy loop (enemy strikes the character while the dummy column still shows
+    Scion DPR). The 4 Flourish-Parry tests were updated for the intercept
+    closure's new 3-tuple (the only existing tests the contract change touched).
+  - **Designed-in, not yet built (registry 4/5 remainder + sequence):** the
+    warm/chill **`choose_one`** mode (selects which payload items install); a
+    melee-vs-ranged tag on the incoming attack (today thorns assumes melee); the
+    10-min day-clock for Fire Shield spanning combats (modeled combat-clock); and
+    the L15 Fire-Shield build row. Next in the sequence: outgoing predicate riders
+    (6) — Rage / Hunter's Mark — + source-gating tags; then zones (7). See
+    `design/buff_primitive.md`.
 
 - **`cast_effect` substrate #3 — StatusSet payload + the debuff `application_save`
   — BUILT & VALIDATED (2026-06-15, session 11).** Step 1 of

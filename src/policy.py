@@ -183,6 +183,10 @@ class Choice:
     #   - `statuses`: applied to the BEARER's StatusSet under the same bearer rule
     #     (substrate #3 — advantage/condition/immunity grants, e.g. Faerie Fire on
     #     a target or Innate Sorcery on self);
+    #   - `damage_response`: a {damage_type: kind} payload (substrate #4 —
+    #     resistance/vulnerability/immunity, e.g. Fire Shield's {"fire":
+    #     "resistance"}) installed on the BEARER's damage responses, swept at the
+    #     combat boundary like the modifiers;
     #   - `concentration`: when True, sets the ACTOR's concentration = effect_source;
     #   - `application_save`: debuff-only — the bearer rolls to resist; a made save
     #     negates the WHOLE payload (modifiers + statuses).  None = it always lands.
@@ -197,6 +201,7 @@ class Choice:
     effect_source: "str | None" = None
     modifiers: list = field(default_factory=list)
     statuses: list = field(default_factory=list)
+    damage_response: dict[str, str] = field(default_factory=dict)
     concentration: bool = False
     duration: str = "combat"
     application_save: "ApplicationSave | None" = None
@@ -377,22 +382,52 @@ class CounterSpec:
 
 
 @dataclass(frozen=True)
+class ReactiveDamageSpec:
+    """Automatic damage the bearer deals to an attacker that HITS it — the
+    "thorns" rider (substrate #5, Fire Shield).  Unlike CounterSpec (an attack
+    ROLL made only when a parry flips the hit to a miss), this is AUTOMATIC on a
+    landed melee hit: no attack roll, no AC flip, it just happens.
+
+    The scheduler enqueues it as a normal DamageEvent FROM the bearer TO the
+    attacker, so it (a) routes through the attacker's own damage-type response —
+    a fire-resistant attacker halves Fire Shield's fire thorns (substrate #4) —
+    and (b) counts as the bearer's OUTGOING damage in the per-target damage log.
+
+    Fields
+    ------
+    damage_dice:
+        The thorns dice, e.g. (2, 8) for Fire Shield's 2d8.
+    damage_type:
+        The thorns damage type, e.g. "fire" (warm) or "cold" (chill).
+    """
+    damage_dice: tuple[int, int]
+    damage_type: "str | None" = None
+
+
+@dataclass(frozen=True)
 class InterceptResponse:
     """The defender's answer to an IncomingAttackContext: spend `resource_cost`
     to add `ac_bonus` to AC against this one attack (potentially flipping it to a
-    miss), and optionally make a `counter` attack.  Return None to decline.
+    miss), optionally make a `counter` attack, and/or deal automatic
+    `reactive_damage` (thorns) back to the attacker.  Return None to decline.
 
     The scheduler validates affordability against the DEFENDER's resources,
-    consumes them, applies the AC bump in resolve_attack_roll, and — if the bump
-    flips the hit to a miss and a counter is present — enqueues the counter.
+    consumes them, applies the AC bump in resolve_attack_roll, and then:
+      - if the bump flips the hit to a miss and a `counter` is present, enqueues
+        the counter attack (Flourish Counter); and
+      - if the attack still HITS and `reactive_damage` is present, enqueues the
+        thorns damage against the attacker (Fire Shield).  These are mutually
+        exclusive in practice (a flip means the hit didn't land, so no thorns).
 
     The reaction itself is NOT modeled as an engine resource here: the policy
-    self-gates it (once per round), decoupled from the opportunity-attack
-    reaction per the build guide's explicit assumption.
+    self-gates it (e.g. once per round for a parry; Fire Shield's thorns are
+    automatic and ungated), decoupled from the opportunity-attack reaction per
+    the build guide's explicit assumption.
     """
-    ac_bonus: int
+    ac_bonus: int = 0
     resource_cost: dict[str, int] = field(default_factory=dict)
     counter: "CounterSpec | None" = None
+    reactive_damage: "ReactiveDamageSpec | None" = None
 
 
 # ---------------------------------------------------------------------------

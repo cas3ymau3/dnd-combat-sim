@@ -4,7 +4,8 @@
 > `design/design.md` (§4 decision points, §6 modifier stack) and
 > `ability_schema.md` (§4.5 scaling, the trigger/effect/cost layers). Status:
 > **design locked 2026-06-15**; built so far = substrates (1) ModifierStack,
-> (2) policy-flag (session 9), and (3) StatusSet + `application_save` (session 11).
+> (2) policy-flag (session 9), (3) StatusSet + `application_save` (session 11),
+> and (4) incoming-damage response + (5) defender thorns rider (session 12).
 
 ---
 
@@ -77,8 +78,8 @@ addition); `cast_effect` just installs a labeled payload into the matching one.
 | 1 | **ModifierStack** | `modifiers.py`, folded by `entity.stat()` | flat / rolled / stat-derived / additive numeric on a rolled stat (attack, damage, AC, save) | **BUILD NOW** |
 | 2 | **policy-flag** | the build's policy (read in `decide`) | a new attack option / capability becomes available | **BUILD NOW** |
 | 3 | **StatusSet** | `statuses.py`, consumed by `roll_d20` (+ saves) | advantage / disadvantage grant; condition; immunity; save floor | **BUILT** (session 11) |
-| 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | designed-in (Fire Shield) |
-| 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | designed-in (Fire Shield) |
+| 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | **BUILT** (session 12) |
+| 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | **BUILT** (session 12) |
 | 6 | **outgoing rider** | `on_hit` / `on_deal_damage` seams | predicate-gated extra damage (Rage melee-STR, Hunter's Mark vs-target, Divine Favor per-hit) | designed-in |
 | 7 | **zone / summon** | (none yet — multi-enemy/spatial) | damaging emanation / placed entity | DEFERRED |
 
@@ -143,11 +144,35 @@ validated — they keep their own `before_combat` sync; not routed through
    immunity/save-floor grants, and the sorcerer-class source-gating tag** (Innate
    Sorcery's "Sorcerer spells only" — modeled here as the simpler `is_spell` gate,
    correct for a pure-caster build; a multiclass needs a class-of-origin tag).
-2. **Incoming-damage modifier (4) + defender-side thorns rider (5)** — first
-   consumer Fire Shield (and Rage's resistances). Couples to the incoming-damage
-   loop (enemy strikes back), so it lands naturally when a Scion level faces an
-   attacking enemy. Thorns is *outgoing* DPR (counts for us); resistance is
-   second-order (eases our concentration saves).
+2. ~~**Incoming-damage modifier (4) + defender-side thorns rider (5)**~~
+   ✓ **BUILT (session 12).** Substrate (4) lives in `resolve_damage` as a
+   defender-side phase-7 step: `Entity.damage_response_for(type)` folds an
+   intrinsic trait + cast-installed payloads (2024 RAW: immunity dominates,
+   resistance halves, vulnerability doubles, res+vuln of one type cancel),
+   applied AFTER phase-6 halving and BEFORE `take_damage`. Substrate (5) rides
+   the existing `on_incoming_hit` intercept seam: `InterceptResponse` gained a
+   `reactive_damage` (`ReactiveDamageSpec`), and on a LANDED melee hit
+   `resolve_attack_roll` enqueues an automatic thorns `DamageEvent` from the
+   bearer to the attacker (no roll) — so thorns runs through the attacker's own
+   (4) response and counts as the bearer's outgoing DPR. The Scion
+   enemy-strikes-back loop (`ScriptedEnemyPolicy`, structurally identical to War
+   Angel's, wired in `make_day_runner` on an `enemy_attack` row) is the machinery
+   that makes both do real work.
+   - **Consumers (per Option B — Fire Shield is L15, outside the modeled L1–L12
+     ladder, so the build-wiring waits for a tier-4 row).** (4)'s REAL in-scope
+     consumer is a **fire-resistant enemy halving the Scion's Searing Arc** (fire,
+     L10+) while leaving Guiding Bolt (radiant) untouched — the exact substrate
+     the deferred **Elemental Adept (fire-bypass)** will toggle. (5) is validated
+     against the real loop via a Fire-Shield-shaped test policy (thorns reflected
+     on every incoming melee hit). Fire Shield itself (4th-level, char L15 =
+     Druid-7, guide 41:48; verified action / 10 min / non-conc / warm=resist-cold
+     +2d8-fire / chill=resist-fire +2d8-cold — aidedd, D&D Beyond) installs BOTH
+     (4) resist + (5) thorns from ONE cast_effect when an L15 row is wired.
+   - **Still designed-in for (4)/(5):** the warm/chill **`choose_one`** mode (the
+     chosen mode selects which payload items install); a melee-vs-ranged tag on
+     the incoming attack (today thorns follows the existing Flourish-Parry
+     convention that the only attacker is melee); day-clock (10-min) duration for
+     Fire Shield spanning combats (modeled combat-clock for now).
 3. **Outgoing predicate riders (6)** — Rage damage, Hunter's Mark; `choose_one`
    modes; source-gating tags. Then zones/summons (7), gated on the multi-enemy /
    spatial model.
@@ -165,3 +190,10 @@ validated — they keep their own `before_combat` sync; not routed through
   build time, not from memory. Fire Shield confirmed 2026-06-15 (D&D Beyond /
   aidedd): action, 10 min, non-conc; warm = resist cold + 2d8 fire thorns; chill =
   resist fire + 2d8 cold thorns.
+- **Fire Shield ACCESS for this build is char L15** (Druid-7 → 4th-level spells;
+  guide 41:48), outside the modeled L1–L12 ladder. Confirmed at session-12 build
+  time (per the per-feature ritual: verify access, not just wording). So #4/#5
+  shipped as engine substrates with (4) validated by a real in-scope consumer
+  (fire-resistant enemy vs Searing Arc) and (5) by a Fire-Shield-shaped test
+  policy against the real enemy loop; the Fire-Shield-on-Scion build-wiring is
+  deferred to a tier-4 row.
