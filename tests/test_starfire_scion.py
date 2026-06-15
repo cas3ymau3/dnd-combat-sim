@@ -127,6 +127,7 @@ def test_factory_stats():
         1: {"attack_bonus": 5, "spell_attack_bonus": 5, "spell_save_dc": 13},
         4: {"attack_bonus": 5, "spell_attack_bonus": 5, "spell_save_dc": 13},
         5: {"attack_bonus": 6, "spell_attack_bonus": 7, "spell_save_dc": 15},
+        9: {"attack_bonus": 7, "spell_attack_bonus": 8, "spell_save_dc": 16},
         10: {"attack_bonus": 7, "spell_attack_bonus": 8, "spell_save_dc": 16},
     }
     for level, want in expected.items():
@@ -152,7 +153,7 @@ def test_unimplemented_level_raises():
 def test_enemy_stats_are_live_from_the_monster_csv():
     """enemy_ac / enemy_dex_save are the csv's ac + dex.save.mod at cr == level."""
     rows = {int(r["level"]): r for r in csv.DictReader(_CSV.open())}
-    for level in (1, 4, 5, 10):
+    for level in (1, 4, 5, 9, 10):
         data = ss.LEVELS[level]
         assert data["enemy_ac"] == int(rows[level]["ac"])
         assert data["enemy_dex_save"] == int(rows[level]["dex.save.mod"])
@@ -375,19 +376,21 @@ def test_l10_searing_arc_only_after_a_weapon_attack():
     dummy = ss.make_training_dummy(10)
     policy = ss.StarfireScionPolicy(10, char, dummy)
     policy.on_combat_start(0, SeededRNG(0))
+    # NB: round 2, not round 1 — at L10 the turn-1 BA is spent casting Shillelagh
+    # (thread B), so the BA ladder we gate here only runs from round 2 onward.
     # Guiding Bolt available → the action is a spell, NOT the Attack action → the BA
     # is Sacred Flame (radiant), never Searing Arc.
-    ba = [c for c in policy.decide(_snapshot(1, _full_resources(10))) if c.cost == "bonus_action"][0]
+    ba = [c for c in policy.decide(_snapshot(2, _full_resources(10))) if c.cost == "bonus_action"][0]
     assert ba.action_type == "save_spell" and ba.damage_type == "radiant"
     # Guiding Bolt exhausted → the action is a quarterstaff weapon attack → the BA is
     # Searing Arc Strike (FIRE, 4d6, save-for-half, 3 FP).
-    ba = [c for c in policy.decide(_snapshot(1, _full_resources(10, guiding_bolt_free=0)))
+    ba = [c for c in policy.decide(_snapshot(2, _full_resources(10, guiding_bolt_free=0)))
           if c.cost == "bonus_action"][0]
     assert ba.action_type == "save_spell" and ba.damage_type == "fire"
     assert ba.damage_dice == (4, 6) and ba.on_save == "half"
     assert ba.resource_cost == {"focus_points": 3} and ba.is_spell is True
     # Weapon-attack turn but FP exhausted → falls back to Sacred Flame (radiant).
-    ba = [c for c in policy.decide(_snapshot(1, _full_resources(10, guiding_bolt_free=0, focus_points=0)))
+    ba = [c for c in policy.decide(_snapshot(2, _full_resources(10, guiding_bolt_free=0, focus_points=0)))
           if c.cost == "bonus_action"][0]
     assert ba.action_type == "save_spell" and ba.damage_type == "radiant"
 
@@ -428,6 +431,80 @@ def test_focus_points_refill_between_combats():
 
 
 # ---------------------------------------------------------------------------
+# THREAD B (L9-L10) — Extra Attack + martial-arts 1d8 + Shillelagh
+# ---------------------------------------------------------------------------
+
+def test_l9_extra_attack_emits_two_weapon_swings():
+    """Extra Attack (monk-5): a weapon Attack action yields TWO swings — one
+    cost="action" + one cost="none" (the engine's Extra-Attack shape).  A Guiding
+    Bolt action is a spell and is NOT doubled."""
+    char = ss.make_starfire_scion(9)
+    policy = ss.StarfireScionPolicy(9, char, ss.make_training_dummy(9))
+    policy.on_combat_start(0, SeededRNG(0))
+    # GB exhausted → the action is the (Shillelagh) quarterstaff, doubled by Extra Attack.
+    act = [c for c in policy.decide(_snapshot(2, _full_resources(9, guiding_bolt_free=0)))
+           if c.action_type == "attack" and c.cost in ("action", "none")]
+    assert [c.cost for c in act] == ["action", "none"]
+    for c in act:                                    # both are Shillelagh swings
+        assert c.damage_dice == (1, 10) and c.weapon_stat == "spell_attack_bonus"
+        assert c.damage_bonus == 4
+    # GB available → a single spell action (Extra Attack does not duplicate a spell).
+    act = [c for c in policy.decide(_snapshot(2, _full_resources(9)))
+           if c.action_type == "attack" and c.cost in ("action", "none")]
+    assert len(act) == 1 and act[0].damage_dice == (4, 6)
+
+
+def test_shillelagh_uses_higher_modifier_default_spellcasting_on_tie():
+    """Shillelagh grants the OPTION to swing with WIS instead of DEX (user-flagged):
+    use whichever ABILITY MODIFIER is higher, defaulting to the spellcasting (WIS)
+    stat on a tie.  The 1d10 die applies regardless of which stat wins."""
+    policy = ss.StarfireScionPolicy(9, ss.make_starfire_scion(9), ss.make_training_dummy(9))
+    policy.on_combat_start(0, SeededRNG(0))
+    # As built at L9: WIS(+4) > DEX(+3) → WIS wins (1d10, WIS to-hit, +4).
+    c = policy._shillelagh_attack_choice("action")
+    assert c.damage_dice == (1, 10) and c.weapon_stat == "spell_attack_bonus" and c.damage_bonus == 4
+    # Tie (both +3) → still the spellcasting stat (the >= default).
+    policy._shillelagh_wis = {"dice": (1, 10), "bonus": 3, "weapon_stat": "spell_attack_bonus"}
+    c = policy._shillelagh_attack_choice("action")
+    assert c.weapon_stat == "spell_attack_bonus" and c.damage_bonus == 3 and c.damage_dice == (1, 10)
+    # Physical stat higher (DEX +3 > WIS +2) → swing with DEX, but the die STAYS 1d10.
+    policy._shillelagh_wis = {"dice": (1, 10), "bonus": 2, "weapon_stat": "spell_attack_bonus"}
+    c = policy._shillelagh_attack_choice("action")
+    assert c.weapon_stat == "attack_bonus" and c.damage_bonus == 3 and c.damage_dice == (1, 10)
+
+
+def test_unarmed_die_is_1d8_at_l9_and_l10():
+    """Martial-arts die bumps 1d6 -> 1d8 at monk-5 (char L9) and holds at L10."""
+    for level in (9, 10):
+        assert ss.LEVELS[level]["unarmed"]["dice"] == (1, 8)
+    # And the policy serves it: the BA falls back to a 1d8 unarmed when spells are spent.
+    char = ss.make_starfire_scion(9)
+    policy = ss.StarfireScionPolicy(9, char, ss.make_training_dummy(9))
+    policy.on_combat_start(0, SeededRNG(0))
+    ba = [c for c in policy.decide(_snapshot(2, _full_resources(9, spellfire_spark=0)))
+          if c.cost == "bonus_action"][0]
+    assert ba.action_type == "attack" and ba.damage_dice == (1, 8) and ba.weapon_stat == "attack_bonus"
+
+
+def test_turn1_bonus_action_is_spent_casting_shillelagh():
+    """Thread B models Shillelagh's turn-1 BA cast (guide 41:539) by WITHHOLDING the
+    turn-1 BA damage option; from round 2 the BA ladder runs normally.  The action
+    (and Extra Attack) is unaffected."""
+    char = ss.make_starfire_scion(9)
+    policy = ss.StarfireScionPolicy(9, char, ss.make_training_dummy(9))
+    policy.on_combat_start(0, SeededRNG(0))
+    r1 = policy.decide(_snapshot(1, _full_resources(9, guiding_bolt_free=0)))
+    assert not any(c.cost == "bonus_action" for c in r1)       # BA spent on the cast
+    assert [c.cost for c in r1 if c.action_type == "attack"] == ["action", "none"]
+    r2 = policy.decide(_snapshot(2, _full_resources(9, guiding_bolt_free=0)))
+    assert any(c.cost == "bonus_action" for c in r2)           # BA ladder runs from round 2
+    # Levels without Shillelagh (L1) never suppress the turn-1 BA.
+    p1 = ss.StarfireScionPolicy(1, ss.make_starfire_scion(1), ss.make_training_dummy(1))
+    p1.on_combat_start(0, SeededRNG(0))
+    assert any(c.cost == "bonus_action" for c in p1.decide(_snapshot(1, _full_resources(1))))
+
+
+# ---------------------------------------------------------------------------
 # DPR sanity — plausible fraction of the ceiling; monotonic at a FIXED enemy
 # ---------------------------------------------------------------------------
 
@@ -442,7 +519,7 @@ def _mean_dpr(level: int, n_days: int, seed: int = 0, rounds_per_combat: int = 4
 def test_dpr_is_a_plausible_fraction_of_the_ceiling():
     """Each level: 0 < DPR < ceiling (every attack can miss / every save can
     succeed, so the all-hit ceiling is a strict upper bound)."""
-    for level in (1, 4, 5, 10):
+    for level in (1, 4, 5, 9, 10):
         dpr = _mean_dpr(level, n_days=400)
         ceiling = ss.LEVELS[level]["ceiling_dpr"]
         assert 0 < dpr < ceiling, f"L{level}: {dpr:.2f} not in (0, {ceiling})"
@@ -484,3 +561,34 @@ def test_searing_arc_strike_lifts_l10_dpr_at_a_fixed_enemy():
     on = _mean_dpr_l10(searing_arc=True, n_days=600)
     off = _mean_dpr_l10(searing_arc=False, n_days=600)
     assert on > off, f"searing arc on {on:.2f} !> off {off:.2f}"
+
+
+def _mean_dpr_l9(thread_b: bool, n_days: int, seed: int = 0, rounds_per_combat: int = 4) -> float:
+    """L9 DPR with thread B (Extra Attack + Shillelagh) enabled or ABLATED — same
+    enemy either way.  Ablating drops to a single DEX quarterstaff swing (no Extra
+    Attack, no 1d10/WIS Shillelagh upgrade, no turn-1 BA cast cost)."""
+    rng = SeededRNG(seed)
+    char = ss.make_starfire_scion(9)
+    dummy = ss.make_training_dummy(9)
+    policy = ss.StarfireScionPolicy(9, char, dummy, rounds_per_combat)
+    if not thread_b:
+        policy._extra_attacks = 0
+        policy._has_shillelagh = False        # on_combat_start then leaves _shillelagh_active False
+    runner = DayRunner(
+        rng=rng, entities=[char, dummy],
+        policies={char.id: policy}, rounds_per_combat=rounds_per_combat,
+    )
+    rounds_per_day = 4 * rounds_per_combat
+    total = sum(runner.run_day().damage_received_by(dummy.id) for _ in range(n_days))
+    return total / (n_days * rounds_per_day)
+
+
+def test_thread_b_lifts_l9_dpr_at_a_fixed_enemy():
+    """Our-side consistency check with the enemy held FIXED (the same L9 monster
+    both ways): enabling Extra Attack + Shillelagh strictly raises DPR over the
+    ablated single-quarterstaff build, isolating thread B's contribution.  (L9 and
+    L10 do NOT share an enemy — L10's DEX save is +3 vs L9's +2 — so this within-L9
+    ablation, not a cross-level compare, is the clean isolation.)"""
+    on = _mean_dpr_l9(thread_b=True, n_days=600)
+    off = _mean_dpr_l9(thread_b=False, n_days=600)
+    assert on > off, f"thread B on {on:.2f} !> off {off:.2f}"
