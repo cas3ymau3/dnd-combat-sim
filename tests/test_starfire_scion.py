@@ -487,21 +487,48 @@ def test_unarmed_die_is_1d8_at_l9_and_l10():
 
 
 def test_turn1_bonus_action_is_spent_casting_shillelagh():
-    """Thread B models Shillelagh's turn-1 BA cast (guide 41:539) by WITHHOLDING the
-    turn-1 BA damage option; from round 2 the BA ladder runs normally.  The action
-    (and Extra Attack) is unaffected."""
+    """Thread B models Shillelagh's turn-1 BA cast (guide 41:539) as a first-class
+    cast_effect that CONSUMES the bonus action (no damage); from round 2 the BA
+    damage ladder runs normally.  The action (and Extra Attack) is unaffected.
+    (DPR-identical to the former 'withhold the BA option' suppression.)"""
     char = ss.make_starfire_scion(9)
     policy = ss.StarfireScionPolicy(9, char, ss.make_training_dummy(9))
     policy.on_combat_start(0, SeededRNG(0))
     r1 = policy.decide(_snapshot(1, _full_resources(9, guiding_bolt_free=0)))
-    assert not any(c.cost == "bonus_action" for c in r1)       # BA spent on the cast
+    # Turn-1 BA is the Shillelagh cast: a cast_effect, not a damage option.
+    ba1 = [c for c in r1 if c.cost == "bonus_action"]
+    assert len(ba1) == 1 and ba1[0].action_type == "cast_effect"
+    assert ba1[0].effect_source == "shillelagh"
+    # No damage-dealing BA on round 1 (the BA went to the cast).
+    assert not any(c.cost == "bonus_action" and c.action_type != "cast_effect" for c in r1)
     assert [c.cost for c in r1 if c.action_type == "attack"] == ["action", "none"]
+    # Round 2: the BA damage ladder runs (no cast_effect).
     r2 = policy.decide(_snapshot(2, _full_resources(9, guiding_bolt_free=0)))
-    assert any(c.cost == "bonus_action" for c in r2)           # BA ladder runs from round 2
-    # Levels without Shillelagh (L1) never suppress the turn-1 BA.
+    ba2 = [c for c in r2 if c.cost == "bonus_action"]
+    assert ba2 and all(c.action_type != "cast_effect" for c in ba2)
+    # Levels without Shillelagh (L1) never cast it — the turn-1 BA is a damage option.
     p1 = ss.StarfireScionPolicy(1, ss.make_starfire_scion(1), ss.make_training_dummy(1))
     p1.on_combat_start(0, SeededRNG(0))
-    assert any(c.cost == "bonus_action" for c in p1.decide(_snapshot(1, _full_resources(1))))
+    r1_l1 = p1.decide(_snapshot(1, _full_resources(1)))
+    assert any(c.cost == "bonus_action" and c.action_type != "cast_effect" for c in r1_l1)
+
+
+def test_starry_form_activation_emits_a_bundled_cast_effect():
+    """Starry Form: Archer activation is a first-class cast_effect on turn 1 — but
+    BUNDLED (cost="none"), so it consumes no economy and the archer BA still fires
+    (DPR-neutral).  Only round 1, only when the form is active."""
+    char = ss.make_starfire_scion(4)
+    policy = ss.StarfireScionPolicy(4, char, ss.make_training_dummy(4))
+    res = _full_resources(4)
+    # Not activated yet → no activation event.
+    assert not any(c.action_type == "cast_effect" for c in policy.decide(_snapshot(1, res)))
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy._starry_form_active
+    r1 = policy.decide(_snapshot(1, res))
+    act = [c for c in r1 if c.action_type == "cast_effect"]
+    assert len(act) == 1 and act[0].effect_source == "starry_form" and act[0].cost == "none"
+    # No activation event after round 1.
+    assert not any(c.action_type == "cast_effect" for c in policy.decide(_snapshot(2, res)))
 
 
 # ---------------------------------------------------------------------------

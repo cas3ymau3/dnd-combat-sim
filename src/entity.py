@@ -74,6 +74,12 @@ class Entity:
         # than in the tick-expiring StatusSet.  Value is the modifier source to
         # drop when concentration breaks (e.g. "bless"), or None.
         self.concentration: str | None = None
+        # Sources of combat-clock buffs installed via the cast_effect primitive
+        # (design/buff_primitive.md).  Combats restart the round counter, so these
+        # cannot tick-expire — they are swept at each combat boundary by
+        # clear_combat_buffs (mirrors StatusSet.clear).  Capability buffs carry no
+        # modifier and are not tracked here (the policy resets its own flag).
+        self._combat_buff_sources: set[str] = set()
         # Cumulative telemetry (design §8 outputs): concentration checks forced
         # by incoming damage and how many broke a spell.  Never auto-reset;
         # callers diff or average across runs.
@@ -159,6 +165,22 @@ class Entity:
 
     def remove_modifier(self, source: str) -> int:
         return self.modifiers.remove(source)
+
+    def note_combat_buff(self, source: str) -> None:
+        """Record a combat-clock cast_effect source so its modifiers are swept at
+        the next combat boundary (see clear_combat_buffs)."""
+        self._combat_buff_sources.add(source)
+
+    def clear_combat_buffs(self) -> None:
+        """Remove all combat-clock cast_effect modifiers and clear concentration if
+        a swept source held it.  Called at each combat boundary (day_runner),
+        mirroring StatusSet.clear() — combat-clock effects cannot tick-expire
+        because each combat restarts the round counter."""
+        for source in self._combat_buff_sources:
+            self.remove_modifier(source)
+            if self.concentration == source:
+                self.concentration = None
+        self._combat_buff_sources.clear()
 
     # ------------------------------------------------------------------
     # Repr

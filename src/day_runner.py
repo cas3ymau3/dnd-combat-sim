@@ -388,6 +388,11 @@ class DayRunner:
         # so a carried-over status would never be swept (see StatusSet.clear).
         for entity in self.entities:
             entity.statuses.clear()
+            # Sweep combat-clock cast_effect buffs (modifiers + their concentration)
+            # so a combat-long cast does not leak into the next encounter
+            # (design/buff_primitive.md).  No-op for builds that manage their own
+            # buff sync (e.g. War Angel's Bless via before_combat).
+            entity.clear_combat_buffs()
 
         # Optional per-combat policy setup (AoO slot, enemy archetype, …).
         # combat_num is 1-based; hand policies a 0-based index.

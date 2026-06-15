@@ -610,6 +610,24 @@ class Scheduler:
                 )
                 self.queue.push(save_event)
                 seq += 1
+            elif choice.action_type == "cast_effect":
+                # First-class non-damaging cast (buff/debuff): the action economy
+                # and resources were already drained above.  Install the persisting
+                # effect and push NO event (no roll, no damage).  See
+                # design/buff_primitive.md.
+                #   - modifiers → the BEARER's ModifierStack (an explicit target =
+                #     a debuff, else the actor = a self-buff); combat-clock sources
+                #     are noted for the combat-boundary sweep;
+                #   - concentration → recorded on the ACTOR;
+                #   - capability buffs carry no payload (the policy reads its flag).
+                bearer = choice.target or actor
+                for mod in choice.modifiers:
+                    bearer.add_modifier(mod)
+                if choice.modifiers and choice.effect_source and choice.duration == "combat":
+                    bearer.note_combat_buff(choice.effect_source)
+                if choice.concentration and choice.effect_source:
+                    actor.concentration = choice.effect_source
+                # No event enqueued — seq is not advanced.
             else:
                 log.warning("Unknown action_type %r — skipped.", choice.action_type)
 

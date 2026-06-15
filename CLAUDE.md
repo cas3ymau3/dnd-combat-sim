@@ -3,7 +3,9 @@
 This file is read automatically at the start of each session. It orients a fresh
 session on what this project is, how it's structured, and the architectural
 decisions already made. **Read `design/design.md` and `design/ability_schema.md`
-in full before doing engine work** — they are the binding contracts.
+in full before doing engine work** — they are the binding contracts. Also read
+`design/buff_primitive.md` (the `cast_effect` buff/debuff primitive — envelope +
+payload-substrate registry) before any buff/debuff or persistent-effect work.
 
 ---
 
