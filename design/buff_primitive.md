@@ -105,6 +105,22 @@ Moonlight → (7).
   `DurationBuffTracker`). Both mechanisms already exist.
 - **`application_save`**: debuff resist roll, reuses the save machinery.
 
+### Engine-seam notes (session 12 — flagged with the user, deferred deliberately)
+
+- **The `on_incoming_hit` intercept seam is near its shape limit.** It now serves
+  Flourish Parry (AC-flip + counter), Shield (AC-flip), and Fire Shield thorns
+  (automatic `reactive_damage`), and the scheduler closure returns a positional
+  3-tuple `(ac_bonus, counter, reactive_damage)`. The NEXT defender reaction added
+  should refactor that to a single richer response object (mirror the
+  Miss/Hit/InterceptResponse pattern) rather than a growing tuple.
+- **Melee-vs-ranged is unmodeled (attack-taxonomy gap).** Thorns and Flourish
+  Parry both ASSUME the only attacker is melee (Fire Shield / Flourish only
+  trigger on melee hits). `IncomingAttackContext` carries the economy `cost` but
+  no melee/ranged tag, and `AttackRollEvent` has no range axis. The first ranged
+  attacker breaks this silently — so it is a conscious deferral tied to the
+  ATTACK-TAXONOMY flag (PROGRESS / CLAUDE memory `attack-taxonomy-three-axes`),
+  to be made first-class when a ranged attacker or a melee-gated rider needs it.
+
 ---
 
 ## Now-scope (this work)
