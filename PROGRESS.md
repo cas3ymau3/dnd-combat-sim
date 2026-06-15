@@ -956,19 +956,20 @@ Strike. Upcast scaling comes later up the ladder.
 (session 8)** — see the session-8 Done entry; NO new engine primitive, as predicted.
 The L1/L4/L5/L9/L10 ladder is now wired. **The `cast_effect` combat-buff/debuff
 PRIMITIVE is DONE (session 9)** — see its Done entry + `design/buff_primitive.md`;
-Shillelagh + Starry Form now raise their buffs through it (DPR-neutral). **Open next
-steps (pick with the user):** (0) **next buff-substrates** — StatusSet payload +
-`application_save` (advantage/condition/immunity + debuff resist), then
-incoming-damage resistance + defender thorns (Fire Shield / Rage); the sequenced
-plan in `design/buff_primitive.md` "Next-steps sequence";
-(a) **L12** — WIS → 20 (a data row; +1 to-hit/DC/damage, Shillelagh die unchanged at
-char L11+ would be 1d12 — note the die-size step at L11); (b) **L11+ Shillelagh die
-→ 1d12** (still bake-able, or finally build the data-driven `scaling: ladder` if a
-continuous ladder past L10 is wanted — see "die-size scaling" below); (c) the
-**ATTACK-TAXONOMY** typology (engine-vocabulary work — discuss first); (d) the
+Shillelagh + Starry Form now raise their buffs through it (DPR-neutral). **The
+DICE LADDER (`scaling: ladder`) is DONE (session 10)** — see its Done entry; the
+Shillelagh die now resolves from YAML by character level (1d8/1d10/1d12/2d6), and
+the **L11 + L12 rows are wired** (L11 = the 1d10→1d12 step; L12 = WIS 20 + Searing
+Arc 5d6). **Open next steps (pick with the user):** (0) **next buff-substrates** —
+StatusSet payload + `application_save` (advantage/condition/immunity + debuff
+resist), then incoming-damage resistance + defender thorns (Fire Shield / Rage);
+the sequenced plan in `design/buff_primitive.md` "Next-steps sequence";
+(a) **L13+** — continue the Scion ladder past L12 (data rows; next die-size step is
+L17 Shillelagh → 2d6, already in the ladder data); (b) the
+**ATTACK-TAXONOMY** typology (engine-vocabulary work — discuss first); (c) the
 **outputs layer** (still ~10% built — design §8). No remaining engine primitive is
-forced by the Scion's offense axis; what's left is data rows, the deferred die-size
-ladder, and the two cross-cutting investments (taxonomy, outputs).
+forced by the Scion's offense axis; what's left is data rows and the two
+cross-cutting investments (taxonomy, outputs).
 
 **die-size scaling — BUILT 2026-06-15 (session 10; `scaling: ladder`), first
 consumer Shillelagh at Starfire Scion L11.** See the session-10 Done entry. The
