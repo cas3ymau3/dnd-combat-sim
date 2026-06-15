@@ -8,15 +8,16 @@ Source of truth for intent:
   - design/build-guides/41_spellfire_scion.txt  (level-by-level notes + DPR
     *ceilings* — see the validation-framing note below)
 
-This module covers L1, L4, L5, L10: the melee baseline (L1), the level Starry Form
-+ Star Map come online (L4), the first "interesting" level where the blaster
-identity converges (L5: Spellfire Adept → cantrip-scaled 2d8 Sacred Flame), and the
-Sun-Soul Monk-6 spike (L10: SEARING ARC STRIKE — upcast Burning Hands as a BA).
-L2/L3 are intentionally SKIPPED (no DPR-relevant mechanics — Druid spellcasting /
-wild-shape utility), and so are L6-L9: L5-L8 are mechanically IDENTICAL on our side
-(PB stays 3, WIS mod stays +4 through L8 — only the enemy hardens), and L9's Extra
-Attack + martial-arts-1d8 + Shillelagh are the SEPARATE martial thread (deferred).
-All skips are easy to backfill if a continuous ladder is ever wanted.
+This module covers L1, L4, L5, L9, L10: the melee baseline (L1), the level Starry
+Form + Star Map come online (L4), the first "interesting" level where the blaster
+identity converges (L5: Spellfire Adept → cantrip-scaled 2d8 Sacred Flame), the
+martial spike (L9: EXTRA ATTACK + martial-arts-1d8 + first SHILLELAGH — thread B),
+and the Sun-Soul Monk-6 spike (L10: SEARING ARC STRIKE — upcast Burning Hands as a
+BA — thread A, now ALSO carrying the L9 thread-B martial bundle).  L2/L3 are
+intentionally SKIPPED (no DPR-relevant mechanics — Druid spellcasting / wild-shape
+utility), and so are L6-L8: L5-L8 are mechanically IDENTICAL on our side (PB stays
+3, WIS mod stays +4 through L8 — only the enemy hardens).  All skips are easy to
+backfill if a continuous ladder is ever wanted.
 
 The build (see PROGRESS.md "Second archetype — STARFIRE SCION")
 ---------------------------------------------------------------
@@ -75,10 +76,28 @@ What IS modeled at L10 (beyond the L1-L5 mechanics above)
      FIRE (not radiant), Fueled Spellfire does NOT fuel it — the cross-check that the
      damage_type gate, not just is_spell, does real work.
 
+What IS modeled at L9-L10 (thread B — the martial bundle)
+--------------------------------------------------------
+  5. **Extra Attack** (monk-5, char L9+): the Attack action yields two weapon
+     swings.  Pure policy — the primary swing costs the action, the follow-up
+     costs nothing (the engine's standard Extra-Attack shape; no new primitive).
+  6. **Martial-arts die 1d8** (monk-5): the unarmed strike die bumps 1d6 -> 1d8.
+  7. **Shillelagh** (druid cantrip, char L9+): upgrades the quarterstaff damage
+     die to 1d10 (the char L9-10 step of the 1d8/1d10/1d12/2d6 ladder — BAKED into
+     the LEVELS row, the data-driven `scaling: ladder` deliberately DODGED) AND
+     grants the OPTION to swing with WIS (spellcasting) instead of DEX.  Per the
+     2024 spell that is an OPTION, not an auto-override, so the policy uses the
+     HIGHER of the two ability modifiers (defaulting to WIS on a tie); here WIS(+4)
+     beats DEX(+3).  Delivered via the per-attack override (primitive #4) — a
+     weapon attack that uses a spellcasting stat, which is exactly the conflation
+     the ATTACK-TAXONOMY flag (PROGRESS) calls out; we reuse `weapon_stat=
+     "spell_attack_bonus"` as the numeric WIS to-hit WITHOUT rebuilding engine
+     vocabulary (that typology is deferred, user-directed).  Cast as the turn-1
+     bonus action (guide 41:539); modeled by withholding the turn-1 BA damage
+     option (the BA is spent on the cast), so it then persists the whole combat.
+
 What is NOT modeled here (deferred — see PROGRESS "Open threads")
 ----------------------------------------------------------------
-  - **Extra Attack + martial-arts 1d8 + Shillelagh** (L9 martial thread): the
-    separate build thread; L10 here keeps a single 1d8+3 quarterstaff attack.
   - **Elemental Adept (fire)** (L8): fire-resistance bypass (moot — the dummy has
     no resistances) + 1->2 die high-grading (a small per-die `replace` modifier).
   - **Starry Form: Chalice** (extra healing — DPR-irrelevant) and **Dragon** (a
@@ -233,23 +252,76 @@ LEVELS: dict[int, dict] = {
         "enemy_dex_save": 2,               # csv level 5
         "ceiling_dpr": 23.0,               # loose: Guiding Bolt 14 + Sacred Flame 2d8 9
     },
+    9: {
+        # Monk-5 (Sun Soul)/Druid-4 (Stars), PB 4, WIS 19 (+4, +1 from Elemental
+        # Adept at L8), DEX 16 (+3).  Headline (THREAD B): EXTRA ATTACK (1->2
+        # quarterstaff swings per Attack action), the martial-arts die bumps to 1d8
+        # (unarmed 1d6->1d8; quarterstaff already 1d8 versatile), and the first
+        # SHILLELAGH (quarterstaff die -> 1d10 with the WIS option).  To-hit / DC /
+        # AC are IDENTICAL to L10 (PB and the WIS modifier do not change monk-5 ->
+        # monk-6).  Starry Form is DROPPED in combat from L9 (guide 41:539 — "we no
+        # longer need to use starry form in combat at all"), so there is no archer
+        # profile / wild_shape here; and no focus_points (Searing Arc is monk-6/L10).
+        "attack_bonus": 7,                 # PB 4 + DEX 3 (martial-arts melee / unarmed)
+        "spell_attack_bonus": 8,           # PB 4 + WIS 4 (Guiding Bolt / Shillelagh option)
+        "spell_save_dc": 16,               # 8 + PB 4 + WIS 4 (Sacred Flame)
+        "char_ac": 17,                     # 10 + DEX 3 + WIS 4
+        "char_hp": 54,                     # DPR-irrelevant (threshold model)
+        "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        # Martial arts die 1d6 -> 1d8 at monk-5 (guide 41:512); unarmed uses it.
+        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        # Extra Attack (monk-5): the Attack action yields two weapon swings (the
+        # policy emits a primary cost="action" + one cost="none" follow-up).
+        "extra_attack": True,
+        # Shillelagh (druid cantrip, cast as the turn-1 BA, persists the combat):
+        # upgrades the quarterstaff damage die to 1d10 (the char L9-10 step of the
+        # 1d8/1d10/1d12/2d6 ladder — BAKED here, the data-driven `scaling: ladder`
+        # deliberately DODGED, see PROGRESS "die-size scaling"), AND grants the
+        # OPTION to use WIS (spellcasting) instead of DEX for attack & damage.  The
+        # block below is the WIS option (bonus = WIS mod, WIS-based to-hit); the
+        # policy compares it to the DEX quarterstaff and uses the HIGHER modifier
+        # (defaulting to WIS on a tie) — see _shillelagh_attack_choice.
+        "shillelagh":   {"dice": (1, 10), "bonus": 4, "weapon_stat": "spell_attack_bonus"},
+        # Guiding Bolt: 4d6 radiant SPELL (Star Map free cast) — a Fueled-Spellfire
+        # target.  Starry Form (Archer) is dropped in combat, so the BA never falls
+        # back to archer; only Sacred Flame / unarmed.
+        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
+                          "damage_type": "radiant", "is_spell": True},
+        "starry_form": False,
+        "resources": {
+            "spellfire_spark":  (4, 0),    # Sacred Flame as a BA, x PB / LR (PB 4)
+            "guiding_bolt_free": (4, 0),   # Star Map: free Guiding Bolt x WIS / LR
+            # Fueled Spellfire pool: 9 hit dice at char L9 (guide 41:547 — "with 9
+            # hit dice").  Its presence is the data-driven on/off gate in the policy.
+            "hit_dice": (9, 0),
+        },
+        "enemy_ac": 16,
+        "enemy_dex_save": 2,               # csv level 9
+        # Loose all-hit/all-fail upper bound: GB turn 14 + fuel 2d8 9 = 23; attack
+        # turns 2x(1d10+WIS) 19 + Sacred Flame 2d8 9 = 28.  ~30 max → 32 cushion.
+        "ceiling_dpr": 32.0,
+    },
     10: {
         # Monk-6 (Sun-Soul)/Druid-4 (Stars), PB 4, WIS 19 (+4, +1 from Elemental
-        # Adept at L8).  Headline: SEARING ARC STRIKE (upcast Burning Hands as a BA).
-        # L6-L9 are intentionally SKIPPED here (like L2/L3): L5-L8 are mechanically
-        # IDENTICAL on our side (PB stays 3, WIS mod stays +4 through L8 — only the
-        # enemy hardens), and L9's Extra Attack + martial-arts-1d8 + Shillelagh are
-        # the SEPARATE martial thread (deferred).  So this row models the searing-arc
-        # / fire-gate axis ONLY; the quarterstaff is still a single 1d8+3 attack and
-        # there is no Shillelagh.  (Elemental Adept's fire-resistance bypass + 1->2
-        # die high-grading are also deferred — see PROGRESS; both are small DPR.)
-        "attack_bonus": 7,                 # PB 4 + DEX 3 (martial-arts melee)
-        "spell_attack_bonus": 8,           # PB 4 + WIS 4 (Guiding Bolt)
+        # Adept at L8).  Headlines: SEARING ARC STRIKE (upcast Burning Hands as a BA,
+        # thread A) PLUS the thread-B martial bundle now shared with L9 — EXTRA ATTACK
+        # (two quarterstaff swings per Attack action), the martial-arts die at 1d8
+        # (unarmed 1d6->1d8), and SHILLELAGH (quarterstaff die -> 1d10, WIS option).
+        # L6-L8 stay SKIPPED (mechanically identical on our side — PB & WIS mod hold;
+        # only the enemy hardens).  (Elemental Adept's fire-resistance bypass + 1->2
+        # die high-grading are still deferred — see PROGRESS; both are small DPR.)
+        "attack_bonus": 7,                 # PB 4 + DEX 3 (martial-arts melee / unarmed)
+        "spell_attack_bonus": 8,           # PB 4 + WIS 4 (Guiding Bolt / Shillelagh option)
         "spell_save_dc": 16,               # 8 + PB 4 + WIS 4 (Sacred Flame + Burning Hands)
         "char_ac": 17,                     # 10 + DEX 3 + WIS 4
         "char_hp": 64,                     # DPR-irrelevant (threshold model)
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
-        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus"},
+        # Martial arts die 1d8 at monk-6; unarmed uses it (1d6 -> 1d8).
+        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        # Extra Attack + Shillelagh (thread B — same as L9: die -> 1d10 at char
+        # L9-10, WIS option; the policy uses the higher of WIS/DEX, default WIS).
+        "extra_attack": True,
+        "shillelagh":   {"dice": (1, 10), "bonus": 4, "weapon_stat": "spell_attack_bonus"},
         # Guiding Bolt: 4d6 radiant SPELL (Star Map free cast) — a Fueled-Spellfire
         # target.  Starry Form (Archer) is DROPPED in combat from L9 (guide), so no
         # archer profile here; the BA falls back to an unarmed strike.
@@ -275,9 +347,10 @@ LEVELS: dict[int, dict] = {
         },
         "enemy_ac": 16,
         "enemy_dex_save": 3,               # csv level 10
-        # Loose all-hit/all-fail upper bound: turn-1 Guiding Bolt 14 + fuel 2d8 9 = 23;
-        # other turns quarterstaff 11.5 + Searing Arc full 4d6 14 = 25.5.  ~26 max.
-        "ceiling_dpr": 28.0,
+        # Loose all-hit/all-fail upper bound (now with Extra Attack + Shillelagh):
+        # turn-1 Guiding Bolt 14 + fuel 2d8 9 = 23; attack turns 2x(1d10+WIS) 19 +
+        # Searing Arc full 4d6 14 = 33.  ~33 max → 36 cushion.
+        "ceiling_dpr": 36.0,
     },
 }
 
@@ -392,6 +465,18 @@ class StarfireScionPolicy:
             self._profiles["archer"] = data["archer"]
         if self._has_guiding_bolt:
             self._profiles["guiding_bolt"] = data["guiding_bolt"]
+        # Extra Attack (monk-5, char L9+): the Attack action yields this many EXTRA
+        # weapon swings beyond the primary (1 → two swings total; 0 when absent).
+        self._extra_attacks: int = 1 if data.get("extra_attack") else 0
+        # Shillelagh (druid cantrip, char L9+): present iff this level carries a
+        # "shillelagh" block (data-driven gate).  That block is the WIS (spellcasting)
+        # OPTION — die 1d10, WIS mod, WIS-based to-hit; _shillelagh_attack_choice
+        # compares it to the DEX quarterstaff and swings with the HIGHER ability
+        # modifier (defaulting to WIS on a tie), per the 2024 spell granting an
+        # option rather than an automatic override.
+        self._has_shillelagh: bool = "shillelagh" in data
+        if self._has_shillelagh:
+            self._shillelagh_wis = data["shillelagh"]
         # Sacred Flame dice + damage TYPE FROM DATA — resolved once for this
         # character level.  The type ("radiant") drives Fueled Spellfire gating.
         _sf = interpret_save_spell(SACRED_FLAME, {"character_level": level})
@@ -418,6 +503,10 @@ class StarfireScionPolicy:
             self._sas_type = _sas.damage_type          # "fire" (NOT fuelable)
         # Per-combat state, (re)set by on_combat_start.
         self._starry_form_active: bool = False
+        # Shillelagh up for this combat (cast as the turn-1 BA, then persists).  Set
+        # by on_combat_start; consumed by the weapon-attack swings and by the turn-1
+        # BA suppression in decide().
+        self._shillelagh_active: bool = False
         # 1/turn Fueled-Spellfire gate: the (round, turn_index) we last fueled on,
         # so a turn that deals radiant damage twice (Guiding Bolt + Sacred Flame)
         # fuels only once.  Keyed by turn → auto-resets across turns; cleared per
@@ -434,6 +523,11 @@ class StarfireScionPolicy:
         resource pool; the parameter matches the on_combat_start hook signature.)
         """
         self._starry_form_active = False
+        # Shillelagh (char L9+) is cast at the top of every combat (its turn-1 BA
+        # cost is modeled in decide() by withholding the turn-1 BA damage option)
+        # and then persists the whole combat, so flag it up here.  It is an at-will
+        # cantrip — no slot / resource cost.
+        self._shillelagh_active = self._has_shillelagh
         # Clear the per-turn Fueled-Spellfire gate (round numbers restart at 1 each
         # combat, so a stale (round, turn) would mis-gate the new combat).
         self._fueled_turn = None
@@ -472,7 +566,13 @@ class StarfireScionPolicy:
                     resource_cost={"guiding_bolt_free": 1},
                 ))
             else:
-                choices.append(self._attack_choice("quarterstaff", "action"))
+                # Weapon Attack action: a (Shillelagh-buffed) quarterstaff swing,
+                # repeated once per Extra Attack.  The primary swing spends the
+                # action; each follow-up costs nothing (the action is already paid)
+                # — the engine's standard Extra-Attack shape (see ExtraAttackPolicy).
+                choices.append(self._weapon_attack_choice("action"))
+                for _ in range(self._extra_attacks):
+                    choices.append(self._weapon_attack_choice("none"))
                 action_is_weapon_attack = True
 
         # BONUS ACTION priority ladder:
@@ -483,7 +583,14 @@ class StarfireScionPolicy:
         #      core; fires on Guiding-Bolt turns (where Searing Arc is unavailable).
         #   3. Archer attack (if Starry Form active — dropped in combat from L9).
         #   4. Unarmed strike.
-        if res.get("bonus_action", 0) >= 1:
+        #
+        # EXCEPT turn 1 of each combat, when the bonus action is spent CASTING
+        # Shillelagh (guide 41:539 — "BA:shillelagh") — modeled by withholding the
+        # turn-1 BA damage option.  Shillelagh then persists and buffs every
+        # quarterstaff swing for the rest of the combat.  (Pure read: the cantrip
+        # was flagged active in on_combat_start; here we only consult round_number.)
+        casting_shillelagh = self._shillelagh_active and snapshot.round_number == 1
+        if res.get("bonus_action", 0) >= 1 and not casting_shillelagh:
             if (
                 self._has_searing_arc
                 and action_is_weapon_attack
@@ -528,6 +635,42 @@ class StarfireScionPolicy:
             damage_type=self._sas_type,                # "fire" (NOT fuelable)
             is_spell=True,
             resource_cost={"focus_points": self._sas_fp_cost},
+        )
+
+    def _weapon_attack_choice(self, cost: str) -> Choice:
+        """The Attack-action weapon swing: the Shillelagh-buffed quarterstaff while
+        Shillelagh is up this combat (char L9+), else the plain quarterstaff."""
+        if self._shillelagh_active:
+            return self._shillelagh_attack_choice(cost)
+        return self._attack_choice("quarterstaff", cost)
+
+    def _shillelagh_attack_choice(self, cost: str) -> Choice:
+        """Shillelagh quarterstaff: the damage die is upgraded to 1d10 (baked into
+        the LEVELS row — the 1d8/1d10/1d12/2d6 ladder is dodged), and the swing MAY
+        use WIS (spellcasting) instead of the weapon's normal DEX.
+
+        Per the 2024 spell this is an OPTION, not an automatic override (user-
+        flagged): use whichever ABILITY MODIFIER is higher, defaulting to the
+        spellcasting stat on a tie.  The 1d10 die applies either way.  Here WIS(+4)
+        beats DEX(+3) so WIS wins; the comparison is kept explicit so the same data
+        works for a future build whose physical stat is the higher one.
+        """
+        wis = self._shillelagh_wis            # 1d10, WIS mod, WIS-based to-hit
+        dex = self._profiles["quarterstaff"]  # DEX mod, attack_bonus to-hit
+        # bonus == the ability modifier, so comparing bonuses picks the higher
+        # ability (PB is common to both to-hit values, so it cancels).  >= → tie
+        # goes to the spellcasting (WIS) option.
+        if wis["bonus"] >= dex["bonus"]:
+            bonus, weapon_stat = wis["bonus"], wis["weapon_stat"]
+        else:
+            bonus, weapon_stat = dex["bonus"], dex["weapon_stat"]
+        return Choice(
+            action_type="attack",
+            cost=cost,
+            target=self._target,
+            weapon_stat=weapon_stat,
+            damage_dice=wis["dice"],           # 1d10 regardless of which stat wins
+            damage_bonus=bonus,
         )
 
     def _attack_choice(

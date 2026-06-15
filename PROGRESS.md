@@ -72,7 +72,27 @@ type, condition, resource, …):
    improvements compound and are cheapest to make while the context is fresh.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-13, session 7) — DONE:** wired **Searing Arc Strike at L10** (thread A,
+> (2026-06-15, session 8) — DONE:** wired **THREAD B at L9 + L10** (Extra Attack +
+> martial-arts 1d8 + first Shillelagh) as pure DATA + POLICY — NO new engine
+> primitive, as predicted. New **L9 LEVELS row** (Monk-5/Druid-4; stats identical to
+> L10 — PB 4, WIS 19/+4; enemy AC 16 / DEX +2 from the monster CSV at cr==9; hit
+> dice 9; Starry Form dropped in combat). **Extra Attack** = a 1→2 weapon-swing
+> change in `decide()` (primary cost="action" + follow-up cost="none", the engine's
+> standard shape). **Martial-arts die** → unarmed 1d6→1d8. **Shillelagh** = the
+> per-attack override (#4): quarterstaff die → **1d10** (char L9-10 step of the
+> 1d8/1d10/1d12/2d6 ladder, BAKED into the row — the `scaling: ladder` deliberately
+> DODGED) + the **WIS option** (user-corrected: Shillelagh grants the OPTION, so the
+> policy uses the HIGHER of WIS/DEX modifiers, defaulting to WIS on a tie — here
+> WIS+4 > DEX+3). Cast as the **turn-1 BA** (modeled by withholding the turn-1 BA
+> damage option; persists the combat). **L10 also upgraded**: its single quarterstaff
+> → Extra Attack + Shillelagh + 1d8 unarmed. **331 tests green (+5).** L9 DPR 18.10
+> (< 32 ceiling, > L5 12.61), L10 DPR 20.36 (< 36 ceiling, > L9); thread-B-on > off
+> at the fixed L9 enemy (18.10 vs 12.95); Searing Arc still lifts L10 (20.34 vs
+> 17.99). Touched the ATTACK-TAXONOMY flag (a weapon attack using a spellcasting
+> stat) — reused `weapon_stat="spell_attack_bonus"` WITHOUT rebuilding vocabulary
+> (typology stays deferred). MCP-toggle recommendation re-made.
+>
+> **Session scope (2026-06-13, session 7) — DONE:** wired **Searing Arc Strike at L10** (thread A,
 > NO new engine primitive — pure data + policy on the ready primitive #3). Added
 > the **L10 LEVELS row** (PB 4, WIS 19/+4, DC 16, enemy AC 16 / DEX +3 from the
 > monster CSV at cr==10; L6–L9 SKIPPED — L5–L8 are identical on our side, L9's
@@ -92,6 +112,67 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **THREAD B wired at L9 + L10 (Extra Attack + martial-arts 1d8 + first Shillelagh)
+  — BUILT & VALIDATED (2026-06-15, session 8).** NO new engine primitive — pure
+  DATA + POLICY (the Extra-Attack shape + the per-attack override #4 were already
+  built). **331 tests green (+5).** Branch `feature/thread-b-extra-attack-shillelagh`.
+  - **What it is** (guide 41:510-513, 526, 539, 545). Monk-5/Druid-4 (char L9): PB
+    +4, martial-arts die → 1d8, **Extra Attack**, and the druid cantrip **Shillelagh**
+    becomes the go-to (guide: "with extra attack in hand, shillelagh is now
+    definitively the best way for us to deal damage"). Per the per-feature ritual the
+    rules text was verified in the guide first: guide 41:545 `attack(x2):quarterstaff
+    --> 2d8+2d10+2DEX+2WIS` confirms the Shillelagh quarterstaff is **1d10 + WIS**
+    (the 2d8/2DEX is the flurry-of-blows unarmed pair we don't model).
+  - **L9 LEVELS row** (PB 4, WIS 19/+4 — stats IDENTICAL to L10; enemy AC 16 / DEX
+    save +2 live from `monster_ac_and_saves_by_level.csv` at cr==9; hit_dice 9 per
+    guide 41:547). **L6-L8 still SKIPPED** (L5-L8 identical on our side). **Starry
+    Form is DROPPED in combat from L9** (guide 41:539), so no archer/wild_shape and
+    no focus_points here (Searing Arc is monk-6/L10).
+  - **Extra Attack (monk-5).** A 1→2 weapon-swing change in `decide()`: the primary
+    swing costs the action, the follow-up costs nothing (`cost="none"`) — the
+    engine's standard Extra-Attack shape (cf. `ExtraAttackPolicy`). A Guiding-Bolt
+    action is a spell and is correctly NOT doubled. `_extra_attacks` is a data-driven
+    count (`extra_attack: True` on the row).
+  - **Martial-arts die → 1d8.** Unarmed strike 1d6→1d8 at L9/L10 (quarterstaff was
+    already 1d8 versatile). Fixed the stale L10 unarmed (1d6→1d8) too.
+  - **Shillelagh (the headline).** Delivered via the per-attack override (#4), zero
+    engine change. The quarterstaff die → **1d10** — the char L9-10 step of the
+    2024 ladder (1d8/1d10/1d12/2d6) — **BAKED into the LEVELS row**, the data-driven
+    `scaling: ladder` deliberately DODGED (see the "die-size scaling" flag).
+    **User-corrected nuance (mid-session):** Shillelagh grants the *OPTION* to swing
+    with the spellcasting (WIS) ability instead of the weapon's normal physical (DEX)
+    stat — it is NOT an automatic override. So `_shillelagh_attack_choice` uses
+    whichever ability **modifier is higher, defaulting to the spellcasting stat on a
+    tie** (here WIS+4 > DEX+3 → WIS); the 1d10 die applies regardless of which stat
+    wins. The comparison is kept explicit so the same data serves a future build
+    whose physical stat is the higher one. Cast as the **turn-1 bonus action** (guide
+    41:539), modeled by **withholding the turn-1 BA damage option** (the BA is spent
+    on the cast) — pure policy-side, DPR-equivalent to consuming the BA, keeps
+    `decide()` a pure read; the cantrip is flagged active for the combat in
+    `on_combat_start` and then buffs every quarterstaff swing.
+  - **L10 also upgraded.** Its single 1d8+3 quarterstaff (searing-arc axis in
+    isolation) now carries Extra Attack + Shillelagh + 1d8 unarmed, sharing the L9
+    martial bundle. The Searing Arc Attack-action gate still holds (the doubled
+    quarterstaff IS a weapon Attack action); ceiling_dpr bumped 28→36.
+  - **ATTACK-TAXONOMY touch-point (flagged, no change made).** Shillelagh is a
+    *weapon attack that uses a spellcasting stat* — exactly the kind/action/economy
+    conflation the ATTACK-TAXONOMY flag calls out (second concrete consumer after
+    Searing Arc). We reused `weapon_stat="spell_attack_bonus"` as the numeric WIS
+    to-hit WITHOUT rebuilding engine vocabulary; the first-class typology stays
+    deferred (user-directed — discuss before any engine-vocabulary change).
+  - **Validation (consistency/sanity — NOT number-matching).** `tests/
+    test_starfire_scion.py` (+5): Extra Attack emits exactly action+none (a spell
+    action is not doubled); the Shillelagh higher-modifier/tie-default logic (incl.
+    the physical-stat-higher branch keeping the 1d10 die); unarmed 1d8 at L9/L10; the
+    turn-1 BA-cast suppression (no BA round 1, BA ladder from round 2; L1 without
+    Shillelagh never suppresses); L9 DPR a plausible fraction of the 32 ceiling
+    (18.10); and a within-L9 ABLATION at the fixed enemy (thread-B-on 18.10 > off
+    12.95, since L9/L10 don't share an enemy — L10 DEX save +3 vs L9 +2). L10 still
+    20.36 (< 36; > L9), Searing Arc still lifts it (20.34 vs 17.99).
+  - **Deferred (unchanged):** Elemental Adept fire (resistance bypass + 1→2 die
+    high-grading); the data-driven die-size ladder; Flame Blade / Stunning Strike /
+    Flurry of Blows; multi-enemy AoE; the attack-taxonomy typology.
 
 - **Searing Arc Strike wired at L10 (thread A) — BUILT & VALIDATED (2026-06-13,
   session 7).** NO new engine primitive — pure DATA + POLICY on the already-built
@@ -737,14 +818,18 @@ Strike. Upcast scaling comes later up the ladder.
    threaded `Choice → events → DamageEvent`). Hit dice = scarce per-day pool; rider
    NOT crit-doubled. See the Done entry above.
 
-**Next on the Scion's ladder (NO new engine primitive needed) — THREAD B, L9.**
-Searing Arc Strike (L10, thread A) is DONE (see the session-7 Done entry). The
-remaining L6–L10 climb is **thread B: L9 = Extra Attack + martial-arts 1d8 (a 1→2
-attack-count change in `decide()`) + first Shillelagh** (attack-profile half =
-primitive #4 + a per-combat policy flag; its die SIZE ladder is DODGED by baking
-the resolved die into the LEVELS row — see below). Thread B also upgrades the
-existing L10 row's quarterstaff to Extra Attack + Shillelagh (L10 currently models
-a single 1d8+3 quarterstaff, the searing-arc axis in isolation).
+**Next on the Scion's ladder.** Thread A (Searing Arc Strike, L10) is DONE (session
+7). **Thread B (L9 + L10: Extra Attack + martial-arts 1d8 + Shillelagh) is DONE
+(session 8)** — see the session-8 Done entry; NO new engine primitive, as predicted.
+The L1/L4/L5/L9/L10 ladder is now wired. **Open next steps (pick with the user):**
+(a) **L12** — WIS → 20 (a data row; +1 to-hit/DC/damage, Shillelagh die unchanged at
+char L11+ would be 1d12 — note the die-size step at L11); (b) **L11+ Shillelagh die
+→ 1d12** (still bake-able, or finally build the data-driven `scaling: ladder` if a
+continuous ladder past L10 is wanted — see "die-size scaling" below); (c) the
+**ATTACK-TAXONOMY** typology (engine-vocabulary work — discuss first); (d) the
+**outputs layer** (still ~10% built — design §8). No remaining engine primitive is
+forced by the Scion's offense axis; what's left is data rows, the deferred die-size
+ladder, and the two cross-cutting investments (taxonomy, outputs).
 
 **die-size scaling — the next unbuilt SCALED-QUANTITY (flagged, first consumer
 SHILLELAGH at L9; recorded with user 2026-06-13).** 2024 Shillelagh has cantrip
