@@ -523,6 +523,56 @@ def interpret_intercept(
 _CANTRIP_THRESHOLDS: tuple[int, ...] = (5, 11, 17)
 
 
+def _threshold_index(level: int, breaks: "list[int] | tuple[int, ...]") -> int:
+    """The number of (ascending) breakpoints `level` has reached.
+
+    The shared **threshold-list step function** behind both cantrip dice-count
+    scaling (`_CANTRIP_THRESHOLDS`) and the dice ladder (per-feature `breaks`):
+    `steps = #{b in breaks : b <= level}`.  For cantrips this is the +1-die step
+    count; for a ladder it is the index into the per-step dice list.
+    """
+    return sum(1 for b in breaks if level >= b)
+
+
+def _resolve_ladder(
+    spec: dict,
+    context: dict[str, int] | None,
+    level_reference: str | None,
+    ability_name: str,
+) -> tuple[int, int]:
+    """Resolve a `scaling: ladder` block to a concrete (count, sides).
+
+    An **enumerated dice ladder**: a `breaks` list (ascending level breakpoints)
+    paired with a `dice` list holding one `(count, sides)` per step — index 0
+    below the first break, index k at/after the k-th break.  Unlike the uniform
+    `increment` form (which holds the die SIZE fixed and walks only the count),
+    each step is an arbitrary die, so the ladder expresses pure die-size growth
+    AND mixed steps that also change the count (Shillelagh's d12 -> 2d6 top step)
+    in one mechanism.  The driver is any `level_reference` (character / class
+    level), so the one shape serves Shillelagh, bardic inspiration, superiority
+    and psi dice alike.
+    """
+    breaks = spec.get("breaks")
+    ladder = spec.get("dice")
+    if not breaks or not ladder:
+        raise NotImplementedError(
+            f"{ability_name}: `scaling: ladder` needs both `breaks` (ascending "
+            f"level breakpoints) and `dice` (one entry per step)"
+        )
+    if list(breaks) != sorted(breaks):
+        raise NotImplementedError(
+            f"{ability_name}: ladder `breaks` must be ascending (got {breaks})"
+        )
+    if len(ladder) != len(breaks) + 1:
+        raise NotImplementedError(
+            f"{ability_name}: ladder `dice` must have exactly one more entry than "
+            f"`breaks` ({len(breaks)} breaks -> {len(breaks) + 1} steps, "
+            f"got {len(ladder)})"
+        )
+    level = _level_from_context(level_reference, context, ability_name)
+    return parse_dice(ladder[_threshold_index(level, breaks)])
+
+
 def _level_from_context(
     level_reference: str | None,
     context: dict[str, int] | None,
@@ -573,15 +623,29 @@ def _resolve_scaling_dice(
         1, +1d6 per slot level) both default ``base_level`` to 1; a spell whose
         base lands higher (Spirit Guardians: 3d8 at slot 3) sets ``base_level: 3``.
         Steps below the base level clamp to zero (the base never shrinks).
+      - **ladder** (``scaling: ladder``, ``breaks`` + ``dice``) — an enumerated
+        dice ladder: the result at/after each breakpoint is an arbitrary
+        ``(count, sides)``, so BOTH the size and the count may change per step
+        (Shillelagh 1d8 -> 1d10 -> 1d12 -> 2d6 at character levels 5/11/17).  Its
+        own branch (`_resolve_ladder`) because this is the one shape the count /
+        increment forms below cannot express.
 
-    Returns a single (count, sides); the die SIZE never changes, only the count.
+    Returns a single (count, sides).  For the cantrip and uniform shapes the die
+    SIZE never changes, only the count; the ladder is the exception, enumerating a
+    full die per step.
     """
     if isinstance(spec, str):
         return parse_dice(spec)
 
-    base_count, sides = parse_dice(spec["base"])
     scaling = spec.get("scaling")
     level_reference = spec.get("level_reference")
+
+    # The ladder enumerates a full die per step (no `base` key), so it resolves
+    # before the `base`-parsing the count-scaling shapes below all share.
+    if scaling == "ladder":
+        return _resolve_ladder(spec, context, level_reference, ability_name)
+
+    base_count, sides = parse_dice(spec["base"])
 
     if scaling == "cantrip":
         if level_reference != "character_level":
@@ -590,7 +654,7 @@ def _resolve_scaling_dice(
                 f"(got level_reference={level_reference!r})"
             )
         level = _level_from_context(level_reference, context, ability_name)
-        steps = sum(1 for t in _CANTRIP_THRESHOLDS if level >= t)
+        steps = _threshold_index(level, _CANTRIP_THRESHOLDS)
         return base_count + steps, sides
 
     if "increment" in spec:
@@ -654,6 +718,46 @@ def interpret_hit_rider(
         resource_type=resource.get("type"),
         min_level=resource.get("min_level"),
     )
+
+
+def interpret_scaled_dice(
+    ability: Ability,
+    context: dict[str, int] | None = None,
+) -> tuple[int, int]:
+    """Resolve an ability's single `damage` die to a concrete (count, sides).
+
+    The general reader for a feature whose damage DIE scales (the dice ladder):
+    Shillelagh's 1d8 -> 1d10 -> 1d12 -> 2d6 by character level today; bardic
+    inspiration / superiority / psi dice later (those feed a `bonus_die` modifier,
+    but the SCALED QUANTITY is the same enumerated ladder, so they reuse this).
+    One `damage` block, folded via `_resolve_scaling_dice` against `context`
+    (e.g. {"character_level": 11}).  Raises loudly on any other shape.
+    """
+    if not isinstance(ability.effect, list):
+        raise NotImplementedError(
+            f"interpret_scaled_dice({ability.name}): expected an effect list"
+        )
+
+    damage_block: dict | None = None
+    for block in ability.effect:
+        verb = block.get("verb")
+        if verb != "damage":
+            raise NotImplementedError(
+                f"interpret_scaled_dice({ability.name}): verb {verb!r} not "
+                f"supported (this reader only resolves a single `damage` die)"
+            )
+        if damage_block is not None:
+            raise NotImplementedError(
+                f"interpret_scaled_dice({ability.name}): more than one `damage` "
+                f"block is not modeled (a single scaled die only)"
+            )
+        damage_block = block
+
+    if damage_block is None:
+        raise NotImplementedError(
+            f"interpret_scaled_dice({ability.name}): expected a `damage` block"
+        )
+    return _resolve_scaling_dice(damage_block.get("dice"), context, ability.name)
 
 
 # ---------------------------------------------------------------------------

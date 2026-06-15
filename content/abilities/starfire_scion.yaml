@@ -60,6 +60,41 @@ duration:
 # given the slot the policy chose.  base_level defaults to 1 (Burning Hands's
 # minimum slot), so it is omitted.  WHICH slot is spent stays policy arbitration.
 
+name: shillelagh
+tags: [active, spell, cantrip]
+# Druid cantrip (char L9+ for this build, once Extra Attack lands).  Cast as a
+# bonus action, it imbues a club/quarterstaff so it deals FORCE damage with the
+# spell's own die instead of the weapon's, and lets you swing with your
+# spellcasting modifier.  Only the DAMAGE DIE is modeled here — the WIS attack
+# OPTION (which ability swings) is the build's attack-profile choice
+# (_shillelagh_attack_choice), not an intrinsic of the cantrip's scaling.
+#
+# 2024 die scaling is the canonical cantrip threshold list [5, 11, 17] but it
+# grows the die SIZE (and changes the COUNT at the top step), so it is the
+# enumerated DICE LADDER, not the +1-die cantrip count rule:
+#   char L1-4 = 1d8, L5-10 = 1d10, L11-16 = 1d12, L17+ = 2d6.
+# Verified 2026-06-15 against the 2024 spell: D&D Beyond / Roll20 compendium /
+# dnd2024.wikidot.com:spell:shillelagh, and build guide 41 line 353 ("shillelagh
+# (1d10)" at the relevant tier).  interpret_scaled_dice folds this to (count,
+# sides) against the character level.
+trigger:
+  all:
+    - event: on_use
+effect:
+  - verb: damage
+    dice:
+      scaling: ladder            # enumerated die per break (size AND count vary)
+      breaks: [5, 11, 17]        # canonical cantrip thresholds (character level)
+      dice: ["1d8", "1d10", "1d12", "2d6"]
+      level_reference: character_level
+    type: force
+    target: self                 # imbues the wielder's weapon
+cost:
+  action_economy: bonus_action
+duration:
+  type: instantaneous
+
+---
 name: searing_arc_strike
 tags: [active, spell]
 trigger:

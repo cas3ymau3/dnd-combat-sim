@@ -135,7 +135,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..content import interpret_save_spell, load_abilities
+from ..content import interpret_save_spell, interpret_scaled_dice, load_abilities
 from ..day_runner import DayRunner
 from ..entity import Entity
 from ..policy import Choice, DamageRiderResponse, DealDamageContext, GameState
@@ -157,6 +157,12 @@ SACRED_FLAME = _ABILITIES["sacred_flame"]   # DEX save-negates, cantrip-scaling 
 # chosen slot level.  type: fire (NOT radiant) — so Fueled Spellfire does NOT fuel
 # it (the cross-check that the damage_type gate, not just is_spell, does real work).
 SEARING_ARC_STRIKE = _ABILITIES["searing_arc_strike"]
+# Shillelagh (druid cantrip, char L9+): the quarterstaff DAMAGE DIE upgrades on the
+# enumerated dice ladder (1d8/1d10/1d12/2d6 at char L5/11/17) — resolved FROM DATA
+# via interpret_scaled_dice by character level (the first consumer of `scaling:
+# ladder`), NOT a literal baked per LEVELS row.  The WIS attack OPTION stays the
+# build's profile choice (_shillelagh_attack_choice).
+SHILLELAGH = _ABILITIES["shillelagh"]
 
 
 # ---------------------------------------------------------------------------
@@ -274,14 +280,14 @@ LEVELS: dict[int, dict] = {
         # policy emits a primary cost="action" + one cost="none" follow-up).
         "extra_attack": True,
         # Shillelagh (druid cantrip, cast as the turn-1 BA, persists the combat):
-        # upgrades the quarterstaff damage die to 1d10 (the char L9-10 step of the
-        # 1d8/1d10/1d12/2d6 ladder — BAKED here, the data-driven `scaling: ladder`
-        # deliberately DODGED, see PROGRESS "die-size scaling"), AND grants the
-        # OPTION to use WIS (spellcasting) instead of DEX for attack & damage.  The
-        # block below is the WIS option (bonus = WIS mod, WIS-based to-hit); the
-        # policy compares it to the DEX quarterstaff and uses the HIGHER modifier
-        # (defaulting to WIS on a tie) — see _shillelagh_attack_choice.
-        "shillelagh":   {"dice": (1, 10), "bonus": 4, "weapon_stat": "spell_attack_bonus"},
+        # upgrades the quarterstaff damage die on the 1d8/1d10/1d12/2d6 ladder
+        # (1d10 at char L9-10) — resolved FROM DATA via interpret_scaled_dice
+        # (`scaling: ladder`), NOT baked here — AND grants the OPTION to use WIS
+        # (spellcasting) instead of DEX for attack & damage.  The block below is the
+        # WIS option (bonus = WIS mod, WIS-based to-hit); the policy compares it to
+        # the DEX quarterstaff and uses the HIGHER modifier (defaulting to WIS on a
+        # tie) — see _shillelagh_attack_choice.  The die is injected at policy init.
+        "shillelagh":   {"bonus": 4, "weapon_stat": "spell_attack_bonus"},
         # Guiding Bolt: 4d6 radiant SPELL (Star Map free cast) — a Fueled-Spellfire
         # target.  Starry Form (Archer) is dropped in combat, so the BA never falls
         # back to archer; only Sacred Flame / unarmed.
@@ -318,10 +324,11 @@ LEVELS: dict[int, dict] = {
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         # Martial arts die 1d8 at monk-6; unarmed uses it (1d6 -> 1d8).
         "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
-        # Extra Attack + Shillelagh (thread B — same as L9: die -> 1d10 at char
-        # L9-10, WIS option; the policy uses the higher of WIS/DEX, default WIS).
+        # Extra Attack + Shillelagh (thread B — same as L9: die from the ladder
+        # (1d10 at char L9-10, via interpret_scaled_dice), WIS option; the policy
+        # uses the higher of WIS/DEX, default WIS).
         "extra_attack": True,
-        "shillelagh":   {"dice": (1, 10), "bonus": 4, "weapon_stat": "spell_attack_bonus"},
+        "shillelagh":   {"bonus": 4, "weapon_stat": "spell_attack_bonus"},
         # Guiding Bolt: 4d6 radiant SPELL (Star Map free cast) — a Fueled-Spellfire
         # target.  Starry Form (Archer) is DROPPED in combat from L9 (guide), so no
         # archer profile here; the BA falls back to an unarmed strike.
@@ -352,6 +359,82 @@ LEVELS: dict[int, dict] = {
         # Searing Arc full 4d6 14 = 33.  ~33 max → 36 cushion.
         "ceiling_dpr": 36.0,
     },
+    11: {
+        # Monk-7 (Sun-Soul)/Druid-4 (Stars), PB 4, WIS 19 (+4), DEX 16 (+3).
+        # Headline (the dice-ladder consumer): SHILLELAGH die steps 1d10 -> 1d12
+        # at character level 11 (the [5,11,17] cantrip break) — resolved FROM DATA
+        # off `scaling: ladder`.  Monk-7 itself adds Evasion (defensive, DPR-
+        # irrelevant in the threshold model), so on our OFFENSE side L11 == L10
+        # except the bigger Shillelagh die (and the FP pool grows monk-6 -> 7).
+        # To-hit / DC / AC are unchanged from L10 (PB 4 and WIS +4 both hold from
+        # monk-6 -> monk-7); only the enemy hardens (AC 16 -> 17 at cr 11).
+        "attack_bonus": 7,                 # PB 4 + DEX 3 (martial-arts melee / unarmed)
+        "spell_attack_bonus": 8,           # PB 4 + WIS 4 (Guiding Bolt / Shillelagh option)
+        "spell_save_dc": 16,               # 8 + PB 4 + WIS 4 (Sacred Flame + Burning Hands)
+        "char_ac": 17,                     # 10 + DEX 3 + WIS 4
+        "char_hp": 74,                     # DPR-irrelevant (threshold model)
+        "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        # Martial arts die still 1d8 at monk-7 (it next steps to 1d10 at monk-11).
+        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "extra_attack": True,
+        # Shillelagh die -> 1d12 at char L11 (resolved by interpret_scaled_dice).
+        "shillelagh":   {"bonus": 4, "weapon_stat": "spell_attack_bonus"},
+        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
+                          "damage_type": "radiant", "is_spell": True},
+        "starry_form": False,
+        # Searing Arc Strike unchanged from L10: monk-7 cap = floor(7/2) = 3 FP →
+        # slot 2 = 4d6 (FP cost 3).  (5d6 waits for monk-8 at L12.)
+        "searing_arc_strike": {"slot_level": 2, "fp_cost": 3},
+        "resources": {
+            "spellfire_spark":  (4, 0),    # Sacred Flame as a BA, x PB / LR (PB 4)
+            "guiding_bolt_free": (4, 0),   # Star Map: free Guiding Bolt x WIS mod / LR
+            "hit_dice": (11, 0),           # Fueled Spellfire: char-level d8 (11 at L11)
+            "focus_points": (7, 0),        # monk-7 = 7 FP
+        },
+        "enemy_ac": 17,
+        "enemy_dex_save": 3,               # csv level 11
+        # Loose upper bound (Shillelagh now 1d12): GB turn 14 + fuel 9 = 23; attack
+        # turns 2x(1d12+4) 21 + Searing Arc full 4d6 14 = 35.  ~35 max → 38 cushion.
+        "ceiling_dpr": 38.0,
+    },
+    12: {
+        # Monk-8 (Sun-Soul)/Druid-4 (Stars), PB 4, WIS 20 (+5, Resilient (WIS) at
+        # L12 — guide lines 30, 45), DEX 16 (+3).  Headlines: WIS 19 -> 20 lifts the
+        # spell to-hit, save DC, and the Shillelagh/Archer/Guiding-Bolt damage by +1;
+        # and monk-8 upcasts Burning Hands one slot higher — SEARING ARC STRIKE
+        # 4d6 -> 5d6 (cap floor(8/2) = 4 FP → slot 3; guide line 106).  Shillelagh die
+        # stays 1d12 (char L11-16 step).  Enemy at cr 12 is AC 17 / DEX +3 — IDENTICAL
+        # to cr 11, so L11 vs L12 is a clean fixed-enemy monotonic check (isolates the
+        # WIS +1 and the 4d6 -> 5d6 upcast).
+        "attack_bonus": 7,                 # PB 4 + DEX 3 (DEX unchanged → martial to-hit holds)
+        "spell_attack_bonus": 9,           # PB 4 + WIS 5 (Guiding Bolt / Shillelagh option)
+        "spell_save_dc": 17,               # 8 + PB 4 + WIS 5
+        "char_ac": 18,                     # 10 + DEX 3 + WIS 5
+        "char_hp": 84,                     # DPR-irrelevant (threshold model)
+        "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "extra_attack": True,
+        # Shillelagh die 1d12 (char L11-16); WIS mod now +5 (bonus 5).
+        "shillelagh":   {"bonus": 5, "weapon_stat": "spell_attack_bonus"},
+        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
+                          "damage_type": "radiant", "is_spell": True},
+        "starry_form": False,
+        # monk-8: cap = floor(8/2) = 4 FP → upcast Burning Hands to slot 3 = 5d6
+        # (guide line 106 — "upcast burning hands at lvl-03 (5d6)").  slot_level = 3.
+        "searing_arc_strike": {"slot_level": 3, "fp_cost": 4},
+        "resources": {
+            "spellfire_spark":  (4, 0),    # Sacred Flame as a BA, x PB / LR (PB 4)
+            "guiding_bolt_free": (5, 0),   # Star Map: free Guiding Bolt x WIS mod / LR (WIS 20 → 5)
+            "hit_dice": (12, 0),           # Fueled Spellfire: char-level d8 (12 at L12)
+            "focus_points": (8, 0),        # monk-8 = 8 FP
+        },
+        "enemy_ac": 17,
+        "enemy_dex_save": 3,               # csv level 12
+        # Loose upper bound (WIS +5, Shillelagh 1d12+5, Searing Arc 5d6): GB turn 14
+        # + fuel 9 = 23; attack turns 2x(1d12+5) 23 + Searing Arc full 5d6 17.5 = 40.5.
+        # ~41 max → 44 cushion.
+        "ceiling_dpr": 44.0,
+    },
 }
 
 
@@ -370,7 +453,7 @@ def _make_resources(data: dict) -> ResourcePool:
 
 
 def make_starfire_scion(level: int) -> Entity:
-    """Build the Starfire Scion Entity for the given level (1, 4, 5, 10 for now)."""
+    """Build the Starfire Scion Entity for the given level (1, 4, 5, 9-12 for now)."""
     if level not in LEVELS:
         raise NotImplementedError(
             f"Starfire Scion level {level} not yet implemented (have {sorted(LEVELS)})."
@@ -417,7 +500,7 @@ def make_training_dummy(level: int) -> Entity:
 # ---------------------------------------------------------------------------
 
 class StarfireScionPolicy:
-    """Starfire Scion daily plan (L1, L4, L5, L10).
+    """Starfire Scion daily plan (L1, L4, L5, L9-L12).
 
     Per-turn rotation (a single representative blaster loop — the guide's full
     optimal play splits melee vs ranged combats and leans on Flame Blade / Starry
@@ -476,7 +559,13 @@ class StarfireScionPolicy:
         # option rather than an automatic override.
         self._has_shillelagh: bool = "shillelagh" in data
         if self._has_shillelagh:
-            self._shillelagh_wis = data["shillelagh"]
+            # The LEVELS row carries the WIS attack OPTION (bonus + which to-hit
+            # stat); the DAMAGE DIE is resolved FROM DATA off the dice ladder by
+            # character level (1d10 at L9-10, 1d12 at L11-16) — interpret_scaled_dice,
+            # the first consumer of `scaling: ladder`.  Retrofit is DPR-neutral at
+            # L9/L10 (ladder yields the same 1d10 formerly baked here).
+            die = interpret_scaled_dice(SHILLELAGH, {"character_level": level})
+            self._shillelagh_wis = {**data["shillelagh"], "dice": die}
         # Sacred Flame dice + damage TYPE FROM DATA — resolved once for this
         # character level.  The type ("radiant") drives Fueled Spellfire gating.
         _sf = interpret_save_spell(SACRED_FLAME, {"character_level": level})
@@ -669,15 +758,16 @@ class StarfireScionPolicy:
         return self._attack_choice("quarterstaff", cost)
 
     def _shillelagh_attack_choice(self, cost: str) -> Choice:
-        """Shillelagh quarterstaff: the damage die is upgraded to 1d10 (baked into
-        the LEVELS row — the 1d8/1d10/1d12/2d6 ladder is dodged), and the swing MAY
-        use WIS (spellcasting) instead of the weapon's normal DEX.
+        """Shillelagh quarterstaff: the damage die is upgraded along the dice
+        ladder (1d10 at char L9-10, 1d12 at L11-16 — resolved FROM DATA into
+        `_shillelagh_wis["dice"]` at policy init), and the swing MAY use WIS
+        (spellcasting) instead of the weapon's normal DEX.
 
-        Per the 2024 spell this is an OPTION, not an automatic override (user-
+        Per the 2024 spell the stat is an OPTION, not an automatic override (user-
         flagged): use whichever ABILITY MODIFIER is higher, defaulting to the
-        spellcasting stat on a tie.  The 1d10 die applies either way.  Here WIS(+4)
-        beats DEX(+3) so WIS wins; the comparison is kept explicit so the same data
-        works for a future build whose physical stat is the higher one.
+        spellcasting stat on a tie.  The ladder die applies either way.  Here
+        WIS(+4/+5) beats DEX(+3) so WIS wins; the comparison is kept explicit so
+        the same data works for a future build whose physical stat is the higher one.
         """
         wis = self._shillelagh_wis            # 1d10, WIS mod, WIS-based to-hit
         dex = self._profiles["quarterstaff"]  # DEX mod, attack_bonus to-hit
