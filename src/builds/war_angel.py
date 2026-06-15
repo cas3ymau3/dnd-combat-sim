@@ -70,6 +70,7 @@ from ..policy import (
     SaveRerollResponse,
 )
 from ..resources import ResourceEntry, ResourcePool
+from .enemy import ScriptedEnemyPolicy  # shared enemy loop (re-exported here)
 
 if TYPE_CHECKING:
     from ..rng import SeededRNG
@@ -1258,60 +1259,12 @@ class WarAngelDailyPlan:
 
 
 # ---------------------------------------------------------------------------
-# Enemy policy — strikes the character to force concentration checks (L13+)
+# Enemy policy: the shared ScriptedEnemyPolicy (src/builds/enemy.py), imported
+# and re-exported above so it strikes the War Angel to force concentration
+# checks on Bless (L13+).  Sap disadvantage on the enemy's first attack each
+# turn is applied by the character's longsword via the existing `sapped` status,
+# read in resolve_attack_roll — nothing the enemy policy needs to do.
 # ---------------------------------------------------------------------------
-
-class WarAngelEnemyPolicy:
-    """Enemy that strikes the War Angel so concentration on Bless can break.
-
-    Makes `n_attacks` attacks per turn; each independently targets the character
-    with probability `char_target_prob` (else a party member — not modeled, so a
-    no-op for our metrics).  Targeting is PRE-ROLLED per (round, attack slot) at
-    on_combat_start so decide() stays dice-free, mirroring the character policy's
-    AoO pre-roll.
-
-    Sap disadvantage on the enemy's first attack each turn is applied by the
-    character's longsword via the existing `sapped` status, read in
-    resolve_attack_roll — nothing to do here.  The enemy makes no decisions
-    beyond targeting (flat damage, no riders), so this stays minimal.
-    """
-
-    def __init__(
-        self,
-        target: Entity,
-        n_attacks: int = 3,
-        char_target_prob: float = 0.40,
-        rounds_per_combat: int = 4,
-    ) -> None:
-        self._target = target
-        self._n_attacks = n_attacks
-        self._p_pct = int(round(char_target_prob * 100))
-        self._rounds = rounds_per_combat
-        self._targets_char: dict[int, list[bool]] = {}
-
-    def on_combat_start(self, combat_index: int, rng: "SeededRNG") -> None:
-        # Pre-roll, per round and attack slot, whether it lands on the character.
-        self._targets_char = {
-            r: [rng.roll_one(100) <= self._p_pct for _ in range(self._n_attacks)]
-            for r in range(1, self._rounds + 1)
-        }
-
-    def decide(self, snapshot: GameState) -> list[Choice]:
-        if snapshot.resources.get("action", 0) < 1:
-            return []
-        choices: list[Choice] = []
-        for targets_char in self._targets_char.get(snapshot.round_number, []):
-            if not targets_char:
-                continue  # party-aimed: unmodeled → no-op for our metrics
-            # First attack at the character spends the action; the rest are
-            # free multiattack swings (cost "none").
-            choices.append(Choice(
-                action_type="attack",
-                cost="action" if not choices else "none",
-                target=self._target,
-                weapon_stat="attack_bonus",
-            ))
-        return choices
 
 
 # ---------------------------------------------------------------------------
@@ -1335,7 +1288,7 @@ def make_day_runner(level: int, rng: "SeededRNG", rounds_per_combat: int = 4):
     # Enemy strikes back once it has an attack profile (L13+).
     ea = LEVELS[level].get("enemy_attack")
     if ea:
-        policies[dummy.id] = WarAngelEnemyPolicy(
+        policies[dummy.id] = ScriptedEnemyPolicy(
             target=char,
             n_attacks=ea["n_attacks"],
             char_target_prob=ea["char_target_prob"],
