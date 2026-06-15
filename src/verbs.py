@@ -212,6 +212,19 @@ def resolve_attack_roll(
         disadvantage = True
         actor.statuses.consume("sapped")
 
+    # --- Persistent advantage grants from cast_effect status payloads (#3) ---
+    # Unlike vex/sap (one-shot, consumed on use), these are duration buffs read
+    # on EVERY qualifying roll until the cast ends (swept at the combat boundary
+    # or dropped on lost concentration) — so they are read, never consumed.
+    #   Faerie Fire: attack rolls against an outlined TARGET have advantage (any
+    #   attacker who can see it — no spell gate).
+    if target is not None and target.statuses.has("attack_advantage_against"):
+        advantage = True
+    #   Innate Sorcery: the caster has advantage on its own SPELL attack rolls
+    #   (gated on the attack being a spell — weapon swings are unaffected).
+    if event.is_spell and actor.statuses.has("spell_attack_advantage"):
+        advantage = True
+
     # Roll d20 (with adv/disadv cancellation handled in the helper)
     d20 = roll_d20(rng, advantage, disadvantage)
     is_crit = (d20 == 20)

@@ -72,7 +72,23 @@ type, condition, resource, …):
    improvements compound and are cheapest to make while the context is fresh.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-15, session 9) — DONE:** built the **`cast_effect` combat-effect
+> (2026-06-15, session 11) — DONE:** built **`cast_effect` substrate #3 — the
+> StatusSet payload + the debuff `application_save`** (step 1 of the buff-primitive
+> "Next-steps sequence"). `Choice` gained a `statuses` (list of `StatusSpec`)
+> payload + an optional `application_save` (`ApplicationSave`); the scheduler
+> `cast_effect` branch rolls the bearer's resist save vs the caster's DC (reusing
+> `resolve_saving_throw`) and, on no-resist, installs the statuses on the bearer
+> (a made save negates the whole payload). `resolve_attack_roll` reads two new
+> PERSISTENT advantage grants — `attack_advantage_against` (Faerie Fire, on the
+> target) + `spell_attack_advantage` (Innate Sorcery, on the actor, `is_spell`-
+> gated). Consumers Innate Sorcery (self-grant, no save) + Faerie Fire (debuff, DEX
+> save) verified per the per-feature ritual + validated via test policies (both
+> speculative — no Scion consumer). Fixed a status-only-concentration sweep leak.
+> **354 tests green (+7).** Branch `feature/cast-effect-statusset-payload` →
+> merging to main this session (user-approved, confirm before the actual merge).
+> MCP-toggle recommendation re-made.
+>
+> **Session scope (2026-06-15, session 9) — DONE:** built the **`cast_effect` combat-effect
 > PRIMITIVE** — a first-class NON-DAMAGING cast (buffs AND debuffs) the scheduler
 > spends action economy + resources on and that pushes NO DamageEvent. Surveyed the
 > build-guide corpus for buffs/debuffs FIRST (user-directed) and locked the design in
@@ -132,6 +148,68 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **`cast_effect` substrate #3 — StatusSet payload + the debuff `application_save`
+  — BUILT & VALIDATED (2026-06-15, session 11).** Step 1 of
+  `design/buff_primitive.md` "Next-steps sequence": a `cast_effect` that GRANTS a
+  status (advantage/condition/immunity) on its bearer, plus the DEBUFF case where
+  the target rolls to resist. **354 tests green (+7).** Branch
+  `feature/cast-effect-statusset-payload`. Design contract:
+  `design/buff_primitive.md` (registry row 3 flipped to BUILT).
+  - **The shape (all reused seams; one named-vocabulary addition).** `Choice`
+    gains a `statuses` payload (list of `StatusSpec(name, value, expiry)` — the
+    declarative twin of the `modifiers`/`Modifier` payload, new in `statuses.py`)
+    and an optional `application_save` (`ApplicationSave(save_stat, dc_stat=
+    "spell_save_dc", on_success="negate")`, new in `policy.py`). The scheduler
+    `cast_effect` branch: if `application_save` is set, the BEARER (the debuff's
+    target) rolls `resolve_saving_throw(bearer, save_stat, caster_dc, rng)` —
+    **the exact save machinery save-for-damage uses, debuffs being the same
+    primitive target-parameterised**; a made save (`on_success=="negate"`) negates
+    the WHOLE payload (modifiers AND statuses). On no-resist, statuses install on
+    `bearer.statuses` under `effect_source`.
+  - **Statuses change a downstream roll (the substrate's whole point).**
+    `resolve_attack_roll` now reads two PERSISTENT advantage grants — read, NEVER
+    consumed (unlike one-shot vex/sap), since a 1-minute buff applies on every
+    qualifying roll until swept: **`attack_advantage_against`** on the TARGET
+    (Faerie Fire — any attacker who can see it, no spell gate) and
+    **`spell_attack_advantage`** on the ACTOR (Innate Sorcery — gated on
+    `event.is_spell`). The status NAMES are the content↔engine contract, exactly
+    like the existing `vex_advantage`/`sapped` keys; the engine stays D&D-agnostic.
+  - **First consumers (verified per the per-feature ritual, both speculative — no
+    Scion consumer; validated via test policies, not wired into a build).**
+    **Innate Sorcery** (2024 Sorcerer L1; D&D Beyond / Roll20): BA, 1 min, 2/LR,
+    NO save — advantage on the caster's own Sorcerer-spell attacks + DC +1; modeled
+    as the self-grant `spell_attack_advantage` (the "Sorcerer spells only" nuance
+    is simplified to the `is_spell` gate — correct for a pure caster; a multiclass
+    would need a class-of-origin tag, flagged in the design note). **Faerie Fire**
+    (2024 1st-level, Action, Concentration 1 min; D&D Beyond / Roll20 / wikidot):
+    DEX save; on FAIL the target is outlined → attacks against it have advantage;
+    modeled as a `target`ed `cast_effect` with `application_save(dex_save)` granting
+    `attack_advantage_against`. The corpus uses both (neurosoldier 34 "concentrate
+    on faerie fire for adv"; lost-voice 42 "innate sorcery … advantage").
+  - **Concentration-sweep fix.** A status-only concentration buff (Faerie Fire: no
+    modifier, bearer = the enemy, but concentration on the CASTER) would have leaked
+    the caster's concentration across combats. The branch now also calls
+    `actor.note_combat_buff(effect_source)` when concentration is set, so the
+    actor's own combat-boundary `clear_combat_buffs()` drops it. Statuses themselves
+    are swept unconditionally by the existing `StatusSet.clear()` at the boundary —
+    no new sweep machinery needed.
+  - **Validation (consistency/sanity, FakeRNG — NOT number-matching).**
+    `tests/test_cast_effect.py` (+7): the granted statuses flip a downstream roll
+    (advantage taken, status NOT consumed); the `spell_attack_advantage` spell-gate
+    (spell attack → adv, weapon swing → straight); the self-grant installs with no
+    DamageEvent; the debuff lands on the target on a FAILED save / the whole payload
+    (status + modifier) is negated on a MADE save; **per-save resolution exact at
+    the boundary** (dex_save +2 vs DC 15: d20=12 fails/lands, d20=13 makes/resists);
+    and the status-only concentration buff is swept (status + caster concentration)
+    at the combat boundary. All dice via the seeded/FakeRNG channel; `decide()`
+    stays a pure read (the application_save rolls in the SCHEDULER).
+  - **Designed-in, not yet built (substrate 3 remainder + sequence):** conditions
+    (frightened/restrained), immunity / save-floor grants, the sorcerer-class
+    source-gating tag, and a non-"negate" `on_success` mode (lesser effect on a made
+    save). Next in the sequence: incoming-damage modifier (4) + defender thorns (5)
+    — Fire Shield / Rage, landing with the enemy-strikes-back loop. See
+    `design/buff_primitive.md`.
 
 - **Enumerated DICE LADDER (`scaling: ladder`) — the die-SIZE scaled quantity —
   BUILT & VALIDATED (2026-06-15, session 10).** The §4.5 scaling typology's
@@ -960,10 +1038,12 @@ Shillelagh + Starry Form now raise their buffs through it (DPR-neutral). **The
 DICE LADDER (`scaling: ladder`) is DONE (session 10)** — see its Done entry; the
 Shillelagh die now resolves from YAML by character level (1d8/1d10/1d12/2d6), and
 the **L11 + L12 rows are wired** (L11 = the 1d10→1d12 step; L12 = WIS 20 + Searing
-Arc 5d6). **Open next steps (pick with the user):** (0) **next buff-substrates** —
-StatusSet payload + `application_save` (advantage/condition/immunity + debuff
-resist), then incoming-damage resistance + defender thorns (Fire Shield / Rage);
-the sequenced plan in `design/buff_primitive.md` "Next-steps sequence";
+Arc 5d6). **The StatusSet payload + `application_save` (substrate #3) is DONE
+(session 11)** — see its Done entry; Innate Sorcery / Faerie Fire validated via
+test policies. **Open next steps (pick with the user):** (0) **next buff-substrates**
+— incoming-damage resistance (4) + defender thorns (5) (Fire Shield / Rage), which
+couple to the enemy-strikes-back loop; the sequenced plan in
+`design/buff_primitive.md` "Next-steps sequence";
 (a) **L13+** — continue the Scion ladder past L12 (data rows; next die-size step is
 L17 Shillelagh → 2d6, already in the ladder data); (b) the
 **ATTACK-TAXONOMY** typology (engine-vocabulary work — discuss first); (c) the

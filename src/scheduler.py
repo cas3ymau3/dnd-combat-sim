@@ -38,7 +38,7 @@ from .events import (
     TurnStartEvent,
     make_tick,
 )
-from .verbs import resolve_attack_roll, resolve_damage, resolve_save_damage
+from .verbs import resolve_attack_roll, resolve_damage, resolve_save_damage, resolve_saving_throw
 
 if TYPE_CHECKING:
     from .entity import Entity
@@ -615,18 +615,42 @@ class Scheduler:
                 # and resources were already drained above.  Install the persisting
                 # effect and push NO event (no roll, no damage).  See
                 # design/buff_primitive.md.
+                #   - application_save (debuff-only) → the BEARER rolls to resist
+                #     vs the CASTER's DC; a made save negates the whole payload;
                 #   - modifiers → the BEARER's ModifierStack (an explicit target =
                 #     a debuff, else the actor = a self-buff); combat-clock sources
                 #     are noted for the combat-boundary sweep;
+                #   - statuses → the BEARER's StatusSet (substrate #3 — these are
+                #     swept unconditionally by StatusSet.clear at the boundary);
                 #   - concentration → recorded on the ACTOR;
                 #   - capability buffs carry no payload (the policy reads its flag).
                 bearer = choice.target or actor
-                for mod in choice.modifiers:
-                    bearer.add_modifier(mod)
-                if choice.modifiers and choice.effect_source and choice.duration == "combat":
-                    bearer.note_combat_buff(choice.effect_source)
-                if choice.concentration and choice.effect_source:
-                    actor.concentration = choice.effect_source
+
+                # Debuff resist roll (reuses the save machinery — debuffs are the
+                # same primitive, target-parameterised).  A made save negates the
+                # whole effect; the cast still happened (economy/resources spent).
+                resisted = False
+                if choice.application_save is not None:
+                    appsave = choice.application_save
+                    dc = int(actor.stat(appsave.dc_stat))
+                    made = resolve_saving_throw(bearer, appsave.save_stat, dc, self.rng)
+                    resisted = made and appsave.on_success == "negate"
+
+                if not resisted:
+                    for mod in choice.modifiers:
+                        bearer.add_modifier(mod)
+                    for spec in choice.statuses:
+                        bearer.statuses.apply(spec.name, spec.value, spec.expiry)
+                    # Modifiers are not auto-swept (statuses are) → note the source
+                    # on the bearer so its modifiers clear at the combat boundary.
+                    if choice.modifiers and choice.effect_source and choice.duration == "combat":
+                        bearer.note_combat_buff(choice.effect_source)
+                    # Concentration always lives on the CASTER; record the source on
+                    # the ACTOR too so the actor's own boundary sweep drops it (the
+                    # bearer may be a different entity for a debuff).
+                    if choice.concentration and choice.effect_source:
+                        actor.concentration = choice.effect_source
+                        actor.note_combat_buff(choice.effect_source)
                 # No event enqueued — seq is not advanced.
             else:
                 log.warning("Unknown action_type %r — skipped.", choice.action_type)
