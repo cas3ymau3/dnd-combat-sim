@@ -140,6 +140,13 @@ class AttackRollEvent(Event):
     # DamageEvent (see DamageEvent.min_die / ignore_resistance).  Default off.
     min_die: "int | None" = None
     ignore_resistance: bool = False
+    # Whether this attack is an UNARMED strike (vs a weapon attack).  A minimal
+    # tactical tag — the same flavour as `is_spell` — read by the on_hit decision
+    # point to gate riders that distinguish weapon from unarmed attacks (Primal
+    # Strike RAW = weapon attacks only; the non-RAW toggle also rides unarmed).
+    # Not the first-class attack typology (deferred — see the ATTACK-TAXONOMY flag);
+    # `weapon_stat` can't tell quarterstaff from unarmed (both use attack_bonus).
+    is_unarmed: bool = False
     # Whether the ACTING entity's post-roll decision points (on_miss / on_hit)
     # may fire for this attack.  False for "rider" attacks that are themselves a
     # reaction and must not spawn further riders — e.g. the Flourish Counter,

@@ -5,7 +5,8 @@
 > `ability_schema.md` (§4.5 scaling, the trigger/effect/cost layers). Status:
 > **design locked 2026-06-15**; built so far = substrates (1) ModifierStack,
 > (2) policy-flag (session 9), (3) StatusSet + `application_save` (session 11),
-> and (4) incoming-damage response + (5) defender thorns rider (session 12).
+> (4) incoming-damage response + (5) defender thorns rider (session 12), and
+> (6) outgoing predicate riders (session 14).  Only (7) zone/summon remains.
 
 ---
 
@@ -80,7 +81,7 @@ addition); `cast_effect` just installs a labeled payload into the matching one.
 | 3 | **StatusSet** | `statuses.py`, consumed by `roll_d20` (+ saves) | advantage / disadvantage grant; condition; immunity; save floor | **BUILT** (session 11) |
 | 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | **BUILT** (session 12) |
 | 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | **BUILT** (session 12) |
-| 6 | **outgoing rider** | `on_hit` / `on_deal_damage` seams | predicate-gated extra damage (Rage melee-STR, Hunter's Mark vs-target, Divine Favor per-hit) | designed-in |
+| 6 | **outgoing rider** | `on_hit` seam → separate typed DamageEvents | predicate-gated extra damage (Fount of Moonlight +2d6 radiant, Primal Strike +1d8, Rage melee-STR, Hunter's Mark) | **BUILT** (session 14) |
 | 7 | **zone / summon** | (none yet — multi-enemy/spatial) | damaging emanation / placed entity | DEFERRED |
 
 Examples mapped: Bless / Magic Weapon / **Sacred Weapon** (+CHA *stacking on*
@@ -212,9 +213,34 @@ validated — they keep their own `before_combat` sync; not routed through
      attack (today thorns follows the existing Flourish-Parry convention that the
      only attacker is melee); day-clock (10-min) duration for Fire Shield spanning
      combats (modeled combat-clock for now).
-3. **Outgoing predicate riders (6)** — Rage damage, Hunter's Mark; `choose_one`
-   modes; source-gating tags. Then zones/summons (7), gated on the multi-enemy /
-   spatial model.
+3. ~~**Outgoing predicate riders (6)**~~ ✓ **BUILT (session 14).** `HitResponse`
+   gained a `rider_damage` list of `RiderDamageSpec`; on a confirmed hit
+   `resolve_attack_roll` spawns each spec as its OWN typed `DamageEvent` (same
+   actor→target, same is_crit) AFTER the weapon hit — so the rider's damage type /
+   `is_spell` / Elemental-Adept flags stay distinct (it routes through the
+   target's per-type response #4 and reaches the caster's `on_deal_damage` rider
+   on its own terms).  `HitContext` gained `is_spell` + `is_unarmed` so a rider can
+   gate on attack kind.  First consumers (Starfire Scion L15): **Fount of
+   Moonlight** (+2d6 radiant on every melee hit incl. unarmed — `is_spell=True` so
+   Fueled Spellfire fuels the first each turn for free) and **Primal Strike**
+   (+1d8 elemental once/turn on a weapon hit — a FEATURE, `is_spell=False`, so NOT
+   fueled and NOT Elemental-Adept-treated; built TOGGLEABLE RAW weapon-only vs a
+   non-RAW also-unarmed option).
+   - **Engine-seam notes (session 14):** the `on_hit` decider's return grew from a
+     2-tuple to `(extra_dice, extra_masteries, rider_damage)` — `extra_damage_dice`
+     (smite/bluff) still fold into the weapon hit; `rider_damage` is the new
+     separate-event path.  `is_unarmed` is a MINIMAL tactical tag (the flavour of
+     `is_spell`) — `weapon_stat` can't tell quarterstaff from unarmed (both
+     `attack_bonus`).  This is a THIRD concrete consumer of the deferred
+     ATTACK-TAXONOMY axis (after Searing Arc and Shillelagh); the first-class
+     typology stays deferred (reuse minimal tags, discuss before rebuilding
+     vocabulary).  FoM is modeled NON-concentration this session (pre-cast like
+     Fire Shield); the in-combat Magic-action cast + concentration + the
+     Starry-Form Dragon save-floor are the next session's work.  Melee-vs-ranged
+     stays gated as "not a spell attack" (no ranged non-spell attacker at L15 —
+     the existing deferral).
+   Then **zones/summons (7)**, gated on the multi-enemy / spatial model — the last
+   unbuilt substrate (Sunbeam L19, Spirit Guardians, the elemental node, AoE).
 
 ---
 
@@ -226,16 +252,19 @@ validated — they keep their own `before_combat` sync; not routed through
   the Depth Guard L3 feature is **Spiritual Protectors** (Ancestral Guardian), a
   debuff-on-hit → substrate (3)/(6), not a mode-choice. Confirm any mode-choice
   feature's exact 2024 wording before modeling.)
-- **Fount of Moonlight / Primal Strikes / Sunbeam — verified at session 13, NOT
-  modeled.** Per the per-feature ACCESS ritual: **Sunbeam is a 6th-level spell =
-  char L19**, not L15 (the session prompt conflated it with FoM). **Fount of
-  Moonlight** (4th-level, L15) and **Primal Strikes** (druid-7, L15) are both
-  **outgoing riders (substrate 6, UNBUILT)** — FoM = +2d6 radiant on every melee
-  hit (concentration; the radiant is fuelable), Primal Strikes = +1d8 once/turn on
-  a weapon hit (cold/fire/lightning/thunder, NOT radiant). Deferred to a follow-up
-  tier-4 session that builds substrate (6). (Sources: dnd2024.wikidot.com /
-  aidedd / D&D Beyond / roll20 — Fount of Moonlight, Elemental Adept, Elemental
-  Fury/Primal Strike.)
+- **Fount of Moonlight / Primal Strikes — verified + MODELED (session 14).** Per
+  the per-feature ACCESS + rules ritual (re-verified 2026-06-16, D&D Beyond /
+  dnd2024.wikidot.com / Roll20; access from build-guide 41:48, 739–742, 758):
+  **Fount of Moonlight** (4th-level, char L15 = druid-7) — "Resistance to Radiant
+  damage, and your MELEE attacks deal an extra 2d6 Radiant damage on a hit" (+ a
+  reaction-blind deferred); the radiant is a spell's → fueled by Fueled Spellfire.
+  **Primal Strike** (Elemental Fury, druid-7) — "Once on each of your turns when
+  you hit with an attack roll using a WEAPON (or a Beast form's attack), +1d8
+  Cold/Fire/Lightning/Thunder (choose on hit)"; the 2d8 step is DRUID-15 (so 1d8
+  here), and it is a FEATURE (not a spell) → Elemental Adept does NOT treat it.
+  Both built as substrate-(6) on_hit riders on the Scion at L15. **Sunbeam is a
+  6th-level spell = char L19** (a separate later row); it fuels for free on the
+  existing DamageEvent path — NOT built this session.
 - **Innate Sorcery / Sacred Weapon / Rage / Fire Shield** wording verified at
   build time, not from memory. Fire Shield confirmed 2026-06-15 (D&D Beyond /
   aidedd): action, 10 min, non-conc; warm = resist cold + 2d8 fire thorns; chill =

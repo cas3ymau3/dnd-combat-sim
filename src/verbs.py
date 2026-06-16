@@ -147,7 +147,7 @@ def resolve_attack_roll(
     queue: "EventQueue",
     next_sequence: int,
     decider: "Callable[[int], int] | None" = None,
-    hit_decider: "Callable[[bool], tuple[list[tuple[int, int]], list[str]]] | None" = None,
+    hit_decider: "Callable[[bool], tuple[list[tuple[int, int]], list[str], list[object]]] | None" = None,
     intercept_decider: "Callable[[int], tuple[int, object, object]] | None" = None,
 ) -> int:
     """Resolve one attack roll.  Returns the next available sequence number.
@@ -175,12 +175,17 @@ def resolve_attack_roll(
         A bonus that lifts the total to >= AC converts the miss to a (non-crit)
         hit.  None = no post-roll decision available.
     hit_decider:
-        Optional callable `(is_crit) -> list[(n, sides)]`.  Called on a hit
-        (including a Guided-Strike-rescued hit), BEFORE the DamageEvent is built;
-        returns extra damage dice to fold into this hit (the scheduler-side
-        closure already validated/consumed the resource + action economy).  The
-        returned dice double on a crit like any others.  None = no on-hit
-        decision available.
+        Optional callable `(is_crit) -> (extra_dice, extra_masteries,
+        rider_damage)`.  Called on a hit (including a Guided-Strike-rescued hit),
+        BEFORE the DamageEvent is built; the scheduler-side closure already
+        validated/consumed any resource + action economy.  `extra_dice` and
+        `extra_masteries` fold into THIS hit's own DamageEvent (smite, bluff).
+        `rider_damage` is a list of substrate-#6 outgoing-rider specs (Fount of
+        Moonlight, Primal Strike) — each is spawned as its OWN separately-typed
+        DamageEvent from this hit, so its damage type / spell-source stay distinct
+        (routes through the target's per-type response, reaches the caster's
+        on_deal_damage rider on its own terms).  All these dice double on a crit.
+        None = no on-hit decision available.
     intercept_decider:
         Optional callable `(hit_margin) -> (ac_bonus, counter_spec | None,
         reactive_damage | None)` for the DEFENDER's in-flight reaction
@@ -332,8 +337,9 @@ def resolve_attack_roll(
     # masteries returned by the policy (e.g. Brutality::bluff adding vex) are
     # folded into event.masteries and applied on this same hit.
     extra_dice = list(event.extra_damage_dice)
+    rider_specs: list = []
     if hit and hit_decider is not None:
-        extra_dice_from_hit, extra_masteries_from_hit = hit_decider(is_crit)
+        extra_dice_from_hit, extra_masteries_from_hit, rider_specs = hit_decider(is_crit)
         extra_dice.extend(extra_dice_from_hit)
         event.masteries.extend(extra_masteries_from_hit)
 
@@ -371,6 +377,38 @@ def resolve_attack_roll(
         )
         queue.push(damage_event)
         next_sequence += 1
+
+        # Substrate #6 — outgoing predicate riders (Fount of Moonlight, Primal
+        # Strike).  Each rider spec is spawned as its OWN DamageEvent from this
+        # same hit (same actor → target, same is_crit so its dice double on a
+        # crit), AFTER the weapon's DamageEvent.  Keeping each rider a separate
+        # typed event — rather than folding its dice into the weapon hit above —
+        # is what lets its damage type / is_spell stay distinct: it routes through
+        # the target's per-type response (substrate #4), carries its own Elemental
+        # Adept treatment, and reaches the caster's on_deal_damage rider on its
+        # own terms (FoM's radiant is is_spell → Fueled Spellfire fuels it; Primal
+        # Strike's elemental is a feature → not fuelable).
+        for spec in rider_specs:
+            rider_event = DamageEvent(
+                tick=make_tick(round_, turn_idx, next_sequence),
+                actor=actor,
+                target=target,
+                is_crit=is_crit,
+                damage_dice=spec.damage_dice,
+                damage_bonus=spec.damage_bonus,
+                damage_type=spec.damage_type,
+                is_spell=spec.is_spell,
+                min_die=spec.min_die,
+                ignore_resistance=spec.ignore_resistance,
+                cost="none",
+            )
+            queue.push(rider_event)
+            next_sequence += 1
+            log.info(
+                "  %s rider -> %s  [%dd%d %s]",
+                actor.name, target.name,
+                spec.damage_dice[0], spec.damage_dice[1], spec.damage_type,
+            )
 
     return next_sequence
 

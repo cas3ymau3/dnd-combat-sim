@@ -143,8 +143,11 @@ from ..policy import (
     DamageRiderResponse,
     DealDamageContext,
     GameState,
+    HitContext,
+    HitResponse,
     InterceptResponse,
     ReactiveDamageSpec,
+    RiderDamageSpec,
 )
 from ..resources import ResourceEntry, ResourcePool
 from .enemy import ScriptedEnemyPolicy  # shared enemy loop (re-exported here)
@@ -190,6 +193,26 @@ FIRE_SHIELD_MODES: dict[str, dict] = {
     "chill": {"resist": "fire", "thorns_type": "cold"},
 }
 FIRE_SHIELD_THORNS_DICE: tuple[int, int] = (2, 8)
+
+
+# ---------------------------------------------------------------------------
+# Fount of Moonlight (4th-level spell, char L15 = Druid-7; guide 41:48, 758) — an
+# OUTGOING RIDER (substrate #6) + a radiant resistance (substrate #4).  Verified
+# 2026-06-16 (D&D Beyond / dnd2024.wikidot.com / Roll20): Action, Concentration up
+# to 10 min; "you have Resistance to Radiant damage, and your MELEE attacks deal an
+# extra 2d6 Radiant damage on a hit" (+ a reaction-blind we defer — control, not
+# DPR).  The +2d6 RADIANT rides every melee hit — quarterstaff AND unarmed (both
+# are melee attacks) — and, being a SPELL's radiant damage, is FUELED by Fueled
+# Spellfire for free (it reaches on_deal_damage as its own is_spell radiant
+# DamageEvent).  See guide 41:780 `quarterstaff_{primal-strike,fueled-spellfire(2)}
+# --> 2d12+3d8+4d6+2WIS` (the 4d6 = FoM's +2d6 on each of two swings).
+#
+# Modeled NON-CONCENTRATION this session (user decision 2026-06-16): pre-cast like
+# Fire Shield (cost="none", one slot/LR), so there is no turn-1 Magic-action cost
+# and no in-combat CON saves.  DEFERRED to the next session: model FoM cast in
+# combat (Magic action turn 1) WITH concentration + the Starry-Form Dragon
+# concentration-save floor (the Scion's first in-combat concentration).
+FOUNT_OF_MOONLIGHT_DICE: tuple[int, int] = (2, 6)
 
 
 # ---------------------------------------------------------------------------
@@ -491,7 +514,10 @@ LEVELS: dict[int, dict] = {
         "char_hp": 99,                     # DPR-irrelevant (threshold model)
         "elemental_adept": "fire",         # monk-4/L8 — fire spells bypass resist + 1->2
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
-        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        # `is_unarmed` tags this as a monk unarmed strike (NOT a weapon attack) so
+        # Primal Strike's RAW gate can decline it (the non-RAW toggle accepts it).
+        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus",
+                          "is_unarmed": True},
         "extra_attack": True,
         # Shillelagh die stays 1d12 (char L11-16 step); WIS mod +5 (bonus 5).
         "shillelagh":   {"bonus": 5, "weapon_stat": "spell_attack_bonus"},
@@ -500,6 +526,25 @@ LEVELS: dict[int, dict] = {
         "starry_form": False,
         # Searing Arc Strike: monk-8 cap floor(8/2)=4 FP → slot 3 = 5d6 (as L12).
         "searing_arc_strike": {"slot_level": 3, "fp_cost": 4},
+        # Primal Strike (Elemental Fury, druid-7; guide 41:741, verified 2026-06-16
+        # D&D Beyond / Roll20): once on each of your turns, when you HIT with an
+        # attack roll using a WEAPON (or a Beast form), +1d8 cold/fire/lightning/
+        # thunder (choose on hit).  An OUTGOING RIDER (substrate #6) on the on_hit
+        # seam.  We pick FIRE for flavour, but it is a FEATURE (is_spell=False) so
+        # Elemental Adept does NOT treat it (spells only) — unlike the fire Searing
+        # Arc / Fire Shield thorns, the cross-check that the is_spell gate does real
+        # work on the rider path.  The 2d8 step is DRUID-15 (far past druid-7) → 1d8
+        # here.  Built TOGGLEABLE: RAW rides weapon attacks only (quarterstaff); the
+        # non-RAW option (user-requested — see memory primal-strikes-explore-unarmed)
+        # also rides unarmed strikes (Flurry of Blows), to compare DPR in tier-4/5
+        # where the action is Sunbeam and the attacks are unarmed.  Default RAW.
+        "primal_strike": {"dice": (1, 8), "damage_type": "fire", "raw_unarmed": False},
+        # Fount of Moonlight (4th-level): +2d6 radiant on every MELEE hit (incl.
+        # unarmed) — an outgoing rider (#6) that is FUELABLE (radiant spell damage)
+        # — plus radiant resistance (#4).  Modeled NON-concentration this session,
+        # pre-cast in ONE combat/day (its own 4th-level slot → fom_use).  See the
+        # FOUNT_OF_MOONLIGHT_DICE note for the deferred concentration model.
+        "fount_of_moonlight": {},
         # Fire Shield (4th-level): pre-cast before ONE combat/day (one 4th-level
         # slot → the fire_shield_use resource).  WARM mode (the guide's pick): cold
         # resistance (#4) + 2d8 fire thorns (#5) reflected on every incoming melee
@@ -518,15 +563,24 @@ LEVELS: dict[int, dict] = {
             "focus_points": (8, 0),        # monk-8 = 8 FP
             # Fire Shield: one 4th-level slot/LR → pre-cast in ONE of the 4 combats.
             "fire_shield_use": (1, 0),
+            # Fount of Moonlight: pre-cast in ONE combat/day (its own use here).
+            # FIDELITY NOTE: druid-7 actually has only ONE 4th-level slot, so Fire
+            # Shield + FoM truly COMPETE for it (the guide treats them as separate
+            # daily loadouts).  We model each with its own 1/LR use (a 4th-slot
+            # over-count) so their DPR contributions can be isolated cleanly; both
+            # land in combat 0, and since each is 1/day this is immaterial to mean
+            # DPR.  To reconcile against the single real slot → the level-by-level
+            # re-walk (see PROGRESS).
+            "fom_use": (1, 0),
         },
         "enemy_ac": 18,
         "enemy_dex_save": 4,               # csv level 15
-        # Loose upper bound for what we MODEL (Primal Strikes / FoM / elemental
-        # weapon deferred): attack turns 2x(1d12+5) 23 + Searing Arc full 5d6 17.5 =
-        # 40.5; GB turn 14 + fuel 9 = 23; + Fire Shield thorns ~+2.  ~43 → 48 cushion.
-        # (The guide's full-kit tier-4 figure is ~50; our deferred riders are why our
-        # DPR lands well under it — by design, not a discrepancy.)
-        "ceiling_dpr": 48.0,
+        # Loose upper bound for what we MODEL now (elemental weapon still deferred):
+        # attack turns 2x(1d12+5) 23 + Primal Strike 1d8 4.5 + Searing Arc 5d6 17.5
+        # = ~45; in the FoM combat add +2d6/swing (radiant, fueled) ~ +14.  The
+        # guide's full-kit tier-4 figure is ~50; modeling FoM + Primal Strikes lifts
+        # our DPR well above session-13's ~29.7 toward it.  52 cushion.
+        "ceiling_dpr": 52.0,
     },
 }
 
@@ -632,6 +686,7 @@ class StarfireScionPolicy:
         character: Entity,
         target: Entity,
         rounds_per_combat: int = 4,
+        primal_strike_unarmed: "bool | None" = None,
     ) -> None:
         if level not in LEVELS:
             raise NotImplementedError(
@@ -708,12 +763,44 @@ class StarfireScionPolicy:
         fs = data.get("fire_shield")
         self._has_fire_shield: bool = fs is not None
         self._fire_shield_mode: str = fs["mode"] if fs else "warm"
+        # Primal Strike (Elemental Fury, druid-7, char L15+): an OUTGOING RIDER
+        # (substrate #6) on the on_hit seam — once/turn, +1d8 of a chosen element
+        # on a weapon (RAW) hit.  Present iff the level carries a "primal_strike"
+        # block.  A FEATURE, not a spell → NOT Elemental-Adept-treated.  The
+        # RAW-vs-unarmed toggle: the data row's "raw_unarmed" default, overridden
+        # by the primal_strike_unarmed ctor arg when given (so tests / a day runner
+        # can compare RAW weapon-only vs non-RAW also-unarmed DPR).
+        ps = data.get("primal_strike")
+        self._has_primal_strike: bool = ps is not None
+        if self._has_primal_strike:
+            self._primal_strike_dice = ps["dice"]            # (1, 8) at druid-7
+            self._primal_strike_type = ps["damage_type"]     # "fire" (chosen)
+            self._primal_strike_unarmed: bool = (
+                ps.get("raw_unarmed", False)
+                if primal_strike_unarmed is None
+                else primal_strike_unarmed
+            )
+        # Fount of Moonlight (4th-level, char L15+): an OUTGOING RIDER (#6) +
+        # radiant resistance (#4).  Present iff the level carries a
+        # "fount_of_moonlight" block.  +2d6 radiant on every MELEE hit (incl.
+        # unarmed), FUELABLE (radiant spell damage).  Modeled non-concentration,
+        # pre-cast in ONE combat/day (the fom_use slot), like Fire Shield.
+        self._has_fount_of_moonlight: bool = "fount_of_moonlight" in data
         # Per-combat state, (re)set by on_combat_start.
         self._starry_form_active: bool = False
         # Fire Shield up for this combat (pre-cast in on_combat_start while a slot
         # remains).  Gates the turn-1 install in decide() and the thorns in
         # on_incoming_hit.
         self._fire_shield_active: bool = False
+        # Fount of Moonlight up for this combat (pre-cast in on_combat_start while
+        # its slot remains).  Gates the turn-1 install in decide() (radiant resist)
+        # and the +2d6 radiant melee rider in on_hit.
+        self._fount_of_moonlight_active: bool = False
+        # Primal Strike's once/turn gate: the combat round we last fired it on.
+        # The character takes exactly one turn per round, so the round number
+        # identifies the turn (mirrors Flourish Parry's round-gating); reset per
+        # combat in on_combat_start.  "Once on each of your turns" (RAW).
+        self._primal_strike_round: "int | None" = None
         # Shillelagh up for this combat (cast as the turn-1 BA, then persists).  Set
         # by on_combat_start; consumed by the weapon-attack swings and by the turn-1
         # BA suppression in decide().
@@ -764,6 +851,19 @@ class StarfireScionPolicy:
         ):
             self._character.resources.consume("fire_shield_use")
             self._fire_shield_active = True
+        # Fount of Moonlight (char L15): pre-cast before ONE combat/day while its
+        # slot (fom_use) remains (modeled like Fire Shield — non-concentration).
+        # decide() emits the radiant-resistance install on turn 1; on_hit then adds
+        # the +2d6 radiant melee rider on every melee hit this combat.
+        self._fount_of_moonlight_active = False
+        if (
+            self._has_fount_of_moonlight
+            and self._character.resources.available("fom_use") >= 1
+        ):
+            self._character.resources.consume("fom_use")
+            self._fount_of_moonlight_active = True
+        # Reset Primal Strike's once/turn gate (round numbers restart each combat).
+        self._primal_strike_round = None
 
     # -- decision point ---------------------------------------------------
 
@@ -803,9 +903,32 @@ class StarfireScionPolicy:
                 duration="combat",
             ))
 
+        # Fount of Moonlight (char L15) — the pre-cast install on turn 1.  Like
+        # Fire Shield, a cost="none" cast_effect (modeled non-concentration this
+        # session) installs the spell's RADIANT RESISTANCE (#4) on the caster under
+        # effect_source "fount_of_moonlight" (swept at the combat boundary).  The
+        # spell's offensive half — +2d6 radiant on every melee hit (#6) — is
+        # delivered separately, on each melee hit, by on_hit.
+        if self._fount_of_moonlight_active and snapshot.round_number == 1:
+            choices.append(Choice(
+                action_type="cast_effect",
+                cost="none",
+                effect_source="fount_of_moonlight",
+                damage_response={"radiant": "resistance"},
+                duration="combat",
+            ))
+
         # ACTION: Guiding Bolt (free Star Map cast) while charges remain, else a
         # quarterstaff attack.  Greedy on the free casts — across statistically
         # identical combats, when they fire does not change mean DPR.
+        #
+        # EXCEPT in the Fount of Moonlight combat: FoM's whole value is +2d6 radiant
+        # (fuelable) on every MELEE hit, so the Scion MELEES that combat (the guide's
+        # FoM combats are `attack(x2):quarterstaff_{...}`, not Guiding Bolt).
+        # Suppressing the ranged Guiding Bolt while FoM is up makes the melee riders
+        # land AND enables Searing Arc (a weapon-Attack-action BA); the unused free
+        # GB charges simply carry to the other (non-FoM) combats, so total GB casts —
+        # and mean DPR outside the FoM combat — are unchanged.
         #
         # Track whether this turn's action is a WEAPON attack (quarterstaff/unarmed)
         # vs. casting a spell (Guiding Bolt): Searing Arc Strike requires the *Attack
@@ -814,7 +937,11 @@ class StarfireScionPolicy:
         # weapon attack was the action", true for quarterstaff, false for Guiding Bolt.
         action_is_weapon_attack = False
         if res.get("action", 0) >= 1:
-            if self._has_guiding_bolt and res.get("guiding_bolt_free", 0) >= 1:
+            if (
+                self._has_guiding_bolt
+                and res.get("guiding_bolt_free", 0) >= 1
+                and not self._fount_of_moonlight_active
+            ):
                 choices.append(self._attack_choice(
                     "guiding_bolt", "action",
                     resource_cost={"guiding_bolt_free": 1},
@@ -963,7 +1090,64 @@ class StarfireScionPolicy:
             damage_bonus=p["bonus"],
             damage_type=p.get("damage_type"),       # "radiant" for GB/Archer
             is_spell=p.get("is_spell", False),       # only Guiding Bolt is a spell
+            is_unarmed=p.get("is_unarmed", False),   # unarmed strike (Primal Strike gate)
             resource_cost=resource_cost or {},
+        )
+
+    # -- on-hit outgoing riders: Fount of Moonlight + Primal Strike (#6, L15+) --
+
+    def on_hit(self, ctx: HitContext) -> "HitResponse | None":
+        """Outgoing predicate riders (substrate #6) on a confirmed hit.
+
+        Fount of Moonlight: while up this combat, every MELEE hit (quarterstaff
+        AND unarmed) deals an extra 2d6 RADIANT.  The radiant is tagged
+        is_spell=True, so when it resolves as its own DamageEvent the caster's
+        on_deal_damage rider (Fueled Spellfire) fuels the FIRST such radiant each
+        turn for free — matching the guide's `quarterstaff_{...fueled-spellfire(2)}
+        --> 2d12+3d8+4d6...` (the 4d6 = FoM's +2d6 across two swings).  "Melee" is
+        gated as "not a spell attack": at L15 every non-spell attack is melee
+        (Guiding Bolt is the only is_spell attack, and is ranged), so the only
+        ranged/melee subtlety — Starry-Form Archer — is moot (dropped from L9).
+
+        Primal Strike: once on each of the character's turns, a WEAPON hit (RAW —
+        the quarterstaff) deals an extra 1d8 of the chosen element (fire here).
+        Built TOGGLEABLE: the non-RAW option (self._primal_strike_unarmed) also
+        rides UNARMED strikes.  It is a FEATURE, not a spell (is_spell=False) → it
+        is NOT Elemental-Adept-treated and NOT fueled — the cross-check that the
+        is_spell gate does real work on the rider path (contrast the fire Searing
+        Arc / Fire Shield thorns, which ARE spells and DO get the EA bypass).  The
+        once/turn gate uses the round number (the character takes one turn/round).
+
+        Both riders are FREE (no action economy, no resource), so the
+        scheduler-side closure always accepts the HitResponse.  Returns None when
+        neither applies (every level below L15 / a non-melee hit with no FoM).
+        """
+        riders: list[RiderDamageSpec] = []
+        if self._fount_of_moonlight_active and not ctx.is_spell:
+            riders.append(RiderDamageSpec(
+                damage_dice=FOUNT_OF_MOONLIGHT_DICE,   # (2, 6)
+                damage_type="radiant",
+                is_spell=True,                         # a spell's radiant → fuelable
+            ))
+        if (
+            self._has_primal_strike
+            and not ctx.is_spell
+            and (not ctx.is_unarmed or self._primal_strike_unarmed)
+            and self._primal_strike_round != ctx.round_number
+        ):
+            self._primal_strike_round = ctx.round_number      # commit the 1/turn use
+            riders.append(RiderDamageSpec(
+                damage_dice=self._primal_strike_dice,  # (1, 8)
+                damage_type=self._primal_strike_type,  # "fire" (chosen on hit)
+                is_spell=False,                        # feature → not fueled / not EA
+            ))
+        if not riders:
+            return None
+        return HitResponse(
+            resource_cost={},
+            extra_damage_dice=[],
+            action_cost=None,          # free riders — no economy slot consumed
+            rider_damage=riders,
         )
 
     # -- defender-side reaction: Fire Shield thorns (substrate #5, L15+) ----
@@ -1048,8 +1232,17 @@ class StarfireScionPolicy:
 # Full day-runner assembly (used by the validation harness / tests)
 # ---------------------------------------------------------------------------
 
-def make_day_runner(level: int, rng: "SeededRNG", rounds_per_combat: int = 4):
+def make_day_runner(
+    level: int,
+    rng: "SeededRNG",
+    rounds_per_combat: int = 4,
+    primal_strike_unarmed: "bool | None" = None,
+):
     """Assemble (DayRunner, character, dummy) for the given level.
+
+    `primal_strike_unarmed` (L15+) overrides the data row's RAW default for Primal
+    Strike: None = RAW (weapon attacks only), True = the non-RAW option that also
+    rides unarmed strikes — so a caller can compare the two DPR readings.
 
     Through L12 the enemy carries no attack profile, so it gets no policy and
     never acts; DPR = damage dealt to the dummy = the character's whole output.
@@ -1062,7 +1255,8 @@ def make_day_runner(level: int, rng: "SeededRNG", rounds_per_combat: int = 4):
     char = make_starfire_scion(level)
     dummy = make_training_dummy(level)
     policy = StarfireScionPolicy(
-        level=level, character=char, target=dummy, rounds_per_combat=rounds_per_combat
+        level=level, character=char, target=dummy, rounds_per_combat=rounds_per_combat,
+        primal_strike_unarmed=primal_strike_unarmed,
     )
     policies: dict[int, object] = {char.id: policy}
 

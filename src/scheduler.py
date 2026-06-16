@@ -285,7 +285,7 @@ class Scheduler:
         round_ = event.tick[0]
         cost = event.cost
 
-        def hit_decider(is_crit: bool) -> tuple[list[tuple[int, int]], list[str]]:
+        def hit_decider(is_crit: bool):
             ba_available = self._turn_economy.get("bonus_action", 0) >= 1
             ctx = HitContext(
                 actor=actor,
@@ -295,18 +295,21 @@ class Scheduler:
                 bonus_action_available=ba_available,
                 resources=actor.resources.as_dict(),
                 round_number=round_,
+                is_spell=event.is_spell,
+                is_unarmed=event.is_unarmed,
             )
             response = on_hit(ctx)
             if response is None:
-                return [], []
-            # Validate action-economy slot; None means no economy cost (e.g. bluff).
+                return [], [], []
+            # Validate action-economy slot; None means no economy cost (e.g. bluff
+            # or a free outgoing rider — Primal Strike / Fount of Moonlight).
             ac = response.action_cost
             if ac is not None and ac in self._turn_economy and self._turn_economy[ac] < 1:
-                return [], []
+                return [], [], []
             # ...and the persistent resource is affordable.
             if any(actor.resources.available(n) < a
                    for n, a in response.resource_cost.items()):
-                return [], []
+                return [], [], []
             # Consume action economy (if any), then persistent resources.
             if ac is not None and ac in self._turn_economy:
                 self._turn_economy[ac] -= 1
@@ -318,7 +321,13 @@ class Scheduler:
             if response.self_status_on_hit is not None:
                 r, t, _ = event.tick
                 actor.statuses.apply(response.self_status_on_hit, True, expiry=(r + 2, t))
-            return list(response.extra_damage_dice), list(response.extra_masteries)
+            # The third element is the substrate-#6 rider damage: separately-typed
+            # DamageEvents resolve_attack_roll spawns FROM this hit (see verbs.py).
+            return (
+                list(response.extra_damage_dice),
+                list(response.extra_masteries),
+                list(response.rider_damage),
+            )
 
         return hit_decider
 
@@ -593,6 +602,7 @@ class Scheduler:
                     is_spell=choice.is_spell,
                     min_die=choice.min_die,
                     ignore_resistance=choice.ignore_resistance,
+                    is_unarmed=choice.is_unarmed,
                 )
                 self.queue.push(atk_event)
                 seq += 1
