@@ -95,8 +95,12 @@ Moonlight → (7).
 
 ## Cross-cutting seams (designed-in, build at first consumer)
 
-- **Mode-choice** (`choose_one`): Fire Shield warm/chill; the deferred schema block.
-  The chosen mode selects which payload items install.
+- **Mode-choice** (`choose_one`): Fire Shield warm/chill — **first consumer BUILT
+  (session 13)**, modeled as a `FIRE_SHIELD_MODES` data table the Scion policy
+  indexes (warm = resist cold + 2d8 fire thorns; chill = resist fire + 2d8 cold
+  thorns); the chosen mode selects which payload items install. The YAML
+  `choose_one` schema construct in `content.py` stays deferred until `cast_effect`
+  itself is data-driven (today its Choices are built in Python policies).
 - **Source-gating tag**: Innate Sorcery applies only to *sorcerer spells* → the
   spell `Choice` carries a class-of-origin tag (same flavor as the existing
   `is_spell` / `damage_type` tags) that the StatusSet predicate reads.
@@ -184,11 +188,30 @@ validated — they keep their own `before_combat` sync; not routed through
      Druid-7, guide 41:48; verified action / 10 min / non-conc / warm=resist-cold
      +2d8-fire / chill=resist-fire +2d8-cold — aidedd, D&D Beyond) installs BOTH
      (4) resist + (5) thorns from ONE cast_effect when an L15 row is wired.
-   - **Still designed-in for (4)/(5):** the warm/chill **`choose_one`** mode (the
-     chosen mode selects which payload items install); a melee-vs-ranged tag on
-     the incoming attack (today thorns follows the existing Flourish-Parry
-     convention that the only attacker is melee); day-clock (10-min) duration for
-     Fire Shield spanning combats (modeled combat-clock for now).
+   - **Fire Shield WIRED on the Scion at char L15 (session 13).** The deferred
+     tier-4 row is built: ONE `cast_effect` (pre-cast, `cost="none"`, the 10-min
+     non-conc spell active from initiative) installs the WARM mode's cold
+     resistance (#4) on the caster; `StarfireScionPolicy.on_incoming_hit` reflects
+     the 2d8 fire thorns (#5) on every incoming melee hit, with the
+     enemy-strikes-back loop (`enemy_attack` row → `ScriptedEnemyPolicy`) turned on
+     so the thorns do real DPR work (they land in the dummy's column — the dummy is
+     both target and attacker). The fire thorns are **Elemental-Adept-treated**
+     (bypass + 1->2 high-grade). Pre-cast in ONE combat/day (one 4th-level slot =
+     `fire_shield_use`, 1/LR). The warm/chill **`choose_one`** is BUILT (above).
+   - **Elemental Adept (fire) BUILT (session 13) — the engine primitive + its
+     first consumer.** A general per-die FLOOR + RESISTANCE-bypass on the
+     `DamageEvent` (`min_die` / `ignore_resistance`, threaded from the `Choice`,
+     applied in `resolve_damage` phases 3 + 7 — bypasses resistance only, not
+     immunity/vulnerability). The Scion's fire spells (Searing Arc) and Fire
+     Shield's fire thorns carry it on L10/L11/L12/L15 (the feat is held from
+     monk-4/L8), so a fire-resistant enemy takes FULL, high-graded fire — the real
+     in-scope consumer (4) was waiting for. (The radiant half — Spellfire Adept's
+     radiant-resistance bypass — is the symmetric deferral; no radiant-resistant
+     enemy is modeled.)
+   - **Still designed-in for (4)/(5):** a melee-vs-ranged tag on the incoming
+     attack (today thorns follows the existing Flourish-Parry convention that the
+     only attacker is melee); day-clock (10-min) duration for Fire Shield spanning
+     combats (modeled combat-clock for now).
 3. **Outgoing predicate riders (6)** — Rage damage, Hunter's Mark; `choose_one`
    modes; source-gating tags. Then zones/summons (7), gated on the multi-enemy /
    spatial model.
@@ -197,11 +220,22 @@ validated — they keep their own `before_combat` sync; not routed through
 
 ## Verification debt (per the per-feature ritual)
 
-- **Mode-choice (`choose_one`)** — the canonical consumer is Fire Shield (warm/
-  chill). (A "distract/protect/strike" feature was floated in discussion but
-  misremembered: the Depth Guard L3 feature is **Spiritual Protectors** (Ancestral
-  Guardian), a debuff-on-hit → substrate (3)/(6), not a mode-choice. Confirm any
-  mode-choice feature's exact 2024 wording before modeling.)
+- **Mode-choice (`choose_one`)** — canonical consumer Fire Shield (warm/chill),
+  **BUILT session 13** as the `FIRE_SHIELD_MODES` data table (see above). (A
+  "distract/protect/strike" feature was floated in discussion but misremembered:
+  the Depth Guard L3 feature is **Spiritual Protectors** (Ancestral Guardian), a
+  debuff-on-hit → substrate (3)/(6), not a mode-choice. Confirm any mode-choice
+  feature's exact 2024 wording before modeling.)
+- **Fount of Moonlight / Primal Strikes / Sunbeam — verified at session 13, NOT
+  modeled.** Per the per-feature ACCESS ritual: **Sunbeam is a 6th-level spell =
+  char L19**, not L15 (the session prompt conflated it with FoM). **Fount of
+  Moonlight** (4th-level, L15) and **Primal Strikes** (druid-7, L15) are both
+  **outgoing riders (substrate 6, UNBUILT)** — FoM = +2d6 radiant on every melee
+  hit (concentration; the radiant is fuelable), Primal Strikes = +1d8 once/turn on
+  a weapon hit (cold/fire/lightning/thunder, NOT radiant). Deferred to a follow-up
+  tier-4 session that builds substrate (6). (Sources: dnd2024.wikidot.com /
+  aidedd / D&D Beyond / roll20 — Fount of Moonlight, Elemental Adept, Elemental
+  Fury/Primal Strike.)
 - **Innate Sorcery / Sacred Weapon / Rage / Fire Shield** wording verified at
   build time, not from memory. Fire Shield confirmed 2026-06-15 (D&D Beyond /
   aidedd): action, 10 min, non-conc; warm = resist cold + 2d8 fire thorns; chill =

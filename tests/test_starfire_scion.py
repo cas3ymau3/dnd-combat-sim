@@ -129,6 +129,7 @@ def test_factory_stats():
         5: {"attack_bonus": 6, "spell_attack_bonus": 7, "spell_save_dc": 15},
         9: {"attack_bonus": 7, "spell_attack_bonus": 8, "spell_save_dc": 16},
         10: {"attack_bonus": 7, "spell_attack_bonus": 8, "spell_save_dc": 16},
+        15: {"attack_bonus": 8, "spell_attack_bonus": 10, "spell_save_dc": 18},
     }
     for level, want in expected.items():
         char = ss.make_starfire_scion(level)
@@ -153,7 +154,7 @@ def test_unimplemented_level_raises():
 def test_enemy_stats_are_live_from_the_monster_csv():
     """enemy_ac / enemy_dex_save are the csv's ac + dex.save.mod at cr == level."""
     rows = {int(r["level"]): r for r in csv.DictReader(_CSV.open())}
-    for level in (1, 4, 5, 9, 10, 11, 12):
+    for level in (1, 4, 5, 9, 10, 11, 12, 15):
         data = ss.LEVELS[level]
         assert data["enemy_ac"] == int(rows[level]["ac"])
         assert data["enemy_dex_save"] == int(rows[level]["dex.save.mod"])
@@ -478,7 +479,8 @@ def test_shillelagh_die_resolves_off_the_ladder_by_character_level():
     NOT baked per LEVELS row: 1d10 at char L9-10 (retrofit — DPR-neutral vs the
     formerly baked die) and 1d12 at char L11-16 (the [5,11,17] cantrip break).  The
     WIS modifier still rides the row (+4 through L11, +5 at L12)."""
-    expected = {9: ((1, 10), 4), 10: ((1, 10), 4), 11: ((1, 12), 4), 12: ((1, 12), 5)}
+    expected = {9: ((1, 10), 4), 10: ((1, 10), 4), 11: ((1, 12), 4), 12: ((1, 12), 5),
+                15: ((1, 12), 5)}  # char L11-16 step holds at L15
     for level, (die, bonus) in expected.items():
         policy = ss.StarfireScionPolicy(
             level, ss.make_starfire_scion(level), ss.make_training_dummy(level))
@@ -563,7 +565,7 @@ def _mean_dpr(level: int, n_days: int, seed: int = 0, rounds_per_combat: int = 4
 def test_dpr_is_a_plausible_fraction_of_the_ceiling():
     """Each level: 0 < DPR < ceiling (every attack can miss / every save can
     succeed, so the all-hit ceiling is a strict upper bound)."""
-    for level in (1, 4, 5, 9, 10, 11, 12):
+    for level in (1, 4, 5, 9, 10, 11, 12, 15):
         dpr = _mean_dpr(level, n_days=400)
         ceiling = ss.LEVELS[level]["ceiling_dpr"]
         assert 0 < dpr < ceiling, f"L{level}: {dpr:.2f} not in (0, {ceiling})"
@@ -675,3 +677,96 @@ def test_l12_outdamages_l11_against_the_same_enemy():
     assert ss.LEVELS[11]["enemy_ac"] == ss.LEVELS[12]["enemy_ac"] == 17
     assert ss.LEVELS[11]["enemy_dex_save"] == ss.LEVELS[12]["enemy_dex_save"] == 3
     assert _mean_dpr(12, n_days=600) > _mean_dpr(11, n_days=600)
+
+
+# ---------------------------------------------------------------------------
+# Tier-4 row (L15): Elemental Adept (fire) + Fire Shield (#4 resist + #5 thorns +
+# the warm/chill choose_one).  Validation framing unchanged — consistency/sanity.
+# ---------------------------------------------------------------------------
+
+def test_l15_searing_arc_is_elemental_adept_treated():
+    """The L15 Scion holds Elemental Adept (fire), so its Searing Arc Choice carries
+    the bypass + 1->2 high-grade (min_die=2, ignore_resistance) — fire only."""
+    policy = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
+                                    ss.make_training_dummy(15))
+    c = policy._searing_arc_choice()
+    assert c.damage_type == "fire" and c.is_spell is True
+    assert c.min_die == 2 and c.ignore_resistance is True
+
+
+def test_l15_fire_shield_warm_choose_one_selects_cold_resist_and_fire_thorns():
+    """The warm/chill choose_one (first consumer): WARM installs ONLY the cold
+    resistance (#4) on the turn-1 pre-cast and reflects FIRE thorns (#5).  The fire
+    thorns match our Elemental Adept element, so they bypass + high-grade."""
+    policy = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
+                                    ss.make_training_dummy(15))
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy._fire_shield_active
+    fs = [c for c in policy.decide(_snapshot(1, {})) if c.effect_source == "fire_shield"]
+    assert len(fs) == 1
+    assert fs[0].action_type == "cast_effect" and fs[0].cost == "none"
+    assert fs[0].damage_response == {"cold": "resistance"}      # warm resists COLD only
+    thorns = policy.on_incoming_hit(None).reactive_damage
+    assert thorns.damage_type == "fire" and thorns.damage_dice == (2, 8)
+    assert thorns.min_die == 2 and thorns.ignore_resistance is True
+
+
+def test_fire_shield_chill_mode_selects_the_other_payload():
+    """Flipping the choose_one to CHILL installs the OTHER payload: resist FIRE +
+    COLD thorns.  Cold thorns do NOT match the fire Elemental Adept, so no bypass."""
+    policy = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
+                                    ss.make_training_dummy(15))
+    policy._fire_shield_mode = "chill"
+    policy.on_combat_start(0, SeededRNG(0))
+    fs = [c for c in policy.decide(_snapshot(1, {})) if c.effect_source == "fire_shield"]
+    assert fs[0].damage_response == {"fire": "resistance"}      # chill resists FIRE
+    thorns = policy.on_incoming_hit(None).reactive_damage
+    assert thorns.damage_type == "cold"                         # ...and reflects COLD
+    assert thorns.min_die is None and thorns.ignore_resistance is False
+
+
+def test_fire_shield_is_pre_cast_in_only_one_combat_per_day():
+    """One 4th-level slot (fire_shield_use, 1/LR) → pre-cast in a single combat;
+    later combats have it down (no resist install, no thorns)."""
+    char = ss.make_starfire_scion(15)
+    policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15))
+    assert char.resources.available("fire_shield_use") == 1
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy._fire_shield_active and char.resources.available("fire_shield_use") == 0
+    policy.on_combat_start(1, SeededRNG(0))
+    assert not policy._fire_shield_active
+    assert policy.on_incoming_hit(None) is None                 # no thorns when down
+
+
+def _mean_dpr_l15(fire_shield: bool, n_days: int, seed: int = 0,
+                  rounds_per_combat: int = 4) -> float:
+    """L15 DPR with Fire Shield enabled or ABLATED.  The enemy strikes back either
+    way (same RNG), so the ONLY difference is the reflected thorns — which, since
+    the dummy is BOTH the Scion's target and the attacker, land in the dummy's
+    column and count toward DPR.  The Scion's offense is identical either way."""
+    rng = SeededRNG(seed)
+    char = ss.make_starfire_scion(15)
+    dummy = ss.make_training_dummy(15)
+    policy = ss.StarfireScionPolicy(15, char, dummy, rounds_per_combat)
+    if not fire_shield:
+        policy._has_fire_shield = False             # ablate the cast (no resist, no thorns)
+    ea = ss.LEVELS[15]["enemy_attack"]
+    enemy_policy = ss.ScriptedEnemyPolicy(
+        target=char, n_attacks=ea["n_attacks"],
+        char_target_prob=ea["char_target_prob"], rounds_per_combat=rounds_per_combat)
+    runner = DayRunner(
+        rng=rng, entities=[char, dummy],
+        policies={char.id: policy, dummy.id: enemy_policy},
+        rounds_per_combat=rounds_per_combat)
+    rounds_per_day = 4 * rounds_per_combat
+    total = sum(runner.run_day().damage_received_by(dummy.id) for _ in range(n_days))
+    return total / (n_days * rounds_per_day)
+
+
+def test_fire_shield_thorns_lift_l15_dpr_at_a_fixed_enemy():
+    """Fire Shield's reflected thorns strictly raise DPR over the ablated build at
+    the same enemy — the clean isolation of substrate #5 doing real work through
+    the enemy-strikes-back loop (thorns land in the dummy's column)."""
+    on = _mean_dpr_l15(fire_shield=True, n_days=600)
+    off = _mean_dpr_l15(fire_shield=False, n_days=600)
+    assert on > off, f"fire shield on {on:.2f} !> off {off:.2f}"

@@ -173,6 +173,13 @@ class Choice:
     # radiant but a feature (is_spell=False); plain weapon attacks leave both unset.
     damage_type: "str | None" = None
     is_spell: bool = False
+    # Elemental Adept (fire, etc.): when a fire SPELL this Choice casts is resolved,
+    # `min_die` floors each of its damage dice ("treat any 1 as a 2" → 2) and
+    # `ignore_resistance` makes it bypass the target's RESISTANCE to that type
+    # (immunity/vulnerability still apply).  Threaded Choice → AttackRollEvent /
+    # SaveDamageEvent → DamageEvent (resolve_damage phases 3 + 7).  Default off.
+    min_die: "int | None" = None
+    ignore_resistance: bool = False
     # --- cast_effect: a first-class non-damaging cast (buff/debuff) ---
     # action_type="cast_effect" installs a PERSISTING effect and pushes NO
     # DamageEvent (the honest model for raising a combat-long buff, or a debuff on
@@ -399,9 +406,16 @@ class ReactiveDamageSpec:
         The thorns dice, e.g. (2, 8) for Fire Shield's 2d8.
     damage_type:
         The thorns damage type, e.g. "fire" (warm) or "cold" (chill).
+    min_die / ignore_resistance:
+        Elemental Adept treatment on the thorns damage (Fire Shield's fire thorns
+        "qualify for our elemental adept feat" — guide 41:876): floor each thorns
+        die at `min_die` and bypass the attacker's RESISTANCE to the thorns type.
+        Threaded onto the spawned thorns DamageEvent.  Default off.
     """
     damage_dice: tuple[int, int]
     damage_type: "str | None" = None
+    min_die: "int | None" = None
+    ignore_resistance: bool = False
 
 
 @dataclass(frozen=True)

@@ -138,7 +138,14 @@ from typing import TYPE_CHECKING
 from ..content import interpret_save_spell, interpret_scaled_dice, load_abilities
 from ..day_runner import DayRunner
 from ..entity import Entity
-from ..policy import Choice, DamageRiderResponse, DealDamageContext, GameState
+from ..policy import (
+    Choice,
+    DamageRiderResponse,
+    DealDamageContext,
+    GameState,
+    InterceptResponse,
+    ReactiveDamageSpec,
+)
 from ..resources import ResourceEntry, ResourcePool
 from .enemy import ScriptedEnemyPolicy  # shared enemy loop (re-exported here)
 
@@ -164,6 +171,25 @@ SEARING_ARC_STRIKE = _ABILITIES["searing_arc_strike"]
 # ladder`), NOT a literal baked per LEVELS row.  The WIS attack OPTION stays the
 # build's profile choice (_shillelagh_attack_choice).
 SHILLELAGH = _ABILITIES["shillelagh"]
+
+
+# ---------------------------------------------------------------------------
+# Fire Shield (4th-level spell, char L15 = Druid-7; guide 41:48) — the warm/chill
+# CHOOSE_ONE.  Verified 2026-06-15 (D&D Beyond / aidedd): Action, 10 min, NON-
+# concentration; warm = resist COLD + 2d8 FIRE thorns; chill = resist FIRE + 2d8
+# COLD thorns.  ONE cast_effect installs BOTH the incoming-damage resistance
+# (substrate #4) and the defender thorns rider (substrate #5); the chosen mode
+# selects WHICH payload items install (the first consumer of the design note's
+# `choose_one` seam — modeled here as a data table the policy indexes, the YAML
+# `choose_one` construct in content.py staying deferred until cast_effect is
+# data-driven).  The guide picks WARM (cold resist + fire thorns) so the fire
+# thorns "qualify for our elemental adept feat" — bypassing fire resistance and
+# benefitting from the 1->2 high-grade (guide 41:876).
+FIRE_SHIELD_MODES: dict[str, dict] = {
+    "warm":  {"resist": "cold", "thorns_type": "fire"},
+    "chill": {"resist": "fire", "thorns_type": "cold"},
+}
+FIRE_SHIELD_THORNS_DICE: tuple[int, int] = (2, 8)
 
 
 # ---------------------------------------------------------------------------
@@ -322,6 +348,11 @@ LEVELS: dict[int, dict] = {
         "spell_save_dc": 16,               # 8 + PB 4 + WIS 4 (Sacred Flame + Burning Hands)
         "char_ac": 17,                     # 10 + DEX 3 + WIS 4
         "char_hp": 64,                     # DPR-irrelevant (threshold model)
+        # Elemental Adept (fire), taken at monk-4/char L8 (the +1 WIS source noted
+        # above): the Scion's FIRE spells (Searing Arc Strike) IGNORE enemy fire
+        # resistance and treat any 1 on a fire damage die as a 2.  Applied to the
+        # Searing Arc Choice in the policy (ignore_resistance + min_die=2).
+        "elemental_adept": "fire",
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         # Martial arts die 1d8 at monk-6; unarmed uses it (1d6 -> 1d8).
         "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
@@ -374,6 +405,8 @@ LEVELS: dict[int, dict] = {
         "spell_save_dc": 16,               # 8 + PB 4 + WIS 4 (Sacred Flame + Burning Hands)
         "char_ac": 17,                     # 10 + DEX 3 + WIS 4
         "char_hp": 74,                     # DPR-irrelevant (threshold model)
+        "elemental_adept": "fire",         # monk-4/L8 (see L10) — fire spells bypass resist + 1->2
+
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         # Martial arts die still 1d8 at monk-7 (it next steps to 1d10 at monk-11).
         "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
@@ -412,6 +445,8 @@ LEVELS: dict[int, dict] = {
         "spell_save_dc": 17,               # 8 + PB 4 + WIS 5
         "char_ac": 18,                     # 10 + DEX 3 + WIS 5
         "char_hp": 84,                     # DPR-irrelevant (threshold model)
+        "elemental_adept": "fire",         # monk-4/L8 (see L10) — fire spells bypass resist + 1->2
+
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         "extra_attack": True,
@@ -435,6 +470,63 @@ LEVELS: dict[int, dict] = {
         # + fuel 9 = 23; attack turns 2x(1d12+5) 23 + Searing Arc full 5d6 17.5 = 40.5.
         # ~41 max → 44 cushion.
         "ceiling_dpr": 44.0,
+    },
+    15: {
+        # Monk-8 (Sun-Soul)/Druid-7 (Circle of Stars), PB 5, WIS 20 (+5), DEX 16
+        # (+3).  The TIER-4 row.  Headlines wired this session: FIRE SHIELD (4th-
+        # level, the first real consumer of substrates #4 + #5 + the warm/chill
+        # CHOOSE_ONE) and ELEMENTAL ADEPT (fire) now has a real fire-resistant-enemy
+        # consumer (validated in tests).  vs L12 our OFFENSE changes only by PB 4->5
+        # (+1 spell to-hit / save DC) — WIS is already capped at 20, the Shillelagh
+        # die stays 1d12 (char L11-16), and Searing Arc stays 5d6 (monk-8 cap).
+        # DEFERRED to a follow-up tier-4 session (need the unbuilt outgoing-rider
+        # substrate #6): Primal Strikes (druid-7, +1d8 once/turn), Fount of Moonlight
+        # (4th-level, +2d6 radiant on melee hits), and elemental weapon (druid-5/L13).
+        # Sunbeam is a 6th-level spell = char L19, outside this row entirely.  So our
+        # modeled L15 DPR is a FRACTION of the guide's ~50 tier-4 ceiling — by design.
+        "attack_bonus": 8,                 # PB 5 + DEX 3 (martial-arts melee / unarmed)
+        "spell_attack_bonus": 10,          # PB 5 + WIS 5 (Guiding Bolt / Shillelagh option)
+        "spell_save_dc": 18,               # 8 + PB 5 + WIS 5 (Sacred Flame + Burning Hands)
+        "char_ac": 18,                     # 10 + DEX 3 + WIS 5
+        "char_hp": 99,                     # DPR-irrelevant (threshold model)
+        "elemental_adept": "fire",         # monk-4/L8 — fire spells bypass resist + 1->2
+        "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "extra_attack": True,
+        # Shillelagh die stays 1d12 (char L11-16 step); WIS mod +5 (bonus 5).
+        "shillelagh":   {"bonus": 5, "weapon_stat": "spell_attack_bonus"},
+        "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
+                          "damage_type": "radiant", "is_spell": True},
+        "starry_form": False,
+        # Searing Arc Strike: monk-8 cap floor(8/2)=4 FP → slot 3 = 5d6 (as L12).
+        "searing_arc_strike": {"slot_level": 3, "fp_cost": 4},
+        # Fire Shield (4th-level): pre-cast before ONE combat/day (one 4th-level
+        # slot → the fire_shield_use resource).  WARM mode (the guide's pick): cold
+        # resistance (#4) + 2d8 fire thorns (#5) reflected on every incoming melee
+        # hit, the fire thorns Elemental-Adept-treated (bypass + high-grade).
+        "fire_shield": {"mode": "warm"},
+        # Enemy strikes back (cr15 melee) so Fire Shield's thorns do real DPR work.
+        # attack_bonus / damage are ILLUSTRATIVE (the monster CSV carries only AC +
+        # saves; per-CR attack/damage is the unrealised half of decision #12 —
+        # see builds/enemy.py).  +9 vs char AC 18 → ~60% hit, exercising the thorns.
+        "enemy_attack": {"n_attacks": 2, "char_target_prob": 1.0,
+                          "attack_bonus": 9, "damage_dice": (2, 8), "damage_bonus": 5},
+        "resources": {
+            "spellfire_spark":  (5, 0),    # Sacred Flame as a BA, x PB / LR (PB 5)
+            "guiding_bolt_free": (5, 0),   # Star Map: free Guiding Bolt x WIS mod / LR (WIS 20 → 5)
+            "hit_dice": (15, 0),           # Fueled Spellfire: char-level d8 (15 at L15)
+            "focus_points": (8, 0),        # monk-8 = 8 FP
+            # Fire Shield: one 4th-level slot/LR → pre-cast in ONE of the 4 combats.
+            "fire_shield_use": (1, 0),
+        },
+        "enemy_ac": 18,
+        "enemy_dex_save": 4,               # csv level 15
+        # Loose upper bound for what we MODEL (Primal Strikes / FoM / elemental
+        # weapon deferred): attack turns 2x(1d12+5) 23 + Searing Arc full 5d6 17.5 =
+        # 40.5; GB turn 14 + fuel 9 = 23; + Fire Shield thorns ~+2.  ~43 → 48 cushion.
+        # (The guide's full-kit tier-4 figure is ~50; our deferred riders are why our
+        # DPR lands well under it — by design, not a discrepancy.)
+        "ceiling_dpr": 48.0,
     },
 }
 
@@ -603,8 +695,25 @@ class StarfireScionPolicy:
             self._sas_dice = _sas.damage_dice          # FROM DATA (4d6 at slot 2)
             self._sas_on_save = _sas.on_save           # "half"
             self._sas_type = _sas.damage_type          # "fire" (NOT fuelable)
+        # Elemental Adept (fire, monk-4/char L8+): the Scion's FIRE spells ignore
+        # enemy fire RESISTANCE and treat any 1 on a fire damage die as a 2.  data
+        # carries the chosen element ("fire") or None; the policy applies it to any
+        # fire save_spell (Searing Arc Strike) and to Fire Shield's fire thorns.
+        self._elemental_adept: "str | None" = data.get("elemental_adept")
+        # Fire Shield (4th-level, char L15+): present iff the level carries a
+        # "fire_shield" block.  ONE cast_effect installs the chosen warm/chill
+        # mode's incoming-damage RESISTANCE (#4) + thorns (#5); pre-cast (one
+        # slot/LR → the fire_shield_use resource) in ONE combat/day, decided +
+        # consumed in on_combat_start.  See FIRE_SHIELD_MODES.
+        fs = data.get("fire_shield")
+        self._has_fire_shield: bool = fs is not None
+        self._fire_shield_mode: str = fs["mode"] if fs else "warm"
         # Per-combat state, (re)set by on_combat_start.
         self._starry_form_active: bool = False
+        # Fire Shield up for this combat (pre-cast in on_combat_start while a slot
+        # remains).  Gates the turn-1 install in decide() and the thorns in
+        # on_incoming_hit.
+        self._fire_shield_active: bool = False
         # Shillelagh up for this combat (cast as the turn-1 BA, then persists).  Set
         # by on_combat_start; consumed by the weapon-attack swings and by the turn-1
         # BA suppression in decide().
@@ -644,6 +753,17 @@ class StarfireScionPolicy:
         ):
             self._character.resources.consume("wild_shape")
             self._starry_form_active = True
+        # Fire Shield (char L15): pre-cast before ONE combat/day while a 4th-level
+        # slot (fire_shield_use) remains — set the combat flag + consume the slot.
+        # decide() emits the install (a cost="none" pre-cast cast_effect) on turn 1;
+        # on_incoming_hit then reflects the mode's thorns on every incoming melee hit.
+        self._fire_shield_active = False
+        if (
+            self._has_fire_shield
+            and self._character.resources.available("fire_shield_use") >= 1
+        ):
+            self._character.resources.consume("fire_shield_use")
+            self._fire_shield_active = True
 
     # -- decision point ---------------------------------------------------
 
@@ -664,6 +784,23 @@ class StarfireScionPolicy:
                 action_type="cast_effect",
                 cost="none",
                 effect_source="starry_form",
+            ))
+
+        # Fire Shield (char L15) — the pre-cast install on turn 1.  A cost="none"
+        # cast_effect: Fire Shield is pre-cast before initiative (10-min, NON-
+        # concentration), so it consumes no in-combat economy (like Starry Form's
+        # activation).  It installs the chosen mode's incoming-damage RESISTANCE
+        # (#4) on the caster under effect_source "fire_shield" (swept at the combat
+        # boundary).  The mode's THORNS (#5) are delivered separately, on every
+        # incoming melee hit, by on_incoming_hit.
+        if self._fire_shield_active and snapshot.round_number == 1:
+            mode = FIRE_SHIELD_MODES[self._fire_shield_mode]
+            choices.append(Choice(
+                action_type="cast_effect",
+                cost="none",
+                effect_source="fire_shield",
+                damage_response={mode["resist"]: "resistance"},
+                duration="combat",
             ))
 
         # ACTION: Guiding Bolt (free Star Map cast) while charges remain, else a
@@ -749,7 +886,12 @@ class StarfireScionPolicy:
         the chosen slot level); FP cost is policy arbitration.  is_spell=True (it IS
         a spell) but damage_type="fire", so Fueled Spellfire declines it — the
         cross-check that the damage_type gate, not just is_spell, does real work.
+
+        Elemental Adept (fire): when the feat's element matches Searing Arc's fire,
+        the cast IGNORES enemy fire resistance and high-grades each die 1->2
+        (min_die=2) — so a fire-resistant enemy takes FULL Searing Arc.
         """
+        ea = self._elemental_adept == self._sas_type   # "fire" == "fire"
         return Choice(
             action_type="save_spell",
             cost="bonus_action",
@@ -760,6 +902,8 @@ class StarfireScionPolicy:
             on_save=self._sas_on_save,                 # "half" (save-for-half)
             damage_type=self._sas_type,                # "fire" (NOT fuelable)
             is_spell=True,
+            min_die=2 if ea else None,                 # Elemental Adept: treat 1 as 2
+            ignore_resistance=ea,                      # Elemental Adept: bypass fire resist
             resource_cost={"focus_points": self._sas_fp_cost},
         )
 
@@ -820,6 +964,36 @@ class StarfireScionPolicy:
             damage_type=p.get("damage_type"),       # "radiant" for GB/Archer
             is_spell=p.get("is_spell", False),       # only Guiding Bolt is a spell
             resource_cost=resource_cost or {},
+        )
+
+    # -- defender-side reaction: Fire Shield thorns (substrate #5, L15+) ----
+
+    def on_incoming_hit(self, ctx) -> "InterceptResponse | None":
+        """Fire Shield thorns: while Fire Shield is up this combat, the bearer
+        reflects the chosen mode's thorns (2d8 fire in WARM mode) at any enemy
+        whose melee attack HITS — automatic, no roll (the intercept seam's
+        reactive_damage, substrate #5).  When the thorns type matches our Elemental
+        Adept element (warm = fire) the thorns bypass the attacker's resistance to
+        that type and high-grade 1->2 (the thorns "qualify for our elemental adept
+        feat" — guide 41:876).  Returns None when Fire Shield is down (the other
+        ~3 combats/day), so no reaction fires.
+
+        Note the thorns DamageEvent is bearer->attacker; since this build's enemy
+        (the dummy) is BOTH the Scion's target and the attacker, the thorns land in
+        the dummy's damage_received column — so they correctly count toward DPR.
+        """
+        if not self._fire_shield_active:
+            return None
+        mode = FIRE_SHIELD_MODES[self._fire_shield_mode]
+        ttype = mode["thorns_type"]
+        ea = self._elemental_adept == ttype
+        return InterceptResponse(
+            reactive_damage=ReactiveDamageSpec(
+                damage_dice=FIRE_SHIELD_THORNS_DICE,
+                damage_type=ttype,
+                min_die=2 if ea else None,
+                ignore_resistance=ea,
+            )
         )
 
     # -- post-damage decision point: Fueled Spellfire (level 5+) ----------

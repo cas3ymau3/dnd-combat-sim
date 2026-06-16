@@ -591,6 +591,8 @@ class Scheduler:
                     damage_bonus_override=dmg_bonus_override,
                     damage_type=choice.damage_type,
                     is_spell=choice.is_spell,
+                    min_die=choice.min_die,
+                    ignore_resistance=choice.ignore_resistance,
                 )
                 self.queue.push(atk_event)
                 seq += 1
@@ -609,6 +611,8 @@ class Scheduler:
                     on_save=choice.on_save,
                     damage_type=choice.damage_type,
                     is_spell=choice.is_spell,
+                    min_die=choice.min_die,
+                    ignore_resistance=choice.ignore_resistance,
                     cost=cost,
                 )
                 self.queue.push(save_event)

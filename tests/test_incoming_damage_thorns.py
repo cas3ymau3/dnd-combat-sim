@@ -29,7 +29,7 @@ import logging
 from src.builds import starfire_scion as ss
 from src.content import interpret_save_spell
 from src.entity import Entity
-from src.events import AttackRollEvent, DamageEvent, EventQueue, make_tick
+from src.events import AttackRollEvent, DamageEvent, EventQueue, SaveDamageEvent, make_tick
 from src.policy import (
     Choice,
     GameState,
@@ -39,7 +39,7 @@ from src.policy import (
 from src.resources import ResourceEntry, ResourcePool
 from src.rng import SeededRNG
 from src.scheduler import Scheduler
-from src.verbs import resolve_attack_roll, resolve_damage
+from src.verbs import resolve_attack_roll, resolve_damage, resolve_save_damage
 
 logging.disable(logging.CRITICAL)
 
@@ -60,7 +60,8 @@ class FakeRNG:
         return self.roll(1, sides)[0]
 
 
-def _resolve_damage_to(target, dice, rolls, *, damage_type, halved=False, bonus=0):
+def _resolve_damage_to(target, dice, rolls, *, damage_type, halved=False, bonus=0,
+                       min_die=None, ignore_resistance=False):
     """Resolve one DamageEvent against *target* and return the total dealt."""
     ev = DamageEvent(
         tick=(1, 0, 1),
@@ -72,6 +73,8 @@ def _resolve_damage_to(target, dice, rolls, *, damage_type, halved=False, bonus=
         halved=halved,
         damage_type=damage_type,
         is_spell=False,
+        min_die=min_die,
+        ignore_resistance=ignore_resistance,
     )
     total, _ = resolve_damage(ev, FakeRNG(rolls), EventQueue(), 2)
     return total
@@ -176,6 +179,74 @@ def test_cast_effect_installs_and_sweeps_a_damage_response():
     scion.clear_combat_buffs()
     assert scion.damage_response_for("fire") is None
     assert _resolve_damage_to(scion, (2, 8), [5, 5], damage_type="fire") == 10
+
+
+# ===========================================================================
+# Elemental Adept — per-die FLOOR (phase 3) + RESISTANCE bypass (phase 7)
+# ===========================================================================
+# The 2024 feat: spells of the chosen type ignore RESISTANCE (not immunity), and
+# any 1 rolled on a damage die counts as a 2.  Modeled as DamageEvent.min_die +
+# .ignore_resistance, threaded from the Choice.  General engine capability; the
+# Starfire Scion's first consumer is fire (Searing Arc + Fire Shield thorns).
+
+def test_min_die_floors_each_spell_die():
+    # 5d6 = [1,1,3,6,2]; min_die=2 raises both 1s to 2 → [2,2,3,6,2] = 15 (not 13).
+    target = Entity(name="t", hp=10_000)
+    assert _resolve_damage_to(
+        target, (5, 6), [1, 1, 3, 6, 2], damage_type="fire", min_die=2
+    ) == 15
+
+
+def test_min_die_is_inert_when_no_die_is_below_the_floor():
+    target = Entity(name="t", hp=10_000)
+    assert _resolve_damage_to(
+        target, (3, 6), [4, 5, 6], damage_type="fire", min_die=2
+    ) == 15  # unchanged
+
+
+def test_ignore_resistance_makes_a_resistant_target_take_full():
+    # Fire-resistant target: 4d6=[6,6,6,5]=23 → normally 11; ignore_resistance → 23.
+    target = Entity(name="t", hp=10_000, damage_response={"fire": "resistance"})
+    assert _resolve_damage_to(
+        target, (4, 6), [6, 6, 6, 5], damage_type="fire", ignore_resistance=True
+    ) == 23
+
+
+def test_ignore_resistance_does_not_bypass_immunity_or_vulnerability():
+    # 2024 Elemental Adept bypasses RESISTANCE only — immunity still zeroes, and
+    # vulnerability still doubles (the flag is scoped to the resistance branch).
+    immune = Entity(name="i", hp=10_000, damage_response={"fire": "immunity"})
+    assert _resolve_damage_to(
+        immune, (2, 8), [5, 5], damage_type="fire", ignore_resistance=True
+    ) == 0
+    vuln = Entity(name="v", hp=10_000, damage_response={"fire": "vulnerability"})
+    assert _resolve_damage_to(
+        vuln, (2, 8), [5, 5], damage_type="fire", ignore_resistance=True
+    ) == 20  # 10 * 2
+
+
+def test_elemental_adept_makes_searing_arc_full_vs_a_fire_resistant_enemy():
+    # The real consumer (session-12 plan): the L15 Scion's Searing Arc carries the
+    # Elemental Adept flags (min_die=2 + ignore_resistance), so a fire-resistant
+    # enemy takes FULL, high-graded Searing Arc — while a radiant Guiding Bolt of
+    # the same dice is irrelevant to a fire feat (and untouched by fire resistance).
+    sas = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
+                                 ss.make_training_dummy(15))._searing_arc_choice()
+    assert sas.min_die == 2 and sas.ignore_resistance is True
+    enemy = Entity(name="fire-resistant", hp=10_000,
+                   damage_response={"fire": "resistance"})
+    ev = SaveDamageEvent(
+        tick=(1, 0, 1), actor=ss.make_starfire_scion(15), target=enemy,
+        save_stat="dex_save", dc_stat="spell_save_dc",
+        damage_dice=sas.damage_dice, on_save="half", damage_type="fire",
+        is_spell=True, min_die=sas.min_die, ignore_resistance=sas.ignore_resistance,
+    )
+    q = EventQueue()
+    # 5d6 with a 1 in it: [6,6,1,5,5]; min_die floors the 1→2 → 24, NOT halved by
+    # the bypassed fire resistance.  (d20=2 → the enemy FAILS the save → full.)
+    resolve_save_damage(ev, FakeRNG([2]), q, 2)   # d20=2 → enemy fails → full
+    total, _ = resolve_damage(q.pop(), FakeRNG([6, 6, 1, 5, 5]), EventQueue(), 3)
+    assert total == 24
 
 
 # ===========================================================================

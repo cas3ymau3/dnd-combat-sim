@@ -315,6 +315,8 @@ def resolve_attack_roll(
                 damage_bonus=0,
                 damage_type=reactive_damage.damage_type,
                 is_spell=False,
+                min_die=reactive_damage.min_die,
+                ignore_resistance=reactive_damage.ignore_resistance,
                 cost="none",
             )
             queue.push(thorns_event)
@@ -363,6 +365,8 @@ def resolve_attack_roll(
             extra_flat_damage=event.extra_flat_damage,
             damage_type=event.damage_type,
             is_spell=event.is_spell,
+            min_die=event.min_die,
+            ignore_resistance=event.ignore_resistance,
             cost=event.cost,
         )
         queue.push(damage_event)
@@ -433,6 +437,8 @@ def resolve_save_damage(
         halved=(saved and event.on_save == "half"),
         damage_type=event.damage_type,
         is_spell=event.is_spell,
+        min_die=event.min_die,
+        ignore_resistance=event.ignore_resistance,
         cost=event.cost,
     )
     queue.push(damage_event)
@@ -502,8 +508,15 @@ def resolve_damage(
         if count >= 1:
             extra_rolls.extend(rng.roll(count, extra_sides))
 
-    # Phase 3: per-die mods — placeholder, nothing wired yet
-    # (reroll-once, replace-with-floor, etc. will hook in here)
+    # Phase 3: per-die mods.  Elemental Adept's "treat any 1 on a damage die as a
+    # 2" is a per-die FLOOR: each of the SPELL's own dice (the main pool) is raised
+    # to at least event.min_die.  Applied here, before the sum, so it composes with
+    # crit-doubling (the doubled dice are floored too).  Only the main pool is
+    # floored — for the current consumers (fire Searing Arc, fire thorns) that IS
+    # the feat's "spell you cast that deals damage of that type"; extra/rider dice
+    # are separate sources/types and would generalize this when one needs it.
+    if event.min_die is not None:
+        rolls = [max(r, event.min_die) for r in rolls]
 
     # Phase 4: sum (weapon dice + extra dice)
     subtotal = sum(rolls) + sum(extra_rolls)
@@ -545,6 +558,11 @@ def resolve_damage(
     damage_response = (
         target.damage_response_for(event.damage_type) if target is not None else None
     )
+    # Elemental Adept: the caster's spell ignores RESISTANCE to its type (the 2024
+    # feat bypasses resistance only — immunity and vulnerability still bind).  So a
+    # fire-resistant enemy takes FULL Searing Arc; a fire-immune one still takes 0.
+    if event.ignore_resistance and damage_response == "resistance":
+        damage_response = None
     if damage_response == "resistance":
         total //= 2
     elif damage_response == "vulnerability":
