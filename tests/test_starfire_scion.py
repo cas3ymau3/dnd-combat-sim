@@ -25,7 +25,7 @@ from src.content import interpret_save_spell, load_abilities
 from src.day_runner import DayRunner
 from src.entity import Entity
 from src.events import AttackRollEvent, EventQueue, SaveDamageEvent
-from src.policy import Choice, DealDamageContext, GameState
+from src.policy import Choice, DealDamageContext, GameState, HitContext
 from src.rng import SeededRNG
 from src.verbs import resolve_attack_roll, resolve_damage, resolve_save_damage
 
@@ -770,3 +770,183 @@ def test_fire_shield_thorns_lift_l15_dpr_at_a_fixed_enemy():
     on = _mean_dpr_l15(fire_shield=True, n_days=600)
     off = _mean_dpr_l15(fire_shield=False, n_days=600)
     assert on > off, f"fire shield on {on:.2f} !> off {off:.2f}"
+
+
+# ---------------------------------------------------------------------------
+# Tier-4 row (L15): substrate #6 — OUTGOING RIDERS (Fount of Moonlight + Primal
+# Strike).  on_hit spawns separately-typed rider DamageEvents; FoM's radiant is
+# fuelable, Primal Strike's elemental is a feature (not fueled, not EA-treated).
+# Validation framing unchanged — consistency/sanity, not number-matching.
+# ---------------------------------------------------------------------------
+
+def _l15_policy(primal_strike_unarmed=None):
+    char = ss.make_starfire_scion(15)
+    policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15),
+                                    primal_strike_unarmed=primal_strike_unarmed)
+    return policy, char
+
+
+def _hit_ctx(round_number=1, is_spell=False, is_unarmed=False, is_crit=False):
+    """A HitContext for poking on_hit directly (the rider gate reads is_spell /
+    is_unarmed / round_number; the rest are unused by the Scion's on_hit)."""
+    return HitContext(
+        actor=Entity(name="a", hp=10), target=Entity(name="t", hp=10),
+        is_crit=is_crit, cost="action", bonus_action_available=True,
+        resources={}, round_number=round_number,
+        is_spell=is_spell, is_unarmed=is_unarmed,
+    )
+
+
+def _rider(resp, damage_type):
+    """The rider of a given damage type in a HitResponse (None if absent)."""
+    if resp is None:
+        return None
+    return next((r for r in resp.rider_damage if r.damage_type == damage_type), None)
+
+
+def test_l15_fom_rides_every_melee_hit_with_fuelable_radiant():
+    """Fount of Moonlight: +2d6 RADIANT on every melee hit — quarterstaff AND
+    unarmed (both are melee attacks) — tagged is_spell so Fueled Spellfire can
+    fuel it (the fueling itself is tested separately)."""
+    policy, _ = _l15_policy()
+    policy.on_combat_start(0, SeededRNG(0))               # FoM pre-cast active
+    assert policy._fount_of_moonlight_active
+    fom = _rider(policy.on_hit(_hit_ctx(is_unarmed=False)), "radiant")   # quarterstaff
+    assert fom is not None and fom.damage_dice == (2, 6) and fom.is_spell is True
+    fom_u = _rider(policy.on_hit(_hit_ctx(round_number=2, is_unarmed=True)), "radiant")  # unarmed
+    assert fom_u is not None and fom_u.damage_dice == (2, 6)
+
+
+def test_l15_fom_skips_the_ranged_guiding_bolt_spell():
+    """FoM rides MELEE attacks only — the ranged Guiding Bolt (is_spell) gets no
+    rider; Primal Strike also declines a spell (not a weapon attack) → None."""
+    policy, _ = _l15_policy()
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy.on_hit(_hit_ctx(is_spell=True)) is None
+
+
+def test_l15_fom_radiant_is_fueled_by_fueled_spellfire():
+    """The FoM rider is radiant + is_spell, so it reaches on_deal_damage as a
+    fuelable instance — Fueled Spellfire adds up to 2 Hit Dice into it (the
+    interaction the guide writes `..._{fueled-spellfire(2)} --> ...+4d6`)."""
+    policy, char = _l15_policy()
+    policy.on_combat_start(0, SeededRNG(0))
+    ctx = DealDamageContext(
+        actor=char, target=ss.make_training_dummy(15),
+        damage_type="radiant", is_spell=True, is_crit=False,
+        base_damage_dice=(2, 6), resources=char.resources.as_dict(),
+        round_number=1, turn_index=0,
+    )
+    resp = policy.on_deal_damage(ctx)
+    assert resp is not None and resp.extra_damage_dice == [(2, 8)]
+
+
+def test_l15_primal_strike_fires_once_per_turn_on_weapon_hits():
+    """Primal Strike: a FEATURE (is_spell False) adding 1d8 of the chosen element,
+    once on each of the character's turns (round-gated), on a weapon hit."""
+    policy, _ = _l15_policy()                             # RAW (default)
+    policy._has_fount_of_moonlight = False                # isolate Primal from FoM
+    policy.on_combat_start(0, SeededRNG(0))
+    r1 = _rider(policy.on_hit(_hit_ctx(round_number=1)), "fire")
+    assert r1 is not None and r1.damage_dice == (1, 8) and r1.is_spell is False
+    assert policy.on_hit(_hit_ctx(round_number=1)) is None      # once/turn — second hit declines
+    assert _rider(policy.on_hit(_hit_ctx(round_number=2)), "fire") is not None  # next turn fires
+
+
+def test_l15_primal_strike_raw_declines_unarmed_nonraw_rides_it():
+    """The user-requested toggle (memory primal-strikes-explore-unarmed): RAW rides
+    weapon attacks only (declines unarmed); the non-RAW option also rides unarmed."""
+    raw, _ = _l15_policy()                                # default RAW
+    raw._has_fount_of_moonlight = False
+    raw.on_combat_start(0, SeededRNG(0))
+    assert raw.on_hit(_hit_ctx(is_unarmed=True)) is None         # RAW: no Primal on unarmed
+
+    nonraw, _ = _l15_policy(primal_strike_unarmed=True)
+    nonraw._has_fount_of_moonlight = False
+    nonraw.on_combat_start(0, SeededRNG(0))
+    r = _rider(nonraw.on_hit(_hit_ctx(is_unarmed=True)), "fire")
+    assert r is not None and r.damage_dice == (1, 8)             # non-RAW: rides unarmed
+
+
+def test_l15_primal_strike_is_not_elemental_adept_treated():
+    """Primal Strike is a FEATURE, not a spell — even though we pick fire it does
+    NOT get Elemental Adept's bypass + 1->2, unlike the fire Searing Arc (a spell).
+    The cross-check that the is_spell gate does real work on the rider path."""
+    policy, _ = _l15_policy()
+    policy._has_fount_of_moonlight = False
+    policy.on_combat_start(0, SeededRNG(0))
+    ps = _rider(policy.on_hit(_hit_ctx()), "fire")
+    assert ps.is_spell is False and ps.min_die is None and ps.ignore_resistance is False
+    sa = policy._searing_arc_choice()                            # ...contrast Searing Arc
+    assert sa.min_die == 2 and sa.ignore_resistance is True
+
+
+def test_l15_fom_and_primal_combine_on_the_first_weapon_hit():
+    """The guide's turn-02 `quarterstaff_{primal-strike,fueled-spellfire(2)} -->
+    2d12+3d8+4d6...`: the first melee swing carries BOTH riders — Primal (fire
+    feature) and FoM (radiant spell)."""
+    policy, _ = _l15_policy()
+    policy.on_combat_start(0, SeededRNG(0))
+    resp = policy.on_hit(_hit_ctx(round_number=1))
+    assert sorted(r.damage_type for r in resp.rider_damage) == ["fire", "radiant"]
+    assert _rider(resp, "radiant").is_spell is True              # FoM — fuelable
+    assert _rider(resp, "fire").is_spell is False                # Primal — feature
+
+
+def test_l15_fom_is_pre_cast_in_only_one_combat_per_day():
+    """One use (fom_use, 1/LR) → pre-cast in a single combat; the turn-1 install is
+    the radiant-resistance (#4); later combats have it down (no rider)."""
+    policy, char = _l15_policy()
+    assert char.resources.available("fom_use") == 1
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy._fount_of_moonlight_active and char.resources.available("fom_use") == 0
+    install = [c for c in policy.decide(_snapshot(1, {})) if c.effect_source == "fount_of_moonlight"]
+    assert len(install) == 1 and install[0].cost == "none"
+    assert install[0].damage_response == {"radiant": "resistance"}
+    policy.on_combat_start(1, SeededRNG(0))
+    assert not policy._fount_of_moonlight_active
+    assert _rider(policy.on_hit(_hit_ctx(round_number=1)), "radiant") is None   # no FoM rider down
+
+
+def _mean_dpr_l15_rider(disable, n_days, seed=0, rounds_per_combat=4):
+    """L15 DPR with one #6 rider ABLATED (FoM or Primal Strike switched off) — the
+    enemy strikes back either way (same loop), so the difference isolates that
+    rider's contribution to the Scion's outgoing DPR."""
+    rng = SeededRNG(seed)
+    char = ss.make_starfire_scion(15)
+    dummy = ss.make_training_dummy(15)
+    policy = ss.StarfireScionPolicy(15, char, dummy, rounds_per_combat)
+    if disable == "fom":
+        policy._has_fount_of_moonlight = False
+    elif disable == "primal":
+        policy._has_primal_strike = False
+    ea = ss.LEVELS[15]["enemy_attack"]
+    enemy_policy = ss.ScriptedEnemyPolicy(
+        target=char, n_attacks=ea["n_attacks"],
+        char_target_prob=ea["char_target_prob"], rounds_per_combat=rounds_per_combat)
+    runner = DayRunner(
+        rng=rng, entities=[char, dummy],
+        policies={char.id: policy, dummy.id: enemy_policy},
+        rounds_per_combat=rounds_per_combat)
+    rounds_per_day = 4 * rounds_per_combat
+    total = sum(runner.run_day().damage_received_by(dummy.id) for _ in range(n_days))
+    return total / (n_days * rounds_per_day)
+
+
+def test_fount_of_moonlight_lifts_l15_dpr_at_a_fixed_enemy():
+    on = _mean_dpr_l15_rider(disable=None, n_days=400)
+    off = _mean_dpr_l15_rider(disable="fom", n_days=400)
+    assert on > off, f"FoM on {on:.2f} !> off {off:.2f}"
+
+
+def test_primal_strike_lifts_l15_dpr_at_a_fixed_enemy():
+    on = _mean_dpr_l15_rider(disable=None, n_days=400)
+    off = _mean_dpr_l15_rider(disable="primal", n_days=400)
+    assert on > off, f"primal strike on {on:.2f} !> off {off:.2f}"
+
+
+def test_l15_dpr_rises_above_the_session13_baseline():
+    """Adding FoM + Primal Strikes lifts L15 DPR clearly above session-13's ~29.7
+    (Fire Shield only) and keeps it under the loose ceiling."""
+    dpr = _mean_dpr(15, n_days=400)
+    assert 29.7 < dpr < ss.LEVELS[15]["ceiling_dpr"], f"L15 DPR {dpr:.2f}"

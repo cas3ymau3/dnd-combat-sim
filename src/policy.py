@@ -180,6 +180,12 @@ class Choice:
     # SaveDamageEvent → DamageEvent (resolve_damage phases 3 + 7).  Default off.
     min_die: "int | None" = None
     ignore_resistance: bool = False
+    # Whether this attack Choice is an UNARMED strike (vs a weapon attack).  A
+    # minimal tactical tag (mirrors `is_spell`), threaded to the AttackRollEvent →
+    # HitContext, read by an on_hit rider that gates weapon-vs-unarmed (Primal
+    # Strike RAW rides weapon attacks only; its non-RAW toggle also rides unarmed).
+    # Not the first-class attack typology (deferred — ATTACK-TAXONOMY flag).
+    is_unarmed: bool = False
     # --- cast_effect: a first-class non-damaging cast (buff/debuff) ---
     # action_type="cast_effect" installs a PERSISTING effect and pushes NO
     # DamageEvent (the honest model for raising a combat-long buff, or a debuff on
@@ -296,6 +302,56 @@ class HitContext:
     bonus_action_available: bool
     resources: dict[str, int]
     round_number: int
+    # Whether the hitting attack was from a SPELL (vs a weapon/feature) and/or an
+    # UNARMED strike (vs a weapon attack), so an on_hit rider can gate on attack
+    # kind.  Fount of Moonlight rides melee attacks (`not is_spell` — Guiding Bolt
+    # is the only ranged spell attack); Primal Strike rides weapon attacks (RAW),
+    # with the non-RAW option also riding unarmed (`is_unarmed`).  is_spell and
+    # is_unarmed separate the three attack kinds the riders care about; neither is
+    # the first-class attack typology (deferred — ATTACK-TAXONOMY flag).
+    is_spell: bool = False
+    is_unarmed: bool = False
+
+
+@dataclass(frozen=True)
+class RiderDamageSpec:
+    """A separately-typed damage instance an on_hit rider adds to a hit
+    (substrate #6 — outgoing predicate riders, e.g. Fount of Moonlight's +2d6
+    radiant, Primal Strike's +1d8 elemental).
+
+    Unlike HitResponse.extra_damage_dice — which folds into the hitting attack's
+    OWN DamageEvent and therefore inherits its damage type / is_spell — each rider
+    spec is spawned as its OWN DamageEvent (same actor → target, same is_crit).
+    That keeps the rider's type and spell-source distinct, so it (a) routes
+    through the target's per-type damage response (substrate #4), (b) can carry
+    its own Elemental Adept treatment, and (c) reaches the caster's on_deal_damage
+    rider on its own terms — Fount of Moonlight's radiant is `is_spell=True`, so
+    Fueled Spellfire fuels it for free, while Primal Strike's elemental damage is
+    a FEATURE (`is_spell=False`) and is correctly NOT fuelable and NOT
+    Elemental-Adept-treated.
+
+    Fields
+    ------
+    damage_dice:
+        The rider's dice, e.g. (2, 6) for FoM, (1, 8) for Primal Strike.
+    damage_type:
+        The rider's type, e.g. "radiant" (FoM) or "fire" (Primal Strike).
+    is_spell:
+        Whether the rider damage is from a SPELL (FoM = True → fuelable) or a
+        feature (Primal Strike = False).
+    damage_bonus:
+        Flat bonus on the rider (default 0 — neither current consumer adds one).
+    min_die / ignore_resistance:
+        Elemental Adept treatment (spells only).  FoM's radiant and Primal
+        Strike's elemental both leave these off — FoM is the wrong type and
+        Primal Strike is not a spell.
+    """
+    damage_dice: tuple[int, int]
+    damage_type: "str | None" = None
+    is_spell: bool = False
+    damage_bonus: int = 0
+    min_die: "int | None" = None
+    ignore_resistance: bool = False
 
 
 @dataclass(frozen=True)
@@ -322,6 +378,12 @@ class HitResponse:
     extra_masteries: list[str] = field(default_factory=list)
     action_cost: "str | None" = "bonus_action"
     self_status_on_hit: "str | None" = None
+    # Substrate #6 — outgoing predicate riders.  Each spec is spawned as its OWN
+    # separately-typed DamageEvent on this hit (see RiderDamageSpec), rather than
+    # folded into the hitting attack's DamageEvent like extra_damage_dice.  Empty
+    # for every existing on_hit consumer (War Angel smite/bluff use only
+    # extra_damage_dice), so this is inert unless a rider sets it.
+    rider_damage: list["RiderDamageSpec"] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------

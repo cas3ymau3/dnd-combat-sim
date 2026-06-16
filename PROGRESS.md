@@ -72,6 +72,35 @@ type, condition, resource, …):
    improvements compound and are cheapest to make while the context is fresh.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
+> (2026-06-16, session 14) — DONE (substrate #6 — OUTGOING RIDERS):** built the
+> `cast_effect` **outgoing predicate rider** substrate (#6, the next item in the
+> buff-primitive "Next-steps sequence") with first consumers on the Starfire Scion
+> at L15: **Fount of Moonlight** (+2d6 radiant on every melee hit incl. unarmed,
+> FUELED by Fueled Spellfire for free) and **Primal Strike** (+1d8 once/turn on a
+> weapon hit — built TOGGLEABLE RAW weapon-only vs a non-RAW also-unarmed option,
+> per the user's standing decision). The engine seam: `HitResponse.rider_damage`
+> (a list of `RiderDamageSpec`) → `resolve_attack_roll` spawns each as its OWN
+> typed `DamageEvent` (so the rider's type / `is_spell` / Elemental-Adept flags
+> stay distinct — FoM's radiant is_spell makes it fuelable for free; Primal
+> Strike, a FEATURE, is NOT fueled and NOT EA-treated, the is_spell-gate
+> cross-check); `HitContext` gained `is_spell` + `is_unarmed` (a minimal tag — the
+> THIRD attack-taxonomy touch, typology still deferred) for the rider gates.
+> **Scope settled with the user up front (4 questions):** #6 with **FoM + Primal
+> Strikes ONLY** (elemental weapon dropped); rider home = policy method + separate
+> typed DamageEvent; FoM modeled **NON-concentration** this session (pre-cast like
+> Fire Shield) with concentration + the Starry-Form Dragon save-floor flagged for
+> NEXT session; clean standalone L15. Found + fixed a rotation bug: the Scion was
+> greedily casting Guiding Bolt in the FoM combat (no melee hits → FoM inert), so
+> the policy now MELEES while FoM is up (matches the guide's melee FoM combat).
+> **399 tests green (+18).** L15 DPR ~36.2 (> session-13's ~29.7, < 52 ceiling);
+> FoM-on > off and Primal-on > off at the fixed L15 enemy isolate each rider.
+> Branch `feature/cast-effect-outgoing-riders` → confirm before merging to main.
+> Per-feature ritual honored (FoM + Primal Strike rules + ACCESS re-verified via
+> web + guide 41 BEFORE modeling). MCP-toggle recommendation re-made. ALSO produced
+> the requested **MODEL BUILD-PLAN OVERVIEW** (visual diagram + roadmap, confirmed
+> with the user) at session start.
+>
+> **Session scope
 > (2026-06-16, session 13) — DONE (the TIER-4 row, L15):** built **Elemental Adept
 > (fire) as a general engine primitive + its first consumer**, and **wired Fire
 > Shield on the Starfire Scion at char L15** — the FIRST REAL BUILD CONSUMER of
@@ -201,6 +230,88 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **`cast_effect` substrate #6 — OUTGOING PREDICATE RIDERS — BUILT & VALIDATED
+  (2026-06-16, session 14).** The last damage-rider substrate; only #7
+  (zone/summon) remains. First consumers: Fount of Moonlight + Primal Strike on
+  the Starfire Scion at L15. **399 tests green (+18).** Branch
+  `feature/cast-effect-outgoing-riders`. Design contract:
+  `design/buff_primitive.md` (registry row 6 flipped to BUILT). Also produced the
+  user-requested **MODEL BUILD-PLAN OVERVIEW** (visual diagram + the ~5–10-session
+  roadmap, confirmed with the user) at the top of the session.
+  - **Scope settled with the user up front (4 questions).** (1) Build #6 with
+    **FoM + Primal Strikes ONLY** — elemental weapon (L13) dropped. (2) Rider home
+    = a **policy-side on_hit method + a SEPARATE typed DamageEvent** (not folding
+    into the weapon hit), so FoM's radiant reaches the existing `on_deal_damage`
+    fuel path on its own terms. (3) FoM modeled **NON-concentration this session**
+    (pre-cast like Fire Shield) — model the in-combat Magic-action cast +
+    concentration + the **Starry-Form Dragon concentration-save floor NEXT
+    session** (the Scion's first in-combat concentration). (4) **Clean standalone
+    L15** (no L13/L14 rows). The RAW-vs-unarmed Primal Strike toggle was a standing
+    user decision (memory `primal-strikes-explore-unarmed`).
+  - **The engine seam.** `HitResponse` gained `rider_damage: list[RiderDamageSpec]`
+    (dice / type / is_spell / damage_bonus / Elemental-Adept flags).  On a confirmed
+    hit `resolve_attack_roll` spawns each spec as its OWN `DamageEvent`
+    (actor→target, same is_crit so the rider doubles on a crit) AFTER the weapon's
+    DamageEvent.  Keeping each rider a separate TYPED event — rather than folding
+    its dice into the weapon hit like `extra_damage_dice` (smite) — is what lets
+    its damage type / `is_spell` stay distinct: it (a) routes through the target's
+    per-type response (#4), (b) carries its own Elemental Adept treatment, and (c)
+    reaches the caster's `on_deal_damage` rider on its own terms.  The `on_hit`
+    decider return grew 2-tuple → `(extra_dice, extra_masteries, rider_damage)`;
+    the smite/bluff `extra_damage_dice` path is untouched (War Angel green).
+    `HitContext` gained `is_spell` + `is_unarmed` so a rider can gate on attack
+    kind.
+  - **Fount of Moonlight (4th-level, char L15; verified D&D Beyond / wikidot /
+    Roll20, access guide 41:48/758).** "Resistance to Radiant + your MELEE attacks
+    deal an extra 2d6 Radiant on a hit" (+ a reaction-blind deferred).  on_hit adds
+    the +2d6 RADIANT rider on every melee hit (quarterstaff AND unarmed; gated as
+    `not is_spell` — the only spell attack, Guiding Bolt, is ranged).  The rider is
+    `is_spell=True`, so **Fueled Spellfire fuels the FIRST such radiant each turn
+    for free** (the guide's `quarterstaff_{...fueled-spellfire(2)} --> ...+4d6`).
+    Pre-cast in ONE combat/day (its own `fom_use` slot); the turn-1 cast_effect
+    installs the radiant RESISTANCE (#4).
+  - **Primal Strike (Elemental Fury, druid-7; verified D&D Beyond / Roll20).**
+    "Once on each of your turns when you hit with an attack roll using a WEAPON
+    (or a Beast form), +1d8 Cold/Fire/Lightning/Thunder (choose on hit)"; the 2d8
+    step is DRUID-15 → **1d8** here.  on_hit adds a +1d8 (we pick fire) rider,
+    round-gated once/turn, on a weapon hit.  It is a FEATURE (`is_spell=False`) →
+    **NOT fueled and NOT Elemental-Adept-treated** even though fire — the
+    cross-check that the is_spell gate does real work on the rider path (contrast
+    the fire Searing Arc / Fire Shield thorns, which ARE spells and DO get the EA
+    bypass).  **Built TOGGLEABLE:** RAW rides weapon attacks only; the non-RAW
+    option (`primal_strike_unarmed`, threaded through `make_day_runner`) also rides
+    unarmed strikes — to compare DPR in tier-4/5 where the action is Sunbeam and
+    the attacks are Flurry of Blows (`is_unarmed` is what distinguishes the two).
+  - **Rotation fix (found via the FoM ablation showing zero effect).** The Scion
+    greedily casts Guiding Bolt every turn while Star-Map charges last, so the FoM
+    combat (combat 0) had NO melee hits → FoM rode nothing.  The guide's FoM
+    combats are MELEE (`attack(x2):quarterstaff_{...}`).  Fixed: `decide()`
+    suppresses Guiding Bolt while FoM is up, so the Scion melees that combat (which
+    also enables Searing Arc); the unused GB charges carry to the other combats, so
+    total GB casts — and DPR outside the FoM combat — are unchanged.
+  - **Validation (consistency/sanity, FakeRNG — NOT number-matching).** Engine
+    (`tests/test_outgoing_riders.py`, +7): a rider spawns its OWN typed DamageEvent
+    (not folded into the weapon hit) / multiple riders each spawn after the weapon
+    hit / rider dice double on a crit / the rider routes through the target's
+    per-type response and `ignore_resistance` bypasses / `min_die` floors / the
+    smite-style `extra_damage_dice` still fold in (War Angel path unchanged).
+    Build (`tests/test_starfire_scion.py`, +11): FoM rides quarterstaff + unarmed
+    with a fuelable radiant; FoM skips Guiding Bolt; the FoM radiant qualifies for
+    Fueled Spellfire (on_deal_damage → +2d8); Primal Strike fires once/turn on
+    weapon hits; RAW declines unarmed / non-RAW rides it; Primal Strike is NOT
+    EA-treated (contrast Searing Arc); FoM + Primal combine on the first swing; FoM
+    pre-cast in one combat/day; **FoM-on > off and Primal-on > off** at the fixed
+    L15 enemy isolate each rider; L15 DPR ~36.2 rises above session-13's ~29.7 and
+    stays under the 52 ceiling.
+  - **Fidelity notes / deferred.** druid-7 has only ONE 4th-level slot, so Fire
+    Shield + FoM truly COMPETE for it; we model each with its own 1/LR use (a
+    4th-slot over-count) so their DPR contributions isolate cleanly — reconcile in
+    the level-by-level re-walk.  FoM concentration + the Dragon save-floor + the
+    in-combat Magic-action cast cost are NEXT session.  `is_unarmed` is a minimal
+    tag, not the first-class attack typology (ATTACK-TAXONOMY flag, third consumer).
+    Melee-vs-ranged stays gated as "not a spell attack" (no ranged non-spell
+    attacker at L15).
 
 - **TIER-4 row (char L15): Elemental Adept (fire) engine primitive + Fire Shield
   wired on the Starfire Scion — BUILT & VALIDATED (2026-06-16, session 13).** The
@@ -1255,16 +1366,24 @@ Shillelagh die now resolves from YAML by character level (1d8/1d10/1d12/2d6), an
 the **L11 + L12 rows are wired** (L11 = the 1d10→1d12 step; L12 = WIS 20 + Searing
 Arc 5d6). **The StatusSet payload + `application_save` (substrate #3) is DONE
 (session 11)** — see its Done entry; Innate Sorcery / Faerie Fire validated via
-test policies. **Open next steps (pick with the user):** (0) **next buff-substrates**
-— incoming-damage resistance (4) + defender thorns (5) (Fire Shield / Rage), which
-couple to the enemy-strikes-back loop; the sequenced plan in
-`design/buff_primitive.md` "Next-steps sequence";
-(a) **L13+** — continue the Scion ladder past L12 (data rows; next die-size step is
-L17 Shillelagh → 2d6, already in the ladder data); (b) the
-**ATTACK-TAXONOMY** typology (engine-vocabulary work — discuss first); (c) the
+test policies. **Substrates #4 + #5 are DONE (session 12)**, **Elemental Adept +
+Fire Shield at L15 DONE (session 13)**, and **substrate #6 (outgoing riders) is
+DONE (session 14)** — Fount of Moonlight + Primal Strike on the Scion at L15; see
+their Done entries + `design/buff_primitive.md`. **Only buff-substrate #7
+(zone/summon) remains, gated on the multi-enemy/spatial model.**
+**Open next steps (pick with the user):** (0) **FoM concentration follow-up** —
+model FoM cast in combat (Magic action turn 1) WITH concentration + the
+Starry-Form Dragon concentration-save floor (the Scion's first in-combat
+concentration; flagged at session 14); (1) **substrate #7 — zones/summons** (the
+last unbuilt substrate: Sunbeam at L19, Spirit Guardians, the elemental node, AoE)
+— the biggest remaining engine chunk; (a) **L13/L14/L16+** — backfill / continue
+the Scion ladder (data rows; next die-size step is L17 Shillelagh → 2d6, already
+in the ladder data; elemental weapon at L13 was dropped from session 14);
+(b) the **ATTACK-TAXONOMY** typology (engine-vocabulary work — now THREE consumers:
+Searing Arc, Shillelagh, Primal Strike's is_unarmed gate — discuss first); (c) the
 **outputs layer** (still ~10% built — design §8). No remaining engine primitive is
-forced by the Scion's offense axis; what's left is data rows and the two
-cross-cutting investments (taxonomy, outputs).
+forced by the Scion's offense axis below L19; what's left is the zone substrate,
+data rows, and the two cross-cutting investments (taxonomy, outputs).
 
 **die-size scaling — BUILT 2026-06-15 (session 10; `scaling: ladder`), first
 consumer Shillelagh at Starfire Scion L11.** See the session-10 Done entry. The
