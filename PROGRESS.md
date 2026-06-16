@@ -269,12 +269,27 @@ type, condition, resource, …):
     (thorns lift DPR through the loop). L15 added to the factory-stats / enemy-CSV /
     DPR-fraction / Shillelagh-die sweeps. L15 DPR ~29.7 (< 48).
   - **Deferred (next tier-4 session):** substrate **#6 (outgoing predicate riders)**
-    + **Fount of Moonlight** (+2d6 radiant on melee hits, fuelable, concentration) +
-    **Primal Strikes** (+1d8 once/turn) + **elemental weapon** (L13, +1d4 fire/+hit);
-    then **Sunbeam** at L19 (a direct radiant save-for-half spell — fueled for free
-    on the existing path). Also still designed-in: a melee-vs-ranged tag on incoming
-    attacks (thorns assumes melee); Fire Shield's 10-min day-clock spanning combats
-    (modeled combat-clock); the radiant-resistance bypass (Spellfire Adept).
+    + **Fount of Moonlight** (+2d6 radiant on melee hits, fuelable, concentration —
+    FoM's rider also applies to UNARMED strikes per the spell text) + **Primal
+    Strikes** (+1d8 once/turn) + **elemental weapon** (L13, +1d4 fire/+hit); then
+    **Sunbeam** at L19 (a direct radiant save-for-half spell — fueled for free on the
+    existing path). Also still designed-in: a melee-vs-ranged tag on incoming attacks
+    (thorns assumes melee); Fire Shield's 10-min day-clock spanning combats (modeled
+    combat-clock); the radiant-resistance bypass (Spellfire Adept).
+  - **User reflections captured (session 13):** (1) applying Elemental Adept across
+    L10–L12 (not just L15) is FINE — we'll eventually re-walk this build level by
+    level with full output + enemy behavior, so a working interim version is good
+    enough. (2) The `choose_one`-as-Python-data-table is fine for now; data-driven
+    `cast_effect` (YAML choose_one) stays deferred ("bigger fish"). (3) **Primal
+    Strikes — when built, ALSO model a NON-RAW option to proc on UNARMED strikes.**
+    RAW (2024 PHB) it's weapon attacks only, but the user wants to EXPLORE the
+    Scion's DPR if Primal Strikes also rides unarmed — especially in T4 where the
+    action goes to Sunbeam and attacks are Flurry of Blows (FoM already covers
+    unarmed). Build it toggleable so RAW vs non-RAW DPR can be compared. (4) The
+    intercept-seam 3-tuple refactor stays deferred until more defender reactions
+    exist. **(5) NEXT SESSION should ALSO produce a MODEL BUILD-PLAN OVERVIEW** —
+    what's accomplished, where we are, and the roadmap for the next ~5–10 sessions —
+    ideally **VISUAL** (a diagram of how the pieces fit), a wall of text acceptable.
 
 - **`cast_effect` substrates #4 (incoming-damage response) + #5 (defender thorns
   rider) + the Starfire Scion enemy-strikes-back loop — BUILT & VALIDATED
