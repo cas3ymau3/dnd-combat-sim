@@ -72,7 +72,38 @@ type, condition, resource, …):
    improvements compound and are cheapest to make while the context is fresh.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
-> (2026-06-15, session 12) — DONE:** built **`cast_effect` substrates #4
+> (2026-06-16, session 13) — DONE (the TIER-4 row, L15):** built **Elemental Adept
+> (fire) as a general engine primitive + its first consumer**, and **wired Fire
+> Shield on the Starfire Scion at char L15** — the FIRST REAL BUILD CONSUMER of
+> substrates #4 (incoming-damage resistance) + #5 (defender thorns) + the warm/chill
+> **`choose_one`** seam. **Scope confirmed with the user up front + deliberately
+> SPLIT:** Sunbeam was found to be a 6th-level spell = char **L19** (the prompt
+> conflated it with FoM), and **Fount of Moonlight + Primal Strikes are both
+> outgoing riders = substrate #6 (UNBUILT)** — so those + Sunbeam were DEFERRED to a
+> follow-up tier-4 session; this session shipped Elemental Adept → Fire Shield (a
+> clean standalone L15 row, no L13/L14). **Elemental Adept** = `DamageEvent.min_die`
+> (per-die floor, "treat 1 as 2", phase 3) + `ignore_resistance` (phase 7, bypasses
+> RESISTANCE only — not immunity/vulnerability), threaded `Choice → AttackRollEvent
+> /SaveDamageEvent → DamageEvent` (also on `ReactiveDamageSpec` for the thorns);
+> applied to the Scion's fire Searing Arc on L10/L11/L12/L15 (held from monk-4/L8 —
+> a low-risk retrofit; the L10-12 DPR tests are relational, not exact). **Fire
+> Shield (4th-lvl, L15)** = ONE pre-cast `cast_effect` (cost="none", 10-min
+> non-conc) installs the WARM mode's cold resistance (#4); `on_incoming_hit`
+> reflects 2d8 fire thorns (#5, Elemental-Adept-treated) on every incoming melee
+> hit, with the **enemy-strikes-back loop turned on** (an `enemy_attack` row →
+> `ScriptedEnemyPolicy`) so thorns do real DPR work (the dummy is both target and
+> attacker → thorns land in its column). Pre-cast in ONE combat/day (one 4th-lvl
+> slot = `fire_shield_use`). The warm/chill **`choose_one`** is the
+> `FIRE_SHIELD_MODES` data table the policy indexes (YAML `choose_one` still
+> deferred until cast_effect is data-driven). **381 tests green (+10).** L15 DPR
+> ~29.7 (< 48 ceiling — a fraction, since Primal Strikes/FoM/elemental weapon are
+> deferred); fire-shield-on > off at the fixed L15 enemy isolates the thorns. Branch
+> `feature/tier4-fire-shield-elemental-adept` → confirm before merging to main.
+> Per-feature ritual honored (FoM / Elemental Adept / Primal Strikes / Sunbeam
+> rules + ACCESS verified via web BEFORE modeling). MCP-toggle recommendation
+> re-made.
+>
+> **Session scope (2026-06-15, session 12) — DONE:** built **`cast_effect` substrates #4
 > (incoming-damage response) + #5 (defender thorns rider)** + the **Starfire Scion
 > enemy-strikes-back loop** (step 2 of the buff-primitive "Next-steps sequence").
 > Substrate #4 = a defender-side phase-7 step in `resolve_damage`
@@ -170,6 +201,95 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **TIER-4 row (char L15): Elemental Adept (fire) engine primitive + Fire Shield
+  wired on the Starfire Scion — BUILT & VALIDATED (2026-06-16, session 13).** The
+  first REAL build consumer of substrates #4 + #5 + the warm/chill `choose_one`.
+  **381 tests green (+10).** Branch `feature/tier4-fire-shield-elemental-adept`.
+  Design contract: `design/buff_primitive.md` (choose_one + Elemental Adept flipped
+  to BUILT).
+  - **Scope confirmed + SPLIT with the user up front (per the prompt's instruction
+    + the per-feature ACCESS ritual).** Web-verified rules/access surfaced two
+    things the prompt conflated: **Sunbeam is 6th-level = char L19** (not L15), and
+    **Fount of Moonlight (4th, L15) + Primal Strikes (druid-7, L15) are both
+    outgoing riders = substrate #6 (UNBUILT)** (FoM = +2d6 radiant on melee hits,
+    concentration; Primal Strikes = +1d8 once/turn, not radiant). So the user chose
+    **Elemental Adept → Fire Shield this session** (clean standalone L15, no L13/L14
+    rows), deferring #6 / FoM / Primal Strikes / Sunbeam to a follow-up tier-4
+    session. This retires the #4/#5/Elemental-Adept verification debt with real
+    consumers without dragging in a new substrate.
+  - **Elemental Adept (fire) — a general engine primitive.** `DamageEvent` gained
+    `min_die` (per-die FLOOR — "treat any 1 on a damage die as a 2", applied in
+    `resolve_damage` phase 3 to the spell's own dice) and `ignore_resistance`
+    (phase 7 — the cast bypasses the target's RESISTANCE to its type; immunity and
+    vulnerability still bind, per 2024 RAW). Threaded `Choice → AttackRollEvent /
+    SaveDamageEvent → DamageEvent`, and onto `ReactiveDamageSpec` so Fire Shield's
+    fire thorns get the same treatment. Inert by default (the 371 prior tests
+    stayed green). Consumer: the Scion's fire Searing Arc carries the flags on
+    L10/L11/L12/L15 (the feat is held from monk-4/L8) — so a **fire-resistant enemy
+    takes FULL, high-graded Searing Arc**, the real in-scope #4 consumer session 12
+    set up. (The L10-12 retrofit is low-risk: those DPR tests are relational —
+    monotonic / ablation — not exact, and `min_die` draws no extra dice so the RNG
+    stream is unchanged.) The radiant half (Spellfire Adept's radiant-resistance
+    bypass) is the symmetric deferral — no radiant-resistant enemy is modeled.
+  - **Fire Shield on the Scion at L15.** New `LEVELS[15]` row (monk-8/druid-7, PB
+    5, WIS 20 +5, DEX 16 +3; enemy cr15 = AC 18 / DEX +4 live from the CSV).
+    Offense vs L12 changes only by PB 4→5 (Shillelagh stays 1d12, Searing Arc stays
+    5d6, WIS already capped) — Primal Strikes / FoM / elemental weapon (L13)
+    deferred, so DPR is a deliberate fraction of the guide's ~50 tier-4 ceiling.
+    Fire Shield (verified: action, 10 min, NON-conc; warm = resist cold + 2d8 fire
+    thorns / chill = resist fire + 2d8 cold thorns) is modeled as a **pre-cast**:
+    `on_combat_start` consumes one 4th-level slot (`fire_shield_use`, 1/LR) and sets
+    the combat flag for ONE combat/day; `decide()` emits a `cost="none"`
+    `cast_effect` on turn 1 installing the WARM mode's cold resistance (#4);
+    `StarfireScionPolicy.on_incoming_hit` reflects the 2d8 fire thorns (#5,
+    Elemental-Adept-treated) on every incoming melee HIT.
+  - **The warm/chill `choose_one` (first consumer).** A `FIRE_SHIELD_MODES` data
+    table (`warm` → resist cold + fire thorns; `chill` → resist fire + cold thorns)
+    the policy indexes by the row's chosen mode — the chosen mode selects WHICH
+    payload items install (resist via the cast_effect, thorns via on_incoming_hit).
+    The YAML `choose_one` construct in `content.py` stays deferred until cast_effect
+    Choices are data-driven (today they're built in Python policies).
+  - **The enemy-strikes-back loop makes thorns real DPR.** The L15 row carries an
+    `enemy_attack` block (cr15 melee, attack_bonus/damage ILLUSTRATIVE — the CSV
+    has only AC + saves), so `make_day_runner` attaches a `ScriptedEnemyPolicy`.
+    Because the dummy is BOTH the Scion's target and the attacker, the thorns
+    (bearer→attacker = char→dummy) land in the **dummy's** damage_received column —
+    so they correctly count toward DPR. Fire-shield-on > off at the fixed L15 enemy
+    isolates the thorns contribution.
+  - **Validation (consistency/sanity, FakeRNG — NOT number-matching).** Engine
+    (`test_incoming_damage_thorns.py`, +5): `min_die` floors each die / is inert
+    above the floor; `ignore_resistance` makes a resistant target take full but does
+    NOT bypass immunity/vulnerability; the real consumer — the L15 Searing Arc
+    Choice's flags drive a fire-resistant enemy to FULL, high-graded damage. Build
+    (`test_starfire_scion.py`, +5): the L15 Searing Arc is Elemental-Adept-treated;
+    the WARM choose_one installs cold resistance + fire thorns (and chill the
+    opposite, with cold thorns NOT Elemental-Adept-treated); Fire Shield is pre-cast
+    in only one combat/day; and **fire-shield-on > off** at the fixed L15 enemy
+    (thorns lift DPR through the loop). L15 added to the factory-stats / enemy-CSV /
+    DPR-fraction / Shillelagh-die sweeps. L15 DPR ~29.7 (< 48).
+  - **Deferred (next tier-4 session):** substrate **#6 (outgoing predicate riders)**
+    + **Fount of Moonlight** (+2d6 radiant on melee hits, fuelable, concentration —
+    FoM's rider also applies to UNARMED strikes per the spell text) + **Primal
+    Strikes** (+1d8 once/turn) + **elemental weapon** (L13, +1d4 fire/+hit); then
+    **Sunbeam** at L19 (a direct radiant save-for-half spell — fueled for free on the
+    existing path). Also still designed-in: a melee-vs-ranged tag on incoming attacks
+    (thorns assumes melee); Fire Shield's 10-min day-clock spanning combats (modeled
+    combat-clock); the radiant-resistance bypass (Spellfire Adept).
+  - **User reflections captured (session 13):** (1) applying Elemental Adept across
+    L10–L12 (not just L15) is FINE — we'll eventually re-walk this build level by
+    level with full output + enemy behavior, so a working interim version is good
+    enough. (2) The `choose_one`-as-Python-data-table is fine for now; data-driven
+    `cast_effect` (YAML choose_one) stays deferred ("bigger fish"). (3) **Primal
+    Strikes — when built, ALSO model a NON-RAW option to proc on UNARMED strikes.**
+    RAW (2024 PHB) it's weapon attacks only, but the user wants to EXPLORE the
+    Scion's DPR if Primal Strikes also rides unarmed — especially in T4 where the
+    action goes to Sunbeam and attacks are Flurry of Blows (FoM already covers
+    unarmed). Build it toggleable so RAW vs non-RAW DPR can be compared. (4) The
+    intercept-seam 3-tuple refactor stays deferred until more defender reactions
+    exist. **(5) NEXT SESSION should ALSO produce a MODEL BUILD-PLAN OVERVIEW** —
+    what's accomplished, where we are, and the roadmap for the next ~5–10 sessions —
+    ideally **VISUAL** (a diagram of how the pieces fit), a wall of text acceptable.
 
 - **`cast_effect` substrates #4 (incoming-damage response) + #5 (defender thorns
   rider) + the Starfire Scion enemy-strikes-back loop — BUILT & VALIDATED

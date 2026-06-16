@@ -136,6 +136,10 @@ class AttackRollEvent(Event):
     # (Fueled Spellfire).  Default (None, False) = an untyped weapon attack.
     damage_type: "str | None" = None
     is_spell: bool = False
+    # Elemental Adept: per-die floor + resistance bypass, threaded to the spawned
+    # DamageEvent (see DamageEvent.min_die / ignore_resistance).  Default off.
+    min_die: "int | None" = None
+    ignore_resistance: bool = False
     # Whether the ACTING entity's post-roll decision points (on_miss / on_hit)
     # may fire for this attack.  False for "rider" attacks that are themselves a
     # reaction and must not spawn further riders — e.g. the Flourish Counter,
@@ -183,6 +187,16 @@ class DamageEvent(Event):
     # damage) and available for future resistance modeling.
     damage_type: "str | None" = None
     is_spell: bool = False
+    # Elemental Adept (and any future per-die floor / resistance-bypass effect):
+    #   min_die — treat any rolled die BELOW this value as this value, applied in
+    #     resolve_damage phase 3 to the spell's own dice ("treat any 1 on a damage
+    #     die as a 2" → min_die=2).  None = no floor.
+    #   ignore_resistance — the source ignores the target's RESISTANCE to this
+    #     damage type (phase 7).  Immunity and vulnerability still apply (2024
+    #     Elemental Adept bypasses resistance only).  Both default off → inert on
+    #     every existing damage path.
+    min_die: "int | None" = None
+    ignore_resistance: bool = False
     cost: str = "action"
     kind: str = field(default="damage", init=False)
 
@@ -227,6 +241,10 @@ class SaveDamageEvent(Event):
     # save spell's damage is a spell's — set is_spell=True when delivering one).
     damage_type: "str | None" = None
     is_spell: bool = False
+    # Elemental Adept: per-die floor + resistance bypass, threaded to the spawned
+    # DamageEvent (see DamageEvent.min_die / ignore_resistance).  Default off.
+    min_die: "int | None" = None
+    ignore_resistance: bool = False
     cost: str = "action"
     kind: str = field(default="save_damage", init=False)
 
