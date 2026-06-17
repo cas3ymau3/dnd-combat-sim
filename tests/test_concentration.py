@@ -123,3 +123,57 @@ def test_dc_floor_is_ten():
     # 4//2 = 2 but the floor is 10, so an impossible-for-this-saver DC still
     # applies and breaks concentration.
     assert target.concentration_breaks == 1
+
+
+# ---------------------------------------------------------------------------
+# d20 floor on saves (substrate-#3 save-floor grant — Starry-Form Dragon)
+# ---------------------------------------------------------------------------
+
+def test_d20_floor_treats_low_rolls_as_the_floor():
+    """A d20_floor raises any sub-floor roll to the floor (Dragon's "treat 9 or
+    lower as 10").  With floor 10, save bonus 0 vs DC 10 EVERY save passes (any
+    floored d20 ≥ 10); without the floor a fair share fail."""
+    e = Entity(name="C", hp=100, base_stats={"con_save": 0})
+    n = 100
+    floored = sum(resolve_saving_throw(e, "con_save", 10, SeededRNG(s), d20_floor=10)
+                  for s in range(n))
+    straight = sum(resolve_saving_throw(e, "con_save", 10, SeededRNG(s))
+                   for s in range(n))
+    assert floored == n          # every roll floored to ≥10, +0 ≥ DC 10
+    assert straight < n          # unfloored, the ≤9 rolls fail
+
+
+def test_concentration_save_floor_status_protects_concentration():
+    """End-to-end: a concentration_save_floor status (Dragon form) floors the CON
+    save in _check_concentration, so a low-CON concentrator that would often break
+    NEVER does over many small hits with the floor up — and breaks without it."""
+    def breaks(with_floor: bool) -> int:
+        broken = 0
+        for s in range(60):
+            t = _concentrating_target(con_save=0)
+            if with_floor:
+                t.statuses.apply("concentration_save_floor", 10)
+            resolve_damage(_hit_for(t, 6), SeededRNG(s), None, next_sequence=2)  # DC 10
+            broken += t.concentration_breaks
+        return broken
+    assert breaks(with_floor=True) == 0
+    assert breaks(with_floor=False) > 0
+
+
+# ---------------------------------------------------------------------------
+# A broken concentration drops the WHOLE effect bundle (remove_effect), not just
+# the modifier — so a cast's damage response (#4) and statuses (#3) clear with it.
+# ---------------------------------------------------------------------------
+
+def test_concentration_break_removes_the_full_effect_bundle():
+    target = Entity(name="Caster", hp=100, base_stats={"con_save": -100})
+    target.add_modifier(Modifier("attack_bonus", 2, "fom"))
+    target.add_damage_response("fom", {"radiant": "resistance"})  # substrate #4
+    target.statuses.apply("fom_flag", True)
+    target.note_effect_status("fom", "fom_flag")                  # substrate #3, tracked
+    target.concentration = "fom"
+    resolve_damage(_hit_for(target, 30), SeededRNG(0), None, next_sequence=2)
+    assert target.concentration is None
+    assert target.modifiers.compute("attack_bonus", base=0) == 0      # modifier gone
+    assert target.damage_response_for("radiant") is None              # #4 response gone
+    assert not target.statuses.has("fom_flag")                        # #3 status gone

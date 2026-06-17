@@ -4,9 +4,10 @@
 > `design/design.md` (§4 decision points, §6 modifier stack) and
 > `ability_schema.md` (§4.5 scaling, the trigger/effect/cost layers). Status:
 > **design locked 2026-06-15**; built so far = substrates (1) ModifierStack,
-> (2) policy-flag (session 9), (3) StatusSet + `application_save` (session 11),
-> (4) incoming-damage response + (5) defender thorns rider (session 12), and
-> (6) outgoing predicate riders (session 14).  Only (7) zone/summon remains.
+> (2) policy-flag (session 9), (3) StatusSet + `application_save` (session 11; its
+> SAVE-FLOOR sub-kind — Starry-Form Dragon — session 15), (4) incoming-damage
+> response + (5) defender thorns rider (session 12), and (6) outgoing predicate
+> riders (session 14).  Only (7) zone/summon remains.
 
 ---
 
@@ -78,7 +79,7 @@ addition); `cast_effect` just installs a labeled payload into the matching one.
 |---|---|---|---|---|
 | 1 | **ModifierStack** | `modifiers.py`, folded by `entity.stat()` | flat / rolled / stat-derived / additive numeric on a rolled stat (attack, damage, AC, save) | **BUILD NOW** |
 | 2 | **policy-flag** | the build's policy (read in `decide`) | a new attack option / capability becomes available | **BUILD NOW** |
-| 3 | **StatusSet** | `statuses.py`, consumed by `roll_d20` (+ saves) | advantage / disadvantage grant; condition; immunity; save floor | **BUILT** (session 11) |
+| 3 | **StatusSet** | `statuses.py`, consumed by `roll_d20` (+ saves) | advantage / disadvantage grant; condition; immunity; save floor | **BUILT** (session 11; save-floor session 15) |
 | 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | **BUILT** (session 12) |
 | 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | **BUILT** (session 12) |
 | 6 | **outgoing rider** | `on_hit` seam → separate typed DamageEvents | predicate-gated extra damage (Fount of Moonlight +2d6 radiant, Primal Strike +1d8, Rage melee-STR, Hunter's Mark) | **BUILT** (session 14) |
@@ -234,11 +235,20 @@ validated — they keep their own `before_combat` sync; not routed through
      `attack_bonus`).  This is a THIRD concrete consumer of the deferred
      ATTACK-TAXONOMY axis (after Searing Arc and Shillelagh); the first-class
      typology stays deferred (reuse minimal tags, discuss before rebuilding
-     vocabulary).  FoM is modeled NON-concentration this session (pre-cast like
-     Fire Shield); the in-combat Magic-action cast + concentration + the
-     Starry-Form Dragon save-floor are the next session's work.  Melee-vs-ranged
-     stays gated as "not a spell attack" (no ranged non-spell attacker at L15 —
-     the existing deferral).
+     vocabulary).  Melee-vs-ranged stays gated as "not a spell attack" (no ranged
+     non-spell attacker at L15 — the existing deferral).
+4. ~~**FoM concentration follow-up + the Starry-Form Dragon save-floor**~~ ✓ **BUILT
+   (session 15).** FoM is now a real turn-1 Magic-action concentration cast
+   (`cost="action"`, sets `actor.concentration`, installs the radiant resistance #4;
+   turn 1 = 0 damage); the on_hit rider gates on concentration being HELD, dropping
+   the instant a failed CON save breaks it.  The substrate-#3 SAVE-FLOOR sub-kind is
+   built: `resolve_saving_throw` gained `d20_floor`, and Dragon form (a Wild-Shape
+   + turn-1 BA `cast_effect`) installs a `concentration_save_floor`=10 status that
+   `_check_concentration` reads (guide 41:308).  A broken concentration now drops the
+   WHOLE bundle via `Entity.remove_effect` (modifier + damage response + statuses,
+   the last indexed by source) — fixing a latent leak where only modifiers cleared.
+   The single druid-7 4th-level slot (`slot_4th`) is shared between FoM and Fire
+   Shield via a `fourth_level_spell` selector (separate daily loadouts).
    Then **zones/summons (7)**, gated on the multi-enemy / spatial model — the last
    unbuilt substrate (Sunbeam L19, Spirit Guardians, the elemental node, AoE).
 
