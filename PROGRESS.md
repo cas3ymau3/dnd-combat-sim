@@ -72,6 +72,43 @@ type, condition, resource, …):
    improvements compound and are cheapest to make while the context is fresh.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
+> (2026-06-17, session 15) — DONE (FoM CONCENTRATION FOLLOW-UP):** retired the
+> session-14 FoM debt — modeled **Fount of Moonlight as a real in-combat cast WITH
+> concentration**, plus the **Starry-Form Dragon** concentration-save floor (the
+> Scion's FIRST in-combat concentration). **Scope settled with the user up front (4
+> questions):** task (A) the FoM follow-up (not (B) zones); Dragon modeled as a
+> **full second Starry Form** (Wild-Shape cost + turn-1 BA, not just the floor
+> flag); FoM **back to a real turn-1 Magic-action cast** (turn 1 = 0 damage); FoM +
+> Fire Shield now **SHARE the single druid-7 4th-level slot** (over-count dropped).
+> Engine seam: `resolve_saving_throw` gained a **`d20_floor`** (the substrate-#3
+> SAVE-FLOOR grant — designed-in since session 11, first consumer now); Dragon's
+> turn-1 BA `cast_effect` installs a `concentration_save_floor`=10 status that
+> `_check_concentration` reads (guide 41:308 "treat 9 or lower as 10"). Also fixed
+> a real bug: a broken concentration only dropped MODIFIERS — added
+> **`Entity.remove_effect`** (modifier + damage-response #4 + statuses #3, tracked
+> by source) so FoM's radiant resistance + any granted status drop WITH it (routed
+> `_check_concentration` AND `clear_combat_buffs` through it). Build: FoM is a
+> turn-1 `cost="action"` concentration cast_effect (installs the radiant resistance,
+> sets concentration); the on_hit +2d6 radiant rider now gates on
+> **concentration being held** (`character.concentration == "fount_of_moonlight"`),
+> so it drops the instant a save breaks; the FoM combat's turn-1 BA is Dragon (guide
+> 41:779 `BA:starry-form(dragon) + magic-action:fount-of-moonlight --> 0`),
+> Shillelagh slides to turn 2. New `slot_4th` (1/LR) + `wild_shape` + `con_save` on
+> the L15 row; `fourth_level_spell` selector ("fount_of_moonlight" default /
+> "fire_shield") threaded through the policy + `make_day_runner` — exactly one
+> loadout casts per day (the slot they compete for). **MODELING FINDING:** the
+> honest cast cost (turn-1 = 0 damage, occasional breaks) + the shared slot (Fire
+> Shield no longer ALSO in the default loadout) drop L15 DPR from session-14's
+> ~36.2 to **~29.6** — near, not above, session-13's Fire-Shield-only ~29.7; the
+> stale "rises above 29.7" test was reframed to FoM-loadout > unused-4th-slot (net
+> still positive) + < ceiling. **406 tests green (+7).** Branch
+> `feature/fom-concentration-dragon-form` → confirm before merging to main.
+> Per-feature ritual honored (Dragon 41:308 + FoM concentration 41:779 re-verified
+> BEFORE modeling). MCP-toggle recommendation re-made. ATTACK-TAXONOMY untouched
+> (no new attack tag this session). **Substrate #7 (zones/summons) is now the ONLY
+> unbuilt buff substrate** — the next big design step (task (B)).
+>
+> **Session scope
 > (2026-06-16, session 14) — DONE (substrate #6 — OUTGOING RIDERS):** built the
 > `cast_effect` **outgoing predicate rider** substrate (#6, the next item in the
 > buff-primitive "Next-steps sequence") with first consumers on the Starfire Scion
@@ -230,6 +267,86 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **FoM CONCENTRATION FOLLOW-UP — Fount of Moonlight in-combat cast + concentration
+  + the Starry-Form Dragon save-floor — BUILT & VALIDATED (2026-06-17, session
+  15).** Retires the session-14 FoM debt: FoM is now a real in-combat cast that
+  concentrates, and the Scion's FIRST in-combat concentration is guarded by Dragon
+  form. Also fixed a latent concentration-break bug and reconciled the 4th-level
+  slot. **406 tests green (+7).** Branch `feature/fom-concentration-dragon-form`.
+  Design contract: `design/buff_primitive.md` (substrate #3 SAVE-FLOOR sub-kind
+  flipped to BUILT; substrate #7 noted as the only remaining gap).
+  - **Scope settled with the user up front (4 questions).** (1) Task **(A)** — the
+    FoM follow-up — over (B) zones/summons (the big multi-enemy/spatial design step,
+    deferred). (2) Model the Dragon save-floor as a **FULL second Starry Form**
+    (Wild-Shape cost + a real turn-1 BA activation), not just the floor flag. (3)
+    FoM back to a **real turn-1 Magic-action cast** (turn 1 = 0 damage). (4) FoM +
+    Fire Shield **SHARE the single druid-7 4th-level slot** (drop session-14's
+    over-count).
+  - **Engine — the substrate-#3 SAVE-FLOOR grant (designed-in since session 11,
+    first consumer now).** `resolve_saving_throw` gained `d20_floor` (a per-die
+    floor on the d20, applied after adv/disadv to the initial roll AND any reroll).
+    `_check_concentration` reads a `concentration_save_floor` status off the saver
+    and passes it — Starry-Form Dragon's "treat 9 or lower as 10 on a CON save to
+    maintain concentration" (guide 41:308).  Inert when the status is absent (every
+    prior save path unchanged).
+  - **Engine — `Entity.remove_effect(source)` (a real bug fix).** A broken
+    concentration previously called `remove_modifier` only, so a cast's NON-modifier
+    payloads (a `_effect_damage_response` like FoM's radiant resistance, a granted
+    status) LEAKED past the break.  `remove_effect` tears down the whole bundle —
+    modifiers + damage response (#4) + statuses (#3, now indexed by source via
+    `note_effect_status`, populated in the scheduler's cast_effect branch) — and
+    clears concentration if the source held it.  BOTH `_check_concentration` (on a
+    break) and `clear_combat_buffs` (the boundary sweep) route through it; the
+    scheduler now notes a combat-buff source for status-only casts too, so Dragon's
+    floor status drops cleanly.  (This also retro-fixes the latent Faerie-Fire
+    concentration-status leak from session 11 — no current consumer, but correct.)
+  - **Build — FoM as a turn-1 Magic-action concentration cast.** decide() emits FoM
+    as a `cost="action"` concentration `cast_effect` on turn 1 of the FoM combat
+    (sets concentration, installs the radiant resistance #4) → **turn 1 deals 0
+    damage** (guide 41:779).  The on_hit +2d6 radiant rider (#6) now gates on
+    **concentration being HELD** (`self._character.concentration ==
+    "fount_of_moonlight"`), so it rides turns 2-4 while concentration lasts and
+    drops the instant a failed CON save breaks it — not on a combat-scoped flag.
+    The FoM combat's turn-1 BA is **Starry-Form Dragon** (a `cost="bonus_action"`
+    cast_effect installing the floor status; a Wild Shape charge spent in
+    on_combat_start), so Shillelagh slides to turn 2 (guide 41:780).
+  - **Build — the shared 4th-level slot.** `fire_shield_use` + `fom_use` (two 1/LR
+    uses → the over-count) replaced by ONE `slot_4th` (1/LR) the two loadouts
+    compete for, plus `wild_shape` (Dragon) and `con_save` (the FoM concentration
+    save: CON 14 +2, NOT proficient) on the L15 row.  A `fourth_level_spell`
+    selector ("fount_of_moonlight" default — the guide's L15 pick — / "fire_shield")
+    threads through `StarfireScionPolicy` + `make_day_runner`; exactly one loadout
+    casts per day.
+  - **MODELING FINDING (the honest cast cost lowers FoM's net DPR).** Default L15
+    DPR fell from session-14's ~36.2 to **~29.6**: the turn-1 = 0-damage cast +
+    occasional concentration breaks cost FoM a turn, and the SHARED slot means Fire
+    Shield's thorns are no longer ALSO in the default loadout (session 14
+    double-counted the slot).  So FoM lands NEAR — not clearly above — session-13's
+    Fire-Shield-only ~29.7; they are now mutually-exclusive loadouts, not additive.
+    The stale `test_l15_dpr_rises_above_the_session13_baseline` was reframed to
+    **FoM-loadout > unused-4th-slot** (net still positive even paying the cast cost)
+    + < ceiling — a non-magic-number consistency check.
+  - **Validation (consistency/sanity, FakeRNG — NOT number-matching).** Engine
+    (`tests/test_concentration.py`, +3): `d20_floor` treats sub-floor rolls as the
+    floor (all-pass vs some-fail); the `concentration_save_floor` status protects an
+    end-to-end concentration through `_check_concentration`; a broken concentration
+    drops the FULL bundle (modifier + damage response + status).  Build
+    (`tests/test_starfire_scion.py`, +4 net): FoM cast as a turn-1 `cost="action"`
+    concentration cast_effect (radiant resistance, 0-damage turn); the FoM-combat
+    turn-1 is FoM + Dragon (both cast_effects → 0 damage, Dragon installs the
+    floor=10 status); the rider gates on concentration (silent before the cast /
+    after a break); FoM + Fire Shield share `slot_4th` (the other never casts); the
+    Dragon floor sharply cuts FoM concentration breaks at the fixed L15 enemy;
+    FoM-on > off and Primal-on > off still hold; the FoM loadout nets positive over
+    an unused slot and stays under the ceiling.
+  - **Deferred / flagged.** Substrate **#7 (zones/summons)** is now the ONLY unbuilt
+    buff substrate — the next big design step (multi-enemy/spatial; survey the
+    corpus first).  FoM's reaction-blind (control, not DPR) stays deferred.  The
+    `intercept`-seam 3-tuple refactor still waits for another defender reaction.
+    `is_unarmed` remains the third ATTACK-TAXONOMY tag (typology still deferred — no
+    new attack tag this session).  Fire Shield's 10-min day-clock stays
+    combat-clock.
 
 - **`cast_effect` substrate #6 — OUTGOING PREDICATE RIDERS — BUILT & VALIDATED
   (2026-06-16, session 14).** The last damage-rider substrate; only #7

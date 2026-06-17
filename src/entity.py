@@ -98,6 +98,13 @@ class Entity:
         #     by effect_source and swept at the combat boundary like the modifiers.
         self.damage_response: dict[str, str] = dict(damage_response or {})
         self._effect_damage_response: dict[str, dict[str, str]] = {}
+        # Statuses installed by the cast_effect primitive (substrate #3), labelled
+        # by effect_source: source → [status name, ...].  StatusSet is keyed by
+        # status NAME (not source), so this index is what lets remove_effect drop a
+        # cast's statuses together with the rest of its bundle when its source is
+        # removed (e.g. a concentration break), rather than waiting for the
+        # unconditional combat-boundary StatusSet.clear().
+        self._effect_statuses: dict[str, list[str]] = {}
         # Cumulative telemetry (design §8 outputs): concentration checks forced
         # by incoming damage and how many broke a spell.  Never auto-reset;
         # callers diff or average across runs.
@@ -189,17 +196,37 @@ class Entity:
         the next combat boundary (see clear_combat_buffs)."""
         self._combat_buff_sources.add(source)
 
+    def note_effect_status(self, source: str, name: str) -> None:
+        """Record that status *name* was installed by the cast_effect labelled
+        *source*, so remove_effect can drop it when the source is removed."""
+        self._effect_statuses.setdefault(source, []).append(name)
+
+    def remove_effect(self, source: str) -> None:
+        """Remove every payload a cast_effect installed under *source* — its
+        ModifierStack modifiers, its damage-type response (substrate #4), and any
+        statuses it granted (substrate #3) — and stop tracking it for the combat
+        sweep, clearing concentration if it held it.
+
+        This is the single place a cast's whole bundle is torn down.  Both a
+        concentration break (verbs._check_concentration) and the combat-boundary
+        sweep route through it, so the non-modifier payloads (a radiant resistance,
+        a granted status) drop WITH the modifiers instead of leaking — the
+        effect_source thread of design/buff_primitive.md."""
+        self.remove_modifier(source)
+        self._effect_damage_response.pop(source, None)
+        for name in self._effect_statuses.pop(source, ()):
+            self.statuses.remove(name)
+        self._combat_buff_sources.discard(source)
+        if self.concentration == source:
+            self.concentration = None
+
     def clear_combat_buffs(self) -> None:
-        """Remove all combat-clock cast_effect modifiers and clear concentration if
-        a swept source held it.  Called at each combat boundary (day_runner),
+        """Remove all combat-clock cast_effect payloads (and clear concentration if
+        a swept source held it).  Called at each combat boundary (day_runner),
         mirroring StatusSet.clear() — combat-clock effects cannot tick-expire
         because each combat restarts the round counter."""
-        for source in self._combat_buff_sources:
-            self.remove_modifier(source)
-            self._effect_damage_response.pop(source, None)
-            if self.concentration == source:
-                self.concentration = None
-        self._combat_buff_sources.clear()
+        for source in list(self._combat_buff_sources):
+            self.remove_effect(source)
 
     # ------------------------------------------------------------------
     # Damage-type responses (substrate #4 — resistance / vuln / immunity)

@@ -150,6 +150,7 @@ from ..policy import (
     RiderDamageSpec,
 )
 from ..resources import ResourceEntry, ResourcePool
+from ..statuses import StatusSpec
 from .enemy import ScriptedEnemyPolicy  # shared enemy loop (re-exported here)
 
 if TYPE_CHECKING:
@@ -207,12 +208,29 @@ FIRE_SHIELD_THORNS_DICE: tuple[int, int] = (2, 8)
 # DamageEvent).  See guide 41:780 `quarterstaff_{primal-strike,fueled-spellfire(2)}
 # --> 2d12+3d8+4d6+2WIS` (the 4d6 = FoM's +2d6 on each of two swings).
 #
-# Modeled NON-CONCENTRATION this session (user decision 2026-06-16): pre-cast like
-# Fire Shield (cost="none", one slot/LR), so there is no turn-1 Magic-action cost
-# and no in-combat CON saves.  DEFERRED to the next session: model FoM cast in
-# combat (Magic action turn 1) WITH concentration + the Starry-Form Dragon
-# concentration-save floor (the Scion's first in-combat concentration).
+# Modeled WITH CONCENTRATION (session 15): FoM is a real turn-1 MAGIC-ACTION cast
+# (cost="action") that sets concentration on the caster and installs the radiant
+# resistance (#4) — so turn 1 of the FoM combat deals 0 damage (guide 41:779
+# `magic-action:fount-of-moonlight --> 0`), and the +2d6 radiant melee rider (#6)
+# is gated on concentration being held (drops the instant a failed CON save breaks
+# it).  The enemy-strikes-back loop forces those CON saves; Starry-Form Dragon
+# (below) is activated the same turn to guard them.  The single druid-7 4th-level
+# slot is now shared with Fire Shield (slot_4th — they are separate daily
+# loadouts; see fourth_level_spell).
 FOUNT_OF_MOONLIGHT_DICE: tuple[int, int] = (2, 6)
+
+
+# ---------------------------------------------------------------------------
+# Starry Form: Dragon (Circle of Stars, druid-3; guide 41:308) — the SECOND form
+# modeled (alongside Archer).  Verified 2026-06-17 (guide 41:304-308): an alternate
+# Wild Shape use; "dragon = treat 9 or lower as 10 when making INT/WIS check or CON
+# save to maintain concentration".  Modeled as a Wild-Shape-costing, turn-1 BA
+# cast_effect that installs the `concentration_save_floor` status (value 10) on the
+# caster — a substrate-#3 SAVE-FLOOR grant (the design note's designed-in "save
+# floor" sub-kind, first consumer here).  _check_concentration reads the floor on
+# the Scion's CON save.  At char L15 the Scion uses Dragon ONLY in the FoM combat
+# (to protect FoM's concentration); Archer stays dropped in combat from L9.
+DRAGON_CONCENTRATION_FLOOR: int = 10
 
 
 # ---------------------------------------------------------------------------
@@ -512,6 +530,9 @@ LEVELS: dict[int, dict] = {
         "spell_save_dc": 18,               # 8 + PB 5 + WIS 5 (Sacred Flame + Burning Hands)
         "char_ac": 18,                     # 10 + DEX 3 + WIS 5
         "char_hp": 99,                     # DPR-irrelevant (threshold model)
+        # CON save: CON 14 (+2), NOT proficient (monk grants STR/DEX, druid INT/WIS)
+        # — used for FoM concentration saves now that the Scion concentrates here.
+        "con_save": 2,
         "elemental_adept": "fire",         # monk-4/L8 — fire spells bypass resist + 1->2
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         # `is_unarmed` tags this as a monk unarmed strike (NOT a weapon attack) so
@@ -541,10 +562,15 @@ LEVELS: dict[int, dict] = {
         "primal_strike": {"dice": (1, 8), "damage_type": "fire", "raw_unarmed": False},
         # Fount of Moonlight (4th-level): +2d6 radiant on every MELEE hit (incl.
         # unarmed) — an outgoing rider (#6) that is FUELABLE (radiant spell damage)
-        # — plus radiant resistance (#4).  Modeled NON-concentration this session,
-        # pre-cast in ONE combat/day (its own 4th-level slot → fom_use).  See the
-        # FOUNT_OF_MOONLIGHT_DICE note for the deferred concentration model.
+        # — plus radiant resistance (#4).  Modeled WITH CONCENTRATION (session 15):
+        # cast as a turn-1 Magic action, guarded by Starry-Form Dragon; shares the
+        # single 4th-level slot with Fire Shield (slot_4th).  See the
+        # FOUNT_OF_MOONLIGHT_DICE note.
         "fount_of_moonlight": {},
+        # Starry Form: Dragon (druid-3) — the concentration-save floor used to
+        # protect FoM (guide 41:308/779).  A Wild-Shape-costing turn-1 BA in the FoM
+        # combat (decide()/on_combat_start).  See DRAGON_CONCENTRATION_FLOOR.
+        "dragon_form": True,
         # Fire Shield (4th-level): pre-cast before ONE combat/day (one 4th-level
         # slot → the fire_shield_use resource).  WARM mode (the guide's pick): cold
         # resistance (#4) + 2d8 fire thorns (#5) reflected on every incoming melee
@@ -561,17 +587,15 @@ LEVELS: dict[int, dict] = {
             "guiding_bolt_free": (5, 0),   # Star Map: free Guiding Bolt x WIS mod / LR (WIS 20 → 5)
             "hit_dice": (15, 0),           # Fueled Spellfire: char-level d8 (15 at L15)
             "focus_points": (8, 0),        # monk-8 = 8 FP
-            # Fire Shield: one 4th-level slot/LR → pre-cast in ONE of the 4 combats.
-            "fire_shield_use": (1, 0),
-            # Fount of Moonlight: pre-cast in ONE combat/day (its own use here).
-            # FIDELITY NOTE: druid-7 actually has only ONE 4th-level slot, so Fire
-            # Shield + FoM truly COMPETE for it (the guide treats them as separate
-            # daily loadouts).  We model each with its own 1/LR use (a 4th-slot
-            # over-count) so their DPR contributions can be isolated cleanly; both
-            # land in combat 0, and since each is 1/day this is immaterial to mean
-            # DPR.  To reconcile against the single real slot → the level-by-level
-            # re-walk (see PROGRESS).
-            "fom_use": (1, 0),
+            # The SINGLE druid-7 4th-level spell slot (1/LR).  Fire Shield and Fount
+            # of Moonlight COMPETE for it — they are separate daily loadouts (the
+            # guide prepares ONE; see fourth_level_spell), so exactly one is cast
+            # per day, in ONE combat.  (This replaces session-14's two separate 1/LR
+            # uses, which over-counted the single real slot.)
+            "slot_4th": (1, 0),
+            # Wild Shape (2/LR + 1 on a short rest → ~4/day with Prayer of Healing,
+            # guide 41:1069): spent to assume Starry-Form Dragon in the FoM combat.
+            "wild_shape": (2, 1),
         },
         "enemy_ac": 18,
         "enemy_dex_save": 4,               # csv level 15
@@ -613,6 +637,7 @@ def make_starfire_scion(level: int) -> Entity:
             "attack_bonus": data["attack_bonus"],          # DEX martial-arts melee
             "spell_attack_bonus": data["spell_attack_bonus"],  # WIS spell attacks
             "spell_save_dc": data["spell_save_dc"],        # Sacred Flame DC
+            "con_save": data.get("con_save", 0),           # CON save (FoM concentration)
             # Fallback weapon profile — every attack the policy emits carries its
             # own damage override, so these are only read if a future Choice omits
             # one.  Default to the quarterstaff so the fallback is sensible.
@@ -687,6 +712,7 @@ class StarfireScionPolicy:
         target: Entity,
         rounds_per_combat: int = 4,
         primal_strike_unarmed: "bool | None" = None,
+        fourth_level_spell: str = "fount_of_moonlight",
     ) -> None:
         if level not in LEVELS:
             raise NotImplementedError(
@@ -755,13 +781,19 @@ class StarfireScionPolicy:
         # carries the chosen element ("fire") or None; the policy applies it to any
         # fire save_spell (Searing Arc Strike) and to Fire Shield's fire thorns.
         self._elemental_adept: "str | None" = data.get("elemental_adept")
-        # Fire Shield (4th-level, char L15+): present iff the level carries a
-        # "fire_shield" block.  ONE cast_effect installs the chosen warm/chill
-        # mode's incoming-damage RESISTANCE (#4) + thorns (#5); pre-cast (one
-        # slot/LR → the fire_shield_use resource) in ONE combat/day, decided +
-        # consumed in on_combat_start.  See FIRE_SHIELD_MODES.
+        # The prepared 4th-level spell (druid-7 has ONE 4th-level slot, slot_4th):
+        # Fire Shield and Fount of Moonlight are SEPARATE daily loadouts competing
+        # for it (the guide prepares one), so fourth_level_spell selects which the
+        # build casts — exactly one consumes the slot per day.  Default FoM (the
+        # guide's L15 pick); set to "fire_shield" to read the Fire-Shield loadout.
+        self._fourth_level_spell = fourth_level_spell
+        # Fire Shield (4th-level, char L15+): available iff the level carries a
+        # "fire_shield" block AND it is the prepared 4th-level spell.  ONE cast_effect
+        # installs the chosen warm/chill mode's incoming-damage RESISTANCE (#4) +
+        # thorns (#5); pre-cast (the slot_4th slot, NON-concentration) in ONE
+        # combat/day, decided + consumed in on_combat_start.  See FIRE_SHIELD_MODES.
         fs = data.get("fire_shield")
-        self._has_fire_shield: bool = fs is not None
+        self._has_fire_shield: bool = fs is not None and fourth_level_spell == "fire_shield"
         self._fire_shield_mode: str = fs["mode"] if fs else "warm"
         # Primal Strike (Elemental Fury, druid-7, char L15+): an OUTGOING RIDER
         # (substrate #6) on the on_hit seam — once/turn, +1d8 of a chosen element
@@ -781,21 +813,34 @@ class StarfireScionPolicy:
                 else primal_strike_unarmed
             )
         # Fount of Moonlight (4th-level, char L15+): an OUTGOING RIDER (#6) +
-        # radiant resistance (#4).  Present iff the level carries a
-        # "fount_of_moonlight" block.  +2d6 radiant on every MELEE hit (incl.
-        # unarmed), FUELABLE (radiant spell damage).  Modeled non-concentration,
-        # pre-cast in ONE combat/day (the fom_use slot), like Fire Shield.
-        self._has_fount_of_moonlight: bool = "fount_of_moonlight" in data
+        # radiant resistance (#4).  Available iff the level carries a
+        # "fount_of_moonlight" block AND it is the prepared 4th-level spell.  +2d6
+        # radiant on every MELEE hit (incl. unarmed), FUELABLE (radiant spell
+        # damage).  Modeled WITH CONCENTRATION (session 15): cast as a turn-1 Magic
+        # action in ONE combat/day (the slot_4th slot), guarded by Starry-Form Dragon.
+        self._has_fount_of_moonlight: bool = (
+            "fount_of_moonlight" in data and fourth_level_spell == "fount_of_moonlight"
+        )
+        # Starry Form: Dragon (druid-3, char L15+): available iff the level carries
+        # a "dragon_form" block.  Assumed (a Wild Shape charge + a turn-1 BA) in the
+        # FoM combat to install the concentration_save_floor that guards FoM.
+        self._has_dragon_form: bool = bool(data.get("dragon_form"))
         # Per-combat state, (re)set by on_combat_start.
         self._starry_form_active: bool = False
-        # Fire Shield up for this combat (pre-cast in on_combat_start while a slot
-        # remains).  Gates the turn-1 install in decide() and the thorns in
-        # on_incoming_hit.
+        # Fire Shield up for this combat (pre-cast in on_combat_start while the
+        # slot_4th slot remains).  Gates the turn-1 install in decide() and the
+        # thorns in on_incoming_hit.
         self._fire_shield_active: bool = False
-        # Fount of Moonlight up for this combat (pre-cast in on_combat_start while
-        # its slot remains).  Gates the turn-1 install in decide() (radiant resist)
-        # and the +2d6 radiant melee rider in on_hit.
+        # The FoM combat: this is the one combat/day the slot_4th slot is spent on
+        # Fount of Moonlight (committed in on_combat_start).  Gates the turn-1 FoM
+        # Magic-action cast + the Guiding-Bolt suppression in decide().  The on_hit
+        # rider itself gates on concentration being HELD (self._character.
+        # concentration == "fount_of_moonlight"), so it drops the instant a failed
+        # CON save breaks it — not merely on this combat-scoped flag.
         self._fount_of_moonlight_active: bool = False
+        # Starry-Form Dragon assumed this combat (Wild Shape spent in on_combat_start
+        # for the FoM combat).  Gates the turn-1 BA Dragon activation in decide().
+        self._dragon_form_active: bool = False
         # Primal Strike's once/turn gate: the combat round we last fired it on.
         # The character takes exactly one turn per round, so the round number
         # identifies the turn (mirrors Flourish Parry's round-gating); reset per
@@ -840,28 +885,36 @@ class StarfireScionPolicy:
         ):
             self._character.resources.consume("wild_shape")
             self._starry_form_active = True
-        # Fire Shield (char L15): pre-cast before ONE combat/day while a 4th-level
-        # slot (fire_shield_use) remains — set the combat flag + consume the slot.
-        # decide() emits the install (a cost="none" pre-cast cast_effect) on turn 1;
-        # on_incoming_hit then reflects the mode's thorns on every incoming melee hit.
+        # The single druid-7 4th-level slot (slot_4th): spend it on the ONE prepared
+        # 4th-level spell, in ONE combat/day.  Fire Shield and FoM compete for it
+        # (only one is "_has_*" true given fourth_level_spell), so at most one branch
+        # fires and the slot is spent at most once per day.
         self._fire_shield_active = False
-        if (
-            self._has_fire_shield
-            and self._character.resources.available("fire_shield_use") >= 1
-        ):
-            self._character.resources.consume("fire_shield_use")
-            self._fire_shield_active = True
-        # Fount of Moonlight (char L15): pre-cast before ONE combat/day while its
-        # slot (fom_use) remains (modeled like Fire Shield — non-concentration).
-        # decide() emits the radiant-resistance install on turn 1; on_hit then adds
-        # the +2d6 radiant melee rider on every melee hit this combat.
         self._fount_of_moonlight_active = False
-        if (
-            self._has_fount_of_moonlight
-            and self._character.resources.available("fom_use") >= 1
-        ):
-            self._character.resources.consume("fom_use")
-            self._fount_of_moonlight_active = True
+        self._dragon_form_active = False
+        if self._character.resources.available("slot_4th") >= 1:
+            if self._has_fire_shield:
+                # Fire Shield: pre-cast (NON-concentration).  decide() emits the
+                # cost="none" resistance install on turn 1; on_incoming_hit reflects
+                # the mode's thorns on every incoming melee hit this combat.
+                self._character.resources.consume("slot_4th")
+                self._fire_shield_active = True
+            elif self._has_fount_of_moonlight:
+                # Fount of Moonlight: a CONCENTRATION spell cast as a turn-1 Magic
+                # action (decide()).  Commit the slot for this combat here; the cast
+                # itself sets concentration + installs the radiant resistance, and
+                # the on_hit rider gates on concentration being held.  Also assume
+                # Starry-Form Dragon (a Wild Shape charge) to guard that
+                # concentration — its turn-1 BA install of the save-floor (guide
+                # 41:779 `BA:starry-form(dragon) + magic-action:fount-of-moonlight`).
+                self._character.resources.consume("slot_4th")
+                self._fount_of_moonlight_active = True
+                if (
+                    self._has_dragon_form
+                    and self._character.resources.available("wild_shape") >= 1
+                ):
+                    self._character.resources.consume("wild_shape")
+                    self._dragon_form_active = True
         # Reset Primal Strike's once/turn gate (round numbers restart each combat).
         self._primal_strike_round = None
 
@@ -903,21 +956,6 @@ class StarfireScionPolicy:
                 duration="combat",
             ))
 
-        # Fount of Moonlight (char L15) — the pre-cast install on turn 1.  Like
-        # Fire Shield, a cost="none" cast_effect (modeled non-concentration this
-        # session) installs the spell's RADIANT RESISTANCE (#4) on the caster under
-        # effect_source "fount_of_moonlight" (swept at the combat boundary).  The
-        # spell's offensive half — +2d6 radiant on every melee hit (#6) — is
-        # delivered separately, on each melee hit, by on_hit.
-        if self._fount_of_moonlight_active and snapshot.round_number == 1:
-            choices.append(Choice(
-                action_type="cast_effect",
-                cost="none",
-                effect_source="fount_of_moonlight",
-                damage_response={"radiant": "resistance"},
-                duration="combat",
-            ))
-
         # ACTION: Guiding Bolt (free Star Map cast) while charges remain, else a
         # quarterstaff attack.  Greedy on the free casts — across statistically
         # identical combats, when they fire does not change mean DPR.
@@ -925,19 +963,35 @@ class StarfireScionPolicy:
         # EXCEPT in the Fount of Moonlight combat: FoM's whole value is +2d6 radiant
         # (fuelable) on every MELEE hit, so the Scion MELEES that combat (the guide's
         # FoM combats are `attack(x2):quarterstaff_{...}`, not Guiding Bolt).
-        # Suppressing the ranged Guiding Bolt while FoM is up makes the melee riders
-        # land AND enables Searing Arc (a weapon-Attack-action BA); the unused free
-        # GB charges simply carry to the other (non-FoM) combats, so total GB casts —
-        # and mean DPR outside the FoM combat — are unchanged.
+        # Turn 1 of that combat the ACTION is the Magic-action CAST of FoM itself
+        # (concentration; installs the radiant resistance #4) — so turn 1 deals 0
+        # damage (guide 41:779).  Suppressing Guiding Bolt for the rest of the combat
+        # makes the melee riders land AND enables Searing Arc (a weapon-Attack-action
+        # BA); the unused free GB charges carry to the other (non-FoM) combats, so
+        # total GB casts — and mean DPR outside the FoM combat — are unchanged.
         #
         # Track whether this turn's action is a WEAPON attack (quarterstaff/unarmed)
-        # vs. casting a spell (Guiding Bolt): Searing Arc Strike requires the *Attack
-        # action*, which Guiding Bolt — though delivered via an attack roll in the
-        # engine — does NOT count as (it is the Magic action).  So the gate is "a
-        # weapon attack was the action", true for quarterstaff, false for Guiding Bolt.
+        # vs. casting a spell (Guiding Bolt / FoM): Searing Arc Strike requires the
+        # *Attack action*, which a spell cast — though Guiding Bolt is delivered via
+        # an attack roll in the engine — does NOT count as (it is the Magic action).
+        # So the gate is "a weapon attack was the action", true for quarterstaff only.
         action_is_weapon_attack = False
         if res.get("action", 0) >= 1:
-            if (
+            if self._fount_of_moonlight_active and snapshot.round_number == 1:
+                # Turn 1 of the FoM combat: the Magic action CASTS Fount of Moonlight
+                # — a CONCENTRATION cast_effect that sets concentration on the caster
+                # and installs the spell's RADIANT RESISTANCE (#4).  No attack this
+                # turn (0 damage).  From turn 2 the +2d6 radiant melee rider (#6,
+                # on_hit) rides every swing while concentration holds.
+                choices.append(Choice(
+                    action_type="cast_effect",
+                    cost="action",
+                    effect_source="fount_of_moonlight",
+                    concentration=True,
+                    damage_response={"radiant": "resistance"},
+                    duration="combat",
+                ))
+            elif (
                 self._has_guiding_bolt
                 and res.get("guiding_bolt_free", 0) >= 1
                 and not self._fount_of_moonlight_active
@@ -965,17 +1019,32 @@ class StarfireScionPolicy:
         #   3. Archer attack (if Starry Form active — dropped in combat from L9).
         #   4. Unarmed strike.
         #
-        # EXCEPT turn 1 of each combat, when the bonus action is spent CASTING
-        # Shillelagh (guide 41:539 — "BA:shillelagh").  This is now a first-class
-        # cast_effect that CONSUMES the bonus action (no damage) — the honest model,
-        # replacing the former "withhold the BA option" suppression (DPR-identical:
-        # the BA is consumed either way).  Shillelagh then persists and buffs every
-        # quarterstaff swing for the rest of the combat (the weapon swings read
-        # _shillelagh_active), so the BA damage ladder runs from round 2.  (Pure
-        # read: the cantrip was flagged active in on_combat_start; here we only
-        # consult round_number.)  See design/buff_primitive.md.
+        # EXCEPT the BA-cast turns: the bonus action is spent CASTING Shillelagh
+        # (guide 41:539 — "BA:shillelagh"), a first-class cast_effect that CONSUMES
+        # the bonus action (no damage) — the honest model, replacing the former
+        # "withhold the BA option" suppression.  Shillelagh then persists and buffs
+        # every quarterstaff swing (the swings read _shillelagh_active).  It is cast
+        # on turn 1 normally; in the FoM combat turn 1's BA is instead Starry-Form
+        # DRAGON (to guard FoM's concentration — guide 41:779), so Shillelagh slides
+        # to turn 2 there (guide 41:780 `turn 02: BA:shillelagh`).  No swings happen
+        # on turn 1 of either combat (the action is a spell cast), so the buff being
+        # flagged from combat start is harmless.  (Pure read: the cantrip / form were
+        # flagged in on_combat_start; here we only consult round_number.)
+        shillelagh_cast_round = 2 if self._fount_of_moonlight_active else 1
         if res.get("bonus_action", 0) >= 1:
-            if self._shillelagh_active and snapshot.round_number == 1:
+            if self._dragon_form_active and snapshot.round_number == 1:
+                # Turn 1 of the FoM combat: BA activates Starry-Form DRAGON — a
+                # cost="bonus_action" cast_effect installing the concentration_save_
+                # floor status (substrate #3 save-floor) that floors FoM's CON saves.
+                choices.append(Choice(
+                    action_type="cast_effect",
+                    cost="bonus_action",
+                    effect_source="starry_form_dragon",
+                    statuses=[StatusSpec("concentration_save_floor",
+                                         DRAGON_CONCENTRATION_FLOOR)],
+                    duration="combat",
+                ))
+            elif self._shillelagh_active and snapshot.round_number == shillelagh_cast_round:
                 choices.append(Choice(
                     action_type="cast_effect",
                     cost="bonus_action",
@@ -1099,8 +1168,10 @@ class StarfireScionPolicy:
     def on_hit(self, ctx: HitContext) -> "HitResponse | None":
         """Outgoing predicate riders (substrate #6) on a confirmed hit.
 
-        Fount of Moonlight: while up this combat, every MELEE hit (quarterstaff
-        AND unarmed) deals an extra 2d6 RADIANT.  The radiant is tagged
+        Fount of Moonlight: while concentration is HELD (self._character.
+        concentration == "fount_of_moonlight" — set by the turn-1 Magic-action cast,
+        dropped on a failed CON save), every MELEE hit (quarterstaff AND unarmed)
+        deals an extra 2d6 RADIANT.  The radiant is tagged
         is_spell=True, so when it resolves as its own DamageEvent the caster's
         on_deal_damage rider (Fueled Spellfire) fuels the FIRST such radiant each
         turn for free — matching the guide's `quarterstaff_{...fueled-spellfire(2)}
@@ -1123,7 +1194,7 @@ class StarfireScionPolicy:
         neither applies (every level below L15 / a non-melee hit with no FoM).
         """
         riders: list[RiderDamageSpec] = []
-        if self._fount_of_moonlight_active and not ctx.is_spell:
+        if self._character.concentration == "fount_of_moonlight" and not ctx.is_spell:
             riders.append(RiderDamageSpec(
                 damage_dice=FOUNT_OF_MOONLIGHT_DICE,   # (2, 6)
                 damage_type="radiant",
@@ -1237,12 +1308,17 @@ def make_day_runner(
     rng: "SeededRNG",
     rounds_per_combat: int = 4,
     primal_strike_unarmed: "bool | None" = None,
+    fourth_level_spell: str = "fount_of_moonlight",
 ):
     """Assemble (DayRunner, character, dummy) for the given level.
 
     `primal_strike_unarmed` (L15+) overrides the data row's RAW default for Primal
     Strike: None = RAW (weapon attacks only), True = the non-RAW option that also
     rides unarmed strikes — so a caller can compare the two DPR readings.
+
+    `fourth_level_spell` (L15+) selects which 4th-level spell the build prepares for
+    the single slot_4th slot — "fount_of_moonlight" (default, the guide's pick) or
+    "fire_shield".  Exactly one is cast per day (they are separate daily loadouts).
 
     Through L12 the enemy carries no attack profile, so it gets no policy and
     never acts; DPR = damage dealt to the dummy = the character's whole output.
@@ -1257,6 +1333,7 @@ def make_day_runner(
     policy = StarfireScionPolicy(
         level=level, character=char, target=dummy, rounds_per_combat=rounds_per_combat,
         primal_strike_unarmed=primal_strike_unarmed,
+        fourth_level_spell=fourth_level_spell,
     )
     policies: dict[int, object] = {char.id: policy}
 

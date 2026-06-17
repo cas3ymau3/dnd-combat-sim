@@ -699,7 +699,8 @@ def test_l15_fire_shield_warm_choose_one_selects_cold_resist_and_fire_thorns():
     resistance (#4) on the turn-1 pre-cast and reflects FIRE thorns (#5).  The fire
     thorns match our Elemental Adept element, so they bypass + high-grade."""
     policy = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
-                                    ss.make_training_dummy(15))
+                                    ss.make_training_dummy(15),
+                                    fourth_level_spell="fire_shield")
     policy.on_combat_start(0, SeededRNG(0))
     assert policy._fire_shield_active
     fs = [c for c in policy.decide(_snapshot(1, {})) if c.effect_source == "fire_shield"]
@@ -715,7 +716,8 @@ def test_fire_shield_chill_mode_selects_the_other_payload():
     """Flipping the choose_one to CHILL installs the OTHER payload: resist FIRE +
     COLD thorns.  Cold thorns do NOT match the fire Elemental Adept, so no bypass."""
     policy = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
-                                    ss.make_training_dummy(15))
+                                    ss.make_training_dummy(15),
+                                    fourth_level_spell="fire_shield")
     policy._fire_shield_mode = "chill"
     policy.on_combat_start(0, SeededRNG(0))
     fs = [c for c in policy.decide(_snapshot(1, {})) if c.effect_source == "fire_shield"]
@@ -726,16 +728,36 @@ def test_fire_shield_chill_mode_selects_the_other_payload():
 
 
 def test_fire_shield_is_pre_cast_in_only_one_combat_per_day():
-    """One 4th-level slot (fire_shield_use, 1/LR) → pre-cast in a single combat;
-    later combats have it down (no resist install, no thorns)."""
+    """With Fire Shield prepared, the single 4th-level slot (slot_4th) → pre-cast
+    in a single combat; later combats have it down (no resist install, no thorns)."""
     char = ss.make_starfire_scion(15)
-    policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15))
-    assert char.resources.available("fire_shield_use") == 1
+    policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15),
+                                    fourth_level_spell="fire_shield")
+    assert char.resources.available("slot_4th") == 1
     policy.on_combat_start(0, SeededRNG(0))
-    assert policy._fire_shield_active and char.resources.available("fire_shield_use") == 0
+    assert policy._fire_shield_active and char.resources.available("slot_4th") == 0
     policy.on_combat_start(1, SeededRNG(0))
     assert not policy._fire_shield_active
     assert policy.on_incoming_hit(None) is None                 # no thorns when down
+
+
+def test_l15_fom_and_fire_shield_share_the_single_4th_level_slot():
+    """The slot reconciliation (session 15): druid-7 has ONE 4th-level slot, so the
+    two loadouts COMPETE — the prepared spell consumes slot_4th and the OTHER is
+    never cast (no over-count).  FoM default; Fire Shield only when prepared."""
+    # Default loadout = FoM: it claims the slot, Fire Shield stays down.
+    char = ss.make_starfire_scion(15)
+    fom_policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15))
+    fom_policy.on_combat_start(0, SeededRNG(0))
+    assert fom_policy._fount_of_moonlight_active and not fom_policy._fire_shield_active
+    assert char.resources.available("slot_4th") == 0
+    # Fire Shield loadout: it claims the slot, FoM stays down.
+    char2 = ss.make_starfire_scion(15)
+    fs_policy = ss.StarfireScionPolicy(15, char2, ss.make_training_dummy(15),
+                                       fourth_level_spell="fire_shield")
+    fs_policy.on_combat_start(0, SeededRNG(0))
+    assert fs_policy._fire_shield_active and not fs_policy._fount_of_moonlight_active
+    assert not fs_policy._has_fount_of_moonlight
 
 
 def _mean_dpr_l15(fire_shield: bool, n_days: int, seed: int = 0,
@@ -747,7 +769,10 @@ def _mean_dpr_l15(fire_shield: bool, n_days: int, seed: int = 0,
     rng = SeededRNG(seed)
     char = ss.make_starfire_scion(15)
     dummy = ss.make_training_dummy(15)
-    policy = ss.StarfireScionPolicy(15, char, dummy, rounds_per_combat)
+    # Prepare the Fire Shield loadout (not the default FoM one) so the slot is spent
+    # on Fire Shield; ablation switches its cast off, isolating ONLY the thorns.
+    policy = ss.StarfireScionPolicy(15, char, dummy, rounds_per_combat,
+                                    fourth_level_spell="fire_shield")
     if not fire_shield:
         policy._has_fire_shield = False             # ablate the cast (no resist, no thorns)
     ea = ss.LEVELS[15]["enemy_attack"]
@@ -807,21 +832,39 @@ def _rider(resp, damage_type):
 def test_l15_fom_rides_every_melee_hit_with_fuelable_radiant():
     """Fount of Moonlight: +2d6 RADIANT on every melee hit — quarterstaff AND
     unarmed (both are melee attacks) — tagged is_spell so Fueled Spellfire can
-    fuel it (the fueling itself is tested separately)."""
-    policy, _ = _l15_policy()
-    policy.on_combat_start(0, SeededRNG(0))               # FoM pre-cast active
+    fuel it (the fueling itself is tested separately).  The rider gates on
+    concentration being held (set by the turn-1 cast — simulated here)."""
+    policy, char = _l15_policy()
+    policy.on_combat_start(0, SeededRNG(0))               # FoM is the combat's 4th-lvl spell
     assert policy._fount_of_moonlight_active
+    char.concentration = "fount_of_moonlight"             # the turn-1 Magic-action cast resolved
     fom = _rider(policy.on_hit(_hit_ctx(is_unarmed=False)), "radiant")   # quarterstaff
     assert fom is not None and fom.damage_dice == (2, 6) and fom.is_spell is True
     fom_u = _rider(policy.on_hit(_hit_ctx(round_number=2, is_unarmed=True)), "radiant")  # unarmed
     assert fom_u is not None and fom_u.damage_dice == (2, 6)
 
 
+def test_l15_fom_rider_is_silent_until_concentration_is_established():
+    """The rider gates on concentration, not the combat flag: before the turn-1
+    cast resolves (no concentration yet) a melee hit gets no FoM radiant; once
+    concentration drops (a broken save), it goes silent again."""
+    policy, char = _l15_policy()
+    policy._has_primal_strike = False                     # isolate FoM
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy._fount_of_moonlight_active              # committed for the combat...
+    assert policy.on_hit(_hit_ctx()) is None              # ...but no rider until concentration holds
+    char.concentration = "fount_of_moonlight"
+    assert _rider(policy.on_hit(_hit_ctx()), "radiant") is not None
+    char.concentration = None                             # a failed CON save broke it
+    assert policy.on_hit(_hit_ctx(round_number=2)) is None
+
+
 def test_l15_fom_skips_the_ranged_guiding_bolt_spell():
     """FoM rides MELEE attacks only — the ranged Guiding Bolt (is_spell) gets no
     rider; Primal Strike also declines a spell (not a weapon attack) → None."""
-    policy, _ = _l15_policy()
+    policy, char = _l15_policy()
     policy.on_combat_start(0, SeededRNG(0))
+    char.concentration = "fount_of_moonlight"
     assert policy.on_hit(_hit_ctx(is_spell=True)) is None
 
 
@@ -885,27 +928,52 @@ def test_l15_fom_and_primal_combine_on_the_first_weapon_hit():
     """The guide's turn-02 `quarterstaff_{primal-strike,fueled-spellfire(2)} -->
     2d12+3d8+4d6...`: the first melee swing carries BOTH riders — Primal (fire
     feature) and FoM (radiant spell)."""
-    policy, _ = _l15_policy()
+    policy, char = _l15_policy()
     policy.on_combat_start(0, SeededRNG(0))
+    char.concentration = "fount_of_moonlight"
     resp = policy.on_hit(_hit_ctx(round_number=1))
     assert sorted(r.damage_type for r in resp.rider_damage) == ["fire", "radiant"]
     assert _rider(resp, "radiant").is_spell is True              # FoM — fuelable
     assert _rider(resp, "fire").is_spell is False                # Primal — feature
 
 
-def test_l15_fom_is_pre_cast_in_only_one_combat_per_day():
-    """One use (fom_use, 1/LR) → pre-cast in a single combat; the turn-1 install is
-    the radiant-resistance (#4); later combats have it down (no rider)."""
+def test_l15_fom_is_cast_as_a_turn1_magic_action_in_one_combat_per_day():
+    """The single 4th-level slot (slot_4th) → FoM in ONE combat/day, cast as a
+    turn-1 MAGIC ACTION (cost="action", concentration) that installs the radiant
+    resistance (#4) and deals 0 damage that turn; later combats have it down."""
     policy, char = _l15_policy()
-    assert char.resources.available("fom_use") == 1
+    assert char.resources.available("slot_4th") == 1
     policy.on_combat_start(0, SeededRNG(0))
-    assert policy._fount_of_moonlight_active and char.resources.available("fom_use") == 0
-    install = [c for c in policy.decide(_snapshot(1, {})) if c.effect_source == "fount_of_moonlight"]
-    assert len(install) == 1 and install[0].cost == "none"
-    assert install[0].damage_response == {"radiant": "resistance"}
-    policy.on_combat_start(1, SeededRNG(0))
+    assert policy._fount_of_moonlight_active and char.resources.available("slot_4th") == 0
+    cast = [c for c in policy.decide(_snapshot(1, {"action": 1}))
+            if c.effect_source == "fount_of_moonlight"]
+    assert len(cast) == 1
+    assert cast[0].action_type == "cast_effect" and cast[0].cost == "action"
+    assert cast[0].concentration is True
+    assert cast[0].damage_response == {"radiant": "resistance"}
+    policy.on_combat_start(1, SeededRNG(0))                  # no slot left → no FoM combat
     assert not policy._fount_of_moonlight_active
-    assert _rider(policy.on_hit(_hit_ctx(round_number=1)), "radiant") is None   # no FoM rider down
+    assert char.concentration != "fount_of_moonlight"
+    # No FoM radiant rider when down (Primal Strike's fire rider may still fire).
+    assert _rider(policy.on_hit(_hit_ctx(round_number=1)), "radiant") is None
+
+
+def test_l15_fom_combat_turn1_casts_fom_and_activates_dragon_for_zero_damage():
+    """Guide 41:779 `turn-01: BA:starry-form(dragon) + magic-action:fount-of-
+    moonlight --> 0`: turn 1 of the FoM combat spends the ACTION on the FoM cast
+    and the BONUS ACTION on the Dragon-form activation, so it deals no damage."""
+    policy, char = _l15_policy()
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy._dragon_form_active and char.resources.available("wild_shape") == 1
+    choices = policy.decide(_snapshot(1, {"action": 1, "bonus_action": 1}))
+    sources = {c.effect_source for c in choices}
+    assert sources == {"fount_of_moonlight", "starry_form_dragon"}
+    # No attack/save_spell on turn 1 → 0 damage; both are cast_effects.
+    assert all(c.action_type == "cast_effect" for c in choices)
+    dragon = next(c for c in choices if c.effect_source == "starry_form_dragon")
+    assert dragon.cost == "bonus_action"
+    assert dragon.statuses[0].name == "concentration_save_floor"
+    assert dragon.statuses[0].value == 10
 
 
 def _mean_dpr_l15_rider(disable, n_days, seed=0, rounds_per_combat=4):
@@ -945,8 +1013,50 @@ def test_primal_strike_lifts_l15_dpr_at_a_fixed_enemy():
     assert on > off, f"primal strike on {on:.2f} !> off {off:.2f}"
 
 
-def test_l15_dpr_rises_above_the_session13_baseline():
-    """Adding FoM + Primal Strikes lifts L15 DPR clearly above session-13's ~29.7
-    (Fire Shield only) and keeps it under the loose ceiling."""
-    dpr = _mean_dpr(15, n_days=400)
-    assert 29.7 < dpr < ss.LEVELS[15]["ceiling_dpr"], f"L15 DPR {dpr:.2f}"
+def test_l15_fom_loadout_nets_positive_over_an_unused_4th_level_slot():
+    """The FoM loadout's NET contribution is positive even paying the honest cast
+    cost (session 15): the turn-1 Magic-action cast deals 0 damage and concentration
+    can break, but the +2d6 fueled radiant on turns 2-4 more than pays for it — so
+    the FoM loadout out-DPRs the same build leaving its single 4th-level slot UNUSED.
+    (This replaces the stale "rises above session-13's 29.7" check: with the slot now
+    SHARED, FoM and Fire Shield are mutually-exclusive loadouts, not additive, so the
+    honest FoM figure sits near — not clearly above — that Fire-Shield-only baseline.)
+    """
+    rng_fom = SeededRNG(0)
+    runner_fom, _, dummy_fom = ss.make_day_runner(15, rng_fom)
+    rng_none = SeededRNG(0)
+    runner_none, _, dummy_none = ss.make_day_runner(15, rng_none, fourth_level_spell="none")
+    n_days, rounds_per_day = 400, 16
+    fom = sum(runner_fom.run_day().damage_received_by(dummy_fom.id)
+              for _ in range(n_days)) / (n_days * rounds_per_day)
+    none = sum(runner_none.run_day().damage_received_by(dummy_none.id)
+               for _ in range(n_days)) / (n_days * rounds_per_day)
+    assert fom > none, f"FoM loadout {fom:.2f} !> unused-slot {none:.2f}"
+    assert fom < ss.LEVELS[15]["ceiling_dpr"], f"L15 FoM DPR {fom:.2f} >= ceiling"
+
+
+def test_l15_dragon_form_floor_protects_fom_concentration():
+    """Starry-Form Dragon's save-floor (treat ≤9 as 10) sharply reduces FoM
+    concentration breaks: with the floor active the Scion almost never loses FoM to
+    the enemy's hits, but ablating the Dragon activation lets breaks happen — a clean
+    isolation of the substrate-#3 save-floor doing real work on the concentration path.
+    """
+    def breaks(dragon: bool) -> int:
+        rng = SeededRNG(1)
+        char = ss.make_starfire_scion(15)
+        dummy = ss.make_training_dummy(15)
+        policy = ss.StarfireScionPolicy(15, char, dummy)
+        if not dragon:
+            policy._has_dragon_form = False          # cast FoM but DON'T guard it
+        ea = ss.LEVELS[15]["enemy_attack"]
+        enemy = ss.ScriptedEnemyPolicy(
+            target=char, n_attacks=ea["n_attacks"], char_target_prob=ea["char_target_prob"])
+        runner = DayRunner(rng=rng, entities=[char, dummy],
+                           policies={char.id: policy, dummy.id: enemy})
+        for _ in range(200):
+            runner.run_day()
+        return char.concentration_breaks
+    with_floor = breaks(dragon=True)
+    without_floor = breaks(dragon=False)
+    assert without_floor > with_floor, (
+        f"dragon floor breaks {with_floor} should be < no-floor {without_floor}")

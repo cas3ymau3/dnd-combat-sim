@@ -48,6 +48,7 @@ def resolve_saving_throw(
     advantage: bool = False,
     disadvantage: bool = False,
     reroll_decider: "Callable[[int, int], int | None] | None" = None,
+    d20_floor: int | None = None,
 ) -> bool:
     """Resolve one saving throw: d20 + save bonus vs DC → True on success.
 
@@ -63,8 +64,16 @@ def resolve_saving_throw(
     the entity's save bonus + that bonus) and the new result stands, per RAW.
     The scheduler builds it from the entity's Policy.on_failed_save and has
     already validated/consumed the resource by the time the bonus comes back.
+
+    `d20_floor` is a per-die FLOOR on the d20 (the substrate-#3 save-floor grant):
+    a rolled value below it is treated as the floor — Starry-Form Dragon's "treat
+    a 9 or lower as 10 when making a CON save to maintain concentration"
+    (guide 41:308).  Applied after advantage/disadvantage to whichever d20 stands,
+    on both the initial roll and any reroll.
     """
     d20 = roll_d20(rng, advantage, disadvantage)
+    if d20_floor is not None:
+        d20 = max(d20, d20_floor)
     bonus = int(entity.stat(save_stat)) + entity.roll_bonus(save_stat, rng)
     total = d20 + bonus
     success = total >= dc
@@ -77,6 +86,8 @@ def resolve_saving_throw(
         extra = reroll_decider(dc, total)
         if extra is not None:
             d20b = roll_d20(rng, advantage, disadvantage)
+            if d20_floor is not None:
+                d20b = max(d20b, d20_floor)
             bonusb = int(entity.stat(save_stat)) + entity.roll_bonus(save_stat, rng) + extra
             totalb = d20b + bonusb
             success = totalb >= dc
@@ -644,9 +655,11 @@ def _check_concentration(
     DC = max(10, ⌊damage/2⌋).  The save is a CON save (con_save), boosted by
     Bless's +1d4 if active (folded via roll_bonus inside resolve_saving_throw),
     and made at advantage if Brutality::bluff set `advantage_next_save` this
-    round (consumed here).  A failed save may be rerolled via `save_reroll_
+    round (consumed here).  A `concentration_save_floor` status (Starry-Form
+    Dragon) floors the d20.  A failed save may be rerolled via `save_reroll_
     decider` (Indomitable) before concentration drops.  On a (final) failure,
-    the concentrated spell's modifiers are dropped and concentration clears.
+    the concentrated spell's WHOLE bundle is dropped (remove_effect: modifiers +
+    damage response + statuses) and concentration clears.
     """
     if entity.concentration is None or damage <= 0:
         return
@@ -654,12 +667,15 @@ def _check_concentration(
     advantage = entity.statuses.has("advantage_next_save")
     if advantage:
         entity.statuses.consume("advantage_next_save")
+    # Starry-Form Dragon (substrate #3 save-floor): treat a d20 of 9 or lower as
+    # 10 on this concentration save (guide 41:308).  None when not in Dragon form.
+    d20_floor = entity.statuses.get("concentration_save_floor")
     entity.concentration_checks += 1
     if not resolve_saving_throw(
         entity, "con_save", dc, rng, advantage=advantage,
         reroll_decider=save_reroll_decider,
+        d20_floor=d20_floor,
     ):
         log.info("%s LOSES concentration on %s", entity.name, entity.concentration)
-        entity.remove_modifier(entity.concentration)
-        entity.concentration = None
+        entity.remove_effect(entity.concentration)
         entity.concentration_breaks += 1

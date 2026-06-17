@@ -658,14 +658,26 @@ class Scheduler:
                         bearer.add_modifier(mod)
                     for spec in choice.statuses:
                         bearer.statuses.apply(spec.name, spec.value, spec.expiry)
+                        # Index the status under effect_source so remove_effect
+                        # (concentration break) can drop it with the rest of the
+                        # bundle, not only the unconditional boundary sweep.
+                        if choice.effect_source:
+                            bearer.note_effect_status(choice.effect_source, spec.name)
                     # Damage-type responses (substrate #4 — Fire Shield resist):
                     # installed on the bearer under effect_source; add_damage_response
                     # notes the source so the boundary sweep clears it.
                     if choice.damage_response and choice.effect_source:
                         bearer.add_damage_response(choice.effect_source, choice.damage_response)
-                    # Modifiers are not auto-swept (statuses are) → note the source
-                    # on the bearer so its modifiers clear at the combat boundary.
-                    if choice.modifiers and choice.effect_source and choice.duration == "combat":
+                    # Note the source for the combat-boundary sweep so remove_effect
+                    # tears down the whole bundle together: modifiers are not
+                    # auto-swept, and although statuses ARE cleared by StatusSet.clear,
+                    # noting the source also clears the _effect_statuses index entry
+                    # (and lets a status-only combat buff drop via the same path).
+                    if (
+                        (choice.modifiers or choice.statuses)
+                        and choice.effect_source
+                        and choice.duration == "combat"
+                    ):
                         bearer.note_combat_buff(choice.effect_source)
                     # Concentration always lives on the CASTER; record the source on
                     # the ACTOR too so the actor's own boundary sweep drops it (the
