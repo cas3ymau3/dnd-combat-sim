@@ -1060,3 +1060,183 @@ def test_l15_dragon_form_floor_protects_fom_concentration():
     without_floor = breaks(dragon=False)
     assert without_floor > with_floor, (
         f"dragon floor breaks {with_floor} should be < no-floor {without_floor}")
+
+
+# ---------------------------------------------------------------------------
+# PRE-CAST ASSUMPTION TOGGLE (session 16): whether the L15 4th-level buff is
+# PRE-CAST (free, before initiative) or CAST IN COMBAT (a real turn cost +
+# concentration) is a tunable knob — "always" (upper bound) / "rng" (per-combat
+# probability) / "never" (lower bound) / None (legacy per-effect default).
+# Validation framing unchanged — consistency/sanity, NOT number-matching: the
+# three modes ORDER correctly on DPR, only "rng" mode draws dice (so the default
+# stream is bit-identical), and pre-casting FoM narrows its gap to Fire Shield.
+# ---------------------------------------------------------------------------
+
+class _RecordingRNG:
+    """Wraps a SeededRNG and counts d100 (precast-coin) rolls, while delegating all
+    other dice to the real seeded stream — so we can assert WHICH modes draw the
+    precast coin without perturbing the rest of the run."""
+
+    def __init__(self, seed=0):
+        self._rng = SeededRNG(seed)
+        self.d100_rolls = 0
+
+    def roll(self, n, sides):
+        return self._rng.roll(n, sides)
+
+    def roll_one(self, sides):
+        if sides == 100:
+            self.d100_rolls += 1
+        return self._rng.roll_one(sides)
+
+
+def _fom_policy(precast_mode=None, precast_prob=0.5):
+    """An L15 FoM-loadout policy + character for poking on_combat_start / decide()
+    with a given pre-cast setting."""
+    char = ss.make_starfire_scion(15)
+    policy = ss.StarfireScionPolicy(
+        15, char, ss.make_training_dummy(15),
+        fourth_level_spell="fount_of_moonlight",
+        precast_mode=precast_mode, precast_prob=precast_prob)
+    return policy, char
+
+
+def test_precast_always_makes_fom_a_free_turn1_install_with_a_full_melee_turn():
+    """precast_mode="always": FoM (and its Dragon guard) install for FREE on turn 1
+    (cost="none", concentration set), so the ACTION is a melee Attack and the BA
+    casts Shillelagh — a full-damage opening turn (the DPR upper bound), in contrast
+    to the in-combat 0-damage opening."""
+    policy, char = _fom_policy(precast_mode="always")
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy._fount_of_moonlight_active and policy._precast_this_combat
+    choices = policy.decide(_snapshot(1, {"action": 1, "bonus_action": 1}))
+    # FoM + Dragon both install free (cost="none") on turn 1...
+    fom = next(c for c in choices if c.effect_source == "fount_of_moonlight")
+    assert fom.action_type == "cast_effect" and fom.cost == "none"
+    assert fom.concentration is True and fom.damage_response == {"radiant": "resistance"}
+    dragon = next(c for c in choices if c.effect_source == "starry_form_dragon")
+    assert dragon.cost == "none" and dragon.statuses[0].name == "concentration_save_floor"
+    # ...and the turn still spends its economy on damage: a melee Attack + Shillelagh.
+    assert any(c.action_type == "attack" and c.cost == "action" for c in choices)
+    assert any(c.effect_source == "shillelagh" and c.cost == "bonus_action" for c in choices)
+
+
+def test_precast_never_matches_the_legacy_in_combat_fom_cast():
+    """precast_mode="never": FoM is the turn-1 Magic action (cost="action",
+    concentration) and Dragon the turn-1 BA (cost="bonus_action") — a 0-damage
+    opening turn, identical to session-15's in-combat model (the DPR lower bound)."""
+    policy, char = _fom_policy(precast_mode="never")
+    policy.on_combat_start(0, SeededRNG(0))
+    assert policy._fount_of_moonlight_active and not policy._precast_this_combat
+    choices = policy.decide(_snapshot(1, {"action": 1, "bonus_action": 1}))
+    sources = {c.effect_source for c in choices}
+    assert sources == {"fount_of_moonlight", "starry_form_dragon"}
+    assert all(c.action_type == "cast_effect" for c in choices)   # 0 damage turn 1
+    fom = next(c for c in choices if c.effect_source == "fount_of_moonlight")
+    assert fom.cost == "action" and fom.concentration is True
+    dragon = next(c for c in choices if c.effect_source == "starry_form_dragon")
+    assert dragon.cost == "bonus_action"
+
+
+def test_precast_default_is_legacy_per_effect():
+    """precast_mode=None falls back to each effect's LEGACY default: FoM cast IN
+    COMBAT (cost="action" turn 1), Fire Shield PRE-CAST (cost="none" turn 1) — the
+    behaviour before the toggle existed."""
+    fom_policy, _ = _fom_policy(precast_mode=None)
+    fom_policy.on_combat_start(0, SeededRNG(0))
+    assert not fom_policy._precast_this_combat                    # FoM legacy = in-combat
+    fom = next(c for c in fom_policy.decide(_snapshot(1, {"action": 1}))
+               if c.effect_source == "fount_of_moonlight")
+    assert fom.cost == "action"
+
+    char = ss.make_starfire_scion(15)
+    fs_policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15),
+                                       fourth_level_spell="fire_shield")
+    fs_policy.on_combat_start(0, SeededRNG(0))
+    assert fs_policy._precast_this_combat                         # Fire Shield legacy = pre-cast
+    fs = next(c for c in fs_policy.decide(_snapshot(1, {"action": 1}))
+              if c.effect_source == "fire_shield")
+    assert fs.cost == "none"
+
+
+def test_precast_coin_is_drawn_only_in_rng_mode():
+    """The bit-identical guarantee: "always"/"never"/None resolve pre-cast with NO
+    dice (so the existing RNG stream — and every prior DPR test — is untouched);
+    only "rng" mode draws the percentile d100, exactly once per slot-spending combat."""
+    for mode in ("always", "never", None):
+        policy, _ = _fom_policy(precast_mode=mode)
+        rng = _RecordingRNG()
+        policy.on_combat_start(0, rng)
+        assert rng.d100_rolls == 0, f"mode {mode} drew a precast coin"
+    policy, _ = _fom_policy(precast_mode="rng")
+    rng = _RecordingRNG()
+    policy.on_combat_start(0, rng)
+    assert rng.d100_rolls == 1
+
+
+def test_precast_rng_roll_resolves_against_the_probability_threshold():
+    """"rng" mode pre-casts when the percentile d100 is within precast_prob
+    (p=0.5 → roll <= 50 pre-casts, roll > 50 casts in combat) — per-roll resolution,
+    exact (FakeRNG), like the save-boundary tests."""
+    # roll 50 (<= 50) → pre-cast.
+    policy, _ = _fom_policy(precast_mode="rng", precast_prob=0.5)
+    policy.on_combat_start(0, FakeRNG([50]))
+    assert policy._precast_this_combat is True
+    # roll 51 (> 50) → cast in combat.
+    policy, _ = _fom_policy(precast_mode="rng", precast_prob=0.5)
+    policy.on_combat_start(0, FakeRNG([51]))
+    assert policy._precast_this_combat is False
+
+
+def _mean_dpr_l15_precast(precast_mode, n_days, precast_prob=0.5, seed=0,
+                          fourth_level_spell="fount_of_moonlight", rounds_per_combat=4):
+    """L15 mean DPR for a given 4th-level loadout + pre-cast setting (via
+    make_day_runner, which wires the enemy-strikes-back loop).  DPR reads the dummy's
+    column = the Scion's outgoing output."""
+    rng = SeededRNG(seed)
+    runner, _, dummy = ss.make_day_runner(
+        15, rng, rounds_per_combat=rounds_per_combat,
+        fourth_level_spell=fourth_level_spell,
+        precast_mode=precast_mode, precast_prob=precast_prob)
+    rounds_per_day = 4 * rounds_per_combat
+    total = sum(runner.run_day().damage_received_by(dummy.id) for _ in range(n_days))
+    return total / (n_days * rounds_per_day)
+
+
+def test_precast_modes_order_fom_dpr_with_rng_strictly_between():
+    """The headline: DPR(always-precast) > DPR(rng, p=0.5) > DPR(always-in-combat)
+    for FoM.  Pre-casting frees the 0-damage opening turn for full melee (the upper
+    bound); the rng mode mixes the two and lands strictly between them."""
+    pre = _mean_dpr_l15_precast("always", n_days=400)
+    mid = _mean_dpr_l15_precast("rng", n_days=400, precast_prob=0.5)
+    post = _mean_dpr_l15_precast("never", n_days=400)
+    assert pre > mid > post, f"precast ordering broke: always={pre:.2f} rng={mid:.2f} never={post:.2f}"
+
+
+def test_precast_never_dpr_is_bit_identical_to_the_legacy_default():
+    """"never" mode and the legacy default (None) are the SAME FoM model (both
+    in-combat, neither draws the precast coin), so on one seed their DPR is exactly
+    equal — the concrete proof the toggle leaves the default stream untouched."""
+    never = _mean_dpr_l15_precast("never", n_days=200, seed=0)
+    default = _mean_dpr_l15_precast(None, n_days=200, seed=0)
+    assert never == default, f"never {never} != default {default}"
+
+
+def test_precasting_fom_narrows_the_gap_to_the_fire_shield_loadout():
+    """The modeling finding: in-combat FoM trails the Fire-Shield loadout clearly
+    (the session-15 inversion), but PRE-CASTING FoM nearly erases that gap — it does
+    NOT fully overtake Fire Shield in this single-dummy model, because Fire Shield's
+    thorns over-proc (the lone dummy always targets the Scion, so every incoming hit
+    reflects) — the SEPARATE multi-entity arc, not this session.  So we assert the
+    gap NARROWS sharply (pre-cast brings FoM to within a small fraction of the
+    in-combat shortfall), the honest version of "FoM re-passes Fire Shield"."""
+    fom_in_combat = _mean_dpr_l15_precast("never", n_days=400)
+    fom_precast = _mean_dpr_l15_precast("always", n_days=400)
+    fire_shield = _mean_dpr_l15_precast(None, n_days=400, fourth_level_spell="fire_shield")
+    gap_in_combat = fire_shield - fom_in_combat       # ~3.0 — FoM clearly behind
+    gap_precast = fire_shield - fom_precast           # ~0.5 — nearly tied
+    assert gap_in_combat > 0, f"FoM in-combat {fom_in_combat:.2f} not behind FS {fire_shield:.2f}"
+    assert gap_precast < gap_in_combat, "pre-casting should narrow the FoM↔FS gap"
+    # Pre-cast closes the bulk of the shortfall (residual is the thorns over-count).
+    assert gap_precast < 0.5 * gap_in_combat, (
+        f"pre-cast gap {gap_precast:.2f} should be < half the in-combat gap {gap_in_combat:.2f}")
