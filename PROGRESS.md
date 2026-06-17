@@ -72,6 +72,37 @@ type, condition, resource, …):
    improvements compound and are cheapest to make while the context is fresh.
 
 > **Currently disabled (re-enable before exit):** none reported. **Session scope
+> (2026-06-17, session 16) — DONE (PRE-CAST ASSUMPTION TOGGLE):** made "is this
+> combat-long buff PRE-CAST (before initiative, free) vs CAST IN COMBAT (a real turn
+> cost + concentration)" a tunable SETTING on the Scion's L15 4th-level loadout (FoM
+> + Fire Shield), rather than the session-15 hard-coded branch. **Scope settled with
+> the user up front (4 questions):** setting lives as a **policy/make_day_runner
+> param** (like `fourth_level_spell`); rng mode = a **single probability p, rolled
+> once per combat** through the seeded dice channel (a percentile d100) in
+> `on_combat_start` — NOT in decide(); applied to **just the L15 4th-level spell**
+> (not Shillelagh/Starry-Form/Bless); validation = **three-mode ordering + FoM
+> re-passing Fire Shield**. `precast_mode` ("always"/"rng"/"never"/None) +
+> `precast_prob` thread through `StarfireScionPolicy` + `make_day_runner`. `decide()`
+> emits each 4th-level cast as a free turn-1 install (pre-cast, cost="none") or a
+> real in-combat action/BA cost; Shillelagh's cast-round + Dragon's cost track the
+> same per-combat flag. **None mode = each effect's LEGACY default** (Fire Shield
+> pre-cast, FoM in-combat) and draws **NO dice**, so the existing RNG stream + every
+> prior DPR/ablation test stay **bit-identical** (only "rng" mode touches the
+> stream). **MODELING FINDING (prompt's hypothesis only HALF-confirmed):** the three
+> modes order — always **32.1** > rng@0.5 **30.5** > in-combat **29.6** — but
+> pre-casting FoM narrows its gap to the Fire-Shield loadout (~32.5) from ~3.0 to
+> only **~0.5 (a near-tie), NOT a full reversal**, in the single-dummy model; the
+> residual is Fire Shield's thorns over-count (lone dummy always targets us — the
+> SEPARATE multi-entity arc). So pre-cast alone ties FoM to Fire Shield; the full
+> re-pass needs the multi-entity fix too. **414 tests green (+8).** Branch
+> `feature/precast-assumption-toggle` → confirm before merging to main. Per-feature
+> ritual: no NEW mechanic (a modeling knob; FoM/Fire-Shield/Dragon rules verified
+> sessions 13-15) — reflection done, user chose **no process change**. MCP-toggle
+> recommendation re-made. **NEXT: substrate #7 (zones/summons / multi-entity)** via
+> the silvertail's-blessing build — the last unbuilt buff substrate AND the fix that
+> lets FoM truly pass Fire Shield (design-survey first; multi-session).
+>
+> **Session scope
 > (2026-06-17, session 15) — DONE (FoM CONCENTRATION FOLLOW-UP):** retired the
 > session-14 FoM debt — modeled **Fount of Moonlight as a real in-combat cast WITH
 > concentration**, plus the **Starry-Form Dragon** concentration-save floor (the
@@ -267,6 +298,68 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **PRE-CAST ASSUMPTION TOGGLE — pre-cast vs in-combat as a tunable SETTING on the
+  Scion's L15 4th-level loadout — BUILT & VALIDATED (2026-06-17, session 16).**
+  Whether a combat-long buff is PRE-CAST (before initiative, free) vs CAST IN COMBAT
+  (a real turn cost + concentration) is now a knob, not a hard-coded branch — so the
+  DPR figure's assumption is EXPOSED rather than hidden (the all-in-combat figure is
+  a lower bound, all-pre-cast an upper bound). **414 tests green (+8).** Branch
+  `feature/precast-assumption-toggle`. Memory: `precast-assumption-as-a-toggle`
+  (flipped to BUILT + the near-tie finding).
+  - **Scope settled with the user up front (4 questions).** (1) Setting lives as a
+    **policy / `make_day_runner` param** (mirroring `fourth_level_spell` /
+    `primal_strike_unarmed`), not LEVELS data or a global knob. (2) rng mode = a
+    **single probability p, rolled ONCE per combat** through the seeded channel. (3)
+    Applies to **just the L15 4th-level spell (FoM + Fire Shield)** — Shillelagh /
+    Starry Form / War Angel's Bless left alone. (4) Validation = **three-mode
+    ordering + the FoM↔Fire-Shield re-pass** (consistency/sanity, FakeRNG).
+  - **The shape.** `precast_mode` ("always" / "rng" / "never" / None) + `precast_prob`
+    on `StarfireScionPolicy.__init__` + `make_day_runner`. The coin is resolved ONCE
+    per combat in **`on_combat_start`** (when the `slot_4th` slot is spent) via a
+    percentile **d100 through the seeded RNG** — so `decide()` stays a pure read
+    (CLAUDE.md #7/#9). `decide()` reads the per-combat `_precast_this_combat` flag:
+    pre-cast → a free turn-1 install (`cost="none"`, full-damage opening turn);
+    in-combat → the buff is the turn-1 action (FoM/Fire Shield) ± BA (Dragon), a
+    0-damage opening turn. Shillelagh's cast-round (1 vs 2) and Dragon's activation
+    cost (`none` vs `bonus_action`) track the same flag.
+  - **Bit-identical default (the key invariant).** `_roll_precast` draws NO dice in
+    "always" / "never" / None modes; **only "rng" mode** consumes the d100. None =
+    each effect's LEGACY default (Fire Shield pre-cast = True; FoM in-combat = False),
+    so the pre-toggle behaviour — and the entire existing RNG stream — is preserved:
+    all 53 prior starfire tests (and the full 406) stayed green untouched.
+  - **MODELING FINDING (the prompt's hypothesis only HALF-confirmed).** The three
+    modes order cleanly on L15 DPR (n=400, seed 0): always-precast **32.1** >
+    rng@0.5 **30.5** > in-combat **29.6** (robust across 5 seeds). BUT pre-casting
+    FoM narrows its gap to the Fire-Shield loadout (~32.5) from ~3.0 (in-combat) to
+    only **~0.5 — a NEAR-TIE, not a full reversal** — in the single-dummy model. The
+    residual is exactly Fire Shield's **thorns over-count** (the lone dummy always
+    targets the Scion, so every incoming hit reflects), the SEPARATE multi-entity
+    arc. So **pre-cast alone ties FoM to Fire Shield; the full re-pass needs the
+    multi-entity fix too.** Validation asserts that honestly ("narrows the gap
+    sharply," gap_precast < 0.5·gap_in_combat) rather than forcing an unsupported
+    full-re-pass claim.
+  - **Validation (consistency/sanity, FakeRNG — NOT number-matching;
+    `tests/test_starfire_scion.py`, +8).** "always" makes FoM a free turn-1 install
+    with a full melee opening turn (+ free Dragon, + Shillelagh BA); "never" matches
+    the session-15 in-combat 0-damage opening (FoM cost="action", Dragon BA); None =
+    legacy per-effect default (FoM in-combat, Fire Shield pre-cast); the precast coin
+    is drawn ONLY in "rng" mode (a `_RecordingRNG` counts d100s); the d100 resolves
+    against the threshold (roll ≤ p·100 pre-casts); the three modes order with rng
+    strictly between; "never" DPR is exactly bit-identical to the legacy default; and
+    pre-casting FoM narrows the Fire-Shield gap to under half the in-combat shortfall.
+  - **Reflection / process.** No NEW game mechanic this session (a modeling knob —
+    FoM / Fire Shield / Dragon rules were verified sessions 13-15), so the
+    rules-verification half of the per-feature ritual was N/A; the reflection half
+    ran and the user chose **no process change**. Judgment call flagged: in the
+    pre-cast FoM combat Shillelagh is still a turn-1 BA cast (scoped OUT of the
+    toggle), making the upper bound slightly conservative — acceptable.
+  - **Deferred / next.** **Substrate #7 (zones / summons / multi-entity)** via the
+    silvertail's-blessing build is the last unbuilt buff substrate AND the fix that
+    lets FoM truly pass Fire Shield (the thorns over-count) — design-survey first,
+    multi-session (memory `zone-summon-substrate-via-silvertail`). Generalizing the
+    pre-cast knob beyond the L15 4th-level slot (to Shillelagh / Starry Form / Bless)
+    is a possible smaller thread, not built.
 
 - **FoM CONCENTRATION FOLLOW-UP — Fount of Moonlight in-combat cast + concentration
   + the Starry-Form Dragon save-floor — BUILT & VALIDATED (2026-06-17, session

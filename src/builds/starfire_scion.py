@@ -713,6 +713,8 @@ class StarfireScionPolicy:
         rounds_per_combat: int = 4,
         primal_strike_unarmed: "bool | None" = None,
         fourth_level_spell: str = "fount_of_moonlight",
+        precast_mode: "str | None" = None,
+        precast_prob: float = 0.5,
     ) -> None:
         if level not in LEVELS:
             raise NotImplementedError(
@@ -787,6 +789,24 @@ class StarfireScionPolicy:
         # build casts — exactly one consumes the slot per day.  Default FoM (the
         # guide's L15 pick); set to "fire_shield" to read the Fire-Shield loadout.
         self._fourth_level_spell = fourth_level_spell
+        # PRE-CAST ASSUMPTION TOGGLE (session 16): whether a combat-long buff is
+        # PRE-CAST (before initiative, free — no in-combat economy / 0-damage turn)
+        # or CAST IN COMBAT (a real turn cost + concentration).  In real play this
+        # varies, and reporting one number hides the assumption (memory
+        # precast-assumption-as-a-toggle): the all-in-combat figure is a LOWER bound,
+        # the all-pre-cast an UPPER bound.  A tunable knob spanning:
+        #   "always" → always pre-cast (upper bound)
+        #   "rng"    → pre-cast with probability precast_prob, rolled ONCE per combat
+        #              through the seeded dice channel (a percentile d100), in
+        #              on_combat_start — NOT in decide() (which stays a pure read).
+        #   "never"  → always cast in combat (lower bound)
+        #   None     → each effect's LEGACY default (Fire Shield pre-cast, FoM
+        #              in-combat) — and, crucially, draws NO dice, so every existing
+        #              run stays bit-identical (only "rng" mode touches the stream).
+        # Applies to the prepared 4th-level loadout (Fire Shield / FoM) — the slot
+        # where the assumption actually moves the FoM-vs-Fire-Shield verdict.
+        self._precast_mode = precast_mode
+        self._precast_prob = precast_prob
         # Fire Shield (4th-level, char L15+): available iff the level carries a
         # "fire_shield" block AND it is the prepared 4th-level spell.  ONE cast_effect
         # installs the chosen warm/chill mode's incoming-damage RESISTANCE (#4) +
@@ -838,6 +858,12 @@ class StarfireScionPolicy:
         # concentration == "fount_of_moonlight"), so it drops the instant a failed
         # CON save breaks it — not merely on this combat-scoped flag.
         self._fount_of_moonlight_active: bool = False
+        # Whether THIS combat's 4th-level buff is pre-cast (True → free, before
+        # initiative) or cast in combat (False → real turn cost).  Resolved once per
+        # combat from _precast_mode/_precast_prob when the slot is spent
+        # (on_combat_start); read by decide() to pick each cast's cost.  Default
+        # False is irrelevant until a buff is committed.
+        self._precast_this_combat: bool = False
         # Starry-Form Dragon assumed this combat (Wild Shape spent in on_combat_start
         # for the FoM combat).  Gates the turn-1 BA Dragon activation in decide().
         self._dragon_form_active: bool = False
@@ -892,10 +918,19 @@ class StarfireScionPolicy:
         self._fire_shield_active = False
         self._fount_of_moonlight_active = False
         self._dragon_form_active = False
+        self._precast_this_combat = False
         if self._character.resources.available("slot_4th") >= 1:
+            # Roll the PRE-CAST coin ONCE for this combat (the only combat/day the
+            # slot is spent) — through the seeded dice channel, in on_combat_start,
+            # so decide() stays a pure read (CLAUDE.md #7/#9).  In the default and
+            # "always"/"never" modes _roll_precast draws NO dice, so the existing
+            # RNG stream — and every prior DPR/ablation test — stays bit-identical;
+            # only "rng" mode consumes the percentile d100.
+            self._precast_this_combat = self._roll_precast(rng)
             if self._has_fire_shield:
-                # Fire Shield: pre-cast (NON-concentration).  decide() emits the
-                # cost="none" resistance install on turn 1; on_incoming_hit reflects
+                # Fire Shield: NON-concentration.  decide() emits the resistance
+                # install on turn 1 as cost="none" (pre-cast) or cost="action"
+                # (in-combat — costs the turn-1 action); on_incoming_hit reflects
                 # the mode's thorns on every incoming melee hit this combat.
                 self._character.resources.consume("slot_4th")
                 self._fire_shield_active = True
@@ -918,11 +953,41 @@ class StarfireScionPolicy:
         # Reset Primal Strike's once/turn gate (round numbers restart each combat).
         self._primal_strike_round = None
 
+    def _roll_precast(self, rng: "SeededRNG") -> bool:
+        """Resolve whether this combat's 4th-level buff is pre-cast (True) or cast
+        in combat (False) — the pre-cast assumption toggle.
+
+        Modes that DON'T draw dice (so the RNG stream stays bit-identical to before
+        the toggle existed):
+          - "always" → True  (upper bound)
+          - "never"  → False (lower bound)
+          - None     → each effect's LEGACY default: Fire Shield was always
+                       pre-cast (True); FoM was always in-combat (False).
+        Only "rng" mode consumes the seeded channel: a percentile d100, pre-cast
+        when the roll is within precast_prob (e.g. p=0.5 → roll <= 50).  Going
+        through rng.roll keeps the single dice channel invariant (CLAUDE.md).
+        """
+        if self._precast_mode == "always":
+            return True
+        if self._precast_mode == "never":
+            return False
+        if self._precast_mode == "rng":
+            threshold = int(round(self._precast_prob * 100))
+            return rng.roll_one(100) <= threshold
+        # None → legacy per-effect default (no dice drawn).
+        return self._has_fire_shield
+
     # -- decision point ---------------------------------------------------
 
     def decide(self, snapshot: GameState) -> list[Choice]:
         res = snapshot.resources
         choices: list[Choice] = []
+        # Whether this combat's 4th-level buff is pre-cast (free, before initiative)
+        # or cast in combat (real turn cost) — resolved in on_combat_start.  Drives
+        # the COST of each 4th-level cast below: pre-cast → cost="none" turn-1
+        # installs (no economy, full-damage turn 1); in-combat → the buff is the
+        # turn-1 action/BA (a 0-damage opening turn).
+        precast = self._precast_this_combat
 
         # Starry Form (L4/L5) activation as a first-class cast_effect on turn 1
         # (design/buff_primitive.md): the Star Druid activates the form, which then
@@ -939,22 +1004,48 @@ class StarfireScionPolicy:
                 effect_source="starry_form",
             ))
 
-        # Fire Shield (char L15) — the pre-cast install on turn 1.  A cost="none"
-        # cast_effect: Fire Shield is pre-cast before initiative (10-min, NON-
-        # concentration), so it consumes no in-combat economy (like Starry Form's
-        # activation).  It installs the chosen mode's incoming-damage RESISTANCE
-        # (#4) on the caster under effect_source "fire_shield" (swept at the combat
-        # boundary).  The mode's THORNS (#5) are delivered separately, on every
-        # incoming melee hit, by on_incoming_hit.
-        if self._fire_shield_active and snapshot.round_number == 1:
-            mode = FIRE_SHIELD_MODES[self._fire_shield_mode]
-            choices.append(Choice(
-                action_type="cast_effect",
-                cost="none",
-                effect_source="fire_shield",
-                damage_response={mode["resist"]: "resistance"},
-                duration="combat",
-            ))
+        # 4th-level buff PRE-CAST installs (turn 1, cost="none") — only when this
+        # combat's buff is pre-cast (before initiative, 10-min/concentration held
+        # from before the fight, no in-combat economy — like Starry Form's
+        # activation).  When NOT pre-cast, the buff is instead cast in combat down in
+        # the action/BA blocks (a real turn cost).  The non-pre-cast path is the
+        # session-15 lower-bound model; pre-cast is the upper bound.
+        if precast and snapshot.round_number == 1:
+            # Fire Shield: installs the chosen mode's incoming-damage RESISTANCE (#4)
+            # under effect_source "fire_shield"; thorns (#5) ride on_incoming_hit.
+            if self._fire_shield_active:
+                mode = FIRE_SHIELD_MODES[self._fire_shield_mode]
+                choices.append(Choice(
+                    action_type="cast_effect",
+                    cost="none",
+                    effect_source="fire_shield",
+                    damage_response={mode["resist"]: "resistance"},
+                    duration="combat",
+                ))
+            # Fount of Moonlight: a free concentration install (sets concentration +
+            # radiant resistance #4) — so turn 1 is a full melee turn (the +2d6
+            # radiant rider rides from the first swing) instead of a 0-damage cast.
+            # Concentration is STILL held + breakable in combat, so Dragon's
+            # save-floor still guards it — also installed free here (a pre-cast Wild
+            # Shape activation).
+            if self._fount_of_moonlight_active:
+                choices.append(Choice(
+                    action_type="cast_effect",
+                    cost="none",
+                    effect_source="fount_of_moonlight",
+                    concentration=True,
+                    damage_response={"radiant": "resistance"},
+                    duration="combat",
+                ))
+                if self._dragon_form_active:
+                    choices.append(Choice(
+                        action_type="cast_effect",
+                        cost="none",
+                        effect_source="starry_form_dragon",
+                        statuses=[StatusSpec("concentration_save_floor",
+                                             DRAGON_CONCENTRATION_FLOOR)],
+                        duration="combat",
+                    ))
 
         # ACTION: Guiding Bolt (free Star Map cast) while charges remain, else a
         # quarterstaff attack.  Greedy on the free casts — across statistically
@@ -977,18 +1068,42 @@ class StarfireScionPolicy:
         # So the gate is "a weapon attack was the action", true for quarterstaff only.
         action_is_weapon_attack = False
         if res.get("action", 0) >= 1:
-            if self._fount_of_moonlight_active and snapshot.round_number == 1:
-                # Turn 1 of the FoM combat: the Magic action CASTS Fount of Moonlight
-                # — a CONCENTRATION cast_effect that sets concentration on the caster
-                # and installs the spell's RADIANT RESISTANCE (#4).  No attack this
-                # turn (0 damage).  From turn 2 the +2d6 radiant melee rider (#6,
-                # on_hit) rides every swing while concentration holds.
+            if (
+                self._fount_of_moonlight_active
+                and not precast
+                and snapshot.round_number == 1
+            ):
+                # IN-COMBAT FoM (lower bound): turn 1 of the FoM combat the Magic
+                # action CASTS Fount of Moonlight — a CONCENTRATION cast_effect that
+                # sets concentration and installs the radiant RESISTANCE (#4).  No
+                # attack this turn (0 damage, guide 41:779).  From turn 2 the +2d6
+                # radiant melee rider (#6, on_hit) rides every swing while
+                # concentration holds.  (Pre-cast skips this — the install is free,
+                # turn 1 above — so the action falls through to a melee swing.)
                 choices.append(Choice(
                     action_type="cast_effect",
                     cost="action",
                     effect_source="fount_of_moonlight",
                     concentration=True,
                     damage_response={"radiant": "resistance"},
+                    duration="combat",
+                ))
+            elif (
+                self._fire_shield_active
+                and not precast
+                and snapshot.round_number == 1
+            ):
+                # IN-COMBAT Fire Shield (lower bound): turn 1 the Action CASTS Fire
+                # Shield (NON-concentration), installing the mode's resistance (#4) —
+                # so turn 1 deals no Attack-action damage.  Thorns (#5) ride
+                # on_incoming_hit from this turn on.  (Pre-cast installs it free
+                # above and melees turn 1 instead.)
+                mode = FIRE_SHIELD_MODES[self._fire_shield_mode]
+                choices.append(Choice(
+                    action_type="cast_effect",
+                    cost="action",
+                    effect_source="fire_shield",
+                    damage_response={mode["resist"]: "resistance"},
                     duration="combat",
                 ))
             elif (
@@ -1030,12 +1145,20 @@ class StarfireScionPolicy:
         # on turn 1 of either combat (the action is a spell cast), so the buff being
         # flagged from combat start is harmless.  (Pure read: the cantrip / form were
         # flagged in on_combat_start; here we only consult round_number.)
-        shillelagh_cast_round = 2 if self._fount_of_moonlight_active else 1
+        # Shillelagh slides to turn 2 ONLY when the turn-1 BA is spent on the
+        # IN-COMBAT Dragon activation (the FoM lower-bound model).  When FoM is
+        # pre-cast, Dragon is installed free above, so the turn-1 BA is free for
+        # Shillelagh (cast round 1); likewise the Fire-Shield / no-buff combats.
+        shillelagh_cast_round = (
+            2 if (self._fount_of_moonlight_active and not precast) else 1
+        )
         if res.get("bonus_action", 0) >= 1:
-            if self._dragon_form_active and snapshot.round_number == 1:
-                # Turn 1 of the FoM combat: BA activates Starry-Form DRAGON — a
-                # cost="bonus_action" cast_effect installing the concentration_save_
-                # floor status (substrate #3 save-floor) that floors FoM's CON saves.
+            if self._dragon_form_active and not precast and snapshot.round_number == 1:
+                # IN-COMBAT Dragon (lower bound): turn 1 of the FoM combat the BA
+                # activates Starry-Form DRAGON — a cost="bonus_action" cast_effect
+                # installing the concentration_save_floor status (substrate #3
+                # save-floor) that floors FoM's CON saves.  (Pre-cast installs it
+                # free above, so this branch is skipped and the BA casts Shillelagh.)
                 choices.append(Choice(
                     action_type="cast_effect",
                     cost="bonus_action",
@@ -1309,6 +1432,8 @@ def make_day_runner(
     rounds_per_combat: int = 4,
     primal_strike_unarmed: "bool | None" = None,
     fourth_level_spell: str = "fount_of_moonlight",
+    precast_mode: "str | None" = None,
+    precast_prob: float = 0.5,
 ):
     """Assemble (DayRunner, character, dummy) for the given level.
 
@@ -1319,6 +1444,14 @@ def make_day_runner(
     `fourth_level_spell` (L15+) selects which 4th-level spell the build prepares for
     the single slot_4th slot — "fount_of_moonlight" (default, the guide's pick) or
     "fire_shield".  Exactly one is cast per day (they are separate daily loadouts).
+
+    `precast_mode` / `precast_prob` (L15+) tune whether that 4th-level buff is
+    PRE-CAST (free, before initiative) or CAST IN COMBAT (a real turn cost +
+    concentration) — the pre-cast assumption toggle (memory
+    precast-assumption-as-a-toggle).  "always" = always pre-cast (DPR upper bound),
+    "never" = always in combat (lower bound), "rng" = pre-cast with probability
+    precast_prob (rolled once per combat through the seeded channel), None = each
+    effect's legacy default (Fire Shield pre-cast, FoM in-combat; draws no dice).
 
     Through L12 the enemy carries no attack profile, so it gets no policy and
     never acts; DPR = damage dealt to the dummy = the character's whole output.
@@ -1334,6 +1467,8 @@ def make_day_runner(
         level=level, character=char, target=dummy, rounds_per_combat=rounds_per_combat,
         primal_strike_unarmed=primal_strike_unarmed,
         fourth_level_spell=fourth_level_spell,
+        precast_mode=precast_mode,
+        precast_prob=precast_prob,
     )
     policies: dict[int, object] = {char.id: policy}
 
