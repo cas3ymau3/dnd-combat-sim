@@ -7,7 +7,13 @@
 > (2) policy-flag (session 9), (3) StatusSet + `application_save` (session 11; its
 > SAVE-FLOOR sub-kind — Starry-Form Dragon — session 15), (4) incoming-damage
 > response + (5) defender thorns rider (session 12), and (6) outgoing predicate
-> riders (session 14).  Only (7) zone/summon remains.
+> riders (session 14).  Substrate (7) — zone / summon / multi-entity — is
+> **DESIGNED but unbuilt** (the design note in "Substrate #7" below, session 17,
+> 2026-06-17): it is the `cast_effect` on-ramp to the multi-entity / spatial model
+> already specified (and likewise unbuilt) in `design/design.md` §1 (objects vs
+> actors; controlled allies; party members with 3 HP pools), §3.1 (zonal spatial
+> model), §3.5/§3.6 (enemy targeting + party), and verbs 11/12 (`move_entity`,
+> `create_entity`/`destroy_entity`).
 
 ---
 
@@ -83,7 +89,7 @@ addition); `cast_effect` just installs a labeled payload into the matching one.
 | 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | **BUILT** (session 12) |
 | 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | **BUILT** (session 12) |
 | 6 | **outgoing rider** | `on_hit` seam → separate typed DamageEvents | predicate-gated extra damage (Fount of Moonlight +2d6 radiant, Primal Strike +1d8, Rage melee-STR, Hunter's Mark) | **BUILT** (session 14) |
-| 7 | **zone / summon** | (none yet — multi-enemy/spatial) | damaging emanation / placed entity | DEFERRED |
+| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 (unbuilt) | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED** (§ "Substrate #7" below; sequenced, unbuilt) |
 
 Examples mapped: Bless / Magic Weapon / **Sacred Weapon** (+CHA *stacking on*
 STR/DEX via `amount:{ability_modifier:charisma}` — already supported) / Bane → (1).
@@ -249,10 +255,256 @@ validated — they keep their own `before_combat` sync; not routed through
    the last indexed by source) — fixing a latent leak where only modifiers cleared.
    The single druid-7 4th-level slot (`slot_4th`) is shared between FoM and Fire
    Shield via a `fourth_level_spell` selector (separate daily loadouts).
-   Then **zones/summons (7)**, gated on the multi-enemy / spatial model — the last
-   unbuilt substrate (Sunbeam L19, Spirit Guardians, the elemental node, AoE).
+5. **Zone / summon / multi-entity (7)** — the last unbuilt substrate, and the
+   `cast_effect` on-ramp to the multi-entity / spatial model already designed in
+   `design/design.md`.  **DESIGNED (session 17), unbuilt** — see the dedicated
+   "Substrate #7" section below for the decomposition (7a summon / 7b zone / 7c
+   multi-entity targeting), the engine seams, the build sequence, and the chosen
+   first slice (7c, which also fixes the Fire-Shield thorns over-count artifact).
 
 ---
+
+## Substrate #7 — zone / summon / multi-entity (DESIGNED session 17, unbuilt)
+
+> Design-first per memory `design-first-for-cross-cutting-primitives`: this is the
+> most cross-cutting substrate of all (it changes the *shape of combat* from 1-vs-1
+> to a roster), so the full envelope is surveyed and written up before any engine
+> code. **This session (17) is design-only.** Vehicle for the survey + eventual
+> validation: the **silvertail's-blessing** build (`design/build-guides/32_*`) —
+> chosen because, like Fire Shield forced #4+#5+choose_one, silvertail forces the
+> whole #7 cluster at once (see "Stress test" below).
+
+### The core realization
+
+Substrate #7 is **not a single payload kind bolted onto `cast_effect`**. It is the
+point where `cast_effect` meets the **multi-entity / spatial combat model that
+`design/design.md` already specifies but the engine has never needed** (every build
+to date is one character vs one infinite-HP dummy). The relevant design.md contract
+is already locked and correct — #7 does not redesign it, it **implements against it**:
+
+- **§1 Core entity model** — two entity types (**Objects**: footprint, no HP/economy;
+  **Actors**: HP + stats + action economy) and four actor subtypes (Character, Enemy,
+  **Controlled allies** = mounts/summons/companions, **Party members** = one acting
+  entity holding **3 separate HP pools**). Character/enemy/party are omnipresent;
+  objects and controlled allies wink in/out.
+- **§3.1 Zonal spatial model** — abstract zones (melee blob / ranged / named zones
+  attached to area objects), `move_entity` changes zone, area objects tagged
+  `anchored_to:<entity>` (emanation follows creator) vs `static` (placed zone).
+- **§3.5 Enemy targeting** — random by default among character + party HP pools,
+  trait-adjusted probabilities (`melee` raises, `invisible` lowers, grapple raises);
+  prefers targets it has advantage against.
+- **§3.6 Party members** — 3 infinite HP pools; statuses apply to all, healing/THP
+  per pool; do nothing by default, can take generic actions for support evaluation.
+- **§4 verbs 11/12** — `move_entity`, `create_entity`/`destroy_entity` (both unbuilt).
+- **§8 outputs** — already lists "damage by party and created allies" and "share of
+  turns summons are under status X" as first-class outputs.
+
+So the `cast_effect` envelope already designed (payload set under an `effect_source`
+label, swept on combat end / concentration drop) extends cleanly: #7 just adds two
+new **payload kinds** — `summon` (→ `create_entity` an Actor) and `zone` (→
+`create_entity` an Object + a recurring scheduled trigger) — plus a **target axis**
+already present in the envelope (`target = self | enemy | ally | set`). What is
+genuinely new is **not the envelope** but the **foundation underneath it**: a combat
+that hosts a roster of >2 entities, an enemy targeting layer, and DPR accounting
+attributed per (source, target).
+
+### Decomposition — three sub-kinds on one foundation
+
+```
+            ┌─────────────────────────────────────────────────────────┐
+            │  FOUNDATION: multi-entity combat (design.md §1/§3.5/§3.6) │
+            │  roster of entities · enemy targeting · per-(src,tgt) DPR │
+            └─────────────────────────────────────────────────────────┘
+              ▲                      ▲                       ▲
+   ┌──────────┴────────┐  ┌──────────┴─────────┐  ┌──────────┴──────────────┐
+   │ 7c MULTI-ENTITY   │  │ 7a SUMMON          │  │ 7b ZONE / EMANATION     │
+   │ TARGETING +       │  │ (controlled ally   │  │ (object + footprint +   │
+   │ ALLY-EFFECTS      │  │  Actor: own HP/AC/ │  │  recurring trigger;     │
+   │ (lightest)        │  │  saves/economy)    │  │  needs §3.1 zonal model)│
+   └───────────────────┘  └────────────────────┘  └─────────────────────────┘
+```
+
+**7c — multi-entity targeting & ally-effects (LIGHTEST; the chosen first slice).**
+A `cast_effect` (or an attack) whose `target` is an **ally** or a **set** of
+entities, plus an **enemy that splits its attacks** across the friendly roster.
+Corpus: aid / bless on the beast or a party member (buff an ally — substrate #1/#3
+payloads, just retargeted), warding bond (damage **redirect** — when the warded
+ally is hit, the caster takes a share), protection fighting style / veer / sanctuary
+/ arrow-catching shield (intercept *who gets hit* — rides the existing
+`on_incoming_hit` seam, design.md §4 #15). Needs from the foundation: at least one
+extra friendly pool (a passive party member is enough) + an enemy targeting layer.
+**Needs NO zones and NO summon lifecycle** — which is exactly why it is the first
+slice, and why it **fixes the Fire-Shield thorns over-count** (see below).
+
+**7a — summon / controlled ally.** `create_entity` brings an **Actor** into being
+with its own `Entity` (HP / AC / saves / ModifierStack / ResourcePool / StatusSet —
+`Entity` already supports all of these) and its own action economy, **commanded by
+the character's policy** (the controller emits the ally's `Choice`s; the ally acts on
+the controller's turn per §1). Lifecycle is tied to the `effect_source` label:
+winks out on `destroy_entity` at concentration drop / 0 HP / combat end. Corpus:
+primal companion (beast-strike charge, commanded via the master's BA), find
+steed/familiar (familiar delivers touch spells — a *channel*, not a damage dealer),
+eldritch cannon (placed Actor that fires), homunculus servant (force-strike +
+item-carry + touch-spell delivery), undead minions. Sub-features it forces:
+a **summon DPR column** (§8), the summon as a **buffable ally** (7c bless/aid land on
+it) and a **redirect/soak target** (7c warding-bond / protection protect it), and
+**commanded actions** (the policy decides the ally's turn).
+
+**7b — zone / emanation.** `create_entity` brings an **Object** with a **footprint**
+that defines a **named zone** (§3.1); a **recurring future-dated scheduled event**
+(CLAUDE.md #5 — *durations are events in the queue, not counters*) fires the zone's
+effect on entities **entering / starting their turn in / remaining in** the zone
+(design.md §3.2 predicate vocabulary already lists these triggers). Two effect
+flavors, same machinery: **damage/debuff enemies in the zone** (Spirit Guardians,
+cloud of daggers, spike growth, moonbeam, spirit shroud, walls — most are
+save-for-half, reusing the save path) and **buff allies in the zone** (circle of
+power = advantage on saves vs magic + success→no-damage; aura of vitality).
+`anchored_to: caster` (emanation moves with you — Spirit Guardians) vs `static` (the
+placed zone stays — spike growth, walls). Obscuring zones (fog cloud, darkness) are
+the same Object but grant advantage/disadvantage statuses rather than damage. **Needs
+the §3.1 zonal spatial model**, which the engine has wholly deferred (every fight so
+far is "everyone in melee") — so 7b is the heaviest and last.
+
+### Envelope extension (how `cast_effect` installs #7 payloads)
+
+The envelope is unchanged in shape; two payload kinds and the target axis are the
+additions:
+
+```
+Choice(action_type="cast_effect",
+    target  = self | enemy | ally | set,   # 7c: ally / set retargets existing #1/#3 payloads
+    summons = [SummonSpec(statblock, commander, lifecycle=effect_source)],  # 7a → create_entity(actor)
+    zones   = [ZoneSpec(footprint, anchored_to, recurring_effect, save?)],  # 7b → create_entity(object) + schedule
+    # plus the existing modifiers / statuses / damage_response / etc. payloads,
+    # which 7c simply lets land on an ally entity instead of self.
+)
+```
+
+`effect_source` remains the thread: combat-end / concentration-drop sweep already
+calls `Entity.remove_effect(source)` (session 15) — #7 extends that teardown to also
+`destroy_entity` any summons/zones labeled with the source. Redirect (warding bond)
+and protect (protection style) are **7c riders on the existing `on_incoming_hit`
+intercept seam** — and per the session-12 engine-seam note, the *next* defender
+reaction added (warding-bond redirect) is the trigger to refactor that seam's
+positional 3-tuple into a single response object.
+
+### DPR accounting — "both, reported separately" (user decision, session 17)
+
+Today `make_day_runner` reads ONE column: `damage_received_by[dummy]`. With a roster,
+attribute every `DamageEvent` to its **(source, target)** pair (the event already
+knows both), then the runner reports, **separately**:
+
+- **the build's own DPR** — damage where `source == character` (the headline metric;
+  **stays bit-comparable to every prior single-entity number** — this is the
+  invariant that keeps the existing test corpus meaningful);
+- **a party / roster total** — summed over `source ∈ {character, summons, party}`
+  (what a summon/aura/support build actually contributes);
+- **a per-summon column** — each controlled ally's own output (design.md §8).
+
+This means the headline never silently changes meaning when allies appear; the party
+total is additive information beside it.
+
+### The first slice (next build session) — 7c, which also fixes the thorns artifact
+
+Session 16 found that pre-casting Fount of Moonlight only **narrows** its gap to the
+Fire-Shield loadout to a ~0.5 near-tie (not a reversal), because **Fire Shield's
+thorns over-proc in the single-dummy model**: the lone dummy *always* targets the
+Scion, so *every* incoming hit reflects 2d8. That is a **modeling artifact of 1-vs-1**,
+not a real advantage. The minimal 7c slice dissolves it:
+
+1. Foundation-min: register a **passive party member** (one extra friendly HP pool;
+   §3.6 — it need not act) alongside the Scion in `make_day_runner`.
+2. Enemy targeting: `ScriptedEnemyPolicy` already pre-rolls its target at
+   `on_combat_start` (dice-free `decide`, per CLAUDE.md #7/#9); extend the target set
+   from `{character}` to `{character, party}` with §3.5 trait weighting.
+3. DPR accounting: the per-(source,target) attribution above.
+
+**Predicted sanity check (consistency, FakeRNG — NOT number-matching, per the
+Starfire framing):** with the enemy spreading attacks across the party, Fire Shield's
+thorns fire on only a fraction of rounds → its DPR drops, and the pre-cast FoM
+loadout **overtakes** it — the session-16 near-tie finally reverses. This is the
+slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling artifact.
+
+### Build sequence (multi-session; each gated design-first against this note)
+
+1. **7c multi-entity targeting (foundation-min)** — the slice above. Validates by
+   reversing the FoM↔Fire-Shield near-tie. No summons, no zones.
+2. **7c ally-effects** — bless/aid retargeted onto an ally; warding-bond **redirect**
+   (refactor the `on_incoming_hit` 3-tuple → response object here); protection /
+   sanctuary **protect** (who-gets-hit). Vehicle: silvertail.
+3. **7a summon** — `create_entity`/`destroy_entity` an Actor; commanded actions; the
+   summon DPR column; summon as buff/redirect target. Vehicle: silvertail primal
+   companion. (`transform_statblock`, §4 #13, is adjacent but distinct — Wild Shape.)
+4. **7b zone / emanation** — the §3.1 zonal spatial model + recurring scheduled zone
+   events; damage/debuff and buff flavors; anchored vs static. Vehicle: silvertail
+   Spirit Guardians (emanation) + the wardancer's spike growth / cloud of daggers
+   (static hazard, the design.md §3.1 canonical example).
+
+### Stress test — silvertail forces the whole cluster (the "hard case")
+
+Per the design-first ritual, the envelope is stress-tested against a build that needs
+*all* of #7 at once, the way Fire Shield forced #4+#5+choose_one:
+
+- **Primal companion** → 7a summon (own HP/AC/saves; beast-strike charge; commanded
+  by the master's BA) — not the threshold-immortal dummy.
+- **Spirit Guardians** (cleric-5 / char L10) → 7b emanation (recurring save-for-half
+  to enemies in a 15-ft radius, anchored to the caster).
+- **Circle of power** (cleric-9 / L17) → 7b **buff**-aura (allies in the zone get
+  advantage on saves vs magic + success→no-damage) — the same Object machinery,
+  buff flavor.
+- **Aid / bless on the beast** → 7c ally-buff (retargeted #1/#3 payloads).
+- **Warding bond** → 7c **redirect** (master takes half the beast's damage).
+- **Protection fighting style / veer / sanctuary / arrow-catching shield** → 7c
+  **protect** (impose disadvantage / reassign the target — `on_incoming_hit` riders).
+- **Invoke duplicity** (the duplicate) → an Object-as-positional-token (no HP) that
+  grants advantage to attacks near it — a degenerate zone (footprint, no recurring
+  damage); confirms the Object/zone shape covers non-damaging placed entities too.
+- **Mounted combat** (rider + mount share a zone, move at mount speed; §3.1) → the
+  zonal model's mount rule; and the enemy choosing **beast OR master** is exactly the
+  7c targeting split (same mechanism that fixes the thorns artifact).
+
+The envelope absorbs every one of these as a payload kind + target/anchor parameter —
+no new envelope field beyond `summons` / `zones` / the `ally|set` target. That
+convergence (one diverse build hitting all three sub-kinds with no envelope growth) is
+the evidence the #7 shape is settled, mirroring the Fire-Shield stress test for
+#4/#5.
+
+### Engine seams to build (enumerated; NOT built this session)
+
+- **Roster in the runner** — `make_day_runner` / `day_runner` register a list of
+  entities (character + party + later summons + enemy) instead of the hard-wired
+  character + one dummy.
+- **Enemy targeting layer** — extend `ScriptedEnemyPolicy` target selection over the
+  friendly roster, pre-rolled at `on_combat_start`, §3.5 trait-weighted.
+- **Per-(source,target) DPR accounting** — attribute every `DamageEvent`; runner
+  reports build-column + party-total + per-summon (above).
+- **verbs 11/12** — `create_entity`/`destroy_entity` (Actor for 7a, Object for 7b),
+  `move_entity` (zone changes); lifecycle keyed to `effect_source`.
+- **Recurring zone event** — a future-dated event re-enqueued each round that fires
+  the zone effect on creatures in/entering the zone at their turn boundaries.
+- **Zonal spatial state (§3.1)** — an explicit `zone` attribute on entities + the
+  named-zone registry; deferred until 7b (the foundation-min slice and 7c can run in
+  the implicit single "melee" zone everything already shares).
+- **Intercept-seam refactor** — collapse the `on_incoming_hit` 3-tuple into one
+  response object when warding-bond redirect (step 2) is added (session-12 note).
+
+### Cross-cutting / deferred notes
+
+- **ATTACK-TAXONOMY (memory `attack-taxonomy-three-axes`).** Multi-entity combat is
+  the most likely forcer of the first-class kind/action/economy typology — melee-vs-
+  ranged finally matters (thorns/protection are melee-gated; an enemy targeting the
+  back-line is ranged). Revisit, but per the standing decision *discuss before
+  rebuilding the attack vocabulary* — keep using minimal tags until a slice truly
+  forces it.
+- **Per-feature ritual.** This is a DESIGN note, not a modeled mechanic, so the
+  rules-verification half is N/A here — but every spell named above (Spirit
+  Guardians, warding bond, circle of power, find steed/familiar, eldritch cannon,
+  spike growth, cloud of daggers, aid) is cited from the build guides as a *survey
+  signal only*; its **exact 2024 wording MUST be verified at its build session**
+  before modeling (the cited guide lines are pointers, not authority).
+- **`design.md` is unchanged.** It already specifies this model correctly; #7
+  implements against it. If a build slice reveals a genuine gap in design.md,
+  reconcile it there deliberately (per design.md §0), not silently.
 
 ## Verification debt (per the per-feature ritual)
 
