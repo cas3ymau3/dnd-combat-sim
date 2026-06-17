@@ -66,6 +66,9 @@ class CombatResult:
     combat_num: int                             # 1–4
     damage_log: list[int]                       # total damage dealt per round
     damage_received: dict[int, list[int]]       # entity_id → damage per round
+    # Per-(source, target) cumulative damage ledger for this combat (substrate #7 /
+    # design.md §8 multi-entity DPR accounting).  (source_id, target_id) → total.
+    damage_by_source_target: dict[tuple[int, int], int] = field(default_factory=dict)
 
 
 @dataclass
@@ -103,6 +106,47 @@ class DayResult:
         return sum(
             sum(c.damage_received.get(entity_id, []))
             for c in self.combats
+        )
+
+    # -- per-(source, target) DPR accounting (substrate #7, design.md §8) ----
+    # These read the (source, target) ledger so a roster of >2 entities reports
+    # cleanly.  The user decision (session 17): report the build's OWN column and a
+    # party/roster total SEPARATELY, so the headline never silently changes meaning
+    # when allies appear.
+
+    def damage_by_source(self, source_id: int) -> int:
+        """Total damage DEALT BY a source across the day (summed over all targets).
+
+        The build's own DPR column = ``damage_by_source(character.id)``: it counts
+        only what the character dealt, regardless of who it hit.  In the
+        single-entity case the character only ever damages the dummy, so this equals
+        the prior ``damage_received_by(dummy.id)`` numbers (bit-comparable), while
+        staying well-defined once allies also deal damage.
+        """
+        return sum(
+            dmg
+            for c in self.combats
+            for (src, _tgt), dmg in c.damage_by_source_target.items()
+            if src == source_id
+        )
+
+    def damage_source_to(self, source_id: int, target_id: int) -> int:
+        """Damage dealt BY source TO target across the day — one (src, tgt) cell."""
+        return sum(
+            c.damage_by_source_target.get((source_id, target_id), 0)
+            for c in self.combats
+        )
+
+    def party_total(self, source_ids) -> int:
+        """Roster/party total: damage dealt by ANY source in ``source_ids`` across
+        the day (character + summons + acting party members).  The additive figure
+        the design note reports BESIDE the build's own column."""
+        ids = set(source_ids)
+        return sum(
+            dmg
+            for c in self.combats
+            for (src, _tgt), dmg in c.damage_by_source_target.items()
+            if src in ids
         )
 
 
@@ -413,4 +457,5 @@ class DayRunner:
             combat_num=combat_num,
             damage_log=damage_log,
             damage_received=dict(scheduler.damage_received),
+            damage_by_source_target=dict(scheduler.damage_by_source_target),
         )

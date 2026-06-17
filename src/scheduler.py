@@ -105,6 +105,16 @@ class Scheduler:
         self._round_damage_received: dict[int, int] = {
             e.id: 0 for e in entities
         }
+        # Per-(source, target) damage ledger — CUMULATIVE total per (source_id,
+        # target_id) across this combat (NOT per-round; the runner sums across
+        # combats).  The foundation for multi-entity DPR accounting (substrate #7 /
+        # design.md §8): attribute every DamageEvent to WHO dealt it and WHO took it,
+        # so the runner can report the build's own column (source == character)
+        # separately from a party/roster total once allies also deal damage.  In the
+        # single-entity case the character only ever damages the dummy, so the
+        # character's column here equals its damage_received[dummy] number — the
+        # invariant that keeps the prior test corpus bit-comparable.
+        self.damage_by_source_target: dict[tuple[int, int], int] = {}
 
         # Register the verb handlers.  save_damage uses the plain 4-arg Handler
         # signature, so the generic dispatch branch in run() drives it — it
@@ -175,8 +185,14 @@ class Scheduler:
                     if isinstance(result, tuple):
                         total_dmg, seq_counter = result
                         round_damage += total_dmg
-                        if event.target is not None and event.target.id in self._round_damage_received:
-                            self._round_damage_received[event.target.id] += total_dmg
+                        if event.target is not None:
+                            if event.target.id in self._round_damage_received:
+                                self._round_damage_received[event.target.id] += total_dmg
+                            # Attribute this damage to its (source, target) pair.
+                            key = (event.actor.id, event.target.id)
+                            self.damage_by_source_target[key] = (
+                                self.damage_by_source_target.get(key, 0) + total_dmg
+                            )
                     else:
                         seq_counter = result
 

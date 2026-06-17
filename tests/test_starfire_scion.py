@@ -1240,3 +1240,120 @@ def test_precasting_fom_narrows_the_gap_to_the_fire_shield_loadout():
     # Pre-cast closes the bulk of the shortfall (residual is the thorns over-count).
     assert gap_precast < 0.5 * gap_in_combat, (
         f"pre-cast gap {gap_precast:.2f} should be < half the in-combat gap {gap_in_combat:.2f}")
+
+
+# ---------------------------------------------------------------------------
+# SUBSTRATE #7 — 7c multi-entity targeting (foundation-min).  A passive party
+# member soaks a share of the enemy's attacks; per-(source, target) DPR
+# accounting; and the headline: with the enemy splitting attacks across the
+# party, Fire Shield's thorns fire on a FRACTION of incoming hits so the pre-cast
+# FoM loadout OVERTAKES it — the session-16 ~0.5 near-tie finally reverses.
+# Validation framing unchanged — consistency/sanity (directional), NOT
+# number-matching.
+# ---------------------------------------------------------------------------
+
+def test_l15_build_column_equals_dummy_column_without_party():
+    """The per-(source,target) build column — damage_by_source(char) — equals the
+    legacy damage_received_by(dummy) in the single-entity case: the character only
+    ever damages the dummy, so 'damage BY char' == 'damage TO dummy'.  This is the
+    bit-comparable invariant that keeps every prior DPR number meaningful as the
+    accounting generalises to a roster."""
+    rng = SeededRNG(0)
+    runner, char, dummy = ss.make_day_runner(15, rng, fourth_level_spell="fire_shield")
+    for _ in range(20):
+        r = runner.run_day()
+        assert r.damage_by_source(char.id) == r.damage_received_by(dummy.id)
+        # The character's only target is the dummy, so the single (char,dummy) cell
+        # carries the whole column.
+        assert r.damage_source_to(char.id, dummy.id) == r.damage_by_source(char.id)
+
+
+def test_scripted_enemy_roster_splits_attacks_by_weight():
+    """ScriptedEnemyPolicy in MULTI-ENTITY mode pre-rolls a WEIGHTED target per slot
+    through the seeded channel (roll over the total weight, walk the cumulative
+    buckets) and emits an attack at each — first costs the action, the rest are free
+    multiattack swings."""
+    a = Entity(name="char", hp=10, base_stats={"attack_bonus": 5})
+    b = Entity(name="party", hp=10, base_stats={"ac": 15})
+    pol = ss.ScriptedEnemyPolicy(target=a, n_attacks=2, rounds_per_combat=1,
+                                 roster=[(a, 2), (b, 1)])
+    # Total weight 3 → roll over a d3 per slot: 1,2 → a (cum 2); 3 → b (cum 3).
+    rng = FakeRNG([1, 3])
+    pol.on_combat_start(0, rng)
+    assert rng.roll_calls == [(1, 3), (1, 3)]            # rolled over the total weight
+    choices = pol.decide(_snapshot(1, {"action": 1, "bonus_action": 1}))
+    assert [c.target for c in choices] == [a, b]         # weighted picks, in slot order
+    assert [c.cost for c in choices] == ["action", "none"]
+
+
+def test_l15_party_member_soaks_a_share_of_enemy_attacks():
+    """With a party member registered, the enemy splits its swings (design.md §3.5):
+    the party takes real damage and the character is hit LESS than in the lone-dummy
+    fight — the foundation that makes Fire-Shield thorns fire on only a fraction of
+    incoming hits."""
+    n = 60
+    # With party: enemy damage splits between character and party.
+    rng = SeededRNG(0)
+    runner, char, dummy = ss.make_day_runner(
+        15, rng, fourth_level_spell="fire_shield", with_party=True)
+    party = next(e for e in runner.entities if e is not char and e is not dummy)
+    to_char_party = to_party = 0
+    for _ in range(n):
+        r = runner.run_day()
+        to_char_party += r.damage_source_to(dummy.id, char.id)
+        to_party += r.damage_source_to(dummy.id, party.id)
+    # Without party: char_target_prob 1.0 → all enemy damage hits the character.
+    rng = SeededRNG(0)
+    runner2, char2, dummy2 = ss.make_day_runner(
+        15, rng, fourth_level_spell="fire_shield", with_party=False)
+    to_char_solo = sum(
+        runner2.run_day().damage_source_to(dummy2.id, char2.id) for _ in range(n))
+    assert to_party > 0, "party member should soak some of the enemy's attacks"
+    assert to_char_party < to_char_solo, (
+        f"character hit for {to_char_party} with party vs {to_char_solo} solo — "
+        "the party should draw some heat away")
+
+
+def _mean_dpr_l15_party(fourth_level_spell, precast_mode, with_party, n_days,
+                        precast_prob=0.5, seed=0, rounds_per_combat=4):
+    """L15 mean BUILD-COLUMN DPR (damage_by_source(char) — the substrate-#7 headline
+    metric) for a 4th-level loadout, with or without the passive party member."""
+    rng = SeededRNG(seed)
+    runner, char, _dummy = ss.make_day_runner(
+        15, rng, rounds_per_combat=rounds_per_combat,
+        fourth_level_spell=fourth_level_spell,
+        precast_mode=precast_mode, precast_prob=precast_prob,
+        with_party=with_party)
+    rounds_per_day = 4 * rounds_per_combat
+    total = sum(runner.run_day().damage_by_source(char.id) for _ in range(n_days))
+    return total / (n_days * rounds_per_day)
+
+
+def test_l15_party_split_cuts_fire_shield_thorns_dpr():
+    """The mechanism: with the enemy splitting attacks across the party, Fire
+    Shield's reflected thorns fire on a FRACTION of incoming hits, so the
+    Fire-Shield loadout's DPR DROPS vs the lone-dummy fight where every hit
+    reflected (the session-16 over-count)."""
+    solo = _mean_dpr_l15_party("fire_shield", None, with_party=False, n_days=400)
+    party = _mean_dpr_l15_party("fire_shield", None, with_party=True, n_days=400)
+    assert party < solo, f"fire shield DPR should drop with a party: solo {solo:.2f}, party {party:.2f}"
+
+
+def test_l15_party_split_reverses_the_fom_vs_fire_shield_near_tie():
+    """THE HEADLINE (substrate #7, 7c slice).  In the single-dummy model the
+    pre-cast FoM loadout sits just BEHIND the Fire-Shield loadout (the session-16
+    ~0.5 near-tie, residual = thorns over-count).  Register a passive party member
+    and the enemy splits its attacks → Fire Shield's thorns fire on a fraction of
+    hits while FoM's OWN-hit riders are untouched → the pre-cast FoM loadout
+    OVERTAKES Fire Shield.  The near-tie reverses — closing BOTH the substrate-#7 gap
+    and the session-16 modeling artifact."""
+    # Solo (single dummy): Fire Shield ahead of pre-cast FoM (the near-tie).
+    fs_solo = _mean_dpr_l15_party("fire_shield", None, with_party=False, n_days=400)
+    fom_solo = _mean_dpr_l15_party("fount_of_moonlight", "always", with_party=False, n_days=400)
+    assert fs_solo > fom_solo, (
+        f"solo: Fire Shield {fs_solo:.2f} should lead pre-cast FoM {fom_solo:.2f} (the near-tie)")
+    # With party: the order reverses — pre-cast FoM overtakes Fire Shield.
+    fs_party = _mean_dpr_l15_party("fire_shield", None, with_party=True, n_days=400)
+    fom_party = _mean_dpr_l15_party("fount_of_moonlight", "always", with_party=True, n_days=400)
+    assert fom_party > fs_party, (
+        f"with party: pre-cast FoM {fom_party:.2f} should OVERTAKE Fire Shield {fs_party:.2f}")
