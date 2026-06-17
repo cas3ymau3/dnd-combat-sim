@@ -71,8 +71,41 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none reported (session 17 toggle
+> **Currently disabled (re-enable before exit):** none reported (session 18 toggle
 > recommendation re-made; nothing confirmed disabled). **Session scope (2026-06-17,
+> session 18) — DONE (SUBSTRATE #7 — 7c MULTI-ENTITY FOUNDATION-MIN):** built the
+> FIRST SLICE of substrate #7 (the last `cast_effect` buff substrate) — the
+> multi-entity-combat foundation + the 7c multi-entity-targeting sub-kind. **Three
+> pieces:** (1) a PASSIVE PARTY MEMBER (`make_party_member` — one infinite-HP
+> friendly pool, design.md §3.6; an AC so attacks resolve, NO policy → never acts);
+> (2) `ScriptedEnemyPolicy` MULTI-ENTITY mode — a weighted friendly roster
+> (`roster=[(char, w), (party, w)]`), §3.5 trait-weighted (melee Scion 2 : party 1),
+> pre-rolled at `on_combat_start` so `decide()` stays dice-free (CLAUDE.md #7/#9);
+> (3) per-(source,target) DPR accounting — `Scheduler.damage_by_source_target`
+> ledger → `DayResult.damage_by_source` / `damage_source_to` / `party_total`, so the
+> runner reports the build's OWN column (source==character) AND a party/roster total
+> SEPARATELY (the session-17 user decision). **Wired on the Scion at L15 via
+> `make_day_runner(..., with_party=True)` — DEFAULT False keeps the 1-vs-1 scenario
+> bit-identical** (the build column `damage_by_source(char)` == the legacy
+> `damage_received_by(dummy)`, 619==619; all 414 prior tests untouched). **HEADLINE
+> VALIDATION (consistency/sanity, FakeRNG + directional DPR — NOT number-matching):**
+> with the enemy splitting attacks, Fire Shield's thorns fire on a FRACTION of
+> incoming hits → its DPR drops (32.5→31.2) while pre-cast FoM's own-hit riders are
+> untouched (≈31.8) → **the pre-cast FoM loadout OVERTAKES Fire Shield** (solo gap
+> +0.44 → party gap −0.56) — the session-16 ~0.5 near-tie finally REVERSES, closing
+> both the substrate-#7 gap and the session-16 thorns-over-count artifact. **419
+> tests green (+5).** Branch `feature/substrate-7c-multientity-foundation` → confirm
+> before merging to main. SCOPE held to 7c foundation-min ONLY (no summons/zones/
+> ally-buff/redirect — those are later slices). Per-feature ritual: the "new
+> mechanic" was the §3.5 enemy-targeting weighting + the §3.6 party-member model —
+> both design.md contracts (not D&D rules text), re-read & honored; reflection
+> pending user input. ATTACK-TAXONOMY NOT forced (the foundation runs in the implicit
+> single melee zone; melee-vs-ranged didn't yet matter) — flagged, untouched.
+> **NEXT: 7c ally-effects** (bless/aid retarget onto an ally; warding-bond REDIRECT —
+> the trigger to refactor the `on_incoming_hit` 3-tuple into a response object;
+> protection/sanctuary PROTECT) via the silvertail build; then 7a summon, 7b zone.
+>
+> **Session scope (2026-06-17,
 > session 17) — DONE (SUBSTRATE #7 DESIGN NOTE — DESIGN-ONLY):** wrote the design
 > note for the LAST unbuilt `cast_effect` buff substrate — zone / summon /
 > multi-entity — into `design/buff_primitive.md` (no engine code; 414 tests green,
@@ -327,6 +360,83 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **SUBSTRATE #7 — 7c MULTI-ENTITY FOUNDATION-MIN — BUILT & VALIDATED (2026-06-17,
+  session 18).** The first slice of the last unbuilt `cast_effect` buff substrate:
+  the multi-entity-combat foundation + the 7c multi-entity-targeting sub-kind. The
+  combat is no longer hard-wired 1-character-vs-1-dummy — it can host a friendly
+  roster, the enemy splits its attacks across it, and DPR is attributed
+  per-(source,target). **419 tests green (+5).** Branch
+  `feature/substrate-7c-multientity-foundation` → confirm before merge. Design
+  contract: `design/buff_primitive.md` (registry row 7 + build-sequence item 1
+  flipped to "7c foundation-min BUILT").
+  - **Scope held to 7c foundation-min ONLY** (the session-17 plan): passive party
+    member + enemy split-targeting + per-(source,target) DPR accounting. NO summons,
+    NO zones, NO ally-buff / warding-bond redirect / protection-protect (later
+    slices). Validated against the EXISTING Scion at L15 (silvertail not stood up
+    yet — that's the slice-2/3/4 vehicle).
+  - **Passive party member (`make_party_member`, design.md §3.6).** One extra
+    FRIENDLY infinite-HP pool carrying just an AC (so the enemy's attacks against it
+    resolve) and NO policy (so it never acts — it draws attacks, deals nothing). The
+    foundation-min stand-in for §3.6's full three-HP-pool party entity (deferred).
+    Its only job: pull a share of the enemy's swings off the character so the
+    character's defender-side reactions (Fire-Shield thorns, #5) fire on a FRACTION
+    of incoming hits instead of every one.
+  - **Enemy MULTI-ENTITY targeting (`ScriptedEnemyPolicy` roster mode, design.md
+    §3.5).** A new optional `roster=[(entity, int_weight), …]` param: each attack is
+    split across the weighted friendly roster (the melee Scion weighted 2 : party 1
+    per §3.5 "melee tag raises targeting probability"), pre-rolled per (round, slot)
+    at `on_combat_start` through the seeded channel (roll over the total weight, walk
+    the cumulative buckets — generalises `char_target_prob` to N targets), so
+    `decide()` stays dice-free. `roster=None` → the LEGACY single-target behavior,
+    byte-identical (War Angel + every prior Scion test runs through it unchanged).
+  - **Per-(source,target) DPR accounting.** `Scheduler.damage_by_source_target` —
+    a cumulative `(source_id, target_id) → total` ledger populated as DamageEvents
+    resolve (every event already knows `actor` + `target`). Surfaced on
+    `CombatResult.damage_by_source_target` and three `DayResult` accessors:
+    `damage_by_source(src)` (the build's OWN column — damage BY the character,
+    regardless of target), `damage_source_to(src, tgt)` (one cell), `party_total
+    (src_ids)` (the roster total). The user's session-17 decision: report the build
+    column AND the party total SEPARATELY, so the headline never silently changes
+    meaning when allies appear.
+  - **The bit-comparable invariant (preserved).** In the single-entity case the
+    character only ever damages the dummy, so `damage_by_source(char)` ==
+    `damage_received_by(dummy)` (verified 619==619); `with_party` defaults False, so
+    the entire prior test corpus + every DPR/ablation number is untouched. The new
+    multi-entity scenario is opt-in (`make_day_runner(..., with_party=True)`).
+  - **HEADLINE VALIDATION — the FoM↔Fire-Shield near-tie REVERSES (consistency/
+    sanity, FakeRNG + directional DPR, NOT number-matching).** Session 16 found
+    pre-cast FoM only NARROWED its gap to the Fire-Shield loadout to ~0.5 (not a
+    reversal), the residual being Fire Shield's thorns over-proc against the lone
+    dummy (which always targets the Scion → every incoming hit reflects). With a
+    party member splitting the attacks: Fire Shield's thorns DPR drops (~32.5→31.2)
+    while FoM's OWN-hit riders are untouched (~31.8) → **pre-cast FoM OVERTAKES Fire
+    Shield** (solo gap +0.44 → party gap −0.56). Closes BOTH the substrate-#7 gap
+    (7c) and the session-16 modeling artifact, exactly as the design note predicted.
+  - **Validation (`tests/test_starfire_scion.py`, +5).** The build column equals the
+    dummy column without a party (bit-comparable invariant); the roster splits
+    attacks by weight through the seeded channel (FakeRNG — first swing action, rest
+    free); the party member soaks real damage and the character is hit less than
+    solo; the party split cuts Fire-Shield DPR; and the party split REVERSES the
+    FoM-vs-Fire-Shield order (solo FS > FoM, party FoM > FS).
+  - **Engine seams touched.** `Scheduler` (the source-target ledger), `DayRunner`
+    (`CombatResult`/`DayResult` plumbing + accessors), `ScriptedEnemyPolicy` (roster
+    mode), `starfire_scion` (`make_party_member`, the L15 row's char/party weights,
+    `make_day_runner(with_party=...)`). NO new engine verb; `create_entity`/
+    `move_entity` (verbs 11/12) + the §3.1 zonal state are still deferred to 7a/7b.
+  - **Per-feature ritual / process.** The "new mechanic" was the §3.5 enemy-targeting
+    weighting + the §3.6 party-member model — both `design.md` CONTRACTS (not D&D
+    rules text), re-read and honored (no external wording to verify). ATTACK-TAXONOMY
+    NOT forced this slice (the foundation runs in the implicit single melee zone;
+    melee-vs-ranged hasn't yet mattered) — flagged, untouched per the standing
+    "discuss before rebuilding the attack vocabulary" decision. Reflection half
+    pending user input.
+  - **Deferred / next.** 7c ally-effects (bless/aid retarget; warding-bond REDIRECT —
+    the trigger to refactor the `on_incoming_hit` 3-tuple → response object;
+    protection/sanctuary PROTECT) via the silvertail build; then 7a summon
+    (`create_entity` an Actor), 7b zone/emanation (§3.1 zonal model). Generalising
+    the full §3.6 three-HP-pool party entity, and `precast_mode` beyond the L15
+    4th-level slot, also still deferred.
 
 - **SUBSTRATE #7 DESIGN NOTE — zone / summon / multi-entity — WRITTEN (design-only,
   2026-06-17, session 17).** The last unbuilt `cast_effect` buff substrate is now

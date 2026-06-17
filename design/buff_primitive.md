@@ -8,10 +8,12 @@
 > SAVE-FLOOR sub-kind — Starry-Form Dragon — session 15), (4) incoming-damage
 > response + (5) defender thorns rider (session 12), and (6) outgoing predicate
 > riders (session 14).  Substrate (7) — zone / summon / multi-entity — is
-> **DESIGNED but unbuilt** (the design note in "Substrate #7" below, session 17,
-> 2026-06-17): it is the `cast_effect` on-ramp to the multi-entity / spatial model
-> already specified (and likewise unbuilt) in `design/design.md` §1 (objects vs
-> actors; controlled allies; party members with 3 HP pools), §3.1 (zonal spatial
+> **DESIGNED** (the design note in "Substrate #7" below, session 17, 2026-06-17),
+> with its **7c foundation-min slice BUILT** (session 18, 2026-06-17: passive party
+> member + enemy split-targeting + per-(source,target) DPR accounting; summons /
+> zones / ally-effects still unbuilt).  It is the `cast_effect` on-ramp to the
+> multi-entity / spatial model already specified in `design/design.md` §1 (objects
+> vs actors; controlled allies; party members with 3 HP pools), §3.1 (zonal spatial
 > model), §3.5/§3.6 (enemy targeting + party), and verbs 11/12 (`move_entity`,
 > `create_entity`/`destroy_entity`).
 
@@ -89,7 +91,7 @@ addition); `cast_effect` just installs a labeled payload into the matching one.
 | 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | **BUILT** (session 12) |
 | 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | **BUILT** (session 12) |
 | 6 | **outgoing rider** | `on_hit` seam → separate typed DamageEvents | predicate-gated extra damage (Fount of Moonlight +2d6 radiant, Primal Strike +1d8, Rage melee-STR, Hunter's Mark) | **BUILT** (session 14) |
-| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 (unbuilt) | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED** (§ "Substrate #7" below; sequenced, unbuilt) |
+| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED**; **7c foundation-min BUILT** (session 18 — party member + enemy split-targeting + per-(source,target) DPR); 7c ally-effects / 7a summon / 7b zone unbuilt |
 
 Examples mapped: Bless / Magic Weapon / **Sacred Weapon** (+CHA *stacking on*
 STR/DEX via `amount:{ability_modifier:charisma}` — already supported) / Bane → (1).
@@ -427,8 +429,18 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
 
 ### Build sequence (multi-session; each gated design-first against this note)
 
-1. **7c multi-entity targeting (foundation-min)** — the slice above. Validates by
-   reversing the FoM↔Fire-Shield near-tie. No summons, no zones.
+1. **7c multi-entity targeting (foundation-min)** — the slice above. **BUILT
+   (session 18, 2026-06-17).** A passive party member (`make_party_member`, one
+   infinite-HP friendly pool, no policy) + `ScriptedEnemyPolicy` MULTI-ENTITY mode
+   (a weighted friendly roster, §3.5: melee Scion 2 : party 1, pre-rolled at
+   `on_combat_start`) + per-(source,target) DPR accounting (a
+   `Scheduler.damage_by_source_target` ledger → `DayResult.damage_by_source` /
+   `damage_source_to` / `party_total`).  Wired on the Scion at L15 via
+   `make_day_runner(..., with_party=True)` (default False → the 1-vs-1 scenario stays
+   bit-identical).  Validated by reversing the FoM↔Fire-Shield near-tie: with the
+   enemy splitting attacks, Fire Shield's thorns fire on a fraction of hits so the
+   pre-cast FoM loadout overtakes it (consistency/sanity, FakeRNG + directional DPR).
+   No summons, no zones.
 2. **7c ally-effects** — bless/aid retargeted onto an ally; warding-bond **redirect**
    (refactor the `on_incoming_hit` 3-tuple → response object here); protection /
    sanctuary **protect** (who-gets-hit). Vehicle: silvertail.

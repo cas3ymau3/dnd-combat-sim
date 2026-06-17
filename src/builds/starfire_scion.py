@@ -581,7 +581,18 @@ LEVELS: dict[int, dict] = {
         # saves; per-CR attack/damage is the unrealised half of decision #12 —
         # see builds/enemy.py).  +9 vs char AC 18 → ~60% hit, exercising the thorns.
         "enemy_attack": {"n_attacks": 2, "char_target_prob": 1.0,
-                          "attack_bonus": 9, "damage_dice": (2, 8), "damage_bonus": 5},
+                          "attack_bonus": 9, "damage_dice": (2, 8), "damage_bonus": 5,
+                          # Multi-entity targeting weights (substrate #7 / 7c slice;
+                          # design.md §3.5).  Used ONLY when make_day_runner is called
+                          # with_party=True: the enemy splits its swings across
+                          # {character, party} by these integer weights.  The melee
+                          # Scion is weighted higher than a passive party member (the
+                          # §3.5 "melee tag raises targeting probability"): 2:1 → the
+                          # character draws 2/3 of the attacks, the party 1/3.  So
+                          # Fire-Shield thorns fire on a FRACTION of incoming hits (no
+                          # longer every one, as against the lone dummy) — dissolving
+                          # the single-dummy thorns over-count (PROGRESS session 16).
+                          "char_weight": 2, "party_weight": 1},
         "resources": {
             "spellfire_spark":  (5, 0),    # Sacred Flame as a BA, x PB / LR (PB 5)
             "guiding_bolt_free": (5, 0),   # Star Map: free Guiding Bolt x WIS mod / LR (WIS 20 → 5)
@@ -676,6 +687,32 @@ def make_training_dummy(level: int) -> Entity:
         hp=10**9,
         base_stats=base_stats,
         damage_response=data.get("enemy_resist"),
+    )
+
+
+def make_party_member(level: int) -> Entity:
+    """A passive PARTY MEMBER (design.md §3.6) — one extra FRIENDLY HP pool that
+    soaks a share of the enemy's attacks.
+
+    The foundation-min piece of substrate #7's 7c slice (the multi-entity-combat
+    on-ramp): a SINGLE infinite-HP pool — the full §3.6 three-HP-pool model is a
+    later slice — carrying just an AC so the enemy's attacks against it resolve, and
+    NO policy, so it never acts (it draws attacks, deals no damage).  Its whole job
+    is to pull a fraction of the enemy's swings away from the character: with the
+    enemy splitting attacks across {character, party}, the character's defender-side
+    reactions (Fire-Shield thorns, substrate #5) fire on only a FRACTION of incoming
+    hits instead of every one — dissolving the single-dummy thorns over-count
+    (PROGRESS session 16 / the substrate-#7 design note's first slice).
+    """
+    data = LEVELS[level]
+    return Entity(
+        name=f"PartyMember-L{level}",
+        hp=10**9,
+        # A peer's AC (§3.6 says party AC scales with level via the CR table; a
+        # melee peer at the Scion's own AC is the foundation-min stand-in).  No
+        # saves/resources — the enemy here only melee-attacks, and the party never
+        # acts, so nothing else is read.
+        base_stats={"ac": data["char_ac"]},
     )
 
 
@@ -1434,6 +1471,7 @@ def make_day_runner(
     fourth_level_spell: str = "fount_of_moonlight",
     precast_mode: "str | None" = None,
     precast_prob: float = 0.5,
+    with_party: bool = False,
 ):
     """Assemble (DayRunner, character, dummy) for the given level.
 
@@ -1460,6 +1498,18 @@ def make_day_runner(
     enemy-strikes-back loop that makes Fire Shield thorns (#5) and incoming-damage
     resistance (#4) do real work.  DPR still reads the dummy's column, so the
     enemy's own damage to the character never pollutes it.
+
+    `with_party` (L15+, substrate #7 / 7c foundation-min) registers a passive PARTY
+    MEMBER (``make_party_member`` — one extra friendly HP pool, design.md §3.6) and
+    switches the enemy to MULTI-ENTITY targeting: it splits its swings across
+    {character, party} by the row's ``char_weight``/``party_weight`` (design.md
+    §3.5).  So the character is attacked on only a fraction of swings and its
+    Fire-Shield thorns fire less — dissolving the single-dummy thorns over-count
+    (PROGRESS session 16).  DEFAULT False keeps the legacy 1-vs-1 scenario
+    bit-identical (every prior DPR/ablation number is unchanged).  Read the build's
+    own DPR column from the result via ``damage_by_source(char.id)`` (equals the old
+    ``damage_received_by(dummy.id)`` in the no-party case, since the character only
+    damages the dummy); the passive party member itself deals nothing.
     """
     char = make_starfire_scion(level)
     dummy = make_training_dummy(level)
@@ -1471,19 +1521,33 @@ def make_day_runner(
         precast_prob=precast_prob,
     )
     policies: dict[int, object] = {char.id: policy}
+    entities: list[Entity] = [char, dummy]
 
     ea = LEVELS[level].get("enemy_attack")
     if ea:
-        policies[dummy.id] = ScriptedEnemyPolicy(
-            target=char,
-            n_attacks=ea.get("n_attacks", 2),
-            char_target_prob=ea.get("char_target_prob", 1.0),
-            rounds_per_combat=rounds_per_combat,
-        )
+        if with_party:
+            # Multi-entity (7c): a passive party member soaks a share of attacks;
+            # the enemy splits its swings across the weighted friendly roster.
+            party = make_party_member(level)
+            entities.append(party)
+            policies[dummy.id] = ScriptedEnemyPolicy(
+                target=char,
+                n_attacks=ea.get("n_attacks", 2),
+                rounds_per_combat=rounds_per_combat,
+                roster=[(char, ea.get("char_weight", 2)),
+                        (party, ea.get("party_weight", 1))],
+            )
+        else:
+            policies[dummy.id] = ScriptedEnemyPolicy(
+                target=char,
+                n_attacks=ea.get("n_attacks", 2),
+                char_target_prob=ea.get("char_target_prob", 1.0),
+                rounds_per_combat=rounds_per_combat,
+            )
 
     runner = DayRunner(
         rng=rng,
-        entities=[char, dummy],
+        entities=entities,
         policies=policies,
         rounds_per_combat=rounds_per_combat,
     )
