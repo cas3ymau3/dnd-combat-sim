@@ -71,7 +71,36 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none reported. **Session scope
+> **Currently disabled (re-enable before exit):** none reported (session 17 toggle
+> recommendation re-made; nothing confirmed disabled). **Session scope (2026-06-17,
+> session 17) — DONE (SUBSTRATE #7 DESIGN NOTE — DESIGN-ONLY):** wrote the design
+> note for the LAST unbuilt `cast_effect` buff substrate — zone / summon /
+> multi-entity — into `design/buff_primitive.md` (no engine code; 414 tests green,
+> unchanged). **Scope settled with the user up front (4 questions):** (1)
+> **design-only** (corpus survey + note, no code); (2) **multi-entity targeting**
+> is the primary focus / first-to-build sub-kind; (3) **silvertail (guide 32)** is
+> the survey + validation vehicle; (4) DPR with multiple friendly entities = report
+> **both** the build's own column AND a party/roster total **separately**. **The
+> core realization:** #7 is NOT a new payload bolted onto `cast_effect` — it is the
+> `cast_effect` ON-RAMP to the multi-entity / spatial model already specified (but
+> unbuilt) in `design.md` §1 (objects vs actors; controlled allies; party 3-HP-pools),
+> §3.1 (zonal model), §3.5/§3.6 (enemy targeting + party), verbs 11/12. It
+> decomposes into **7c multi-entity targeting + ally-effects (lightest)**, **7a
+> summon (own-HP ally)**, **7b zone/emanation**, on a shared multi-entity-combat
+> foundation. **Sequenced 7c→7a→7b**, each gated design-first. **The first slice
+> (next session) = 7c foundation-min** (passive party member + enemy split-targeting
+> + per-(source,target) DPR accounting) — which ALSO fixes the session-16
+> Fire-Shield thorns over-count artifact (predicted: FoM overtakes Fire Shield once
+> incoming hits spread across the party). **Silvertail is the stress test** (forces
+> summon + emanation + buff-aura + ally-buff + redirect + protect + targeting-split
+> with NO envelope growth — the design-first "hard case", mirroring Fire Shield for
+> #4/#5). Per-feature ritual: no NEW mechanic modeled (design note) — rules-verify
+> half N/A; the surveyed spells are pointers, exact wording to be verified at each
+> build session. Branch `design/substrate-7-zones-summons-multientity` (pushed) →
+> confirm before merging to main. **NEXT: build the 7c foundation-min slice** (see
+> the "Substrate #7" section of `design/buff_primitive.md`).
+>
+> **Session scope
 > (2026-06-17, session 16) — DONE (PRE-CAST ASSUMPTION TOGGLE):** made "is this
 > combat-long buff PRE-CAST (before initiative, free) vs CAST IN COMBAT (a real turn
 > cost + concentration)" a tunable SETTING on the Scion's L15 4th-level loadout (FoM
@@ -298,6 +327,76 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **SUBSTRATE #7 DESIGN NOTE — zone / summon / multi-entity — WRITTEN (design-only,
+  2026-06-17, session 17).** The last unbuilt `cast_effect` buff substrate is now
+  DESIGNED (still unbuilt). Surveyed the build-guide corpus for zone/summon/aura/
+  multi-entity effects and wrote the design note into `design/buff_primitive.md`
+  (registry row 7 flipped DEFERRED → DESIGNED; header + next-steps updated; new
+  "Substrate #7" section). **No engine code; 414 tests green (unchanged).** Branch
+  `design/substrate-7-zones-summons-multientity` (pushed) → confirm before merge.
+  - **Scope settled with the user up front (4 questions).** (1) **Design-only**
+    (survey + note, no code). (2) **Multi-entity targeting** = primary focus /
+    first-to-build. (3) **Silvertail (guide 32)** = survey + validation vehicle.
+    (4) DPR with multiple friendly entities = report **both** the build's own
+    column AND a party/roster total **separately**.
+  - **The core realization (the note's spine).** #7 is the `cast_effect` ON-RAMP to
+    the multi-entity/spatial model `design.md` already specifies but the engine has
+    never needed (every build so far = 1 character vs 1 infinite-HP dummy): §1
+    (Objects vs Actors; Controlled allies; Party = one actor, 3 HP pools), §3.1
+    (zonal spatial model), §3.5 (enemy targeting over character+party), §3.6 (party),
+    verbs 11/12 (`move_entity`, `create_entity`/`destroy_entity`), §8 (already lists
+    summon/party damage as outputs). #7 implements against that contract — it does
+    NOT redesign it. `design.md` left unchanged.
+  - **Decomposition — 3 sub-kinds on 1 foundation.** FOUNDATION = multi-entity
+    combat (roster of >2 entities, enemy targeting layer, per-(source,target) DPR).
+    **7c** multi-entity targeting + ally-effects (target=ally|set; bless/aid
+    retargeted; warding-bond redirect; protection/veer/sanctuary protect via the
+    `on_incoming_hit` seam) — LIGHTEST, needs no zones/summons. **7a** summon
+    (`create_entity` an Actor with own HP/AC/saves/economy, commanded by the
+    character policy, lifecycle keyed to `effect_source`; summon DPR column;
+    buffable + redirect target). **7b** zone/emanation (`create_entity` an Object +
+    footprint defining a named zone + a recurring future-dated scheduled event;
+    damage/debuff OR buff flavor; anchored-to-caster vs static; needs the §3.1
+    zonal model). Sequenced **7c → 7a → 7b**, each gated design-first.
+  - **Envelope extension.** Shape unchanged; adds payload kinds `summons`
+    (`SummonSpec`) + `zones` (`ZoneSpec`) and uses the target axis `ally|set`; the
+    `effect_source` label already drives teardown (`Entity.remove_effect`, session
+    15) — extended to also `destroy_entity` summons/zones on the same source.
+    Redirect/protect ride the existing intercept seam; adding warding-bond redirect
+    is the trigger to refactor that seam's 3-tuple into a response object (the
+    session-12 deferred note).
+  - **DPR accounting (user decision: both, separately).** Attribute every
+    `DamageEvent` to its (source, target); the runner reports the **build's own
+    column** (`source==character` — stays bit-comparable to all prior numbers, the
+    invariant that keeps the test corpus meaningful), a **party/roster total**
+    (sum over character+summons+party), and a **per-summon column**.
+  - **First slice (next session) = 7c foundation-min.** Register a passive party
+    member (one extra friendly HP pool); extend `ScriptedEnemyPolicy` target set to
+    {character, party}, pre-rolled at `on_combat_start` (dice-free decide), §3.5
+    trait-weighted; per-(source,target) DPR accounting. **Predicted sanity check
+    (consistency, FakeRNG — NOT number-matching):** spreading incoming hits across
+    the party drops Fire Shield's thorns DPR and the pre-cast FoM loadout OVERTAKES
+    it — the session-16 ~0.5 near-tie finally reverses. Closes BOTH the substrate
+    gap (7c) and the session-16 modeling artifact.
+  - **Stress test = silvertail (guide 32).** Forces the whole cluster at once
+    (primal companion = 7a; Spirit Guardians = 7b emanation; circle of power = 7b
+    buff-aura; aid/bless on beast = 7c ally-buff; warding bond = 7c redirect;
+    protection/veer/sanctuary/arrow-catching = 7c protect; invoke duplicity =
+    Object-as-token degenerate zone; mounted combat = zonal mount rule + the 7c
+    targeting split). All absorbed with no envelope growth — the evidence the shape
+    is settled, mirroring Fire Shield for #4/#5.
+  - **Engine seams enumerated (NOT built):** roster in the runner; enemy targeting
+    layer; per-(source,target) DPR; verbs 11/12; recurring zone event; the §3.1
+    zonal state (deferred to 7b — 7c/7a run in the implicit single melee zone);
+    intercept-seam refactor at warding-bond.
+  - **Reflection / process.** Design-only → per-feature ritual's rules-verify half
+    is N/A (surveyed spells are pointers, to be verified at each build session); the
+    reflection half ran (see end-of-session — pending user input on process
+    changes). ATTACK-TAXONOMY flagged as most likely to be forced by multi-entity
+    combat (melee-vs-ranged finally matters) — revisit, but discuss before
+    rebuilding the attack vocabulary. Memory `zone-summon-substrate-via-silvertail`
+    updated to BUILT-design / scope-decided.
 
 - **PRE-CAST ASSUMPTION TOGGLE — pre-cast vs in-combat as a tunable SETTING on the
   Scion's L15 4th-level loadout — BUILT & VALIDATED (2026-06-17, session 16).**
