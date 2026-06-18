@@ -71,8 +71,56 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none reported (session 19 toggle
+> **Currently disabled (re-enable before exit):** none reported (session 20 toggle
 > recommendation re-made; nothing confirmed disabled). **Session scope (2026-06-17,
+> session 20) — DONE (SUBSTRATE #7 — 7a SUMMON):** built the MINIMAL 7a slice — the
+> **Blessed of Silvertail** (guide 32) at **char L4** with its **PRIMAL COMPANION as
+> a `create_entity`'d ACTOR**, COMMANDED on the master's turn, in its own per-summon
+> DPR column. **Scope settled with the user up front (3 questions):** (1) **L4
+> beast-only** (the prompt's minimal — verbs + commanded actions + the summon column;
+> NO 7c-on-summon); (2) command model = **fully commanded on the master's turn**
+> (design-literal — the controller's policy emits the beast's Choice, attributed to
+> the beast, command costs the master's BA — not the lighter own-turn abstraction);
+> (3) lifecycle = **build `create_entity` as a real mid-combat verb but invoke it at
+> DAY START out of combat** for the silvertail (the permanent companion persists the
+> day; defer *testing* the mid-combat conjure-spawn until a build forces it). **The
+> engine primitive:** (a) **`Choice.actor`** — the COMMANDED-action override
+> (design.md §1: controlled allies act on their controller's turn): the cost (action
+> economy + resources) is drained from the CONTROLLER (the master's Bonus Action
+> commands the beast), but the spawned event's actor is the commanded entity, so the
+> attack uses ITS stats and is attributed to it — the **summon DPR column falls out
+> of the per-(source,target) ledger for free**; (b) **`src/summons.py`** — `SummonSpec`
+> + **`create_entity`/`destroy_entity`** (verb 12) on an (entities, policies) roster,
+> + `Scheduler.add_entity`/`remove_entity` (live-ledger sync) + the cast_effect
+> **`summons`** payload (the general mid-combat verb, lightly exercised); (c)
+> **`Entity.remove_effect` winks out summons** keyed to `effect_source` (a `destroyed`
+> flag + `note_effect_summon`; the scheduler skips destroyed entities' turns) —
+> design.md §1 "controlled allies wink in/out". **Build (`src/builds/silvertail.py`,
+> L4 only):** master (Air Genasi Fighter-1/Ranger-3, AC 19, **shocking grasp = the
+> build column**) + **Beast of the Land** (AC 16, HP 20, Beast's Strike 1d8+2+WIS,
+> to-hit +5, +1d6 charge — verified vs 2024 Roll20/D&D Beyond + guide 32:326 BEFORE
+> modeling); `SilvertailPolicy` commands the beast via the master's BA; the runner
+> summons it at day start via `create_entity` and reports the **build column,
+> summon column, AND party total SEPARATELY** (user decision s17 — the beast
+> ≈121.5/day dominates the master's cantrip ≈43.9/day, and the party total 165.4 is
+> exactly their sum: the case "report both" exists for). **444 tests green (+12.)**
+> Branch `feature/substrate-7a-summon` → confirm before merging to main. Per-feature
+> ritual: Beast of the Land's 2024 statblock web-verified BEFORE modeling; reflection
+> done — user chose **no ritual change**, with THREE forward-looking flags captured
+> (below). **DEFERRED (flagged):** charge PRONE → advantage on shocking grasp (needs
+> an **on-hit-applies-status seam** — a hit installs a condition the later roll reads);
+> the **7c effects ON the beast** (warding bond redirect / protection / aid retarget
+> — the beast as a buff/redirect target); higher rows; 7b zone; mid-combat conjure
+> summon lifecycle (testing). The scheduler's **`snapshot.enemies` labels every
+> non-actor (incl. friendlies) as an enemy and always sets `allies=()`** — harmless
+> today (policies use explicit target refs) but a known seam to fix when a policy
+> must read its allies. **Revisit commanded-vs-DPR-faithful** before the next summon
+> slice now that the commanded model is concrete. ATTACK-TAXONOMY untouched. **NEXT:
+> 7c-on-summon** (the beast as a buff/redirect/protect target — connect 7a to the
+> built 7c machinery) and/or **7b zone/emanation** (Spirit Guardians — the §3.1
+> zonal model).
+>
+> **Session scope (2026-06-17,
 > session 19) — DONE (SUBSTRATE #7 — 7c ALLY-EFFECTS):** built the SECOND 7c slice —
 > `cast_effect` / intercept riders whose target is an ALLY, on the session-18
 > multi-entity foundation. **Three effects, each verified against 2024 text FIRST**
@@ -393,6 +441,87 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **SUBSTRATE #7 — 7a SUMMON (commanded primal companion) — BUILT & VALIDATED
+  (2026-06-17, session 20).** The minimal 7a slice: a controlled-ally SUMMON as a
+  real `create_entity`'d Actor, COMMANDED on its controller's turn, in its own
+  per-summon DPR column. The combat now hosts a friendly that ACTS (not just the
+  passive party member of slice 1). **444 tests green (+12).** Branch
+  `feature/substrate-7a-summon` → confirm before merge. Design contract:
+  `design/buff_primitive.md` (registry row 7 + build-sequence item 3 flipped to BUILT;
+  `design.md` §1 controlled allies / §4 verbs 11/12 / §8 per-summon output).
+  - **Scope settled with the user up front (3 questions).** (1) **L4 beast-only**
+    (the prompt's minimal — the verbs + commanded actions + the summon column; NO
+    7c-on-summon). (2) Command model = **fully commanded on the master's turn**
+    (design-literal, not the lighter own-turn+BA-cost abstraction). (3) Lifecycle =
+    **build `create_entity` as a real mid-combat verb, but invoke it at DAY START out
+    of combat** for the silvertail's permanent companion; defer *testing* the
+    mid-combat conjure-spawn until a build forces it.
+  - **Commanded actions — `Choice.actor` (the load-bearing primitive).** A choice may
+    carry an `actor` override: the controller's policy emits it, the COST (action
+    economy + `resource_cost`) is drained from the CONTROLLER (the Beast Master spends
+    a **Bonus Action** to command the beast), but the spawned event's actor is the
+    commanded entity. So the attack uses the BEAST's stats and is attributed to the
+    beast — the **per-summon DPR column falls out of the existing per-(source,target)
+    ledger for free** (`damage_by_source(beast.id)`). Threaded in the scheduler's
+    attack + save_spell branches (`acting = choice.actor or actor`); cost/resource
+    checks stay on the commanding `actor`. design.md §1: "controlled allies act on
+    their controller's turn."
+  - **create_entity / destroy_entity (verbs 11/12) — `src/summons.py`.** `SummonSpec`
+    (entity + lifecycle source + commander/policy) + `create_entity`/`destroy_entity`
+    operating on a plain `(entities, policies)` roster, so the SAME verb summons at
+    **day start out of combat** (the runner assembles the day's roster — how the
+    permanent companion is created once and persists the day) or **mid-combat**
+    (`Scheduler.add_entity`/`remove_entity` keep the live per-combat damage ledgers in
+    sync; the cast_effect **`summons`** payload create_entity's into the live combat).
+    The mid-combat path is built + lightly exercised; a per-combat conjure summon whose
+    turns must splice into a round already in flight is **deferred** until a build forces
+    it (user decision).
+  - **Lifecycle teardown — `Entity.remove_effect` winks out summons.** A `destroyed`
+    flag on Entity + `note_effect_summon(source, summon)`; `remove_effect(source)` now
+    marks any summons it created `destroyed` alongside the modifiers/statuses/response
+    of the bundle, so a controlled ally winks out with a dropped concentration / the
+    combat-boundary sweep (design.md §1). The scheduler skips a `destroyed` entity's
+    turns; a commander checks `beast.destroyed` before commanding.
+  - **Build — `src/builds/silvertail.py` (char L4 only, the minimal row).**
+    `make_silvertail` (Air Genasi Fighter-1/Ranger-3, AC 19; **shocking grasp** = a
+    WIS spell attack, 1d8 lightning = the BUILD column) + `make_primal_companion`
+    (Beast of the Land — an ACTOR: AC 16, HP 20, own saves). `SilvertailPolicy`
+    commands the beast via the master's Bonus Action (`actor=beast`) and casts shocking
+    grasp with the action (guide 32:353 rotation). `make_silvertail_runner` summons the
+    beast at day start via `create_entity` and reports the **build column / summon
+    column / party total SEPARATELY** (user decision s17). The beast (≈121.5/day) is the
+    cornerstone and out-damages the master's cantrip (≈43.9/day); the party total
+    (165.4) is exactly their sum — the case "report both, separately" exists for.
+  - **Rules verified BEFORE modeling (per-feature ritual).** Beast of the Land, D&D
+    2024 (Roll20 / D&D Beyond, 2026-06-17; matches guide 32:326): AC 13+WIS, HP
+    5+5·ranger, Beast's Strike to-hit = your spell attack modifier (+5), Hit 1d8+2+WIS,
+    Charge (moved ≥20 ft) +1d6 + Prone, command = a Bonus Action on your turn. The
+    +1d6 charge is baked into the commanded strike (the guide's plan always charges).
+  - **Validation (`tests/test_silvertail.py`, +12).** Engine seams via deterministic
+    FakeRNG: the commanded strike is attributed to the BEAST not the master; the
+    command draws the MASTER's Bonus Action only (two commands → one resolves); exact
+    Beast's-Strike-with-charge damage math; a commanded beast takes no turn of its own;
+    `create_entity`/`destroy_entity` roster ops; `remove_effect` winks out a noted
+    summon; a destroyed independent summon takes no turns; the cast_effect `summons`
+    payload creates into the live combat + ledger. Integration via
+    `make_silvertail_runner`: the summon is a real Actor (HP 20 / AC 16); the summon
+    column is separate from AND additive to the build column over 200 days; both
+    friendlies only ever damage the dummy.
+  - **Process / reflection.** Per-feature ritual honored (statblock verified first);
+    user chose **no ritual change**, with THREE forward-looking flags captured: (i) the
+    deferred charge-PRONE→advantage needs an **on-hit-applies-status seam** (a hit
+    installs a condition the later roll reads) — the designed-in next control primitive;
+    (ii) the scheduler's `snapshot.enemies` labels every non-actor (incl. friendlies)
+    as an enemy and always sets `allies=()` — harmless today (policies use explicit
+    refs) but a seam to fix when a policy must read its allies; (iii) **revisit
+    commanded-vs-DPR-faithful** before the next summon slice now that the commanded
+    model is concrete. ATTACK-TAXONOMY NOT forced this slice — flagged, untouched.
+  - **Deferred / next.** **7c-on-summon** (the beast as a buff/redirect/protect target
+    — connect 7a to the built 7c warding-bond/protection/aid machinery) and/or **7b
+    zone/emanation** (Spirit Guardians — the §3.1 zonal spatial model, the heaviest
+    and last sub-kind). Also still deferred: higher silvertail rows; the full §3.6
+    three-HP-pool party entity; "resistance to all" (#4); generalizing `precast_mode`.
 
 - **SUBSTRATE #7 — 7c ALLY-EFFECTS — BUILT & VALIDATED (2026-06-17, session 19).**
   The second 7c slice: `cast_effect` / intercept riders whose target is an ALLY, on

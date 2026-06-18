@@ -10,10 +10,13 @@
 > riders (session 14).  Substrate (7) — zone / summon / multi-entity — is
 > **DESIGNED** (the design note in "Substrate #7" below, session 17, 2026-06-17),
 > with its **7c foundation-min slice BUILT** (session 18: passive party member +
-> enemy split-targeting + per-(source,target) DPR accounting) and its **7c
+> enemy split-targeting + per-(source,target) DPR accounting), its **7c
 > ally-effects BUILT** (session 19, 2026-06-17: `cast_effect target=ally` retarget +
 > warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit`
-> response object; summons / zones still unbuilt).  It is the `cast_effect` on-ramp to the
+> response object), and its **7a summon BUILT** (session 20, 2026-06-17: a controlled
+> ally as a `create_entity`'d Actor, COMMANDED on its controller's turn via the
+> `Choice.actor` override, in its own per-summon DPR column — the silvertail primal
+> companion; **7b zone still unbuilt**).  It is the `cast_effect` on-ramp to the
 > multi-entity / spatial model already specified in `design/design.md` §1 (objects
 > vs actors; controlled allies; party members with 3 HP pools), §3.1 (zonal spatial
 > model), §3.5/§3.6 (enemy targeting + party), and verbs 11/12 (`move_entity`,
@@ -93,7 +96,7 @@ addition); `cast_effect` just installs a labeled payload into the matching one.
 | 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | **BUILT** (session 12) |
 | 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | **BUILT** (session 12) |
 | 6 | **outgoing rider** | `on_hit` seam → separate typed DamageEvents | predicate-gated extra damage (Fount of Moonlight +2d6 radiant, Primal Strike +1d8, Rage melee-STR, Hunter's Mark) | **BUILT** (session 14) |
-| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED**; **7c foundation-min BUILT** (session 18 — party member + enemy split-targeting + per-(source,target) DPR) + **7c ally-effects BUILT** (session 19 — target=ally retarget + warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit` response object); 7a summon / 7b zone unbuilt |
+| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED**; **7c foundation-min BUILT** (session 18 — party member + enemy split-targeting + per-(source,target) DPR) + **7c ally-effects BUILT** (session 19 — target=ally retarget + warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit` response object) + **7a summon BUILT** (session 20 — `create_entity`'d Actor COMMANDED on the controller's turn via the `Choice.actor` override + per-summon DPR column; silvertail primal companion); **7b zone unbuilt** |
 
 Examples mapped: Bless / Magic Weapon / **Sacred Weapon** (+CHA *stacking on*
 STR/DEX via `amount:{ability_modifier:charisma}` — already supported) / Bane → (1).
@@ -468,6 +471,23 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
 3. **7a summon** — `create_entity`/`destroy_entity` an Actor; commanded actions; the
    summon DPR column; summon as buff/redirect target. Vehicle: silvertail primal
    companion. (`transform_statblock`, §4 #13, is adjacent but distinct — Wild Shape.)
+   **BUILT (session 20, 2026-06-17, the MINIMAL slice — char L4 only).** A controlled
+   ally as a real `create_entity`'d **Actor** (`make_primal_companion` — own HP/AC/
+   saves), **COMMANDED on the controller's turn** via the new **`Choice.actor`**
+   override (the master's policy emits the beast's Beast's-Strike Choice; the cost is
+   the master's **Bonus Action** — the command; the spawned event's actor is the
+   beast, so it uses the beast's stats and is attributed to it). The **per-summon DPR
+   column** falls out of the per-(source,target) ledger for free
+   (`damage_by_source(beast)`), reported SEPARATELY from the build column + party
+   total. **Verbs 11/12** = `src/summons.py` `create_entity`/`destroy_entity` on an
+   `(entities, policies)` roster (exercised at DAY START for the permanent companion;
+   `Scheduler.add_entity`/`remove_entity` + the cast_effect `summons` payload are the
+   general mid-combat path, lightly exercised); lifecycle keyed to `effect_source`
+   (`Entity.remove_effect` marks summons `destroyed`). **Summon-as-buff/redirect
+   target (7c-on-summon) DEFERRED** to the next slice (the beast is an `Entity`, so
+   the built 7c warding-bond/protection/aid machinery lands on it directly when wired).
+   Also deferred: charge-PRONE→advantage (needs an on-hit-applies-status seam);
+   mid-combat conjure summon lifecycle (testing).
 4. **7b zone / emanation** — the §3.1 zonal spatial model + recurring scheduled zone
    events; damage/debuff and buff flavors; anchored vs static. Vehicle: silvertail
    Spirit Guardians (emanation) + the wardancer's spike growth / cloud of daggers
@@ -512,7 +532,11 @@ the evidence the #7 shape is settled, mirroring the Fire-Shield stress test for
 - **Per-(source,target) DPR accounting** — attribute every `DamageEvent`; runner
   reports build-column + party-total + per-summon (above).
 - **verbs 11/12** — `create_entity`/`destroy_entity` (Actor for 7a, Object for 7b),
-  `move_entity` (zone changes); lifecycle keyed to `effect_source`.
+  `move_entity` (zone changes); lifecycle keyed to `effect_source`.  ✓ `create_entity`/
+  `destroy_entity` DONE (session 20, `src/summons.py`) for the Actor/7a case —
+  roster-level ops usable at day start or mid-combat, lifecycle keyed to
+  `effect_source` via `Entity.remove_effect`.  Commanded actions DONE via the
+  `Choice.actor` override.  `move_entity` + the Object/7b create still unbuilt.
 - **Recurring zone event** — a future-dated event re-enqueued each round that fires
   the zone effect on creatures in/entering the zone at their turn boundaries.
 - **Zonal spatial state (§3.1)** — an explicit `zone` attribute on entities + the
