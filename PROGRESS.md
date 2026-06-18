@@ -71,8 +71,45 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none reported (session 20 toggle
-> recommendation re-made; nothing confirmed disabled). **Session scope (2026-06-17,
+> **Currently disabled (re-enable before exit):** none reported (session 21 toggle
+> recommendation re-made; nothing confirmed disabled). **Session scope (2026-06-18,
+> session 21) — DONE (SUBSTRATE #7 — 7c-ON-SUMMON):** wired the built 7c ally-effect
+> machinery (session 19) ONTO the 7a primal companion (session 20) — the summon as a
+> **buff / redirect / protect target**. **Scope settled with the user up front (A,
+> full slice).** Per-feature ACCESS finding: the full kit isn't online at the L4
+> summon row — only Protection is (fighter-1); Bless is char L6, Aid + Warding Bond
+> char L8 (guide 32:436-471). So built RAW-faithfully at a **new char L8 row**
+> (Fighter-1 / Ranger-4 / Cleric-3 Trickery), mirroring the Fire-Shield→L15 access
+> discipline (user picked "wire onto L4" by mis-click, then corrected to "your
+> recommendation" = the L8 row). **The vehicle:** `BeastEffectPolicy`
+> (`src/builds/silvertail.py`) — a PASSIVE defender policy registered for the beast
+> (`decide → []`, so the beast is still COMMANDED by the master), carrying the 7c
+> rider + pre-cast payload: **warding bond** (+1 AC/+1 saves + RESISTANCE TO ALL +
+> redirect the post-resistance taken amount to the master), **protection** (impose
+> disadvantage on attacks vs the beast), **bless** (+1d4 to the beast's attacks/saves
+> → raises its OUTGOING DPR, concentration on the master), **aid** (+5 HP max/current
+> — DPR-inert under the threshold model). The enemy now **STRIKES THE BEAST** (typed)
+> so the defender effects do real work; the combat-clock payload is re-applied each
+> combat via `on_combat_start` (the Fire Shield / Bless re-cast pattern — `DayRunner`
+> sweeps combat-clock buffs at every boundary). **Engine seam (resolves the session-19
+> deferral):** `Entity.damage_response_for` now honors a reserved **`"_all"` key** —
+> "resistance to all damage" applies to any TYPED hit (still None for untyped),
+> feeding the same 2024 dominate/cancel rules; `ScriptedEnemyPolicy` gained an optional
+> `damage_type` (backward-compatible default None → War Angel / Scion byte-identical).
+> **Rules verified BEFORE modeling (per-feature ritual, web + guide 32):** Warding Bond
+> / Aid / Bless / Protection 2024 text + ACCESS levels. **455 tests green (+11).**
+> Branch `feature/substrate-7c-on-summon` → confirm before merging to main. ATTACK-
+> TAXONOMY NOT forced (the enemy melee-attacks the beast; no melee/ranged gate yet) —
+> flagged, untouched. Carry-over flag (ii) `snapshot.allies=()` **NOT forced** (all
+> policies use explicit refs). **Forward-looking:** the charge-PRONE→advantage work is
+> entangled with **shocking grasp denying the enemy's reactions (no OA)** — the build
+> kites in/out + charges repeatedly only because shocking grasp suppresses the OA; the
+> on-hit-applies-status seam + a reaction-denial status + an opportunity-attack model
+> are ONE connected control cluster (user note, session 21). **NEXT: 7b zone/emanation**
+> (Spirit Guardians — the §3.1 zonal spatial model + a recurring scheduled zone event;
+> the LAST unbuilt #7 sub-kind). Per-feature reflection pending user input.
+>
+> **Session scope (2026-06-17,
 > session 20) — DONE (SUBSTRATE #7 — 7a SUMMON):** built the MINIMAL 7a slice — the
 > **Blessed of Silvertail** (guide 32) at **char L4** with its **PRIMAL COMPANION as
 > a `create_entity`'d ACTOR**, COMMANDED on the master's turn, in its own per-summon
@@ -441,6 +478,77 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **SUBSTRATE #7 — 7c-ON-SUMMON (beast as buff/redirect/protect target) — BUILT &
+  VALIDATED (2026-06-18, session 21).** The built 7c ally-effect machinery (session
+  19) wired ONTO the 7a primal companion (session 20): the summon as a buff / redirect
+  / protect target. **455 tests green (+11).** Branch `feature/substrate-7c-on-summon`
+  → confirm before merge. Design contract: `design/buff_primitive.md` (registry row 7
+  + build-sequence item 3 note flipped to 7c-on-summon BUILT; the `_all` resistance-key
+  deferral resolved).
+  - **Scope settled with the user up front: (A) 7c-on-summon, full slice.** Per-feature
+    ACCESS finding (the per-feature ritual's "verify access, not just wording" — the
+    same lesson that put Fire Shield at L15): the full kit is NOT online at the L4
+    summon row — only Protection is (fighter-1); Bless is char L6, Aid + Warding Bond
+    char L8 (guide 32:436-471). Built RAW-faithfully at a **new char L8 row**
+    (Fighter-1 / Ranger-4 / Cleric-3 Trickery). (The user first selected "wire onto L4"
+    by an accidental click, then asked for "your recommendation" = the L8 row.)
+  - **`BeastEffectPolicy` (`src/builds/silvertail.py`) — the vehicle.** A PASSIVE
+    defender policy registered for the beast (`decide → []`, so the beast still takes
+    no turn of its own — the master COMMANDS it via `Choice.actor`). The beast is a
+    real `Entity`, so the same `on_incoming_hit` riders + `cast_effect target=ally`
+    payloads session 19 built for a synthetic ally land on it directly:
+    - **warding bond** → +1 AC / +1 saves + RESISTANCE TO ALL damage on the beast, and
+      each time it takes damage the MASTER takes the same (post-resistance) amount
+      (`RedirectSpec`, fraction 1.0). Exact per-run invariant validated:
+      `damage_source_to(enemy, beast) == damage_source_to(enemy, master)`.
+    - **protection** → impose disadvantage on attacks vs the beast (the master
+      interposes; guide 32:227 = 2024 Protection).
+    - **bless** → +1d4 (rolled modifier) to the beast's attacks/saves → raises its
+      OUTGOING DPR; concentration on the master.
+    - **aid** → +5 HP max/current (DPR-INERT under the threshold HP model — installed
+      as an assertion that the target=ally HP buff lands on the beast).
+  - **Enemy strikes the beast (the loop that makes the defender effects matter).** The
+    L8 row carries an `enemy_attack` profile; `make_silvertail_runner` registers a
+    `ScriptedEnemyPolicy(target=beast, damage_type="slashing")` so the typed swing lets
+    warding bond's resistance bite before the redirect. The combat-clock payload is
+    re-applied each combat via `BeastEffectPolicy.on_combat_start` (the Fire Shield /
+    Bless re-cast pattern — `DayRunner` sweeps combat-clock buffs at every boundary; a
+    one-time pre-cast would be wiped before combat 1).
+  - **Engine seam — the `_all` damage-response key (resolves the session-19
+    deferral).** `Entity.damage_response_for` now honors a reserved `"_all"` key that
+    applies to any TYPED hit (still None for an untyped attack), feeding the same 2024
+    dominate/cancel rules (an `_all` resistance + a type-specific vulnerability still
+    cancel). `ScriptedEnemyPolicy` gained an optional `damage_type` threaded onto its
+    swings (backward-compatible default None → War Angel / Scion byte-identical).
+  - **Rules verified BEFORE modeling (per-feature ritual, 2026-06-18, web + guide 32).**
+    Warding Bond (+1 AC/saves, resistance to all, "each time it takes damage you take
+    the same amount"; ends if caster hits 0 / >60 ft — unmodeled), Aid (+5 HP max &
+    current, +5/slot above 2nd → 2nd-level here = +5; 8 hr, non-conc), Bless (+1d4
+    attacks/saves, conc, 3 targets), Protection (guide 32:227 = impose disadvantage).
+    Direction confirmed: the beast is WARDED → the master takes the share (guide 32:471).
+  - **Validation (`tests/test_silvertail.py`, +11).** Unit (FakeRNG): the `_all` key
+    resists any type + honors cancel; warding bond resists the hit AND redirects an
+    equal share to the master; protection flips a hit via the disadvantage reroll;
+    bless's +1d4 turns a miss into a hit; aid bumps HP max; the beast stays commanded
+    (not self-acting) with an effect attached. Integration (`make_silvertail_runner` at
+    L8, per-(source,target) ledger): baseline enemy damages the beast and spares the
+    master; warding bond cuts the beast's incoming below baseline and the redirected
+    share equals it exactly; protection cuts incoming with no redirect; bless raises the
+    beast's outgoing DPR; the beast keeps dealing commanded DPR with an effect active.
+  - **Process / flags.** ATTACK-TAXONOMY NOT forced (the enemy melee-attacks the beast;
+    no melee/ranged gate). Carry-over flag (ii) `snapshot.allies=()` NOT forced (all
+    policies use explicit refs). **Forward-looking (user note):** the deferred
+    charge-PRONE→advantage is entangled with **shocking grasp denying the enemy's
+    reactions (no opportunity attack)** — the build's kite-in/out + repeated-charge
+    pattern only works because shocking grasp suppresses the OA, so the
+    on-hit-applies-status seam + a reaction-denial status + an opportunity-attack model
+    are ONE connected control cluster (build deliberately when forced).
+  - **Deferred / next.** **7b zone / emanation** (Spirit Guardians — the §3.1 zonal
+    spatial model + a recurring scheduled zone event) is the LAST unbuilt #7 sub-kind.
+    Also still deferred: higher silvertail rows; the full §3.6 three-HP-pool party
+    entity; aid upcast (+10 at a row with 3rd-level slots); mid-combat conjure summon
+    lifecycle; the charge/prone + reaction-denial control cluster above.
 
 - **SUBSTRATE #7 — 7a SUMMON (commanded primal companion) — BUILT & VALIDATED
   (2026-06-17, session 20).** The minimal 7a slice: a controlled-ally SUMMON as a

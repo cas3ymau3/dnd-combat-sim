@@ -13,10 +13,14 @@
 > enemy split-targeting + per-(source,target) DPR accounting), its **7c
 > ally-effects BUILT** (session 19, 2026-06-17: `cast_effect target=ally` retarget +
 > warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit`
-> response object), and its **7a summon BUILT** (session 20, 2026-06-17: a controlled
+> response object), its **7a summon BUILT** (session 20, 2026-06-17: a controlled
 > ally as a `create_entity`'d Actor, COMMANDED on its controller's turn via the
 > `Choice.actor` override, in its own per-summon DPR column — the silvertail primal
-> companion; **7b zone still unbuilt**).  It is the `cast_effect` on-ramp to the
+> companion), and its **7c-on-summon BUILT** (session 21, 2026-06-18: the 7c
+> ally-effect machinery wired ONTO the 7a beast — warding bond / protection / aid /
+> bless on the silvertail beast at char L8, with the enemy striking the beast; the
+> session-19 `_all` resistance-key deferral resolved here; **7b zone still unbuilt**).
+> It is the `cast_effect` on-ramp to the
 > multi-entity / spatial model already specified in `design/design.md` §1 (objects
 > vs actors; controlled allies; party members with 3 HP pools), §3.1 (zonal spatial
 > model), §3.5/§3.6 (enemy targeting + party), and verbs 11/12 (`move_entity`,
@@ -96,7 +100,7 @@ addition); `cast_effect` just installs a labeled payload into the matching one.
 | 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | **BUILT** (session 12) |
 | 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | **BUILT** (session 12) |
 | 6 | **outgoing rider** | `on_hit` seam → separate typed DamageEvents | predicate-gated extra damage (Fount of Moonlight +2d6 radiant, Primal Strike +1d8, Rage melee-STR, Hunter's Mark) | **BUILT** (session 14) |
-| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED**; **7c foundation-min BUILT** (session 18 — party member + enemy split-targeting + per-(source,target) DPR) + **7c ally-effects BUILT** (session 19 — target=ally retarget + warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit` response object) + **7a summon BUILT** (session 20 — `create_entity`'d Actor COMMANDED on the controller's turn via the `Choice.actor` override + per-summon DPR column; silvertail primal companion); **7b zone unbuilt** |
+| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED**; **7c foundation-min BUILT** (session 18 — party member + enemy split-targeting + per-(source,target) DPR) + **7c ally-effects BUILT** (session 19 — target=ally retarget + warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit` response object) + **7a summon BUILT** (session 20 — `create_entity`'d Actor COMMANDED on the controller's turn via the `Choice.actor` override + per-summon DPR column; silvertail primal companion) + **7c-on-summon BUILT** (session 21 — warding bond / protection / aid / bless ON the beast at char L8 via `BeastEffectPolicy`; the `_all` resistance-key resolved); **7b zone unbuilt** |
 
 Examples mapped: Bless / Magic Weapon / **Sacred Weapon** (+CHA *stacking on*
 STR/DEX via `amount:{ability_modifier:charisma}` — already supported) / Bane → (1).
@@ -483,11 +487,21 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
    `(entities, policies)` roster (exercised at DAY START for the permanent companion;
    `Scheduler.add_entity`/`remove_entity` + the cast_effect `summons` payload are the
    general mid-combat path, lightly exercised); lifecycle keyed to `effect_source`
-   (`Entity.remove_effect` marks summons `destroyed`). **Summon-as-buff/redirect
-   target (7c-on-summon) DEFERRED** to the next slice (the beast is an `Entity`, so
-   the built 7c warding-bond/protection/aid machinery lands on it directly when wired).
-   Also deferred: charge-PRONE→advantage (needs an on-hit-applies-status seam);
-   mid-combat conjure summon lifecycle (testing).
+   (`Entity.remove_effect` marks summons `destroyed`).  **Summon-as-buff/redirect
+   target (7c-on-summon) BUILT (session 21, 2026-06-18, char L8.)** The beast is a
+   real `Entity`, so the built 7c machinery lands on it directly via
+   `BeastEffectPolicy` (a passive defender policy registered for the beast — it still
+   takes no turn of its own, the master COMMANDS it): warding bond (+1 AC/saves +
+   resistance-to-all + redirect the post-resistance share to the master), protection
+   (impose disadvantage), bless (+1d4 to the beast's attacks/saves → raises its
+   outgoing DPR), aid (+5 HP max — DPR-inert).  The enemy STRIKES THE BEAST (typed) so
+   the defender effects do real work; the payload is re-applied each combat via
+   `on_combat_start` (the Fire Shield / Bless re-cast pattern).  The session-19 `_all`
+   resistance-key deferral was resolved here.  Built RAW-faithfully at the kit's access
+   level (char L8: Protection fighter-1 / Bless cleric-1 / Aid + Warding Bond
+   cleric-3), mirroring Fire Shield → L15.  Still deferred: charge-PRONE→advantage
+   (needs an on-hit-applies-status seam — entangled with shocking-grasp-denies-
+   reactions + an opportunity-attack model); mid-combat conjure summon lifecycle.
 4. **7b zone / emanation** — the §3.1 zonal spatial model + recurring scheduled zone
    events; damage/debuff and buff flavors; anchored vs static. Vehicle: silvertail
    Spirit Guardians (emanation) + the wardancer's spike growth / cloud of daggers
@@ -557,12 +571,14 @@ the evidence the #7 shape is settled, mirroring the Fire-Shield stress test for
   contention (two protectors, or a protector also wanting an opportunity attack) is
   unmodeled. A known simplification, fine for the single-attacker cases modeled;
   revisit only when a build with competing reactions forces it.
-- **"Resistance to ALL damage" has no per-type expression (session 19).** Warding
-  Bond / Rage grant resistance to all damage, but `Entity.damage_response` /
-  `damage_response_for` are keyed per damage type, so "all" isn't representable and is
-  inert against an untyped attack (`damage_response_for(None) → None`). When a build
-  needs it, add an `_all`/default key to the damage-response lookup (substrate #4).
-  The #4 retarget itself is validated with a typed-damage test in the meantime.
+- **"Resistance to ALL damage" — BUILT (session 21).** The session-19 deferral is
+  resolved: `Entity.damage_response_for` now honors a reserved `"_all"` key that
+  applies to any TYPED hit (it still returns None for an untyped `None` attack),
+  feeding the same 2024 dominate/cancel rules.  Warding Bond installs
+  `{"_all": "resistance"}` on the beast; the silvertail enemy's swings are TYPED
+  (`ScriptedEnemyPolicy(damage_type=...)`) so the resistance bites before the redirect
+  copies the halved amount to the master.  (Warding Bond / Rage grant resistance to
+  all damage; per-type keys remain for type-specific effects like Fire Shield.)
 
 - **ATTACK-TAXONOMY (memory `attack-taxonomy-three-axes`).** Multi-entity combat is
   the most likely forcer of the first-class kind/action/economy typology — melee-vs-
