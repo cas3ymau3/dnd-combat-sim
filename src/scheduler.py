@@ -135,6 +135,30 @@ class Scheduler:
         self._registry.setdefault(kind, []).append(handler)
 
     # ------------------------------------------------------------------
+    # Live-roster mutation (the create_entity / destroy_entity verbs,
+    # substrate #7 — design.md §4 #12).  Keep the per-combat damage ledgers
+    # in sync when an entity winks in/out of a combat already in progress.
+    # ------------------------------------------------------------------
+
+    def add_entity(self, entity: "Entity", policy: "Policy | None" = None) -> None:
+        """create_entity against the LIVE combat: add a summon to this scheduler's
+        roster and damage ledgers so it can deal/take damage immediately.  If it has
+        its own policy it is registered, but its turns are NOT spliced into the round
+        already in flight (a mid-combat conjure-style summon that must act THIS round
+        is deferred — see summons.py); a COMMANDED summon (policy=None) needs no
+        turn slot, so the primal-companion case is fully covered."""
+        from .summons import create_entity
+        create_entity(self.entities, self.policies, entity, policy)
+        self.damage_received.setdefault(entity.id, [])
+        self._round_damage_received.setdefault(entity.id, 0)
+
+    def remove_entity(self, entity: "Entity") -> None:
+        """destroy_entity against the LIVE combat: drop a summon from the roster and
+        policies (its accumulated damage ledger entries are kept for accounting)."""
+        from .summons import destroy_entity
+        destroy_entity(self.entities, self.policies, entity)
+
+    # ------------------------------------------------------------------
     # Main loop
     # ------------------------------------------------------------------
 
@@ -585,11 +609,19 @@ class Scheduler:
                 for name, amount in choice.resource_cost.items():
                     actor.resources.consume(name, amount)
 
+            # The entity that ACTS this choice.  For a COMMANDED action (substrate
+            # #7 / 7a — the Beast Master directing the primal companion) the choice
+            # carries an `actor` override: the cost was just drained from the
+            # commanding `actor` (the master's Bonus Action), but the spawned event's
+            # actor is the commanded entity so its stats/damage apply and the damage
+            # is attributed to it (its own DPR column).  None → the deciding entity.
+            acting = choice.actor or actor
+
             if choice.action_type == "attack":
                 # Build the combined mastery list:
                 #   base = mastery_override if set, else weapon's natural mastery
                 #   then add any extra_masteries (Brutality, etc.) on top
-                base_mastery = choice.mastery_override or actor.base_stats.get("weapon_mastery")
+                base_mastery = choice.mastery_override or acting.base_stats.get("weapon_mastery")
                 masteries: list[str] = []
                 if base_mastery:
                     masteries.append(base_mastery)
@@ -605,7 +637,7 @@ class Scheduler:
                 )
                 atk_event = AttackRollEvent(
                     tick=make_tick(round_, turn_idx, seq),
-                    actor=actor,
+                    actor=acting,                       # commanded actor (7a) or self
                     target=choice.target,
                     weapon_stat=choice.weapon_stat,
                     cost=cost,
@@ -628,7 +660,7 @@ class Scheduler:
                 # full / half / none and enqueues the DamageEvent.
                 save_event = SaveDamageEvent(
                     tick=make_tick(round_, turn_idx, seq),
-                    actor=actor,
+                    actor=acting,                       # commanded actor (7a) or self
                     target=choice.target,
                     save_stat=choice.save_stat or "dex_save",
                     dc_stat=choice.dc_stat,
@@ -701,6 +733,16 @@ class Scheduler:
                     if choice.concentration and choice.effect_source:
                         actor.concentration = choice.effect_source
                         actor.note_combat_buff(choice.effect_source)
+                    # Summons (substrate #7 / 7a): create_entity each into the LIVE
+                    # combat, labelled under effect_source so remove_effect winks them
+                    # out with the rest of the bundle.  (Silvertail's permanent
+                    # companion is summoned at DAY START via the runner instead — this
+                    # mid-combat branch is the general verb, built + lightly exercised.)
+                    for spec in choice.summons:
+                        self.add_entity(spec.entity, spec.policy)
+                        if choice.effect_source:
+                            actor.note_effect_summon(choice.effect_source, spec.entity)
+                            actor.note_combat_buff(choice.effect_source)
                 # No event enqueued — seq is not advanced.
             else:
                 log.warning("Unknown action_type %r — skipped.", choice.action_type)
@@ -714,6 +756,8 @@ class Scheduler:
     def _enqueue_round(self, round_: int) -> None:
         """Push TurnStartEvents for every entity that has a policy."""
         for turn_idx, entity in enumerate(self.entities):
+            if entity.destroyed:
+                continue  # a summon that has winked out takes no turns (design.md §1)
             if entity.id in self.policies:
                 self.queue.push(
                     TurnStartEvent(
