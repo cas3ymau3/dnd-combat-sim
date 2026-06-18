@@ -72,11 +72,17 @@ class ScriptedEnemyPolicy:
         char_target_prob: float = 1.0,
         rounds_per_combat: int = 4,
         roster: "list[tuple[Entity, int]] | None" = None,
+        damage_type: "str | None" = None,
     ) -> None:
         self._target = target
         self._n_attacks = n_attacks
         self._p_pct = int(round(char_target_prob * 100))
         self._rounds = rounds_per_combat
+        # Optional damage TYPE on the enemy's swings (default None = untyped, the
+        # legacy behavior).  A typed swing lets a defender's typed/all damage
+        # response bite — e.g. Warding Bond's resistance-to-all on the silvertail
+        # beast (substrate #7 / 7c-on-summon) halves a typed hit before redirect.
+        self._damage_type = damage_type
         # Multi-entity targeting roster: [(friendly_entity, integer_weight), ...].
         # None → legacy single-target behavior (char_target_prob).  Given → weighted
         # split across the roster (design.md §3.5 trait-weighted targeting).
@@ -127,6 +133,7 @@ class ScriptedEnemyPolicy:
                     cost="action" if not choices else "none",
                     target=self._target,
                     weapon_stat="attack_bonus",
+                    damage_type=self._damage_type,
                 ))
         else:
             # Multi-entity: every pre-rolled slot lands on a real roster entity.
@@ -136,5 +143,6 @@ class ScriptedEnemyPolicy:
                     cost="action" if not choices else "none",
                     target=ent,
                     weapon_stat="attack_bonus",
+                    damage_type=self._damage_type,
                 ))
         return choices
