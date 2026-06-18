@@ -141,6 +141,16 @@ class Choice:
     action_type: str
     cost: str = "action"
     target: "Entity | None" = None
+    # The entity that ACTS this choice, when it is NOT the deciding entity — a
+    # COMMANDED action (substrate #7 / 7a, design.md §1: "controlled allies act on
+    # their controller's turn").  The controller's policy emits the choice; the
+    # COST (action economy + resource_cost) is still drained from the controller
+    # (e.g. the Beast Master spends a Bonus Action to command the beast), but the
+    # spawned event's actor is `actor` so the attack uses the commanded entity's
+    # stats / damage and is attributed to it (its own summon DPR column falls out of
+    # the per-(source,target) ledger).  None → the deciding entity acts (every
+    # ordinary self-directed choice).
+    actor: "Entity | None" = None
     weapon_stat: str = "attack_bonus"
     resource_cost: dict[str, int] | None = None
     extra_masteries: list[str] = field(default_factory=list)
@@ -218,6 +228,12 @@ class Choice:
     concentration: bool = False
     duration: str = "combat"
     application_save: "ApplicationSave | None" = None
+    # cast_effect `summons` payload (substrate #7 / 7a) — a list of SummonSpec.  Each
+    # brings a controlled-ally Actor into the combat (create_entity), labelled under
+    # effect_source so remove_effect winks it out with the cast's bundle.  Typed
+    # loosely (a list of SummonSpec) to avoid an import cycle.  Empty for every
+    # non-summoning cast.
+    summons: list = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------

@@ -105,6 +105,18 @@ class Entity:
         # removed (e.g. a concentration break), rather than waiting for the
         # unconditional combat-boundary StatusSet.clear().
         self._effect_statuses: dict[str, list[str]] = {}
+        # Summons (substrate #7 / 7a) this entity created via the cast_effect
+        # `summons` payload, labelled by effect_source: source → [summon Entity, ...].
+        # remove_effect(source) marks each `destroyed` so a controlled ally winks out
+        # WITH the rest of its cast's bundle (a dropped concentration / combat sweep),
+        # design.md §1.  The roster removal itself is done by the scheduler/runner
+        # (Entity holds no roster reference); the flag is the Entity-level teardown.
+        self._effect_summons: dict[str, list["Entity"]] = {}
+        # Whether this entity has been destroyed (destroy_entity / a summon whose
+        # source was removed).  A created Object/ally that has winked out; the
+        # scheduler skips a destroyed entity's turns and a controller checks it before
+        # commanding.  False for every omnipresent entity (character / enemy / party).
+        self.destroyed: bool = False
         # Cumulative telemetry (design §8 outputs): concentration checks forced
         # by incoming damage and how many broke a spell.  Never auto-reset;
         # callers diff or average across runs.
@@ -201,21 +213,31 @@ class Entity:
         *source*, so remove_effect can drop it when the source is removed."""
         self._effect_statuses.setdefault(source, []).append(name)
 
+    def note_effect_summon(self, source: str, summon: "Entity") -> None:
+        """Record that *summon* was created by the cast_effect labelled *source*
+        (substrate #7 / 7a), so remove_effect winks it out when the source ends."""
+        self._effect_summons.setdefault(source, []).append(summon)
+
     def remove_effect(self, source: str) -> None:
         """Remove every payload a cast_effect installed under *source* — its
-        ModifierStack modifiers, its damage-type response (substrate #4), and any
-        statuses it granted (substrate #3) — and stop tracking it for the combat
-        sweep, clearing concentration if it held it.
+        ModifierStack modifiers, its damage-type response (substrate #4), any
+        statuses it granted (substrate #3), and any summons it created (substrate #7
+        / 7a) — and stop tracking it for the combat sweep, clearing concentration if
+        it held it.
 
         This is the single place a cast's whole bundle is torn down.  Both a
         concentration break (verbs._check_concentration) and the combat-boundary
         sweep route through it, so the non-modifier payloads (a radiant resistance,
-        a granted status) drop WITH the modifiers instead of leaking — the
-        effect_source thread of design/buff_primitive.md."""
+        a granted status, a controlled ally) drop WITH the modifiers instead of
+        leaking — the effect_source thread of design/buff_primitive.md.  Summons are
+        marked `destroyed` here (the Entity-level teardown); the scheduler/runner
+        does the actual roster removal (Entity holds no roster reference)."""
         self.remove_modifier(source)
         self._effect_damage_response.pop(source, None)
         for name in self._effect_statuses.pop(source, ()):
             self.statuses.remove(name)
+        for summon in self._effect_summons.pop(source, ()):
+            summon.destroyed = True
         self._combat_buff_sources.discard(source)
         if self.concentration == source:
             self.concentration = None
