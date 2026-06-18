@@ -204,6 +204,12 @@ class DamageEvent(Event):
     #     every existing damage path.
     min_die: "int | None" = None
     ignore_resistance: bool = False
+    # Damage REDIRECT (substrate #7 / 7c, Warding Bond): a RedirectSpec set by
+    # resolve_attack_roll when the DEFENDER's on_incoming_hit returns one.  After
+    # this event's damage resolves, resolve_damage spawns a copy of the taken amount
+    # (× fraction) onto redirect.target (the warding caster).  None on every other
+    # path.  Typed as a string forward-ref so events.py needn't import policy.py.
+    redirect: "object | None" = None
     cost: str = "action"
     kind: str = field(default="damage", init=False)
 

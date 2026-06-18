@@ -269,7 +269,7 @@ def test_thorns_fires_on_a_landed_hit():
     resolve_attack_roll(
         AttackRollEvent(tick=make_tick(1, 0, 1), actor=a, target=b),
         FakeRNG([15]), q, next_sequence=2,
-        intercept_decider=lambda margin: (0, None, thorns),
+        intercept_decider=lambda margin: InterceptResponse(reactive_damage=thorns),
     )
     # Two DamageEvents: the attacker's own hit AND the thorns back at the attacker.
     events = [q.pop() for _ in range(len(q))]
@@ -292,7 +292,7 @@ def test_thorns_does_not_fire_on_a_miss():
         AttackRollEvent(tick=make_tick(1, 0, 1), actor=a, target=b),
         FakeRNG([5]), q, next_sequence=2,
         intercept_decider=lambda margin: called.append(margin)
-        or (0, None, ReactiveDamageSpec((2, 8), "fire")),
+        or InterceptResponse(reactive_damage=ReactiveDamageSpec((2, 8), "fire")),
     )
     assert called == []
     assert len(q) == 0
@@ -308,7 +308,7 @@ def test_thorns_suppressed_when_the_hit_is_parried_to_a_miss():
     resolve_attack_roll(
         AttackRollEvent(tick=make_tick(1, 0, 1), actor=a_low, target=b),
         FakeRNG([12]), q, next_sequence=2,
-        intercept_decider=lambda margin: (5, None, thorns),
+        intercept_decider=lambda margin: InterceptResponse(ac_bonus=5, reactive_damage=thorns),
     )
     assert len(q) == 0  # parried → no attacker damage, and the hit didn't land → no thorns
 
@@ -324,7 +324,7 @@ def test_thorns_routes_through_the_attackers_damage_response():
     resolve_attack_roll(
         AttackRollEvent(tick=make_tick(1, 0, 1), actor=a, target=b),
         FakeRNG([15]), q, next_sequence=2,
-        intercept_decider=lambda margin: (0, None, thorns),
+        intercept_decider=lambda margin: InterceptResponse(reactive_damage=thorns),
     )
     thorns_ev = next(e for e in (q.pop() for _ in range(len(q))) if e.actor is b)
     # 2d8 = [6,6] = 12; the attacker resists fire → 6.

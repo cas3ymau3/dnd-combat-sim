@@ -159,7 +159,7 @@ def resolve_attack_roll(
     next_sequence: int,
     decider: "Callable[[int], int] | None" = None,
     hit_decider: "Callable[[bool], tuple[list[tuple[int, int]], list[str], list[object]]] | None" = None,
-    intercept_decider: "Callable[[int], tuple[int, object, object]] | None" = None,
+    intercept_decider: "Callable[[int], object | None] | None" = None,
 ) -> int:
     """Resolve one attack roll.  Returns the next available sequence number.
 
@@ -198,17 +198,18 @@ def resolve_attack_roll(
         on_deal_damage rider on its own terms).  All these dice double on a crit.
         None = no on-hit decision available.
     intercept_decider:
-        Optional callable `(hit_margin) -> (ac_bonus, counter_spec | None,
-        reactive_damage | None)` for the DEFENDER's in-flight reaction
-        (intercept_event — e.g. Flourish Parry / Shield / Fire Shield thorns).
-        Called on a confirmed hit, AFTER any Guided-Strike rescue and BEFORE the
-        attacker's on-hit rider.  `hit_margin = total_roll - AC` (>= 0).  If the
-        returned `ac_bonus` exceeds it, the hit flips to a miss (no damage, no
-        concentration check); if a `counter_spec` accompanies a flip, a counter
-        attack is enqueued.  If the hit STILL lands and `reactive_damage` is
-        present, automatic thorns damage is enqueued against the attacker.  The
-        scheduler-side closure already validated/consumed the defender's
-        resources.  None = no interceptor.
+        Optional callable `(hit_margin) -> InterceptResponse | None` for the
+        DEFENDER's in-flight reaction (intercept_event — Flourish Parry / Shield /
+        Fire Shield thorns, plus the 7c ally-effects riders).  Called on a confirmed
+        hit, AFTER any Guided-Strike rescue and BEFORE the attacker's on-hit rider.
+        `hit_margin = total_roll - AC` (>= 0).  The response object's riders are
+        applied in order, each able to flip the hit to a miss (later riders skip
+        once flipped): `ac_bonus` (flip + optional `counter`), `impose_disadvantage`
+        (Protection — re-roll with disadvantage), `negate_save` (Sanctuary —
+        attacker save-or-negate), `reactive_damage` (Fire Shield thorns if the hit
+        still lands), and `redirect` (Warding Bond — threaded onto the DamageEvent,
+        resolved at damage time).  The scheduler-side closure already
+        validated/consumed the defender's resources.  None = no interceptor.
     """
     actor = event.actor
     target = event.target
@@ -288,21 +289,29 @@ def resolve_attack_roll(
             )
 
     # In-flight interception (intercept_event): on a confirmed hit, let the
-    # DEFENDER react (Flourish Parry / Shield) — raise AC after seeing the roll
-    # and potentially flip the hit to a miss.  Runs AFTER any Guided-Strike
-    # rescue (a rescued hit is still parryable) and BEFORE the attacker's on-hit
-    # rider / masteries / damage (a parried hit deals nothing, forces no
-    # concentration check).  On a flip with a counter, enqueue the counter.
+    # DEFENDER react.  The decider returns a single InterceptResponse object
+    # (refactored from a positional 3-tuple at the warding-bond redirect — the
+    # session-12 engine-seam note); its riders are applied in order, each able to
+    # flip the hit to a miss (later riders skip once the hit is flipped).  Runs
+    # AFTER any Guided-Strike rescue (a rescued hit is still parryable) and BEFORE
+    # the attacker's on-hit rider / masteries / damage (a flipped hit deals
+    # nothing, forces no concentration check).
+    redirect_spec = None
     if hit and intercept_decider is not None:
         hit_margin = int(total_roll) - int(target_ac)
-        ac_bonus, counter_spec, reactive_damage = intercept_decider(hit_margin)
-        if ac_bonus > 0 and total_roll < int(target_ac) + ac_bonus:
+        response = intercept_decider(hit_margin)
+    else:
+        response = None
+    if response is not None:
+        # 1. AC bump (Flourish Parry / Shield) — flip if it clears the margin.
+        if response.ac_bonus > 0 and total_roll < int(target_ac) + response.ac_bonus:
             hit = False
             log.info(
                 "  defender +%d AC -> %d vs roll %d  [INTERCEPTED -> MISS]",
-                ac_bonus, int(target_ac) + ac_bonus, total_roll,
+                response.ac_bonus, int(target_ac) + response.ac_bonus, total_roll,
             )
-            if counter_spec is not None and target is not None:
+            if response.counter is not None and target is not None:
+                counter_spec = response.counter
                 counter_event = AttackRollEvent(
                     tick=make_tick(round_, turn_idx, next_sequence),
                     actor=target,                       # the defender counters
@@ -315,12 +324,43 @@ def resolve_attack_roll(
                 )
                 queue.push(counter_event)
                 next_sequence += 1
-        # Thorns (Fire Shield, substrate #5): when the melee hit LANDS (not
+        # 2. Protection fighting style (7c): a nearby protector interposes a shield
+        # and imposes DISADVANTAGE on the attack.  Modeled by rolling a SECOND d20
+        # and flipping the hit to a miss if it now misses — distributionally exact
+        # (P(hit)^2 either way, since we condition on the first roll being a hit).
+        # The surviving hit keeps its crit only if the second die is also a 20.
+        if hit and response.impose_disadvantage:
+            d20_2 = roll_d20(rng, False, False)
+            if d20_2 == 1 or (d20_2 + atk_bonus) < int(target_ac):
+                hit = False
+                log.info(
+                    "  protector imposes disadvantage: d20=%d -> %d vs AC %d  "
+                    "[PROTECTED -> MISS]", d20_2, d20_2 + atk_bonus, int(target_ac),
+                )
+            else:
+                is_crit = is_crit and (d20_2 == 20)
+        # 3. Sanctuary (7c): the ATTACKER must make a save or lose the attack.  On
+        # a FAILED save the hit is negated (flipped to a miss).
+        if hit and response.negate_save is not None:
+            ns = response.negate_save
+            if not resolve_saving_throw(actor, ns.save_stat, ns.dc, rng):
+                hit = False
+                log.info(
+                    "  sanctuary: %s failed %s vs DC %d  [SANCTUARY -> MISS]",
+                    actor.name, ns.save_stat, ns.dc,
+                )
+        # 4. Redirect (Warding Bond, 7c): if the hit STILL lands, capture the
+        # redirect for the DamageEvent (resolved at damage time — the amount isn't
+        # known until the bearer's damage resolves).
+        if hit and response.redirect is not None:
+            redirect_spec = response.redirect
+        # 5. Thorns (Fire Shield, substrate #5): when the melee hit LANDS (not
         # flipped to a miss above), the bearer deals automatic damage to the
         # attacker — no attack roll.  Enqueued as a DamageEvent FROM the bearer
         # (the defender = this event's target) TO the attacker (this event's
         # actor), so it routes through the attacker's own damage-type response
         # and counts as the bearer's outgoing damage.
+        reactive_damage = response.reactive_damage
         if hit and reactive_damage is not None and target is not None:
             thorns_event = DamageEvent(
                 tick=make_tick(round_, turn_idx, next_sequence),
@@ -384,6 +424,7 @@ def resolve_attack_roll(
             is_spell=event.is_spell,
             min_die=event.min_die,
             ignore_resistance=event.ignore_resistance,
+            redirect=redirect_spec,            # Warding Bond (7c) — resolved at damage time
             cost=event.cost,
         )
         queue.push(damage_event)
@@ -640,6 +681,33 @@ def resolve_damage(
     if target is not None:
         target.take_damage(total)
         _check_concentration(target, total, rng, save_reroll_decider)
+
+    # Damage REDIRECT (substrate #7 / 7c, Warding Bond): the bearer is warded, so a
+    # share of the amount IT JUST TOOK (post-resistance — phase 7 already halved it)
+    # is also dealt to the warding caster.  Spawned as a flat DamageEvent attributed
+    # to the ORIGINAL attacker (event.actor) so it lands in that attacker's outgoing
+    # column, with redirect=None so it never recurses.  Faithful to "you take the
+    # same amount of damage": no dice, no further response, just the flat amount.
+    if event.redirect is not None and total > 0:
+        rspec = event.redirect
+        amount = int(total * rspec.fraction)
+        if amount > 0 and rspec.target is not None:
+            round_, turn_idx, _ = event.tick
+            redirect_event = DamageEvent(
+                tick=make_tick(round_, turn_idx, next_sequence),
+                actor=actor,                    # attributed to the original attacker
+                target=rspec.target,            # ...the warding caster takes the share
+                is_crit=False,
+                damage_dice=(0, 0),
+                damage_bonus=amount,
+                cost="none",
+            )
+            queue.push(redirect_event)
+            next_sequence += 1
+            log.info(
+                "  warding bond: %s also takes %d (redirected from %s)",
+                rspec.target.name, amount, target.name,
+            )
 
     return total, next_sequence
 

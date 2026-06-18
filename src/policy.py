@@ -481,29 +481,90 @@ class ReactiveDamageSpec:
 
 
 @dataclass(frozen=True)
+class RedirectSpec:
+    """Damage REDIRECT — when the bearer takes damage from a hit, a share of that
+    damage is also dealt to another entity (substrate #7 / 7c, Warding Bond: "each
+    time it takes damage, you take the same amount").
+
+    Unlike ReactiveDamageSpec (a FIXED dice spec dealt to the ATTACKER), redirect's
+    amount is the damage the BEARER actually takes (it is not known until the
+    DamageEvent resolves), and it lands on a THIRD party (the warding caster), not
+    the attacker.  So it cannot be resolved at the on_incoming_hit seam like thorns:
+    the seam only ORIGINATES it (the bearer's policy says "I am warded, redirect to
+    my warder"); resolve_attack_roll threads it onto the spawned DamageEvent, and
+    resolve_damage spawns the redirect copy once the final taken amount is known.
+
+    Fields
+    ------
+    target:
+        Who receives the redirected damage (the Warding Bond caster).
+    fraction:
+        Share of the bearer's taken damage to redirect (Warding Bond = 1.0 — the
+        caster takes the SAME amount the warded ally took, after the ally's own
+        resistance).  int(taken * fraction).
+    """
+    target: "Entity"
+    fraction: float = 1.0
+
+
+@dataclass(frozen=True)
+class NegateSaveSpec:
+    """Attacker save-or-negate — when the bearer is attacked, the ATTACKER must
+    make a saving throw or the attack is negated (substrate #7 / 7c, Sanctuary:
+    "any creature who targets the warded creature with an attack roll ... must
+    succeed on a Wisdom saving throw or ... lose the attack").
+
+    Modeled at the on_incoming_hit seam (post-hit): the attacker rolls the save vs
+    the warding caster's DC, and on a FAILURE the hit is flipped to a miss.  RAW the
+    save is made when the attacker CHOOSES to target (pre-roll), but damage lands iff
+    (attacker passes the save) AND (the attack hits) either way, so resolving it at
+    the seam is outcome-equivalent for our DPR model.
+
+    Fields
+    ------
+    save_stat:
+        The ATTACKER's saving-throw stat (Sanctuary = "wis_save").
+    dc:
+        The save DC (the warding caster's spell save DC), precomputed by the policy.
+    """
+    save_stat: str
+    dc: int
+
+
+@dataclass(frozen=True)
 class InterceptResponse:
-    """The defender's answer to an IncomingAttackContext: spend `resource_cost`
-    to add `ac_bonus` to AC against this one attack (potentially flipping it to a
-    miss), optionally make a `counter` attack, and/or deal automatic
-    `reactive_damage` (thorns) back to the attacker.  Return None to decline.
+    """The defender's answer to an IncomingAttackContext.  Return None to decline;
+    otherwise the scheduler validates affordability against the DEFENDER's
+    resources, consumes `resource_cost`, and HANDS THIS WHOLE OBJECT BACK to
+    resolve_attack_roll (the seam carries a single richer response object — refactored
+    from a positional 3-tuple at the warding-bond redirect, the session-12 note).
 
-    The scheduler validates affordability against the DEFENDER's resources,
-    consumes them, applies the AC bump in resolve_attack_roll, and then:
-      - if the bump flips the hit to a miss and a `counter` is present, enqueues
-        the counter attack (Flourish Counter); and
-      - if the attack still HITS and `reactive_damage` is present, enqueues the
-        thorns damage against the attacker (Fire Shield).  These are mutually
-        exclusive in practice (a flip means the hit didn't land, so no thorns).
+    The riders, applied in resolve_attack_roll on a confirmed hit (each may flip the
+    hit to a miss; later riders are skipped once the hit is flipped):
+      - `ac_bonus` — raise AC against this one attack; flips the hit to a miss if it
+        exceeds the margin (Flourish Parry / Shield).  On a flip with a `counter`,
+        the counter attack is enqueued (Flourish Counter).
+      - `impose_disadvantage` — re-roll the attack with disadvantage (a second d20,
+        flip to a miss if it now misses; substrate #7 / 7c, Protection fighting
+        style: "impose Disadvantage on the triggering attack roll").
+      - `negate_save` — the ATTACKER makes a save or the attack is negated (Sanctuary).
+      - `reactive_damage` — automatic thorns dealt to the attacker if the hit STILL
+        lands (Fire Shield, substrate #5).
+      - `redirect` — a share of the bearer's TAKEN damage is also dealt to a third
+        party (Warding Bond, 7c); captured here and resolved at damage time.
 
-    The reaction itself is NOT modeled as an engine resource here: the policy
-    self-gates it (e.g. once per round for a parry; Fire Shield's thorns are
-    automatic and ungated), decoupled from the opportunity-attack reaction per
-    the build guide's explicit assumption.
+    The reaction itself is NOT modeled as an engine resource: the policy self-gates
+    it (once per round for a parry; thorns/redirect are automatic and ungated),
+    decoupled from the opportunity-attack reaction per the build guide's assumption.
     """
     ac_bonus: int = 0
     resource_cost: dict[str, int] = field(default_factory=dict)
     counter: "CounterSpec | None" = None
     reactive_damage: "ReactiveDamageSpec | None" = None
+    # --- substrate #7 / 7c ally-effects (intercept riders) ---
+    impose_disadvantage: bool = False               # Protection fighting style
+    negate_save: "NegateSaveSpec | None" = None     # Sanctuary
+    redirect: "RedirectSpec | None" = None          # Warding Bond
 
 
 # ---------------------------------------------------------------------------
