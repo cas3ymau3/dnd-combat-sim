@@ -124,8 +124,26 @@ Moonlight → (7).
   spell `Choice` carries a class-of-origin tag (same flavor as the existing
   `is_spell` / `damage_type` tags) that the StatusSet predicate reads.
 - **Duration clock**: combat-clock (swept at combat boundary, like
-  `StatusSet.clear()`) vs day-clock (10 min / 1 hr spanning combats →
-  `DurationBuffTracker`). Both mechanisms already exist.
+  `StatusSet.clear()`) vs day-clock (10 min / 1 hr / 8 hr spanning combats →
+  `DurationBuffTracker`).
+  - **FULL day-clock integration is DEFERRED (planned slice, 2026-06-18).** What
+    EXISTS: the minute clock (`DayRunner` samples `combat_times` in minutes, 960-min
+    day) + `DurationBuffTracker` (records `(cast_minute, duration, value)`, answers
+    `active_at(minute)` / `strongest_at(minute)`) — but it is a STANDALONE helper the
+    **daily plan hand-wires** (War Angel checks `active_at(combat_start_minute)` in a
+    `before_combat` hook and adds/removes the Magic Weapon modifier per combat).  What
+    is MISSING: the `cast_effect` envelope's `duration="day"` field is NOT integrated —
+    the scheduler's `cast_effect` branch only does combat-clock (note → swept at every
+    boundary).  So an hour+ buff today has two imperfect options: re-cast-each-combat
+    (silvertail's warding bond / aid in session 21 — effectively "always on," does NOT
+    model the single-cast slot economy) or a hand-rolled `DurationBuffTracker`.  The
+    FULL version threads `duration="day"` through the `cast_effect` branch + a per-entity
+    day-clock effect registry that survives `clear_combat_buffs` and expires when
+    `combat_start_minute > cast_minute + duration` (combat-boundary granularity).
+    **Payoff (concentrated on hour+ buffs):** slot-economy fidelity — warding bond (1 hr)
+    / aid (8 hr) are ONE cast covering the day, not one-per-combat — which is the whole
+    sim's per-day resource-budget metric.  Pairs with the summon-survival slice (both
+    touch `DayRunner` + raise silvertail fidelity).
 - **`application_save`**: debuff resist roll, reuses the save machinery.
 
 ### Engine-seam notes (session 12 — flagged with the user, deferred deliberately)
@@ -502,6 +520,33 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
    cleric-3), mirroring Fire Shield → L15.  Still deferred: charge-PRONE→advantage
    (needs an on-hit-applies-status seam — entangled with shocking-grasp-denies-
    reactions + an opportunity-attack model); mid-combat conjure summon lifecycle.
+   - **Uncommanded summon → Dodge (DEFERRED, build when forced).** A controlled ally
+     that is NOT commanded on a turn takes the **Dodge** action by default (2024 Primal
+     Companion; design.md §1) → **disadvantage on attacks against it** (until its next
+     turn) + **advantage on DEX saves**.  The disadvantage half **reuses the existing
+     `impose_disadvantage` rider** (Protection / 7c-on-summon): the summon's
+     `on_incoming_hit` returns it, gated on "not commanded this turn"; the DEX-save-
+     advantage half matters against 7b save-for-half zones.  NOT forced yet — the
+     silvertail always spends its BA to command the beast (max offense, never dodges);
+     build at the first build that leaves a summon uncommanded.  This is the
+     action-economy trade-off the command model exists to expose (command = offense,
+     Dodge = defense).
+3b. **SUMMON SURVIVAL & DEATH + recast policy (NEXT — user decision 2026-06-18).** Today
+   HP never gates turns (threshold model), so a summon contributes for all rounds
+   regardless of damage taken — which makes the 7c-on-summon DEFENSES (aid / warding
+   bond / protection) DPR-INERT (they only reduce a number we don't read).  Make a
+   summon **die / wink out at 0 HP**: wire `is_functionally_dead` (hp ≤ 0) → set
+   `destroyed` for summons (the scheduler already skips destroyed turns + the commander
+   already checks `destroyed`), so a dead summon's DPR contribution **disappears**.
+   Add a **per-character recast policy** decision point (summon died → recast or not —
+   bespoke Python per build, "policies are code").  Consequence: aid / warding bond /
+   protection become **DPR-RELEVANT** (survivability → more rounds of summon strikes) —
+   so the session-21 "aid is DPR-inert" caveat lifts.  **Coupled requirement:** summon
+   survival makes the enemy's attack/damage profile LOAD-BEARING (it decides whether the
+   summon lives), so this slice should pull in **real-ish per-CR enemy damage** — exactly
+   decision #12's unrealised half (today's enemy numbers are "illustrative").  Vehicle:
+   silvertail beast under real enemy fire (and its upcast aid at L10+ where it has
+   3rd-level slots → +10).
 4. **7b zone / emanation** — the §3.1 zonal spatial model + recurring scheduled zone
    events; damage/debuff and buff flavors; anchored vs static. Vehicle: silvertail
    Spirit Guardians (emanation) + the wardancer's spike growth / cloud of daggers

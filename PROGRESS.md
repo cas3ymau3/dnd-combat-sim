@@ -105,9 +105,17 @@ type, condition, resource, …):
 > entangled with **shocking grasp denying the enemy's reactions (no OA)** — the build
 > kites in/out + charges repeatedly only because shocking grasp suppresses the OA; the
 > on-hit-applies-status seam + a reaction-denial status + an opportunity-attack model
-> are ONE connected control cluster (user note, session 21). **NEXT: 7b zone/emanation**
-> (Spirit Guardians — the §3.1 zonal spatial model + a recurring scheduled zone event;
-> the LAST unbuilt #7 sub-kind). Per-feature reflection pending user input.
+> are ONE connected control cluster (user note, session 21). **Per-feature reflection
+> DONE (2026-06-18 discussion):** three forward items recorded (no rework) — (1)
+> uncommanded summon → Dodge (reuses `impose_disadvantage`; build when forced); (2) full
+> day-clock integration of `duration="day"` into `cast_effect` (a partial day-clock —
+> minute clock + `DurationBuffTracker` — already exists; War Angel hand-wires it); (3)
+> summon DEATH at 0 HP + per-character recast policy → makes aid/warding/protection
+> DPR-relevant (lifts the "aid inert" caveat) + needs real per-CR enemy damage (decision
+> #12). **NEXT (user decision: summon-death FIRST, then 7b): SUMMON SURVIVAL & DEATH**
+> (item 3b) — wire `is_functionally_dead` → `destroyed` for summons + a recast decision
+> point + real per-CR enemy damage; THEN **7b zone/emanation** (Spirit Guardians, §3.1
+> zonal model — the LAST unbuilt #7 sub-kind).
 >
 > **Session scope (2026-06-17,
 > session 20) — DONE (SUBSTRATE #7 — 7a SUMMON):** built the MINIMAL 7a slice — the
@@ -506,8 +514,12 @@ type, condition, resource, …):
       interposes; guide 32:227 = 2024 Protection).
     - **bless** → +1d4 (rolled modifier) to the beast's attacks/saves → raises its
       OUTGOING DPR; concentration on the master.
-    - **aid** → +5 HP max/current (DPR-INERT under the threshold HP model — installed
-      as an assertion that the target=ally HP buff lands on the beast).
+    - **aid** → +5 HP max/current. **DPR-INERT *only under the current threshold HP
+      model*** (HP never gates turns) — installed as an assertion that the target=ally
+      HP buff lands on the beast. **This caveat LIFTS with the planned summon-survival
+      slice** (when summons die at 0 HP, aid's +HP buys more rounds of summon DPR →
+      DPR-relevant). Modeled +5 (2nd-level, the slot L8 has); the guide upcasts to +10
+      at L10+ (3rd-level slots) — a future row.
   - **Enemy strikes the beast (the loop that makes the defender effects matter).** The
     L8 row carries an `enemy_attack` profile; `make_silvertail_runner` registers a
     `ScriptedEnemyPolicy(target=beast, damage_type="slashing")` so the typed swing lets
@@ -544,11 +556,30 @@ type, condition, resource, …):
     pattern only works because shocking grasp suppresses the OA, so the
     on-hit-applies-status seam + a reaction-denial status + an opportunity-attack model
     are ONE connected control cluster (build deliberately when forced).
-  - **Deferred / next.** **7b zone / emanation** (Spirit Guardians — the §3.1 zonal
-    spatial model + a recurring scheduled zone event) is the LAST unbuilt #7 sub-kind.
-    Also still deferred: higher silvertail rows; the full §3.6 three-HP-pool party
-    entity; aid upcast (+10 at a row with 3rd-level slots); mid-combat conjure summon
-    lifecycle; the charge/prone + reaction-denial control cluster above.
+  - **Reflection (per-feature ritual, done 2026-06-18 — user discussion).** Three
+    forward items surfaced, each recorded (no rework of this session's machinery — it is
+    correct under the current model):
+    1. **Uncommanded summon → Dodge** (disadvantage on incoming + advantage on DEX
+       saves) — the general summon default; **reuses `impose_disadvantage`**; NOT forced
+       (silvertail always commands → never dodges); build when a build leaves a summon
+       uncommanded.
+    2. **Full day-clock integration** — a day-clock partially EXISTS (the minute clock +
+       `DurationBuffTracker`, War Angel hand-wires it for Magic Weapon); the full version
+       integrates `duration="day"` into the `cast_effect` envelope (one cast persists
+       across combats + minute-accurate expiry) for slot-economy fidelity on hour+ buffs
+       (warding bond 1 hr / aid 8 hr). Planned slice; pairs with summon-survival.
+    3. **Summon death at 0 HP** (+ per-character recast policy) — makes aid / warding
+       bond / protection DPR-RELEVANT; needs real per-CR enemy damage (decision #12).
+       See `design/buff_primitive.md` for all three.
+  - **Deferred / NEXT (user decision 2026-06-18: summon-death FIRST, then 7b).**
+    **SUMMON SURVIVAL & DEATH + recast policy** (item 3b in the build sequence) is the
+    NEXT slice — wire `is_functionally_dead` → `destroyed` for summons, add a recast
+    decision point, pull in real per-CR enemy damage; it lifts the "aid DPR-inert"
+    caveat. THEN **7b zone / emanation** (Spirit Guardians — the §3.1 zonal model + a
+    recurring scheduled event), the LAST unbuilt #7 sub-kind. Also deferred: the full
+    day-clock integration; the uncommanded-Dodge default; higher silvertail rows; the
+    full §3.6 three-HP-pool party entity; aid upcast (+10); the charge/prone +
+    reaction-denial (shocking-grasp-denies-OA) control cluster.
 
 - **SUBSTRATE #7 — 7a SUMMON (commanded primal companion) — BUILT & VALIDATED
   (2026-06-17, session 20).** The minimal 7a slice: a controlled-ally SUMMON as a
