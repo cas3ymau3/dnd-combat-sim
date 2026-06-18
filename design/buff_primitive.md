@@ -9,9 +9,11 @@
 > response + (5) defender thorns rider (session 12), and (6) outgoing predicate
 > riders (session 14).  Substrate (7) — zone / summon / multi-entity — is
 > **DESIGNED** (the design note in "Substrate #7" below, session 17, 2026-06-17),
-> with its **7c foundation-min slice BUILT** (session 18, 2026-06-17: passive party
-> member + enemy split-targeting + per-(source,target) DPR accounting; summons /
-> zones / ally-effects still unbuilt).  It is the `cast_effect` on-ramp to the
+> with its **7c foundation-min slice BUILT** (session 18: passive party member +
+> enemy split-targeting + per-(source,target) DPR accounting) and its **7c
+> ally-effects BUILT** (session 19, 2026-06-17: `cast_effect target=ally` retarget +
+> warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit`
+> response object; summons / zones still unbuilt).  It is the `cast_effect` on-ramp to the
 > multi-entity / spatial model already specified in `design/design.md` §1 (objects
 > vs actors; controlled allies; party members with 3 HP pools), §3.1 (zonal spatial
 > model), §3.5/§3.6 (enemy targeting + party), and verbs 11/12 (`move_entity`,
@@ -91,7 +93,7 @@ addition); `cast_effect` just installs a labeled payload into the matching one.
 | 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | **BUILT** (session 12) |
 | 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | **BUILT** (session 12) |
 | 6 | **outgoing rider** | `on_hit` seam → separate typed DamageEvents | predicate-gated extra damage (Fount of Moonlight +2d6 radiant, Primal Strike +1d8, Rage melee-STR, Hunter's Mark) | **BUILT** (session 14) |
-| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED**; **7c foundation-min BUILT** (session 18 — party member + enemy split-targeting + per-(source,target) DPR); 7c ally-effects / 7a summon / 7b zone unbuilt |
+| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED**; **7c foundation-min BUILT** (session 18 — party member + enemy split-targeting + per-(source,target) DPR) + **7c ally-effects BUILT** (session 19 — target=ally retarget + warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit` response object); 7a summon / 7b zone unbuilt |
 
 Examples mapped: Bless / Magic Weapon / **Sacred Weapon** (+CHA *stacking on*
 STR/DEX via `amount:{ability_modifier:charisma}` — already supported) / Bane → (1).
@@ -121,12 +123,16 @@ Moonlight → (7).
 
 ### Engine-seam notes (session 12 — flagged with the user, deferred deliberately)
 
-- **The `on_incoming_hit` intercept seam is near its shape limit.** It now serves
-  Flourish Parry (AC-flip + counter), Shield (AC-flip), and Fire Shield thorns
-  (automatic `reactive_damage`), and the scheduler closure returns a positional
-  3-tuple `(ac_bonus, counter, reactive_damage)`. The NEXT defender reaction added
-  should refactor that to a single richer response object (mirror the
-  Miss/Hit/InterceptResponse pattern) rather than a growing tuple.
+- **The `on_incoming_hit` intercept seam 3-tuple — REFACTORED (session 19).** It
+  served Flourish Parry (AC-flip + counter), Shield (AC-flip), and Fire Shield thorns
+  (automatic `reactive_damage`) via a positional 3-tuple `(ac_bonus, counter,
+  reactive_damage)`. Adding the 7c ally-effects riders (warding-bond redirect,
+  protection disadvantage, sanctuary save-or-negate) was the trigger (this note's
+  prediction): the scheduler closure now returns the whole `InterceptResponse` object
+  (or `None`) and `resolve_attack_roll` reads the riders off it, so new riders are
+  added as fields, not tuple positions. Two test files that hand-built 3-tuple
+  deciders (`test_flourish_parry`, `test_incoming_damage_thorns`) were updated to
+  return `InterceptResponse`.
 - **Melee-vs-ranged is unmodeled (attack-taxonomy gap).** Thorns and Flourish
   Parry both ASSUME the only attacker is melee (Fire Shield / Flourish only
   trigger on melee hits). `IncomingAttackContext` carries the economy `cost` but
@@ -443,7 +449,22 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
    No summons, no zones.
 2. **7c ally-effects** — bless/aid retargeted onto an ally; warding-bond **redirect**
    (refactor the `on_incoming_hit` 3-tuple → response object here); protection /
-   sanctuary **protect** (who-gets-hit). Vehicle: silvertail.
+   sanctuary **protect** (who-gets-hit). **BUILT (session 19, 2026-06-17).** Vehicle:
+   the Scion + a synthetic ally (`make_ally` + `AllyEffectPolicy` +
+   `make_ally_effects_runner`) — silvertail deferred to the 7a summon slice (lighter
+   first, per the user). Three effects, all verified against 2024 text first:
+   (a) **ally-buff retarget** — `cast_effect target=ally` lands existing #1/#3/#4
+   payloads on the ally, NO engine change (the cast_effect branch already installs on
+   `choice.target or actor`); (b) **warding bond** — the ally's `on_incoming_hit`
+   returns a `RedirectSpec`; `resolve_attack_roll` threads it onto the `DamageEvent`
+   and `resolve_damage` spawns a copy of the taken amount onto the caster (attributed
+   to the original attacker, never recursing); (c) **protection** — `impose_disadvantage`
+   re-rolls the attack with a second d20 (flip on a miss; P(hit)² exact; crit kept only
+   on a double-20); (d) **sanctuary** — `negate_save` makes the ATTACKER save vs the
+   caster's DC or the attack is negated. Adding warding-bond redirect was the trigger
+   that **refactored the `on_incoming_hit` positional 3-tuple
+   (`ac_bonus, counter, reactive_damage`) into the single `InterceptResponse` object
+   returned by the decider** (the session-12 engine-seam note paid off).
 3. **7a summon** — `create_entity`/`destroy_entity` an Actor; commanded actions; the
    summon DPR column; summon as buff/redirect target. Vehicle: silvertail primal
    companion. (`transform_statblock`, §4 #13, is adjacent but distinct — Wild Shape.)
@@ -497,10 +518,27 @@ the evidence the #7 shape is settled, mirroring the Fire-Shield stress test for
 - **Zonal spatial state (§3.1)** — an explicit `zone` attribute on entities + the
   named-zone registry; deferred until 7b (the foundation-min slice and 7c can run in
   the implicit single "melee" zone everything already shares).
-- **Intercept-seam refactor** — collapse the `on_incoming_hit` 3-tuple into one
-  response object when warding-bond redirect (step 2) is added (session-12 note).
+- **Intercept-seam refactor** — ✓ DONE (session 19): the `on_incoming_hit` 3-tuple
+  is now the single `InterceptResponse` object returned by the decider (warding-bond
+  redirect was the trigger, exactly as the session-12 note predicted).
 
 ### Cross-cutting / deferred notes
+
+- **Reactor economy is ABSTRACTED into the defender's response (session 19, user
+  decision: keep).** The 7c riders (protection disadvantage, sanctuary save-or-negate,
+  warding-bond redirect) are returned by the ALLY's `on_incoming_hit` (the seam
+  consults the DEFENDER's policy), with the protector/caster's reaction folded in and
+  self-gated — the same convention as Fire-Shield thorns and Flourish Parry. So a
+  protector's single reaction is NOT a real engine resource and multi-reactor
+  contention (two protectors, or a protector also wanting an opportunity attack) is
+  unmodeled. A known simplification, fine for the single-attacker cases modeled;
+  revisit only when a build with competing reactions forces it.
+- **"Resistance to ALL damage" has no per-type expression (session 19).** Warding
+  Bond / Rage grant resistance to all damage, but `Entity.damage_response` /
+  `damage_response_for` are keyed per damage type, so "all" isn't representable and is
+  inert against an untyped attack (`damage_response_for(None) → None`). When a build
+  needs it, add an `_all`/default key to the damage-response lookup (substrate #4).
+  The #4 retarget itself is validated with a typed-damage test in the meantime.
 
 - **ATTACK-TAXONOMY (memory `attack-taxonomy-three-axes`).** Multi-entity combat is
   the most likely forcer of the first-class kind/action/economy typology — melee-vs-

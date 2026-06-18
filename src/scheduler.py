@@ -348,18 +348,18 @@ class Scheduler:
         return hit_decider
 
     def _make_intercept_decider(self, event: "AttackRollEvent"):
-        """Return a `(hit_margin) -> (ac_bonus, counter_spec | None, reactive_damage
-        | None)` callable for the TARGET's in-flight reaction (intercept_event —
-        Flourish Parry, Shield, Fire Shield thorns).
+        """Return a `(hit_margin) -> InterceptResponse | None` callable for the
+        TARGET's in-flight reaction (intercept_event — Flourish Parry, Shield, Fire
+        Shield thorns, and the 7c ally-effects redirect/protect/sanctuary).
 
         Mirror of the miss/hit deciders, but it consults the DEFENDER's policy
         (event.target), not the attacker's.  The closure calls
         policy.on_incoming_hit; validates and consumes the DEFENDER's resources;
-        returns the AC bonus to apply, an optional counter spec, and optional
-        thorns (reactive) damage.  resolve_attack_roll applies the bonus (flipping
-        the hit to a miss if it exceeds the margin), enqueues the counter on a
-        flip, and enqueues the thorns damage when the hit still lands.  None = no
-        interceptor.
+        and hands the WHOLE InterceptResponse back to resolve_attack_roll (refactored
+        from a positional 3-tuple to a single response object at the warding-bond
+        redirect — the session-12 engine-seam note).  resolve_attack_roll reads the
+        riders off it (AC bump / disadvantage / save-or-negate / thorns / redirect).
+        None = no interceptor (declined or unaffordable).
         """
         from .policy import IncomingAttackContext
 
@@ -386,16 +386,16 @@ class Scheduler:
             )
             response = on_incoming(ctx)
             if response is None:
-                return 0, None, None
+                return None
             # Validate affordability against the DEFENDER's resources, then
             # consume.  (The reaction itself is the policy's once-per-round gate,
             # not an engine resource — see InterceptResponse.)
             if any(target.resources.available(n) < a
                    for n, a in response.resource_cost.items()):
-                return 0, None, None
+                return None
             for n, a in response.resource_cost.items():
                 target.resources.consume(n, a)
-            return response.ac_bonus, response.counter, response.reactive_damage
+            return response
 
         return intercept_decider
 

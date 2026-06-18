@@ -138,6 +138,7 @@ from typing import TYPE_CHECKING
 from ..content import interpret_save_spell, interpret_scaled_dice, load_abilities
 from ..day_runner import DayRunner
 from ..entity import Entity
+from ..modifiers import Modifier
 from ..policy import (
     Choice,
     DamageRiderResponse,
@@ -146,7 +147,9 @@ from ..policy import (
     HitContext,
     HitResponse,
     InterceptResponse,
+    NegateSaveSpec,
     ReactiveDamageSpec,
+    RedirectSpec,
     RiderDamageSpec,
 )
 from ..resources import ResourceEntry, ResourcePool
@@ -714,6 +717,96 @@ def make_party_member(level: int) -> Entity:
         # acts, so nothing else is read.
         base_stats={"ac": data["char_ac"]},
     )
+
+
+def make_ally(level: int) -> Entity:
+    """A synthetic ALLY (substrate #7 / 7c ally-effects) — the friendly entity the
+    Scion's ally-effect casts LAND ON (bless/aid retarget, warding bond, protection,
+    sanctuary).  Like make_party_member it is a passive infinite-HP friendly pool at
+    a peer's AC, but it ALSO carries the saving-throw stats an ally-effect reads (no
+    policy of its own → it never acts; the AllyEffectPolicy is attached separately so
+    the intercept seam consults it).
+    """
+    data = LEVELS[level]
+    return Entity(
+        name=f"Ally-L{level}",
+        hp=10**9,
+        base_stats={
+            "ac": data["char_ac"],
+            # A peer's saves — read only if an ally-effect ever rolls one ON the ally
+            # (none of the 7c effects do; Sanctuary's save is the ATTACKER's).  Kept
+            # for parity with a real party member.
+            "con_save": 4, "wis_save": 4, "dex_save": 3,
+        },
+    )
+
+
+# ---------------------------------------------------------------------------
+# 7c ally-effects: the protected/warded/sanctified ALLY's reaction policy
+# ---------------------------------------------------------------------------
+
+class AllyEffectPolicy:
+    """The defender-side policy for an ALLY benefiting from a 7c ally-effect, plus
+    the cast that installs it (substrate #7 / 7c ally-effects).  One vehicle covers
+    all three intercept-riding effects; the rider returned by ``on_incoming_hit``
+    selects which.
+
+    The seam consults the DEFENDER's policy (the ally), so the protector/warder's
+    reaction economy is ABSTRACTED into the ally's response and self-gated — the same
+    convention as Fire-Shield thorns and Flourish Parry (the reactor entity, here the
+    Scion ``caster``, is not separately ticked).
+
+      - ``warding_bond``  → REDIRECT a share of the ally's taken damage to the caster
+        (RedirectSpec).  The cast ALSO installs the +1 AC modifier (substrate #1) and
+        resistance-to-all (substrate #4) on the ally — the retargeted payloads.
+      - ``protection``    → impose DISADVANTAGE on the attack (a nearby shield-bearer
+        interposes; 2024 Protection makes ALL attacks vs the target disadvantaged
+        until the protector's next turn, so always-on while active is RAW-correct for
+        a single attacker).
+      - ``sanctuary``     → the ATTACKER must make a WIS save (vs the caster's DC) or
+        lose the attack (NegateSaveSpec).
+
+    The ally never acts: ``decide`` returns [] so its TurnStartEvent is a no-op.
+    """
+
+    def __init__(self, effect: str, ally: "Entity", caster: "Entity"):
+        if effect not in ("warding_bond", "protection", "sanctuary"):
+            raise ValueError(f"unknown ally-effect {effect!r}")
+        self._effect = effect
+        self._ally = ally
+        self._caster = caster
+
+    def install(self) -> None:
+        """Install the retargeted persistent payload on the ALLY (the part of the
+        effect that is not an intercept rider).  Called once at setup (a pre-cast,
+        like the Scion's Fire Shield) so the buff is live from initiative.
+
+        Warding Bond's +1 AC (substrate #1) lands on the ally's ModifierStack — a
+        ``cast_effect target=ally`` payload, here installed directly.  Its
+        resistance-to-all (substrate #4) is also a target=ally payload, but our
+        modeled enemy attack is UNTYPED (``damage_response_for(None) → None``), so it
+        would be inert here; the #4 retarget is exercised in the typed-damage unit
+        test instead (test_ally_effects).  Protection / Sanctuary carry no persistent
+        payload — they are pure intercept riders.
+        """
+        if self._effect == "warding_bond":
+            self._ally.add_modifier(Modifier(stat="ac", value=1, source="warding_bond"))
+
+    def on_incoming_hit(self, ctx) -> "InterceptResponse | None":
+        if self._effect == "warding_bond":
+            # Each time the warded ally takes damage, the caster takes the same.
+            return InterceptResponse(
+                redirect=RedirectSpec(target=self._caster, fraction=1.0))
+        if self._effect == "protection":
+            return InterceptResponse(impose_disadvantage=True)
+        if self._effect == "sanctuary":
+            dc = int(self._caster.stat("spell_save_dc"))
+            return InterceptResponse(
+                negate_save=NegateSaveSpec(save_stat="wis_save", dc=dc))
+        return None
+
+    def decide(self, snapshot: "GameState") -> "list[Choice]":
+        return []                                   # passive — never acts
 
 
 # ---------------------------------------------------------------------------
@@ -1552,3 +1645,61 @@ def make_day_runner(
         rounds_per_combat=rounds_per_combat,
     )
     return runner, char, dummy
+
+
+def make_ally_effects_runner(
+    level: int,
+    rng: "SeededRNG",
+    effect: "str | None",
+    rounds_per_combat: int = 4,
+):
+    """Assemble (DayRunner, char, ally, dummy) for the substrate-#7 / 7c ALLY-EFFECTS
+    scenario (the Scion + synthetic-ally vehicle).
+
+    The Scion is the CASTER; a synthetic ``make_ally`` is the friendly entity the
+    ally-effect lands on; the enemy (``dummy``) is a melee attacker whose every swing
+    targets the ALLY (a single-entity roster ``[(ally, 1)]``), isolating the effect.
+    ``effect`` selects the ally-effect (``"warding_bond"`` / ``"protection"`` /
+    ``"sanctuary"``), or ``None`` for the baseline (no rider — attacks land in full),
+    so a test can read the effect's directional impact off the per-(source,target)
+    DPR ledger:
+
+      - warding bond: the enemy's damage to the ally is ALSO dealt to the caster —
+        ``damage_source_to(enemy, char) ≈ damage_source_to(enemy, ally)`` (the share);
+      - protection / sanctuary: ``damage_source_to(enemy, ally)`` drops below the
+        ``effect=None`` baseline (disadvantage / save-or-negate cut the landed hits).
+    """
+    char = make_starfire_scion(level)
+    ally = make_ally(level)
+    dummy = make_training_dummy(level)
+    policy = StarfireScionPolicy(
+        level=level, character=char, target=dummy, rounds_per_combat=rounds_per_combat,
+    )
+    policies: dict[int, object] = {char.id: policy}
+    entities: list[Entity] = [char, ally, dummy]
+
+    if effect is not None:
+        ally_policy = AllyEffectPolicy(effect=effect, ally=ally, caster=char)
+        ally_policy.install()                       # pre-cast the persistent payload
+        policies[ally.id] = ally_policy
+
+    ea = LEVELS[level].get("enemy_attack")
+    if ea:
+        # The enemy attacks the ALLY on every swing (legacy single-target mode with
+        # char_target_prob=1.0 — the friendly here is the ally), so the ally-effect
+        # is the only thing modulating its incoming damage.  (A single-entity roster
+        # would degenerate to a weight-1 d1 pick; single-target mode is the clean fit.)
+        policies[dummy.id] = ScriptedEnemyPolicy(
+            target=ally,
+            n_attacks=ea.get("n_attacks", 2),
+            char_target_prob=1.0,
+            rounds_per_combat=rounds_per_combat,
+        )
+
+    runner = DayRunner(
+        rng=rng,
+        entities=entities,
+        policies=policies,
+        rounds_per_combat=rounds_per_combat,
+    )
+    return runner, char, ally, dummy
