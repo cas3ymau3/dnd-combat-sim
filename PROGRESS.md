@@ -71,8 +71,41 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none reported (session 18 toggle
+> **Currently disabled (re-enable before exit):** none reported (session 19 toggle
 > recommendation re-made; nothing confirmed disabled). **Session scope (2026-06-17,
+> session 19) — DONE (SUBSTRATE #7 — 7c ALLY-EFFECTS):** built the SECOND 7c slice —
+> `cast_effect` / intercept riders whose target is an ALLY, on the session-18
+> multi-entity foundation. **Three effects, each verified against 2024 text FIRST**
+> (warding bond / protection style / sanctuary / bless / aid): (1) **ally-buff
+> retarget** (Bless/Aid) — `cast_effect target=ally` lands the existing #1/#3/#4
+> payloads on the ally entity, **NO engine change** (the cast_effect branch already
+> installs on `choice.target or actor`); (2) **warding bond** (redirect) — the ally's
+> `on_incoming_hit` returns a `RedirectSpec`; `resolve_attack_roll` threads it onto the
+> `DamageEvent` and `resolve_damage` spawns a copy of the taken amount onto the caster
+> (attributed to the original attacker, never recursing); (3) **protection fighting
+> style** (disadvantage) — `impose_disadvantage` re-rolls the attack with a second d20,
+> flipping the hit on a miss (P(hit)² exact; crit kept only on a double-20); (4)
+> **sanctuary** (save-or-negate) — `negate_save` makes the ATTACKER save vs the
+> caster's DC or the attack is negated. **The load-bearing engine change:** adding
+> warding-bond redirect was the trigger that **REFACTORED the `on_incoming_hit`
+> positional 3-tuple (`ac_bonus, counter, reactive_damage`) into the single
+> `InterceptResponse` object returned by the decider** — the session-12 engine-seam
+> note paid off (new riders are fields, not tuple positions; two test files that
+> hand-built 3-tuples updated). **Vehicle:** Scion + a synthetic ally (`make_ally` +
+> `AllyEffectPolicy` + `make_ally_effects_runner`) — silvertail deferred to the 7a
+> summon slice (user decision: lighter first; silvertail stands up at 7a as the
+> eventual 7a/7b stress vehicle). **432 tests green (+13).** Branch
+> `feature/substrate-7c-ally-effects` → confirm before merging to main. Per-feature
+> ritual: all five spells' 2024 wording web-verified before modeling; reflection done
+> — user chose to KEEP the reactor-economy abstraction (the protector/caster reaction
+> is folded into the ally's self-gated response, like Fire-Shield thorns; multi-reactor
+> contention unmodeled — recorded as a known simplification) and noted the "resistance
+> to ALL damage" per-type gap. ATTACK-TAXONOMY NOT forced (no rider gated on
+> melee/ranged) — flagged, untouched. **NEXT: 7a summon** (silvertail primal companion
+> — `create_entity`/`destroy_entity` an Actor; commanded actions; summon DPR column;
+> summon as a buff/redirect target); then 7b zone/emanation.
+>
+> **Session scope (2026-06-17,
 > session 18) — DONE (SUBSTRATE #7 — 7c MULTI-ENTITY FOUNDATION-MIN):** built the
 > FIRST SLICE of substrate #7 (the last `cast_effect` buff substrate) — the
 > multi-entity-combat foundation + the 7c multi-entity-targeting sub-kind. **Three
@@ -360,6 +393,80 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **SUBSTRATE #7 — 7c ALLY-EFFECTS — BUILT & VALIDATED (2026-06-17, session 19).**
+  The second 7c slice: `cast_effect` / intercept riders whose target is an ALLY, on
+  the session-18 multi-entity foundation. **432 tests green (+13).** Branch
+  `feature/substrate-7c-ally-effects` → confirm before merge. Design contract:
+  `design/buff_primitive.md` (registry row 7 + build-sequence item 2 flipped to BUILT;
+  the 3-tuple seam note marked refactored).
+  - **The load-bearing engine change — the `on_incoming_hit` 3-tuple REFACTOR.**
+    Adding warding-bond redirect was the trigger (the session-12 engine-seam note's
+    own prediction): the decider's positional `(ac_bonus, counter, reactive_damage)`
+    is now the single `InterceptResponse` object returned whole by
+    `_make_intercept_decider`, and `resolve_attack_roll` reads the riders off it. New
+    riders are now FIELDS, not tuple positions. The two test files that hand-built
+    3-tuple deciders (`test_flourish_parry`, `test_incoming_damage_thorns`) were
+    updated to `InterceptResponse`; all prior intercept behavior (parry / counter /
+    Shield / thorns) byte-unchanged.
+  - **(a) Ally-buff retarget (Bless/Aid) — NO engine change.** A `cast_effect` with
+    `target=ally` lands the existing substrate-#1 (modifier) / #3 (status) / #4
+    (damage-response) payloads on the ALLY's own `Entity` — the scheduler's cast_effect
+    branch already installs on `choice.target or actor`. Validated: a `target=ally`
+    cast puts the modifier + response on the ally and NOT the caster.
+  - **(b) Warding bond (redirect).** The ally's `on_incoming_hit` returns a new
+    `RedirectSpec(target, fraction)`; `resolve_attack_roll` threads it onto the spawned
+    `DamageEvent` (new `DamageEvent.redirect` field) and `resolve_damage`, after the
+    bearer takes its (post-resistance) damage, spawns a flat copy of `int(taken *
+    fraction)` onto the caster — attributed to the ORIGINAL attacker (so it lands in
+    that attacker's outgoing column) and `redirect=None` so it never recurses. "Each
+    time it takes damage, you take the same amount" (2024, web-verified).
+  - **(c) Protection fighting style (disadvantage).** `InterceptResponse.
+    impose_disadvantage` re-rolls the attack with a SECOND d20 and flips the hit to a
+    miss if it now misses — distributionally exact (P(hit)² either way, conditioning on
+    the first roll being a hit); the surviving hit keeps its crit only on a double-20.
+    2024 Protection (web-verified): reaction + shield → impose Disadvantage on the
+    attack (and all attacks vs the target until your next turn → always-on while active
+    is RAW-correct for a single attacker).
+  - **(d) Sanctuary (save-or-negate).** `InterceptResponse.negate_save` (new
+    `NegateSaveSpec(save_stat, dc)`) makes the ATTACKER roll a save vs the caster's DC;
+    a FAILURE negates the attack (flips to a miss). 2024 Sanctuary (web-verified):
+    attacker makes a WIS save or loses the attack; outcome-equivalent to the RAW
+    pre-roll save for our DPR model (damage lands iff attacker-saves AND attack-hits).
+  - **Vehicle — Scion + a synthetic ally.** `make_ally` (a passive infinite-HP friendly
+    pool at peer AC/saves), `AllyEffectPolicy` (the defender-side reaction policy + the
+    persistent-payload install; one vehicle covers all three intercept-riding effects),
+    and `make_ally_effects_runner(level, rng, effect)` (Scion caster + ally + a melee
+    enemy whose every swing targets the ally, isolating the effect). The protector/
+    caster's reaction economy is ABSTRACTED into the ally's self-gated response (the
+    seam consults the DEFENDER's policy) — the same convention as Fire-Shield thorns /
+    Flourish Parry (user decision: keep; multi-reactor contention is unmodeled, a
+    recorded simplification). Silvertail (the design note's named 7c stress vehicle)
+    deferred to the 7a summon slice (user decision: lighter first).
+  - **Validation (`tests/test_ally_effects.py`, +13).** Engine seams via deterministic
+    FakeRNG: `target=ally` lands the payload on the ally not the caster; redirect is
+    threaded onto the DamageEvent and spawns the taken amount (respecting the ally's
+    resistance + the fraction); protection flips on a missed reroll / keeps a hit on a
+    made one / downgrades a single-20 crit; sanctuary negates on a failed attacker save
+    / lets a made save through. Integration via `make_ally_effects_runner` + the
+    per-(source,target) ledger: warding bond redirects the FULL share to the caster
+    (`damage_source_to(enemy, char) == damage_source_to(enemy, ally)`) and the +1 AC
+    lands on the ally; protection and sanctuary each cut the ally's incoming damage
+    below the `effect=None` baseline (directional, summed over a long run); the baseline
+    takes full damage and redirects nothing (the control).
+  - **Process / per-feature ritual.** All five spells' 2024 wording web-verified
+    (D&D 2024 wikidot / Roll20 / D&D Beyond) BEFORE modeling. Reflection done — user
+    chose to KEEP the reactor-economy abstraction and noted the "resistance to ALL
+    damage" per-type gap (`damage_response` is keyed per type; add an `_all`/default key
+    when a build needs it; #4 retarget validated with a typed test meanwhile).
+    ATTACK-TAXONOMY NOT forced (no rider gated on melee/ranged) — flagged, untouched.
+  - **Deferred / next.** **7a summon** — `create_entity`/`destroy_entity` an Actor with
+    own HP/AC/saves/economy, commanded by the character policy, lifecycle keyed to
+    `effect_source`; a summon DPR column; the summon as a buff/redirect target. Vehicle:
+    stand up SILVERTAIL (guide 32) here (its primal companion), doubling as the eventual
+    7a/7b stress test. Then **7b zone/emanation** (the §3.1 zonal model). Also still
+    deferred: the full §3.6 three-HP-pool party entity; "resistance to all" (#4);
+    generalizing `precast_mode` beyond the L15 4th-level slot.
 
 - **SUBSTRATE #7 — 7c MULTI-ENTITY FOUNDATION-MIN — BUILT & VALIDATED (2026-06-17,
   session 18).** The first slice of the last unbuilt `cast_effect` buff substrate:

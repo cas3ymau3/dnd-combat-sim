@@ -9,9 +9,11 @@
 > response + (5) defender thorns rider (session 12), and (6) outgoing predicate
 > riders (session 14).  Substrate (7) — zone / summon / multi-entity — is
 > **DESIGNED** (the design note in "Substrate #7" below, session 17, 2026-06-17),
-> with its **7c foundation-min slice BUILT** (session 18, 2026-06-17: passive party
-> member + enemy split-targeting + per-(source,target) DPR accounting; summons /
-> zones / ally-effects still unbuilt).  It is the `cast_effect` on-ramp to the
+> with its **7c foundation-min slice BUILT** (session 18: passive party member +
+> enemy split-targeting + per-(source,target) DPR accounting) and its **7c
+> ally-effects BUILT** (session 19, 2026-06-17: `cast_effect target=ally` retarget +
+> warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit`
+> response object; summons / zones still unbuilt).  It is the `cast_effect` on-ramp to the
 > multi-entity / spatial model already specified in `design/design.md` §1 (objects
 > vs actors; controlled allies; party members with 3 HP pools), §3.1 (zonal spatial
 > model), §3.5/§3.6 (enemy targeting + party), and verbs 11/12 (`move_entity`,
@@ -516,10 +518,27 @@ the evidence the #7 shape is settled, mirroring the Fire-Shield stress test for
 - **Zonal spatial state (§3.1)** — an explicit `zone` attribute on entities + the
   named-zone registry; deferred until 7b (the foundation-min slice and 7c can run in
   the implicit single "melee" zone everything already shares).
-- **Intercept-seam refactor** — collapse the `on_incoming_hit` 3-tuple into one
-  response object when warding-bond redirect (step 2) is added (session-12 note).
+- **Intercept-seam refactor** — ✓ DONE (session 19): the `on_incoming_hit` 3-tuple
+  is now the single `InterceptResponse` object returned by the decider (warding-bond
+  redirect was the trigger, exactly as the session-12 note predicted).
 
 ### Cross-cutting / deferred notes
+
+- **Reactor economy is ABSTRACTED into the defender's response (session 19, user
+  decision: keep).** The 7c riders (protection disadvantage, sanctuary save-or-negate,
+  warding-bond redirect) are returned by the ALLY's `on_incoming_hit` (the seam
+  consults the DEFENDER's policy), with the protector/caster's reaction folded in and
+  self-gated — the same convention as Fire-Shield thorns and Flourish Parry. So a
+  protector's single reaction is NOT a real engine resource and multi-reactor
+  contention (two protectors, or a protector also wanting an opportunity attack) is
+  unmodeled. A known simplification, fine for the single-attacker cases modeled;
+  revisit only when a build with competing reactions forces it.
+- **"Resistance to ALL damage" has no per-type expression (session 19).** Warding
+  Bond / Rage grant resistance to all damage, but `Entity.damage_response` /
+  `damage_response_for` are keyed per damage type, so "all" isn't representable and is
+  inert against an untyped attack (`damage_response_for(None) → None`). When a build
+  needs it, add an `_all`/default key to the damage-response lookup (substrate #4).
+  The #4 retarget itself is validated with a typed-damage test in the meantime.
 
 - **ATTACK-TAXONOMY (memory `attack-taxonomy-three-axes`).** Multi-entity combat is
   the most likely forcer of the first-class kind/action/economy typology — melee-vs-
