@@ -283,3 +283,180 @@ def test_master_and_beast_only_ever_damage_the_dummy():
         r = runner.run_day()
         assert r.damage_by_source(char.id) == r.damage_source_to(char.id, dummy.id)
         assert r.damage_by_source(beast.id) == r.damage_source_to(beast.id, dummy.id)
+
+
+# ===========================================================================
+# 7c-ON-SUMMON: the summon (beast) as a buff / redirect / protect TARGET.
+# The 7c ally-effect machinery (session 19) wired onto the 7a beast (session 20).
+# ===========================================================================
+
+def _enemy_strike(target, damage_type="slashing"):
+    """An enemy melee attack against `target` (typed, so a defender's all-damage
+    response can bite)."""
+    return Choice(
+        action_type="attack",
+        cost="action",
+        target=target,
+        weapon_stat="attack_bonus",
+        damage_type=damage_type,
+    )
+
+
+# -- the `_all` damage-response key (substrate #4 — the session-19 deferral) -----
+
+def test_all_key_damage_response_applies_to_any_type():
+    # Warding Bond's "resistance to all damage" — the reserved "_all" key resists any
+    # TYPED hit, but leaves an untyped hit (None) unchanged.
+    e = Entity(name="e", hp=20, base_stats={})
+    e.add_damage_response("warding_bond", {"_all": "resistance"})
+    assert e.damage_response_for("slashing") == "resistance"
+    assert e.damage_response_for("fire") == "resistance"
+    assert e.damage_response_for(None) is None
+    # 2024 dominate/cancel rules still apply across the _all key: an _all resistance
+    # plus a type-specific VULNERABILITY cancel for that type.
+    e.add_damage_response("curse", {"fire": "vulnerability"})
+    assert e.damage_response_for("fire") is None
+    assert e.damage_response_for("cold") == "resistance"
+
+
+# -- warding bond: resistance + redirect the post-resistance share to the master ---
+
+def test_warding_bond_resists_the_hit_and_redirects_the_share_to_the_master():
+    master = Entity(name="master", hp=60, base_stats={"ac": 20})
+    beast = sv.make_primal_companion(8)                  # AC 17, HP 25
+    dummy = Entity(name="dummy", hp=10**9,
+                   base_stats={"ac": 16, "attack_bonus": 7,
+                               "damage_dice": (2, 6), "damage_bonus": 4})
+    sv.BeastEffectPolicy("warding_bond", beast, master).install()
+    # Beast AC 17 + warding-bond +1 = 18.  Enemy d20=15 (+7 = 22 ≥ 18 → hit);
+    # 2d6=[6,6]=12 + 4 = 16 → resistance halves → 8 to the beast → 8 redirected.
+    sch = Scheduler(
+        rng=FakeRNG([15, 6, 6]),
+        entities=[master, beast, dummy],
+        policies={dummy.id: _OneShot([_enemy_strike(beast)]),
+                  beast.id: sv.BeastEffectPolicy("warding_bond", beast, master)},
+        max_rounds=1,
+    )
+    sch.run()
+    assert sch.damage_by_source_target[(dummy.id, beast.id)] == 8       # halved
+    assert sch.damage_by_source_target[(dummy.id, master.id)] == 8      # redirected share
+
+
+# -- protection: impose disadvantage on attacks vs the beast ----------------------
+
+def test_protection_flips_a_hit_to_a_miss_via_the_disadvantage_reroll():
+    master = Entity(name="master", hp=60, base_stats={"ac": 20})
+    beast = Entity(name="beast", hp=25, base_stats={"ac": 17, "attack_bonus": 7})
+    dummy = Entity(name="dummy", hp=10**9,
+                   base_stats={"ac": 16, "attack_bonus": 7,
+                               "damage_dice": (2, 6), "damage_bonus": 4})
+    # First d20=15 (+7 = 22 ≥ 17 → would HIT); protection rolls a SECOND d20=1
+    # (1 + 7 = 8 < 17 → MISS) → the attack is flipped to a miss, no damage.
+    sch = Scheduler(
+        rng=FakeRNG([15, 1]),
+        entities=[master, beast, dummy],
+        policies={dummy.id: _OneShot([_enemy_strike(beast)]),
+                  beast.id: sv.BeastEffectPolicy("protection", beast, master)},
+        max_rounds=1,
+    )
+    sch.run()
+    assert sch.damage_by_source_target.get((dummy.id, beast.id)) is None
+    assert len(sch.rng._values) == 0                    # both d20s consumed, no dmg rolled
+
+
+# -- bless: +1d4 (rolled) to the beast's commanded strike → raises its to-hit ------
+
+def test_bless_raises_the_beasts_to_hit_via_a_rolled_d4():
+    # A commanded strike at +7 vs AC 16 with d20=8 totals 15 → a MISS without bless.
+    # Bless's +1d4 (=4) lifts it to 19 → a HIT.  Isolates the rolled-modifier retarget
+    # landing on the BEAST (substrate #1, target=ally).
+    def run(with_bless):
+        master = Entity(name="master", hp=60, base_stats={})
+        beast = Entity(name="beast", hp=25, base_stats={"ac": 17, "attack_bonus": 7})
+        dummy = Entity(name="dummy", hp=10**9, base_stats={"ac": 16})
+        if with_bless:
+            sv.BeastEffectPolicy("bless", beast, master).install()
+        vals = [8, 4, 5, 3] if with_bless else [8, 5, 3]
+        sch = Scheduler(
+            rng=FakeRNG(vals),
+            entities=[master, beast, dummy],
+            policies={master.id: _OneShot([_beast_strike(beast, dummy)])},
+            max_rounds=1,
+        )
+        sch.run()
+        return sch.damage_by_source_target.get((beast.id, dummy.id))
+
+    assert run(False) is None                           # miss without bless
+    assert run(True) and run(True) > 0                  # hit once the +1d4 lands
+
+
+# -- aid: +5 to the beast's HP maximum (DPR-inert install assertion) --------------
+
+def test_aid_raises_the_beasts_hp_maximum_and_current():
+    beast = sv.make_primal_companion(8)                 # HP 25
+    master = Entity(name="master", hp=60, base_stats={})
+    before_max, before_hp = beast.max_hp, beast.hp
+    sv.BeastEffectPolicy("aid", beast, master).install()
+    assert beast.max_hp == before_max + 5
+    assert beast.hp == before_hp + 5
+
+
+def test_beast_with_an_effect_policy_is_still_commanded_not_self_acting():
+    # Registering a BeastEffectPolicy (for on_incoming_hit) must NOT make the beast act
+    # on its own turn — it is still COMMANDED by the master (its decide returns []).
+    bep = sv.BeastEffectPolicy("protection", Entity(name="b", hp=25, base_stats={}),
+                               Entity(name="m", hp=60, base_stats={}))
+    assert bep.decide(None) == []
+
+
+# -- integration (make_silvertail_runner at L8) — directional, per-(source,target) --
+
+def _l8_incoming(effect, seed, days=100):
+    """Sum, over `days`, the enemy's damage to the beast and to the master."""
+    runner, char, beast, dummy = sv.make_silvertail_runner(8, SeededRNG(seed),
+                                                           beast_effect=effect)
+    to_beast = to_master = 0
+    for _ in range(days):
+        r = runner.run_day()
+        to_beast += r.damage_source_to(dummy.id, beast.id)
+        to_master += r.damage_source_to(dummy.id, char.id)
+    return to_beast, to_master
+
+
+def test_l8_baseline_enemy_hits_the_beast_and_spares_the_master():
+    to_beast, to_master = _l8_incoming(None, 11)
+    assert to_beast > 0                                 # the enemy strikes the beast
+    assert to_master == 0                               # no redirect → master untouched
+
+
+def test_warding_bond_cuts_beast_damage_and_redirects_an_equal_share_to_master():
+    base_beast, _ = _l8_incoming(None, 11)
+    wb_beast, wb_master = _l8_incoming("warding_bond", 11)
+    assert wb_beast < base_beast                        # +1 AC + resistance cut incoming
+    assert wb_master > 0                                # the redirected share lands on master
+    assert wb_master == wb_beast                        # fraction 1.0 → exactly equal per run
+
+
+def test_protection_cuts_the_beasts_incoming_below_baseline_without_redirect():
+    base_beast, _ = _l8_incoming(None, 11)
+    prot_beast, prot_master = _l8_incoming("protection", 11)
+    assert prot_beast < base_beast                      # disadvantage cuts landed hits
+    assert prot_master == 0                             # protection never redirects
+
+
+def test_bless_raises_the_beasts_outgoing_dpr():
+    def beast_out(effect, seed, days=100):
+        runner, _char, beast, _dummy = sv.make_silvertail_runner(
+            8, SeededRNG(seed), beast_effect=effect)
+        return sum(runner.run_day().damage_by_source(beast.id) for _ in range(days))
+
+    assert beast_out("bless", 9) > beast_out(None, 9)
+
+
+def test_l8_beast_is_still_commanded_and_deals_damage_with_an_effect_active():
+    # The beast keeps dealing its commanded Beast's-Strike DPR even while a passive
+    # BeastEffectPolicy is attached for its defender rider.
+    runner, _char, beast, dummy = sv.make_silvertail_runner(
+        8, SeededRNG(2), beast_effect="protection")
+    total = sum(runner.run_day().damage_source_to(beast.id, dummy.id) for _ in range(50))
+    assert total > 0

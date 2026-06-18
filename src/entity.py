@@ -274,17 +274,25 @@ class Entity:
         the same type CANCEL (net no change → None); otherwise whichever is
         present.  Multiple instances of the same kind don't stack (resistance
         halves once).  None damage_type (untyped weapon hits) → no response.
+
+        The reserved key ``"_all"`` is a catch-all that applies to ANY typed hit —
+        "resistance to all damage" (Warding Bond, Rage; substrate #7 / 7c, the
+        session-19 deferral).  Both the type-specific key and ``"_all"`` feed the
+        kinds set, so the same dominate/cancel rules apply (e.g. an ``"_all"``
+        resistance + a type-specific vulnerability still cancel).
         """
         if damage_type is None:
             return None
         kinds: set[str] = set()
-        intrinsic = self.damage_response.get(damage_type)
-        if intrinsic:
-            kinds.add(intrinsic)
+        for key in (damage_type, "_all"):
+            intrinsic = self.damage_response.get(key)
+            if intrinsic:
+                kinds.add(intrinsic)
         for responses in self._effect_damage_response.values():
-            kind = responses.get(damage_type)
-            if kind:
-                kinds.add(kind)
+            for key in (damage_type, "_all"):
+                kind = responses.get(key)
+                if kind:
+                    kinds.add(kind)
         if "immunity" in kinds:
             return "immunity"
         has_res = "resistance" in kinds
