@@ -71,8 +71,60 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none reported (session 22 toggle
-> recommendation re-made; nothing confirmed disabled). **Session scope (2026-06-19,
+> **Currently disabled (re-enable before exit):** none confirmed (session 23 toggle
+> recommendation re-made: computer-use / Claude-in-Chrome / Claude_Preview /
+> scheduled-tasks / mcp-registry / Google Drive — user to toggle via the app). **Session
+> scope (2026-06-19, session 23) — DONE (SUBSTRATE #7 — 7b ZONE / EMANATION; the LAST
+> #7 sub-kind → #7 COMPLETE):** built the zone/emanation substrate via the silvertail's
+> **Spirit Guardians** at a new char **L10** row (Fighter-1/Ranger-4/Cleric-5 Trickery).
+> **Scope settled with the user up front (3 Qs): minimal-but-real spatial model; Spirit
+> Guardians ONLY; commit, stop before merge.** 2024 text web-verified FIRST (per-feature
+> ritual): 3rd-level, Self 15-ft Emanation, **Wisdom** save (the prompt's "WIS/DEX" was
+> off — WIS only), 3d8 radiant (good/neutral), half on a save, concentration up to 10
+> min, once per turn. **Built:** (1) **zonal spatial state §3.1** — `Entity.zone` (each
+> entity occupies one abstract zone; the implicit shared `"melee"` blob by default) +
+> `zones.move_entity` (verb 11); (2) **`src/zones.py`** — `Zone` (a created **Object**:
+> footprint, no HP/economy — a distinct lightweight type, NOT an HP-bearing `Entity`,
+> faithful to §1's Object/Actor split) + `ZoneEffectSpec`; an emanation is `anchored_to`
+> its owner (its location follows the caster), `unaffected` designates the owner + allies
+> safe, a `destroyed` flag is the teardown; (3) **recurring zone trigger** —
+> `Scheduler._fire_zone_effects` at each turn boundary forces the save on every damaging
+> zone the entity is inside, reusing the save-for-damage path (`SaveDamageEvent` →
+> `resolve_save_damage`) — the recurrence falls out of turns recurring (CLAUDE.md #5: a
+> trigger on `TurnStartEvent`), NOT a hand-rolled re-enqueued event; zone damage is
+> attributed to the OWNER → the caster's zone-DPR column falls out of the ledger like the
+> 7a summon column; (4) **envelope** — `Choice.zones` payload (mirrors `summons`); the
+> `cast_effect` branch registers the Zone + labels it under `effect_source` so
+> `Entity.remove_effect` (a dropped concentration / boundary sweep) winks it out. The L10
+> master casts the emanation round 1 (concentration) then melees under it; the enemy
+> focus-fires the master so its hits can break concentration and end the zone. **MECHANISM
+> validated** (`tests/test_zone_emanation.py`, +12; NOT build-value, per the steer): zone
+> fires recurringly once per occupant turn; save-for-half; owner-attributed; `move_entity`
+> escapes / an anchored emanation follows the owner; owner + allies unaffected; a dropped
+> concentration ends it. L10 integration: the emanation forces recurring WIS saves (~57%
+> fail vs DC 16) and lifts the caster's column ~+81 radiant/day. **483 tests green (+12;**
+> L4/L8 byte-identical — the zone path is opt-in via `zone_effect`). Branch
+> `feature/substrate-7b-zone-emanation` → confirm before merge. **ATTACK-TAXONOMY NOT
+> forced** (Spirit Guardians is a *save* emanation, not an attack; who's "inside" is
+> zonal membership, not attack kind — the warning didn't bite). **DEFERRED (flagged):**
+> static (placed) zones + buff-auras (circle of power) — same machinery, the
+> anchored-vs-static + buff-target axes; footprint-vs-mover-speed exit gating;
+> multi-named-zone maps; the "enters / emanation enters its space" mid-turn triggers (only
+> the turn-boundary "ends turn inside" is modeled); an enemy policy that actually leaves
+> the zone (§3.5). **Reflection DONE (2026-06-19): user — NO process change**, but
+> agrees we should **revisit some of the DEFERRED 7b FLAVORS before moving on from
+> substrate #7**. Flagged structural decisions (user OK): recurring trigger on
+> `TurnStartEvent` (not a re-enqueued event); Zone as a distinct lightweight Object
+> (not an HP-bearing `Entity`); only the "ends turn inside" trigger modeled. **NEXT: a
+> 7b ROUND-2 slice — pick which deferred flavor(s) with the user** (the strongest
+> candidates: **static placed zones** [spike growth / cloud of daggers — the
+> anchored-vs-static axis, design.md §3.1 canonical example] and **buff-auras** [circle
+> of power — the same Object machinery with an ally-buff payload]; plus
+> footprint-vs-mover-speed exit gating, the "enters / emanation enters space" mid-turn
+> triggers, and an enemy policy that actually leaves a damaging zone §3.5). Merge of
+> `feature/substrate-7b-zone-emanation` HELD at user request (review first).
+>
+> **Session scope (2026-06-19,
 > session 22) — DONE (SUBSTRATE #7 — 7a SUMMON SURVIVAL & DEATH):** built all three
 > coupled pieces (user: all three, through-merge) — (1) summons WINK OUT at 0 HP
 > (`Entity.dies_at_zero_hp` → `take_damage` sets `destroyed`; threshold model preserved
@@ -519,6 +571,81 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **SUBSTRATE #7 — 7b ZONE / EMANATION — BUILT & VALIDATED (2026-06-19, session 23).
+  The LAST unbuilt #7 sub-kind → substrate #7 is now COMPLETE.** A created **Object**
+  (design.md §1) defining a named zone (§3.1) whose recurring effect fires on the
+  creatures **inside** it at their turn boundaries. Vehicle: the silvertail's **Spirit
+  Guardians** at a new char **L10** row. **483 tests green (+12).** Branch
+  `feature/substrate-7b-zone-emanation` → confirm before merge. Design contract:
+  `design/buff_primitive.md` (registry row 7 + build-sequence item 4 flipped to BUILT;
+  the zonal-state / move_entity / recurring-event / Object-create engine seams flipped
+  to DONE).
+  - **Scope settled with the user up front (3 questions): minimal-but-real spatial
+    model; Spirit Guardians ONLY; commit, stop before merge.**
+  - **Rules verified FIRST (per-feature ritual, web 2026-06-19).** Spirit Guardians 2024:
+    3rd-level conjuration (cleric-5 → char L10), Action, Self (15-ft Emanation),
+    Concentration up to 10 min, **Wisdom** save (the session prompt's "WIS/DEX" was
+    off — it is WIS only), 3d8 radiant (good/neutral) on a fail / half on a save,
+    +1d8/slot above 3rd, speed halved inside, **once per turn**.
+  - **(1) Zonal spatial state (§3.1).** `Entity.zone` — each entity occupies one
+    abstract zone; everything shares the implicit `"melee"` blob by default (the
+    foundation-min slice and 7c ran in that single shared zone). `zones.move_entity`
+    (verb 11) is the membership-change verb behind kiting / leaving a hazard.
+  - **(2) `src/zones.py` — the Object + the emanation.** `Zone` is a created **Object**
+    (footprint, no HP / no economy) — modeled as a **distinct lightweight type, NOT
+    forced into the HP-bearing `Entity` roster**, faithful to §1's Object/Actor split.
+    An emanation is `anchored_to` its owner (`current_location` reads the anchor's zone,
+    so the aura follows the caster); `unaffected` designates the owner + allies safe
+    (Spirit Guardians "you can designate creatures to be unaffected"); a `destroyed`
+    flag is the teardown. `ZoneEffectSpec` carries the recurring save-for-half.
+  - **(3) Recurring zone trigger (the core new engine seam).**
+    `Scheduler._fire_zone_effects` at each entity's turn boundary forces the save on
+    every damaging zone it is inside, reusing the save-for-damage path
+    (`SaveDamageEvent` → `resolve_save_damage`) so the save / half / per-type-response /
+    crit machinery is untouched. **Implemented as a synchronous trigger on the recurring
+    `TurnStartEvent`, NOT a hand-rolled re-enqueued event** — the recurrence comes from
+    turns recurring each round (CLAUDE.md #5: triggers are subscribers fired when an
+    event resolves), so no separate scheduled-event machinery duplicates the round
+    seeding. Zone damage is attributed to the **owner** → the caster's zone-DPR column
+    falls out of the per-(source, target) ledger for free, exactly like the 7a summon
+    column. (Spirit Guardians' "once per turn" falls out: fired once at the turn
+    boundary.)
+  - **(4) Envelope.** `Choice.zones` (the `zones` payload, mirroring `summons`); the
+    scheduler's `cast_effect` branch registers each Zone in its registry and labels it
+    under `effect_source`, so `Entity.remove_effect` (a dropped concentration via
+    `_check_concentration`, or the combat-boundary sweep) marks it `destroyed` and the
+    emanation winks out with the rest of the cast's bundle. The 3rd-level slot is
+    abstracted under the combat-clock recast model (full slot/day-clock economy
+    deferred, as for Fire Shield / the L8 buffs).
+  - **Build — silvertail char L10** (Fighter-1/Ranger-4/Cleric-5 Trickery, PB 4, WIS 19
+    → cleric DC 16, spell-attack/Beast's-Strike +8; guide 32:42,503,523). The master
+    opens each combat by casting the emanation (concentration) then melees shocking grasp
+    under it + commands the beast; the enemy (the definitive per-level table via
+    `BaselineEnemyPolicy`) focus-fires the master so its hits can break concentration and
+    end the zone.
+  - **MECHANISM validated** (`tests/test_zone_emanation.py`, +12; **NOT build-value**,
+    per the project steer): a zone fires recurringly once per occupant turn; save-for-half
+    (a made save halves, a fail takes full); owner-attributed; `move_entity` escapes / an
+    anchored emanation follows the owner; owner + designated allies inside take nothing; a
+    dropped concentration ends it. L10 integration: the emanation forces recurring WIS
+    saves (~57% fail vs DC 16) and lifts the caster's column ~+81 radiant/day vs no zone.
+    L4/L8 byte-identical (the zone path is opt-in via `zone_effect`).
+  - **ATTACK-TAXONOMY NOT forced** (the session warned it was the likely forcer): Spirit
+    Guardians is a *save* emanation, not an attack, and "who's inside" is zonal
+    membership, not attack kind — so the standing typology stayed deferred, untouched.
+  - **DEFERRED (flagged):** static (placed) zones + buff-auras (circle of power) — the
+    same Object machinery, the anchored-vs-static + buff-target axes; footprint-vs-mover-
+    speed exit gating; richer multi-named-zone maps; the "creature enters / emanation
+    enters its space" mid-turn triggers (only the turn-boundary "ends turn inside" is
+    modeled); an enemy policy that actually leaves a damaging zone (§3.5).
+  - **NEXT (user decision, session 23 close-out): a 7b ROUND-2 slice — revisit the
+    deferred 7b flavors before moving on from substrate #7.** Strongest candidates:
+    **static placed zones** (spike growth / cloud of daggers — the anchored-vs-static
+    axis) and **buff-auras** (circle of power — the same Object machinery with an
+    ally-buff payload); plus footprint-vs-mover-speed exit gating, the mid-turn "enters"
+    triggers, and an enemy policy that leaves a damaging zone (§3.5). (Reflection: no
+    process change; merge held for review.)
 
 - **SUBSTRATE #7 — 7a SUMMON SURVIVAL & DEATH + recast + the DEFINITIVE per-level enemy
   table — BUILT & VALIDATED (2026-06-19, session 22).** The slice that makes the

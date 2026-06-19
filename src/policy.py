@@ -234,6 +234,13 @@ class Choice:
     # loosely (a list of SummonSpec) to avoid an import cycle.  Empty for every
     # non-summoning cast.
     summons: list = field(default_factory=list)
+    # cast_effect `zones` payload (substrate #7 / 7b) — a list of Zone Objects.  Each
+    # creates an emanation / placed hazard (create_entity's Object case), registered
+    # in the scheduler's zone registry and labelled under effect_source so
+    # remove_effect winks it out with the cast's bundle (a dropped concentration ends
+    # Spirit Guardians).  Typed loosely (a list of Zone) to avoid an import cycle.
+    # Empty for every non-zone cast.
+    zones: list = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------

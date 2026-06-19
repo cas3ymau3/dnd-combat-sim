@@ -19,7 +19,13 @@
 > companion), and its **7c-on-summon BUILT** (session 21, 2026-06-18: the 7c
 > ally-effect machinery wired ONTO the 7a beast — warding bond / protection / aid /
 > bless on the silvertail beast at char L8, with the enemy striking the beast; the
-> session-19 `_all` resistance-key deferral resolved here; **7b zone still unbuilt**).
+> session-19 `_all` resistance-key deferral resolved here), its **7a summon survival
+> & death BUILT** (session 22, 2026-06-19: summons wink out at 0 HP + a between-combats
+> recast policy + the definitive per-level enemy table), and its **7b zone/emanation
+> BUILT** (session 23, 2026-06-19: Spirit Guardians at silvertail char L10 — a created
+> Object defining a named zone (§3.1) whose recurring WIS save-for-half fires on
+> occupants at their turn boundaries; the §3.1 zonal state + move_entity + the recurring
+> zone trigger.  **Substrate #7 is now COMPLETE — all sub-kinds built.**).
 > It is the `cast_effect` on-ramp to the
 > multi-entity / spatial model already specified in `design/design.md` §1 (objects
 > vs actors; controlled allies; party members with 3 HP pools), §3.1 (zonal spatial
@@ -100,7 +106,10 @@ addition); `cast_effect` just installs a labeled payload into the matching one.
 | 4 | **incoming-damage modifier** | `resolve_damage`, defender-side | resistance / vulnerability / immunity by damage type | **BUILT** (session 12) |
 | 5 | **defender-side reactive rider** ("thorns") | `on_incoming_hit` seam | deal damage to whoever melee-hits the bearer | **BUILT** (session 12) |
 | 6 | **outgoing rider** | `on_hit` seam → separate typed DamageEvents | predicate-gated extra damage (Fount of Moonlight +2d6 radiant, Primal Strike +1d8, Rage melee-STR, Hunter's Mark) | **BUILT** (session 14) |
-| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED**; **7c foundation-min BUILT** (session 18 — party member + enemy split-targeting + per-(source,target) DPR) + **7c ally-effects BUILT** (session 19 — target=ally retarget + warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit` response object) + **7a summon BUILT** (session 20 — `create_entity`'d Actor COMMANDED on the controller's turn via the `Choice.actor` override + per-summon DPR column; silvertail primal companion) + **7c-on-summon BUILT** (session 21 — warding bond / protection / aid / bless ON the beast at char L8 via `BeastEffectPolicy`; the `_all` resistance-key resolved); **7b zone unbuilt** |
+| 7 | **zone / summon / multi-entity** | design.md §1/§3.1/§3.5/§3.6 + verbs 11/12 | summon (own-HP ally) / emanation-zone (damage·debuff·buff) / multi-entity targeting + ally-effects (redirect, ally-buff) | **DESIGNED**; **7c foundation-min BUILT** (session 18 — party member + enemy split-targeting + per-(source,target) DPR) + **7c ally-effects BUILT** (session 19 — target=ally retarget + warding-bond redirect + protection/sanctuary, on a refactored `on_incoming_hit` response object) + **7a summon BUILT** (session 20 — `create_entity`'d Actor COMMANDED on the controller's turn via the `Choice.actor` override + per-summon DPR column; silvertail primal companion) + **7c-on-summon BUILT** (session 21 — warding bond / protection / aid / bless ON the beast at char L8 via `BeastEffectPolicy`; the `_all` resistance-key resolved) + **7b zone/emanation BUILT**
+(session 23 — Spirit Guardians at silvertail char L10: a created Object / named zone
+(§3.1) + `Entity.zone` + `move_entity` + a recurring turn-boundary save-for-half trigger
+in the scheduler).  **#7 COMPLETE** |
 
 Examples mapped: Bless / Magic Weapon / **Sacred Weapon** (+CHA *stacking on*
 STR/DEX via `amount:{ability_modifier:charisma}` — already supported) / Bane → (1).
@@ -589,6 +598,48 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
    events; damage/debuff and buff flavors; anchored vs static. Vehicle: silvertail
    Spirit Guardians (emanation) + the wardancer's spike growth / cloud of daggers
    (static hazard, the design.md §3.1 canonical example).
+   **BUILT (session 23, 2026-06-19 — Spirit Guardians, the minimal-but-real slice).**
+   Scope settled with the user up front: minimal-but-real spatial model; Spirit
+   Guardians ONLY; commit, stop before merge. 2024 text web-verified first (3rd-level,
+   Self 15-ft emanation, **Wisdom** save (not WIS/DEX), 3d8 radiant good/neutral, half
+   on a save, concentration, once per turn). Built:
+   - **Zonal spatial state (§3.1)** — `Entity.zone` (every entity occupies one abstract
+     zone; the implicit shared `"melee"` blob by default) + `zones.move_entity` (verb
+     11, the membership-change behind kiting / leaving a hazard).
+   - **`src/zones.py`** — `Zone` (a created **Object**: footprint, no HP/economy —
+     modeled as a distinct lightweight type, NOT forced into the HP-bearing `Entity`
+     roster, faithful to §1's Object/Actor split) + `ZoneEffectSpec`. An emanation is
+     `anchored_to` its owner (`current_location` reads the anchor's zone → the aura
+     follows the caster); `unaffected` designates the owner + allies safe; a `destroyed`
+     flag is the teardown.
+   - **Recurring zone trigger** — `Scheduler._fire_zone_effects` at each entity's turn
+     boundary forces the save on every damaging zone it is inside, reusing the
+     save-for-damage path (`SaveDamageEvent` → `resolve_save_damage`). The recurrence
+     falls out of turns recurring (CLAUDE.md #5: a trigger on the `TurnStartEvent`),
+     rather than a hand-rolled re-enqueued event — a deliberate decision (see the
+     engine-seams note). Zone damage is attributed to the OWNER → the caster's zone-DPR
+     column falls out of the per-(source, target) ledger, like the 7a summon column.
+   - **Envelope** — `Choice.zones` (the `zones` payload, mirroring `summons`); the
+     scheduler's `cast_effect` branch registers each Zone and labels it under
+     `effect_source` so `Entity.remove_effect` (concentration drop / boundary sweep)
+     marks it destroyed (a broken concentration ends the emanation). The 3rd-level slot
+     is abstracted under the combat-clock recast model (full slot/day-clock economy
+     deferred, as for Fire Shield / the L8 buffs).
+   - **Build** — new silvertail char **L10** row (Fighter-1/Ranger-4/Cleric-5 Trickery,
+     PB 4, WIS 19 → DC 16): the master opens each combat by casting the emanation
+     (concentration) then melees under it; the enemy focus-fires the master so its hits
+     can break concentration and end the zone.
+   - **MECHANISM validated** (`tests/test_zone_emanation.py`, +12; NOT build value): a
+     zone fires recurringly once per occupant turn; save-for-half; owner-attributed;
+     `move_entity` escapes / an anchored emanation follows the owner; owner + allies
+     unaffected; a dropped concentration winks it out. L10 integration: the emanation
+     forces recurring WIS saves (~57% fail vs DC 16) and lifts the caster's column
+     ~+81 radiant/day. ATTACK-TAXONOMY NOT forced (a save emanation, not an attack).
+   - **DEFERRED:** static (placed) zones (spike growth / cloud of daggers) + buff-auras
+     (circle of power) — same machinery, the anchored-vs-static + buff-target axes;
+     footprint-vs-mover-speed exit gating; multi-named-zone maps; the "enters / emanation
+     enters its space" triggers (only the turn-boundary "ends turn inside" is modeled);
+     wiring an enemy's §3.5 "tries to leave the zone" into a policy.
 
 ### Stress test — silvertail forces the whole cluster (the "hard case")
 
@@ -633,12 +684,24 @@ the evidence the #7 shape is settled, mirroring the Fire-Shield stress test for
   `destroy_entity` DONE (session 20, `src/summons.py`) for the Actor/7a case —
   roster-level ops usable at day start or mid-combat, lifecycle keyed to
   `effect_source` via `Entity.remove_effect`.  Commanded actions DONE via the
-  `Choice.actor` override.  `move_entity` + the Object/7b create still unbuilt.
-- **Recurring zone event** — a future-dated event re-enqueued each round that fires
-  the zone effect on creatures in/entering the zone at their turn boundaries.
-- **Zonal spatial state (§3.1)** — an explicit `zone` attribute on entities + the
-  named-zone registry; deferred until 7b (the foundation-min slice and 7c can run in
-  the implicit single "melee" zone everything already shares).
+  `Choice.actor` override.  ✓ `move_entity` DONE (session 23, `src/zones.py`).  ✓ The
+  Object/7b create DONE (session 23) — a Zone is a distinct lightweight Object type
+  registered in the scheduler's zone registry (NOT an HP-bearing `Entity`), labelled
+  under `effect_source` so `Entity.remove_effect` winks it out.
+- **Recurring zone event** — ✓ DONE (session 23): `Scheduler._fire_zone_effects` fires
+  the zone's save-for-half on every occupant inside at its turn boundary (reusing the
+  `SaveDamageEvent` path).  Implemented as a synchronous trigger on the recurring
+  `TurnStartEvent` rather than a hand-rolled re-enqueued event — the recurrence comes
+  from turns recurring (CLAUDE.md #5: triggers are subscribers fired when an event
+  resolves), so no separate scheduled-event machinery duplicates the round seeding.
+  (The "enters the zone / emanation enters its space" mid-turn triggers are deferred —
+  only the turn-boundary "ends its turn inside" case is modeled.)
+- **Zonal spatial state (§3.1)** — ✓ DONE (session 23): an explicit `Entity.zone`
+  attribute (the implicit shared `"melee"` blob by default) + the scheduler's named-zone
+  registry; `move_entity` changes membership; an anchored emanation reads its location
+  off the anchor (it follows the caster).  Deferred: footprint-vs-mover-speed exit
+  gating and richer multi-named-zone maps (the minimal model is one shared blob + the
+  emanation's location).
 - **Intercept-seam refactor** — ✓ DONE (session 19): the `on_incoming_hit` 3-tuple
   is now the single `InterceptResponse` object returned by the decider (warding-bond
   redirect was the trigger, exactly as the session-12 note predicted).
