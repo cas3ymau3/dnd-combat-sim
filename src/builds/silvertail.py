@@ -91,7 +91,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ..builds.enemy import BaselineEnemyPolicy, ScriptedEnemyPolicy
-from ..builds.enemy_stats import baseline_attack_bonus, baseline_save_dc, level_to_cr
+from ..builds.enemy_stats import baseline_attack_bonus, baseline_save_dc
 from ..day_runner import BetweenCombatsContext, DayRunner
 from ..entity import Entity
 from ..modifiers import Modifier
@@ -609,20 +609,18 @@ def make_silvertail_runner(
     # effects modulate real incoming damage.
     ea = LEVELS[level].get("enemy_attack")
     if ea and enemy_model == "baseline_cr":
-        # Realistic per-CR enemy (decision #12's realised half): the encounter CR is the
-        # BASELINE SOLO CR for the character's level (level_to_cr — CR is a baseline for
-        # a much higher level than CR == level, so a lone summon is not over-CR'd).  The
-        # per-CR attack bonus + save DC live on the dummy Entity (read by the verbs); the
-        # per-CR attack/AoE DICE + the attack/save mix + retargeting live in the policy.
-        # Focus-fires the beast, shifting to the master when the beast winks out.
-        cr = level_to_cr(level)
-        dummy.base_stats["attack_bonus"] = baseline_attack_bonus(cr)
-        dummy.base_stats["enemy_save_dc"] = baseline_save_dc(cr)
+        # Realistic per-LEVEL enemy (decision #12's realised half; enemy_stats.py).  The
+        # offensive stats are keyed by character level (CR == level, with the ÷1.5
+        # party-size correction baked in).  The per-level attack bonus + save DC live on
+        # the dummy Entity (read by the verbs); the per-level attack/AoE DICE + the
+        # attack/save mix + retargeting live in the policy.  Focus-fires the beast,
+        # shifting to the master when the beast winks out.
+        dummy.base_stats["attack_bonus"] = baseline_attack_bonus(level)
+        dummy.base_stats["enemy_save_dc"] = baseline_save_dc(level)
         policies[dummy.id] = BaselineEnemyPolicy(
-            cr=cr,
+            level=level,
             primary=beast,
             fallback=char,
-            n_attacks=ea.get("n_attacks", 2),
             rounds_per_combat=rounds_per_combat,
             damage_type=ea.get("damage_type"),
         )

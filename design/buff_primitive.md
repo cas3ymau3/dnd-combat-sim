@@ -542,18 +542,21 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
    2024 Primal Companion revival is **1 minute** (web-verified) → never lands inside a
    4-round combat, so it is inherently between-combats — revive iff dead + a spare slot
    remains + a later combat remains (greedy, finite slot budget; "policies are code").
-   **Coupled — real per-CR enemy (decision #12's realised half):** `src/builds/
-   enemy_stats.py` encodes the user's "Average Monster Stats by CR" chart (Rothner) —
-   per-CR attack bonus / save DC + the actual **multiattack DICE** (2-attack routine) +
-   AoE save-for-half dice, so the engine rolls REAL attacks → **enemy CRITS fall out**
-   (a natural 20 doubles the dice).  Two de-harshening levers from the chart: (a) its
-   **Level column** maps a CR to a much HIGHER character level than CR == level (CR 8 ↔
-   L14), so `level_to_cr` pits a lone **L8 summon against ~CR 5, not CR 8** — roughly
-   half the damage; (b) real dice instead of flat.  `BaselineEnemyPolicy`
-   (`src/builds/enemy.py`) mixes attack-roll rounds (n swings, per-CR dice) and
-   SAVE-forcing rounds (one of the six saves, weighted, vs the per-CR DC, AoE dice, half
-   on a save), and RETARGETS onto the master when the beast winks out (focus-fire →
-   fallback), so the enemy's damage is genuinely load-bearing.  **MECHANISM validated**
+   **Coupled — real per-LEVEL enemy (decision #12's realised half):** `src/builds/
+   enemy_stats.py` derives a per-CHARACTER-LEVEL offensive table from the user's "Average
+   Monster Stats by CR" chart (Rothner) so it pairs 1:1 with the AC/saves CSV (combined
+   snapshot: `reference/data/enemy_stats_by_level.csv`).  Derivation (user spec): fit each
+   chart column vs CR (linear to-hit/DC, quadratic damage; R²>0.99), evaluate at **CR ==
+   level** (ignore the chart's Level column), **÷1.5 the damage** (a CR-N monster is built
+   for FOUR level-N PCs; here ≤3 friendlies and the enemy is never killed by them →
+   incoming over-inflated), and re-express each damage average as DICE (per-swing =
+   `N dX + PB`, the chart's matched die size X + the level's proficiency bonus as the flat;
+   AoE = `M dY`) so **enemy CRITS fall out** (a natural 20 doubles the dice; the flat PB
+   stays single).  `BaselineEnemyPolicy` (`src/builds/enemy.py`, keyed by `level`) mixes
+   attack-roll rounds (n swings, per-level dice) and SAVE-forcing rounds (one of the six
+   saves, weighted, vs the per-level DC, AoE dice, half on a save), and RETARGETS onto the
+   master when the beast winks out (focus-fire → fallback).  (L8 enemy: +8 / DC 15 /
+   `3d10+3` ×2 / `8d4` AoE.)  **MECHANISM validated**
    (`tests/test_summon_survival.py`, +14): a dead summon stops contributing (mortal
    lifetime output ≪ the threshold-immortal beast); a +HP buffer buys an extra strike
    when it crosses a per-hit breakpoint (deterministic); reducing landed hits keeps it

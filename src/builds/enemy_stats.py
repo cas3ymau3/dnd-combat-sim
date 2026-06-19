@@ -1,37 +1,53 @@
 """
-enemy_stats.py — per-Challenge-Rating baseline monster offense (decision #12's
+enemy_stats.py — per-CHARACTER-LEVEL baseline monster offense (decision #12's
 unrealised half).
 
 CLAUDE.md decision #12 said the enemy's numeric profile — attack bonus / save DC /
-damage — should come from per-CR data, but only AC + saves were ever pulled in.
-This module supplies the missing half from the user's "Average Monster Stats by CR"
-chart (Rothner), verified 2026-06-19 (per-feature ritual):
+damage — should come from per-CR data, but only AC + saves were ever pulled in
+(``reference/data/monster_ac_and_saves_by_level.csv``, keyed by level == CR).  This
+module supplies the missing OFFENSIVE half, per character level, so it pairs 1:1 with
+that AC/saves table.
 
-  - per-CR ATTACK BONUS, SAVE DC, and — crucially — the actual MULTIATTACK DICE (a
-    2-attack routine) and the AoE save-for-half DICE.  Because we carry the dice (not
-    just an averaged number), the engine rolls REAL attacks → enemy CRITS fall out
-    (resolve_attack_roll doubles the dice count on a natural 20).
-  - a LEVEL → CR mapping (the chart's "Level" column): a given CR is a baseline for a
-    much HIGHER character level than CR == level would suggest — CR 8 ↔ level 14, CR 5
-    ↔ level 9.  So a level-8 character's baseline solo enemy is ~CR 5, not CR 8; using
-    ``level_to_cr`` (instead of cr == level) is what makes the enemy's damage realistic
-    rather than brutal for a lone summon.
+Derivation (user spec, 2026-06-19)
+----------------------------------
+1. Source chart: the user's "Average Monster Stats by CR" (Rothner) — ``_CR_ROWS``
+   below (per-CR to-hit, save DC, multiattack dice, AoE dice).
+2. Fit a simple curve to each column vs CR (linear for to-hit / DC, quadratic for the
+   damage averages — all R² > 0.99) and evaluate it AT CR == LEVEL.  We deliberately
+   IGNORE the chart's "Level" column (which pairs a CR with a higher party level) and
+   instead treat CR == level, matching the AC/saves table's convention.
+3. Divide the DAMAGE outputs (per-swing, AoE) by ``DAMAGE_DIVISOR`` = 1.5.  Rationale:
+   a CR-N monster is balanced for a party of FOUR level-N PCs, but here we field at
+   most three friendlies (character + summon + ally) and the enemy is never killed /
+   incapacitated by them — so its un-attrited incoming damage is over-inflated.  To-hit
+   and DC are NOT divided (they aren't damage).
+4. Re-express each damage average as DICE so enemy CRITS fall out of the engine (a
+   natural 20 doubles the dice, not the flat).  Per-swing = ``N dX + PB`` where:
+     - X = the attack die SIZE from the matching CR == level chart row (the largest
+       matched CR row, 17, is reused for levels 18-20);
+     - PB = the character/monster proficiency bonus at that level, added as the FLAT
+       (non-crit-doubling) part — a weapon swing's "+mod";
+     - N = chosen so N·avg(dX) + PB matches the ÷1.5 per-swing target.
+   AoE = ``M dY`` (matched AoE die size; NO flat — save spells don't crit, so there is
+   nothing to keep out of the doubling).
+5. ``n_attacks`` = 2 (the chart's two-attack multiattack routine), exposed as a column.
 
-The chart's "To Hit Bonus" / "DC" are half-integer averages; they are rounded to the
-nearest integer here (a d20 bonus must be integral).  The "Damage/Round" column equals
-twice the per-attack multiattack average (2-attack routine), so we derive DPR from the
-dice rather than storing it separately.
+The whole per-level table is computed once at import from ``_CR_ROWS`` (so it never
+goes stale if the source chart is edited); ``level_table()`` returns it for inspection,
+and ``reference/data/enemy_stats_by_level.csv`` is a generated snapshot for eyeballing.
 """
 
 from __future__ import annotations
 
-# Per-CR baseline rows from the chart.  Each value:
-#   (to_hit, save_dc, attack_dice, aoe_dice)
-# where attack_dice / aoe_dice are (count, sides, flat_bonus):
-#   - attack_dice: the damage of ONE swing of the 2-attack multiattack routine
-#     (the engine emits two of these and rolls each; crits double the dice).
-#   - aoe_dice: the save-for-half AoE damage (one effect, half on a made save).
-# to_hit / save_dc are the chart's averages rounded to the nearest integer (.5 up).
+import numpy as np
+
+# 3-vs-4 party size + enemy-never-incapacitated correction (see derivation step 3).
+DAMAGE_DIVISOR = 1.5
+
+# Source chart (Rothner "Average Monster Stats by CR").  Each value:
+#   (to_hit, save_dc, attack_dice, aoe_dice)   with dice = (count, sides, flat_bonus)
+# attack_dice is ONE swing of the 2-attack routine; aoe_dice is the save-for-half AoE.
+# to_hit / save_dc are the chart's averages rounded to the nearest integer.
 _CR_ROWS: dict[int, tuple[int, int, tuple[int, int, int], tuple[int, int, int]]] = {
     0:  (4, 11, (1, 8, 2),  (1, 8, 0)),    # CR 1/4
     1:  (5, 12, (1, 8, 2),  (2, 6, 0)),
@@ -53,73 +69,113 @@ _CR_ROWS: dict[int, tuple[int, int, tuple[int, int, int], tuple[int, int, int]]]
     17: (13, 20, (14, 6, 6), (17, 6, 0)),
 }
 
-# Character LEVEL → baseline solo-enemy CR (the chart's "Level" column, inverted +
-# interpolated across its gaps).  A CR is a baseline for a much higher level than
-# CR == level: CR 8 ↔ L14, CR 5 ↔ L9.  This is the "less harsh" lever — a lone
-# level-8 summon faces ~CR 5, not CR 8.
-_LEVEL_TO_CR: dict[int, int] = {
-    1: 0, 2: 1, 3: 1, 4: 2, 5: 3, 6: 4, 7: 4, 8: 5, 9: 5, 10: 6,
-    11: 7, 12: 7, 13: 8, 14: 8, 15: 9, 16: 9, 17: 10, 18: 11, 19: 12, 20: 13,
-}
+_N_ATTACKS = 2                                 # the chart's 2-attack multiattack routine
 
 # Default split of save-forcing effects across the SIX save types ("varying
-# probability for each" — the user's request).  Reflects typical monster effects:
-# physical/AoE leans DEX + CON, fear/charm WIS, grapple/shove STR, banish/dominate
-# CHA, psychic INT.  Weights are relative (need not sum to 1); pre-rolled through the
-# seeded channel so decide() stays dice-free.
+# probability for each").  Physical/AoE leans DEX + CON; fear/charm WIS; grapple/shove
+# STR; banish/dominate CHA; psychic INT.  Weights are relative (need not sum to 1).
 SAVE_TYPE_WEIGHTS: dict[str, int] = {
-    "dex_save": 30,
-    "con_save": 25,
-    "wis_save": 20,
-    "str_save": 12,
-    "cha_save": 8,
-    "int_save": 5,
+    "dex_save": 30, "con_save": 25, "wis_save": 20,
+    "str_save": 12, "cha_save": 8, "int_save": 5,
 }
 
-# Fraction of an enemy's rounds spent forcing a SAVE (an AoE / breath / gaze) rather
-# than making attack rolls.  Most monsters mostly attack; ~1/3 save rounds is a
-# reasonable default for a save-capable bruiser.  Tunable per enemy.
+# Fraction of an enemy's rounds spent forcing a SAVE rather than attacking.
 SAVE_ROUND_PROB = 0.35
 
 
-def _row(cr: int) -> tuple[int, int, tuple[int, int, int], tuple[int, int, int]]:
-    cr = max(0, min(17, cr))
-    return _CR_ROWS[cr]
+def _avg(count: int, sides: int, bonus: int) -> float:
+    return count * (sides + 1) / 2 + bonus
 
 
-def level_to_cr(level: int) -> int:
-    """The baseline solo-enemy CR for a character *level* (the chart's Level column).
-
-    CR is a baseline for a much higher level than CR == level (CR 8 ↔ L14), so this is
-    what keeps a lone summon's enemy from being brutally over-CR."""
-    if level in _LEVEL_TO_CR:
-        return _LEVEL_TO_CR[level]
-    return 0 if level < 1 else 13
+def _pb(level: int) -> int:
+    """Proficiency bonus by character level (2 / 3 / 4 / 5 / 6)."""
+    return 2 + (level - 1) // 4
 
 
-def baseline_save_dc(cr: int) -> int:
-    """The enemy's save DC at challenge rating *cr* (chart, rounded)."""
-    return _row(cr)[1]
+def _attack_die(level: int) -> int:
+    """Attack die SIZE matched from the CR == level chart row (clamp >17 to 17)."""
+    return _CR_ROWS[min(level, 17)][2][1]
 
 
-def baseline_attack_bonus(cr: int) -> int:
-    """The enemy's attack bonus at *cr* (chart, rounded)."""
-    return _row(cr)[0]
+def _aoe_die(level: int) -> int:
+    """AoE die SIZE matched from the CR == level chart row (clamp >17 to 17)."""
+    return _CR_ROWS[min(level, 17)][3][1]
 
 
-def baseline_attack_dice(cr: int) -> tuple[int, int, int]:
-    """The per-swing damage dice (count, sides, flat_bonus) of the enemy's 2-attack
-    multiattack routine at *cr* — rolled per attack so crits double the dice."""
-    return _row(cr)[2]
+def _build_level_table() -> dict[int, dict]:
+    """Fit the chart columns vs CR, evaluate at CR == level, ÷1.5 the damage, and
+    re-express as dice (see the module docstring).  Computed once at import."""
+    crs = sorted(_CR_ROWS)
+    x = np.array(crs, dtype=float)
+    th = np.array([_CR_ROWS[c][0] for c in crs], dtype=float)
+    dc = np.array([_CR_ROWS[c][1] for c in crs], dtype=float)
+    ps = np.array([_avg(*_CR_ROWS[c][2]) for c in crs], dtype=float)
+    ao = np.array([_avg(*_CR_ROWS[c][3]) for c in crs], dtype=float)
+    c_th = np.polyfit(x, th, 1)
+    c_dc = np.polyfit(x, dc, 1)
+    c_ps = np.polyfit(x, ps, 2)
+    c_ao = np.polyfit(x, ao, 2)
+
+    rows: dict[int, dict] = {}
+    for level in range(1, 21):
+        to_hit = int(round(np.polyval(c_th, level)))
+        save_dc = int(round(np.polyval(c_dc, level)))
+        target_swing = float(np.polyval(c_ps, level)) / DAMAGE_DIVISOR
+        target_aoe = float(np.polyval(c_ao, level)) / DAMAGE_DIVISOR
+        pb = _pb(level)
+        ax, ay = _attack_die(level), _aoe_die(level)
+        n = max(1, int(round((target_swing - pb) / ((ax + 1) / 2))))
+        m = max(1, int(round(target_aoe / ((ay + 1) / 2))))
+        rows[level] = {
+            "to_hit": to_hit,
+            "save_dc": save_dc,
+            "n_attacks": _N_ATTACKS,
+            "attack_dice": (n, ax, pb),       # one swing: N dX + PB
+            "aoe_dice": (m, ay, 0),           # save-for-half AoE: M dY
+        }
+    return rows
 
 
-def baseline_aoe_dice(cr: int) -> tuple[int, int, int]:
-    """The save-for-half AoE damage dice (count, sides, flat_bonus) at *cr*."""
-    return _row(cr)[3]
+_LEVEL_ROWS: dict[int, dict] = _build_level_table()
 
 
-def baseline_dpr(cr: int) -> float:
-    """The all-hits-land damage-per-round budget at *cr*, derived from the multiattack
-    dice (two swings).  Used for reference / sanity checks; the policy rolls the dice."""
-    n, sides, bonus = baseline_attack_dice(cr)
-    return 2 * (n * (sides + 1) / 2 + bonus)
+def _row(level: int) -> dict:
+    return _LEVEL_ROWS[max(1, min(20, level))]
+
+
+def baseline_attack_bonus(level: int) -> int:
+    """The enemy's attack bonus at character *level*."""
+    return _row(level)["to_hit"]
+
+
+def baseline_save_dc(level: int) -> int:
+    """The enemy's save DC at character *level*."""
+    return _row(level)["save_dc"]
+
+
+def baseline_n_attacks(level: int) -> int:
+    """How many swings the enemy's multiattack makes at *level* (the chart's routine)."""
+    return _row(level)["n_attacks"]
+
+
+def baseline_attack_dice(level: int) -> tuple[int, int, int]:
+    """One swing's damage dice ``(count, sides, flat_PB)`` at *level* — rolled per
+    attack, so a natural 20 doubles the dice (the flat PB stays single, RAW crit)."""
+    return _row(level)["attack_dice"]
+
+
+def baseline_aoe_dice(level: int) -> tuple[int, int, int]:
+    """The save-for-half AoE damage dice ``(count, sides, 0)`` at *level*."""
+    return _row(level)["aoe_dice"]
+
+
+def baseline_dpr(level: int) -> float:
+    """All-hits-land damage-per-round at *level* (n_attacks × per-swing average).  For
+    reference / sanity checks; the policy rolls the dice."""
+    n, sides, bonus = baseline_attack_dice(level)
+    return baseline_n_attacks(level) * _avg(n, sides, bonus)
+
+
+def level_table() -> dict[int, dict]:
+    """The full per-level offensive table (a copy), for inspection / CSV generation."""
+    return {lvl: dict(row) for lvl, row in _LEVEL_ROWS.items()}

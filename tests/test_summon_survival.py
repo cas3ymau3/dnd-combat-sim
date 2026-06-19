@@ -28,9 +28,8 @@ from src.builds.enemy_stats import (
     baseline_aoe_dice,
     baseline_attack_bonus,
     baseline_attack_dice,
-    baseline_dpr,
+    baseline_n_attacks,
     baseline_save_dc,
-    level_to_cr,
 )
 from src.day_runner import BetweenCombatsContext, DayRunner
 from src.entity import Entity
@@ -106,26 +105,27 @@ def test_long_rest_revives_a_winked_out_summon():
 # (2) Per-CR enemy stats (decision #12's realised half)
 # ===========================================================================
 
-def test_baseline_enemy_stats_match_the_per_cr_chart():
-    # Chart anchors (Rothner "Average Monster Stats by CR"): CR8 → +8 / DC 15, with the
-    # multiattack 4d10+5 per swing and a 12d4 AoE.
+def test_baseline_enemy_stats_are_per_level_chart_div_1_5():
+    # Per-LEVEL offensive stats (CR == level), damage re-diced after the ÷1.5 party-size
+    # correction.  L8: to-hit +8 / DC 15; per-swing matched to the chart's d10 with a +PB
+    # flat (3d10+3); AoE matched to the chart's d4 (8d4); the chart's 2-attack routine.
     assert baseline_attack_bonus(8) == 8 and baseline_save_dc(8) == 15
-    assert baseline_attack_bonus(4) == 6 and baseline_save_dc(4) == 13
-    assert baseline_attack_dice(8) == (4, 10, 5)
-    assert baseline_aoe_dice(8) == (12, 4, 0)
-    # Damage/Round = two multiattack swings (the chart's column): CR8 → 54, CR4 → 30.
-    assert baseline_dpr(8) == 54
-    assert baseline_dpr(4) == 30
+    assert baseline_attack_dice(8) == (3, 10, 3)     # N dX + PB, crit-doubles the dice
+    assert baseline_aoe_dice(8) == (8, 4, 0)         # save spell: pure dice, no flat
+    assert baseline_n_attacks(8) == 2
+    # The ÷1.5 correction holds: per-round (≈39) is ~2/3 of the chart's CR8 Dmg/Round 54.
+    n, sides, bonus = baseline_attack_dice(8)
+    per_round = baseline_n_attacks(8) * (n * (sides + 1) / 2 + bonus)
+    assert 33 <= per_round <= 42                      # 54 / 1.5 = 36, ± dice-matching
 
 
-def test_level_to_cr_is_the_de_harshening_mapping():
-    # The chart's Level column: a CR is a baseline for a HIGHER level than CR == level.
-    # A lone level-8 summon faces ~CR 5 (not CR 8), level 14 faces CR 8.
-    assert level_to_cr(8) == 5
-    assert level_to_cr(14) == 8
-    assert level_to_cr(4) == 2
-    # Strictly gentler than the naive cr == level it replaces.
-    assert level_to_cr(8) < 8
+def test_baseline_attack_bonus_and_dc_scale_monotonically_with_level():
+    for lvl in range(1, 20):
+        assert baseline_attack_bonus(lvl) <= baseline_attack_bonus(lvl + 1)
+        assert baseline_save_dc(lvl) <= baseline_save_dc(lvl + 1)
+    # The +PB flat on a swing is the level's proficiency bonus (non-crit-doubling).
+    assert baseline_attack_dice(8)[2] == 3           # PB 3 at L8
+    assert baseline_attack_dice(13)[2] == 5          # PB 5 at L13
 
 
 # ===========================================================================
@@ -136,15 +136,15 @@ def test_baseline_enemy_attack_round_emits_n_swings():
     beast = Entity(name="beast", hp=25, base_stats={"ac": 17})
     enemy = Entity(name="enemy", hp=10**9,
                    base_stats={"attack_bonus": 8, "enemy_save_dc": 16})
-    pol = BaselineEnemyPolicy(cr=8, primary=beast, n_attacks=2, rounds_per_combat=1)
+    pol = BaselineEnemyPolicy(level=8, primary=beast, rounds_per_combat=1)
     # roll_one(100)=50 > 35 → an ATTACK round (no save pick consumed).
     pol.on_combat_start(0, FakeRNG([50]))
     choices = pol.decide(_snap(enemy, beast, 1))
     assert [c.action_type for c in choices] == ["attack", "attack"]
     assert [c.cost for c in choices] == ["action", "none"]
-    # Each swing rolls the chart's per-CR multiattack dice (CR8 = 4d10+5), so a
-    # natural 20 doubles the dice — enemy crits are modeled.
-    assert all(c.damage_dice == (4, 10) and c.damage_bonus == 5 for c in choices)
+    # Each swing rolls the per-level dice (L8 = 3d10+3), so a natural 20 doubles the
+    # dice — enemy crits are modeled (the +PB flat stays single).
+    assert all(c.damage_dice == (3, 10) and c.damage_bonus == 3 for c in choices)
     assert all(c.target is beast for c in choices)
 
 
@@ -152,7 +152,7 @@ def test_baseline_enemy_save_round_forces_a_weighted_save():
     beast = Entity(name="beast", hp=25, base_stats={"ac": 17})
     enemy = Entity(name="enemy", hp=10**9,
                    base_stats={"attack_bonus": 8, "enemy_save_dc": 16})
-    pol = BaselineEnemyPolicy(cr=8, primary=beast, n_attacks=2, rounds_per_combat=1)
+    pol = BaselineEnemyPolicy(level=8, primary=beast, rounds_per_combat=1)
     # roll_one(100)=10 ≤ 35 → a SAVE round; then _weighted_save roll_one(100)=5 lands
     # in the first bucket (dex_save, weight 30).
     pol.on_combat_start(0, FakeRNG([10, 5]))
@@ -163,9 +163,9 @@ def test_baseline_enemy_save_round_forces_a_weighted_save():
     assert c.save_stat == "dex_save"
     assert c.dc_stat == "enemy_save_dc"
     assert c.on_save == "half"
-    # The per-CR AoE dice (CR8 = 12d4); enemy_stats stores (count, sides, bonus).
-    assert baseline_aoe_dice(8) == (12, 4, 0)
-    assert c.damage_dice == (12, 4) and c.damage_bonus == 0
+    # The per-level AoE dice (L8 = 8d4); enemy_stats stores (count, sides, bonus).
+    assert baseline_aoe_dice(8) == (8, 4, 0)
+    assert c.damage_dice == (8, 4) and c.damage_bonus == 0
 
 
 def test_baseline_enemy_retargets_to_fallback_when_primary_winks_out():
@@ -173,8 +173,8 @@ def test_baseline_enemy_retargets_to_fallback_when_primary_winks_out():
     master = Entity(name="master", hp=60, base_stats={"ac": 20})
     enemy = Entity(name="enemy", hp=10**9,
                    base_stats={"attack_bonus": 8, "enemy_save_dc": 16})
-    pol = BaselineEnemyPolicy(cr=8, primary=beast, fallback=master,
-                              n_attacks=2, rounds_per_combat=1)
+    pol = BaselineEnemyPolicy(level=8, primary=beast, fallback=master,
+                              rounds_per_combat=1)
     pol.on_combat_start(0, FakeRNG([50]))           # attack round
     # Beast alive → hits the beast.
     assert all(c.target is beast for c in pol.decide(_snap(enemy, beast, 1)))

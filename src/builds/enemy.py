@@ -48,6 +48,7 @@ from .enemy_stats import (
     SAVE_TYPE_WEIGHTS,
     baseline_aoe_dice,
     baseline_attack_dice,
+    baseline_n_attacks,
 )
 
 if TYPE_CHECKING:
@@ -184,37 +185,39 @@ class BaselineEnemyPolicy:
     damage is not wasted on a corpse — which is what makes the defender effects and the
     enemy's damage profile DPR-load-bearing.
 
-    The CR should be the encounter's baseline solo CR for the character's level
-    (``enemy_stats.level_to_cr`` — CR is a baseline for a much higher level than
-    CR == level), so a lone summon is not pitted against a brutally over-CR enemy.
+    Keyed by the character ``level`` (CR == level; ``enemy_stats`` already applies the
+    ÷1.5 party-size correction), so the per-level dice / to-hit / DC pair 1:1 with the
+    AC/saves table.
     """
 
     def __init__(
         self,
-        cr: int,
+        level: int,
         primary: "Entity",
         fallback: "Entity | None" = None,
-        n_attacks: int = 2,
+        n_attacks: "int | None" = None,
         rounds_per_combat: int = 4,
         save_round_prob: float = SAVE_ROUND_PROB,
         save_weights: "dict[str, int] | None" = None,
         dc_stat: str = "enemy_save_dc",
         damage_type: "str | None" = None,
     ) -> None:
-        self._cr = cr
+        self._level = level
         self._primary = primary
         self._fallback = fallback
-        self._n_attacks = max(1, n_attacks)
+        self._n_attacks = max(1, n_attacks if n_attacks is not None
+                              else baseline_n_attacks(level))
         self._rounds = rounds_per_combat
         self._save_round_pct = int(round(save_round_prob * 100))
         self._save_weights = dict(save_weights or SAVE_TYPE_WEIGHTS)
         self._dc_stat = dc_stat
         self._damage_type = damage_type
-        # Per-CR damage DICE (chart): one multiattack swing, and the AoE save effect.
-        an, asides, abonus = baseline_attack_dice(cr)
+        # Per-level damage DICE (the chart, ÷1.5, re-diced): one multiattack swing
+        # (N dX + PB) and the AoE save effect (M dY).
+        an, asides, abonus = baseline_attack_dice(level)
         self._attack_dice = (an, asides)
         self._attack_bonus = abonus
-        sn, ssides, sbonus = baseline_aoe_dice(cr)
+        sn, ssides, sbonus = baseline_aoe_dice(level)
         self._aoe_dice = (sn, ssides)
         self._aoe_bonus = sbonus
         # Pre-rolled per round: whether it is a save round, and (if so) which save.
