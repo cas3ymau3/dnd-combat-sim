@@ -104,10 +104,15 @@ These were reached deliberately; do not silently revisit them.
     (round, turn_index) at the next available sequence number.
 
 12. **Enemy policy is structurally identical to character policy** — both
-    implement `Policy.decide(snapshot) → list[Choice]`. Near-term target is a
-    `ScriptedEnemyPolicy(archetype, stats_by_level)` driven by
-    `reference/data/monster_ac_and_saves_by_level.csv`. See PROGRESS.md for
-    the full enemy-policy decision record.
+    implement `Policy.decide(snapshot) → list[Choice]`. The definitive enemy
+    data is `reference/data/monster_stats_by_level.csv` (AC + saves + to-hit /
+    save DC / per-swing & AoE dice, per character level), loaded by
+    `src/builds/enemy_stats.py`; `BaselineEnemyPolicy` (`src/builds/enemy.py`)
+    is its full consumer (per-level dice → enemy crits, attack-vs-save mix,
+    retargeting). The older `ScriptedEnemyPolicy` (targeting-only) and the
+    AC/saves-only `monster_ac_and_saves_by_level.csv` (now the generation
+    provenance) remain for the earlier builds. See PROGRESS.md for the full
+    enemy-policy decision record.
 
 ---
 

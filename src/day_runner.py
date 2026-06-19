@@ -375,10 +375,19 @@ class DayRunner:
     # ------------------------------------------------------------------
 
     def _apply_lr(self) -> None:
-        """Long rest: restore HP and all resources to maximum."""
+        """Long rest: restore HP and all resources to maximum.
+
+        A summon that winked out at 0 HP (``dies_at_zero_hp``) is brought back at
+        the long rest — a Beast Master chooses/revives a companion on a long rest
+        (2024 Primal Companion), so the day always starts with a live beast.  This
+        also keeps multi-day loops sane: a beast that died on day N is not still
+        ``destroyed`` on day N+1.
+        """
         for entity in self.entities:
             entity.hp = entity.max_hp
             entity.resources.restore_lr()
+            if entity.dies_at_zero_hp and entity.destroyed:
+                entity.destroyed = False
         log.debug("Long rest applied — all entities at full HP and resources.")
 
     def _apply_sr(self) -> None:

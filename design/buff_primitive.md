@@ -531,22 +531,60 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
      build at the first build that leaves a summon uncommanded.  This is the
      action-economy trade-off the command model exists to expose (command = offense,
      Dodge = defense).
-3b. **SUMMON SURVIVAL & DEATH + recast policy (NEXT — user decision 2026-06-18).** Today
-   HP never gates turns (threshold model), so a summon contributes for all rounds
-   regardless of damage taken — which makes the 7c-on-summon DEFENSES (aid / warding
-   bond / protection) DPR-INERT (they only reduce a number we don't read).  Make a
-   summon **die / wink out at 0 HP**: wire `is_functionally_dead` (hp ≤ 0) → set
-   `destroyed` for summons (the scheduler already skips destroyed turns + the commander
-   already checks `destroyed`), so a dead summon's DPR contribution **disappears**.
-   Add a **per-character recast policy** decision point (summon died → recast or not —
-   bespoke Python per build, "policies are code").  Consequence: aid / warding bond /
-   protection become **DPR-RELEVANT** (survivability → more rounds of summon strikes) —
-   so the session-21 "aid is DPR-inert" caveat lifts.  **Coupled requirement:** summon
-   survival makes the enemy's attack/damage profile LOAD-BEARING (it decides whether the
-   summon lives), so this slice should pull in **real-ish per-CR enemy damage** — exactly
-   decision #12's unrealised half (today's enemy numbers are "illustrative").  Vehicle:
-   silvertail beast under real enemy fire (and its upcast aid at L10+ where it has
-   3rd-level slots → +10).
+3b. **SUMMON SURVIVAL & DEATH + recast policy — BUILT (session 22, 2026-06-19).** Wired
+   `Entity.dies_at_zero_hp` → `take_damage` sets `destroyed` when a SUMMON crosses to
+   ≤ 0 HP (the single 0-HP trigger; the scheduler already skips destroyed turns + the
+   commander already checks `destroyed`, so a dead summon's DPR contribution
+   disappears).  The threshold model is untouched for non-summons (they leave the flag
+   False).  A **long rest revives a winked-out summon** (`DayRunner._apply_lr` — RAW:
+   choose/revive a companion on a long rest; also keeps multi-day loops sane).
+   **Recast policy** = a per-character BETWEEN-COMBATS decision (`make_recast_hook`):
+   2024 Primal Companion revival is **1 minute** (web-verified) → never lands inside a
+   4-round combat, so it is inherently between-combats — revive iff dead + a spare slot
+   remains + a later combat remains (greedy, finite slot budget; "policies are code").
+   **Coupled — the DEFINITIVE per-LEVEL enemy table (decision #12's realised half):** the
+   single reference the engine draws enemy numbers from is now
+   `reference/data/monster_stats_by_level.csv` — one row per character level 1-20 carrying
+   BOTH halves: AC + the six saves (defense) AND to-hit / save DC / n_attacks / per-swing
+   `attack_dice` / `aoe_dice` (offense).  `src/builds/enemy_stats.py` LOADS it at import and
+   is the accessor layer; the generation (`regenerate()`, run `python -m
+   src.builds.enemy_stats`) derives the offense from the user's "Average Monster Stats by
+   CR" chart (Rothner) and copies AC/saves from `monster_ac_and_saves_by_level.csv`
+   (provenance).  Derivation (user spec): fit each chart column vs CR (linear to-hit/DC,
+   quadratic damage; R²>0.99), evaluate at **CR == level** (ignore the chart's Level
+   column), **÷1.5 the damage** (a CR-N monster is built for FOUR level-N PCs; here ≤3
+   friendlies and the enemy is never killed by them → incoming over-inflated), re-express
+   each damage average as DICE (per-swing = `N dX + PB`, the chart's matched die size X +
+   the level's proficiency bonus as the flat; AoE = `M dY`) so **enemy CRITS fall out** (a
+   natural 20 doubles the dice; the flat PB stays single), and apply a few hand-tuned
+   `_OVERRIDES` so every DAMAGE column rises MONOTONICALLY.  `BaselineEnemyPolicy`
+   (`src/builds/enemy.py`, keyed by `level`) mixes attack-roll rounds (n swings, per-level
+   dice) and SAVE-forcing rounds (one of the six saves, weighted, vs the per-level DC, AoE
+   dice, half on a save), and RETARGETS onto the master when the beast winks out (focus-fire
+   → fallback).  (L8 enemy: AC 16 / +8 / DC 15 / `3d8+3` ×2 / `8d4` AoE.)  **MECHANISM
+   validated**
+   (`tests/test_summon_survival.py`): a dead summon stops contributing (mortal
+   lifetime output ≪ the threshold-immortal beast); a +HP buffer buys an extra strike
+   when it crosses a per-hit breakpoint (deterministic); reducing landed hits keeps it
+   contributing longer; reviving it restores the contribution; the enemy retargets to the
+   master on death.  Wired on the silvertail L8 row, with `mortal_beast` / `recast` opt-in
+   flags so the session-21 mechanism tests (immortal beast) stay byte-identical; the
+   enemy is the definitive per-level table by default.  **These are MECHANISM checks, NOT
+   build-value claims** — the
+   survivability numbers are not meaningful as build evaluation yet because three build
+   factors are unmodeled (each flagged for the full build, NOT this slice):
+   (i) **enemy targeting split** — with a party present the beast should be hit ≤ 1/3 of
+   the time, not focus-fired (the §3.5 weighted roster already exists in
+   `ScriptedEnemyPolicy`; wire it into `BaselineEnemyPolicy`);
+   (ii) **beast self-healing** — the companion has ranger-level d8 HIT DICE (spent on a
+   short rest) and receives Prayer of Healing (the master gets it at L8) — neither
+   hit-dice nor PoH healing is modeled (a real engine gap);
+   (iii) **Mounted Combatant's VEER** (the master, L4) — redirect onto the master any hit
+   that would drop the beast OR that beats the beast's AC but not the master's higher AC
+   (a target-REASSIGNMENT intercept — a new `on_incoming_hit` flavor; relates to the
+   attack-only seam below).  **Also still deferred:** aid upcast (+10 at L10+, 3rd-level
+   slots); warding-bond redirect on save-damage (rides the attack-only `on_incoming_hit`
+   seam — resistance applies to saves, the redirect doesn't); a smarter recast policy.
 4. **7b zone / emanation** — the §3.1 zonal spatial model + recurring scheduled zone
    events; damage/debuff and buff flavors; anchored vs static. Vehicle: silvertail
    Spirit Guardians (emanation) + the wardancer's spike growth / cloud of daggers
