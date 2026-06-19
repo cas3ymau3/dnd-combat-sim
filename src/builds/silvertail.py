@@ -90,8 +90,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..builds.enemy import ScriptedEnemyPolicy
-from ..day_runner import DayRunner
+from ..builds.enemy import BaselineEnemyPolicy, ScriptedEnemyPolicy
+from ..builds.enemy_stats import baseline_attack_bonus, baseline_save_dc
+from ..day_runner import BetweenCombatsContext, DayRunner
 from ..entity import Entity
 from ..modifiers import Modifier
 from ..policy import Choice, InterceptResponse, RedirectSpec
@@ -159,6 +160,17 @@ LEVELS: dict[int, dict] = {
         "spell_attack_bonus": 7,           # PB 3 + WIS 4 (shocking grasp + Beast's-Strike to-hit)
         "spell_save_dc": 15,               # 8 + PB 3 + WIS 4
         "wis_mod": 4,                      # WIS 18
+        # Master saves — so a save-forcing enemy retargeted onto the master (after the
+        # beast dies) resolves against a real line, not auto-fail.  Cleric/Ranger:
+        # WIS + CHA proficient; modest physical saves.  (PB 3.)
+        "char_saves": {"str_save": 0, "dex_save": 2, "con_save": 4,
+                       "int_save": 1, "wis_save": 7, "cha_save": 6},
+        # Spare leveled spell slots reserved for REVIVING the companion (2024 Primal
+        # Companion: expend a slot, 1-minute revival → between-combats).  The buff
+        # casts (bless/aid/warding bond) are modeled pre-cast/concentration and their
+        # slot cost is abstracted; this is the revive economy the recast policy spends
+        # against (the "recast or not" decision has a finite budget).  LR-restored.
+        "resources": {"spell_slot": (3, 0)},
         "shocking_grasp": {"dice": (2, 8), "bonus": 0,
                            "weapon_stat": "spell_attack_bonus",
                            "damage_type": "lightning", "is_spell": True},
@@ -210,22 +222,24 @@ def make_silvertail(level: int) -> Entity:
             f"Silvertail level {level} not yet implemented (have {sorted(LEVELS)})."
         )
     data = LEVELS[level]
+    base_stats = {
+        "ac": data["char_ac"],
+        "spell_attack_bonus": data["spell_attack_bonus"],
+        "spell_save_dc": data["spell_save_dc"],
+        # Fallback weapon profile (every emitted attack carries its own override).
+        "damage_dice": data["shocking_grasp"]["dice"],
+        "damage_bonus": 0,
+    }
+    base_stats.update(data.get("char_saves", {}))   # master saves (L8+: for retargeting)
     return Entity(
         name=f"Silvertail-L{level}",
         hp=data["char_hp"],
-        base_stats={
-            "ac": data["char_ac"],
-            "spell_attack_bonus": data["spell_attack_bonus"],
-            "spell_save_dc": data["spell_save_dc"],
-            # Fallback weapon profile (every emitted attack carries its own override).
-            "damage_dice": data["shocking_grasp"]["dice"],
-            "damage_bonus": 0,
-        },
+        base_stats=base_stats,
         resources=_make_resources(data),
     )
 
 
-def make_primal_companion(level: int) -> Entity:
+def make_primal_companion(level: int, mortal: bool = False) -> Entity:
     """Build the PRIMAL COMPANION (Beast of the Land) — the 7a summon (an ACTOR with
     its own HP / AC / saves; design.md §1).  Commanded by the master, so it carries
     NO policy of its own (the master's policy emits its Beast's Strike).
@@ -234,9 +248,15 @@ def make_primal_companion(level: int) -> Entity:
     modifier, 2024 RAW); its ``damage_dice``/``damage_bonus`` are the strike fallback
     (the commanded Choice also carries them explicitly).  AC + HP let the enemy
     target it once a 7c-on-summon slice (warding bond / protection) lands here.
+
+    ``mortal`` arms summon survival (substrate #7 / 7a — session 22): a mortal
+    companion WINKS OUT at 0 HP (``dies_at_zero_hp``), so under real enemy fire it can
+    die mid-combat and stop contributing — which is what makes aid / warding bond /
+    protection DPR-relevant (more rounds alive = more Beast's-Strike DPR).  Default
+    False keeps the threshold-immortal beast the session-21 mechanism tests use.
     """
     b = LEVELS[level]["beast"]
-    return Entity(
+    beast = Entity(
         name=f"PrimalCompanion-L{level}",
         hp=b["hp"],
         base_stats={
@@ -250,6 +270,8 @@ def make_primal_companion(level: int) -> Entity:
             "con_save": b["save_bonus"], "wis_save": b["save_bonus"],
         },
     )
+    beast.dies_at_zero_hp = mortal
+    return beast
 
 
 def make_training_dummy(level: int) -> Entity:
@@ -480,11 +502,39 @@ class BeastEffectPolicy:
 # Full day-runner assembly
 # ---------------------------------------------------------------------------
 
+def make_recast_hook(master: Entity, beast: Entity, slot_resource: str = "spell_slot"):
+    """The silvertail's per-character RECAST policy (substrate #7 / 7a summon
+    survival — "policies are code"): a BETWEEN-COMBATS decision to revive the
+    companion after it died.
+
+    2024 Primal Companion revival (web-verified 2026-06-19): if the beast has died
+    within the last hour, the master takes a Magic action, touches it, and expends a
+    spell slot; it returns to life after **1 minute** with full HP.  One minute is
+    ~10 rounds, so revival NEVER lands inside a 4-round combat — it is inherently a
+    between-combats action (the dead beast contributes nothing for the rest of the
+    combat it died in; the survivability payoff).  The decision: revive iff the beast
+    is dead, a revive slot remains, and a LATER combat remains to use it in.  Greedy
+    with a finite slot budget — the simplest "recast or not" policy; it can grow.
+    """
+    def hook(ctx: BetweenCombatsContext) -> None:
+        if (
+            beast.destroyed
+            and ctx.after_combat_num < 4                  # a later combat to use it in
+            and master.resources.consume(slot_resource)   # spend a spare slot
+        ):
+            beast.destroyed = False
+            beast.hp = beast.max_hp                        # revived with full HP (RAW)
+    return hook
+
+
 def make_silvertail_runner(
     level: int,
     rng: "SeededRNG",
     rounds_per_combat: int = 4,
     beast_effect: "str | None" = None,
+    mortal_beast: bool = False,
+    enemy_model: str = "illustrative",
+    recast: bool = False,
 ):
     """Assemble (DayRunner, master, beast, dummy) for the given level.
 
@@ -497,25 +547,41 @@ def make_silvertail_runner(
     ``BeastEffectPolicy`` is registered for it so the intercept seam can consult its
     defender-side rider (the beast still takes no turn of its own).
 
-    Two modes by the level's data:
-      - rows WITHOUT an ``enemy_attack`` profile (L4) → the dummy is passive (the 7a
-        summon scenario); ``beast_effect`` is ignored.
-      - rows WITH one (L8, the 7c-ON-SUMMON slice) → the dummy also gets a
-        ScriptedEnemyPolicy that strikes the BEAST (typed), so the beast's defender
-        effects do real work.  ``beast_effect`` ∈ {None (baseline — beast takes full),
-        "warding_bond", "protection", "bless", "aid"} selects the effect ON the beast.
+    Parameters that select the scenario
+    ------------------------------------
+    beast_effect:
+        The 7c-on-summon effect ON the beast (session 21): None (baseline — beast
+        takes full), "warding_bond", "protection", "bless", "aid".
+    mortal_beast:
+        If True the companion WINKS OUT at 0 HP (summon survival, session 22), so it
+        can die mid-combat and stop contributing.  Default False = the threshold-
+        immortal beast the session-21 mechanism tests isolate effects against.
+    enemy_model:
+        "illustrative" (default) → the row's hand-picked ``enemy_attack`` numbers via
+        ``ScriptedEnemyPolicy`` (the session-21 controlled enemy — keeps those tests
+        byte-identical).  "baseline_cr" → a realistic per-CR ``BaselineEnemyPolicy``
+        (decision #12's realised half): per-CR attack bonus / save DC / damage budget
+        from ``enemy_stats``, mixing attack rolls and save-forcing across the target's
+        saves, and RETARGETING onto the master when the beast dies.
+    recast:
+        If True, register the between-combats RECAST policy (``make_recast_hook``) so
+        a dead beast is revived (spending a spare slot) before the next combat.
 
     Read the DPR columns SEPARATELY off the result (user decision, session 17):
       - build column   = ``damage_by_source(master.id)``  (the master's shocking grasp)
-      - summon column  = ``damage_by_source(beast.id)``    (the Beast's Strike)
+      - summon column  = ``damage_by_source(beast.id)``    (the Beast's Strike — also the
+        beast's LIFETIME DPR, the survival validation's headline: aid / warding bond /
+        protection / recast RAISE it by keeping the beast alive for more strikes)
       - party total    = ``party_total([master.id, beast.id])``
     The 7c-on-summon effects are read off the INCOMING ledger instead:
       - ``damage_source_to(dummy.id, beast.id)`` — what the enemy deals to the beast
         (protection / warding-bond resistance cut it below baseline);
-      - ``damage_source_to(dummy.id, master.id)`` — warding bond's redirected share.
+      - ``damage_source_to(dummy.id, master.id)`` — warding bond's redirected share
+        (and, under ``mortal_beast`` + retargeting, the hits the master eats after the
+        beast falls).
     """
     char = make_silvertail(level)
-    beast = make_primal_companion(level)
+    beast = make_primal_companion(level, mortal=mortal_beast)
     dummy = make_training_dummy(level)
 
     entities: list[Entity] = [char, dummy]
@@ -539,10 +605,27 @@ def make_silvertail_runner(
         bep.install()
         policies[beast.id] = bep
 
-    # Enemy strikes back (L8): the dummy attacks the BEAST (single-target, TYPED) so
-    # the beast's defender effects modulate real incoming damage.
+    # Enemy strikes back (L8): the dummy attacks the BEAST so the beast's defender
+    # effects modulate real incoming damage.
     ea = LEVELS[level].get("enemy_attack")
-    if ea:
+    if ea and enemy_model == "baseline_cr":
+        # Realistic per-CR enemy (decision #12's realised half): per-CR attack bonus +
+        # save DC live on the dummy Entity (read by the verbs); the damage budget +
+        # attack/save mix + retargeting live in the policy.  Focus-fires the beast,
+        # shifting to the master when the beast winks out.
+        dummy.base_stats["attack_bonus"] = baseline_attack_bonus(level)
+        dummy.base_stats["enemy_save_dc"] = baseline_save_dc(level)
+        policies[dummy.id] = BaselineEnemyPolicy(
+            cr=level,
+            primary=beast,
+            fallback=char,
+            n_attacks=ea.get("n_attacks", 2),
+            rounds_per_combat=rounds_per_combat,
+            damage_type=ea.get("damage_type"),
+        )
+    elif ea:
+        # Illustrative (session-21) enemy: the dummy strikes the BEAST (typed),
+        # single-target, with the row's hand-picked numbers.
         policies[dummy.id] = ScriptedEnemyPolicy(
             target=beast,
             n_attacks=ea.get("n_attacks", 2),
@@ -556,5 +639,6 @@ def make_silvertail_runner(
         entities=entities,
         policies=policies,
         rounds_per_combat=rounds_per_combat,
+        between_combats=make_recast_hook(char, beast) if recast else None,
     )
     return runner, char, beast, dummy

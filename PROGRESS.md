@@ -71,8 +71,26 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none reported (session 21 toggle
-> recommendation re-made; nothing confirmed disabled). **Session scope (2026-06-18,
+> **Currently disabled (re-enable before exit):** none reported (session 22 toggle
+> recommendation re-made; nothing confirmed disabled). **Session scope (2026-06-19,
+> session 22) — DONE (SUBSTRATE #7 — 7a SUMMON SURVIVAL & DEATH):** built all three
+> coupled pieces (user: all three, through-merge) — (1) summons WINK OUT at 0 HP
+> (`Entity.dies_at_zero_hp` → `take_damage` sets `destroyed`; threshold model preserved
+> for non-summons; LR revives); (2) a per-character BETWEEN-COMBATS RECAST policy
+> (`make_recast_hook` — 2024 revival is 1 min → never mid-combat; revive for a spare
+> slot); (3) a REAL per-CR enemy (`enemy_stats.py` Tom Dunn baseline + `BaselineEnemyPolicy`
+> — attack-roll/save-forcing mix across the six saves, retargets to the master when the
+> beast falls; decision #12's realised half). **VALIDATION FLIP:** under a CR8 enemy the
+> immortal beast's ~140 lifetime DPR/day collapses to ~10 mortal, and protection (13) /
+> warding bond (16) / **aid (16 — the s21 caveat LIFTS)** / bless (12) / recast (40) each
+> raise it. Opt-in (`mortal_beast`/`enemy_model`/`recast`) → 455 prior tests byte-identical;
+> **470 green (+15).** Branch `feature/substrate-7-summon-survival` → confirm before merge.
+> DPR-source reconciliation: Tom Dunn 6+6·CR = all-hits-land budget, Reddit 6+3·CR =
+> expected-after-hit-rate; the engine rolls, so feed the budget (`DPR_COEFF`). ATTACK-
+> TAXONOMY NOT forced. Reflection pending. **NEXT: 7b zone/emanation** (Spirit Guardians —
+> the §3.1 zonal model + recurring scheduled event), the LAST unbuilt #7 sub-kind.
+>
+> **Session scope (2026-06-18,
 > session 21) — DONE (SUBSTRATE #7 — 7c-ON-SUMMON):** wired the built 7c ally-effect
 > machinery (session 19) ONTO the 7a primal companion (session 20) — the summon as a
 > **buff / redirect / protect target**. **Scope settled with the user up front (A,
@@ -486,6 +504,65 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **SUBSTRATE #7 — 7a SUMMON SURVIVAL & DEATH + recast + real per-CR enemy — BUILT &
+  VALIDATED (2026-06-19, session 22).** The slice that makes the 7c-on-summon defenses
+  (aid / warding bond / protection) and a recast policy DPR-relevant: a summon now WINKS
+  OUT at 0 HP, a realistic per-CR enemy makes the incoming damage load-bearing, and a
+  per-character recast policy revives the dead companion between combats. **470 tests
+  green (+15).** Branch `feature/substrate-7-summon-survival` → confirm before merge.
+  Design contract: `design/buff_primitive.md` (build-sequence item 3b flipped to BUILT).
+  - **Scope settled with the user up front: (all three) + through-merge.** Summon death
+    + recast + a real per-CR enemy model (decision #12's unrealised half), confirmed up
+    front; the user supplied the DPR formula + the Tom Dunn / Reddit sources.
+  - **(1) Summon death at 0 HP — `Entity.dies_at_zero_hp` → `take_damage`.** A new
+    per-entity flag (summons set it True; character / enemy / party leave it False →
+    threshold model preserved).  When cumulative damage drops a mortal entity to ≤ 0 HP,
+    `take_damage` sets `destroyed` — the single 0-HP trigger that arms the already-present
+    plumbing (scheduler skips destroyed turns at `scheduler.py:759`; `SilvertailPolicy`
+    checks `beast.destroyed` before commanding).  A dead summon's DPR disappears for the
+    rest of the combat.  `DayRunner._apply_lr` revives a winked-out summon at the long
+    rest (RAW: choose/revive a companion on a long rest; also keeps multi-day loops sane).
+  - **(2) Per-character RECAST policy — `make_recast_hook` (between-combats).** Rules
+    verified FIRST (per-feature ritual, web 2026-06-19): 2024 Primal Companion revival
+    is **1 minute** (~10 rounds) → never lands inside a 4-round combat, so it is
+    inherently a BETWEEN-COMBATS action (the dead beast contributes nothing for the rest
+    of the combat it died in — the survivability payoff).  The policy revives iff the
+    beast is dead, a spare slot remains, and a later combat remains to use it in (greedy,
+    finite slot budget — "policies are code"; it can grow smarter).  Added a `spell_slot`
+    revive budget (3/LR) to the L8 master row.
+  - **(3) Real per-CR enemy — `enemy_stats.py` + `BaselineEnemyPolicy` (decision #12's
+    realised half).** `enemy_stats.py`: per-CR attack bonus / save DC / damage budget
+    from the Tom Dunn baseline regression (AB = DC − 8 across the table; DPR = 6 + 6·CR).
+    Reconciled the user's two DPR sources: Tom Dunn's 6 + 6·CR is the **all-hits-land
+    budget**, the Reddit 6 + 3·CR is the **expected** after a ~50% hit rate; since the
+    engine ROLLS the attacks/saves the dice apply the discount, so the budget (6+6·CR) is
+    the right input (`DPR_COEFF` is the one knob).  `BaselineEnemyPolicy`: each round is
+    either an ATTACK-ROLL round (n swings vs AC, budget split flat) or a SAVE-forcing
+    round (one of the six saves, weighted, vs the per-CR DC, half on a save) — the user's
+    "test all our saves with varying probability AND make attack rolls"; pre-rolled at
+    `on_combat_start` (dice-free decide).  **RETARGETS** onto the master (`fallback`) when
+    the beast winks out, so a slain ally's incoming load is not wasted on a corpse and the
+    beast genuinely tanks.  Damage is flat (budget exact); the enemy's attacks carry no
+    crit bonus (deliberate approximation of an averaged profile, not a statblock).
+  - **VALIDATION FLIP (the headline — `tests/test_summon_survival.py`, +15).** Under a
+    CR8 enemy the threshold-immortal beast's **~140 lifetime DPR/day collapses to ~10**
+    when mortal (a dead summon does nothing); every defensive lever RAISES it by buying
+    more alive rounds: protection **→ 13**, warding bond **→ 16**, **aid → 16 (the
+    session-21 "aid is DPR-inert" caveat LIFTS)**, bless **→ 12**, recast **→ 40** (the
+    biggest lever — revive between combats).  The enemy retargets to the master after the
+    beast dies (immortal beast → master untouched; mortal → master eats the rest).
+  - **Opt-in wiring (existing tests byte-identical).** `make_silvertail_runner` gained
+    `mortal_beast` / `enemy_model="illustrative"|"baseline_cr"` / `recast`, all defaulting
+    to the session-21 behavior — so the 455 prior tests (incl. the 7c-on-summon mechanism
+    tests, which isolate effects against the controlled immortal-beast enemy) stay
+    unchanged.  The realistic survival scenario is the new opt-in path.
+  - **Process / flags.** ATTACK-TAXONOMY NOT forced (the enemy still melee/save-attacks;
+    no melee/ranged gate).  **Deferred:** aid upcast (+10 at L10+, 3rd-level slots); crit
+    damage on the averaged enemy; a slot-conserving recast policy; higher silvertail rows.
+    Reflection (per-feature ritual) pending user input.
+  - **NEXT: 7b zone / emanation** (Spirit Guardians — the §3.1 zonal model + a recurring
+    scheduled event), the LAST unbuilt #7 sub-kind.
 
 - **SUBSTRATE #7 — 7c-ON-SUMMON (beast as buff/redirect/protect target) — BUILT &
   VALIDATED (2026-06-18, session 21).** The built 7c ally-effect machinery (session

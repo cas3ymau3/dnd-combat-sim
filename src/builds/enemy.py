@@ -43,6 +43,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ..policy import Choice, GameState
+from .enemy_stats import (
+    SAVE_ROUND_PROB,
+    SAVE_TYPE_WEIGHTS,
+    baseline_dpr,
+)
 
 if TYPE_CHECKING:
     from ..entity import Entity
@@ -145,4 +150,131 @@ class ScriptedEnemyPolicy:
                     weapon_stat="attack_bonus",
                     damage_type=self._damage_type,
                 ))
+        return choices
+
+
+class BaselineEnemyPolicy:
+    """A per-CR baseline enemy (decision #12's realised half — see enemy_stats.py).
+
+    Each round it does ONE of two things, pre-rolled at ``on_combat_start`` so
+    ``decide()`` stays dice-free (CLAUDE.md #7/#9):
+
+      - an ATTACK-ROLL round → ``n_attacks`` melee swings vs the target's AC
+        (``weapon_stat="attack_bonus"`` read off the enemy Entity, set to the per-CR
+        baseline attack bonus); the per-CR damage budget is split across the swings
+        as flat on-hit damage.
+      - a SAVE-FORCING round (with probability ``save_round_prob``) → one effect that
+        makes the target roll one of its SIX saving throws, chosen by weighted
+        probability (``save_weights``), vs the enemy's per-CR save DC (``dc_stat`` on
+        the Entity); full damage on a fail, half on a save (the whole budget).
+
+    This is the "test all our different saving throws, with varying probability, AND
+    make attack rolls" model the user asked for: the engine rolls the d20s and saves,
+    so the per-CR figures are the PRE-hit-rate budget (enemy_stats reconciliation).
+
+    TARGETING with summon survival (substrate #7 / 7a): the enemy focus-fires
+    ``primary``; the instant ``primary`` winks out (a dead summon — ``destroyed``) the
+    load shifts to ``fallback`` (the master).  So keeping the beast alive (warding bond
+    / protection / aid) genuinely *tanks* for the master, and a slain beast's incoming
+    damage is not wasted on a corpse — which is what makes the defender effects and the
+    enemy's damage profile DPR-load-bearing.
+
+    Damage is delivered FLAT (``damage_dice=(0, 0)`` + a flat bonus) so the per-CR
+    budget is exact; the stochasticity is in the hit/miss and save/fail rolls.  (A
+    consequence: the enemy's attacks carry no crit damage bonus — a deliberate
+    simplification, since we are approximating an averaged per-CR profile, not a
+    specific statblock.)
+    """
+
+    def __init__(
+        self,
+        cr: int,
+        primary: "Entity",
+        fallback: "Entity | None" = None,
+        n_attacks: int = 2,
+        rounds_per_combat: int = 4,
+        save_round_prob: float = SAVE_ROUND_PROB,
+        save_weights: "dict[str, int] | None" = None,
+        dc_stat: str = "enemy_save_dc",
+        damage_type: "str | None" = None,
+    ) -> None:
+        self._cr = cr
+        self._primary = primary
+        self._fallback = fallback
+        self._n_attacks = max(1, n_attacks)
+        self._rounds = rounds_per_combat
+        self._save_round_pct = int(round(save_round_prob * 100))
+        self._save_weights = dict(save_weights or SAVE_TYPE_WEIGHTS)
+        self._dc_stat = dc_stat
+        self._damage_type = damage_type
+        # Per-CR damage budget (all-hits-land), split across the attack swings.
+        dpr = baseline_dpr(cr)
+        self._per_hit = max(1, round(dpr / self._n_attacks))
+        self._save_damage = dpr
+        # Pre-rolled per round: whether it is a save round, and (if so) which save.
+        self._save_round: dict[int, bool] = {}
+        self._save_stat: dict[int, str] = {}
+
+    def on_combat_start(self, combat_index: int, rng: "SeededRNG") -> None:
+        self._save_round = {}
+        self._save_stat = {}
+        for r in range(1, self._rounds + 1):
+            is_save = rng.roll_one(100) <= self._save_round_pct
+            self._save_round[r] = is_save
+            if is_save:
+                self._save_stat[r] = self._weighted_save(rng)
+
+    def _weighted_save(self, rng: "SeededRNG") -> str:
+        """Pick a save type with probability proportional to its weight, through the
+        single seeded channel (generalises ScriptedEnemyPolicy._weighted_pick)."""
+        items = list(self._save_weights.items())
+        total = sum(w for _, w in items)
+        roll = rng.roll_one(total)              # 1..total
+        cum = 0
+        for stat, w in items:
+            cum += w
+            if roll <= cum:
+                return stat
+        return items[-1][0]                     # numerical safety (unreachable)
+
+    def _current_target(self) -> "Entity | None":
+        """Focus-fire the primary; shift to the fallback once the primary winks out."""
+        if not self._primary.destroyed:
+            return self._primary
+        if self._fallback is not None and not self._fallback.destroyed:
+            return self._fallback
+        return None
+
+    def decide(self, snapshot: GameState) -> list[Choice]:
+        if snapshot.resources.get("action", 0) < 1:
+            return []
+        target = self._current_target()
+        if target is None:
+            return []
+        r = snapshot.round_number
+        if self._save_round.get(r, False):
+            # Save-forcing round: one effect, the whole budget, half on a save.
+            return [Choice(
+                action_type="save_spell",
+                cost="action",
+                target=target,
+                save_stat=self._save_stat[r],
+                dc_stat=self._dc_stat,
+                damage_dice=(0, 0),
+                damage_bonus=self._save_damage,
+                on_save="half",
+                damage_type=self._damage_type,
+            )]
+        # Attack-roll round: n swings, the budget split flat across them.
+        choices: list[Choice] = []
+        for i in range(self._n_attacks):
+            choices.append(Choice(
+                action_type="attack",
+                cost="action" if i == 0 else "none",
+                target=target,
+                weapon_stat="attack_bonus",
+                damage_dice=(0, 0),
+                damage_bonus=self._per_hit,
+                damage_type=self._damage_type,
+            ))
         return choices

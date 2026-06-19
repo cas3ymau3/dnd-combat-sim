@@ -531,22 +531,32 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
      build at the first build that leaves a summon uncommanded.  This is the
      action-economy trade-off the command model exists to expose (command = offense,
      Dodge = defense).
-3b. **SUMMON SURVIVAL & DEATH + recast policy (NEXT — user decision 2026-06-18).** Today
-   HP never gates turns (threshold model), so a summon contributes for all rounds
-   regardless of damage taken — which makes the 7c-on-summon DEFENSES (aid / warding
-   bond / protection) DPR-INERT (they only reduce a number we don't read).  Make a
-   summon **die / wink out at 0 HP**: wire `is_functionally_dead` (hp ≤ 0) → set
-   `destroyed` for summons (the scheduler already skips destroyed turns + the commander
-   already checks `destroyed`), so a dead summon's DPR contribution **disappears**.
-   Add a **per-character recast policy** decision point (summon died → recast or not —
-   bespoke Python per build, "policies are code").  Consequence: aid / warding bond /
-   protection become **DPR-RELEVANT** (survivability → more rounds of summon strikes) —
-   so the session-21 "aid is DPR-inert" caveat lifts.  **Coupled requirement:** summon
-   survival makes the enemy's attack/damage profile LOAD-BEARING (it decides whether the
-   summon lives), so this slice should pull in **real-ish per-CR enemy damage** — exactly
-   decision #12's unrealised half (today's enemy numbers are "illustrative").  Vehicle:
-   silvertail beast under real enemy fire (and its upcast aid at L10+ where it has
-   3rd-level slots → +10).
+3b. **SUMMON SURVIVAL & DEATH + recast policy — BUILT (session 22, 2026-06-19).** Wired
+   `Entity.dies_at_zero_hp` → `take_damage` sets `destroyed` when a SUMMON crosses to
+   ≤ 0 HP (the single 0-HP trigger; the scheduler already skips destroyed turns + the
+   commander already checks `destroyed`, so a dead summon's DPR contribution
+   disappears).  The threshold model is untouched for non-summons (they leave the flag
+   False).  A **long rest revives a winked-out summon** (`DayRunner._apply_lr` — RAW:
+   choose/revive a companion on a long rest; also keeps multi-day loops sane).
+   **Recast policy** = a per-character BETWEEN-COMBATS decision (`make_recast_hook`):
+   2024 Primal Companion revival is **1 minute** (web-verified) → never lands inside a
+   4-round combat, so it is inherently between-combats — revive iff dead + a spare slot
+   remains + a later combat remains (greedy, finite slot budget; "policies are code").
+   **Coupled — real per-CR enemy (decision #12's realised half):** `src/builds/
+   enemy_stats.py` (per-CR attack bonus / save DC / damage budget — Tom Dunn baseline;
+   DPR = 6 + 6·CR is the all-hits-land budget the engine's rolls then discount) +
+   `BaselineEnemyPolicy` (`src/builds/enemy.py`) — mixes attack rolls and SAVE-forcing
+   across the target's six saves (weighted), and RETARGETS onto the master when the
+   beast winks out (focus-fire → fallback), so the enemy's damage is genuinely
+   load-bearing.  **VALIDATION FLIP confirmed** (`tests/test_summon_survival.py`, +15):
+   under a CR8 enemy the immortal beast's ~140 lifetime DPR/day collapses to ~10 when
+   mortal; protection (→13), warding bond (→16), **aid (→16 — the session-21 caveat
+   LIFTS)**, bless (→12), and recast (→40) each RAISE it by buying more alive rounds.
+   Wired on the silvertail L8 row, opt-in (`mortal_beast` / `enemy_model="baseline_cr"`
+   / `recast`) so the session-21 mechanism tests stay byte-identical.  **Still deferred:**
+   aid upcast (+10 at L10+, 3rd-level slots); crit damage on the averaged enemy profile
+   (flat on-hit damage, no crit bonus — a deliberate approximation); a smarter recast
+   policy (slot-conserving).
 4. **7b zone / emanation** — the §3.1 zonal spatial model + recurring scheduled zone
    events; damage/debuff and buff flavors; anchored vs static. Vehicle: silvertail
    Spirit Guardians (emanation) + the wardancer's spike growth / cloud of daggers

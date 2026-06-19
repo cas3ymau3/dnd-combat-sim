@@ -117,6 +117,15 @@ class Entity:
         # scheduler skips a destroyed entity's turns and a controller checks it before
         # commanding.  False for every omnipresent entity (character / enemy / party).
         self.destroyed: bool = False
+        # Whether this entity WINKS OUT at 0 HP (substrate #7 / 7a summon survival).
+        # The character / enemy / party use the threshold model (HP never gates turns),
+        # so they leave this False.  A SUMMON (the primal companion) sets it True: when
+        # cumulative damage drops it to 0 HP, take_damage marks it `destroyed` so it
+        # stops acting / being commanded, and its DPR contribution disappears for the
+        # rest of the combat (a dead summon does nothing).  This is the 0-HP trigger
+        # that arms the already-present `destroyed` plumbing (scheduler skips destroyed
+        # turns; a commander checks `destroyed` before ordering).
+        self.dies_at_zero_hp: bool = False
         # Cumulative telemetry (design §8 outputs): concentration checks forced
         # by incoming damage and how many broke a spell.  Never auto-reset;
         # callers diff or average across runs.
@@ -169,9 +178,18 @@ class Entity:
         The sim never gates turn access on HP — entities always act for the
         full scheduled rounds.  HP is a tracker; use is_functionally_dead to
         detect death-proc thresholds (e.g. hungering hex on enemy kill).
+
+        The ONE exception is a SUMMON (``dies_at_zero_hp``): a controlled ally
+        winks out at 0 HP (substrate #7 / 7a summon survival).  Crossing to ≤ 0
+        sets ``destroyed`` here — the single 0-HP trigger; everything downstream
+        (the scheduler skipping its turns, the commander declining to order it)
+        already reads ``destroyed``.  Non-summons are unaffected (threshold model).
         """
         self.hp -= amount
         log.info("%s takes %s damage → hp=%s/%s", self.name, amount, self.hp, self.max_hp)
+        if self.dies_at_zero_hp and self.hp <= 0 and not self.destroyed:
+            self.destroyed = True
+            log.info("%s WINKS OUT at 0 HP (summon death)", self.name)
 
     def heal(self, amount: int | float) -> None:
         """Restore HP by *amount*.  Clamps at max_hp."""
