@@ -25,13 +25,16 @@ import logging
 from src.builds import silvertail as sv
 from src.builds.enemy import BaselineEnemyPolicy
 from src.builds.enemy_stats import (
+    baseline_aoe_dice,
     baseline_attack_bonus,
+    baseline_attack_dice,
     baseline_dpr,
     baseline_save_dc,
+    level_to_cr,
 )
 from src.day_runner import BetweenCombatsContext, DayRunner
 from src.entity import Entity
-from src.policy import GameState
+from src.policy import Choice, GameState
 from src.rng import SeededRNG
 
 logging.disable(logging.CRITICAL)
@@ -103,17 +106,26 @@ def test_long_rest_revives_a_winked_out_summon():
 # (2) Per-CR enemy stats (decision #12's realised half)
 # ===========================================================================
 
-def test_baseline_enemy_stats_match_the_per_cr_table():
-    # Tom Dunn baseline table anchors: CR8 → +8 / DC 16; AB is a constant 8 below DC.
-    assert baseline_save_dc(8) == 16
-    assert baseline_attack_bonus(8) == 8
-    assert baseline_attack_bonus(4) == 6 and baseline_save_dc(4) == 14
-    for cr in range(0, 13):
-        assert baseline_attack_bonus(cr) == baseline_save_dc(cr) - 8
-    # DPR is the all-hits-land budget 6 + 6·CR (the pre-hit-rate figure the rolls then
-    # discount — enemy_stats reconciliation).
+def test_baseline_enemy_stats_match_the_per_cr_chart():
+    # Chart anchors (Rothner "Average Monster Stats by CR"): CR8 → +8 / DC 15, with the
+    # multiattack 4d10+5 per swing and a 12d4 AoE.
+    assert baseline_attack_bonus(8) == 8 and baseline_save_dc(8) == 15
+    assert baseline_attack_bonus(4) == 6 and baseline_save_dc(4) == 13
+    assert baseline_attack_dice(8) == (4, 10, 5)
+    assert baseline_aoe_dice(8) == (12, 4, 0)
+    # Damage/Round = two multiattack swings (the chart's column): CR8 → 54, CR4 → 30.
     assert baseline_dpr(8) == 54
-    assert baseline_dpr(0) == 6
+    assert baseline_dpr(4) == 30
+
+
+def test_level_to_cr_is_the_de_harshening_mapping():
+    # The chart's Level column: a CR is a baseline for a HIGHER level than CR == level.
+    # A lone level-8 summon faces ~CR 5 (not CR 8), level 14 faces CR 8.
+    assert level_to_cr(8) == 5
+    assert level_to_cr(14) == 8
+    assert level_to_cr(4) == 2
+    # Strictly gentler than the naive cr == level it replaces.
+    assert level_to_cr(8) < 8
 
 
 # ===========================================================================
@@ -130,8 +142,9 @@ def test_baseline_enemy_attack_round_emits_n_swings():
     choices = pol.decide(_snap(enemy, beast, 1))
     assert [c.action_type for c in choices] == ["attack", "attack"]
     assert [c.cost for c in choices] == ["action", "none"]
-    # The per-CR budget (54) is split flat across the 2 swings (27 each).
-    assert all(c.damage_bonus == 27 and c.damage_dice == (0, 0) for c in choices)
+    # Each swing rolls the chart's per-CR multiattack dice (CR8 = 4d10+5), so a
+    # natural 20 doubles the dice — enemy crits are modeled.
+    assert all(c.damage_dice == (4, 10) and c.damage_bonus == 5 for c in choices)
     assert all(c.target is beast for c in choices)
 
 
@@ -150,7 +163,9 @@ def test_baseline_enemy_save_round_forces_a_weighted_save():
     assert c.save_stat == "dex_save"
     assert c.dc_stat == "enemy_save_dc"
     assert c.on_save == "half"
-    assert c.damage_bonus == baseline_dpr(8)        # whole budget, half on a save
+    # The per-CR AoE dice (CR8 = 12d4); enemy_stats stores (count, sides, bonus).
+    assert baseline_aoe_dice(8) == (12, 4, 0)
+    assert c.damage_dice == (12, 4) and c.damage_bonus == 0
 
 
 def test_baseline_enemy_retargets_to_fallback_when_primary_winks_out():
@@ -202,12 +217,77 @@ def test_warding_bond_raises_mortal_beast_lifetime_dpr():
     assert wb > base                        # resistance-to-all → more rounds alive
 
 
-def test_aid_raises_mortal_beast_lifetime_dpr_caveat_lifts():
-    # The session-21 caveat LIFTS: +5 HP buys the beast more rounds of strikes under
-    # real fire, so aid is no longer DPR-inert.
+class _CommandBeastEachRound:
+    """A minimal commander: every round (while the beast lives) it commands a flat
+    Beast's Strike at the dummy, costing its Bonus Action."""
+
+    def __init__(self, beast, target, dmg):
+        self._beast, self._target, self._dmg = beast, target, dmg
+
+    def decide(self, snapshot):
+        if snapshot.resources.get("bonus_action", 0) >= 1 and not self._beast.destroyed:
+            return [Choice(action_type="attack", cost="bonus_action", actor=self._beast,
+                           target=self._target, weapon_stat="attack_bonus",
+                           damage_dice=(0, 0), damage_bonus=self._dmg,
+                           damage_type="bludgeoning")]
+        return []
+
+
+class _HitBeastEachRound:
+    """A minimal enemy: every round it lands a flat hit on the beast."""
+
+    def __init__(self, beast, dmg):
+        self._beast, self._dmg = beast, dmg
+
+    def decide(self, snapshot):
+        if snapshot.resources.get("action", 0) >= 1:
+            return [Choice(action_type="attack", cost="action", target=self._beast,
+                           weapon_stat="attack_bonus", damage_dice=(0, 0),
+                           damage_bonus=self._dmg, damage_type="slashing")]
+        return []
+
+
+def test_aid_survival_value_buys_an_extra_strike_at_a_breakpoint():
+    # Aid's +HP is DPR-relevant exactly when it crosses a per-hit breakpoint: the extra
+    # 5 HP lets the beast survive a hit it would otherwise die to, buying one more
+    # commanded strike.  Deterministic (FakeRNG all-20 → every attack hits): beast deals
+    # 10/strike to the dummy; the enemy deals 12/round to the beast.
+    #   base HP 20:  strike R1, enemy→8;  strike R2, enemy→-4 DEAD;  R3 no strike → 20.
+    #   aided HP 25: strike R1, enemy→13; strike R2, enemy→1;  strike R3, enemy dead → 30.
+    from src.scheduler import Scheduler
+
+    def run(with_aid):
+        master = Entity(name="master", hp=60, base_stats={"ac": 20})
+        beast = Entity(name="beast", hp=20, base_stats={"ac": 10, "attack_bonus": 10})
+        beast.dies_at_zero_hp = True
+        dummy = Entity(name="dummy", hp=10**9, base_stats={"ac": 10})
+        enemy = Entity(name="enemy", hp=10**9, base_stats={"ac": 10, "attack_bonus": 10})
+        if with_aid:
+            sv.BeastEffectPolicy("aid", beast, master).install()   # +5 HP max & current
+        sch = Scheduler(
+            rng=FakeRNG([20] * 24),
+            entities=[master, enemy, beast, dummy],
+            policies={master.id: _CommandBeastEachRound(beast, dummy, 10),
+                      enemy.id: _HitBeastEachRound(beast, 12)},
+            max_rounds=3,
+        )
+        sch.run()
+        return sch.damage_by_source_target.get((beast.id, dummy.id), 0)
+
+    assert run(False) == 20         # dies before round 3 → two strikes
+    assert run(True) == 30          # +5 HP survives to strike a third round
+
+
+def test_aid_is_marginal_at_l8_caveat_lift_is_conditional():
+    # Honest finding under the realistic enemy: at L8 the CR5 enemy hits for ~17/swing,
+    # so +5 HP (25→30) does NOT cross a per-hit breakpoint → aid is ~DPR-NEUTRAL here
+    # (within noise), NOT the clear lever protection/warding are.  The session-21 "aid
+    # is DPR-inert" caveat lifts only CONDITIONALLY — with the +10 upcast (L10+, 3rd-
+    # level slots) or a higher-per-hit enemy (the deterministic breakpoint test above).
     base = _beast_lifetime(None, 11)
     aid = _beast_lifetime("aid", 11)
-    assert aid > base
+    assert 0.85 * base <= aid <= 1.25 * base                 # roughly neutral
+    assert aid < _beast_lifetime("warding_bond", 11)         # a weak lever vs warding
 
 
 def test_bless_raises_mortal_beast_lifetime_dpr():

@@ -543,20 +543,29 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
    4-round combat, so it is inherently between-combats — revive iff dead + a spare slot
    remains + a later combat remains (greedy, finite slot budget; "policies are code").
    **Coupled — real per-CR enemy (decision #12's realised half):** `src/builds/
-   enemy_stats.py` (per-CR attack bonus / save DC / damage budget — Tom Dunn baseline;
-   DPR = 6 + 6·CR is the all-hits-land budget the engine's rolls then discount) +
-   `BaselineEnemyPolicy` (`src/builds/enemy.py`) — mixes attack rolls and SAVE-forcing
-   across the target's six saves (weighted), and RETARGETS onto the master when the
-   beast winks out (focus-fire → fallback), so the enemy's damage is genuinely
-   load-bearing.  **VALIDATION FLIP confirmed** (`tests/test_summon_survival.py`, +15):
-   under a CR8 enemy the immortal beast's ~140 lifetime DPR/day collapses to ~10 when
-   mortal; protection (→13), warding bond (→16), **aid (→16 — the session-21 caveat
-   LIFTS)**, bless (→12), and recast (→40) each RAISE it by buying more alive rounds.
+   enemy_stats.py` encodes the user's "Average Monster Stats by CR" chart (Rothner) —
+   per-CR attack bonus / save DC + the actual **multiattack DICE** (2-attack routine) +
+   AoE save-for-half dice, so the engine rolls REAL attacks → **enemy CRITS fall out**
+   (a natural 20 doubles the dice).  Two de-harshening levers from the chart: (a) its
+   **Level column** maps a CR to a much HIGHER character level than CR == level (CR 8 ↔
+   L14), so `level_to_cr` pits a lone **L8 summon against ~CR 5, not CR 8** — roughly
+   half the damage; (b) real dice instead of flat.  `BaselineEnemyPolicy`
+   (`src/builds/enemy.py`) mixes attack-roll rounds (n swings, per-CR dice) and
+   SAVE-forcing rounds (one of the six saves, weighted, vs the per-CR DC, AoE dice, half
+   on a save), and RETARGETS onto the master when the beast winks out (focus-fire →
+   fallback), so the enemy's damage is genuinely load-bearing.  **VALIDATION FLIP
+   confirmed** (`tests/test_summon_survival.py`, +17): under the CR5 enemy the immortal
+   beast's ~140 lifetime DPR/day collapses to ~21 when mortal; protection (→27), warding
+   bond (→33), bless (→22), and recast (→70) each RAISE it by buying more alive rounds.
+   **Aid is the honest exception: MARGINAL at L8** — +5 HP doesn't cross the ~17/swing
+   breakpoint, so it's ≈ DPR-neutral here (a deterministic test shows aid DOES buy an
+   extra strike when +HP crosses a per-hit breakpoint; the session-21 "aid inert" caveat
+   lifts only CONDITIONALLY — needs the +10 upcast at L10+ or a higher-per-hit enemy).
    Wired on the silvertail L8 row, opt-in (`mortal_beast` / `enemy_model="baseline_cr"`
    / `recast`) so the session-21 mechanism tests stay byte-identical.  **Still deferred:**
-   aid upcast (+10 at L10+, 3rd-level slots); crit damage on the averaged enemy profile
-   (flat on-hit damage, no crit bonus — a deliberate approximation); a smarter recast
-   policy (slot-conserving).
+   aid upcast (+10 at L10+, 3rd-level slots); warding-bond redirect on save-damage (it
+   rides the attack-only `on_incoming_hit` seam — resistance applies to saves, redirect
+   doesn't; flagged); a smarter recast policy (slot-conserving).
 4. **7b zone / emanation** — the §3.1 zonal spatial model + recurring scheduled zone
    events; damage/debuff and buff flavors; anchored vs static. Vehicle: silvertail
    Spirit Guardians (emanation) + the wardancer's spike growth / cloud of daggers

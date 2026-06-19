@@ -46,7 +46,8 @@ from ..policy import Choice, GameState
 from .enemy_stats import (
     SAVE_ROUND_PROB,
     SAVE_TYPE_WEIGHTS,
-    baseline_dpr,
+    baseline_aoe_dice,
+    baseline_attack_dice,
 )
 
 if TYPE_CHECKING:
@@ -166,11 +167,15 @@ class BaselineEnemyPolicy:
       - a SAVE-FORCING round (with probability ``save_round_prob``) → one effect that
         makes the target roll one of its SIX saving throws, chosen by weighted
         probability (``save_weights``), vs the enemy's per-CR save DC (``dc_stat`` on
-        the Entity); full damage on a fail, half on a save (the whole budget).
+        the Entity); full damage on a fail, half on a save (the per-CR AoE dice).
 
     This is the "test all our different saving throws, with varying probability, AND
-    make attack rolls" model the user asked for: the engine rolls the d20s and saves,
-    so the per-CR figures are the PRE-hit-rate budget (enemy_stats reconciliation).
+    make attack rolls" model the user asked for: the engine rolls the d20s and saves.
+
+    Damage is rolled from the chart's PER-CR DICE (``enemy_stats`` — multiattack dice
+    per swing, AoE dice for a save), NOT a flat number, so a natural-20 attack DOUBLES
+    the dice (enemy CRITS are modeled).  The dice already total the chart's Damage/Round
+    across the 2-attack routine.
 
     TARGETING with summon survival (substrate #7 / 7a): the enemy focus-fires
     ``primary``; the instant ``primary`` winks out (a dead summon — ``destroyed``) the
@@ -179,11 +184,9 @@ class BaselineEnemyPolicy:
     damage is not wasted on a corpse — which is what makes the defender effects and the
     enemy's damage profile DPR-load-bearing.
 
-    Damage is delivered FLAT (``damage_dice=(0, 0)`` + a flat bonus) so the per-CR
-    budget is exact; the stochasticity is in the hit/miss and save/fail rolls.  (A
-    consequence: the enemy's attacks carry no crit damage bonus — a deliberate
-    simplification, since we are approximating an averaged per-CR profile, not a
-    specific statblock.)
+    The CR should be the encounter's baseline solo CR for the character's level
+    (``enemy_stats.level_to_cr`` — CR is a baseline for a much higher level than
+    CR == level), so a lone summon is not pitted against a brutally over-CR enemy.
     """
 
     def __init__(
@@ -207,10 +210,13 @@ class BaselineEnemyPolicy:
         self._save_weights = dict(save_weights or SAVE_TYPE_WEIGHTS)
         self._dc_stat = dc_stat
         self._damage_type = damage_type
-        # Per-CR damage budget (all-hits-land), split across the attack swings.
-        dpr = baseline_dpr(cr)
-        self._per_hit = max(1, round(dpr / self._n_attacks))
-        self._save_damage = dpr
+        # Per-CR damage DICE (chart): one multiattack swing, and the AoE save effect.
+        an, asides, abonus = baseline_attack_dice(cr)
+        self._attack_dice = (an, asides)
+        self._attack_bonus = abonus
+        sn, ssides, sbonus = baseline_aoe_dice(cr)
+        self._aoe_dice = (sn, ssides)
+        self._aoe_bonus = sbonus
         # Pre-rolled per round: whether it is a save round, and (if so) which save.
         self._save_round: dict[int, bool] = {}
         self._save_stat: dict[int, str] = {}
@@ -253,19 +259,20 @@ class BaselineEnemyPolicy:
             return []
         r = snapshot.round_number
         if self._save_round.get(r, False):
-            # Save-forcing round: one effect, the whole budget, half on a save.
+            # Save-forcing round: one effect, the per-CR AoE dice, half on a save.
             return [Choice(
                 action_type="save_spell",
                 cost="action",
                 target=target,
                 save_stat=self._save_stat[r],
                 dc_stat=self._dc_stat,
-                damage_dice=(0, 0),
-                damage_bonus=self._save_damage,
+                damage_dice=self._aoe_dice,
+                damage_bonus=self._aoe_bonus,
                 on_save="half",
                 damage_type=self._damage_type,
             )]
-        # Attack-roll round: n swings, the budget split flat across them.
+        # Attack-roll round: n swings, each rolling the per-CR multiattack dice (so a
+        # natural 20 doubles the dice — enemy crits).
         choices: list[Choice] = []
         for i in range(self._n_attacks):
             choices.append(Choice(
@@ -273,8 +280,8 @@ class BaselineEnemyPolicy:
                 cost="action" if i == 0 else "none",
                 target=target,
                 weapon_stat="attack_bonus",
-                damage_dice=(0, 0),
-                damage_bonus=self._per_hit,
+                damage_dice=self._attack_dice,
+                damage_bonus=self._attack_bonus,
                 damage_type=self._damage_type,
             ))
         return choices
