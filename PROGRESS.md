@@ -111,10 +111,18 @@ type, condition, resource, …):
 > anchored-vs-static + buff-target axes; footprint-vs-mover-speed exit gating;
 > multi-named-zone maps; the "enters / emanation enters its space" mid-turn triggers (only
 > the turn-boundary "ends turn inside" is modeled); an enemy policy that actually leaves
-> the zone (§3.5). **NEXT: #7 is COMPLETE — pick the next arc with the user** (candidates:
-> the deferred 7b static/buff-aura flavors; the standing build-value factors — enemy
-> targeting-split, beast self-heal, Mounted Combatant veer; full day-clock slot economy;
-> or a NEW build/model-capacity axis). Reflection pending user input.
+> the zone (§3.5). **Reflection DONE (2026-06-19): user — NO process change**, but
+> agrees we should **revisit some of the DEFERRED 7b FLAVORS before moving on from
+> substrate #7**. Flagged structural decisions (user OK): recurring trigger on
+> `TurnStartEvent` (not a re-enqueued event); Zone as a distinct lightweight Object
+> (not an HP-bearing `Entity`); only the "ends turn inside" trigger modeled. **NEXT: a
+> 7b ROUND-2 slice — pick which deferred flavor(s) with the user** (the strongest
+> candidates: **static placed zones** [spike growth / cloud of daggers — the
+> anchored-vs-static axis, design.md §3.1 canonical example] and **buff-auras** [circle
+> of power — the same Object machinery with an ally-buff payload]; plus
+> footprint-vs-mover-speed exit gating, the "enters / emanation enters space" mid-turn
+> triggers, and an enemy policy that actually leaves a damaging zone §3.5). Merge of
+> `feature/substrate-7b-zone-emanation` HELD at user request (review first).
 >
 > **Session scope (2026-06-19,
 > session 22) — DONE (SUBSTRATE #7 — 7a SUMMON SURVIVAL & DEATH):** built all three
@@ -631,10 +639,13 @@ type, condition, resource, …):
     speed exit gating; richer multi-named-zone maps; the "creature enters / emanation
     enters its space" mid-turn triggers (only the turn-boundary "ends turn inside" is
     modeled); an enemy policy that actually leaves a damaging zone (§3.5).
-  - **NEXT: substrate #7 is COMPLETE.** Pick the next arc with the user — the deferred 7b
-    static/buff-aura flavors; the standing build-value factors (enemy targeting-split,
-    beast self-heal / Prayer of Healing, Mounted Combatant veer); full day-clock slot
-    economy; or a new build / model-capacity axis.
+  - **NEXT (user decision, session 23 close-out): a 7b ROUND-2 slice — revisit the
+    deferred 7b flavors before moving on from substrate #7.** Strongest candidates:
+    **static placed zones** (spike growth / cloud of daggers — the anchored-vs-static
+    axis) and **buff-auras** (circle of power — the same Object machinery with an
+    ally-buff payload); plus footprint-vs-mover-speed exit gating, the mid-turn "enters"
+    triggers, and an enemy policy that leaves a damaging zone (§3.5). (Reflection: no
+    process change; merge held for review.)
 
 - **SUBSTRATE #7 — 7a SUMMON SURVIVAL & DEATH + recast + the DEFINITIVE per-level enemy
   table — BUILT & VALIDATED (2026-06-19, session 22).** The slice that makes the
