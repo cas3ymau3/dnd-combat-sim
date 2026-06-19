@@ -90,8 +90,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..builds.enemy import BaselineEnemyPolicy, ScriptedEnemyPolicy
-from ..builds.enemy_stats import baseline_attack_bonus, baseline_save_dc
+from ..builds.enemy import BaselineEnemyPolicy
+from ..builds.enemy_stats import enemy_base_stats
 from ..day_runner import BetweenCombatsContext, DayRunner
 from ..entity import Entity
 from ..modifiers import Modifier
@@ -111,8 +111,10 @@ if TYPE_CHECKING:
 #     with wind" makes it WIS-based): a WIS spell attack, 1d8 lightning, no ability
 #     modifier to damage (cantrips add none until Blessed Strikes at char L15).
 #     Char L4 → 1d8 (cantrip scaling is char L5+).
-#   enemy_ac / enemy_dex_save — live from monster_ac_and_saves_by_level.csv (cr 4),
-#     the same source the Scion's rows use (AC 15, DEX save +2 at cr 4).
+#   The enemy's full profile (AC / saves / attack bonus / save DC / per-level DICE) is
+#     drawn from the definitive table (enemy_stats; monster_stats_by_level.csv), so the
+#     rows carry no enemy numbers — only an ``enemy_attack`` marker (+ damage type) on
+#     levels where the enemy strikes the beast.
 # Beast (primal companion, Beast of the Land) — see make_primal_companion.
 LEVELS: dict[int, dict] = {
     4: {
@@ -136,8 +138,9 @@ LEVELS: dict[int, dict] = {
             "strike_type": "bludgeoning",  # chosen on summon
             "save_bonus": 5,               # primal bond: +PB to all saves (PB 2 + base)
         },
-        "enemy_ac": 15,
-        "enemy_dex_save": 2,               # csv level 4
+        # No enemy_attack at L4: the dummy is a passive target (the 7a summon scenario).
+        # Its AC / saves still come from the table (make_training_dummy) so the master's
+        # shocking grasp resolves against a real AC.
         # Loose all-hit upper bound (NOT a target): beast strike 1d8+1d6+5 ≈ 13 +
         # shocking grasp 1d8 ≈ 4.5 → ~18.  24 cushion.
         "ceiling_dpr": 24.0,
@@ -152,7 +155,8 @@ LEVELS: dict[int, dict] = {
     #   PB +3, WIS 18 (+4) (mounted combatant L5 → WIS 18, guide 32:23,27).
     #   shocking grasp scales to 2d8 (char L5-10 cantrip step); no mod (Blessed
     #     Strikes is char L15).
-    #   enemy (cr8): AC 16, DEX save +2 (monster_ac_and_saves_by_level.csv).
+    #   enemy: the full per-level profile (AC 16 / saves / +8 / DC 15 / 3d8+3 ×2 / 8d4
+    #     AoE) is drawn from the definitive table (monster_stats_by_level.csv at L8).
     # -----------------------------------------------------------------------
     8: {
         "char_ac": 20,                     # splint(17) + cloak of protection(+1) + shield(2), guide 32:453
@@ -185,16 +189,12 @@ LEVELS: dict[int, dict] = {
             "strike_type": "bludgeoning",
             "save_bonus": 5,               # primal bond: +PB to saves (parity line)
         },
-        "enemy_ac": 16,
-        "enemy_dex_save": 2,               # csv level 8
-        # Enemy strikes the BEAST (cr8 melee, TYPED slashing) so the 7c-on-summon
-        # DEFENDER effects (warding bond resistance+redirect, protection
-        # disadvantage) do real work.  attack_bonus / damage are ILLUSTRATIVE (the
-        # monster CSV carries only AC + saves; per-CR attack/damage is decision
-        # #12's unrealised half — see builds/enemy.py).  +7 vs beast AC 17 → ~55%.
-        "enemy_attack": {"n_attacks": 2, "attack_bonus": 7,
-                         "damage_dice": (2, 6), "damage_bonus": 4,
-                         "damage_type": "slashing"},
+        # Enemy strikes the BEAST (TYPED slashing) so the 7c-on-summon DEFENDER effects
+        # (warding bond resistance+redirect, protection disadvantage) do real work.  A
+        # MARKER only — the actual numbers (to-hit / save DC / per-level DICE) come from
+        # the definitive table via BaselineEnemyPolicy; ``damage_type`` lets warding
+        # bond's resistance bite before the redirect.
+        "enemy_attack": {"damage_type": "slashing"},
         # Loose all-hit upper bound (NOT a target): beast 1d8+1d6+6 ≈ 14 + shocking
         # grasp 2d8 ≈ 9 → ~23, + Bless accuracy.  40 cushion.
         "ceiling_dpr": 40.0,
@@ -275,25 +275,20 @@ def make_primal_companion(level: int, mortal: bool = False) -> Entity:
 
 
 def make_training_dummy(level: int) -> Entity:
-    """The target: an effectively infinite-HP dummy carrying the enemy AC + DEX save
-    (live from monster_ac_and_saves_by_level.csv at cr==level).
+    """The target: an effectively infinite-HP dummy carrying the enemy's full profile —
+    AC + the six saves + attack bonus + save DC — drawn from the definitive per-level
+    table (``enemy_stats.enemy_base_stats``; ``reference/data/monster_stats_by_level.csv``).
 
-    Through the L4 summon row it has no policy and never acts (a passive target).
-    On a row that carries an ``enemy_attack`` profile (L8 — the 7c-on-summon slice)
-    it also gets an ``attack_bonus`` + flat melee damage profile so a
-    ScriptedEnemyPolicy can strike the BEAST — the enemy-strikes-back loop that makes
-    the beast's defender-side effects (warding bond / protection) do real work."""
-    data = LEVELS[level]
-    base_stats: dict = {"ac": data["enemy_ac"], "dex_save": data["enemy_dex_save"]}
-    ea = data.get("enemy_attack")
-    if ea:
-        base_stats["attack_bonus"] = ea["attack_bonus"]
-        base_stats["damage_dice"] = ea.get("damage_dice", (1, 8))
-        base_stats["damage_bonus"] = ea.get("damage_bonus", 0)
+    Through the L4 summon row it has no policy and never acts (a passive target).  On a
+    row that carries an ``enemy_attack`` marker (L8 — the 7c-on-summon slice) a
+    ``BaselineEnemyPolicy`` drives it to strike the BEAST with the table's per-level
+    DICE — the enemy-strikes-back loop that makes the beast's defender-side effects
+    (warding bond / protection) do real work."""
+    stats = enemy_base_stats(level)
     return Entity(
-        name=f"Dummy-AC{data['enemy_ac']}",
+        name=f"Dummy-AC{stats['ac']}",
         hp=10**9,
-        base_stats=base_stats,
+        base_stats=stats,
     )
 
 
@@ -533,7 +528,6 @@ def make_silvertail_runner(
     rounds_per_combat: int = 4,
     beast_effect: "str | None" = None,
     mortal_beast: bool = False,
-    enemy_model: str = "illustrative",
     recast: bool = False,
 ):
     """Assemble (DayRunner, master, beast, dummy) for the given level.
@@ -555,14 +549,11 @@ def make_silvertail_runner(
     mortal_beast:
         If True the companion WINKS OUT at 0 HP (summon survival, session 22), so it
         can die mid-combat and stop contributing.  Default False = the threshold-
-        immortal beast the session-21 mechanism tests isolate effects against.
-    enemy_model:
-        "illustrative" (default) → the row's hand-picked ``enemy_attack`` numbers via
-        ``ScriptedEnemyPolicy`` (the session-21 controlled enemy — keeps those tests
-        byte-identical).  "baseline_cr" → a realistic per-CR ``BaselineEnemyPolicy``
-        (decision #12's realised half): per-CR attack bonus / save DC / damage budget
-        from ``enemy_stats``, mixing attack rolls and save-forcing across the target's
-        saves, and RETARGETING onto the master when the beast dies.
+        immortal beast the session-21 mechanism tests isolate effects against.  When the
+        row has an ``enemy_attack`` marker the enemy is driven by ``BaselineEnemyPolicy``
+        off the definitive per-level table (``enemy_stats``): per-level attack bonus /
+        save DC / DICE, mixing attack rolls and save-forcing across the target's saves,
+        and RETARGETING onto the master when the beast dies.
     recast:
         If True, register the between-combats RECAST policy (``make_recast_hook``) so
         a dead beast is revived (spending a spare slot) before the next combat.
@@ -606,31 +597,18 @@ def make_silvertail_runner(
         policies[beast.id] = bep
 
     # Enemy strikes back (L8): the dummy attacks the BEAST so the beast's defender
-    # effects modulate real incoming damage.
+    # effects modulate real incoming damage.  The enemy is driven entirely by the
+    # definitive per-level table (decision #12's realised half; enemy_stats.py): the
+    # dummy Entity already carries the table's AC / saves / attack bonus / save DC
+    # (make_training_dummy), and BaselineEnemyPolicy supplies the per-level attack /
+    # AoE DICE + the attack-vs-save mix.  It focus-fires the beast, shifting to the
+    # master when the beast winks out.
     ea = LEVELS[level].get("enemy_attack")
-    if ea and enemy_model == "baseline_cr":
-        # Realistic per-LEVEL enemy (decision #12's realised half; enemy_stats.py).  The
-        # offensive stats are keyed by character level (CR == level, with the ÷1.5
-        # party-size correction baked in).  The per-level attack bonus + save DC live on
-        # the dummy Entity (read by the verbs); the per-level attack/AoE DICE + the
-        # attack/save mix + retargeting live in the policy.  Focus-fires the beast,
-        # shifting to the master when the beast winks out.
-        dummy.base_stats["attack_bonus"] = baseline_attack_bonus(level)
-        dummy.base_stats["enemy_save_dc"] = baseline_save_dc(level)
+    if ea:
         policies[dummy.id] = BaselineEnemyPolicy(
             level=level,
             primary=beast,
             fallback=char,
-            rounds_per_combat=rounds_per_combat,
-            damage_type=ea.get("damage_type"),
-        )
-    elif ea:
-        # Illustrative (session-21) enemy: the dummy strikes the BEAST (typed),
-        # single-target, with the row's hand-picked numbers.
-        policies[dummy.id] = ScriptedEnemyPolicy(
-            target=beast,
-            n_attacks=ea.get("n_attacks", 2),
-            char_target_prob=1.0,
             rounds_per_combat=rounds_per_combat,
             damage_type=ea.get("damage_type"),
         )

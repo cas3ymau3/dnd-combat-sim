@@ -429,12 +429,16 @@ def test_l8_baseline_enemy_hits_the_beast_and_spares_the_master():
     assert to_master == 0                               # no redirect → master untouched
 
 
-def test_warding_bond_cuts_beast_damage_and_redirects_an_equal_share_to_master():
+def test_warding_bond_cuts_beast_damage_and_redirects_the_attack_share_to_master():
     base_beast, _ = _l8_incoming(None, 11)
     wb_beast, wb_master = _l8_incoming("warding_bond", 11)
     assert wb_beast < base_beast                        # +1 AC + resistance cut incoming
-    assert wb_master > 0                                # the redirected share lands on master
-    assert wb_master == wb_beast                        # fraction 1.0 → exactly equal per run
+    # The redirect rides the attack-hit intercept seam (fraction 1.0 per hit — the exact
+    # equality is unit-tested with FakeRNG above).  The realistic enemy also forces
+    # SAVES on the beast, and warding-bond-on-saves is DEFERRED (no redirect of save/AoE
+    # damage yet), so the master's redirected share is the ATTACK portion only — positive
+    # but strictly less than the beast's total incoming.
+    assert 0 < wb_master < wb_beast
 
 
 def test_protection_cuts_the_beasts_incoming_below_baseline_without_redirect():

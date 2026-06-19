@@ -5,10 +5,11 @@ the RECAST policy DPR-relevant:
 
   1. a SUMMON winks out at 0 HP (``Entity.dies_at_zero_hp`` → ``take_damage`` sets
      ``destroyed``); the threshold model is untouched for non-summons;
-  2. a realistic per-CR enemy (``BaselineEnemyPolicy`` + ``enemy_stats`` — decision
-     #12's realised half) makes the enemy's damage LOAD-BEARING (it decides whether
-     the beast lives), mixing attack rolls and save-forcing across our saves and
-     RETARGETING onto the master when the beast falls;
+  2. a realistic per-LEVEL enemy (``BaselineEnemyPolicy`` + ``enemy_stats``, drawn from
+     the definitive ``monster_stats_by_level.csv`` — decision #12's realised half) makes
+     the enemy's damage LOAD-BEARING (it decides whether the beast lives), mixing attack
+     rolls and save-forcing across our saves and RETARGETING onto the master when the
+     beast falls;
   3. a per-character RECAST policy (``make_recast_hook``) revives the dead companion
      between combats for a spell slot.
 
@@ -25,11 +26,16 @@ import logging
 from src.builds import silvertail as sv
 from src.builds.enemy import BaselineEnemyPolicy
 from src.builds.enemy_stats import (
+    baseline_ac,
     baseline_aoe_dice,
     baseline_attack_bonus,
     baseline_attack_dice,
     baseline_n_attacks,
+    baseline_save,
     baseline_save_dc,
+    enemy_base_stats,
+    level_table,
+    regenerate,
 )
 from src.day_runner import BetweenCombatsContext, DayRunner
 from src.entity import Entity
@@ -105,27 +111,52 @@ def test_long_rest_revives_a_winked_out_summon():
 # (2) Per-CR enemy stats (decision #12's realised half)
 # ===========================================================================
 
+def _avg(dice):
+    n, sides, bonus = dice
+    return n * (sides + 1) / 2 + bonus
+
+
 def test_baseline_enemy_stats_are_per_level_chart_div_1_5():
     # Per-LEVEL offensive stats (CR == level), damage re-diced after the ÷1.5 party-size
-    # correction.  L8: to-hit +8 / DC 15; per-swing matched to the chart's d10 with a +PB
-    # flat (3d10+3); AoE matched to the chart's d4 (8d4); the chart's 2-attack routine.
+    # correction.  L8: to-hit +8 / DC 15; per-swing 3d8+3 (hand-tuned for monotonicity);
+    # AoE matched to the chart's d4 (8d4); the chart's 2-attack routine.
     assert baseline_attack_bonus(8) == 8 and baseline_save_dc(8) == 15
-    assert baseline_attack_dice(8) == (3, 10, 3)     # N dX + PB, crit-doubles the dice
+    assert baseline_attack_dice(8) == (3, 8, 3)      # N dX + PB, crit-doubles the dice
     assert baseline_aoe_dice(8) == (8, 4, 0)         # save spell: pure dice, no flat
     assert baseline_n_attacks(8) == 2
-    # The ÷1.5 correction holds: per-round (≈39) is ~2/3 of the chart's CR8 Dmg/Round 54.
-    n, sides, bonus = baseline_attack_dice(8)
-    per_round = baseline_n_attacks(8) * (n * (sides + 1) / 2 + bonus)
-    assert 33 <= per_round <= 42                      # 54 / 1.5 = 36, ± dice-matching
 
 
-def test_baseline_attack_bonus_and_dc_scale_monotonically_with_level():
+def test_baseline_offense_scales_monotonically_with_level():
+    # to-hit / DC and every DAMAGE column rise monotonically (non-decreasing) with level
+    # — the auto-derived matched-die dips are smoothed by the hand-tuned overrides.
     for lvl in range(1, 20):
         assert baseline_attack_bonus(lvl) <= baseline_attack_bonus(lvl + 1)
         assert baseline_save_dc(lvl) <= baseline_save_dc(lvl + 1)
-    # The +PB flat on a swing is the level's proficiency bonus (non-crit-doubling).
+        per_round = lambda L: baseline_n_attacks(L) * _avg(baseline_attack_dice(L))
+        assert _avg(baseline_attack_dice(lvl)) <= _avg(baseline_attack_dice(lvl + 1))
+        assert per_round(lvl) <= per_round(lvl + 1)
+        assert _avg(baseline_aoe_dice(lvl)) <= _avg(baseline_aoe_dice(lvl + 1))
+    # L1 is a single-attack routine (the chart's low-CR "(1x)"); the +PB flat on a swing
+    # is the level's proficiency bonus (non-crit-doubling).
+    assert baseline_n_attacks(1) == 1 and baseline_n_attacks(2) == 2
     assert baseline_attack_dice(8)[2] == 3           # PB 3 at L8
     assert baseline_attack_dice(13)[2] == 5          # PB 5 at L13
+
+
+def test_definitive_table_carries_defense_and_offense_per_level():
+    # The combined table is the single enemy source: AC + the six saves (defense) AND
+    # to-hit / DC / dice (offense), per level.  enemy_base_stats packs an Entity profile.
+    assert baseline_ac(8) == 16 and baseline_save(8, "dex_save") == 2
+    stats = enemy_base_stats(8)
+    assert stats["ac"] == 16 and stats["attack_bonus"] == 8 and stats["enemy_save_dc"] == 15
+    assert all(k in stats for k in ("str_save", "dex_save", "con_save",
+                                    "int_save", "wis_save", "cha_save"))
+
+
+def test_committed_table_is_in_sync_with_its_generator():
+    # Guard against the CSV drifting from _CR_ROWS / _OVERRIDES: regenerating in-memory
+    # must reproduce exactly what the engine loaded from the committed CSV.
+    assert regenerate(write=False) == level_table()
 
 
 # ===========================================================================
@@ -142,9 +173,9 @@ def test_baseline_enemy_attack_round_emits_n_swings():
     choices = pol.decide(_snap(enemy, beast, 1))
     assert [c.action_type for c in choices] == ["attack", "attack"]
     assert [c.cost for c in choices] == ["action", "none"]
-    # Each swing rolls the per-level dice (L8 = 3d10+3), so a natural 20 doubles the
+    # Each swing rolls the per-level dice (L8 = 3d8+3), so a natural 20 doubles the
     # dice — enemy crits are modeled (the +PB flat stays single).
-    assert all(c.damage_dice == (3, 10) and c.damage_bonus == 3 for c in choices)
+    assert all(c.damage_dice == (3, 8) and c.damage_bonus == 3 for c in choices)
     assert all(c.target is beast for c in choices)
 
 
@@ -196,10 +227,10 @@ def test_baseline_enemy_retargets_to_fallback_when_primary_winks_out():
 
 def _beast_lifetime(effect, seed, *, mortal=True, recast=False, days=150):
     """Sum the beast's commanded Beast's-Strike output over `days`, under the
-    realistic per-CR enemy (a proxy for rounds-alive: a dead beast stops striking)."""
+    realistic per-level enemy (a proxy for rounds-alive: a dead beast stops striking)."""
     runner, _char, beast, _dummy = sv.make_silvertail_runner(
         8, SeededRNG(seed), beast_effect=effect, mortal_beast=mortal,
-        enemy_model="baseline_cr", recast=recast)
+        recast=recast)
     return sum(runner.run_day().damage_by_source(beast.id) for _ in range(days))
 
 
@@ -299,7 +330,7 @@ def test_enemy_retargets_to_master_after_the_beast_dies():
     # everything and spares the master entirely.
     def master_taken(mortal, seed, days=100):
         runner, char, _beast, dummy = sv.make_silvertail_runner(
-            8, SeededRNG(seed), mortal_beast=mortal, enemy_model="baseline_cr")
+            8, SeededRNG(seed), mortal_beast=mortal)
         return sum(runner.run_day().damage_source_to(dummy.id, char.id) for _ in range(days))
 
     assert master_taken(False, 11) == 0     # immortal beast tanks → master untouched
@@ -310,7 +341,7 @@ def test_recast_consumes_the_finite_slot_budget():
     # The recast policy spends a spare slot per revive — a finite per-day budget (the
     # "recast or not" decision has a real cost), not a free respawn.
     runner, char, beast, _dummy = sv.make_silvertail_runner(
-        8, SeededRNG(11), mortal_beast=True, enemy_model="baseline_cr", recast=True)
+        8, SeededRNG(11), mortal_beast=True, recast=True)
     before = char.resources.available("spell_slot")
     assert before == 3
     runner.run_day()
@@ -321,6 +352,6 @@ def test_recast_consumes_the_finite_slot_budget():
     assert 0 <= after <= before
     # A no-recast runner never touches the pool.
     runner2, char2, _b2, _d2 = sv.make_silvertail_runner(
-        8, SeededRNG(11), mortal_beast=True, enemy_model="baseline_cr", recast=False)
+        8, SeededRNG(11), mortal_beast=True, recast=False)
     runner2.run_day()
     assert char2.resources.available("spell_slot") == 3

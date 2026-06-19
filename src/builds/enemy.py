@@ -2,7 +2,11 @@
 
 CLAUDE.md decision #12: "Enemy policy is structurally identical to character
 policy ... Near-term target is a ``ScriptedEnemyPolicy(archetype, stats_by_level)``
-driven by ``reference/data/monster_ac_and_saves_by_level.csv``."
+driven by per-level monster data."  Decision #12's "stats_by_level" is now the
+definitive ``reference/data/monster_stats_by_level.csv`` (loaded by ``enemy_stats``);
+``BaselineEnemyPolicy`` below is its full realisation (per-level attack bonus / save DC
+/ DICE + an attack-vs-save mix), while the legacy ``ScriptedEnemyPolicy`` keeps the
+simpler targeting-only behavior the earlier builds rely on.
 
 This module collapses the two byte-identical build-local enemy policies that grew
 up in parallel — War Angel's ``WarAngelEnemyPolicy`` (forces concentration checks
@@ -29,13 +33,12 @@ so ``decide()`` stays dice-free, mirroring the character policies' AoO pre-roll.
 The first swing costs the action; the rest are free multiattack swings (cost
 "none").  The enemy makes no decisions beyond targeting (flat damage, no riders).
 
-What the policy does NOT own (deliberately, to keep this a pure refactor): the
-enemy's numeric profile — attack_bonus / damage_dice / damage_bonus / intrinsic
-damage_response — lives on the *dummy Entity*, assembled by each build's
-``make_training_dummy`` from its per-level row (which is where the
-monster_ac_and_saves_by_level.csv values are already sourced).  Pulling that CSV
-into the policy by level is the unrealised half of decision #12 and is left for a
-follow-up: it is a new capability, not part of merging the duplicates.
+``ScriptedEnemyPolicy``'s own numeric profile (attack_bonus / damage / intrinsic
+damage_response) lives on the *dummy Entity*.  ``BaselineEnemyPolicy`` (below) instead
+draws its full numeric profile from the definitive per-level table via ``enemy_stats``
+— decision #12's previously-unrealised half: the dummy Entity carries the table's AC /
+saves / attack bonus / save DC, and the policy supplies the per-level per-swing /
+AoE DICE (so enemy crits fall out) plus an attack-vs-save round mix and retargeting.
 """
 
 from __future__ import annotations

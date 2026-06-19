@@ -83,8 +83,14 @@ type, condition, resource, …):
 > saves, REAL DICE → enemy CRITS, retargets to the master when the beast falls; decision
 > #12's realised half). Enemy stats are now PER-LEVEL: fit the chart cols vs CR, eval at
 > CR==level, ÷1.5 the damage (3-vs-4 party + enemy-never-dies), re-diced as `N dX + PB` /
-> `M dY` (matched die sizes; combined CSV `reference/data/enemy_stats_by_level.csv`).
-> L8 enemy: +8 / DC15 / 3d10+3 ×2 / 8d4. **MECHANISM validated** (NOT
+> `M dY` (matched die sizes), with a few hand-tuned `_OVERRIDES` so every damage column
+> rises MONOTONICALLY (user edits + L16). **The DEFINITIVE enemy reference is now ONE
+> combined per-level table `reference/data/monster_stats_by_level.csv`** (AC + 6 saves +
+> to-hit/DC/n_attacks/attack_dice/aoe_dice); `enemy_stats.py` LOADS it (the regression is
+> the `regenerate()` step) and is the single accessor layer the engine draws from; the
+> silvertail enemy + dummy now draw AC/saves/offense from it (the old hand-picked
+> "illustrative" numbers + the `level_to_cr` mapping are GONE). L8 enemy: AC 16 / +8 /
+> DC15 / 3d8+3 ×2 / 8d4. **MECHANISM validated** (NOT
 > build-value claims — user steer): a dead summon stops contributing; a +HP buffer buys a
 > strike when it crosses a per-hit breakpoint (deterministic); reducing landed hits keeps
 > it contributing longer; reviving restores it; the enemy retargets on death. The earlier
@@ -92,11 +98,12 @@ type, condition, resource, …):
 > evaluation while 3 factors are unmodeled (flagged for the FULL build): enemy targeting
 > split (beast hit ≤ 1/3 w/ a party), beast HIT-DICE + Prayer-of-Healing self-heal (engine
 > gap), Mounted Combatant VEER (redirect onto the higher-AC master). Opt-in
-> (`mortal_beast`/`enemy_model`/`recast`) → 455 prior tests byte-identical; **469 green
-> (+14).** Branch `feature/substrate-7-summon-survival` → confirm before merge. ATTACK-
-> TAXONOMY NOT forced. Flagged + deferred: warding-bond redirect on SAVE damage. Reflection
-> done. **NEXT: 7b zone/emanation** (Spirit Guardians — §3.1 zonal model + recurring
-> scheduled event), the LAST unbuilt #7 sub-kind.
+> (`mortal_beast`/`recast`) → the session-21 immortal-beast tests byte-identical; **471
+> green.** Branch `feature/substrate-7-summon-survival` → confirm before merge. ATTACK-
+> TAXONOMY NOT forced. Flagged + deferred: warding-bond redirect on SAVE damage (the
+> realistic enemy now forces saves the redirect doesn't catch — surfaced this slice).
+> Reflection done. **NEXT: 7b zone/emanation** (Spirit Guardians — §3.1 zonal model +
+> recurring scheduled event), the LAST unbuilt #7 sub-kind.
 >
 > **Session scope (2026-06-18,
 > session 21) — DONE (SUBSTRATE #7 — 7c-ON-SUMMON):** wired the built 7c ally-effect
@@ -513,12 +520,13 @@ type, condition, resource, …):
 
 ## Done
 
-- **SUBSTRATE #7 — 7a SUMMON SURVIVAL & DEATH + recast + real per-CR enemy — BUILT &
-  VALIDATED (2026-06-19, session 22).** The slice that makes the 7c-on-summon defenses
-  (aid / warding bond / protection) and a recast policy DPR-relevant: a summon now WINKS
-  OUT at 0 HP, a realistic per-CR enemy makes the incoming damage load-bearing, and a
-  per-character recast policy revives the dead companion between combats. **469 tests
-  green (+14).** Branch `feature/substrate-7-summon-survival` → confirm before merge.
+- **SUBSTRATE #7 — 7a SUMMON SURVIVAL & DEATH + recast + the DEFINITIVE per-level enemy
+  table — BUILT & VALIDATED (2026-06-19, session 22).** The slice that makes the
+  7c-on-summon defenses (aid / warding bond / protection) and a recast policy DPR-relevant:
+  a summon now WINKS OUT at 0 HP, a realistic per-level enemy (drawn from the new combined
+  `monster_stats_by_level.csv`) makes the incoming damage load-bearing, and a per-character
+  recast policy revives the dead companion between combats. **471 tests green.** Branch
+  `feature/substrate-7-summon-survival` → confirm before merge.
   Design contract: `design/buff_primitive.md` (build-sequence item 3b flipped to BUILT).
   - **Scope settled with the user up front: (all three) + through-merge.** Summon death
     + recast + a real per-CR enemy model (decision #12's unrealised half), confirmed up
@@ -539,26 +547,35 @@ type, condition, resource, …):
     beast is dead, a spare slot remains, and a later combat remains to use it in (greedy,
     finite slot budget — "policies are code"; it can grow smarter).  Added a `spell_slot`
     revive budget (3/LR) to the L8 master row.
-  - **(3) Real per-LEVEL enemy — `enemy_stats.py` + `BaselineEnemyPolicy` (decision #12's
-    realised half).** `enemy_stats.py` derives a per-CHARACTER-LEVEL offensive table from
-    the user's "Average Monster Stats by CR" chart (Rothner), so it pairs 1:1 with the
-    AC/saves CSV (combined snapshot written to `reference/data/enemy_stats_by_level.csv`
-    for inspection).  **Derivation (user spec, finalised 2026-06-19):** fit each chart
-    column vs CR (linear to-hit/DC, quadratic damage — R²>0.99), evaluate at **CR == level**
-    (ignore the chart's Level column, matching the AC/saves table), **÷1.5 the damage**
-    (a CR-N monster is built for FOUR level-N PCs; here ≤3 friendlies and the enemy is
-    never killed by them → incoming over-inflated), and re-express each damage average as
+  - **(3) Real per-LEVEL enemy — the DEFINITIVE combined table + `BaselineEnemyPolicy`
+    (decision #12's realised half).** The single reference the engine draws enemy numbers
+    from is now **`reference/data/monster_stats_by_level.csv`** — one row per character
+    level (1-20) carrying BOTH halves: AC + the six saves (defense) AND to-hit / save DC /
+    n_attacks / per-swing `attack_dice` / `aoe_dice` (offense).  `enemy_stats.py` LOADS it
+    at import and is the accessor layer (`enemy_base_stats`, `baseline_*`); the silvertail
+    enemy + dummy draw their whole profile from it (the old hand-picked "illustrative"
+    numbers + the `level_to_cr` mapping are removed).  The OFFENSE columns are generated
+    (`regenerate()`; `python -m src.builds.enemy_stats`) from the user's "Average Monster
+    Stats by CR" chart (Rothner); AC/saves are copied from `monster_ac_and_saves_by_level.csv`
+    (provenance, retained).  **Derivation (user spec, finalised 2026-06-19):** fit each
+    chart column vs CR (linear to-hit/DC, quadratic damage — R²>0.99), evaluate at **CR ==
+    level** (ignore the chart's Level column, matching the AC/saves table), **÷1.5 the
+    damage** (a CR-N monster is built for FOUR level-N PCs; here ≤3 friendlies and the enemy
+    is never killed by them → incoming over-inflated), re-express each damage average as
     DICE: per-swing = `N dX + PB` (X = the chart's matched die size at CR==level, PB = the
     level's proficiency bonus as the flat, N solved to match the ÷1.5 target); AoE =
-    `M dY`.  Carrying DICE (not a flat number) means **enemy CRITS are modeled** — a
-    natural 20 doubles the dice, the flat PB stays single (RAW).  (L8 enemy: +8 / DC 15 /
-    `3d10+3` ×2 / `8d4` AoE.)  `BaselineEnemyPolicy` (keyed by `level`): each round is an
+    `M dY`; and apply a few hand-tuned `_OVERRIDES` so every DAMAGE column rises
+    MONOTONICALLY (user edits: L1 nAtk=1, L2/L8/L9 dice; + L16).  Carrying DICE (not a flat
+    number) means **enemy CRITS are modeled** — a natural 20 doubles the dice, the flat PB
+    stays single (RAW).  (L8 enemy: AC 16 / +8 / DC 15 / `3d8+3` ×2 / `8d4` AoE.)  A
+    drift-guard test asserts the committed CSV matches `regenerate()`.
+    `BaselineEnemyPolicy` (keyed by `level`): each round is an
     ATTACK-ROLL round (n swings, per-level dice) or a SAVE-forcing round (one of the six
     saves, weighted, vs the per-level DC, AoE dice, half on a save) — the user's "test all
     our saves with varying probability AND make attack rolls"; pre-rolled at
     `on_combat_start` (dice-free decide).  **RETARGETS** onto the master (`fallback`) when
     the beast winks out, so a slain ally's incoming load is not wasted on a corpse.
-  - **MECHANISM validated (`tests/test_summon_survival.py`, +14) — NOT build-value
+  - **MECHANISM validated (`tests/test_summon_survival.py`) — NOT build-value
     claims.** The slice's job was to model summon death CORRECTLY, so the tests confirm
     the mechanism, not which effect is "best": a dead summon stops contributing (mortal
     lifetime output ≪ the threshold-immortal beast's); a +HP buffer buys an extra strike
@@ -577,9 +594,8 @@ type, condition, resource, …):
     beast or that beats the beast's AC but not the master's higher AC (a target-
     REASSIGNMENT `on_incoming_hit` flavor).
   - **Opt-in wiring (existing tests byte-identical).** `make_silvertail_runner` gained
-    `mortal_beast` / `enemy_model="illustrative"|"baseline_cr"` / `recast`, all defaulting
-    to the session-21 behavior — so the 455 prior tests (incl. the 7c-on-summon mechanism
-    tests, which isolate effects against the controlled immortal-beast enemy) stay
+    `mortal_beast` / `recast`, defaulting to the session-21 immortal-beast behavior — so the
+    7c-on-summon mechanism tests (which isolate effects against the immortal beast) stay
     unchanged.  The realistic survival scenario is the new opt-in path.
   - **Process / flags.** ATTACK-TAXONOMY NOT forced.  Enemy crits are now MODELED (the
     chart's dice).  **Deferred:** the three build factors above; aid upcast (+10 at L10+);

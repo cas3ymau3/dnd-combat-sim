@@ -542,28 +542,35 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
    2024 Primal Companion revival is **1 minute** (web-verified) → never lands inside a
    4-round combat, so it is inherently between-combats — revive iff dead + a spare slot
    remains + a later combat remains (greedy, finite slot budget; "policies are code").
-   **Coupled — real per-LEVEL enemy (decision #12's realised half):** `src/builds/
-   enemy_stats.py` derives a per-CHARACTER-LEVEL offensive table from the user's "Average
-   Monster Stats by CR" chart (Rothner) so it pairs 1:1 with the AC/saves CSV (combined
-   snapshot: `reference/data/enemy_stats_by_level.csv`).  Derivation (user spec): fit each
-   chart column vs CR (linear to-hit/DC, quadratic damage; R²>0.99), evaluate at **CR ==
-   level** (ignore the chart's Level column), **÷1.5 the damage** (a CR-N monster is built
-   for FOUR level-N PCs; here ≤3 friendlies and the enemy is never killed by them →
-   incoming over-inflated), and re-express each damage average as DICE (per-swing =
-   `N dX + PB`, the chart's matched die size X + the level's proficiency bonus as the flat;
-   AoE = `M dY`) so **enemy CRITS fall out** (a natural 20 doubles the dice; the flat PB
-   stays single).  `BaselineEnemyPolicy` (`src/builds/enemy.py`, keyed by `level`) mixes
-   attack-roll rounds (n swings, per-level dice) and SAVE-forcing rounds (one of the six
-   saves, weighted, vs the per-level DC, AoE dice, half on a save), and RETARGETS onto the
-   master when the beast winks out (focus-fire → fallback).  (L8 enemy: +8 / DC 15 /
-   `3d10+3` ×2 / `8d4` AoE.)  **MECHANISM validated**
-   (`tests/test_summon_survival.py`, +14): a dead summon stops contributing (mortal
+   **Coupled — the DEFINITIVE per-LEVEL enemy table (decision #12's realised half):** the
+   single reference the engine draws enemy numbers from is now
+   `reference/data/monster_stats_by_level.csv` — one row per character level 1-20 carrying
+   BOTH halves: AC + the six saves (defense) AND to-hit / save DC / n_attacks / per-swing
+   `attack_dice` / `aoe_dice` (offense).  `src/builds/enemy_stats.py` LOADS it at import and
+   is the accessor layer; the generation (`regenerate()`, run `python -m
+   src.builds.enemy_stats`) derives the offense from the user's "Average Monster Stats by
+   CR" chart (Rothner) and copies AC/saves from `monster_ac_and_saves_by_level.csv`
+   (provenance).  Derivation (user spec): fit each chart column vs CR (linear to-hit/DC,
+   quadratic damage; R²>0.99), evaluate at **CR == level** (ignore the chart's Level
+   column), **÷1.5 the damage** (a CR-N monster is built for FOUR level-N PCs; here ≤3
+   friendlies and the enemy is never killed by them → incoming over-inflated), re-express
+   each damage average as DICE (per-swing = `N dX + PB`, the chart's matched die size X +
+   the level's proficiency bonus as the flat; AoE = `M dY`) so **enemy CRITS fall out** (a
+   natural 20 doubles the dice; the flat PB stays single), and apply a few hand-tuned
+   `_OVERRIDES` so every DAMAGE column rises MONOTONICALLY.  `BaselineEnemyPolicy`
+   (`src/builds/enemy.py`, keyed by `level`) mixes attack-roll rounds (n swings, per-level
+   dice) and SAVE-forcing rounds (one of the six saves, weighted, vs the per-level DC, AoE
+   dice, half on a save), and RETARGETS onto the master when the beast winks out (focus-fire
+   → fallback).  (L8 enemy: AC 16 / +8 / DC 15 / `3d8+3` ×2 / `8d4` AoE.)  **MECHANISM
+   validated**
+   (`tests/test_summon_survival.py`): a dead summon stops contributing (mortal
    lifetime output ≪ the threshold-immortal beast); a +HP buffer buys an extra strike
    when it crosses a per-hit breakpoint (deterministic); reducing landed hits keeps it
    contributing longer; reviving it restores the contribution; the enemy retargets to the
-   master on death.  Wired on the silvertail L8 row, opt-in (`mortal_beast` /
-   `enemy_model="baseline_cr"` / `recast`) so the session-21 mechanism tests stay
-   byte-identical.  **These are MECHANISM checks, NOT build-value claims** — the
+   master on death.  Wired on the silvertail L8 row, with `mortal_beast` / `recast` opt-in
+   flags so the session-21 mechanism tests (immortal beast) stay byte-identical; the
+   enemy is the definitive per-level table by default.  **These are MECHANISM checks, NOT
+   build-value claims** — the
    survivability numbers are not meaningful as build evaluation yet because three build
    factors are unmodeled (each flagged for the full build, NOT this slice):
    (i) **enemy targeting split** — with a party present the beast should be hit ≤ 1/3 of
