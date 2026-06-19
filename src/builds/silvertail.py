@@ -103,6 +103,21 @@ if TYPE_CHECKING:
     from ..rng import SeededRNG
 
 
+# Beast of the Land — base ability saving-throw modifiers from the 2024 Beast Master
+# statblock (per the user): STR/DEX/CON +2, INT -1, WIS +2, CHA +0.  The companion adds
+# the MASTER's proficiency bonus to ANY save it makes (2024 Primal Companion: it uses
+# your PB), so make_primal_companion stores base + char PB.
+BEAST_BASE_SAVES: dict[str, int] = {
+    "str_save": 2, "dex_save": 2, "con_save": 2,
+    "int_save": -1, "wis_save": 2, "cha_save": 0,
+}
+
+
+def _char_pb(level: int) -> int:
+    """The master's proficiency bonus at character *level* (2 / 3 / 4 / 5 / 6)."""
+    return 2 + (level - 1) // 4
+
+
 # ---------------------------------------------------------------------------
 # Per-level build data — char L4 only (the minimal 7a row)
 # ---------------------------------------------------------------------------
@@ -136,7 +151,7 @@ LEVELS: dict[int, dict] = {
             "strike_bonus": 5,             # 2 + WIS(3)
             "charge_dice": (1, 6),         # +1d6 on a ≥20ft straight charge (always)
             "strike_type": "bludgeoning",  # chosen on summon
-            "save_bonus": 5,               # primal bond: +PB to all saves (PB 2 + base)
+            # saves: the full 2024 statblock (BEAST_BASE_SAVES + char PB) in the factory.
         },
         # No enemy_attack at L4: the dummy is a passive target (the 7a summon scenario).
         # Its AC / saves still come from the table (make_training_dummy) so the master's
@@ -187,7 +202,7 @@ LEVELS: dict[int, dict] = {
             "strike_bonus": 6,             # 2 + WIS(4)
             "charge_dice": (1, 6),
             "strike_type": "bludgeoning",
-            "save_bonus": 5,               # primal bond: +PB to saves (parity line)
+            # saves: the full 2024 statblock (BEAST_BASE_SAVES + char PB) in the factory.
         },
         # Enemy strikes the BEAST (TYPED slashing) so the 7c-on-summon DEFENDER effects
         # (warding bond resistance+redirect, protection disadvantage) do real work.  A
@@ -256,6 +271,12 @@ def make_primal_companion(level: int, mortal: bool = False) -> Entity:
     False keeps the threshold-immortal beast the session-21 mechanism tests use.
     """
     b = LEVELS[level]["beast"]
+    # Beast of the Land — the full 2024 Beast Master statblock saves.  Base ability-save
+    # modifiers (per the user): STR/DEX/CON +2, INT -1, WIS +2, CHA +0.  The companion
+    # adds the MASTER's proficiency bonus to ANY save it makes (2024 Primal Companion —
+    # it uses your PB), so the effective save = base + char PB.
+    pb = _char_pb(level)
+    saves = {stat: base + pb for stat, base in BEAST_BASE_SAVES.items()}
     beast = Entity(
         name=f"PrimalCompanion-L{level}",
         hp=b["hp"],
@@ -264,10 +285,7 @@ def make_primal_companion(level: int, mortal: bool = False) -> Entity:
             "attack_bonus": b["attack_bonus"],       # Beast's Strike to-hit (+5)
             "damage_dice": b["strike_dice"],
             "damage_bonus": b["strike_bonus"],
-            # Primal bond (+PB to all checks/saves) — a flat peer save line so a
-            # future ally-effect / hostile save resolves against the beast.
-            "str_save": b["save_bonus"], "dex_save": b["save_bonus"],
-            "con_save": b["save_bonus"], "wis_save": b["save_bonus"],
+            **saves,
         },
     )
     beast.dies_at_zero_hp = mortal

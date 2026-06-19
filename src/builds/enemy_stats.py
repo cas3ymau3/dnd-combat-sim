@@ -141,12 +141,13 @@ def level_table() -> dict[int, dict]:
 # Enemy-policy tuning constants (used by BaselineEnemyPolicy, not stored per level)
 # ---------------------------------------------------------------------------
 
-# Default split of save-forcing effects across the SIX save types ("varying
-# probability for each").  Physical/AoE leans DEX + CON; fear/charm WIS; grapple/shove
-# STR; banish/dominate CHA; psychic INT.  Weights are relative (need not sum to 1).
+# Default split of save-forcing effects across the SIX save types.  PLACEHOLDER values
+# (unsubstantiated — user-approved as a knob to ground later from real 2024 monster
+# data), ordered by the user's prevalence ranking: DEX == WIS > STR > CON > INT == CHA.
+# Weights are relative (need not sum to 1).
 SAVE_TYPE_WEIGHTS: dict[str, int] = {
-    "dex_save": 30, "con_save": 25, "wis_save": 20,
-    "str_save": 12, "cha_save": 8, "int_save": 5,
+    "dex_save": 25, "wis_save": 25, "str_save": 15,
+    "con_save": 10, "int_save": 5, "cha_save": 5,
 }
 
 # Fraction of an enemy's rounds spent forcing a SAVE rather than attacking.
