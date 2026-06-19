@@ -553,19 +553,28 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
    (`src/builds/enemy.py`) mixes attack-roll rounds (n swings, per-CR dice) and
    SAVE-forcing rounds (one of the six saves, weighted, vs the per-CR DC, AoE dice, half
    on a save), and RETARGETS onto the master when the beast winks out (focus-fire →
-   fallback), so the enemy's damage is genuinely load-bearing.  **VALIDATION FLIP
-   confirmed** (`tests/test_summon_survival.py`, +17): under the CR5 enemy the immortal
-   beast's ~140 lifetime DPR/day collapses to ~21 when mortal; protection (→27), warding
-   bond (→33), bless (→22), and recast (→70) each RAISE it by buying more alive rounds.
-   **Aid is the honest exception: MARGINAL at L8** — +5 HP doesn't cross the ~17/swing
-   breakpoint, so it's ≈ DPR-neutral here (a deterministic test shows aid DOES buy an
-   extra strike when +HP crosses a per-hit breakpoint; the session-21 "aid inert" caveat
-   lifts only CONDITIONALLY — needs the +10 upcast at L10+ or a higher-per-hit enemy).
-   Wired on the silvertail L8 row, opt-in (`mortal_beast` / `enemy_model="baseline_cr"`
-   / `recast`) so the session-21 mechanism tests stay byte-identical.  **Still deferred:**
-   aid upcast (+10 at L10+, 3rd-level slots); warding-bond redirect on save-damage (it
-   rides the attack-only `on_incoming_hit` seam — resistance applies to saves, redirect
-   doesn't; flagged); a smarter recast policy (slot-conserving).
+   fallback), so the enemy's damage is genuinely load-bearing.  **MECHANISM validated**
+   (`tests/test_summon_survival.py`, +14): a dead summon stops contributing (mortal
+   lifetime output ≪ the threshold-immortal beast); a +HP buffer buys an extra strike
+   when it crosses a per-hit breakpoint (deterministic); reducing landed hits keeps it
+   contributing longer; reviving it restores the contribution; the enemy retargets to the
+   master on death.  Wired on the silvertail L8 row, opt-in (`mortal_beast` /
+   `enemy_model="baseline_cr"` / `recast`) so the session-21 mechanism tests stay
+   byte-identical.  **These are MECHANISM checks, NOT build-value claims** — the
+   survivability numbers are not meaningful as build evaluation yet because three build
+   factors are unmodeled (each flagged for the full build, NOT this slice):
+   (i) **enemy targeting split** — with a party present the beast should be hit ≤ 1/3 of
+   the time, not focus-fired (the §3.5 weighted roster already exists in
+   `ScriptedEnemyPolicy`; wire it into `BaselineEnemyPolicy`);
+   (ii) **beast self-healing** — the companion has ranger-level d8 HIT DICE (spent on a
+   short rest) and receives Prayer of Healing (the master gets it at L8) — neither
+   hit-dice nor PoH healing is modeled (a real engine gap);
+   (iii) **Mounted Combatant's VEER** (the master, L4) — redirect onto the master any hit
+   that would drop the beast OR that beats the beast's AC but not the master's higher AC
+   (a target-REASSIGNMENT intercept — a new `on_incoming_hit` flavor; relates to the
+   attack-only seam below).  **Also still deferred:** aid upcast (+10 at L10+, 3rd-level
+   slots); warding-bond redirect on save-damage (rides the attack-only `on_incoming_hit`
+   seam — resistance applies to saves, the redirect doesn't); a smarter recast policy.
 4. **7b zone / emanation** — the §3.1 zonal spatial model + recurring scheduled zone
    events; damage/debuff and buff flavors; anchored vs static. Vehicle: silvertail
    Spirit Guardians (emanation) + the wardancer's spike growth / cloud of daggers

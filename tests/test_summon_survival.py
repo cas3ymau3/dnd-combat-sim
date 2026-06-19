@@ -184,37 +184,42 @@ def test_baseline_enemy_retargets_to_fallback_when_primary_winks_out():
 
 
 # ===========================================================================
-# (4) Integration — the SURVIVAL FLIP under the realistic per-CR enemy (L8)
+# (4) Integration — the summon-death MECHANISM under the realistic per-CR enemy.
+#
+# These confirm the mechanism is mechanically correct: a dead summon stops
+# contributing, more effective HP / fewer landed hits keep it contributing longer,
+# and a revive restores its contribution.  They are NOT build-value claims about
+# which effect is "best" — that waits for the full build (with enemy targeting-split,
+# the beast's hit-dice / Prayer-of-Healing healing, and Mounted Combatant's veer all
+# modeled; none of those are in scope here).
 # ===========================================================================
 
 def _beast_lifetime(effect, seed, *, mortal=True, recast=False, days=150):
-    """Sum the beast's lifetime DPR (its commanded Beast's-Strike output) over
-    `days`, under the realistic per-CR enemy."""
+    """Sum the beast's commanded Beast's-Strike output over `days`, under the
+    realistic per-CR enemy (a proxy for rounds-alive: a dead beast stops striking)."""
     runner, _char, beast, _dummy = sv.make_silvertail_runner(
         8, SeededRNG(seed), beast_effect=effect, mortal_beast=mortal,
         enemy_model="baseline_cr", recast=recast)
     return sum(runner.run_day().damage_by_source(beast.id) for _ in range(days))
 
 
-def test_mortal_beast_collapses_lifetime_dpr_vs_immortal():
+def test_mortal_beast_stops_contributing_when_it_dies():
     # The core of the slice: under real fire a MORTAL beast dies and stops contributing,
-    # so its lifetime DPR is a fraction of the threshold-immortal beast's.
+    # so its output is a fraction of the threshold-immortal beast's (which never dies).
     immortal = _beast_lifetime(None, 11, mortal=False)
     mortal = _beast_lifetime(None, 11, mortal=True)
-    assert mortal > 0
-    assert mortal < immortal / 3            # a large, unambiguous drop
+    assert mortal > 0                       # it still acts while alive
+    assert mortal < immortal / 3            # death cuts its contribution sharply
 
 
-def test_protection_raises_mortal_beast_lifetime_dpr():
+def test_reducing_incoming_damage_keeps_the_summon_contributing_longer():
+    # Mechanism: an effect that reduces landed hits (here Protection's disadvantage)
+    # keeps the mortal beast alive for more rounds, so it contributes more.  This tests
+    # the survival→contribution link responds to a defender effect — NOT that Protection
+    # is the right call (a build-value question deferred to the full build).
     base = _beast_lifetime(None, 11)
-    prot = _beast_lifetime("protection", 11)
-    assert prot > base                      # disadvantage → more rounds alive → more DPR
-
-
-def test_warding_bond_raises_mortal_beast_lifetime_dpr():
-    base = _beast_lifetime(None, 11)
-    wb = _beast_lifetime("warding_bond", 11)
-    assert wb > base                        # resistance-to-all → more rounds alive
+    less_incoming = _beast_lifetime("protection", 11)
+    assert less_incoming > base
 
 
 class _CommandBeastEachRound:
@@ -247,22 +252,24 @@ class _HitBeastEachRound:
         return []
 
 
-def test_aid_survival_value_buys_an_extra_strike_at_a_breakpoint():
-    # Aid's +HP is DPR-relevant exactly when it crosses a per-hit breakpoint: the extra
-    # 5 HP lets the beast survive a hit it would otherwise die to, buying one more
-    # commanded strike.  Deterministic (FakeRNG all-20 → every attack hits): beast deals
-    # 10/strike to the dummy; the enemy deals 12/round to the beast.
-    #   base HP 20:  strike R1, enemy→8;  strike R2, enemy→-4 DEAD;  R3 no strike → 20.
-    #   aided HP 25: strike R1, enemy→13; strike R2, enemy→1;  strike R3, enemy dead → 30.
+def test_extra_max_hp_buys_an_extra_strike_at_a_breakpoint():
+    # Mechanism: a +HP buffer is survival-relevant exactly when it crosses a per-hit
+    # breakpoint — the extra HP lets the beast survive a hit it would otherwise die to,
+    # buying one more commanded strike.  Deterministic (FakeRNG all-20 → every attack
+    # hits): beast deals 10/strike to the dummy; the enemy deals 12/round to the beast.
+    #   HP 20:    strike R1, enemy→8;  strike R2, enemy→-4 DEAD;  R3 no strike → 20.
+    #   HP 20+5:  strike R1, enemy→13; strike R2, enemy→1;  strike R3, enemy dead → 30.
+    # (Vehicle: Aid's +5 max HP.  Whether Aid is worth casting is a build-value question
+    # deferred to the full build; this only proves the HP→survival→contribution link.)
     from src.scheduler import Scheduler
 
-    def run(with_aid):
+    def run(with_buffer):
         master = Entity(name="master", hp=60, base_stats={"ac": 20})
         beast = Entity(name="beast", hp=20, base_stats={"ac": 10, "attack_bonus": 10})
         beast.dies_at_zero_hp = True
         dummy = Entity(name="dummy", hp=10**9, base_stats={"ac": 10})
         enemy = Entity(name="enemy", hp=10**9, base_stats={"ac": 10, "attack_bonus": 10})
-        if with_aid:
+        if with_buffer:
             sv.BeastEffectPolicy("aid", beast, master).install()   # +5 HP max & current
         sch = Scheduler(
             rng=FakeRNG([20] * 24),
@@ -278,31 +285,12 @@ def test_aid_survival_value_buys_an_extra_strike_at_a_breakpoint():
     assert run(True) == 30          # +5 HP survives to strike a third round
 
 
-def test_aid_is_marginal_at_l8_caveat_lift_is_conditional():
-    # Honest finding under the realistic enemy: at L8 the CR5 enemy hits for ~17/swing,
-    # so +5 HP (25→30) does NOT cross a per-hit breakpoint → aid is ~DPR-NEUTRAL here
-    # (within noise), NOT the clear lever protection/warding are.  The session-21 "aid
-    # is DPR-inert" caveat lifts only CONDITIONALLY — with the +10 upcast (L10+, 3rd-
-    # level slots) or a higher-per-hit enemy (the deterministic breakpoint test above).
-    base = _beast_lifetime(None, 11)
-    aid = _beast_lifetime("aid", 11)
-    assert 0.85 * base <= aid <= 1.25 * base                 # roughly neutral
-    assert aid < _beast_lifetime("warding_bond", 11)         # a weak lever vs warding
-
-
-def test_bless_raises_mortal_beast_lifetime_dpr():
-    # Bless raises the beast's to-hit, so each alive round deals more → more lifetime DPR.
-    base = _beast_lifetime(None, 11)
-    bless = _beast_lifetime("bless", 11)
-    assert bless > base
-
-
-def test_recast_raises_lifetime_dpr_by_reviving_between_combats():
-    # Reviving the dead companion between combats (a spell slot, 1-minute revival)
-    # restores its output for later combats — the biggest survival lever.
+def test_reviving_a_dead_summon_restores_its_contribution():
+    # Mechanism: the recast policy revives the dead companion between combats (a spell
+    # slot, 1-minute revival), restoring its output for later combats.
     no_recast = _beast_lifetime(None, 11, recast=False)
     recast = _beast_lifetime(None, 11, recast=True)
-    assert recast > no_recast * 2           # revival roughly multiplies the output
+    assert recast > no_recast               # revival brings the contribution back
 
 
 def test_enemy_retargets_to_master_after_the_beast_dies():

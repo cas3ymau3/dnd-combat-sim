@@ -82,17 +82,19 @@ type, condition, resource, …):
 > chart [Rothner] + `BaselineEnemyPolicy` — attack-roll/save-forcing mix across the six
 > saves, REAL multiattack DICE → enemy CRITS, retargets to the master when the beast
 > falls; decision #12's realised half). The chart's **Level column** de-harshens it:
-> `level_to_cr` pits a lone L8 summon vs ~CR5 (not CR8). **VALIDATION FLIP:** under the
-> CR5 enemy the immortal beast's ~140 lifetime DPR/day collapses to ~21 mortal; protection
-> (27) / warding bond (33) / bless (22) / recast (70) each raise it. **Aid is MARGINAL at
-> L8** (≈ neutral — +5 HP doesn't cross the ~17/swing breakpoint; the s21 caveat lifts
-> only CONDITIONALLY, needs +10 upcast or harder hits — honest finding; a deterministic
-> breakpoint test shows aid DOES buy a strike when it crosses). Opt-in
-> (`mortal_beast`/`enemy_model`/`recast`) → 455 prior tests byte-identical; **472 green
-> (+17).** Branch `feature/substrate-7-summon-survival` → confirm before merge. ATTACK-
-> TAXONOMY NOT forced. Flagged + deferred: warding-bond redirect on SAVE damage (rides
-> the attack-only seam today). Reflection pending. **NEXT: 7b zone/emanation** (Spirit
-> Guardians — the §3.1 zonal model + recurring scheduled event), the LAST unbuilt #7 sub-kind.
+> `level_to_cr` pits a lone L8 summon vs ~CR5 (not CR8). **MECHANISM validated** (NOT
+> build-value claims — user steer): a dead summon stops contributing; a +HP buffer buys a
+> strike when it crosses a per-hit breakpoint (deterministic); reducing landed hits keeps
+> it contributing longer; reviving restores it; the enemy retargets on death. The earlier
+> per-effect "survival DPR" ranking was TRIMMED — the numbers aren't meaningful as build
+> evaluation while 3 factors are unmodeled (flagged for the FULL build): enemy targeting
+> split (beast hit ≤ 1/3 w/ a party), beast HIT-DICE + Prayer-of-Healing self-heal (engine
+> gap), Mounted Combatant VEER (redirect onto the higher-AC master). Opt-in
+> (`mortal_beast`/`enemy_model`/`recast`) → 455 prior tests byte-identical; **469 green
+> (+14).** Branch `feature/substrate-7-summon-survival` → confirm before merge. ATTACK-
+> TAXONOMY NOT forced. Flagged + deferred: warding-bond redirect on SAVE damage. Reflection
+> done. **NEXT: 7b zone/emanation** (Spirit Guardians — §3.1 zonal model + recurring
+> scheduled event), the LAST unbuilt #7 sub-kind.
 >
 > **Session scope (2026-06-18,
 > session 21) — DONE (SUBSTRATE #7 — 7c-ON-SUMMON):** wired the built 7c ally-effect
@@ -513,8 +515,8 @@ type, condition, resource, …):
   VALIDATED (2026-06-19, session 22).** The slice that makes the 7c-on-summon defenses
   (aid / warding bond / protection) and a recast policy DPR-relevant: a summon now WINKS
   OUT at 0 HP, a realistic per-CR enemy makes the incoming damage load-bearing, and a
-  per-character recast policy revives the dead companion between combats. **472 tests
-  green (+17).** Branch `feature/substrate-7-summon-survival` → confirm before merge.
+  per-character recast policy revives the dead companion between combats. **469 tests
+  green (+14).** Branch `feature/substrate-7-summon-survival` → confirm before merge.
   Design contract: `design/buff_primitive.md` (build-sequence item 3b flipped to BUILT).
   - **Scope settled with the user up front: (all three) + through-merge.** Summon death
     + recast + a real per-CR enemy model (decision #12's unrealised half), confirmed up
@@ -550,28 +552,34 @@ type, condition, resource, …):
     varying probability AND make attack rolls"; pre-rolled at `on_combat_start` (dice-free
     decide).  **RETARGETS** onto the master (`fallback`) when the beast winks out, so a
     slain ally's incoming load is not wasted on a corpse and the beast genuinely tanks.
-  - **VALIDATION FLIP (the headline — `tests/test_summon_survival.py`, +17).** Under the
-    realistic **CR5** enemy the threshold-immortal beast's **~140 lifetime DPR/day
-    collapses to ~21** when mortal (a dead summon does nothing); the defensive levers
-    RAISE it by buying more alive rounds: protection **→ 27**, warding bond **→ 33**,
-    bless **→ 22**, recast **→ 70** (the biggest lever — revive between combats).  **Aid
-    is the honest exception — MARGINAL at L8** (≈ DPR-neutral): +5 HP doesn't cross the
-    ~17/swing breakpoint, so the session-21 "aid is DPR-inert" caveat lifts only
-    CONDITIONALLY (a deterministic test shows aid DOES buy an extra strike when +HP
-    crosses a per-hit breakpoint; the full lift needs the +10 upcast at L10+ or a
-    higher-per-hit enemy).  The enemy retargets to the master after the beast dies
-    (immortal beast → master untouched; mortal → master eats the rest).
+  - **MECHANISM validated (`tests/test_summon_survival.py`, +14) — NOT build-value
+    claims.** The slice's job was to model summon death CORRECTLY, so the tests confirm
+    the mechanism, not which effect is "best": a dead summon stops contributing (mortal
+    lifetime output ≪ the threshold-immortal beast's); a +HP buffer buys an extra strike
+    when it crosses a per-hit breakpoint (deterministic); reducing landed hits keeps the
+    beast contributing longer; reviving it restores the contribution; the enemy retargets
+    to the master on death.  The earlier per-effect "survival DPR" ranking was trimmed —
+    those are build-value judgments the model can't support yet (user steer 2026-06-19).
+  - **NOT meaningful as build evaluation yet — three unmodeled factors (flagged for the
+    FULL build, NOT this slice).** The survivability numbers are illustrative of the
+    mechanism only: (i) **enemy targeting split** — with a party the beast should be hit
+    ≤ 1/3 of the time, not focus-fired (the §3.5 weighted roster exists in
+    `ScriptedEnemyPolicy`; wire it into `BaselineEnemyPolicy`); (ii) **beast self-healing**
+    — ranger-level d8 HIT DICE on a short rest + Prayer of Healing (master gets it at L8);
+    neither hit-dice nor PoH healing is modeled (a real engine gap); (iii) **Mounted
+    Combatant VEER** (master, L4) — redirect onto the master any hit that would drop the
+    beast or that beats the beast's AC but not the master's higher AC (a target-
+    REASSIGNMENT `on_incoming_hit` flavor).
   - **Opt-in wiring (existing tests byte-identical).** `make_silvertail_runner` gained
     `mortal_beast` / `enemy_model="illustrative"|"baseline_cr"` / `recast`, all defaulting
     to the session-21 behavior — so the 455 prior tests (incl. the 7c-on-summon mechanism
     tests, which isolate effects against the controlled immortal-beast enemy) stay
     unchanged.  The realistic survival scenario is the new opt-in path.
-  - **Process / flags.** ATTACK-TAXONOMY NOT forced (the enemy still melee/save-attacks;
-    no melee/ranged gate).  **Deferred:** aid upcast (+10 at L10+, 3rd-level slots);
-    **warding-bond redirect on SAVE damage** (it rides the attack-only `on_incoming_hit`
-    seam — resistance applies to saves but the redirect doesn't; user OK to flag + defer,
-    nothing forces a save-redirect today); a slot-conserving recast policy; higher
-    silvertail rows.  Enemy crits are now MODELED (the chart's dice), not deferred.
+  - **Process / flags.** ATTACK-TAXONOMY NOT forced.  Enemy crits are now MODELED (the
+    chart's dice).  **Deferred:** the three build factors above; aid upcast (+10 at L10+);
+    warding-bond redirect on SAVE damage (attack-only `on_incoming_hit` seam — resistance
+    applies to saves, the redirect doesn't; user OK to flag + defer); slot-conserving
+    recast; higher silvertail rows.
   - **NEXT: 7b zone / emanation** (Spirit Guardians — the §3.1 zonal model + a recurring
     scheduled event), the LAST unbuilt #7 sub-kind.
 
