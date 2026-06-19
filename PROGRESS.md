@@ -574,7 +574,12 @@ type, condition, resource, …):
     saves, weighted, vs the per-level DC, AoE dice, half on a save) — the user's "test all
     our saves with varying probability AND make attack rolls"; pre-rolled at
     `on_combat_start` (dice-free decide).  **RETARGETS** onto the master (`fallback`) when
-    the beast winks out, so a slain ally's incoming load is not wasted on a corpse.
+    the beast winks out, so a slain ally's incoming load is not wasted on a corpse.  The
+    `SAVE_TYPE_WEIGHTS` are PLACEHOLDER values (unsubstantiated — to ground later from real
+    monster data) ordered by the user's prevalence ranking DEX==WIS > STR > CON > INT==CHA
+    (25/25/15/10/5/5).  The beast saves against them with its full 2024 Beast Master
+    statblock: base STR/DEX/CON +2, INT −1, WIS +2, CHA +0, plus the master's PB on any
+    save (2024 Primal Companion uses your PB) → at L8: STR/DEX/CON/WIS +5, INT +2, CHA +3.
   - **MECHANISM validated (`tests/test_summon_survival.py`) — NOT build-value
     claims.** The slice's job was to model summon death CORRECTLY, so the tests confirm
     the mechanism, not which effect is "best": a dead summon stops contributing (mortal
