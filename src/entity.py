@@ -112,6 +112,19 @@ class Entity:
         # design.md §1.  The roster removal itself is done by the scheduler/runner
         # (Entity holds no roster reference); the flag is the Entity-level teardown.
         self._effect_summons: dict[str, list["Entity"]] = {}
+        # Zones (substrate #7 / 7b) this entity created via the cast_effect `zones`
+        # payload, labelled by effect_source: source → [Zone, ...].  remove_effect(
+        # source) marks each `destroyed` so an emanation winks out WITH the rest of
+        # its cast's bundle (a dropped concentration / combat sweep), design.md §1 —
+        # mirroring _effect_summons for the 7a Actor case.  The scheduler holds the
+        # live zone registry; this index is the Entity-level teardown hook.
+        self._effect_zones: dict[str, list] = {}
+        # Which abstract zone this entity occupies (design.md §3.1 zonal model;
+        # substrate #7 / 7b).  Everything shares the implicit "melee" blob by default
+        # (the literal mirrors zones.DEFAULT_ZONE — hard-coded here to avoid an import
+        # cycle); a damaging emanation fires on occupants whose zone matches its
+        # location, and `move_entity` (zones.py) changes it.
+        self.zone: str = "melee"
         # Whether this entity has been destroyed (destroy_entity / a summon whose
         # source was removed).  A created Object/ally that has winked out; the
         # scheduler skips a destroyed entity's turns and a controller checks it before
@@ -236,12 +249,18 @@ class Entity:
         (substrate #7 / 7a), so remove_effect winks it out when the source ends."""
         self._effect_summons.setdefault(source, []).append(summon)
 
+    def note_effect_zone(self, source: str, zone: object) -> None:
+        """Record that *zone* was created by the cast_effect labelled *source*
+        (substrate #7 / 7b), so remove_effect winks it out (marks it destroyed) when
+        the source ends — e.g. a dropped concentration ending Spirit Guardians."""
+        self._effect_zones.setdefault(source, []).append(zone)
+
     def remove_effect(self, source: str) -> None:
         """Remove every payload a cast_effect installed under *source* — its
         ModifierStack modifiers, its damage-type response (substrate #4), any
-        statuses it granted (substrate #3), and any summons it created (substrate #7
-        / 7a) — and stop tracking it for the combat sweep, clearing concentration if
-        it held it.
+        statuses it granted (substrate #3), any summons it created (substrate #7
+        / 7a), and any zones it created (substrate #7 / 7b) — and stop tracking it
+        for the combat sweep, clearing concentration if it held it.
 
         This is the single place a cast's whole bundle is torn down.  Both a
         concentration break (verbs._check_concentration) and the combat-boundary
@@ -256,6 +275,8 @@ class Entity:
             self.statuses.remove(name)
         for summon in self._effect_summons.pop(source, ()):
             summon.destroyed = True
+        for zone in self._effect_zones.pop(source, ()):
+            zone.destroyed = True
         self._combat_buff_sources.discard(source)
         if self.concentration == source:
             self.concentration = None

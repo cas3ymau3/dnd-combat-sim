@@ -116,6 +116,16 @@ class Scheduler:
         # invariant that keeps the prior test corpus bit-comparable.
         self.damage_by_source_target: dict[tuple[int, int], int] = {}
 
+        # Active zones (substrate #7 / 7b — design.md §3.1).  name → Zone Object,
+        # installed by a cast_effect's `zones` payload.  At each entity's turn
+        # boundary the scheduler fires every damaging zone the entity is inside on it
+        # (_fire_zone_effects), so the "recurring zone event" falls out of turns
+        # recurring each round (CLAUDE.md #5: a trigger on the TurnStartEvent).  The
+        # registry is per-combat (a fresh Scheduler each fight); a Spirit-Guardians-
+        # style emanation is recast each combat under the combat-clock model, and a
+        # dropped concentration marks its Zone `destroyed` mid-combat.
+        self.zones: dict[str, object] = {}
+
         # Register the verb handlers.  save_damage uses the plain 4-arg Handler
         # signature, so the generic dispatch branch in run() drives it — it
         # enqueues a DamageEvent that is accounted when that event resolves.
@@ -574,8 +584,14 @@ class Scheduler:
         choices = policy.decide(snapshot)
         log.debug("%s policy returned %d choice(s).", actor.name, len(choices))
 
-        # Enqueue one event per choice, consuming resources as we go
-        seq = 1  # sequence 0 was the TurnStartEvent itself
+        # Recurring zone effects (substrate #7 / 7b): any active damaging zone this
+        # entity is currently inside forces its per-turn save at its turn boundary
+        # (Spirit Guardians: WIS save vs the owner's DC, 3d8 radiant, half on save),
+        # BEFORE the entity acts.  Reuses the save-for-damage path (SaveDamageEvent →
+        # resolve_save_damage), attributed to the zone's owner so the caster's zone
+        # DPR falls out of the per-(source, target) ledger (like the 7a summon
+        # column).  Sequence 0 was the TurnStartEvent itself.
+        seq = self._fire_zone_effects(actor, round_, turn_idx, start_seq=1)
         for choice in choices:
             cost = choice.cost
 
@@ -743,11 +759,67 @@ class Scheduler:
                         if choice.effect_source:
                             actor.note_effect_summon(choice.effect_source, spec.entity)
                             actor.note_combat_buff(choice.effect_source)
+                    # Zones (substrate #7 / 7b): register each created zone Object in
+                    # the live registry so it fires on occupants at their turn
+                    # boundaries (_fire_zone_effects).  Labelled under effect_source so
+                    # remove_effect (concentration drop / boundary sweep) marks it
+                    # destroyed and the emanation winks out with the bundle.
+                    for zone in choice.zones:
+                        self.zones[zone.name] = zone
+                        if choice.effect_source:
+                            actor.note_effect_zone(choice.effect_source, zone)
+                            actor.note_combat_buff(choice.effect_source)
                 # No event enqueued — seq is not advanced.
             else:
                 log.warning("Unknown action_type %r — skipped.", choice.action_type)
 
         return 0  # damage accumulates when DamageEvents resolve
+
+    # ------------------------------------------------------------------
+    # Recurring zone effects (substrate #7 / 7b — design.md §3.1)
+    # ------------------------------------------------------------------
+
+    def _fire_zone_effects(
+        self, actor: "Entity", round_: int, turn_idx: int, start_seq: int = 1
+    ) -> int:
+        """Fire every active damaging zone *actor* is currently inside, at the start
+        of its turn (the recurring zone trigger — CLAUDE.md #5: a synchronous trigger
+        on the TurnStartEvent, recurring because turns recur each round).
+
+        For each zone whose ``contains(actor)`` holds (actor shares the zone's
+        location and is not the owner / not designated-unaffected), enqueue a
+        ``SaveDamageEvent`` from the zone's OWNER to the actor — reusing the
+        save-for-damage path (the target rolls the zone's save vs the owner's DC;
+        half on a save).  Spirit Guardians' "a creature makes this save only once per
+        turn" falls out: we fire once, at the actor's turn boundary.
+
+        Returns the next available sequence number so the choice loop continues past
+        the zone events.
+        """
+        seq = start_seq
+        for zone in self.zones.values():
+            if getattr(zone, "destroyed", False) or not zone.contains(actor):
+                continue
+            eff = zone.effect
+            self.queue.push(SaveDamageEvent(
+                tick=make_tick(round_, turn_idx, seq),
+                actor=zone.owner,                   # attributed to the caster (zone DPR)
+                target=actor,                       # the occupant rolls the save
+                save_stat=eff.save_stat,
+                dc_stat=eff.dc_stat,
+                damage_dice=eff.damage_dice,
+                damage_bonus=eff.damage_bonus,
+                on_save=eff.on_save,
+                damage_type=eff.damage_type,
+                is_spell=eff.is_spell,
+                cost="none",
+            ))
+            seq += 1
+            log.info(
+                "  zone %r assails %s (save %s vs %s's DC)",
+                zone.name, actor.name, eff.save_stat, zone.owner.name,
+            )
+        return seq
 
     # ------------------------------------------------------------------
     # Round seeding

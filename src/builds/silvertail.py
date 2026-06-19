@@ -98,6 +98,7 @@ from ..modifiers import Modifier
 from ..policy import Choice, InterceptResponse, RedirectSpec
 from ..resources import ResourceEntry, ResourcePool
 from ..summons import SummonSpec, create_entity
+from ..zones import Zone, ZoneEffectSpec
 
 if TYPE_CHECKING:
     from ..rng import SeededRNG
@@ -213,6 +214,64 @@ LEVELS: dict[int, dict] = {
         # Loose all-hit upper bound (NOT a target): beast 1d8+1d6+6 ≈ 14 + shocking
         # grasp 2d8 ≈ 9 → ~23, + Bless accuracy.  40 cushion.
         "ceiling_dpr": 40.0,
+    },
+    # -----------------------------------------------------------------------
+    # char L10 (Fighter-1 / Ranger-4 / Cleric-5 Trickery) — the 7b ZONE / EMANATION
+    # row.  Cleric-5 unlocks 3rd-level spells → SPIRIT GUARDIANS (guide 32:42,523), a
+    # 15-ft emanation anchored to the caster: each enemy that ends its turn inside
+    # makes a Wisdom save vs our DC or takes 3d8 radiant (half on a save).  This is
+    # the recurring-save-for-half emanation that stands up substrate #7 / 7b.
+    #   PB +4; WIS 19 (+4) (resilient WIS at L9, guide 32:41,479) → cleric DC 16,
+    #     spell-attack / Beast's-Strike to-hit +8.
+    #   shocking grasp stays 2d8 (char L5-10 cantrip step); no mod (Blessed Strikes
+    #     is char L15).
+    #   enemy: the full per-level profile (AC / saves / +to-hit / DC / DICE) is drawn
+    #     from the definitive table (monster_stats_by_level.csv at L10); it strikes
+    #     the master (the Spirit-Guardians tank) and rolls a real WIS save vs our DC
+    #     each of its turns inside the emanation.
+    # -----------------------------------------------------------------------
+    10: {
+        "char_ac": 20,                     # splint(17) + cloak of protection(+1) + shield(2)
+        "char_hp": 70,                     # DPR-irrelevant (threshold model)
+        "spell_attack_bonus": 8,           # PB 4 + WIS 4 (shocking grasp + Beast's-Strike to-hit)
+        "spell_save_dc": 16,               # 8 + PB 4 + WIS 4  → the Spirit Guardians save DC
+        "wis_mod": 4,                      # WIS 19
+        # Master saves — so a save-forcing enemy resolves against a real line.  Cleric
+        # (WIS/CHA) + Fighter (STR/CON) + resilient WIS; PB 4.
+        "char_saves": {"str_save": 6, "dex_save": 2, "con_save": 5,
+                       "int_save": 1, "wis_save": 8, "cha_save": 1},
+        # Spare leveled slots (3rd-level by now) — the revive budget the recast policy
+        # spends; the Spirit Guardians slot itself is abstracted under the combat-clock
+        # recast model (like the L8 buffs / the Scion's Fire Shield — full slot/day-
+        # clock economy deferred).
+        "resources": {"spell_slot": (3, 0)},
+        "shocking_grasp": {"dice": (2, 8), "bonus": 0,
+                           "weapon_stat": "spell_attack_bonus",
+                           "damage_type": "lightning", "is_spell": True},
+        # Beast of the Land (ranger-4): AC 17, HP 25, Beast's Strike 1d8+2+WIS=1d8+6,
+        # to-hit = spell attack mod (+8 at PB4+WIS4), charge +1d6.
+        "beast": {
+            "ac": 17, "hp": 25,
+            "attack_bonus": 8,
+            "strike_dice": (1, 8),
+            "strike_bonus": 6,             # 2 + WIS(4)
+            "charge_dice": (1, 6),
+            "strike_type": "bludgeoning",
+        },
+        # Enemy strikes the master (the emanation tank) — a MARKER; the numbers come
+        # from the definitive table via BaselineEnemyPolicy.  Its hits force the
+        # master's concentration saves (a failed one ends Spirit Guardians).
+        "enemy_attack": {"damage_type": "slashing"},
+        # Spirit Guardians spec (the 7b emanation): WIS save vs our DC, 3d8 radiant,
+        # half on a save, anchored to the caster, concentration.
+        "spirit_guardians": {
+            "save_stat": "wis_save",
+            "damage_dice": (3, 8),
+            "damage_type": "radiant",
+        },
+        # Loose all-hit upper bound (NOT a target): beast 1d8+1d6+6 ≈ 14 + shocking
+        # grasp 2d8 ≈ 9 + spirit guardians 3d8 ≈ 13.5/enemy-turn → ~37.  60 cushion.
+        "ceiling_dpr": 60.0,
     },
 }
 
@@ -340,6 +399,7 @@ class SilvertailPolicy:
         beast: Entity,
         target: Entity,
         rounds_per_combat: int = 4,
+        zone_effect: "str | None" = None,
     ) -> None:
         if level not in LEVELS:
             raise NotImplementedError(
@@ -353,6 +413,10 @@ class SilvertailPolicy:
         data = LEVELS[level]
         self._shocking_grasp = data["shocking_grasp"]
         self._beast_data = data["beast"]
+        # 7b zone: when "spirit_guardians", the master opens each combat by casting
+        # the emanation (concentration) as its Action, then meleeing under it.
+        self._zone_effect = zone_effect
+        self._zone_data = data.get("spirit_guardians")
 
     def decide(self, snapshot) -> list[Choice]:
         res = snapshot.resources
@@ -369,21 +433,63 @@ class SilvertailPolicy:
         ):
             choices.append(self._beast_strike_choice())
 
-        # ACTION: shocking grasp — the master's own attack (the build column).
+        # ACTION: round 1 of each combat — cast the Spirit Guardians emanation (the
+        # 7b zone, concentration); from then on, while it holds, melee shocking grasp
+        # under it (guide 32:80 "use shocking grasp + beast strike").  If we are not
+        # running the zone scenario, every round is shocking grasp.
         if res.get("action", 0) >= 1:
-            sg = self._shocking_grasp
-            choices.append(Choice(
-                action_type="attack",
-                cost="action",
-                target=self._target,
-                weapon_stat=sg["weapon_stat"],
-                damage_dice=sg["dice"],
-                damage_bonus=sg["bonus"],
-                damage_type=sg.get("damage_type"),
-                is_spell=sg.get("is_spell", False),
-            ))
+            if (
+                self._zone_effect == "spirit_guardians"
+                and snapshot.round_number == 1
+                and self._character.concentration != "spirit_guardians"
+            ):
+                choices.append(self._spirit_guardians_choice())
+            else:
+                sg = self._shocking_grasp
+                choices.append(Choice(
+                    action_type="attack",
+                    cost="action",
+                    target=self._target,
+                    weapon_stat=sg["weapon_stat"],
+                    damage_dice=sg["dice"],
+                    damage_bonus=sg["bonus"],
+                    damage_type=sg.get("damage_type"),
+                    is_spell=sg.get("is_spell", False),
+                ))
 
         return choices
+
+    def _spirit_guardians_choice(self) -> Choice:
+        """The Spirit Guardians cast (substrate #7 / 7b): a ``cast_effect`` whose
+        ``zones`` payload creates a 15-ft emanation ANCHORED to the master, forcing a
+        WIS save-for-half (3d8 radiant) on each enemy that ends its turn inside it.
+        Concentration on the master (a broken concentration ends the emanation); the
+        owner + the commanded beast are designated UNAFFECTED.  The 3rd-level slot is
+        abstracted under the combat-clock recast model (see the L10 row)."""
+        z = self._zone_data
+        zone = Zone(
+            name="spirit_guardians",
+            owner=self._character,
+            effect_source="spirit_guardians",
+            effect=ZoneEffectSpec(
+                save_stat=z["save_stat"],
+                dc_stat="spell_save_dc",
+                damage_dice=z["damage_dice"],
+                on_save="half",
+                damage_type=z["damage_type"],
+                is_spell=True,
+            ),
+            anchored_to=self._character,
+            unaffected={self._character.id, self._beast.id},
+        )
+        return Choice(
+            action_type="cast_effect",
+            cost="action",
+            effect_source="spirit_guardians",
+            concentration=True,
+            duration="combat",
+            zones=[zone],
+        )
 
     def _beast_strike_choice(self) -> Choice:
         """The COMMANDED Beast's Strike (charge): a melee attack made BY the beast
@@ -547,6 +653,7 @@ def make_silvertail_runner(
     beast_effect: "str | None" = None,
     mortal_beast: bool = False,
     recast: bool = False,
+    zone_effect: "str | None" = None,
 ):
     """Assemble (DayRunner, master, beast, dummy) for the given level.
 
@@ -575,6 +682,15 @@ def make_silvertail_runner(
     recast:
         If True, register the between-combats RECAST policy (``make_recast_hook``) so
         a dead beast is revived (spending a spare slot) before the next combat.
+    zone_effect:
+        The 7b ZONE/EMANATION cast the master opens combat with (session 23):
+        ``"spirit_guardians"`` (the L10 emanation — a recurring WIS save-for-half on
+        enemies inside) or None (no zone).  When set, the enemy focus-fires the
+        MASTER (the emanation tank) so its hits can break the master's concentration
+        and end the zone.  Read the caster's ZONE DPR off the ledger as
+        ``damage_source_to(master.id, dummy.id)`` (Spirit Guardians' radiant + the
+        master's own shocking grasp both land in that cell — an all-radiant filter
+        isolates the zone, since shocking grasp is lightning).
 
     Read the DPR columns SEPARATELY off the result (user decision, session 17):
       - build column   = ``damage_by_source(master.id)``  (the master's shocking grasp)
@@ -603,7 +719,7 @@ def make_silvertail_runner(
 
     policies[char.id] = SilvertailPolicy(
         level=level, character=char, beast=beast, target=dummy,
-        rounds_per_combat=rounds_per_combat,
+        rounds_per_combat=rounds_per_combat, zone_effect=zone_effect,
     )
 
     # 7c-on-summon: install the requested effect ON the beast (summon as buff /
@@ -623,10 +739,19 @@ def make_silvertail_runner(
     # master when the beast winks out.
     ea = LEVELS[level].get("enemy_attack")
     if ea:
+        # In the 7b zone scenario the enemy focus-fires the MASTER (the emanation
+        # tank) so its hits force the master's concentration saves (a failed one ends
+        # Spirit Guardians); otherwise it focus-fires the beast (the 7c-on-summon
+        # defender scenario).  Either way it takes the zone's per-turn save while
+        # inside (the zone fires on it regardless of whom it targets).
+        if zone_effect is not None:
+            primary, fallback = char, beast
+        else:
+            primary, fallback = beast, char
         policies[dummy.id] = BaselineEnemyPolicy(
             level=level,
-            primary=beast,
-            fallback=char,
+            primary=primary,
+            fallback=fallback,
             rounds_per_combat=rounds_per_combat,
             damage_type=ea.get("damage_type"),
         )
