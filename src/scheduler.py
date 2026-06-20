@@ -250,6 +250,21 @@ class Scheduler:
                 for handler in handlers:
                     seq_counter = handler(event, self.rng, self.queue, seq_counter, decider, hit_decider, intercept_decider)  # type: ignore[call-arg]
 
+            elif isinstance(event, SaveDamageEvent):
+                # Save-for-damage delivery (an enemy spell, or a damaging zone's
+                # recurring save).  Before resolving, query any ally-buff aura the
+                # TARGET is inside (substrate #7 / 7b, Circle of Power): a friendly
+                # creature inside gets ADVANTAGE on the save and, on a success vs a
+                # save-for-half spell, takes NO damage.  Only spells/magic qualify.
+                handlers = self._registry.get("save_damage", [])
+                seq_counter = seq + 1
+                save_adv, negate = self._zone_save_buffs(event.target, event.is_spell)
+                for handler in handlers:
+                    seq_counter = handler(  # type: ignore[call-arg]
+                        event, self.rng, self.queue, seq_counter,
+                        save_advantage=save_adv, negate_on_save=negate,
+                    )
+
             elif isinstance(event, RoundEndEvent):
                 log.debug("RoundEndEvent fired, round=%d", round_)
 
@@ -798,7 +813,11 @@ class Scheduler:
         """
         seq = start_seq
         for zone in self.zones.values():
-            if getattr(zone, "destroyed", False) or not zone.contains(actor):
+            # Buff-only auras (effect is None — Circle of Power) fire nothing; they are
+            # queried at save resolution instead (see _zone_save_buffs).
+            if getattr(zone, "destroyed", False) or getattr(zone, "effect", None) is None:
+                continue
+            if not zone.contains(actor):
                 continue
             eff = zone.effect
             self.queue.push(SaveDamageEvent(
@@ -820,6 +839,30 @@ class Scheduler:
                 zone.name, actor.name, eff.save_stat, zone.owner.name,
             )
         return seq
+
+    def _zone_save_buffs(self, target: "Entity | None", is_spell: bool):
+        """Buff-aura query (substrate #7 / 7b, Circle of Power): does an active
+        ally-buff zone the *target* is inside grant it advantage on this save and/or
+        negate damage on a successful save?
+
+        Returns ``(save_advantage, negate_on_save)``.  Only spells / magical effects
+        qualify ("advantage on saving throws against spells and other magical
+        effects") — a non-spell save (a trap, an enemy's natural breath that is not
+        magical) is unaffected.  Computed here because the scheduler owns the live zone
+        registry; the flags are threaded into ``resolve_save_damage``.
+        """
+        if target is None or not is_spell:
+            return (False, False)
+        advantage = False
+        negate = False
+        for zone in self.zones.values():
+            buff = getattr(zone, "buff", None)
+            if buff is None or getattr(zone, "destroyed", False):
+                continue
+            if zone.affects(target):
+                advantage = advantage or buff.save_advantage_vs_magic
+                negate = negate or buff.success_negates_half
+        return (advantage, negate)
 
     # ------------------------------------------------------------------
     # Round seeding

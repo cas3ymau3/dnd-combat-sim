@@ -71,9 +71,33 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none confirmed (session 23 toggle
+> **Currently disabled (re-enable before exit):** none confirmed (session 24 toggle
 > recommendation re-made: computer-use / Claude-in-Chrome / Claude_Preview /
-> scheduled-tasks / mcp-registry / Google Drive — user to toggle via the app). **Session
+> scheduled-tasks / mcp-registry / Google Drive — user to toggle via the app).
+>
+> **Session scope (2026-06-20, session 24) — DONE (SUBSTRATE #7 — 7b ROUND-2: BUFF-AURA,
+> Circle of Power):** built the BUFF half of the 7b zone (the deferred buff-aura flavor),
+> through-merge. **Scope settled up front (2 Qs): buff-auras (circle of power);
+> through-merge** (the static-placed-zones candidate NOT taken — still deferred).
+> Per-feature ritual CAUGHT AN ACCESS ERROR: Circle of Power is a **Paladin** 5th-level
+> spell, NOT cleric (the design note + prompt said "cleric-9 / L17"); the silvertail
+> (a Cleric) can't cast it → validated on a SYNTHETIC vehicle (caster + beneficiary ally
+> + save-forcing enemy), per validate-mechanism-not-build-value. **Built:** `ZoneBuffSpec`
+> + `Zone.buff` + `Zone.affects` (the friendly-polarity mirror of `contains`); a buff aura
+> is QUERIED on demand at save resolution (`Scheduler._zone_save_buffs` + an explicit
+> `SaveDamageEvent` dispatch branch threading `save_advantage`/`negate_on_save` into
+> `resolve_save_damage`), NOT a recurring event — so entering/leaving toggles the benefit
+> with no enter/leave trigger (sidesteps a deferred item). The cast_effect `zones`
+> registration + `remove_effect` teardown reused UNCHANGED. **MECHANISM validated**
+> (`tests/test_zone_buff_aura.py`, +12; NOT build value): advantage on the save +
+> success-vs-half→no-damage + the gate to spells/magic + leave/destroy/concentration-drop
+> + anchored-follow. **495 tests green (+12).** ATTACK-TAXONOMY NOT forced. **STILL
+> DEFERRED:** the static/positioning axis (static placed zones + enemy-leaves-zone §3.5 +
+> footprint-vs-speed + mid-turn "enters" triggers). **NEXT (user picks at close-out):
+> the remaining 7b static axis (wardancer spike growth / cloud of daggers) OR move on
+> from #7 (substrate #7 is complete; round-2 is optional polish).**
+>
+> **Session
 > scope (2026-06-19, session 23) — DONE (SUBSTRATE #7 — 7b ZONE / EMANATION; the LAST
 > #7 sub-kind → #7 COMPLETE):** built the zone/emanation substrate via the silvertail's
 > **Spirit Guardians** at a new char **L10** row (Fighter-1/Ranger-4/Cleric-5 Trickery).
@@ -571,6 +595,64 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **SUBSTRATE #7 — 7b ROUND-2: BUFF-AURA FLAVOR (Circle of Power) — BUILT & VALIDATED
+  (2026-06-20, session 24).** The first of the deferred 7b round-2 flavors: the BUFF
+  half of the zone (the same Object machinery conferring a benefit on the FRIENDLY
+  creatures inside, instead of FIRING damage on the enemies inside). **495 tests green
+  (+12).** Branch `feature/substrate-7b-buff-aura` → merged to main this session
+  (user-approved up front: through-merge). Design contract: `design/buff_primitive.md`
+  (the 7b BUILT entry's ROUND-2 sub-entry + the stress-test Circle-of-Power line).
+  - **Scope settled with the user up front (2 Qs): buff-auras (circle of power);
+    through-merge.** (The other round-2 candidate — static placed zones + the
+    enemy-leaves-zone §3.5 policy — was NOT taken; still deferred.)
+  - **Rules verified FIRST (per-feature ritual, web 2026-06-20) — WITH A CORRECTION.**
+    Circle of Power is a **Paladin** 5th-level abjuration, NOT a Cleric spell (the design
+    note + the session prompt both said "cleric-9 / L17"). The silvertail is a Cleric with
+    no Paladin levels → it CANNOT cast it. 2024 text: Action, **Self (30-ft emanation,
+    moves with you → anchored to caster)**, Concentration ≤10 min; each **friendly
+    creature in the area (including you)** has **advantage on saves vs spells/magic**, and
+    on a **success vs a save-for-half spell takes NO damage** instead of half.
+  - **(1) `ZoneBuffSpec` + `Zone.buff` + `Zone.affects` (`src/zones.py`).** A zone is now
+    either DAMAGING (`effect` set — `contains` selects the enemies it FIRES on) or a BUFF
+    AURA (`buff` set — `affects` selects the friendly creatures it confers on: owner +
+    designated `beneficiaries` inside; the friendly-polarity mirror of `contains`).
+    `contains` now returns False for a buff-only zone and `affects` False for a damaging
+    zone — the flavors don't bleed.
+  - **(2) Computed-on-demand, NOT a recurring event (the key design call).** Unlike the
+    damage zone (a recurring `SaveDamageEvent` fired at turn boundaries via
+    `_fire_zone_effects`), a buff aura installs nothing and fires nothing: it is QUERIED
+    at save resolution (CLAUDE.md #6 — effective state folds active membership).
+    `Scheduler._zone_save_buffs(target, is_spell)` scans the registry for a buff aura the
+    target is inside; a new explicit `SaveDamageEvent` dispatch branch threads
+    `save_advantage` / `negate_on_save` into `resolve_save_damage` (rolls the save at
+    advantage; upgrades `on_save="half"` → `"none"` on a success). **This sidesteps the
+    deferred "enters the zone" mid-turn trigger** — entering/leaving toggles the benefit
+    for free because membership is read at the moment a save happens. `_fire_zone_effects`
+    guarded to skip buff-only zones (no `effect`).
+  - **(3) Vehicle = synthetic** (Circle of Power has no RAW silvertail vehicle, per the
+    access correction): a caster owning the aura + a beneficiary ally + a save-forcing
+    enemy, mirroring session 19's synthetic ally. Per validate-mechanism-not-build-value,
+    NO fabricated build row.
+  - **MECHANISM validated** (`tests/test_zone_buff_aura.py`, +12; NOT build value):
+    `affects` polarity (owner + designated allies inside, never enemies); a buffed ally
+    saves at ADVANTAGE; a SUCCESS vs a save-for-half spell takes NO damage (vs HALF without
+    the aura); a FAIL still takes full; only spells/magic qualify (a non-spell save
+    unaffected); leaving (`move_entity`) / a destroyed aura / a dropped concentration
+    (`remove_effect`) drop the benefit; an anchored aura follows the owner; one directional
+    check under the real `SeededRNG` (buffed ally takes strictly less enemy-spell damage).
+  - **ATTACK-TAXONOMY NOT forced** (a save buff, no positioning attack vocabulary). The
+    cast_effect `zones` registration + `Entity.remove_effect` teardown were reused
+    UNCHANGED (a buff zone winks out exactly like the damage emanation).
+  - **STILL DEFERRED after round-2:** the static/positioning axis — static (placed) zones
+    (spike growth / cloud of daggers), an enemy policy that tries to LEAVE a damaging zone
+    (§3.5), footprint-vs-mover-speed exit gating, the mid-turn "creature enters / emanation
+    enters its space" triggers, multi-named-zone maps.
+  - **NEXT (user to pick at session-24 close-out): either the remaining 7b round-2 static
+    axis** (static placed zones + enemy-leaves-zone §3.5 + footprint-vs-speed — vehicle: a
+    wardancer build's spike growth / cloud of daggers, the design.md §3.1 canonical
+    example) **OR move on from #7** to the next model-capacity axis (substrate #7 is
+    complete; round-2 is optional polish on the zonal model).
 
 - **SUBSTRATE #7 — 7b ZONE / EMANATION — BUILT & VALIDATED (2026-06-19, session 23).
   The LAST unbuilt #7 sub-kind → substrate #7 is now COMPLETE.** A created **Object**
