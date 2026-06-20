@@ -474,6 +474,8 @@ def resolve_save_damage(
     rng: "SeededRNG",
     queue: "EventQueue",
     next_sequence: int,
+    save_advantage: bool = False,
+    negate_on_save: bool = False,
 ) -> int:
     """Resolve a save-FOR-damage spell.  Returns the next available sequence.
 
@@ -492,6 +494,13 @@ def resolve_save_damage(
     enemy targets carry no failed-save rescue, and an attacker-imposed save is
     not the kind of save Indomitable/Luck protect (those rescue the SAVER's own
     concentration / effects, handled on the spawned DamageEvent if relevant).
+
+    ``save_advantage`` / ``negate_on_save`` are the BUFF-AURA grants (substrate #7 /
+    7b, Circle of Power): a friendly creature inside an ally-buff zone rolls this save
+    at ADVANTAGE (``save_advantage``), and on a SUCCESS vs a save-for-half spell takes
+    NO damage instead of half (``negate_on_save`` upgrades ``on_save="half"`` to
+    ``"none"``).  Both gate on the event being a spell/magical effect — the scheduler
+    (which owns the zone registry) computes them and passes them in.
     """
     actor = event.actor
     target = event.target
@@ -501,7 +510,8 @@ def resolve_save_damage(
     round_, turn_idx, _ = event.tick
     dc = int(actor.stat(event.dc_stat, tick=event.tick))
 
-    saved = resolve_saving_throw(target, event.save_stat, dc, rng)
+    saved = resolve_saving_throw(target, event.save_stat, dc, rng,
+                                 advantage=save_advantage)
 
     # Telemetry (design §8: saves forced / failed by type) — tracked on the
     # entity that MADE the save, mirroring concentration_checks on the saver.
@@ -509,7 +519,12 @@ def resolve_save_damage(
     if not saved:
         target.saving_throws_failed += 1
 
-    deals_damage = (not saved) or (event.on_save == "half")
+    # Buff aura: a successful save vs a save-for-half spell takes NO damage instead
+    # of half (Circle of Power).  Only changes the SUCCESS branch — a fail still
+    # takes full — so upgrading on_save "half" → "none" is exactly the clause.
+    on_save = "none" if (negate_on_save and event.on_save == "half") else event.on_save
+
+    deals_damage = (not saved) or (on_save == "half")
     if not deals_damage:
         log.info(
             "%s SAVES vs %s's %s (DC %d) — negated, no damage",
@@ -524,7 +539,7 @@ def resolve_save_damage(
         is_crit=False,                 # saving-throw spells never crit
         damage_dice=event.damage_dice,
         damage_bonus=event.damage_bonus,
-        halved=(saved and event.on_save == "half"),
+        halved=(saved and on_save == "half"),
         damage_type=event.damage_type,
         is_spell=event.is_spell,
         min_die=event.min_die,

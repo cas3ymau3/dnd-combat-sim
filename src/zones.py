@@ -72,8 +72,38 @@ class ZoneEffectSpec:
 
 
 @dataclass
+class ZoneBuffSpec:
+    """The persistent BUFF an ally-buff aura confers on each FRIENDLY creature inside
+    it (substrate #7 / 7b, the BUFF flavor — the mirror of the damaging
+    ``ZoneEffectSpec``).
+
+    Defaults describe **Circle of Power** (2024 PHB: a **Cleric** [Level 5 Cleric Spell
+    List] / Paladin 5th-level abjuration, Concentration — verified against the official
+    D&D Beyond 2024 PHB before modeling; cleric-9 → char L17, so the silvertail CAN cast
+    it): each friendly creature in the 30-ft emanation (including the caster) has
+    **advantage on saving throws against spells and other magical effects**, and when an
+    affected creature **succeeds on a save vs a spell/effect that allows a save for half
+    damage, it takes NO damage** instead of half.
+
+    Unlike a damaging zone (which FIRES a recurring ``SaveDamageEvent`` on the enemies
+    inside at their turn boundaries), a buff aura installs nothing and fires nothing: it
+    is queried ON DEMAND at save resolution (CLAUDE.md #6 — effective state folds active
+    membership), so entering / leaving the aura toggles the benefit with no enter/leave
+    trigger needed (the deferred mid-turn "enters the zone" trigger is sidestepped).
+    """
+    save_advantage_vs_magic: bool = True
+    success_negates_half: bool = True
+
+
+@dataclass
 class Zone:
     """A created Object defining a named zone (substrate #7 / 7b).
+
+    A zone is either a **damaging** zone (``effect`` set — a ``ZoneEffectSpec`` it FIRES
+    on the enemies inside, via ``contains`` / ``_fire_zone_effects``) or an **ally-buff
+    aura** (``buff`` set — a ``ZoneBuffSpec`` it confers on the friendly creatures
+    inside, via ``affects``, queried at save resolution).  Spirit Guardians is the
+    former; Circle of Power the latter.
 
     Fields
     ------
@@ -88,7 +118,11 @@ class Zone:
         The cast_effect lifecycle label.  ``Entity.remove_effect(effect_source)``
         marks this zone ``destroyed`` (concentration drop / combat-boundary sweep).
     effect:
-        The recurring ``ZoneEffectSpec`` forced on affected occupants.
+        For a **damaging** zone, the recurring ``ZoneEffectSpec`` forced on the
+        enemies inside.  None for a buff aura.
+    buff:
+        For an **ally-buff aura**, the ``ZoneBuffSpec`` conferred on the friendly
+        creatures inside.  None for a damaging zone.
     anchored_to:
         For an **emanation**, the entity the zone follows (Spirit Guardians is
         anchored to the caster — it is wherever the caster stands).  None for a
@@ -97,19 +131,24 @@ class Zone:
         A static zone's fixed abstract-zone key.  Ignored when ``anchored_to`` is
         set (an emanation's location is read off the anchor each time).
     unaffected:
-        Entity ids the caster designated safe (the owner + its allies) — they are
-        never made to save even while standing in the zone.
+        (Damaging zone) entity ids the caster designated safe (the owner + its
+        allies) — they are never made to save even while standing in the zone.
+    beneficiaries:
+        (Buff aura) entity ids of the friendly creatures the aura confers its buff
+        on (the caster's allies; the owner always benefits — "including you").
     destroyed:
         Set True by ``Entity.remove_effect`` when the cast ends; the scheduler
-        skips a destroyed zone (and ``contains`` returns False).
+        skips a destroyed zone (and ``contains`` / ``affects`` return False).
     """
     name: str
     owner: "Entity"
     effect_source: str
-    effect: ZoneEffectSpec
+    effect: "ZoneEffectSpec | None" = None
+    buff: "ZoneBuffSpec | None" = None
     anchored_to: "Entity | None" = None
     location: "str | None" = None
     unaffected: set[int] = field(default_factory=set)
+    beneficiaries: set[int] = field(default_factory=set)
     destroyed: bool = False
 
     def current_location(self) -> "str | None":
@@ -120,12 +159,28 @@ class Zone:
         return self.location
 
     def contains(self, entity: "Entity") -> bool:
-        """Whether *entity* is currently inside this zone AND affected by it — it
+        """Whether *entity* is an enemy this DAMAGING zone currently assails — it
         shares the zone's abstract location and is neither the owner nor a
-        designated-unaffected ally.  Returns False for a destroyed zone."""
-        if self.destroyed:
+        designated-unaffected ally.  Returns False for a destroyed zone or a buff-only
+        aura (no ``effect`` payload — use ``affects`` for the buff polarity)."""
+        if self.destroyed or self.effect is None:
             return False
         if entity.id == self.owner.id or entity.id in self.unaffected:
+            return False
+        loc = self.current_location()
+        if loc is None:
+            return False
+        return getattr(entity, "zone", DEFAULT_ZONE) == loc
+
+    def affects(self, entity: "Entity") -> bool:
+        """Whether *entity* is a FRIENDLY creature currently benefiting from this buff
+        aura — it shares the aura's location AND is the owner or a designated
+        beneficiary (Circle of Power: "each friendly creature in the area, including
+        you").  The mirror of ``contains`` (which selects the enemies a damaging zone
+        assails).  Returns False for a destroyed zone or a non-buff (damaging) zone."""
+        if self.destroyed or self.buff is None:
+            return False
+        if entity.id != self.owner.id and entity.id not in self.beneficiaries:
             return False
         loc = self.current_location()
         if loc is None:
