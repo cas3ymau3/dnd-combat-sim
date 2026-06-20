@@ -645,15 +645,18 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
    chose the buff-aura half of the deferred 7b list (through-merge). The BUFF flavor of
    the zone: the same Object machinery, but conferring a benefit on the FRIENDLY
    creatures inside instead of FIRING damage on the enemies inside.
-   - **Rules verified FIRST (per-feature ritual, web 2026-06-20) — and a correction.**
-     Circle of Power is a **Paladin** 5th-level abjuration (this note previously, wrongly,
-     attributed it to "cleric-9 / L17"; the silvertail is a Cleric and CANNOT cast it —
-     exactly the access mismatch the ritual exists to catch). 2024 text: Action, **Self
-     (30-ft emanation, moves with you → anchored to the caster)**, Concentration up to 10
-     min; each **friendly creature in the area (including you)** has **advantage on saving
-     throws vs spells and other magical effects**, and when an affected creature
-     **succeeds on a save vs a spell/effect that allows a save for half damage, it takes
-     NO damage** instead.
+   - **Rules verified (per-feature ritual) — with a ritual lesson.** Circle of Power is a
+     **Cleric** spell in the 2024 PHB (Level 5 Cleric Spell List — confirmed on the
+     official D&D Beyond 2024 PHB; also Paladin). It was Paladin-ONLY in 2014, and a stale
+     2014-SRD source (AideDD) wrongly led the first pass to "correct" the design note's
+     "cleric-9 / L17" to Paladin — the user caught it from the authoritative page. **The
+     design note was right all along: cleric-9 → char L17, the silvertail CAN cast it.**
+     Ritual lesson: for 2024 CLASS LISTS, use D&D Beyond's 2024 PHB pages, not AideDD /
+     the 5e fandom wiki (both 2014-era). 2024 text: Action, **Self (30-ft Emanation, moves
+     with you → anchored to the caster)**, Concentration up to 10 min; each **friendly
+     creature in the area (including you)** has **advantage on saving throws vs spells and
+     other magical effects**, and when an affected creature **succeeds on a save vs a
+     spell/effect that allows a save for half damage, it takes NO damage** instead.
    - **`ZoneBuffSpec` + `Zone.buff` + `Zone.affects` (`src/zones.py`).** A zone is now
      either DAMAGING (`effect` set — fired on the enemies `contains` selects) or a BUFF
      AURA (`buff` set — conferred on the friendly creatures `affects` selects: owner +
@@ -669,9 +672,9 @@ slice that closes BOTH the substrate-#7 gap (7c) and the session-16 modeling art
      at advantage and upgrades `on_save="half"` → `"none"` on a success). This sidesteps
      the deferred "enters the zone" trigger — entering/leaving toggles the benefit for
      free, since membership is read at the moment a save happens.
-   - **Vehicle = synthetic** (Circle of Power has no RAW silvertail vehicle): a caster
-     owning the aura + a beneficiary ally + a save-forcing enemy, mirroring session 19's
-     synthetic ally. **MECHANISM validated** (`tests/test_zone_buff_aura.py`, +12; NOT
+   - **Vehicle = synthetic** (the silvertail CAN cast it at char L17, but no L17 row is
+     built yet — synthetic on scope grounds, not access): a caster owning the aura + a
+     beneficiary ally + a save-forcing enemy, mirroring session 19's synthetic ally. **MECHANISM validated** (`tests/test_zone_buff_aura.py`, +12; NOT
      build value): `affects` polarity (owner + allies, not enemies); a buffed ally saves
      at advantage; a success vs a half-spell takes NO damage (vs HALF without the aura); a
      fail still takes full; only spells/magic qualify; leaving (`move_entity`) / a
@@ -691,10 +694,10 @@ Per the design-first ritual, the envelope is stress-tested against a build that 
   by the master's BA) — not the threshold-immortal dummy.
 - **Spirit Guardians** (cleric-5 / char L10) → 7b emanation (recurring save-for-half
   to enemies in a 15-ft radius, anchored to the caster).
-- **Circle of power** (PALADIN-9 / L17 — NOT cleric; the silvertail can't cast it, so
-  validated on a synthetic vehicle) → 7b **buff**-aura (allies in the zone get advantage
-  on saves vs magic + success→no-damage) — the same Object machinery, buff flavor.
-  **BUILT round-2, session 24** (see the 7b BUILT entry above).
+- **Circle of power** (cleric-9 / L17 — a 2024-PHB Cleric spell; the silvertail CAN cast
+  it, but validated on a synthetic vehicle since no L17 row is built yet) → 7b **buff**-aura
+  (allies in the zone get advantage on saves vs magic + success→no-damage) — the same
+  Object machinery, buff flavor. **BUILT round-2, session 24** (see the 7b BUILT entry above).
 - **Aid / bless on the beast** → 7c ally-buff (retargeted #1/#3 payloads).
 - **Warding bond** → 7c **redirect** (master takes half the beast's damage).
 - **Protection fighting style / veer / sanctuary / arrow-catching shield** → 7c

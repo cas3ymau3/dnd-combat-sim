@@ -4,15 +4,16 @@
 The session-23 7b core built the DAMAGE flavor (Spirit Guardians: a zone that FIRES a
 recurring save-for-half on the enemies inside).  This is its mirror: a buff AURA that
 confers a benefit on the FRIENDLY creatures inside instead — **Circle of Power** (2024
-**Paladin** 5th-level abjuration, web-verified before modeling; NOT a cleric spell,
-contrary to the old design-note attribution).  A 30-ft emanation anchored to the caster; each
-friendly creature inside (including the caster) has ADVANTAGE on saving throws vs spells
-and magical effects, and on a SUCCESS vs a save-for-half spell takes NO damage.
+PHB: a **Cleric** [Level 5 Cleric Spell List] / Paladin 5th-level abjuration,
+Concentration — verified against the official D&D Beyond 2024 PHB before modeling;
+cleric-9 → char L17).  A 30-ft emanation anchored to the caster; each friendly creature
+inside (including the caster) has ADVANTAGE on saving throws vs spells and magical
+effects, and on a SUCCESS vs a save-for-half spell takes NO damage.
 
-Because Circle of Power has no RAW vehicle in the (Cleric) silvertail, this validates
-the MECHANISM with a synthetic vehicle (a caster owning the aura + a beneficiary ally +
-a save-forcing enemy), exactly as session 19's 7c ally-effects used a synthetic ally —
-per the project steer (validate the mechanism, not build value):
+The silvertail (a Cleric) CAN cast it at char L17, but no L17 row is built yet, so this
+validates the MECHANISM with a synthetic vehicle (a caster owning the aura + a beneficiary
+ally + a save-forcing enemy), exactly as session 19's 7c ally-effects used a synthetic
+ally — per the project steer (validate the mechanism, not build value):
 
   - Zone.affects selects the owner + designated allies INSIDE (the friendly mirror of
     Zone.contains, which selects the enemies a damaging zone assails);

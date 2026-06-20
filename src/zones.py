@@ -77,12 +77,13 @@ class ZoneBuffSpec:
     it (substrate #7 / 7b, the BUFF flavor — the mirror of the damaging
     ``ZoneEffectSpec``).
 
-    Defaults describe **Circle of Power** (2024: a **Paladin** 5th-level abjuration —
-    web-verified 2026-06-20 before modeling; NOT a Cleric spell, contrary to the old
-    design-note attribution): each friendly creature in the 30-ft emanation (including
-    the caster) has **advantage on saving throws against spells and other magical
-    effects**, and when an affected creature **succeeds on a save vs a spell/effect that
-    allows a save for half damage, it takes NO damage** instead of half.
+    Defaults describe **Circle of Power** (2024 PHB: a **Cleric** [Level 5 Cleric Spell
+    List] / Paladin 5th-level abjuration, Concentration — verified against the official
+    D&D Beyond 2024 PHB before modeling; cleric-9 → char L17, so the silvertail CAN cast
+    it): each friendly creature in the 30-ft emanation (including the caster) has
+    **advantage on saving throws against spells and other magical effects**, and when an
+    affected creature **succeeds on a save vs a spell/effect that allows a save for half
+    damage, it takes NO damage** instead of half.
 
     Unlike a damaging zone (which FIRES a recurring ``SaveDamageEvent`` on the enemies
     inside at their turn boundaries), a buff aura installs nothing and fires nothing: it

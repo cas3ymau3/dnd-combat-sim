@@ -79,10 +79,13 @@ type, condition, resource, …):
 > Circle of Power):** built the BUFF half of the 7b zone (the deferred buff-aura flavor),
 > through-merge. **Scope settled up front (2 Qs): buff-auras (circle of power);
 > through-merge** (the static-placed-zones candidate NOT taken — still deferred).
-> Per-feature ritual CAUGHT AN ACCESS ERROR: Circle of Power is a **Paladin** 5th-level
-> spell, NOT cleric (the design note + prompt said "cleric-9 / L17"); the silvertail
-> (a Cleric) can't cast it → validated on a SYNTHETIC vehicle (caster + beneficiary ally
-> + save-forcing enemy), per validate-mechanism-not-build-value. **Built:** `ZoneBuffSpec`
+> Per-feature ritual lesson: a stale 2014-SRD source (AideDD) led the first pass to
+> wrongly "correct" Circle of Power to Paladin-only; the USER caught it — it IS a 2024-PHB
+> **Cleric** spell (cleric-9 → char L17), so the silvertail CAN cast it and the design
+> note was right. (Lesson: 2024 class lists → D&D Beyond 2024 PHB, not AideDD/fandom.)
+> Validated on a SYNTHETIC vehicle (caster + beneficiary ally + save-forcing enemy)
+> because no L17 silvertail row is built yet — scope, not access — per
+> validate-mechanism-not-build-value. **Built:** `ZoneBuffSpec`
 > + `Zone.buff` + `Zone.affects` (the friendly-polarity mirror of `contains`); a buff aura
 > is QUERIED on demand at save resolution (`Scheduler._zone_save_buffs` + an explicit
 > `SaveDamageEvent` dispatch branch threading `save_advantage`/`negate_on_save` into
@@ -606,13 +609,17 @@ type, condition, resource, …):
   - **Scope settled with the user up front (2 Qs): buff-auras (circle of power);
     through-merge.** (The other round-2 candidate — static placed zones + the
     enemy-leaves-zone §3.5 policy — was NOT taken; still deferred.)
-  - **Rules verified FIRST (per-feature ritual, web 2026-06-20) — WITH A CORRECTION.**
-    Circle of Power is a **Paladin** 5th-level abjuration, NOT a Cleric spell (the design
-    note + the session prompt both said "cleric-9 / L17"). The silvertail is a Cleric with
-    no Paladin levels → it CANNOT cast it. 2024 text: Action, **Self (30-ft emanation,
-    moves with you → anchored to caster)**, Concentration ≤10 min; each **friendly
-    creature in the area (including you)** has **advantage on saves vs spells/magic**, and
-    on a **success vs a save-for-half spell takes NO damage** instead of half.
+  - **Rules verified (per-feature ritual) — WITH A RITUAL LESSON.** Circle of Power is a
+    **Cleric** spell in the 2024 PHB (Level 5 Cleric Spell List — confirmed on the official
+    D&D Beyond 2024 PHB; also Paladin). It was Paladin-ONLY in 2014, and a stale 2014-SRD
+    source (AideDD) led the first pass to wrongly "correct" the design note's "cleric-9 /
+    L17" to Paladin; the USER caught it from the authoritative page. **The design note was
+    right: cleric-9 → char L17, the silvertail CAN cast it.** Lesson: for 2024 CLASS LISTS,
+    use D&D Beyond's 2024 PHB pages, not AideDD / the 5e fandom wiki (both 2014-era). 2024
+    text: Action, **Self (30-ft Emanation, moves with you → anchored to caster)**,
+    Concentration ≤10 min; each **friendly creature in the area (including you)** has
+    **advantage on saves vs spells/magic**, and on a **success vs a save-for-half spell
+    takes NO damage** instead of half.
   - **(1) `ZoneBuffSpec` + `Zone.buff` + `Zone.affects` (`src/zones.py`).** A zone is now
     either DAMAGING (`effect` set — `contains` selects the enemies it FIRES on) or a BUFF
     AURA (`buff` set — `affects` selects the friendly creatures it confers on: owner +
@@ -630,10 +637,10 @@ type, condition, resource, …):
     deferred "enters the zone" mid-turn trigger** — entering/leaving toggles the benefit
     for free because membership is read at the moment a save happens. `_fire_zone_effects`
     guarded to skip buff-only zones (no `effect`).
-  - **(3) Vehicle = synthetic** (Circle of Power has no RAW silvertail vehicle, per the
-    access correction): a caster owning the aura + a beneficiary ally + a save-forcing
-    enemy, mirroring session 19's synthetic ally. Per validate-mechanism-not-build-value,
-    NO fabricated build row.
+  - **(3) Vehicle = synthetic** (the silvertail CAN cast Circle of Power at char L17, but
+    no L17 row is built yet — synthetic on scope grounds, NOT access): a caster owning the
+    aura + a beneficiary ally + a save-forcing enemy, mirroring session 19's synthetic
+    ally. Per validate-mechanism-not-build-value, NO fabricated build row.
   - **MECHANISM validated** (`tests/test_zone_buff_aura.py`, +12; NOT build value):
     `affects` polarity (owner + designated allies inside, never enemies); a buffed ally
     saves at ADVANTAGE; a SUCCESS vs a save-for-half spell takes NO damage (vs HALF without
