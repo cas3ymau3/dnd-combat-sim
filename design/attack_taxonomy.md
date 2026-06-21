@@ -122,6 +122,78 @@ is_spell_origin(origin)          := origin == "spell"
 `HitContext` exposes `is_physical` / `is_spell_origin` as properties; riders
 should prefer these over the legacy `is_spell` / `is_unarmed` flags.
 
+> ⚠️ `is_attack_action` identifies the Attack-action **expenditure** (you spend
+> your action to Attack). It is **NOT** the gate GWM / Searing-Arc features key on
+> — those want "made *as part of* the Attack action", which is the PROVENANCE
+> property below, not derivable from `(modality, cost)`.
+
+---
+
+## Worked example — Eldritch Knight, War Magic, True Strike (every axis decouples)
+
+War Magic (2024) lets you replace one attack of the Attack action with casting a
+cantrip. True Strike (2024) is a cantrip that makes one **weapon** attack with the
+casting weapon, using your spellcasting mod (INT), damage = the weapon's type *or*
+radiant (choice), plus a radiant rider at higher levels. So an EK who swings a
+longsword then War-Magics True Strike maps as:
+
+| | modality | cost | resolution | origin | range | damage_type | stat |
+|---|---|---|---|---|---|---|---|
+| *Take the Attack action* | Attack | action | — | — | — | — | — |
+| Swing 1 — longsword | Attack | action | attack_roll | weapon | melee | slashing | STR |
+| Swing 2 — cast True Strike (the hit) | **Magic** | **none** | attack_roll | **weapon** | melee | slashing *or* radiant | INT |
+| ↳ True Strike's radiant rider | Magic | none | (rider) | **spell** | — | radiant | — |
+
+Lessons it pins:
+- **modality ⊥ resolution** (Magic, yet attack_roll) and **modality ⊥ origin**
+  (Magic-modality, yet weapon-origin — True Strike attacks *with* the weapon).
+- **cost ⊥ modality** — Magic at `cost=none` (War Magic slots the cast into an
+  Attack-action swing; casting True Strike *normally* would be Magic at
+  `cost=action`).
+- **origin ⊥ damage_type** — if the EK renders the weapon damage as radiant, that
+  is a *weapon-origin* hit dealing radiant, which is **not** spell damage (not
+  fuelable). Only the rider (`origin=spell`) is.
+- **Engine gotcha:** swing 2 uses the spell-attack stat (INT) but is `origin=weapon`
+  — the back-compat `derive_origin` would mis-infer `feature`, so the call site
+  must set `origin="weapon"` explicitly. The legacy flags can't represent
+  "weapon attack with a spell stat" (the Shillelagh family) — the reason we want a
+  first-class axis.
+
+---
+
+## Provenance — "made as part of the Attack action" (descriptor, deferred build)
+
+GWM's +PB damage, and Searing-Arc-style gates, apply to attacks **made as part of
+the Attack action**. The True Strike/GWM stress test (session 25, web-verified
+against the 2024 RAW + community consensus) shows this is a **provenance** property
+— *which action granted the attack* — and that it is **not** the sub-attack's
+modality and **not** derivable from `(modality, cost)`:
+
+- GWM's +PB applies to **both** EK swings above, including the War-Magic True
+  Strike (`modality=Magic, cost=none`) — because War Magic casts the cantrip "as
+  part of the Attack action".
+- It does **not** apply to a normally-cast True Strike (Magic action), nor to a
+  bonus-action attack or an opportunity attack.
+- It already isn't `is_attack_action(modality, cost)`: a plain Extra Attack
+  follow-up is `cost=none` yet GWM applies to it.
+
+Model: a per-attack flag `part_of_attack_action: bool`, set by whatever GRANTS the
+attack (the Attack action sets it True on every swing it grants, incl. a War-Magic
+replacement; BA / reaction / standalone-cast attacks leave it False). GWM reads it;
+the turn-level "did you take the Attack action this turn?" gate is the OR of it over
+the turn. Generalises later to a "granting action" tag. **Build when a GWM /
+War-Magic build forces it** — no current build uses it.
+
+## Weapon properties are NOT taxonomy axes
+
+GWM's gate is also "a **Heavy** weapon" — excluding an off-hand dagger (Light) and,
+via `origin`, Shocking Grasp (spell) and an unarmed strike. The **origin** part is
+taxonomy and already does that work; **Heavy / Light / Finesse / Reach / Thrown /
+Versatile** are properties of the WEAPON (equipment data), not a classification of
+the action. Keep them on the weapon-data layer (alongside `weapon_mastery`) and
+compose GWM's gate as `part_of_attack_action AND origin==weapon AND
+weapon.has("Heavy") AND hit`. Build the weapon-property data when a build forces it.
+
 ---
 
 ## Deferred (named, not yet built)
@@ -135,6 +207,12 @@ should prefer these over the legacy `is_spell` / `is_unarmed` flags.
   the near-term builds.
 - **The non-combat modalities** (Influence / Study / Search / Hide-as-skill) are
   named for closure but given no resolution machinery.
+- **The `part_of_attack_action` provenance flag** (see the Provenance section) —
+  the gate GWM / Searing-Arc features actually need. Build when a GWM / War-Magic
+  build forces it.
+- **Weapon-property data** (Heavy / Light / Finesse / Reach / Thrown / Versatile)
+  on the weapon-data layer — NOT a taxonomy axis. Build when a build (e.g. GWM)
+  forces it.
 - **Runtime gate migration** (see below).
 
 ---

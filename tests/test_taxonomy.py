@@ -36,11 +36,18 @@ def test_predicates():
     assert not taxonomy.is_attack("automatic")
     assert not taxonomy.is_attack(None)
 
-    # "Attack action" = the Attack modality AT AN ACTION cost specifically — a
-    # bonus-action swing is the Attack modality but NOT the Attack action.
+    # is_attack_action = the Attack-action EXPENDITURE (spend your action to
+    # Attack) — a bonus-action swing is the Attack modality but not the
+    # expenditure.
     assert taxonomy.is_attack_action("Attack", "action")
     assert not taxonomy.is_attack_action("Attack", "bonus_action")
     assert not taxonomy.is_attack_action("Magic", "action")
+    # ...and it is deliberately NOT the GWM / Searing-Arc "made as part of the
+    # Attack action" gate, which is a provenance property (deferred build): an
+    # Extra Attack FOLLOW-UP (Attack, none) and a War-Magic cantrip (Magic, none)
+    # are both part of the Attack action yet return False here.
+    assert not taxonomy.is_attack_action("Attack", "none")   # Extra Attack follow-up
+    assert not taxonomy.is_attack_action("Magic", "none")    # War-Magic True Strike
 
     # physical = weapon | unarmed; spell-origin = spell SPECIFICALLY (a feature
     # is magical but not a spell).

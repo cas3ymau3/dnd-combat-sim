@@ -45,6 +45,32 @@ Derived predicates (helpers below) — NOT stored, computed from the axes:
     is_physical      := origin in {"weapon", "unarmed"}
     is_spell_origin  := origin == "spell"
 
+PROVENANCE — "part of the Attack action" (a descriptor, deferred build):
+    Some features (Great Weapon Master's +PB damage; Searing-Arc-style "after you
+    take the Attack action" gates) key on whether an attack was made "as part of
+    the Attack action".  This is NOT the attack's modality and NOT derivable from
+    (modality, cost):
+      - an Extra Attack FOLLOW-UP swing is part of the Attack action but costs
+        "none";
+      - a War-Magic cantrip (Eldritch Knight) is part of the Attack action but
+        has modality == "Magic" (it casts True Strike, which makes a weapon
+        attack) — and GWM's +PB DOES apply to it (RAW + community consensus);
+      - a bonus-action attack, an opportunity attack, and a standalone
+        Magic-action cantrip are NOT part of the Attack action.
+    So "part of the Attack action" needs a per-attack PROVENANCE flag set by
+    whatever GRANTS the attack (the Attack action sets it on every swing it
+    grants, incl. a War-Magic replacement).  Generalises later to a "granting
+    action" tag.  Build the flag when a GWM / War-Magic build forces it.
+
+WEAPON PROPERTIES ARE NOT A TAXONOMY AXIS:
+    GWM's gate is also "a *Heavy* weapon" — but Heavy / Light / Finesse / Reach /
+    Thrown / Versatile are properties of the WEAPON (equipment data), not a
+    classification of the action.  The taxonomy already carries the part GWM needs
+    from it — `origin` (weapon vs unarmed vs spell, which excludes Shocking Grasp
+    and an unarmed strike) and `range` — and composes those predicates with a
+    weapon-property LOOKUP on the equipped weapon.  Model weapon properties on the
+    weapon-data layer (alongside `weapon_mastery`), not here; build when forced.
+
 DEFERRED (named here, not yet carried as data):
     - a `magical` flag distinct from origin.  Under the 2024 rules monsters no
       longer resist "nonmagical" B/P/S (resistances are flat by damage type), so
@@ -158,10 +184,26 @@ def is_attack(resolution: str | None) -> bool:
 
 
 def is_attack_action(modality: str | None, cost: str | None) -> bool:
-    """True only when the Attack modality is taken with an *action* — the gate
-    a number of features key on (e.g. Searing Arc Strike requires that you
-    "took the Attack action").  A bonus-action swing is the Attack modality but
-    NOT the Attack action."""
+    """True only when the Attack modality is taken with an *action* — i.e. this
+    Choice is the Attack-action EXPENDITURE (the moment you spend your action to
+    Attack).  A bonus-action swing is the Attack modality but NOT the Attack
+    action expenditure.
+
+    WARNING — this is NOT the gate GWM / Searing-Arc-style features key on.
+    Those gate on "made as part of the Attack action", which is a PROVENANCE
+    property, not this (modality, cost) pair:
+      - an Extra Attack FOLLOW-UP swing is part of the Attack action but has
+        cost == "none" (the action was paid by the first swing) → this returns
+        False, yet GWM's +PB applies to it;
+      - a War-Magic cantrip (Eldritch Knight) is part of the Attack action but
+        has modality == "Magic" → this returns False, yet GWM applies to it
+        (community consensus + RAW: War Magic casts the cantrip "as part of the
+        Attack action").
+    "part of the Attack action" therefore needs a per-attack PROVENANCE flag set
+    by whatever grants the attack (see the module docstring + attack_taxonomy.md);
+    it cannot be derived from (modality, cost).  Build that flag when a GWM /
+    War-Magic build forces it.
+    """
     return modality == "Attack" and cost == "action"
 
 
