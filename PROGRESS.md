@@ -71,9 +71,48 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none confirmed (session 24 toggle
+> **Currently disabled (re-enable before exit):** none confirmed (session 25 toggle
 > recommendation re-made: computer-use / Claude-in-Chrome / Claude_Preview /
 > scheduled-tasks / mcp-registry / Google Drive — user to toggle via the app).
+>
+> **Session scope (2026-06-21, session 25) — DONE (NEW CAPACITY AXIS — ATTACK/ACTION
+> MODALITY TAXONOMY; design note + backward-compat refactor):** moved on from substrate
+> #7 (complete) to the long-flagged attack-taxonomy axis. **Scope settled with the user up
+> front (multiple Qs):** (B) move on from #7 → which axis = **attack-taxonomy** (the user's
+> pick over my finite-HP recommendation); then a full DESIGN DISCUSSION (the user drove the
+> vocabulary) → build scope = **design note + backward-compat refactor**; axes = **all four
+> (3 + range)**. **The user's central insight:** the word "action" was conflating
+> action-economy COST with the THING being done; reserve "action" for cost, use
+> **MODALITY** for the thing. Locked taxonomy = 2 PRIMARY axes (modality, cost) + 4
+> DESCRIPTORS (resolution = attack_roll/saving_throw/automatic; origin =
+> weapon/unarmed/spell/feature; range = melee/ranged; damage_type). Key calls: **origin is
+> 4-valued** — `feature` (magical-but-not-a-spell, e.g. Starry-Form Archer) is distinct from
+> `spell`, which validates the existing `is_spell` flag (≡ `origin=="spell"`); **attack-type
+> split into origin × range** (absorbs the user's "physical vs spell" as a predicate);
+> **`magical` boolean DROPPED** — web-verified (per-feature ritual) that 2024 removed
+> nonmagical-B/P/S monster resistance (flat by type now), so it earns nothing; "Use
+> Ability" modality added for non-magical class features (Rage). **Built (NO behavior
+> change):** `src/taxonomy.py` (closed vocabularies + Literal types + pure predicates +
+> back-compat derivation); `Choice` gained modality/resolution/origin/range_ filled in
+> `__post_init__` from the legacy flags (so every existing Choice carries correct values);
+> origin/range_ threaded through AttackRollEvent/DamageEvent/SaveDamageEvent +
+> HitContext/IncomingAttackContext (+ HitContext.is_physical/is_spell_origin properties) via
+> scheduler.py/verbs.py; `is_spell`/`is_unarmed` kept as TRANSITIONAL aliases. **509 tests
+> green (+14; 495 prior BYTE-IDENTICAL** — the new fields are descriptors, no gate reads
+> them yet). Branch `feature/attack-modality-taxonomy` → confirm before merge. **Design
+> contract: `design/attack_taxonomy.md`** (new, LOCKED) — supersedes the PROGRESS
+> "ATTACK TAXONOMY — engine-vocabulary gap" flag. **DELIBERATELY DEFERRED (each its own
+> validated, non-byte-identical follow-up):** (1) migrate the RUNTIME GATES to the new vocab
+> (FoM `not is_spell` → `is_physical and range_=="melee"`, which also FIXES a latent
+> feature/range edge; Primal Strike; Searing Arc's Attack-action boolean); (2) set
+> modality/origin/range_ EXPLICITLY at build call sites (range_="ranged" on Guiding
+> Bolt/Archer; modality="Use Ability" on Rage); (3) exercise the range gate with a REAL
+> ranged attacker (the first capability it unlocks: melee-only thorns/Parry NOT firing on a
+> ranged hit); (4) remove the is_spell/is_unarmed aliases once 1–2 land. **NEXT (user picks
+> at close-out):** the gate-migration + ranged-attacker follow-up (item 1+3 — proves the
+> axes do real work) OR a different capacity axis (finite-HP/emergent fight length was my
+> standing recommendation). Per-feature reflection PENDING user input (new vocabulary
+> introduced — ask about process/schema updates).
 >
 > **Session scope (2026-06-20, session 24) — DONE (SUBSTRATE #7 — 7b ROUND-2: BUFF-AURA,
 > Circle of Power):** built the BUFF half of the 7b zone (the deferred buff-aura flavor),
@@ -598,6 +637,79 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **NEW CAPACITY AXIS — ATTACK/ACTION MODALITY TAXONOMY — DESIGN + BACKWARD-COMPAT
+  REFACTOR (2026-06-21, session 25).** Moved on from substrate #7 (complete) to the
+  long-flagged attack-taxonomy axis: a first-class, closed vocabulary that separates
+  *what a character does* from *what it costs*, replacing the ad-hoc `action_type` /
+  `is_spell` / `is_unarmed` / `weapon_stat` proxies. **509 tests green (+14; the 495
+  prior tests BYTE-IDENTICAL.)** Branch `feature/attack-modality-taxonomy` → confirm
+  before merge. **Design contract: `design/attack_taxonomy.md` (new, LOCKED)** — it
+  supersedes the "ATTACK TAXONOMY — engine-vocabulary gap" flag below.
+  - **Scope settled with the user up front, in stages.** (B) move on from #7 → axis =
+    **attack-taxonomy** (the user's pick over my finite-HP/emergent-fight-length
+    recommendation — recorded candidly per build-selection-prioritizes-capacity); then a
+    full design discussion the USER drove → **design note + backward-compat refactor**,
+    **all four axes (3 + range)**.
+  - **The user's central insight (the whole motivation).** The word "action" was doing
+    double duty — action-economy COST vs the THING being done. Using your *bonus action*
+    to attack is still the Attack *thing* but NOT "the Attack action" (no action spent),
+    so the gate must read False. Fix: reserve **action** for cost, use **modality** for
+    the thing. The "magic action" is likewise a misnomer (Magic can be a BA/reaction).
+  - **The locked taxonomy** = 2 PRIMARY axes + 4 descriptors:
+    `modality` (Attack/Magic/Use Ability/Dash/…) · `cost` (action/bonus_action/
+    reaction/movement/free/none) · `resolution` (attack_roll/saving_throw/automatic) ·
+    `origin` (weapon/unarmed/spell/feature) · `range` (melee/ranged) · `damage_type`.
+    Derived predicates (not stored): `is_attack`=resolution==attack_roll (the rules'
+    overloaded "an attack"); `is_attack_action`=modality==Attack and cost==action;
+    `is_physical`=origin∈{weapon,unarmed}; `is_spell_origin`=origin==spell.
+  - **Design calls made WITH the user.** (1) **origin is 4-valued** — `feature`
+    (magical-but-not-a-spell, e.g. Starry-Form Archer's radiant) is distinct from
+    `spell`; this VALIDATES the existing `is_spell` flag, which has always meant
+    `origin=="spell"` specifically (a feature is magical yet not fuelable / not
+    Elemental-Adept-treated). (2) **attack-type split into origin × range** (my
+    recommendation) — absorbs the user's "physical vs spell" as a predicate over origin
+    and lets origin describe save/automatic abilities too (grapple = Attack modality,
+    saving_throw resolution, physical origin). (3) **`magical` boolean DROPPED** —
+    web-verified (per-feature ritual, 2024-based sources) that the 2024 rules removed
+    monster resistance to "nonmagical" B/P/S (resistances are flat by damage type now),
+    so the bit earns nothing for resistance math; NAMED as deferred. (4) **"Use Ability"
+    modality** added for non-magical class features (Rage / Second Wind / Steady Aim).
+    (5) **"resolution"** chosen over "implementation" (fits the project's policy-vs-
+    resolution vocabulary). (6) Full modality set NAMED, only the combat subset
+    implemented.
+  - **Built (NO behavior change — the new fields are descriptors no gate reads yet).**
+    `src/taxonomy.py` (the single source of truth: closed vocabularies + Literal types +
+    pure predicates + back-compat derivation helpers). `Choice` gained
+    modality/resolution/origin/range_, FILLED in `__post_init__` from the legacy flags
+    when not set (so every existing Choice carries correct taxonomy values and behaviour
+    is unchanged); an explicit `origin` keeps the is_spell/is_unarmed aliases consistent.
+    origin (+ range_ on the attack event) threaded through AttackRollEvent / DamageEvent /
+    SaveDamageEvent; origin/range_ + the is_physical/is_spell_origin properties added to
+    HitContext / IncomingAttackContext; threaded Choice → events → contexts in
+    scheduler.py / verbs.py. `is_spell` / `is_unarmed` retained as TRANSITIONAL aliases.
+  - **Validation** (`tests/test_taxonomy.py`, +14; NOT build value): the pure predicates +
+    derivation helpers; Choice.__post_init__ derivation for each modality shape (weapon /
+    spell / unarmed / feature attack, save spell, buff cast with no origin, Use Ability);
+    explicit origin overriding the legacy flags (the migration direction); the descriptor
+    threading Choice → AttackRollEvent → HitContext and the HitContext predicates. The 495
+    prior tests are byte-identical (behaviour-identity proof).
+  - **ATTACK-TAXONOMY flag CLOSED** (this WAS the flagged future work). The melee/ranged
+    defense-side gap from the attack-taxonomy memory is now expressible (range_ on
+    IncomingAttackContext) though not yet exercised.
+  - **DELIBERATELY DEFERRED (each its own validated, non-byte-identical follow-up).**
+    (1) migrate the RUNTIME GATES to the new vocab (FoM `not is_spell` →
+    `is_physical and range_=="melee"`, which also FIXES a latent feature/range edge;
+    Primal Strike; Searing Arc's policy-local Attack-action boolean → is_attack_action);
+    (2) set modality/origin/range_ EXPLICITLY at the build call sites (range_="ranged" on
+    Guiding Bolt / Archer; modality="Use Ability" on Rage); (3) exercise the range gate
+    with a REAL ranged attacker (the first capability the axis unlocks: melee-only
+    thorns/Parry correctly NOT firing on a ranged hit); (4) remove the is_spell/is_unarmed
+    aliases once 1–2 land.
+  - **NEXT (user picks at close-out):** the gate-migration + ranged-attacker follow-up
+    (deferred items 1+3 — proves the axes do real work, with real DPR validation) OR a
+    different capacity axis (finite-HP / emergent fight length remains my standing
+    recommendation). Per-feature reflection PENDING user input.
 
 - **SUBSTRATE #7 — 7b ROUND-2: BUFF-AURA FLAVOR (Circle of Power) — BUILT & VALIDATED
   (2026-06-20, session 24).** The first of the deferred 7b round-2 flavors: the BUFF
@@ -2546,8 +2658,13 @@ covers pure die-size growth and Shillelagh's mixed 2d6 step alike), reused acros
 all of them, not re-solved per ability. See `design/ability_schema.md` §4.5
 "Scaled quantity".
 
-**ATTACK TAXONOMY — engine-vocabulary gap (flagged, surfaced session 7; FUTURE
-work, discuss before any engine change).** Searing Arc Strike keys on the *Attack
+**ATTACK TAXONOMY — engine-vocabulary gap (flagged session 7; ADDRESSED session 25 —
+see `design/attack_taxonomy.md` + the session-25 Done entry).** The taxonomy is now
+locked and the vocabulary (modality / cost / resolution / origin / range / damage_type)
+is first-class on Choice + the events + the hit contexts. What remains is the deferred
+follow-up (migrate the runtime gates off the legacy proxies; exercise the range gate
+with a ranged attacker). Original flag text retained below for the history. Searing Arc
+Strike keys on the *Attack
 action*, which forced disambiguating it from Guiding Bolt (a spell delivered via an
 attack roll). The proxy used (`is_spell == False`) works, but it exposed that the
 engine conflates three *distinct* rules axes the user wants cleanly mapped across

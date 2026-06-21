@@ -147,6 +147,14 @@ class AttackRollEvent(Event):
     # Not the first-class attack typology (deferred — see the ATTACK-TAXONOMY flag);
     # `weapon_stat` can't tell quarterstaff from unarmed (both use attack_bonus).
     is_unarmed: bool = False
+    # Modality taxonomy (src/taxonomy.py), threaded from the Choice:
+    #   origin — weapon / unarmed / spell / feature (the canonical successor to
+    #     is_spell + is_unarmed; is_spell == (origin == "spell")).
+    #   range_ — melee / ranged (defense-side gates like Fire-Shield thorns and
+    #     Flourish Parry that only fire on MELEE hits read this; previously they
+    #     silently assumed melee because no range axis existed).
+    origin: "str | None" = None
+    range_: "str | None" = None
     # Whether the ACTING entity's post-roll decision points (on_miss / on_hit)
     # may fire for this attack.  False for "rider" attacks that are themselves a
     # reaction and must not spawn further riders — e.g. the Flourish Counter,
@@ -204,6 +212,11 @@ class DamageEvent(Event):
     #     every existing damage path.
     min_die: "int | None" = None
     ignore_resistance: bool = False
+    # Modality taxonomy (src/taxonomy.py): the damage's origin — weapon / unarmed
+    # / spell / feature.  is_spell == (origin == "spell"); the caster-side
+    # Fueled-Spellfire gate keys on a SPELL origin specifically (a magical FEATURE
+    # such as Starry-Form Archer's radiant is origin="feature", not fuelable).
+    origin: "str | None" = None
     # Damage REDIRECT (substrate #7 / 7c, Warding Bond): a RedirectSpec set by
     # resolve_attack_roll when the DEFENDER's on_incoming_hit returns one.  After
     # this event's damage resolves, resolve_damage spawns a copy of the taken amount
@@ -258,6 +271,8 @@ class SaveDamageEvent(Event):
     # DamageEvent (see DamageEvent.min_die / ignore_resistance).  Default off.
     min_die: "int | None" = None
     ignore_resistance: bool = False
+    # Modality taxonomy (src/taxonomy.py): a save spell's damage origin — "spell".
+    origin: "str | None" = None
     cost: str = "action"
     kind: str = field(default="save_damage", init=False)
 
