@@ -424,6 +424,7 @@ def resolve_attack_roll(
             is_spell=event.is_spell,
             min_die=event.min_die,
             ignore_resistance=event.ignore_resistance,
+            origin=event.origin,
             redirect=redirect_spec,            # Warding Bond (7c) — resolved at damage time
             cost=event.cost,
         )
@@ -452,6 +453,10 @@ def resolve_attack_roll(
                 is_spell=spec.is_spell,
                 min_die=spec.min_die,
                 ignore_resistance=spec.ignore_resistance,
+                # A rider's origin: a spell rider (FoM) is "spell"; a feature rider
+                # (Primal Strike) is "feature" — both magical, but only the spell
+                # one is fuelable / Elemental-Adept-treatable (mirrors is_spell).
+                origin=("spell" if spec.is_spell else "feature"),
                 cost="none",
             )
             queue.push(rider_event)
@@ -544,6 +549,7 @@ def resolve_save_damage(
         is_spell=event.is_spell,
         min_die=event.min_die,
         ignore_resistance=event.ignore_resistance,
+        origin=event.origin,
         cost=event.cost,
     )
     queue.push(damage_event)

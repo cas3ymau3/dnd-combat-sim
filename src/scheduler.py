@@ -362,6 +362,8 @@ class Scheduler:
                 round_number=round_,
                 is_spell=event.is_spell,
                 is_unarmed=event.is_unarmed,
+                origin=event.origin,
+                range_=event.range_,
             )
             response = on_hit(ctx)
             if response is None:
@@ -682,6 +684,8 @@ class Scheduler:
                     min_die=choice.min_die,
                     ignore_resistance=choice.ignore_resistance,
                     is_unarmed=choice.is_unarmed,
+                    origin=choice.origin,
+                    range_=choice.range_,
                 )
                 self.queue.push(atk_event)
                 seq += 1
@@ -702,6 +706,7 @@ class Scheduler:
                     is_spell=choice.is_spell,
                     min_die=choice.min_die,
                     ignore_resistance=choice.ignore_resistance,
+                    origin=choice.origin,
                     cost=cost,
                 )
                 self.queue.push(save_event)
@@ -831,6 +836,7 @@ class Scheduler:
                 on_save=eff.on_save,
                 damage_type=eff.damage_type,
                 is_spell=eff.is_spell,
+                origin=("spell" if eff.is_spell else None),
                 cost="none",
             ))
             seq += 1

@@ -22,6 +22,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Protocol, TYPE_CHECKING
 
+from . import taxonomy
+
 if TYPE_CHECKING:
     from .entity import Entity
     from .rng import SeededRNG
@@ -241,6 +243,60 @@ class Choice:
     # Spirit Guardians).  Typed loosely (a list of Zone) to avoid an import cycle.
     # Empty for every non-zone cast.
     zones: list = field(default_factory=list)
+    # --- Modality taxonomy (src/taxonomy.py) ---
+    # The first-class vocabulary for "what the character is doing" and "how it is
+    # resolved", separated from the action-economy `cost` above and from the
+    # scheduler's `action_type` DISPATCH discriminator.  See taxonomy.py for the
+    # full rationale.  These default to None and are FILLED in __post_init__ from
+    # the legacy flags (action_type / is_spell / is_unarmed / weapon_stat) so an
+    # un-migrated Choice still carries correct taxonomy values and behaviour is
+    # unchanged; explicit call sites set them directly.
+    #   modality:   Attack / Magic / Use Ability / Dash / ... (taxonomy.MODALITIES)
+    #   resolution: attack_roll / saving_throw / automatic
+    #   origin:     weapon / unarmed / spell / feature (for damage/save abilities)
+    #   range_:     melee / ranged (for attack_roll abilities; unarmed ⇒ melee)
+    # `is_spell` / `is_unarmed` above remain as TRANSITIONAL aliases for
+    # `origin == "spell"` / `origin == "unarmed"` (slated for removal once every
+    # reader uses `origin`); __post_init__ keeps them consistent in both directions.
+    modality: "str | None" = None
+    resolution: "str | None" = None
+    origin: "str | None" = None
+    range_: "str | None" = None
+
+    def __post_init__(self) -> None:
+        # Resolution: derive from the dispatch discriminator when not given.
+        if self.resolution is None:
+            self.resolution = taxonomy.derive_resolution(self.action_type)
+        # Origin: derive from the legacy flags when not given; otherwise keep the
+        # legacy flags consistent with an explicitly-set origin (so existing
+        # readers of is_spell / is_unarmed see the right thing).  Origin is only
+        # meaningful for an attack or a damage-dealing ability — a pure buff/debuff
+        # cast (no attack, no damage) leaves it None.
+        if self.origin is None:
+            deals_damage = bool(
+                self.damage_dice or self.damage_type or self.extra_damage_dice
+            )
+            if self.resolution == "attack_roll" or deals_damage:
+                self.origin = taxonomy.derive_origin(
+                    self.is_spell, self.is_unarmed, self.weapon_stat
+                )
+        else:
+            self.is_spell = self.origin == "spell"
+            self.is_unarmed = self.origin == "unarmed"
+        # Range: only meaningful for attacks; default melee (every modelled
+        # attacker is melee unless a call site says otherwise — Guiding Bolt /
+        # Archer set range_="ranged").  Left None for non-attack Choices.
+        if self.range_ is None and self.resolution == "attack_roll":
+            self.range_ = "melee"
+        # Modality: derive a reasonable default from the dispatch discriminator.
+        # "attack" → Attack; spell/effect casts → Magic.  Capability features
+        # (Rage etc.) are Use Ability — call sites set that explicitly.
+        if self.modality is None:
+            self.modality = {
+                "attack": "Attack",
+                "save_spell": "Magic",
+                "cast_effect": "Magic",
+            }.get(self.action_type or "")
 
 
 # ---------------------------------------------------------------------------
@@ -334,6 +390,22 @@ class HitContext:
     # the first-class attack typology (deferred — ATTACK-TAXONOMY flag).
     is_spell: bool = False
     is_unarmed: bool = False
+    # Modality taxonomy (src/taxonomy.py): the hitting attack's origin (weapon /
+    # unarmed / spell / feature) and range (melee / ranged).  These are the
+    # first-class successors to is_spell + is_unarmed; riders should prefer the
+    # predicates below (is_physical / is_spell_origin) over the legacy flags.
+    origin: "str | None" = None
+    range_: "str | None" = None
+
+    @property
+    def is_physical(self) -> bool:
+        """True for a weapon or unarmed hit (the set Fount of Moonlight rides)."""
+        return taxonomy.is_physical(self.origin)
+
+    @property
+    def is_spell_origin(self) -> bool:
+        """True only for an actual spell attack (NOT a magical feature)."""
+        return taxonomy.is_spell_origin(self.origin)
 
 
 @dataclass(frozen=True)
@@ -435,6 +507,13 @@ class IncomingAttackContext:
         The action-economy tag of the INCOMING attack ("action"/"none"/...).
         Flourish Parry only triggers on melee attacks; our only attacker is
         melee, so the policy treats every incoming hit as meleeable.
+    range_:
+        The incoming attack's range — "melee" / "ranged" (modality taxonomy,
+        src/taxonomy.py).  The defense-side gate that melee-only reactions
+        (Fire-Shield thorns, Flourish Parry) should read instead of assuming
+        melee.  None when the attacker did not tag a range (legacy attackers);
+        a melee-only reaction should treat None as melee for back-compat until
+        every attacker tags its range.
     resources:
         Flat {name: current} view of the DEFENDER's persistent resources.
     round_number:
@@ -447,6 +526,7 @@ class IncomingAttackContext:
     cost: str
     resources: dict[str, int]
     round_number: int
+    range_: "str | None" = None
 
 
 @dataclass(frozen=True)
