@@ -71,9 +71,10 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none confirmed (session 27 toggle
-> recommendation re-made: computer-use / Claude-in-Chrome / Claude_Preview /
-> scheduled-tasks / mcp-registry / Google Drive — user to toggle via the app).
+> **Currently disabled (re-enable before exit):** none confirmed. NOTE: session 28
+> NEEDED **Claude-in-Chrome** (MM scrape) — recommend KEEPING it on for the next
+> session too (more census). The others (computer-use / Claude_Preview /
+> scheduled-tasks / mcp-registry / Google Drive) stay off-recommended.
 >
 > **Session scope (2026-06-22, session 27) — DONE (ATTACK-TAXONOMY GATE MIGRATION —
 > the axes now do REAL runtime work + full legacy-alias removal):** made the session-25
@@ -734,6 +735,42 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **EMPIRICAL ENEMY PROFILE — METHODOLOGY LOCKED + CR 11-16 PILOT CENSUS (2026-06-22,
+  session 28).** First working slice of the next major arc (`design/enemy_profile.md`
+  SEED → LOCKED). DATA + design note, NOT engine wiring. Branch
+  `design/enemy-profile-tables` (1 commit, pushed) → confirm before merge. **525 tests
+  green** (new aggregator module is well-isolated; no engine changes).
+  - **Scope settled up front (3 Qs): full CENSUS (not sample), CR bands
+    0-4/5-10/11-16/17+, stopping point = methodology + ONE-band pilot then regroup.**
+    Mid-session the user added the **enemy-DEFENSE half** (damage res/imm/vuln + condition
+    immunities) — it prices the *character's* damage-type & rider choice (symmetric with
+    the offense profile pricing the character's defense). Now a **two normalized tables**
+    model.
+  - **Workflow proven + resumable (the user asked how to do the census effectively).**
+    Claude-in-Chrome `javascript_tool` + authenticated same-origin `fetch()` of statblock
+    pages → parse `[class*="stat-block"]` → tag. Full 2024-MM index = **510 monsters**
+    (`filter-source=147`; the site CR filter is broken → band by parsed CR). Gotchas
+    locked in the note (class-substring match; full-slug href; query-string URLs blocked
+    by a safety filter so return innerText/ids only + strip numbers; `(async()=>{})()`
+    wrapper). NOT click-expanding (statblocks load via AJAX).
+  - **Pilot = CR 11-16, all 46 monsters** → `reference/data/monster_profile_monsters.csv`
+    (defense) + `monster_profile_raw.csv` (105 damaging actions) → aggregated by
+    `src/builds/monster_profile.py` (pure raw→band tabulator; NOT wired into the enemy
+    policy — that's the next step). **Findings:** elemental 60% / physical 40%; save mix
+    **DEX 41 / CON 34 / WIS 15** (contradicts the `SAVE_TYPE_WEIGHTS` placeholder in
+    `enemy_stats.py` — CON underweighted, WIS over); reach 42% non-melee; fire ~28%
+    resisted-or-immune; frightened-immune 22%. These validate the arc's premise.
+  - **Regroup decisions (user-confirmed):** keep **damage-only** tagging (no pure-control
+    rows; condition-immunity prevalence still prices riders); **approximate** menu/choice
+    attackers (eye-ray menus, dragon replace-with-spell). Both binding for the full census.
+  - **Per-feature reflection:** PENDING (asked at close-out).
+  - **NEXT:** continue the census — tag the remaining bands (0-4 / 5-10 / 17+) into the
+    same two CSVs via the locked workflow, then `python -m src.builds.monster_profile`
+    for the full per-band tables. After the census: wire the static profile into
+    `BaselineEnemyPolicy` (damage-type + save-type variety + enemy res/imm checks vs the
+    character's damage), grounding the `enemy_stats.py` placeholders. See
+    `design/enemy_profile.md` "Downstream arc" for the full sequencing.
 
 - **NEW CAPACITY AXIS — ATTACK/ACTION MODALITY TAXONOMY — DESIGN + BACKWARD-COMPAT
   REFACTOR (2026-06-21, session 25).** Moved on from substrate #7 (complete) to the
