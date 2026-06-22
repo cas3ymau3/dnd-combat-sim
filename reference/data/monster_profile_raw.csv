@@ -1,0 +1,106 @@
+monster,cr,cr_band,section,ability,resolution,reach,aoe,damage_types,save_ability,save_effect,riders,instances_per_round,recharge,notes
+Adult Black Dragon,14,11-16,multiattack-swing,Rend,attack,melee,n,slashing;acid,,,,3,at-will,
+Adult Black Dragon,14,11-16,action,Acid Breath,save,ranged,y,acid,DEX,half,,1,5-6,
+Adult Black Dragon,14,11-16,legendary,Cloud of Insects,save,ranged,n,poison,DEX,other,,1,at-will,
+Adult Blue Dragon,16,11-16,multiattack-swing,Rend,attack,melee,n,slashing;lightning,,,,3,at-will,
+Adult Blue Dragon,16,11-16,action,Lightning Breath,save,ranged,y,lightning,DEX,half,,1,5-6,
+Adult Brass Dragon,13,11-16,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
+Adult Brass Dragon,13,11-16,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Adult Brass Dragon,13,11-16,legendary,Scorching Sands,save,ranged,n,fire,DEX,other,,1,at-will,
+Adult Bronze Dragon,15,11-16,multiattack-swing,Rend,attack,melee,n,slashing;lightning,,,,3,at-will,
+Adult Bronze Dragon,15,11-16,action,Lightning Breath,save,ranged,y,lightning,DEX,half,,1,5-6,
+Adult Bronze Dragon,15,11-16,legendary,Thunderclap,save,ranged,y,thunder,CON,other,,1,at-will,
+Adult Copper Dragon,14,11-16,multiattack-swing,Rend,attack,melee,n,slashing;acid,,,,3,at-will,
+Adult Copper Dragon,14,11-16,action,Acid Breath,save,ranged,y,acid,DEX,half,,1,5-6,
+Adult Copper Dragon,14,11-16,legendary,Giggling Magic,save,ranged,n,psychic,CHA,other,incapacitated,1,at-will,damage type approx
+Adult Green Dragon,15,11-16,multiattack-swing,Rend,attack,melee,n,slashing;poison,,,,3,at-will,
+Adult Green Dragon,15,11-16,action,Poison Breath,save,ranged,y,poison,CON,half,,1,5-6,
+Adult Green Dragon,15,11-16,legendary,Noxious Miasma,save,ranged,y,poison,CON,other,,1,at-will,
+Adult Silver Dragon,16,11-16,multiattack-swing,Rend,attack,melee,n,slashing;cold,,,,3,at-will,
+Adult Silver Dragon,16,11-16,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
+Adult Silver Dragon,16,11-16,legendary,Cold Gale,save,ranged,y,cold,DEX,other,,1,at-will,
+Adult White Dragon,13,11-16,multiattack-swing,Rend,attack,melee,n,slashing;cold,,,,3,at-will,
+Adult White Dragon,13,11-16,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
+Adult White Dragon,13,11-16,legendary,Freezing Burst,save,ranged,y,cold,CON,other,,1,at-will,
+Arcanaloth,12,11-16,multiattack-swing,Fiendish Burst,attack,both,n,necrotic,,,,2,at-will,
+Arcanaloth,12,11-16,action,Banishing Claw,attack,melee,n,slashing;psychic,,,,1,at-will,replace-1
+Archmage,12,11-16,multiattack-swing,Arcane Burst,attack,both,n,force,,,,4,at-will,1/Day damage spells omitted (negligible per-round)
+Archpriest,12,11-16,multiattack-swing,Radiant Burst,attack,both,n,radiant,,,,3,at-will,
+Archpriest,12,11-16,action,Holy Word,save,melee,y,radiant,WIS,other,incapacitated,1,4-6,
+Bandit Crime Lord,11,11-16,multiattack-swing,Scimitar,attack,melee,n,slashing;poison,,,,1.5,at-will,split of 3 attacks (scimitar/pistol)
+Bandit Crime Lord,11,11-16,multiattack-swing,Pistol,attack,ranged,n,piercing;poison,,,,1.5,at-will,split of 3 attacks (scimitar/pistol)
+Behir,11,11-16,multiattack-swing,Bite,attack,melee,n,piercing;lightning,,,,1,at-will,
+Behir,11,11-16,action,Constrict,save,melee,n,bludgeoning,STR,other,grappled,1,at-will,
+Behir,11,11-16,action,Lightning Breath,save,ranged,y,lightning,DEX,half,,1,5-6,
+Beholder,13,11-16,action,Charm Ray (eye),save,ranged,n,psychic,WIS,other,charmed,0.3,at-will,eye-ray menu approx (3 of ~10 rays/round)
+Beholder,13,11-16,action,Enervation Ray (eye),save,ranged,n,necrotic,CON,other,,0.3,at-will,eye-ray menu approx
+Beholder,13,11-16,action,Disintegration Ray (eye),save,ranged,n,force,DEX,other,,0.3,at-will,eye-ray menu approx
+Beholder,13,11-16,action,Death Ray (eye),save,ranged,n,necrotic,DEX,other,,0.3,at-will,eye-ray menu approx
+Dao,11,11-16,multiattack-swing,Earthen Maul,attack,melee,n,bludgeoning,,,,1.5,at-will,split (3 maul or 2 burst)
+Dao,11,11-16,multiattack-swing,Earth Burst,attack,ranged,n,bludgeoning,,,,1,at-will,split (3 maul or 2 burst)
+Death Knight Aspirant,11,11-16,multiattack-swing,Dread Blade,attack,melee,n,slashing;necrotic,,,,3,at-will,
+Death Knight Aspirant,11,11-16,action,Hellfire Orb,save,ranged,y,fire,DEX,half,,1,recharge,
+Death Tyrant,14,11-16,action,Charm Ray (eye),save,ranged,n,psychic,WIS,other,charmed,0.3,at-will,eye-ray menu approx
+Death Tyrant,14,11-16,action,Enervation Ray (eye),save,ranged,n,necrotic,CON,other,,0.3,at-will,eye-ray menu approx
+Death Tyrant,14,11-16,action,Disintegration Ray (eye),save,ranged,n,force,DEX,other,,0.3,at-will,eye-ray menu approx
+Death Tyrant,14,11-16,action,Death Ray (eye),save,ranged,n,necrotic,DEX,other,,0.3,at-will,eye-ray menu approx
+Djinni,11,11-16,multiattack-swing,Storm Blade,attack,melee,n,slashing;lightning,,,,1.5,at-will,split (storm blade/bolt)
+Djinni,11,11-16,multiattack-swing,Storm Bolt,attack,ranged,n,thunder,,,,1.5,at-will,split (storm blade/bolt)
+Efreeti,11,11-16,multiattack-swing,Heated Blade,attack,melee,n,slashing;fire,,,,1.5,at-will,split (blade/hurl flame)
+Efreeti,11,11-16,multiattack-swing,Hurl Flame,attack,ranged,n,fire,,,,1.5,at-will,split (blade/hurl flame)
+Erinyes,12,11-16,multiattack-swing,Withering Sword,attack,melee,n,slashing;necrotic,,,,3,at-will,Entangling Rope (restrained) is control-only, not tagged
+Githyanki Dracomancer,16,11-16,multiattack-swing,Draconic Strike,attack,both,n,slashing;psychic,,,,3,at-will,2nd damage type approx
+Githzerai Psion,12,11-16,multiattack-swing,Psychic Warp,attack,both,n,psychic,,,,3,at-will,
+Gulthias Blight,16,11-16,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,,1,at-will,split (slam/thorn volley)
+Gulthias Blight,16,11-16,multiattack-swing,Thorn Volley,attack,ranged,n,piercing,,,,1,at-will,split (slam/thorn volley)
+Gulthias Blight,16,11-16,action,Life-Draining Root,save,ranged,n,necrotic,CON,other,,1,at-will,
+Horned Devil,11,11-16,multiattack-swing,Searing Fork,attack,melee,n,piercing,,,,1.5,at-will,split (fork/hurl flame)
+Horned Devil,11,11-16,multiattack-swing,Hurl Flame,attack,ranged,n,fire,,,,1.5,at-will,split (fork/hurl flame)
+Ice Devil,14,11-16,multiattack-swing,Ice Spear,attack,both,n,piercing;cold,,,,2,at-will,
+Ice Devil,14,11-16,action,Tail,attack,melee,n,bludgeoning;cold,,,,1,at-will,replace-1
+Iron Golem,16,11-16,multiattack-swing,Bladed Arm,attack,melee,n,slashing;fire,,,,1,at-will,split (arm/fiery bolt)
+Iron Golem,16,11-16,multiattack-swing,Fiery Bolt,attack,ranged,n,fire,,,,1,at-will,split (arm/fiery bolt)
+Iron Golem,16,11-16,action,Poison Breath,save,ranged,y,poison,CON,half,,1,recharge,
+Marid,11,11-16,multiattack-swing,Aquatic Lash,attack,melee,n,slashing;cold,,,,3,at-will,
+Marid,11,11-16,action,Water Jet,save,ranged,y,cold,DEX,half,,1,at-will,
+Marilith,16,11-16,multiattack-swing,Pact Blade,attack,melee,n,slashing;necrotic,,,,6,at-will,
+Marilith,16,11-16,action,Constrict,save,melee,n,bludgeoning,STR,other,grappled,1,at-will,
+Mind Flayer Arcanist,11,11-16,multiattack-swing,Arcane Tentacles,attack,both,n,psychic,,,,3,at-will,
+Mind Flayer Arcanist,11,11-16,action,Mind Burst,save,melee,y,psychic,INT,half,stunned,1,recharge,
+Mummy Lord,15,11-16,multiattack-swing,Rotting Fist,attack,melee,n,bludgeoning;necrotic,,,,0.5,at-will,split (fist or channel) + Dreadful Glare (control)
+Mummy Lord,15,11-16,multiattack-swing,Channel Negative Energy,attack,ranged,n,necrotic,,,,0.5,at-will,split (fist or channel)
+Nalfeshnee,13,11-16,multiattack-swing,Rend,attack,melee,n,slashing;force,,,,3,at-will,
+Nalfeshnee,13,11-16,bonus,Horror Nimbus,save,melee,y,psychic,WIS,half,frightened,1,recharge,
+Pirate Admiral,12,11-16,multiattack-swing,Scimitar,attack,melee,n,slashing;poison,,,,1.5,at-will,split (scimitar/pistol)
+Pirate Admiral,12,11-16,multiattack-swing,Pistol,attack,ranged,n,piercing,,,,1.5,at-will,split (scimitar/pistol)
+Planetar,16,11-16,multiattack-swing,Radiant Sword,attack,melee,n,slashing;radiant,,,,1.5,at-will,split (sword or holy burst)
+Planetar,16,11-16,action,Holy Burst,save,ranged,y,radiant,DEX,half,,1,at-will,split (sword or holy burst)
+Purple Worm,15,11-16,multiattack-swing,Bite,attack,melee,n,piercing,,,grappled,1,at-will,
+Purple Worm,15,11-16,multiattack-swing,Tail Stinger,attack,melee,n,piercing;poison,,,,1,at-will,
+Questing Knight,12,11-16,multiattack-swing,Greatsword,attack,melee,n,slashing;radiant,,,,1.5,at-will,split (greatsword/longbow)
+Questing Knight,12,11-16,multiattack-swing,Longbow,attack,ranged,n,piercing;radiant,,,,1.5,at-will,split (greatsword/longbow)
+Rakshasa,13,11-16,multiattack-swing,Cursed Touch,attack,melee,n,slashing;necrotic,,,,3,at-will,
+Rakshasa,13,11-16,action,Baleful Command,save,ranged,y,psychic,WIS,other,frightened,1,recharge,type approx
+Remorhaz,11,11-16,action,Bite,attack,melee,n,piercing;fire,,,grappled,1,at-will,
+Remorhaz,11,11-16,trait,Heat Aura,auto,melee,y,fire,,,,1,at-will,
+Roc,11,11-16,multiattack-swing,Beak,attack,melee,n,piercing,,,,1,at-will,
+Roc,11,11-16,action,Talons,attack,melee,n,slashing,,,grappled,1,at-will,replace-1
+Salamander Inferno Master,15,11-16,multiattack-swing,Flame Trident,attack,both,n,piercing;fire,,,,2,at-will,
+Salamander Inferno Master,15,11-16,action,Inferno,save,ranged,y,fire,DEX,half,,1,recharge,name/save approx
+Salamander Inferno Master,15,11-16,trait,Fire Aura,auto,melee,y,fire,,,,1,at-will,
+Shadow Dragon (Huge),13,11-16,multiattack-swing,Rend,attack,melee,n,slashing;necrotic,,,,3,at-will,
+Shadow Dragon (Huge),13,11-16,action,Shadow Breath,save,ranged,y,necrotic,CON,half,,1,5-6,save approx
+Shadow Dragon (Large),13,11-16,multiattack-swing,Rend,attack,melee,n,slashing;necrotic,,,,3,at-will,size variant
+Shadow Dragon (Large),13,11-16,action,Shadow Breath,save,ranged,y,necrotic,CON,half,,1,5-6,size variant; save approx
+Sphinx of Lore,11,11-16,multiattack-swing,Claw,attack,melee,n,slashing,,,,3,at-will,
+Sphinx of Lore,11,11-16,action,Mind-Rending Roar,save,melee,y,psychic,WIS,half,,1,recharge,
+Storm Giant,13,11-16,multiattack-swing,Storm Sword,attack,melee,n,slashing;lightning,,,,1,at-will,split (sword/thunderbolt)
+Storm Giant,13,11-16,multiattack-swing,Thunderbolt,attack,ranged,n,lightning,,,blinded;deafened,1,at-will,split (sword/thunderbolt)
+Storm Giant,13,11-16,action,Lightning Storm,save,ranged,y,lightning,DEX,half,,1,recharge,
+Ultroloth,13,11-16,multiattack-swing,Mercurial Whip,attack,melee,n,force,,,,2,at-will,
+Ultroloth,13,11-16,action,Hypnotic Gaze,save,ranged,y,psychic,WIS,other,charmed,1,at-will,
+Vampire,13,11-16,multiattack-swing,Grave Strike,attack,melee,n,bludgeoning;necrotic,,,,2,at-will,
+Vampire,13,11-16,action,Bite,save,melee,n,necrotic,CON,other,,1,at-will,
+Vampire Umbral Lord,15,11-16,multiattack-swing,Grave Strike,attack,melee,n,slashing;necrotic,,,,1,at-will,split (grave strike/sickening ray)
+Vampire Umbral Lord,15,11-16,multiattack-swing,Sickening Ray,attack,ranged,n,necrotic,,,poisoned,1,at-will,split (grave strike/sickening ray)
+Vampire Umbral Lord,15,11-16,action,Sanguine Drain,save,melee,n,necrotic,CON,other,,1,at-will,
