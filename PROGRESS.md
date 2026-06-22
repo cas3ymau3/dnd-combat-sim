@@ -71,9 +71,60 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none confirmed (session 26 toggle
+> **Currently disabled (re-enable before exit):** none confirmed (session 27 toggle
 > recommendation re-made: computer-use / Claude-in-Chrome / Claude_Preview /
 > scheduled-tasks / mcp-registry / Google Drive — user to toggle via the app).
+>
+> **Session scope (2026-06-22, session 27) — DONE (ATTACK-TAXONOMY GATE MIGRATION —
+> the axes now do REAL runtime work + full legacy-alias removal):** made the session-25
+> modality taxonomy (origin / range_ / modality) DRIVE the runtime gates instead of the
+> legacy `is_spell` / `is_unarmed` proxies, and REMOVED those aliases entirely. **Scope
+> settled with the user up front (2 Qs): the FULL sweep (delete the aliases everywhere,
+> origin is the single source of truth) + THROUGH-MERGE.** NOT byte-identical — it
+> changes behaviour (and fixes a latent feature/range edge), validated by **525 tests
+> green** (the migration commit netted +5 ranged-gate tests, removed the
+> derive_origin/alias tests; the reflection commit +1). **Per-feature ritual: FoM's
+> 2024 trigger WEB-VERIFIED FIRST** (D&D Beyond) = "your **melee attacks** deal an extra
+> 2d6 Radiant damage on a hit" → the gate is RANGE-based, not origin-based (a melee
+> SPELL attack qualifies; the ranged Guiding Bolt does not). **Gates migrated
+> (starfire_scion):** (1) **FoM** `not is_spell` → `range_=="melee"` (REQUIRED tagging
+> GB/Archer `range_="ranged"`, else they default to melee and FoM would wrongly fire on
+> Guiding Bolt); (2) **Primal Strike** → origin (`origin=="weapon"`, or `"unarmed"` under
+> the non-RAW toggle) — the **Shillelagh quarterstaff sets `origin="weapon"` EXPLICITLY**
+> (a weapon attack made with the spell stat — the EK/True-Strike gotcha — else the rider
+> would wrongly decline it); (3) **Searing Arc** "weapon Attack action" boolean → derived
+> from the emitted action Choice via `is_attack_action(modality, cost)`. **Alias removal
+> (full sweep):** `is_spell`/`is_unarmed` deleted from Choice / AttackRollEvent /
+> DamageEvent / SaveDamageEvent / HitContext / RiderDamageSpec / DealDamageContext /
+> ZoneEffectSpec; `derive_origin` deleted (`derive_resolution` kept); the only
+> spell-vs-not API left is the pure predicate `taxonomy.is_spell_origin(origin)` + the
+> `is_physical`/`is_spell_origin` context properties. `Choice.__post_init__` defaults
+> `origin="weapon"` for any untagged attack/damage. **RANGE axis exercised by a REAL
+> ranged attacker** (`tests/test_ranged_melee_gate.py`, NEW): the melee-only Fire-Shield
+> thorns (Scion) + Flourish Parry (War Angel) correctly do NOT fire on a ranged hit (and
+> DO on melee / an untagged None attacker) — validated at the build gate AND through the
+> scheduler (`event.range_` → `IncomingAttackContext.range_`, now threaded; the same
+> melee gate added to both `on_incoming_hit` sites). **PER-FEATURE REFLECTION DONE —
+> user chose to ACT on one item: `modality` for an attack is now AUTO-DERIVED from origin**
+> (spell/feature origin → Magic, weapon/unarmed → Attack) in `Choice.__post_init__`, so
+> spell-attacks need no explicit `modality` tag and `is_attack_action` reads False for
+> them; explicit call sites still override (a future EK War-Magic True Strike:
+> `origin="weapon"` + `modality="Magic"`). Dropped the now-redundant `modality="Magic"`
+> profile tags. Branch `feature/attack-taxonomy-gate-migration` (2 commits) →
+> THROUGH-MERGE (confirm before the actual merge). `design/attack_taxonomy.md` "Migration
+> status" updated to DONE (items 1–4). **DEFERRED (flagged, no current build forces
+> them):** (i) FoM-on-a-MELEE-SPELL-attack is now correct-by-construction but UNEXERCISED
+> (silvertail's Shocking Grasp is a melee spell attack, but silvertail has no FoM); (ii)
+> the **zone-buff aura gate** kept spell-only (`is_spell_origin`) — RAW "spells AND OTHER
+> MAGICAL EFFECTS" should also cover `feature`-origin magical saves (widen when a
+> consumer appears); (iii) the EK/Shillelagh "weapon attack with a spell stat must set
+> `origin='weapon'`" gotcha is now load-bearing (documented in attack_taxonomy.md). The
+> taxonomy's own DEFERRED items remain (provenance `part_of_attack_action` flag +
+> weapon-property data — build when a GWM/War-Magic build forces them). **NEXT: user picks
+> the next CAPACITY AXIS at session start** (build-selection-prioritizes-capacity) — the
+> natural taxonomy continuation is the **GWM/War-Magic provenance flag + weapon-property
+> data** (now that modality/origin/range are real gates), OR a new build expanding a
+> different model axis. Finite-HP stays DE-PRIORITIZED (standardized-dpr-baseline memory).
 >
 > **Session scope (2026-06-21, session 26) — DONE (NEW CAPACITY AXIS — FINITE-HP ENEMY /
 > EMERGENT COMBAT LENGTH):** moved past the attack-taxonomy follow-up to the long-standing
