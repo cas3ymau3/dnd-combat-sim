@@ -64,6 +64,7 @@ def _load_table(path: Path) -> dict[int, dict]:
             level = int(r["level"])
             rows[level] = {
                 "ac": int(r["ac"]),
+                "hp": int(r["hp"]),
                 "saves": {k: int(r[k]) for k in _SAVE_KEYS},
                 "to_hit": int(r["to_hit"]),
                 "save_dc": int(r["save_dc"]),
@@ -81,6 +82,33 @@ def _row(level: int) -> dict:
 def baseline_ac(level: int) -> int:
     """The enemy's armor class at character *level*."""
     return _row(level)["ac"]
+
+
+def baseline_hp_midpoint(level: int) -> int:
+    """The enemy's RAW baseline hit points at character *level* — the midpoint of the
+    DMG "Monster Statistics by Challenge Rating" Hit Points range (CR == level; see
+    ``_HP_MIDPOINT_BY_CR``), with NO party-size correction applied."""
+    return _row(level)["hp"]
+
+
+def baseline_hp(level: int, divisor: float = None) -> int:
+    """The enemy's EFFECTIVE hit points at character *level* for the finite-HP combat
+    mode (the new capacity axis: combats END when the enemy drops, so length is
+    emergent rather than a fixed round count).
+
+    Base = the DMG per-CR midpoint (``baseline_hp_midpoint``); effective HP = base /
+    ``divisor``.  The divisor is the HP mirror of ``DAMAGE_DIVISOR``: the DMG HP is
+    calibrated so that FOUR level-N PCs chew through it in ~3 rounds, but our default
+    scenario is a SOLO build (one PC doing the work of four), so full HP would yield
+    ~8-10 round slogs that just hit the round cap.  ``HP_DIVISOR`` (default below) is
+    tuned so a solo build's fights land in a believable ~3-5 round window across
+    levels (the HP/DPR ratio is ~10 at both L1 and L15, so one constant divisor works);
+    a multi-attacker PARTY scenario should pass a LARGER divisor (toward 1.0) since the
+    party's combined DPR is closer to the table's 4-PC assumption.  It is a documented
+    MODELING KNOB, not a rules figure — pass an explicit ``divisor`` per scenario."""
+    if divisor is None:
+        divisor = HP_DIVISOR
+    return int(round(baseline_hp_midpoint(level) / divisor))
 
 
 def baseline_save(level: int, stat: str) -> int:
@@ -153,6 +181,12 @@ SAVE_TYPE_WEIGHTS: dict[str, int] = {
 # Fraction of an enemy's rounds spent forcing a SAVE rather than attacking.
 SAVE_ROUND_PROB = 0.35
 
+# Default HP divisor for the finite-HP combat mode (see baseline_hp).  Tuned so a SOLO
+# build's emergent fight length lands in a ~3-5 round window (the DMG HP is built for a
+# 4-PC party).  A documented MODELING KNOB — raise it toward 1.0 for a full-party
+# scenario.  Default off: the finite-HP mode itself is opt-in (enemy stays inf HP).
+HP_DIVISOR = 2.5
+
 
 # ---------------------------------------------------------------------------
 # Generation (NOT run at import) — rewrites monster_stats_by_level.csv
@@ -184,6 +218,17 @@ _CR_ROWS: dict[int, tuple[int, int, tuple[int, int, int], tuple[int, int, int]]]
     15: (12, 19, (12, 6, 6), (15, 6, 0)),
     16: (12, 19, (8, 10, 7), (16, 6, 0)),
     17: (13, 20, (14, 6, 6), (17, 6, 0)),
+}
+
+# Baseline enemy HP per character level (CR == level): the MIDPOINT of the DMG "Monster
+# Statistics by Challenge Rating" Hit Points range (DMG p.274; 2024 values match — e.g.
+# CR1 71-85 → 78, CR5 131-145 → 138, CR10 206-220 → 213, CR15 281-295 → 288, CR20
+# 356-400 → 378).  Stored RAW (no party-size divisor); baseline_hp applies HP_DIVISOR.
+# Web-verified before modeling (per-feature ritual) — NOT taken from memory.
+_HP_MIDPOINT_BY_CR: dict[int, int] = {
+    1: 78,   2: 93,   3: 108,  4: 123,  5: 138,  6: 153,  7: 168,
+    8: 183,  9: 198,  10: 213, 11: 228, 12: 243, 13: 258, 14: 273,
+    15: 288, 16: 303, 17: 318, 18: 333, 19: 348, 20: 378,
 }
 
 # Hand-tuned overrides so the DAMAGE curve rises monotonically — the auto-derived
@@ -238,6 +283,7 @@ def regenerate(write: bool = True) -> dict[int, dict]:
         m = max(1, int(round(target_aoe / ((ay + 1) / 2))))
         row = {
             "ac": int(ac_saves[level]["ac"]),
+            "hp": _HP_MIDPOINT_BY_CR[level],
             "saves": {k: int(ac_saves[level][k.replace("_save", ".save.mod")]) for k in _SAVE_KEYS},
             "to_hit": int(round(np.polyval(c_th, level))),
             "save_dc": int(round(np.polyval(c_dc, level))),
@@ -259,7 +305,7 @@ def _dice_str(dice: tuple[int, int, int]) -> str:
 
 
 def _write_csv(rows: dict[int, dict]) -> None:
-    cols = (["level", "ac", *_SAVE_KEYS, "to_hit", "save_dc", "n_attacks",
+    cols = (["level", "ac", "hp", *_SAVE_KEYS, "to_hit", "save_dc", "n_attacks",
              "attack_dice", "aoe_dice", "per_swing_avg", "dmg_per_round", "aoe_avg"])
     with _TABLE_PATH.open("w", newline="") as f:
         w = csv.writer(f)
@@ -268,19 +314,19 @@ def _write_csv(rows: dict[int, dict]) -> None:
             r = rows[level]
             ps = _avg(*r["attack_dice"])
             w.writerow([
-                level, r["ac"], *[r["saves"][k] for k in _SAVE_KEYS],
+                level, r["ac"], r["hp"], *[r["saves"][k] for k in _SAVE_KEYS],
                 r["to_hit"], r["save_dc"], r["n_attacks"],
                 _dice_str(r["attack_dice"]), _dice_str(r["aoe_dice"]),
                 round(ps, 1), round(r["n_attacks"] * ps, 1), round(_avg(*r["aoe_dice"]), 1),
             ])
 
 
-# Load the definitive table at import.  Self-bootstraps the first time ever (CSV
-# absent) by generating it; once committed, the CSV exists so numpy is never imported
-# on the runtime path.
+# Load the definitive table at import.  Self-bootstraps (CSV absent, or its schema has
+# drifted from the current columns — e.g. a newly added `hp`) by regenerating it; once
+# committed, the CSV exists in-sync so numpy is never imported on the runtime path.
 try:
     _LEVEL_ROWS: dict[int, dict] = _load_table(_TABLE_PATH)
-except FileNotFoundError:
+except (FileNotFoundError, KeyError):
     regenerate(write=True)
     _LEVEL_ROWS = _load_table(_TABLE_PATH)
 

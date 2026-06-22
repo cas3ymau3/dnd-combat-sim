@@ -69,6 +69,10 @@ class CombatResult:
     # Per-(source, target) cumulative damage ledger for this combat (substrate #7 /
     # design.md §8 multi-entity DPR accounting).  (source_id, target_id) → total.
     damage_by_source_target: dict[tuple[int, int], int] = field(default_factory=dict)
+    # How many rounds this combat actually ran.  In the legacy fixed-length model this
+    # equals rounds_per_combat; in finite-HP mode it is the EMERGENT length — the round
+    # the enemy dropped (≤ the round cap).  The new capacity-axis output.
+    rounds_elapsed: int = 0
 
 
 @dataclass
@@ -94,6 +98,18 @@ class DayResult:
         for c in self.combats:
             rounds.extend(c.damage_log)
         return rounds
+
+    @property
+    def rounds_by_combat(self) -> list[int]:
+        """Emergent fight length per combat (finite-HP mode).  In the legacy model
+        every entry equals rounds_per_combat."""
+        return [c.rounds_elapsed for c in self.combats]
+
+    @property
+    def total_rounds(self) -> int:
+        """Total rounds fought across the day — the denominator for a true per-round
+        DPR once fights end on the enemy's death (emergent length)."""
+        return sum(c.rounds_elapsed for c in self.combats)
 
     def damage_received_by(self, entity_id: int) -> int:
         """Total damage dealt TO a specific entity across the day.
@@ -296,6 +312,7 @@ class DayRunner:
         rounds_per_combat: int = 4,
         between_combats: BetweenCombatsHook | None = None,
         before_combat: BeforeCombatHook | None = None,
+        enemy_ids: "set[int] | None" = None,
     ) -> None:
         self.rng = rng
         self.entities = entities
@@ -303,6 +320,11 @@ class DayRunner:
         self.rounds_per_combat = rounds_per_combat
         self.between_combats = between_combats
         self.before_combat = before_combat
+        # Finite-HP combat mode (the emergent-length capacity axis).  When a set of
+        # opposition entity ids is given, each combat is a FRESH enemy at full HP and
+        # ENDS the moment they all drop (rounds_per_combat becomes the cap, not the
+        # length).  Default None = the legacy fixed-length model (byte-identical).
+        self.enemy_ids: "set[int] | None" = set(enemy_ids) if enemy_ids else None
 
     # ------------------------------------------------------------------
     # Public API
@@ -446,6 +468,13 @@ class DayRunner:
             # (design/buff_primitive.md).  No-op for builds that manage their own
             # buff sync (e.g. War Angel's Bless via before_combat).
             entity.clear_combat_buffs()
+            # Finite-HP mode: each combat faces a FRESH enemy, so restore the
+            # opposition to full HP at the boundary (the character/party stay on the
+            # threshold model — their HP carries over as before).  No-op when the mode
+            # is off (enemy on the threshold model never has its HP read for ending).
+            if self.enemy_ids is not None and entity.id in self.enemy_ids:
+                entity.hp = entity.max_hp
+                entity.destroyed = False
 
         # Optional per-combat policy setup (AoO slot, enemy archetype, …).
         # combat_num is 1-based; hand policies a 0-based index.
@@ -459,12 +488,15 @@ class DayRunner:
             entities=self.entities,
             policies=self.policies,
             max_rounds=self.rounds_per_combat,
+            enemy_ids=self.enemy_ids,
         )
         damage_log = scheduler.run()
-        log.info("=== Combat %d end: damage=%s ===", combat_num, damage_log)
+        log.info("=== Combat %d end: damage=%s (rounds=%d) ===",
+                 combat_num, damage_log, scheduler.rounds_elapsed)
         return CombatResult(
             combat_num=combat_num,
             damage_log=damage_log,
             damage_received=dict(scheduler.damage_received),
             damage_by_source_target=dict(scheduler.damage_by_source_target),
+            rounds_elapsed=scheduler.rounds_elapsed,
         )
