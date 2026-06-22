@@ -71,9 +71,47 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none confirmed (session 25 toggle
+> **Currently disabled (re-enable before exit):** none confirmed (session 26 toggle
 > recommendation re-made: computer-use / Claude-in-Chrome / Claude_Preview /
 > scheduled-tasks / mcp-registry / Google Drive — user to toggle via the app).
+>
+> **Session scope (2026-06-21, session 26) — DONE (NEW CAPACITY AXIS — FINITE-HP ENEMY /
+> EMERGENT COMBAT LENGTH):** moved past the attack-taxonomy follow-up to the long-standing
+> finite-HP recommendation (build-selection-prioritizes-capacity). **Scope settled up front
+> (2 Qs): (B) finite-HP axis, through-merge; HP calibration = DMG-midpoint base + a
+> documented `hp_divisor` knob; slice = MECHANISM FOUNDATION ONLY** (defer
+> execute/bloodied/death-proc consumers — no build wires them yet). An OPT-IN combat mode:
+> the enemy has real HP and the combat ENDS the round the enemy drops, so fight length is
+> an EMERGENT output instead of a fixed count — the foundation that later unlocks
+> execute/bloodied thresholds, regain-on-kill, death-procs, nova-vs-sustain resource
+> realism. **Built:** (1) `enemy_stats.py` — a rules-grounded per-level HP table (DMG p.274
+> "Monster Statistics by CR" midpoints, CR==level, WEB-VERIFIED per the per-feature ritual)
+> as a new `hp` column on `monster_stats_by_level.csv`, + `baseline_hp(level,
+> divisor=HP_DIVISOR)`; **`HP_DIVISOR`=2.5** is the HP mirror of `DAMAGE_DIVISOR` — a
+> documented MODELING KNOB landing a SOLO build's fights in ~3-5 rounds (DMG HP is built
+> for a 4-PC party; the HP/DPR ratio is ~10 at both L1 and L15, so one constant works);
+> raise toward 1.0 for a full-party scenario. The import-time loader now self-heals on a
+> schema drift (KeyError), not just a missing CSV. (2) `scheduler.py` — optional
+> `enemy_ids`; after each `DamageEvent`, once every designated opposition entity is
+> functionally dead the combat breaks; new `rounds_elapsed` records the emergent length
+> (capped at `max_rounds`, which stays the safety bound). (3) `day_runner.py` — `enemy_ids`
+> threaded through; each combat resets the opposition to full HP (fresh creature per fight)
+> while the character/party stay on the threshold model; `CombatResult.rounds_elapsed` +
+> `DayResult.rounds_by_combat`/`total_rounds` surface the new output. **Default None = OPT-IN
+> OFF → the 509 prior tests are BYTE-IDENTICAL (519 total, +10).** MECHANISM validated
+> (`tests/test_finite_hp_combat.py`): termination-on-drop before the cap; lower-HP / nova →
+> fewer rounds; cap bounds a too-tough enemy; mode-off full-length; multi-enemy "all dead";
+> per-combat HP reset; the real per-level table feeding it. Branch
+> `feature/finite-hp-emergent-combat` → confirm before merge. ATTACK-TAXONOMY untouched
+> (still deferred). **DEFERRED (flagged, each its own slice):** (1) wire a real build's
+> `make_day_runner` to the finite-HP mode + report a true emergent-length DPR (rounds the
+> denominator); (2) the threshold-PROC consumers the axis unlocks — execute/bloodied riders,
+> regain-on-kill, on-kill death-procs (the `is_functionally_dead` on_kill seam); (3) per-CR
+> HP calibration vs the multi-entity party scenario (the divisor is solo-tuned); (4)
+> reconsider `DAMAGE_DIVISOR`=1.5 now that fights actually END (part of its "enemy never
+> dies" justification changes). Per-feature reflection PENDING user input. **NEXT (user picks
+> at close-out):** a finite-HP CONSUMER (wire a build / a bloodied-execute rider) OR the
+> attack-taxonomy gate-migration follow-up.
 >
 > **Session scope (2026-06-21, session 25) — DONE (NEW CAPACITY AXIS — ATTACK/ACTION
 > MODALITY TAXONOMY; design note + backward-compat refactor):** moved on from substrate
