@@ -25,7 +25,13 @@ from src.content import interpret_save_spell, load_abilities
 from src.day_runner import DayRunner
 from src.entity import Entity
 from src.events import AttackRollEvent, EventQueue, SaveDamageEvent
-from src.policy import Choice, DealDamageContext, GameState, HitContext
+from src.policy import (
+    Choice,
+    DealDamageContext,
+    GameState,
+    HitContext,
+    IncomingAttackContext,
+)
 from src.rng import SeededRNG
 from src.verbs import resolve_attack_roll, resolve_damage, resolve_save_damage
 
@@ -93,7 +99,7 @@ def _resolve_burning_hands(caster, enemy, dice, rng) -> int:
     ev = SaveDamageEvent(
         tick=(1, 0, 1), actor=caster, target=enemy,
         save_stat="dex_save", damage_dice=dice, on_save="half",
-        damage_type="fire", is_spell=True,
+        damage_type="fire", origin="spell",
     )
     resolve_save_damage(ev, rng, q, 2)
     if len(q) == 0:
@@ -389,7 +395,7 @@ def test_l10_searing_arc_only_after_a_weapon_attack():
           if c.cost == "bonus_action"][0]
     assert ba.action_type == "save_spell" and ba.damage_type == "fire"
     assert ba.damage_dice == (4, 6) and ba.on_save == "half"
-    assert ba.resource_cost == {"focus_points": 3} and ba.is_spell is True
+    assert ba.resource_cost == {"focus_points": 3} and ba.origin == "spell"
     # Weapon-attack turn but FP exhausted → falls back to Sacred Flame (radiant).
     ba = [c for c in policy.decide(_snapshot(2, _full_resources(10, guiding_bolt_free=0, focus_points=0)))
           if c.cost == "bonus_action"][0]
@@ -398,8 +404,8 @@ def test_l10_searing_arc_only_after_a_weapon_attack():
 
 def test_searing_arc_fire_is_not_fueled_but_radiant_is():
     """The cross-check the FIRE Searing Arc Strike validates: Fueled Spellfire gates
-    on `damage_type == radiant AND is_spell`, so a FIRE spell is declined even
-    though it IS a spell — proving the damage_type gate, not just is_spell, does
+    on `damage_type == radiant AND origin == "spell"`, so a FIRE spell is declined
+    even though it IS a spell — proving the damage_type gate, not just origin, does
     real work.  A RADIANT spell of the same shape is fueled."""
     char = ss.make_starfire_scion(10)
     dummy = ss.make_training_dummy(10)
@@ -407,7 +413,7 @@ def test_searing_arc_fire_is_not_fueled_but_radiant_is():
 
     def ctx(dtype):
         return DealDamageContext(
-            actor=char, target=dummy, damage_type=dtype, is_spell=True,
+            actor=char, target=dummy, damage_type=dtype, origin="spell",
             is_crit=False, base_damage_dice=(4, 6),
             round_number=1, turn_index=0, resources={"hit_dice": 10},
         )
@@ -690,7 +696,7 @@ def test_l15_searing_arc_is_elemental_adept_treated():
     policy = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
                                     ss.make_training_dummy(15))
     c = policy._searing_arc_choice()
-    assert c.damage_type == "fire" and c.is_spell is True
+    assert c.damage_type == "fire" and c.origin == "spell"
     assert c.min_die == 2 and c.ignore_resistance is True
 
 
@@ -707,7 +713,7 @@ def test_l15_fire_shield_warm_choose_one_selects_cold_resist_and_fire_thorns():
     assert len(fs) == 1
     assert fs[0].action_type == "cast_effect" and fs[0].cost == "none"
     assert fs[0].damage_response == {"cold": "resistance"}      # warm resists COLD only
-    thorns = policy.on_incoming_hit(None).reactive_damage
+    thorns = policy.on_incoming_hit(_melee_incoming()).reactive_damage
     assert thorns.damage_type == "fire" and thorns.damage_dice == (2, 8)
     assert thorns.min_die == 2 and thorns.ignore_resistance is True
 
@@ -722,7 +728,7 @@ def test_fire_shield_chill_mode_selects_the_other_payload():
     policy.on_combat_start(0, SeededRNG(0))
     fs = [c for c in policy.decide(_snapshot(1, {})) if c.effect_source == "fire_shield"]
     assert fs[0].damage_response == {"fire": "resistance"}      # chill resists FIRE
-    thorns = policy.on_incoming_hit(None).reactive_damage
+    thorns = policy.on_incoming_hit(_melee_incoming()).reactive_damage
     assert thorns.damage_type == "cold"                         # ...and reflects COLD
     assert thorns.min_die is None and thorns.ignore_resistance is False
 
@@ -811,14 +817,26 @@ def _l15_policy(primal_strike_unarmed=None):
     return policy, char
 
 
-def _hit_ctx(round_number=1, is_spell=False, is_unarmed=False, is_crit=False):
-    """A HitContext for poking on_hit directly (the rider gate reads is_spell /
-    is_unarmed / round_number; the rest are unused by the Scion's on_hit)."""
+def _hit_ctx(round_number=1, origin="weapon", range_="melee", is_crit=False):
+    """A HitContext for poking on_hit directly (the rider gates read the modality
+    axes origin + range_ / round_number; the rest are unused by the Scion's
+    on_hit).  Defaults describe a melee quarterstaff swing (origin="weapon",
+    range_="melee"); pass origin="unarmed" for a monk strike, or
+    origin="spell"/range_="ranged" for the ranged Guiding Bolt."""
     return HitContext(
         actor=Entity(name="a", hp=10), target=Entity(name="t", hp=10),
         is_crit=is_crit, cost="action", bonus_action_available=True,
         resources={}, round_number=round_number,
-        is_spell=is_spell, is_unarmed=is_unarmed,
+        origin=origin, range_=range_,
+    )
+
+
+def _melee_incoming():
+    """A melee IncomingAttackContext for poking on_incoming_hit (Fire Shield thorns)
+    directly — the thorns gate now reads ctx.range_, so the context must be real."""
+    return IncomingAttackContext(
+        defender=Entity(name="d", hp=10), attacker=Entity(name="a", hp=10),
+        hit_margin=0, cost="action", resources={}, round_number=1, range_="melee",
     )
 
 
@@ -831,16 +849,16 @@ def _rider(resp, damage_type):
 
 def test_l15_fom_rides_every_melee_hit_with_fuelable_radiant():
     """Fount of Moonlight: +2d6 RADIANT on every melee hit — quarterstaff AND
-    unarmed (both are melee attacks) — tagged is_spell so Fueled Spellfire can
+    unarmed (both are melee attacks) — tagged origin="spell" so Fueled Spellfire can
     fuel it (the fueling itself is tested separately).  The rider gates on
     concentration being held (set by the turn-1 cast — simulated here)."""
     policy, char = _l15_policy()
     policy.on_combat_start(0, SeededRNG(0))               # FoM is the combat's 4th-lvl spell
     assert policy._fount_of_moonlight_active
     char.concentration = "fount_of_moonlight"             # the turn-1 Magic-action cast resolved
-    fom = _rider(policy.on_hit(_hit_ctx(is_unarmed=False)), "radiant")   # quarterstaff
-    assert fom is not None and fom.damage_dice == (2, 6) and fom.is_spell is True
-    fom_u = _rider(policy.on_hit(_hit_ctx(round_number=2, is_unarmed=True)), "radiant")  # unarmed
+    fom = _rider(policy.on_hit(_hit_ctx()), "radiant")   # quarterstaff (melee weapon)
+    assert fom is not None and fom.damage_dice == (2, 6) and fom.origin == "spell"
+    fom_u = _rider(policy.on_hit(_hit_ctx(round_number=2, origin="unarmed")), "radiant")  # unarmed
     assert fom_u is not None and fom_u.damage_dice == (2, 6)
 
 
@@ -860,23 +878,23 @@ def test_l15_fom_rider_is_silent_until_concentration_is_established():
 
 
 def test_l15_fom_skips_the_ranged_guiding_bolt_spell():
-    """FoM rides MELEE attacks only — the ranged Guiding Bolt (is_spell) gets no
-    rider; Primal Strike also declines a spell (not a weapon attack) → None."""
+    """FoM rides MELEE attacks only — the ranged Guiding Bolt (range_=="ranged",
+    origin="spell") gets no rider; Primal Strike also declines a spell origin → None."""
     policy, char = _l15_policy()
     policy.on_combat_start(0, SeededRNG(0))
     char.concentration = "fount_of_moonlight"
-    assert policy.on_hit(_hit_ctx(is_spell=True)) is None
+    assert policy.on_hit(_hit_ctx(origin="spell", range_="ranged")) is None
 
 
 def test_l15_fom_radiant_is_fueled_by_fueled_spellfire():
-    """The FoM rider is radiant + is_spell, so it reaches on_deal_damage as a
+    """The FoM rider is radiant + origin="spell", so it reaches on_deal_damage as a
     fuelable instance — Fueled Spellfire adds up to 2 Hit Dice into it (the
     interaction the guide writes `..._{fueled-spellfire(2)} --> ...+4d6`)."""
     policy, char = _l15_policy()
     policy.on_combat_start(0, SeededRNG(0))
     ctx = DealDamageContext(
         actor=char, target=ss.make_training_dummy(15),
-        damage_type="radiant", is_spell=True, is_crit=False,
+        damage_type="radiant", origin="spell", is_crit=False,
         base_damage_dice=(2, 6), resources=char.resources.as_dict(),
         round_number=1, turn_index=0,
     )
@@ -885,13 +903,13 @@ def test_l15_fom_radiant_is_fueled_by_fueled_spellfire():
 
 
 def test_l15_primal_strike_fires_once_per_turn_on_weapon_hits():
-    """Primal Strike: a FEATURE (is_spell False) adding 1d8 of the chosen element,
+    """Primal Strike: a FEATURE (origin="feature") adding 1d8 of the chosen element,
     once on each of the character's turns (round-gated), on a weapon hit."""
     policy, _ = _l15_policy()                             # RAW (default)
     policy._has_fount_of_moonlight = False                # isolate Primal from FoM
     policy.on_combat_start(0, SeededRNG(0))
     r1 = _rider(policy.on_hit(_hit_ctx(round_number=1)), "fire")
-    assert r1 is not None and r1.damage_dice == (1, 8) and r1.is_spell is False
+    assert r1 is not None and r1.damage_dice == (1, 8) and r1.origin == "feature"
     assert policy.on_hit(_hit_ctx(round_number=1)) is None      # once/turn — second hit declines
     assert _rider(policy.on_hit(_hit_ctx(round_number=2)), "fire") is not None  # next turn fires
 
@@ -902,24 +920,24 @@ def test_l15_primal_strike_raw_declines_unarmed_nonraw_rides_it():
     raw, _ = _l15_policy()                                # default RAW
     raw._has_fount_of_moonlight = False
     raw.on_combat_start(0, SeededRNG(0))
-    assert raw.on_hit(_hit_ctx(is_unarmed=True)) is None         # RAW: no Primal on unarmed
+    assert raw.on_hit(_hit_ctx(origin="unarmed")) is None        # RAW: no Primal on unarmed
 
     nonraw, _ = _l15_policy(primal_strike_unarmed=True)
     nonraw._has_fount_of_moonlight = False
     nonraw.on_combat_start(0, SeededRNG(0))
-    r = _rider(nonraw.on_hit(_hit_ctx(is_unarmed=True)), "fire")
+    r = _rider(nonraw.on_hit(_hit_ctx(origin="unarmed")), "fire")
     assert r is not None and r.damage_dice == (1, 8)             # non-RAW: rides unarmed
 
 
 def test_l15_primal_strike_is_not_elemental_adept_treated():
     """Primal Strike is a FEATURE, not a spell — even though we pick fire it does
     NOT get Elemental Adept's bypass + 1->2, unlike the fire Searing Arc (a spell).
-    The cross-check that the is_spell gate does real work on the rider path."""
+    The cross-check that the origin gate does real work on the rider path."""
     policy, _ = _l15_policy()
     policy._has_fount_of_moonlight = False
     policy.on_combat_start(0, SeededRNG(0))
     ps = _rider(policy.on_hit(_hit_ctx()), "fire")
-    assert ps.is_spell is False and ps.min_die is None and ps.ignore_resistance is False
+    assert ps.origin == "feature" and ps.min_die is None and ps.ignore_resistance is False
     sa = policy._searing_arc_choice()                            # ...contrast Searing Arc
     assert sa.min_die == 2 and sa.ignore_resistance is True
 
@@ -933,8 +951,8 @@ def test_l15_fom_and_primal_combine_on_the_first_weapon_hit():
     char.concentration = "fount_of_moonlight"
     resp = policy.on_hit(_hit_ctx(round_number=1))
     assert sorted(r.damage_type for r in resp.rider_damage) == ["fire", "radiant"]
-    assert _rider(resp, "radiant").is_spell is True              # FoM — fuelable
-    assert _rider(resp, "fire").is_spell is False                # Primal — feature
+    assert _rider(resp, "radiant").origin == "spell"             # FoM — fuelable
+    assert _rider(resp, "fire").origin == "feature"              # Primal — feature
 
 
 def test_l15_fom_is_cast_as_a_turn1_magic_action_in_one_combat_per_day():

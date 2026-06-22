@@ -4,7 +4,7 @@ radiant, Primal Strike's +1d8 elemental), the engine half of the build work.
 
 Engine-level contract (consistency, NOT number-matching):
   - a rider spec spawns its OWN DamageEvent (NOT folded into the weapon hit), with
-    its own damage_dice / damage_type / is_spell / Elemental-Adept flags;
+    its own damage_dice / damage_type / origin / Elemental-Adept flags;
   - rider dice double on a crit;
   - the rider routes through the target's per-type damage response (#4), and its
     own ignore_resistance / min_die ride along;
@@ -79,22 +79,22 @@ def _hit_with_riders(d20, riders, target=None):
 
 def test_rider_spawns_a_separate_typed_damage_event():
     q, a, t = _hit_with_riders(
-        15, [RiderDamageSpec(damage_dice=(2, 6), damage_type="radiant", is_spell=True)])
+        15, [RiderDamageSpec(damage_dice=(2, 6), damage_type="radiant", origin="spell")])
     dmgs = [e for e in _drain(q) if isinstance(e, DamageEvent)]
     # main weapon DamageEvent (pushed first, lower sequence) + the rider event
     assert len(dmgs) == 2
     main, rider = dmgs[0], dmgs[1]
     # the weapon hit is untouched — the rider did NOT fold into it
-    assert main.damage_dice == (1, 8) and main.damage_type is None and main.is_spell is False
-    # the rider carries its OWN type / spell-source / dice
+    assert main.damage_dice == (1, 8) and main.damage_type is None and main.origin is None
+    # the rider carries its OWN type / origin / dice
     assert rider.damage_dice == (2, 6) and rider.damage_type == "radiant"
-    assert rider.is_spell is True and rider.damage_bonus == 0
+    assert rider.origin == "spell" and rider.damage_bonus == 0
 
 
 def test_multiple_riders_each_spawn_their_own_event_after_the_weapon_hit():
     q, a, t = _hit_with_riders(15, [
-        RiderDamageSpec(damage_dice=(2, 6), damage_type="radiant", is_spell=True),
-        RiderDamageSpec(damage_dice=(1, 8), damage_type="fire", is_spell=False),
+        RiderDamageSpec(damage_dice=(2, 6), damage_type="radiant", origin="spell"),
+        RiderDamageSpec(damage_dice=(1, 8), damage_type="fire", origin="feature"),
     ])
     dmgs = [e for e in _drain(q) if isinstance(e, DamageEvent)]
     assert len(dmgs) == 3

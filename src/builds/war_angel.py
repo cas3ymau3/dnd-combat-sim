@@ -1003,6 +1003,12 @@ class WarAngelPolicy:
         """
         if not self._flourish_parry:
             return None
+        # Melee-only: Flourish Parry triggers on a MELEE attack that hits us (2024
+        # Battle Master).  Read the incoming attack's range axis (modality taxonomy)
+        # rather than assuming melee; a ranged hit does not provoke the parry.  None
+        # (an attacker that did not tag a range) is treated as melee for back-compat.
+        if ctx.range_ == "ranged":
+            return None
         # Once-per-round reaction gate.
         if self._last_parry_round == ctx.round_number:
             return None

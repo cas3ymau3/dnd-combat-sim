@@ -178,13 +178,13 @@ class Choice:
     damage_dice: "tuple[int, int] | None" = None
     damage_bonus: int = 0
     on_save: str = "none"
-    # Damage type + spell-source flag, threaded to the spawned event → DamageEvent.
-    # The caster-side Fueled-Spellfire decision point gates on "spell radiant
-    # damage" (damage_type == "radiant" and is_spell).  So Guiding Bolt / Sacred
-    # Flame set damage_type="radiant", is_spell=True; Starry-Form Archer is
-    # radiant but a feature (is_spell=False); plain weapon attacks leave both unset.
+    # Damage type, threaded to the spawned event → DamageEvent.  The caster-side
+    # Fueled-Spellfire decision point gates on "spell radiant damage"
+    # (damage_type == "radiant" and origin == "spell").  So Guiding Bolt / Sacred
+    # Flame set damage_type="radiant", origin="spell"; Starry-Form Archer is
+    # radiant but a feature (origin="feature"); plain weapon attacks leave the type
+    # unset and `origin` defaults to "weapon" (see __post_init__ + the origin axis).
     damage_type: "str | None" = None
-    is_spell: bool = False
     # Elemental Adept (fire, etc.): when a fire SPELL this Choice casts is resolved,
     # `min_die` floors each of its damage dice ("treat any 1 as a 2" → 2) and
     # `ignore_resistance` makes it bypass the target's RESISTANCE to that type
@@ -192,12 +192,6 @@ class Choice:
     # SaveDamageEvent → DamageEvent (resolve_damage phases 3 + 7).  Default off.
     min_die: "int | None" = None
     ignore_resistance: bool = False
-    # Whether this attack Choice is an UNARMED strike (vs a weapon attack).  A
-    # minimal tactical tag (mirrors `is_spell`), threaded to the AttackRollEvent →
-    # HitContext, read by an on_hit rider that gates weapon-vs-unarmed (Primal
-    # Strike RAW rides weapon attacks only; its non-RAW toggle also rides unarmed).
-    # Not the first-class attack typology (deferred — ATTACK-TAXONOMY flag).
-    is_unarmed: bool = False
     # --- cast_effect: a first-class non-damaging cast (buff/debuff) ---
     # action_type="cast_effect" installs a PERSISTING effect and pushes NO
     # DamageEvent (the honest model for raising a combat-long buff, or a debuff on
@@ -247,17 +241,16 @@ class Choice:
     # The first-class vocabulary for "what the character is doing" and "how it is
     # resolved", separated from the action-economy `cost` above and from the
     # scheduler's `action_type` DISPATCH discriminator.  See taxonomy.py for the
-    # full rationale.  These default to None and are FILLED in __post_init__ from
-    # the legacy flags (action_type / is_spell / is_unarmed / weapon_stat) so an
-    # un-migrated Choice still carries correct taxonomy values and behaviour is
-    # unchanged; explicit call sites set them directly.
+    # full rationale.  modality / resolution / range_ default to None and are
+    # FILLED in __post_init__ from the dispatch discriminator + sensible defaults;
+    # `origin` defaults to "weapon" for any attack/damage Choice that does not set
+    # it explicitly.  Spell / unarmed / feature sources MUST set `origin`
+    # explicitly at the call site (the legacy is_spell / is_unarmed flags that used
+    # to derive it have been removed):
     #   modality:   Attack / Magic / Use Ability / Dash / ... (taxonomy.MODALITIES)
     #   resolution: attack_roll / saving_throw / automatic
     #   origin:     weapon / unarmed / spell / feature (for damage/save abilities)
     #   range_:     melee / ranged (for attack_roll abilities; unarmed ⇒ melee)
-    # `is_spell` / `is_unarmed` above remain as TRANSITIONAL aliases for
-    # `origin == "spell"` / `origin == "unarmed"` (slated for removal once every
-    # reader uses `origin`); __post_init__ keeps them consistent in both directions.
     modality: "str | None" = None
     resolution: "str | None" = None
     origin: "str | None" = None
@@ -267,36 +260,43 @@ class Choice:
         # Resolution: derive from the dispatch discriminator when not given.
         if self.resolution is None:
             self.resolution = taxonomy.derive_resolution(self.action_type)
-        # Origin: derive from the legacy flags when not given; otherwise keep the
-        # legacy flags consistent with an explicitly-set origin (so existing
-        # readers of is_spell / is_unarmed see the right thing).  Origin is only
-        # meaningful for an attack or a damage-dealing ability — a pure buff/debuff
-        # cast (no attack, no damage) leaves it None.
+        # Origin: an attack or damage-dealing Choice defaults to "weapon"; a spell,
+        # unarmed strike, or magical feature sets `origin` explicitly at the call
+        # site (e.g. Guiding Bolt origin="spell", an unarmed strike origin="unarmed",
+        # Starry-Form Archer origin="feature").  A pure buff/debuff cast (no attack,
+        # no damage) leaves it None.  NB the Shillelagh quarterstaff — a WEAPON
+        # attack made with the spellcasting stat — must set origin="weapon"
+        # explicitly so it is not mistaken for a feature/spell (the EK / True Strike
+        # gotcha in attack_taxonomy.md).
         if self.origin is None:
             deals_damage = bool(
                 self.damage_dice or self.damage_type or self.extra_damage_dice
             )
             if self.resolution == "attack_roll" or deals_damage:
-                self.origin = taxonomy.derive_origin(
-                    self.is_spell, self.is_unarmed, self.weapon_stat
-                )
-        else:
-            self.is_spell = self.origin == "spell"
-            self.is_unarmed = self.origin == "unarmed"
+                self.origin = "weapon"
         # Range: only meaningful for attacks; default melee (every modelled
         # attacker is melee unless a call site says otherwise — Guiding Bolt /
         # Archer set range_="ranged").  Left None for non-attack Choices.
         if self.range_ is None and self.resolution == "attack_roll":
             self.range_ = "melee"
-        # Modality: derive a reasonable default from the dispatch discriminator.
-        # "attack" → Attack; spell/effect casts → Magic.  Capability features
-        # (Rage etc.) are Use Ability — call sites set that explicitly.
+        # Modality: derive a reasonable default from the dispatch discriminator +
+        # origin.  A save/effect cast is Magic.  An ATTACK is Magic when its source
+        # is a spell or a magical feature (Guiding Bolt, Starry-Form Archer) and
+        # Attack otherwise (a weapon / unarmed swing) — so a spell-attack no longer
+        # needs an explicit modality tag, and is_attack_action(modality, cost)
+        # reads False for it without one.  Call sites still OVERRIDE: a non-magical
+        # capability feature (Rage) sets modality="Use Ability"; the EK War-Magic
+        # True Strike sets modality="Magic" despite origin="weapon".
         if self.modality is None:
-            self.modality = {
-                "attack": "Attack",
-                "save_spell": "Magic",
-                "cast_effect": "Magic",
-            }.get(self.action_type or "")
+            if self.action_type == "attack":
+                self.modality = (
+                    "Magic" if self.origin in ("spell", "feature") else "Attack"
+                )
+            else:
+                self.modality = {
+                    "save_spell": "Magic",
+                    "cast_effect": "Magic",
+                }.get(self.action_type or "")
 
 
 # ---------------------------------------------------------------------------
@@ -381,19 +381,12 @@ class HitContext:
     bonus_action_available: bool
     resources: dict[str, int]
     round_number: int
-    # Whether the hitting attack was from a SPELL (vs a weapon/feature) and/or an
-    # UNARMED strike (vs a weapon attack), so an on_hit rider can gate on attack
-    # kind.  Fount of Moonlight rides melee attacks (`not is_spell` — Guiding Bolt
-    # is the only ranged spell attack); Primal Strike rides weapon attacks (RAW),
-    # with the non-RAW option also riding unarmed (`is_unarmed`).  is_spell and
-    # is_unarmed separate the three attack kinds the riders care about; neither is
-    # the first-class attack typology (deferred — ATTACK-TAXONOMY flag).
-    is_spell: bool = False
-    is_unarmed: bool = False
     # Modality taxonomy (src/taxonomy.py): the hitting attack's origin (weapon /
-    # unarmed / spell / feature) and range (melee / ranged).  These are the
-    # first-class successors to is_spell + is_unarmed; riders should prefer the
-    # predicates below (is_physical / is_spell_origin) over the legacy flags.
+    # unarmed / spell / feature) and range (melee / ranged) — the axes on-hit
+    # riders gate on.  Fount of Moonlight rides MELEE attacks (range_ == "melee" —
+    # any melee attack roll, weapon or spell); Primal Strike rides WEAPON hits
+    # (origin == "weapon"), with the non-RAW option also riding unarmed.  Prefer
+    # the predicates below (is_physical / is_spell_origin) over raw origin checks.
     origin: "str | None" = None
     range_: "str | None" = None
 
@@ -415,14 +408,14 @@ class RiderDamageSpec:
     radiant, Primal Strike's +1d8 elemental).
 
     Unlike HitResponse.extra_damage_dice — which folds into the hitting attack's
-    OWN DamageEvent and therefore inherits its damage type / is_spell — each rider
+    OWN DamageEvent and therefore inherits its damage type / origin — each rider
     spec is spawned as its OWN DamageEvent (same actor → target, same is_crit).
-    That keeps the rider's type and spell-source distinct, so it (a) routes
+    That keeps the rider's type and source-origin distinct, so it (a) routes
     through the target's per-type damage response (substrate #4), (b) can carry
     its own Elemental Adept treatment, and (c) reaches the caster's on_deal_damage
-    rider on its own terms — Fount of Moonlight's radiant is `is_spell=True`, so
+    rider on its own terms — Fount of Moonlight's radiant is `origin="spell"`, so
     Fueled Spellfire fuels it for free, while Primal Strike's elemental damage is
-    a FEATURE (`is_spell=False`) and is correctly NOT fuelable and NOT
+    a FEATURE (`origin="feature"`) and is correctly NOT fuelable and NOT
     Elemental-Adept-treated.
 
     Fields
@@ -431,9 +424,11 @@ class RiderDamageSpec:
         The rider's dice, e.g. (2, 6) for FoM, (1, 8) for Primal Strike.
     damage_type:
         The rider's type, e.g. "radiant" (FoM) or "fire" (Primal Strike).
-    is_spell:
-        Whether the rider damage is from a SPELL (FoM = True → fuelable) or a
-        feature (Primal Strike = False).
+    origin:
+        The rider's source (modality taxonomy): "spell" (FoM → fuelable by Fueled
+        Spellfire) or "feature" (Primal Strike → NOT fuelable, NOT Elemental-Adept-
+        treated).  Threaded onto the spawned DamageEvent so the rider routes through
+        its own per-type response and reaches on_deal_damage on its own terms.
     damage_bonus:
         Flat bonus on the rider (default 0 — neither current consumer adds one).
     min_die / ignore_resistance:
@@ -443,7 +438,7 @@ class RiderDamageSpec:
     """
     damage_dice: tuple[int, int]
     damage_type: "str | None" = None
-    is_spell: bool = False
+    origin: "str | None" = "feature"
     damage_bonus: int = 0
     min_die: "int | None" = None
     ignore_resistance: bool = False
@@ -759,9 +754,10 @@ class DealDamageContext:
     damage_type:
         The damage's type, e.g. "radiant" (None = untyped).  Fueled Spellfire
         fires only on radiant damage.
-    is_spell:
-        Whether the damage is from a SPELL (vs a weapon/feature).  Fueled
-        Spellfire requires a spell — so Starry-Form Archer (radiant, but a
+    origin:
+        The damage's source (modality taxonomy): weapon / unarmed / spell /
+        feature.  Fueled Spellfire requires a SPELL origin (use the
+        `is_spell_origin` property) — so Starry-Form Archer (radiant, but a
         feature) is correctly excluded.
     is_crit:
         Whether the hitting attack was a crit.  Informational: the engine does
@@ -778,12 +774,17 @@ class DealDamageContext:
     actor: "Entity"
     target: "Entity | None"
     damage_type: "str | None"
-    is_spell: bool
+    origin: "str | None"
     is_crit: bool
     base_damage_dice: tuple[int, int]
     resources: dict[str, int]
     round_number: int
     turn_index: int
+
+    @property
+    def is_spell_origin(self) -> bool:
+        """True only for an actual spell source (the Fueled Spellfire gate)."""
+        return taxonomy.is_spell_origin(self.origin)
 
 
 @dataclass(frozen=True)

@@ -66,12 +66,12 @@ class FakeRNG:
         return self._values.pop(0)
 
 
-def _attack_event(actor, target, is_spell=False):
+def _attack_event(actor, target, origin="weapon"):
     return AttackRollEvent(
         tick=make_tick(1, 0, 1),
         actor=actor,
         target=target,
-        is_spell=is_spell,
+        origin=origin,
     )
 
 
@@ -176,18 +176,19 @@ def test_faerie_fire_status_grants_attackers_advantage_against_target():
 
 
 def test_innate_sorcery_status_grants_advantage_on_spell_attacks_only():
-    # spell_attack_advantage on the caster → advantage on a SPELL attack, but a
-    # weapon swing (is_spell=False) is unaffected.  Persists either way.
+    # spell_attack_advantage on the caster → advantage on a SPELL attack
+    # (origin="spell"), but a weapon swing (origin="weapon") is unaffected.
+    # Persists either way.
     caster = Entity(name="Caster", hp=50, base_stats={"attack_bonus": 0, "damage_dice": (1, 8), "damage_bonus": 0})
     foe = Entity(name="Foe", hp=math.inf, base_stats={"ac": 10})
     caster.statuses.apply("spell_attack_advantage")
 
     spell_rng = FakeRNG([4, 19])
-    resolve_attack_roll(_attack_event(caster, foe, is_spell=True), spell_rng, EventQueue(), next_sequence=2)
+    resolve_attack_roll(_attack_event(caster, foe, origin="spell"), spell_rng, EventQueue(), next_sequence=2)
     assert spell_rng.roll_calls[0] == (2, 20)    # spell attack → advantage
 
     weapon_rng = FakeRNG([7])
-    resolve_attack_roll(_attack_event(caster, foe, is_spell=False), weapon_rng, EventQueue(), next_sequence=2)
+    resolve_attack_roll(_attack_event(caster, foe, origin="weapon"), weapon_rng, EventQueue(), next_sequence=2)
     assert weapon_rng.roll_calls[0] == (1, 20)   # weapon swing → straight
     assert caster.statuses.has("spell_attack_advantage")  # not consumed
 

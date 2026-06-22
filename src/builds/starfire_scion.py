@@ -74,7 +74,7 @@ What IS modeled at L10 (beyond the L1-L5 mechanics above)
      floor(monk/2) = 3 FP at monk-6 → upcast to slot 2 (4d6).  Gated on having taken
      a weapon Attack action this turn (NOT a Guiding-Bolt/spell turn).  Because it is
      FIRE (not radiant), Fueled Spellfire does NOT fuel it — the cross-check that the
-     damage_type gate, not just is_spell, does real work.
+     damage_type gate, not just origin, does real work.
 
 What IS modeled at L9-L10 (thread B — the martial bundle)
 --------------------------------------------------------
@@ -128,7 +128,7 @@ Engine-capacity build order (see PROGRESS):
   5. [DONE, this session] Fueled Spellfire — a caster-side post-damage decision
      point (Policy.on_deal_damage → DamageRiderResponse), threaded through
      resolve_damage as `rider_decider`; gated on "spell radiant damage" via
-     damage_type + is_spell threaded Choice → events → DamageEvent.
+     damage_type + origin threaded Choice → events → DamageEvent.
 """
 
 from __future__ import annotations
@@ -154,6 +154,7 @@ from ..policy import (
 )
 from ..resources import ResourceEntry, ResourcePool
 from ..statuses import StatusSpec
+from ..taxonomy import is_attack_action
 from .enemy import ScriptedEnemyPolicy  # shared enemy loop (re-exported here)
 
 if TYPE_CHECKING:
@@ -170,7 +171,7 @@ SACRED_FLAME = _ABILITIES["sacred_flame"]   # DEX save-negates, cantrip-scaling 
 # DEX save FOR HALF, FIRE, base 3d6 + 1d6/slot-level (upcast `increment` scaling,
 # primitive #3).  Its dice resolve from data via interpret_save_spell against the
 # chosen slot level.  type: fire (NOT radiant) — so Fueled Spellfire does NOT fuel
-# it (the cross-check that the damage_type gate, not just is_spell, does real work).
+# it (the cross-check that the damage_type gate, not just origin, does real work).
 SEARING_ARC_STRIKE = _ABILITIES["searing_arc_strike"]
 # Shillelagh (druid cantrip, char L9+): the quarterstaff DAMAGE DIE upgrades on the
 # enumerated dice ladder (1d8/1d10/1d12/2d6 at char L5/11/17) — resolved FROM DATA
@@ -207,7 +208,7 @@ FIRE_SHIELD_THORNS_DICE: tuple[int, int] = (2, 8)
 # extra 2d6 Radiant damage on a hit" (+ a reaction-blind we defer — control, not
 # DPR).  The +2d6 RADIANT rides every melee hit — quarterstaff AND unarmed (both
 # are melee attacks) — and, being a SPELL's radiant damage, is FUELED by Fueled
-# Spellfire for free (it reaches on_deal_damage as its own is_spell radiant
+# Spellfire for free (it reaches on_deal_damage as its own origin="spell" radiant
 # DamageEvent).  See guide 41:780 `quarterstaff_{primal-strike,fueled-spellfire(2)}
 # --> 2d12+3d8+4d6+2WIS` (the 4d6 = FoM's +2d6 on each of two swings).
 #
@@ -259,7 +260,8 @@ LEVELS: dict[int, dict] = {
         "char_ac": 16,                     # 10 + DEX 3 + WIS 3 (unarmored defense)
         "char_hp": 8,                      # DPR-irrelevant (threshold model)
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
-        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus",
+                          "origin": "unarmed"},
         "starry_form": False,
         "guiding_bolt": False,
         "resources": {
@@ -279,16 +281,19 @@ LEVELS: dict[int, dict] = {
         "char_ac": 16,
         "char_hp": 22,
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
-        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus",
+                          "origin": "unarmed"},
         # Archer form: BA ranged spell attack 1d8 + WIS, WIS-based to-hit.  It
         # deals RADIANT damage, but it is a starry-form FEATURE, not a spell — so
-        # is_spell stays False and Fueled Spellfire (L5+) does NOT fuel it.
+        # origin="feature" (NOT "spell") and Fueled Spellfire (L5+) does NOT fuel it.
         "archer":       {"dice": (1, 8), "bonus": 3, "weapon_stat": "spell_attack_bonus",
-                          "damage_type": "radiant"},
+                          "damage_type": "radiant", "origin": "feature",
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         # Guiding Bolt: 4d6 radiant SPELL, ranged spell attack, no damage modifier.
-        # radiant + is_spell → a Fueled-Spellfire target at L5+.
+        # radiant + origin="spell" → a Fueled-Spellfire target at L5+.
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
-                          "damage_type": "radiant", "is_spell": True},
+                          "damage_type": "radiant", "origin": "spell",
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": True,
         "resources": {
             "spellfire_spark": (2, 0),     # x PB / LR
@@ -309,11 +314,14 @@ LEVELS: dict[int, dict] = {
         "char_ac": 17,                     # 10 + DEX 3 + WIS 4
         "char_hp": 30,
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
-        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 6), "bonus": 3, "weapon_stat": "attack_bonus",
+                          "origin": "unarmed"},
         "archer":       {"dice": (1, 8), "bonus": 4, "weapon_stat": "spell_attack_bonus",
-                          "damage_type": "radiant"},  # radiant FEATURE (not a spell)
+                          "damage_type": "radiant", "origin": "feature",  # radiant FEATURE (not a spell)
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
-                          "damage_type": "radiant", "is_spell": True},
+                          "damage_type": "radiant", "origin": "spell",
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": True,
         "resources": {
             "spellfire_spark": (3, 0),     # x PB / LR (PB 3 now)
@@ -346,7 +354,8 @@ LEVELS: dict[int, dict] = {
         "char_hp": 54,                     # DPR-irrelevant (threshold model)
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         # Martial arts die 1d6 -> 1d8 at monk-5 (guide 41:512); unarmed uses it.
-        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus",
+                          "origin": "unarmed"},
         # Extra Attack (monk-5): the Attack action yields two weapon swings (the
         # policy emits a primary cost="action" + one cost="none" follow-up).
         "extra_attack": True,
@@ -363,7 +372,8 @@ LEVELS: dict[int, dict] = {
         # target.  Starry Form (Archer) is dropped in combat, so the BA never falls
         # back to archer; only Sacred Flame / unarmed.
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
-                          "damage_type": "radiant", "is_spell": True},
+                          "damage_type": "radiant", "origin": "spell",
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": False,
         "resources": {
             "spellfire_spark":  (4, 0),    # Sacred Flame as a BA, x PB / LR (PB 4)
@@ -399,7 +409,8 @@ LEVELS: dict[int, dict] = {
         "elemental_adept": "fire",
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         # Martial arts die 1d8 at monk-6; unarmed uses it (1d6 -> 1d8).
-        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus",
+                          "origin": "unarmed"},
         # Extra Attack + Shillelagh (thread B — same as L9: die from the ladder
         # (1d10 at char L9-10, via interpret_scaled_dice), WIS option; the policy
         # uses the higher of WIS/DEX, default WIS).
@@ -409,7 +420,8 @@ LEVELS: dict[int, dict] = {
         # target.  Starry Form (Archer) is DROPPED in combat from L9 (guide), so no
         # archer profile here; the BA falls back to an unarmed strike.
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
-                          "damage_type": "radiant", "is_spell": True},
+                          "damage_type": "radiant", "origin": "spell",
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": False,
         # Searing Arc Strike (Sun-Soul Monk-6): upcast Burning Hands.  FP cost = 2
         # base + 1 per upcast slot level, capped at floor(monk_level / 2) = 3 FP at
@@ -453,12 +465,14 @@ LEVELS: dict[int, dict] = {
 
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
         # Martial arts die still 1d8 at monk-7 (it next steps to 1d10 at monk-11).
-        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus",
+                          "origin": "unarmed"},
         "extra_attack": True,
         # Shillelagh die -> 1d12 at char L11 (resolved by interpret_scaled_dice).
         "shillelagh":   {"bonus": 4, "weapon_stat": "spell_attack_bonus"},
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
-                          "damage_type": "radiant", "is_spell": True},
+                          "damage_type": "radiant", "origin": "spell",
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": False,
         # Searing Arc Strike unchanged from L10: monk-7 cap = floor(7/2) = 3 FP →
         # slot 2 = 4d6 (FP cost 3).  (5d6 waits for monk-8 at L12.)
@@ -492,12 +506,14 @@ LEVELS: dict[int, dict] = {
         "elemental_adept": "fire",         # monk-4/L8 (see L10) — fire spells bypass resist + 1->2
 
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
-        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
+        "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus",
+                          "origin": "unarmed"},
         "extra_attack": True,
         # Shillelagh die 1d12 (char L11-16); WIS mod now +5 (bonus 5).
         "shillelagh":   {"bonus": 5, "weapon_stat": "spell_attack_bonus"},
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
-                          "damage_type": "radiant", "is_spell": True},
+                          "damage_type": "radiant", "origin": "spell",
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": False,
         # monk-8: cap = floor(8/2) = 4 FP → upcast Burning Hands to slot 3 = 5d6
         # (guide line 106 — "upcast burning hands at lvl-03 (5d6)").  slot_level = 3.
@@ -538,15 +554,16 @@ LEVELS: dict[int, dict] = {
         "con_save": 2,
         "elemental_adept": "fire",         # monk-4/L8 — fire spells bypass resist + 1->2
         "quarterstaff": {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus"},
-        # `is_unarmed` tags this as a monk unarmed strike (NOT a weapon attack) so
-        # Primal Strike's RAW gate can decline it (the non-RAW toggle accepts it).
+        # `origin="unarmed"` tags this as a monk unarmed strike (NOT a weapon attack)
+        # so Primal Strike's RAW gate can decline it (the non-RAW toggle accepts it).
         "unarmed":      {"dice": (1, 8), "bonus": 3, "weapon_stat": "attack_bonus",
-                          "is_unarmed": True},
+                          "origin": "unarmed"},
         "extra_attack": True,
         # Shillelagh die stays 1d12 (char L11-16 step); WIS mod +5 (bonus 5).
         "shillelagh":   {"bonus": 5, "weapon_stat": "spell_attack_bonus"},
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
-                          "damage_type": "radiant", "is_spell": True},
+                          "damage_type": "radiant", "origin": "spell",
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": False,
         # Searing Arc Strike: monk-8 cap floor(8/2)=4 FP → slot 3 = 5d6 (as L12).
         "searing_arc_strike": {"slot_level": 3, "fp_cost": 4},
@@ -554,9 +571,9 @@ LEVELS: dict[int, dict] = {
         # D&D Beyond / Roll20): once on each of your turns, when you HIT with an
         # attack roll using a WEAPON (or a Beast form), +1d8 cold/fire/lightning/
         # thunder (choose on hit).  An OUTGOING RIDER (substrate #6) on the on_hit
-        # seam.  We pick FIRE for flavour, but it is a FEATURE (is_spell=False) so
+        # seam.  We pick FIRE for flavour, but it is a FEATURE (origin="feature") so
         # Elemental Adept does NOT treat it (spells only) — unlike the fire Searing
-        # Arc / Fire Shield thorns, the cross-check that the is_spell gate does real
+        # Arc / Fire Shield thorns, the cross-check that the origin gate does real
         # work on the rider path.  The 2d8 step is DRUID-15 (far past druid-7) → 1d8
         # here.  Built TOGGLEABLE: RAW rides weapon attacks only (quarterstaff); the
         # non-RAW option (user-requested — see memory primal-strikes-explore-unarmed)
@@ -1191,12 +1208,16 @@ class StarfireScionPolicy:
         # BA); the unused free GB charges carry to the other (non-FoM) combats, so
         # total GB casts — and mean DPR outside the FoM combat — are unchanged.
         #
-        # Track whether this turn's action is a WEAPON attack (quarterstaff/unarmed)
+        # Track whether this turn's action was the Attack action (a weapon swing)
         # vs. casting a spell (Guiding Bolt / FoM): Searing Arc Strike requires the
         # *Attack action*, which a spell cast — though Guiding Bolt is delivered via
-        # an attack roll in the engine — does NOT count as (it is the Magic action).
-        # So the gate is "a weapon attack was the action", true for quarterstaff only.
-        action_is_weapon_attack = False
+        # an attack roll in the engine — does NOT count as (it is the Magic modality).
+        # Rather than hand-set a boolean per branch, we DERIVE it from the primary
+        # action-cost Choice via the taxonomy predicate is_attack_action(modality,
+        # cost): True only for modality=="Attack" + cost=="action".  The weapon swing
+        # is modality="Attack" (default); Guiding Bolt / the cast_effects are
+        # modality="Magic", so they read False.  (attack_taxonomy.md migration item 1.)
+        action_choice_idx = len(choices)
         if res.get("action", 0) >= 1:
             if (
                 self._fount_of_moonlight_active
@@ -1253,7 +1274,16 @@ class StarfireScionPolicy:
                 choices.append(self._weapon_attack_choice("action"))
                 for _ in range(self._extra_attacks):
                     choices.append(self._weapon_attack_choice("none"))
-                action_is_weapon_attack = True
+
+        # The Attack-action gate for Searing Arc: derived from the primary action
+        # Choice emitted above (if any) via the taxonomy predicate — True only when a
+        # weapon swing (modality="Attack", cost="action") was the action.
+        action_is_weapon_attack = (
+            action_choice_idx < len(choices)
+            and is_attack_action(
+                choices[action_choice_idx].modality, choices[action_choice_idx].cost
+            )
+        )
 
         # BONUS ACTION priority ladder:
         #   1. Searing Arc Strike (L10+) — only after a weapon Attack action, and
@@ -1319,7 +1349,7 @@ class StarfireScionPolicy:
                     damage_dice=self._sacred_flame_dice,   # FROM DATA
                     on_save="none",                        # save NEGATES
                     damage_type=self._sacred_flame_type,   # "radiant" (FROM DATA)
-                    is_spell=True,                         # a cantrip → fuelable
+                    origin="spell",                        # a cantrip → fuelable
                     resource_cost={"spellfire_spark": 1},
                 ))
             elif self._starry_form_active:
@@ -1332,9 +1362,9 @@ class StarfireScionPolicy:
     def _searing_arc_choice(self) -> Choice:
         """Searing Arc Strike: upcast Burning Hands as a BA — a FIRE save-FOR-HALF
         save_spell.  Dice + on_save + type come FROM DATA (interpret_save_spell, at
-        the chosen slot level); FP cost is policy arbitration.  is_spell=True (it IS
+        the chosen slot level); FP cost is policy arbitration.  origin="spell" (it IS
         a spell) but damage_type="fire", so Fueled Spellfire declines it — the
-        cross-check that the damage_type gate, not just is_spell, does real work.
+        cross-check that the damage_type gate, not just origin, does real work.
 
         Elemental Adept (fire): when the feat's element matches Searing Arc's fire,
         the cast IGNORES enemy fire resistance and high-grades each die 1->2
@@ -1350,7 +1380,7 @@ class StarfireScionPolicy:
             damage_dice=self._sas_dice,                # FROM DATA (4d6 at slot 2)
             on_save=self._sas_on_save,                 # "half" (save-for-half)
             damage_type=self._sas_type,                # "fire" (NOT fuelable)
-            is_spell=True,
+            origin="spell",
             min_die=2 if ea else None,                 # Elemental Adept: treat 1 as 2
             ignore_resistance=ea,                      # Elemental Adept: bypass fire resist
             resource_cost={"focus_points": self._sas_fp_cost},
@@ -1391,6 +1421,12 @@ class StarfireScionPolicy:
             weapon_stat=weapon_stat,
             damage_dice=wis["dice"],           # 1d10 regardless of which stat wins
             damage_bonus=bonus,
+            # The Shillelagh quarterstaff is a WEAPON attack even though it MAY use
+            # the spellcasting stat (weapon_stat="spell_attack_bonus") — so set
+            # origin="weapon" explicitly, or it would be mistaken for a feature/spell
+            # (the EK / True Strike gotcha, attack_taxonomy.md).  Primal Strike (RAW,
+            # origin=="weapon") must still ride it.
+            origin="weapon",
         )
 
     def _attack_choice(
@@ -1401,6 +1437,13 @@ class StarfireScionPolicy:
     ) -> Choice:
         """Build an attack Choice carrying a per-attack damage override (the
         multi-weapon primitive): its own dice/bonus and the WIS-or-DEX to-hit stat.
+
+        The modality-taxonomy axes come FROM the profile data: origin (weapon /
+        unarmed / spell / feature), range_ (melee / ranged), and modality.  A plain
+        weapon profile (quarterstaff) omits them — Choice defaults origin="weapon",
+        range_="melee", modality="Attack".  Guiding Bolt sets origin="spell" +
+        range_="ranged" + modality="Magic"; the Archer feature origin="feature";
+        the monk unarmed strike origin="unarmed".
         """
         p = self._profiles[profile]
         return Choice(
@@ -1411,8 +1454,9 @@ class StarfireScionPolicy:
             damage_dice=p["dice"],
             damage_bonus=p["bonus"],
             damage_type=p.get("damage_type"),       # "radiant" for GB/Archer
-            is_spell=p.get("is_spell", False),       # only Guiding Bolt is a spell
-            is_unarmed=p.get("is_unarmed", False),   # unarmed strike (Primal Strike gate)
+            origin=p.get("origin"),                  # None → "weapon" (quarterstaff)
+            range_=p.get("range_"),                  # None → "melee"
+            modality=p.get("modality"),              # None → "Attack"
             resource_cost=resource_cost or {},
         )
 
@@ -1424,46 +1468,51 @@ class StarfireScionPolicy:
         Fount of Moonlight: while concentration is HELD (self._character.
         concentration == "fount_of_moonlight" — set by the turn-1 Magic-action cast,
         dropped on a failed CON save), every MELEE hit (quarterstaff AND unarmed)
-        deals an extra 2d6 RADIANT.  The radiant is tagged
-        is_spell=True, so when it resolves as its own DamageEvent the caster's
-        on_deal_damage rider (Fueled Spellfire) fuels the FIRST such radiant each
-        turn for free — matching the guide's `quarterstaff_{...fueled-spellfire(2)}
-        --> 2d12+3d8+4d6...` (the 4d6 = FoM's +2d6 across two swings).  "Melee" is
-        gated as "not a spell attack": at L15 every non-spell attack is melee
-        (Guiding Bolt is the only is_spell attack, and is ranged), so the only
-        ranged/melee subtlety — Starry-Form Archer — is moot (dropped from L9).
+        deals an extra 2d6 RADIANT.  The rider is origin="spell", so when it resolves
+        as its own DamageEvent the caster's on_deal_damage rider (Fueled Spellfire)
+        fuels the FIRST such radiant each turn for free — matching the guide's
+        `quarterstaff_{...fueled-spellfire(2)} --> 2d12+3d8+4d6...` (the 4d6 = FoM's
+        +2d6 across two swings).  The gate is the spell's literal trigger — a MELEE
+        attack (`ctx.range_ == "melee"`, the modality-taxonomy range axis) — verified
+        against the 2024 text ("your melee attacks deal an extra 2d6 Radiant damage
+        on a hit").  This is RANGE-based, not origin-based: a melee SPELL attack
+        would also qualify; the ranged Guiding Bolt (range_=="ranged") does not, so
+        the latent `not is_spell` edge (a ranged feature would have falsely matched)
+        is closed.
 
         Primal Strike: once on each of the character's turns, a WEAPON hit (RAW —
-        the quarterstaff) deals an extra 1d8 of the chosen element (fire here).
-        Built TOGGLEABLE: the non-RAW option (self._primal_strike_unarmed) also
-        rides UNARMED strikes.  It is a FEATURE, not a spell (is_spell=False) → it
-        is NOT Elemental-Adept-treated and NOT fueled — the cross-check that the
-        is_spell gate does real work on the rider path (contrast the fire Searing
-        Arc / Fire Shield thorns, which ARE spells and DO get the EA bypass).  The
-        once/turn gate uses the round number (the character takes one turn/round).
+        the quarterstaff, origin=="weapon") deals an extra 1d8 of the chosen element
+        (fire here).  Built TOGGLEABLE: the non-RAW option (self._primal_strike_
+        unarmed) also rides UNARMED strikes (origin=="unarmed").  It is a FEATURE,
+        not a spell (origin="feature") → NOT Elemental-Adept-treated and NOT fueled
+        — the cross-check that the origin gate does real work on the rider path
+        (contrast the fire Searing Arc / Fire Shield thorns, which ARE spells and DO
+        get the EA bypass).  The once/turn gate uses the round number (the character
+        takes one turn/round).  NB the Shillelagh quarterstaff sets origin="weapon"
+        explicitly despite using the spell to-hit stat, so Primal Strike rides it.
 
         Both riders are FREE (no action economy, no resource), so the
         scheduler-side closure always accepts the HitResponse.  Returns None when
         neither applies (every level below L15 / a non-melee hit with no FoM).
         """
         riders: list[RiderDamageSpec] = []
-        if self._character.concentration == "fount_of_moonlight" and not ctx.is_spell:
+        if self._character.concentration == "fount_of_moonlight" and ctx.range_ == "melee":
             riders.append(RiderDamageSpec(
                 damage_dice=FOUNT_OF_MOONLIGHT_DICE,   # (2, 6)
                 damage_type="radiant",
-                is_spell=True,                         # a spell's radiant → fuelable
+                origin="spell",                        # a spell's radiant → fuelable
             ))
         if (
             self._has_primal_strike
-            and not ctx.is_spell
-            and (not ctx.is_unarmed or self._primal_strike_unarmed)
+            and (ctx.origin == "weapon"
+                 or (self._primal_strike_unarmed and ctx.origin == "unarmed"))
             and self._primal_strike_round != ctx.round_number
         ):
             self._primal_strike_round = ctx.round_number      # commit the 1/turn use
             riders.append(RiderDamageSpec(
                 damage_dice=self._primal_strike_dice,  # (1, 8)
                 damage_type=self._primal_strike_type,  # "fire" (chosen on hit)
-                is_spell=False,                        # feature → not fueled / not EA
+                origin="feature",                      # feature → not fueled / not EA
             ))
         if not riders:
             return None
@@ -1489,8 +1538,15 @@ class StarfireScionPolicy:
         Note the thorns DamageEvent is bearer->attacker; since this build's enemy
         (the dummy) is BOTH the Scion's target and the attacker, the thorns land in
         the dummy's damage_received column — so they correctly count toward DPR.
+
+        Melee-only: Fire Shield's thorns fire only when a creature hits the bearer
+        with a MELEE attack (2024 PHB).  We read the incoming attack's range axis
+        (modality taxonomy) instead of assuming melee — a RANGED hit provokes no
+        thorns.  None (an untagged attacker) is treated as melee for back-compat.
         """
         if not self._fire_shield_active:
+            return None
+        if ctx.range_ == "ranged":
             return None
         mode = FIRE_SHIELD_MODES[self._fire_shield_mode]
         ttype = mode["thorns_type"]
@@ -1530,7 +1586,7 @@ class StarfireScionPolicy:
         """
         if not self._fueled_spellfire:
             return None
-        if ctx.damage_type != "radiant" or not ctx.is_spell:
+        if ctx.damage_type != "radiant" or not ctx.is_spell_origin:
             return None
         turn = (ctx.round_number, ctx.turn_index)
         if self._fueled_turn == turn:                  # already fueled this turn

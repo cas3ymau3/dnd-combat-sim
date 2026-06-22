@@ -6,19 +6,16 @@ describes *how it is resolved* (resolution), its *origin* (weapon / unarmed /
 spell / feature), and its *range* (melee / ranged).  See src/taxonomy.py for the
 full rationale and design/attack_taxonomy.md for the locked contract.
 
-This is a backward-compatible refactor: the taxonomy fields are ADDED to Choice /
-the events / the hit contexts and DERIVED from the legacy flags (action_type /
-is_spell / is_unarmed / weapon_stat) so every existing construction carries
-correct taxonomy values and behaviour is unchanged.  These tests pin:
+`origin` is now the canonical axis (the legacy is_spell / is_unarmed flags were
+removed in the gate-migration pass): a Choice that omits `origin` defaults to
+"weapon" for any attack/damage, and spell / unarmed / feature sources set it
+explicitly at the call site.  These tests pin:
 
-  - the pure predicate + derivation helpers;
-  - Choice.__post_init__ derivation from the legacy flags (each modality shape);
-  - explicit origin overriding the legacy flags (the migration direction);
+  - the pure predicates + the resolution-derivation helper;
+  - Choice.__post_init__ defaults (modality / resolution / origin / range_) per
+    modality shape, and explicit origin at the call site;
   - the descriptor threading Choice → AttackRollEvent → HitContext, and the
     HitContext is_physical / is_spell_origin predicates.
-
-Behaviour-identity (495 prior tests byte-identical) is verified by the existing
-suite; this file pins the NEW vocabulary's wiring only.
 """
 
 from src import taxonomy
@@ -67,18 +64,6 @@ def test_derive_resolution():
     assert taxonomy.derive_resolution("dodge") is None
 
 
-def test_derive_origin():
-    assert taxonomy.derive_origin(is_spell=True, is_unarmed=False,
-                                  weapon_stat="spell_attack_bonus") == "spell"
-    assert taxonomy.derive_origin(is_spell=False, is_unarmed=True,
-                                  weapon_stat="attack_bonus") == "unarmed"
-    # spell_attack_bonus but NOT a spell → a magical FEATURE (Starry-Form Archer).
-    assert taxonomy.derive_origin(is_spell=False, is_unarmed=False,
-                                  weapon_stat="spell_attack_bonus") == "feature"
-    assert taxonomy.derive_origin(is_spell=False, is_unarmed=False,
-                                  weapon_stat="attack_bonus") == "weapon"
-
-
 def test_vocabularies_closed():
     # The implemented combat subset is a subset of the full named modality set.
     assert set(taxonomy.COMBAT_MODALITIES) <= set(taxonomy.MODALITIES)
@@ -99,36 +84,50 @@ def test_choice_weapon_attack_derives():
     assert ch.range_ == "melee"          # default for an attack with no explicit range
 
 
-def test_choice_spell_attack_derives():
+def test_choice_spell_attack_explicit_origin():
     # Guiding Bolt: a Magic-modality attack delivered via an attack roll, ranged.
-    ch = Choice(action_type="attack", cost="action", is_spell=True,
-                damage_type="radiant", weapon_stat="spell_attack_bonus",
-                range_="ranged")
+    # origin / modality / range_ are set explicitly at the call site.
+    ch = Choice(action_type="attack", cost="action", origin="spell",
+                modality="Magic", damage_type="radiant",
+                weapon_stat="spell_attack_bonus", range_="ranged")
     assert ch.resolution == "attack_roll"
+    assert ch.modality == "Magic"
     assert ch.origin == "spell"
     assert ch.range_ == "ranged"
     assert taxonomy.is_attack(ch.resolution)         # "an attack" in the rules sense
+    assert not taxonomy.is_attack_action(ch.modality, ch.cost)   # Magic, not the Attack action
 
 
-def test_choice_unarmed_attack_derives():
-    ch = Choice(action_type="attack", cost="none", is_unarmed=True)
+def test_choice_unarmed_attack_explicit_origin():
+    ch = Choice(action_type="attack", cost="none", origin="unarmed")
     assert ch.origin == "unarmed"
     assert ch.range_ == "melee"
 
 
-def test_choice_feature_attack_derives():
+def test_choice_feature_attack_explicit_origin():
     # Starry-Form Archer: a magical FEATURE (not a spell) making a ranged attack.
-    ch = Choice(action_type="attack", cost="bonus_action",
+    # Without the legacy weapon_stat derivation, origin is set explicitly.
+    ch = Choice(action_type="attack", cost="bonus_action", origin="feature",
                 weapon_stat="spell_attack_bonus", damage_type="radiant",
                 damage_dice=(1, 8), range_="ranged")
     assert ch.origin == "feature"
-    assert not ch.is_spell           # a feature is NOT a spell (not fuelable)
+    assert not taxonomy.is_spell_origin(ch.origin)   # a feature is NOT a spell (not fuelable)
 
 
-def test_choice_save_spell_derives():
+def test_choice_weapon_attack_with_spell_stat_stays_weapon():
+    # The EK / True Strike / Shillelagh gotcha: a WEAPON attack made with the
+    # spellcasting stat must set origin="weapon" explicitly — there is no
+    # weapon_stat-based derivation that would mis-classify it as a feature now.
+    ch = Choice(action_type="attack", cost="action", origin="weapon",
+                weapon_stat="spell_attack_bonus", damage_dice=(1, 10))
+    assert ch.origin == "weapon"
+    assert taxonomy.is_physical(ch.origin)
+
+
+def test_choice_save_spell_explicit_origin():
     # Burning Hands: Magic modality, resolved by a saving throw, spell origin.
     ch = Choice(action_type="save_spell", cost="action", save_stat="dex_save",
-                damage_dice=(3, 6), damage_type="fire", is_spell=True,
+                damage_dice=(3, 6), damage_type="fire", origin="spell",
                 on_save="half")
     assert ch.modality == "Magic"
     assert ch.resolution == "saving_throw"
@@ -146,15 +145,32 @@ def test_choice_buff_cast_has_no_origin():
     assert ch.range_ is None
 
 
-def test_explicit_origin_overrides_legacy_flags():
-    # The migration direction: setting origin keeps the legacy aliases consistent.
-    ch = Choice(action_type="attack", origin="spell", damage_type="radiant")
-    assert ch.is_spell is True
-    assert ch.is_unarmed is False
+def test_attack_modality_derived_from_origin():
+    # An ATTACK Choice derives modality from origin: a spell- or feature-origin
+    # attack is the Magic modality (Guiding Bolt, Starry-Form Archer); a weapon /
+    # unarmed swing is Attack.  So a spell-attack needs no explicit modality tag,
+    # and is_attack_action reads False for it.
+    gb = Choice(action_type="attack", cost="action", origin="spell",
+                damage_type="radiant", range_="ranged")
+    assert gb.modality == "Magic"
+    assert not taxonomy.is_attack_action(gb.modality, gb.cost)
 
-    ch2 = Choice(action_type="attack", origin="unarmed")
-    assert ch2.is_unarmed is True
-    assert ch2.is_spell is False
+    archer = Choice(action_type="attack", cost="bonus_action", origin="feature",
+                    damage_dice=(1, 8), range_="ranged")
+    assert archer.modality == "Magic"
+
+    swing = Choice(action_type="attack", cost="action")            # origin → weapon
+    assert swing.modality == "Attack"
+    assert taxonomy.is_attack_action(swing.modality, swing.cost)
+
+    unarmed = Choice(action_type="attack", cost="none", origin="unarmed")
+    assert unarmed.modality == "Attack"
+
+    # Explicit override survives: the EK War-Magic True Strike is a WEAPON attack
+    # (origin="weapon") but the Magic modality (it casts a cantrip).
+    true_strike = Choice(action_type="attack", cost="none", origin="weapon",
+                         modality="Magic")
+    assert true_strike.modality == "Magic"
 
 
 def test_use_ability_modality_explicit():
