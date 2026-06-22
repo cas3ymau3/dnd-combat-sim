@@ -109,9 +109,17 @@ type, condition, resource, …):
 > regain-on-kill, on-kill death-procs (the `is_functionally_dead` on_kill seam); (3) per-CR
 > HP calibration vs the multi-entity party scenario (the divisor is solo-tuned); (4)
 > reconsider `DAMAGE_DIVISOR`=1.5 now that fights actually END (part of its "enemy never
-> dies" justification changes). Per-feature reflection PENDING user input. **NEXT (user picks
-> at close-out):** a finite-HP CONSUMER (wire a build / a bloodied-execute rider) OR the
-> attack-taxonomy gate-migration follow-up.
+> dies" justification changes). **Per-feature reflection DONE — KEY USER STEER:** finite-HP
+> is **DE-PRIORITIZED going forward.** The sim's purpose is **standardized DPR + defensive
+> resilience estimates against the conventional 4×4-round baseline** (the metric other
+> content creators use → comparability is the point), NOT realistic combat; the user doubts
+> they'll ever turn finite-HP ON and values it only as a **basis for comparison.** So the
+> finite-HP DEFERRED items above are LOW priority — don't build on top of finite-HP unless
+> asked (see the standardized-dpr-baseline-not-realism memory). Merged to main + branch
+> deleted. **NEXT (user-chosen): ATTACK-TAXONOMY GATE MIGRATION** — make the session-25
+> taxonomy axes do real runtime work (FoM/Primal/Searing gates off legacy proxies + a real
+> ranged attacker exercising the melee/ranged gate). See `design/attack_taxonomy.md`
+> "Migration status & plan".
 >
 > **Session scope (2026-06-21, session 25) — DONE (NEW CAPACITY AXIS — ATTACK/ACTION
 > MODALITY TAXONOMY; design note + backward-compat refactor):** moved on from substrate
