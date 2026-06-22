@@ -72,7 +72,6 @@ def _resolve_damage_to(target, dice, rolls, *, damage_type, halved=False, bonus=
         damage_bonus=bonus,
         halved=halved,
         damage_type=damage_type,
-        is_spell=False,
         min_die=min_die,
         ignore_resistance=ignore_resistance,
     )
@@ -239,7 +238,7 @@ def test_elemental_adept_makes_searing_arc_full_vs_a_fire_resistant_enemy():
         tick=(1, 0, 1), actor=ss.make_starfire_scion(15), target=enemy,
         save_stat="dex_save", dc_stat="spell_save_dc",
         damage_dice=sas.damage_dice, on_save="half", damage_type="fire",
-        is_spell=True, min_die=sas.min_die, ignore_resistance=sas.ignore_resistance,
+        origin="spell", min_die=sas.min_die, ignore_resistance=sas.ignore_resistance,
     )
     q = EventQueue()
     # 5d6 with a 1 in it: [6,6,1,5,5]; min_die floors the 1→2 → 24, NOT halved by

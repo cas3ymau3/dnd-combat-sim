@@ -55,24 +55,24 @@ class FakeRNG:
 
 
 def _damage(dice, rng, *, is_crit=False, halved=False, damage_type="radiant",
-            is_spell=True, bonus=0, rider_decider=None):
+            origin="spell", bonus=0, rider_decider=None):
     """Resolve one DamageEvent and return the total dealt to a dummy target."""
     actor = Entity(name="caster", hp=20)
     target = Entity(name="t", hp=10_000)
     ev = DamageEvent(
         tick=(1, 0, 1), actor=actor, target=target,
         is_crit=is_crit, damage_dice=dice, damage_bonus=bonus,
-        halved=halved, damage_type=damage_type, is_spell=is_spell,
+        halved=halved, damage_type=damage_type, origin=origin,
     )
     total, _ = resolve_damage(ev, rng, EventQueue(), 2, None, rider_decider)
     return total
 
 
-def _ctx(damage_type="radiant", is_spell=True, hit_dice=5, round_=1, turn=0,
+def _ctx(damage_type="radiant", origin="spell", hit_dice=5, round_=1, turn=0,
          is_crit=False):
     return DealDamageContext(
         actor=Entity(name="c", hp=10), target=Entity(name="t", hp=10),
-        damage_type=damage_type, is_spell=is_spell, is_crit=is_crit,
+        damage_type=damage_type, origin=origin, is_crit=is_crit,
         base_damage_dice=(4, 6),
         resources={"hit_dice": hit_dice}, round_number=round_, turn_index=turn,
     )
@@ -155,15 +155,15 @@ def test_does_not_fuel_when_no_hit_dice_remain():
 
 def test_does_not_fuel_a_radiant_feature_only_a_spell():
     """Starry-Form Archer deals RADIANT damage but is a FEATURE, not a spell —
-    is_spell=False must exclude it (the whole reason is_spell is threaded)."""
+    origin="feature" must exclude it (the whole reason origin is threaded)."""
     policy, _ = _l5_policy()
-    assert policy.on_deal_damage(_ctx(damage_type="radiant", is_spell=False)) is None
+    assert policy.on_deal_damage(_ctx(damage_type="radiant", origin="feature")) is None
 
 
 def test_does_not_fuel_non_radiant_spell_damage():
     policy, _ = _l5_policy()
-    assert policy.on_deal_damage(_ctx(damage_type="fire", is_spell=True)) is None
-    assert policy.on_deal_damage(_ctx(damage_type=None, is_spell=False)) is None
+    assert policy.on_deal_damage(_ctx(damage_type="fire", origin="spell")) is None
+    assert policy.on_deal_damage(_ctx(damage_type=None, origin="weapon")) is None
 
 
 def test_once_per_turn():
@@ -204,10 +204,10 @@ def test_scheduler_closure_consumes_hit_dice():
     sched = Scheduler(rng=SeededRNG(0), entities=[char],
                       policies={char.id: policy}, max_rounds=1)
     ev = DamageEvent(tick=(1, 0, 1), actor=char, target=Entity(name="t", hp=10),
-                     damage_dice=(4, 6), damage_type="radiant", is_spell=True)
+                     damage_dice=(4, 6), damage_type="radiant", origin="spell")
     decider = sched._make_deal_damage_decider(ev)
     assert char.resources.available("hit_dice") == 5
-    dice = decider("radiant", True, False)
+    dice = decider("radiant", "spell", False)
     assert dice == [(2, 8)]
     assert char.resources.available("hit_dice") == 3   # 2 consumed
 
@@ -218,7 +218,7 @@ def test_scheduler_closure_is_none_without_the_hook():
     dummy = ss.make_training_dummy(5)
     sched = Scheduler(rng=SeededRNG(0), entities=[dummy], policies={}, max_rounds=1)
     ev = DamageEvent(tick=(1, 0, 1), actor=dummy, target=None,
-                     damage_dice=(1, 6), damage_type="radiant", is_spell=True)
+                     damage_dice=(1, 6), damage_type="radiant", origin="spell")
     assert sched._make_deal_damage_decider(ev) is None
 
 

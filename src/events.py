@@ -130,29 +130,21 @@ class AttackRollEvent(Event):
     # distinguishable from "no override".
     damage_dice_override: "tuple[int, int] | None" = None
     damage_bonus_override: "int | None" = None
-    # Damage type (e.g. "radiant") and whether this attack's damage is from a
-    # SPELL (vs a weapon/feature).  Threaded to the spawned DamageEvent so the
-    # caster-side post-damage decision point can gate on "spell radiant damage"
-    # (Fueled Spellfire).  Default (None, False) = an untyped weapon attack.
+    # Damage type (e.g. "radiant"), threaded to the spawned DamageEvent.
+    # Default None = an untyped weapon attack.
     damage_type: "str | None" = None
-    is_spell: bool = False
     # Elemental Adept: per-die floor + resistance bypass, threaded to the spawned
     # DamageEvent (see DamageEvent.min_die / ignore_resistance).  Default off.
     min_die: "int | None" = None
     ignore_resistance: bool = False
-    # Whether this attack is an UNARMED strike (vs a weapon attack).  A minimal
-    # tactical tag — the same flavour as `is_spell` — read by the on_hit decision
-    # point to gate riders that distinguish weapon from unarmed attacks (Primal
-    # Strike RAW = weapon attacks only; the non-RAW toggle also rides unarmed).
-    # Not the first-class attack typology (deferred — see the ATTACK-TAXONOMY flag);
-    # `weapon_stat` can't tell quarterstaff from unarmed (both use attack_bonus).
-    is_unarmed: bool = False
-    # Modality taxonomy (src/taxonomy.py), threaded from the Choice:
-    #   origin — weapon / unarmed / spell / feature (the canonical successor to
-    #     is_spell + is_unarmed; is_spell == (origin == "spell")).
+    # Modality taxonomy (src/taxonomy.py), threaded from the Choice — the canonical
+    # axes the on-hit / defense-side gates read:
+    #   origin — weapon / unarmed / spell / feature (the caster-side Fueled-Spellfire
+    #     gate keys on origin == "spell"; `weapon_stat` can't tell quarterstaff from
+    #     unarmed, nor a weapon attack made with a spell stat from a spell).
     #   range_ — melee / ranged (defense-side gates like Fire-Shield thorns and
-    #     Flourish Parry that only fire on MELEE hits read this; previously they
-    #     silently assumed melee because no range axis existed).
+    #     Flourish Parry that only fire on MELEE hits read this; the on_hit FoM
+    #     rider reads it too — previously these silently assumed melee).
     origin: "str | None" = None
     range_: "str | None" = None
     # Whether the ACTING entity's post-roll decision points (on_miss / on_hit)
@@ -196,12 +188,10 @@ class DamageEvent(Event):
     # Hands).  Set by resolve_save_damage when a target SAVES against a half-on-
     # save spell; left False for every attack-roll hit and every failed save.
     halved: bool = False
-    # Damage type (e.g. "radiant") and whether this damage is from a SPELL (vs a
-    # weapon/feature).  Threaded from the source event.  Read by the caster-side
-    # post-damage decision point (Fueled Spellfire fires only on SPELL radiant
-    # damage) and available for future resistance modeling.
+    # Damage type (e.g. "radiant").  Threaded from the source event.  Read by the
+    # caster-side post-damage decision point (Fueled Spellfire fires only on SPELL
+    # radiant damage — see `origin` below) and available for resistance modeling.
     damage_type: "str | None" = None
-    is_spell: bool = False
     # Elemental Adept (and any future per-die floor / resistance-bypass effect):
     #   min_die — treat any rolled die BELOW this value as this value, applied in
     #     resolve_damage phase 3 to the spell's own dice ("treat any 1 on a damage
@@ -213,9 +203,9 @@ class DamageEvent(Event):
     min_die: "int | None" = None
     ignore_resistance: bool = False
     # Modality taxonomy (src/taxonomy.py): the damage's origin — weapon / unarmed
-    # / spell / feature.  is_spell == (origin == "spell"); the caster-side
-    # Fueled-Spellfire gate keys on a SPELL origin specifically (a magical FEATURE
-    # such as Starry-Form Archer's radiant is origin="feature", not fuelable).
+    # / spell / feature.  The caster-side Fueled-Spellfire gate keys on a SPELL
+    # origin specifically (a magical FEATURE such as Starry-Form Archer's radiant
+    # is origin="feature", not fuelable).
     origin: "str | None" = None
     # Damage REDIRECT (substrate #7 / 7c, Warding Bond): a RedirectSpec set by
     # resolve_attack_roll when the DEFENDER's on_incoming_hit returns one.  After
@@ -263,15 +253,15 @@ class SaveDamageEvent(Event):
     damage_dice: tuple[int, int] = (1, 8)
     damage_bonus: int = 0
     on_save: str = "none"
-    # Damage type + spell-source flag, threaded to the spawned DamageEvent (a
-    # save spell's damage is a spell's — set is_spell=True when delivering one).
+    # Damage type, threaded to the spawned DamageEvent.
     damage_type: "str | None" = None
-    is_spell: bool = False
     # Elemental Adept: per-die floor + resistance bypass, threaded to the spawned
     # DamageEvent (see DamageEvent.min_die / ignore_resistance).  Default off.
     min_die: "int | None" = None
     ignore_resistance: bool = False
-    # Modality taxonomy (src/taxonomy.py): a save spell's damage origin — "spell".
+    # Modality taxonomy (src/taxonomy.py): a save spell's damage origin — usually
+    # "spell" (set at the call site; the caster-side Fueled-Spellfire gate keys on
+    # it).  Zone emanations also deliver via this event with origin from the zone.
     origin: "str | None" = None
     cost: str = "action"
     kind: str = field(default="save_damage", init=False)

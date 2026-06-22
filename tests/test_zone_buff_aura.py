@@ -72,12 +72,12 @@ class _CastSaveSpell:
     """An enemy policy that casts a save-for-half spell at a fixed target each turn —
     the save-forcing pressure a buff aura is meant to blunt."""
 
-    def __init__(self, target, *, dice=(2, 8), on_save="half", is_spell=True,
+    def __init__(self, target, *, dice=(2, 8), on_save="half", origin="spell",
                  save_stat="dex_save"):
         self._target = target
         self._dice = dice
         self._on_save = on_save
-        self._is_spell = is_spell
+        self._origin = origin
         self._save_stat = save_stat
 
     def decide(self, snapshot):
@@ -90,7 +90,7 @@ class _CastSaveSpell:
             damage_dice=self._dice,
             on_save=self._on_save,
             damage_type="fire",
-            is_spell=self._is_spell,
+            origin=self._origin,
         )]
 
 
@@ -171,7 +171,7 @@ def test_remove_effect_destroys_the_buff_aura_and_clears_concentration():
 # ===========================================================================
 
 def _buff_scheduler(rng, *, max_rounds, with_buff=True, ally_zone=DEFAULT_ZONE,
-                    on_save="half", is_spell=True):
+                    on_save="half", origin="spell"):
     caster = Entity(name="caster", hp=100, base_stats={"spell_save_dc": 16})
     ally = Entity(name="ally", hp=100, base_stats={"dex_save": 0, "ac": 10})
     enemy = Entity(name="enemy", hp=100, base_stats={"spell_save_dc": 15, "ac": 10})
@@ -182,7 +182,7 @@ def _buff_scheduler(rng, *, max_rounds, with_buff=True, ally_zone=DEFAULT_ZONE,
         policies={
             caster.id: _NoOp(),
             ally.id: _NoOp(),
-            enemy.id: _CastSaveSpell(ally, on_save=on_save, is_spell=is_spell),
+            enemy.id: _CastSaveSpell(ally, on_save=on_save, origin=origin),
         },
         max_rounds=max_rounds,
     )
@@ -225,10 +225,10 @@ def test_buff_does_not_rescue_a_failed_save():
 
 
 def test_buff_aura_only_affects_spells_and_magic():
-    # A NON-spell save (is_spell=False) is unaffected: no advantage (one d20), no negate
-    # — a made save still takes HALF.
+    # A NON-spell save (origin=None — a trap/natural effect) is unaffected: no
+    # advantage (one d20), no negate — a made save still takes HALF.
     sch, _c, ally, enemy, _z = _buff_scheduler(
-        FakeRNG([20, 3, 3]), max_rounds=1, is_spell=False)
+        FakeRNG([20, 3, 3]), max_rounds=1, origin=None)
     sch.run()
     assert sch.damage_by_source_target[(enemy.id, ally.id)] == 3     # half, not negated
 

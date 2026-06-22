@@ -213,7 +213,7 @@ weapon.has("Heavy") AND hit`. Build the weapon-property data when a build forces
 - **Weapon-property data** (Heavy / Light / Finesse / Reach / Thrown / Versatile)
   on the weapon-data layer — NOT a taxonomy axis. Build when a build (e.g. GWM)
   forces it.
-- **Runtime gate migration** (see below).
+- ~~Runtime gate migration~~ — **DONE (session 27).** See "Migration status" below.
 
 ---
 
@@ -235,19 +235,37 @@ weapon.has("Heavy") AND hit`. Build the weapon-property data when a build forces
   uses `origin`.
 - Tests: `tests/test_taxonomy.py` (+14) pins the derivation + threading.
 
-**NOT YET DONE (deliberate follow-ups — each its own validated change, because
-each can subtly change behaviour and so is NOT byte-identical):**
-1. **Migrate the runtime gates** to the new vocabulary:
-   - FoM's `not ctx.is_spell` → `ctx.is_physical and ctx.range_ == "melee"`
-     (this also FIXES a latent edge: under `not is_spell`, a `feature`-origin or
-     ranged attack would wrongly satisfy the gate).
-   - Primal Strike's `not is_spell and (not is_unarmed or toggle)` → origin-based.
-   - Searing Arc's policy-local "weapon Attack action" boolean → derive from the
-     emitted Choice's `is_attack_action(modality, cost)`.
-2. **Set `modality` / `origin` / `range_` explicitly at the build call sites**
-   (war_angel / starfire_scion / silvertail / enemy) rather than relying on
-   derivation — especially `range_="ranged"` on Guiding Bolt / Archer and
-   `modality="Use Ability"` on non-magical feature casts.
-3. **Exercise the range gate with a real ranged attacker** (the first thing the
-   taxonomy unlocks: melee-only thorns/Parry correctly NOT firing on a ranged hit).
-4. **Remove the `is_spell` / `is_unarmed` transitional aliases** once 1–2 land.
+**DONE (session 27, 2026-06-22) — gate migration + full alias removal; 524 tests
+green. NOT byte-identical (the intended behaviour changes below):**
+1. **Runtime gates migrated** off the legacy proxies:
+   - FoM's `not ctx.is_spell` → `ctx.range_ == "melee"` (RANGE-based, per the
+     2024 text "your melee attacks deal an extra 2d6 Radiant damage on a hit",
+     web-verified).  This FIXES the latent edge: a melee SPELL attack now
+     correctly qualifies, and a ranged feature/spell (Guiding Bolt) correctly does
+     not.  It REQUIRED tagging Guiding Bolt / Archer `range_="ranged"` so they no
+     longer default to melee.
+   - Primal Strike's `not is_spell and (not is_unarmed or toggle)` → origin-based
+     (`origin == "weapon"`, or `"unarmed"` under the non-RAW toggle).  The
+     Shillelagh quarterstaff sets `origin="weapon"` EXPLICITLY (a weapon attack
+     made with the spell stat — the EK / True Strike gotcha) so the rider still
+     rides it.
+   - Searing Arc's policy-local "weapon Attack action" boolean → derived from the
+     emitted action Choice via `is_attack_action(modality, cost)` (Guiding Bolt is
+     tagged `modality="Magic"`, so it reads False).
+2. **`origin` / `range_` / `modality` set explicitly at the build call sites**
+   (starfire_scion profiles: GB/Archer `range_="ranged"` + `modality="Magic"`,
+   Archer `origin="feature"`, unarmed `origin="unarmed"`, Shillelagh
+   `origin="weapon"`; silvertail shocking grasp `origin="spell"` + `modality=
+   "Magic"`).  A Choice that omits `origin` now defaults to `"weapon"`.
+3. **Range gate exercised by a real ranged attacker** (`tests/test_ranged_melee_
+   gate.py`): the melee-only Fire-Shield thorns (Scion) and Flourish Parry (War
+   Angel) correctly do NOT fire on a ranged hit (and DO on melee / an untagged
+   None attacker), validated both at the build gate and through the scheduler
+   (`event.range_` → `IncomingAttackContext.range_`, which the migration also
+   started threading).
+4. **`is_spell` / `is_unarmed` transitional aliases REMOVED** from Choice / the
+   three events / HitContext / RiderDamageSpec / DealDamageContext / ZoneEffectSpec.
+   `origin` is the single source of truth; the only spell-vs-not reader API left is
+   the pure predicate `taxonomy.is_spell_origin(origin)` and the `is_physical` /
+   `is_spell_origin` context properties.  `derive_origin` was deleted (the legacy
+   flags it derived from are gone); `derive_resolution` stays.

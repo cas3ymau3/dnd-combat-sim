@@ -27,6 +27,7 @@ import logging
 from typing import Callable, TYPE_CHECKING
 
 from .events import AttackRollEvent, DamageEvent, SaveDamageEvent, make_tick
+from .taxonomy import is_spell_origin
 
 if TYPE_CHECKING:
     from .entity import Entity
@@ -241,8 +242,8 @@ def resolve_attack_roll(
     if target is not None and target.statuses.has("attack_advantage_against"):
         advantage = True
     #   Innate Sorcery: the caster has advantage on its own SPELL attack rolls
-    #   (gated on the attack being a spell — weapon swings are unaffected).
-    if event.is_spell and actor.statuses.has("spell_attack_advantage"):
+    #   (gated on the attack having a spell origin — weapon swings are unaffected).
+    if is_spell_origin(event.origin) and actor.statuses.has("spell_attack_advantage"):
         advantage = True
 
     # Roll d20 (with adv/disadv cancellation handled in the helper)
@@ -370,7 +371,7 @@ def resolve_attack_roll(
                 damage_dice=reactive_damage.damage_dice,
                 damage_bonus=0,
                 damage_type=reactive_damage.damage_type,
-                is_spell=False,
+                origin="feature",          # thorns are a magical feature, not a spell
                 min_die=reactive_damage.min_die,
                 ignore_resistance=reactive_damage.ignore_resistance,
                 cost="none",
@@ -421,7 +422,6 @@ def resolve_attack_roll(
             extra_damage_dice=extra_dice,
             extra_flat_damage=event.extra_flat_damage,
             damage_type=event.damage_type,
-            is_spell=event.is_spell,
             min_die=event.min_die,
             ignore_resistance=event.ignore_resistance,
             origin=event.origin,
@@ -436,11 +436,11 @@ def resolve_attack_roll(
         # same hit (same actor → target, same is_crit so its dice double on a
         # crit), AFTER the weapon's DamageEvent.  Keeping each rider a separate
         # typed event — rather than folding its dice into the weapon hit above —
-        # is what lets its damage type / is_spell stay distinct: it routes through
+        # is what lets its damage type / origin stay distinct: it routes through
         # the target's per-type response (substrate #4), carries its own Elemental
         # Adept treatment, and reaches the caster's on_deal_damage rider on its
-        # own terms (FoM's radiant is is_spell → Fueled Spellfire fuels it; Primal
-        # Strike's elemental is a feature → not fuelable).
+        # own terms (FoM's radiant is origin="spell" → Fueled Spellfire fuels it;
+        # Primal Strike's elemental is a feature → not fuelable).
         for spec in rider_specs:
             rider_event = DamageEvent(
                 tick=make_tick(round_, turn_idx, next_sequence),
@@ -450,13 +450,12 @@ def resolve_attack_roll(
                 damage_dice=spec.damage_dice,
                 damage_bonus=spec.damage_bonus,
                 damage_type=spec.damage_type,
-                is_spell=spec.is_spell,
                 min_die=spec.min_die,
                 ignore_resistance=spec.ignore_resistance,
                 # A rider's origin: a spell rider (FoM) is "spell"; a feature rider
                 # (Primal Strike) is "feature" — both magical, but only the spell
-                # one is fuelable / Elemental-Adept-treatable (mirrors is_spell).
-                origin=("spell" if spec.is_spell else "feature"),
+                # one is fuelable / Elemental-Adept-treatable.
+                origin=spec.origin,
                 cost="none",
             )
             queue.push(rider_event)
@@ -546,7 +545,6 @@ def resolve_save_damage(
         damage_bonus=event.damage_bonus,
         halved=(saved and on_save == "half"),
         damage_type=event.damage_type,
-        is_spell=event.is_spell,
         min_die=event.min_die,
         ignore_resistance=event.ignore_resistance,
         origin=event.origin,
@@ -567,7 +565,7 @@ def resolve_damage(
     queue: "EventQueue",
     next_sequence: int,
     save_reroll_decider: "Callable[[int, int], int | None] | None" = None,
-    rider_decider: "Callable[[str | None, bool, bool], list[tuple[int, int]]] | None" = None,
+    rider_decider: "Callable[[str | None, str | None, bool], list[tuple[int, int]]] | None" = None,
 ) -> tuple[int, int]:
     """Resolve damage for a confirmed hit.  Returns (total_damage, next_sequence).
 
@@ -586,7 +584,7 @@ def resolve_damage(
     rng, queue, next_sequence:
         Standard handler args.
     rider_decider:
-        Optional `(damage_type, is_spell, is_crit) -> list[(n, sides)]` callable
+        Optional `(damage_type, origin, is_crit) -> list[(n, sides)]` callable
         for the CASTER's post-damage rider (Fueled Spellfire).  Called as this
         damage resolves — the on_hit analog on the *damage* side, reachable from
         BOTH the attack-roll and save-for-damage paths (this verb is the single
@@ -646,7 +644,7 @@ def resolve_damage(
     rider_total = 0
     if rider_decider is not None:
         for n_rider, sides_rider in rider_decider(
-            event.damage_type, event.is_spell, event.is_crit
+            event.damage_type, event.origin, event.is_crit
         ):
             if n_rider >= 1:
                 rider_total += sum(rng.roll(n_rider, sides_rider))

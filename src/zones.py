@@ -68,7 +68,10 @@ class ZoneEffectSpec:
     damage_bonus: int = 0
     on_save: str = "half"
     damage_type: "str | None" = None
-    is_spell: bool = True
+    # Modality taxonomy: the zone damage's origin (Spirit Guardians is a spell).
+    # The caster-side Fueled-Spellfire gate and the ally-buff "vs spells/magic"
+    # gate key on origin == "spell".
+    origin: "str | None" = "spell"
 
 
 @dataclass

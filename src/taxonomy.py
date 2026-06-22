@@ -221,12 +221,13 @@ def is_spell_origin(origin: str | None) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Back-compat derivation — fill the new axes from the legacy flags
+# Resolution derivation — fill `resolution` from the dispatch discriminator
 # ---------------------------------------------------------------------------
-# During the migration, Choices/events constructed with only the old flags
-# (action_type / is_spell / is_unarmed / weapon_stat) still need correct
-# taxonomy values.  These derive them so behaviour is unchanged; explicit call
-# sites override by passing the new fields directly.
+# `origin` / `range_` / `modality` are now set EXPLICITLY at the call sites
+# (a Choice that omits `origin` defaults to "weapon" — see Choice.__post_init__),
+# so no origin-derivation helper exists any more: the legacy is_spell / is_unarmed
+# flags it depended on have been removed.  Only resolution still derives, from the
+# scheduler's dispatch discriminator (which every call site already sets).
 
 def derive_resolution(action_type: str | None) -> str | None:
     """Map the engine's dispatch discriminator to the resolution descriptor.
@@ -241,26 +242,3 @@ def derive_resolution(action_type: str | None) -> str | None:
         "save_spell": "saving_throw",
         "cast_effect": "automatic",
     }.get(action_type or "")
-
-
-def derive_origin(is_spell: bool, is_unarmed: bool, weapon_stat: str) -> str:
-    """Derive the origin from the legacy flags.
-
-    - is_spell            → "spell"   (a spell source)
-    - is_unarmed          → "unarmed"
-    - weapon_stat is the  → "feature" (a magical/feature attack that is NOT a
-      spell-attack stat        spell — e.g. Starry-Form Archer's radiant, which
-      but not a spell           uses spell_attack_bonus yet has is_spell=False)
-    - otherwise           → "weapon"
-
-    The `feature` case is best-effort from the legacy flags; a feature attack
-    that used the plain attack_bonus would derive as "weapon".  Explicit call
-    sites should set `origin` directly rather than rely on this.
-    """
-    if is_spell:
-        return "spell"
-    if is_unarmed:
-        return "unarmed"
-    if weapon_stat == "spell_attack_bonus":
-        return "feature"
-    return "weapon"

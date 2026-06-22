@@ -58,7 +58,7 @@ def _radiant_emanation(owner, *, unaffected=()):
         effect_source="spirit_guardians",
         effect=ZoneEffectSpec(
             save_stat="wis_save", dc_stat="spell_save_dc",
-            damage_dice=(3, 8), on_save="half", damage_type="radiant", is_spell=True,
+            damage_dice=(3, 8), on_save="half", damage_type="radiant", origin="spell",
         ),
         anchored_to=owner,
         unaffected={owner.id, *(e.id for e in unaffected)},

@@ -39,6 +39,7 @@ from .events import (
     make_tick,
 )
 from .verbs import resolve_attack_roll, resolve_damage, resolve_save_damage, resolve_saving_throw
+from .taxonomy import is_spell_origin
 
 if TYPE_CHECKING:
     from .entity import Entity
@@ -269,7 +270,7 @@ class Scheduler:
                 # save-for-half spell, takes NO damage.  Only spells/magic qualify.
                 handlers = self._registry.get("save_damage", [])
                 seq_counter = seq + 1
-                save_adv, negate = self._zone_save_buffs(event.target, event.is_spell)
+                save_adv, negate = self._zone_save_buffs(event.target, event.origin)
                 for handler in handlers:
                     seq_counter = handler(  # type: ignore[call-arg]
                         event, self.rng, self.queue, seq_counter,
@@ -394,8 +395,6 @@ class Scheduler:
                 bonus_action_available=ba_available,
                 resources=actor.resources.as_dict(),
                 round_number=round_,
-                is_spell=event.is_spell,
-                is_unarmed=event.is_unarmed,
                 origin=event.origin,
                 range_=event.range_,
             )
@@ -468,6 +467,7 @@ class Scheduler:
                 cost=cost,
                 resources=target.resources.as_dict(),
                 round_number=round_,
+                range_=event.range_,
             )
             response = on_incoming(ctx)
             if response is None:
@@ -532,7 +532,7 @@ class Scheduler:
         return save_reroll_decider
 
     def _make_deal_damage_decider(self, event: "DamageEvent"):
-        """Return a `(damage_type, is_spell, is_crit) -> list[(n, sides)]` callable
+        """Return a `(damage_type, origin, is_crit) -> list[(n, sides)]` callable
         for the CASTER's post-damage rider (Fueled Spellfire), or None if the
         actor's policy has no such hook.
 
@@ -553,12 +553,12 @@ class Scheduler:
 
         round_, turn_idx, _ = event.tick
 
-        def rider_decider(damage_type, is_spell, is_crit):
+        def rider_decider(damage_type, origin, is_crit):
             ctx = DealDamageContext(
                 actor=actor,
                 target=event.target,
                 damage_type=damage_type,
-                is_spell=is_spell,
+                origin=origin,
                 is_crit=is_crit,
                 base_damage_dice=event.damage_dice,
                 resources=actor.resources.as_dict(),
@@ -714,10 +714,8 @@ class Scheduler:
                     damage_dice_override=dmg_dice_override,
                     damage_bonus_override=dmg_bonus_override,
                     damage_type=choice.damage_type,
-                    is_spell=choice.is_spell,
                     min_die=choice.min_die,
                     ignore_resistance=choice.ignore_resistance,
-                    is_unarmed=choice.is_unarmed,
                     origin=choice.origin,
                     range_=choice.range_,
                 )
@@ -737,7 +735,6 @@ class Scheduler:
                     damage_bonus=choice.damage_bonus,
                     on_save=choice.on_save,
                     damage_type=choice.damage_type,
-                    is_spell=choice.is_spell,
                     min_die=choice.min_die,
                     ignore_resistance=choice.ignore_resistance,
                     origin=choice.origin,
@@ -869,8 +866,7 @@ class Scheduler:
                 damage_bonus=eff.damage_bonus,
                 on_save=eff.on_save,
                 damage_type=eff.damage_type,
-                is_spell=eff.is_spell,
-                origin=("spell" if eff.is_spell else None),
+                origin=eff.origin,
                 cost="none",
             ))
             seq += 1
@@ -880,7 +876,7 @@ class Scheduler:
             )
         return seq
 
-    def _zone_save_buffs(self, target: "Entity | None", is_spell: bool):
+    def _zone_save_buffs(self, target: "Entity | None", origin: "str | None"):
         """Buff-aura query (substrate #7 / 7b, Circle of Power): does an active
         ally-buff zone the *target* is inside grant it advantage on this save and/or
         negate damage on a successful save?
@@ -891,7 +887,7 @@ class Scheduler:
         magical) is unaffected.  Computed here because the scheduler owns the live zone
         registry; the flags are threaded into ``resolve_save_damage``.
         """
-        if target is None or not is_spell:
+        if target is None or not is_spell_origin(origin):
             return (False, False)
         advantage = False
         negate = False
