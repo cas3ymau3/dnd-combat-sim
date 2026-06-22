@@ -84,11 +84,22 @@ class Scheduler:
         entities: list["Entity"],
         policies: dict[int, "Policy"],
         max_rounds: int = 3,
+        enemy_ids: "set[int] | None" = None,
     ) -> None:
         self.rng = rng
         self.entities = entities
         self.policies = policies
         self.max_rounds = max_rounds
+        # Finite-HP combat termination (the emergent-length capacity axis).  When a set
+        # of opposition entity ids is given, the combat ENDS the moment they are all
+        # functionally dead (hp <= 0) rather than always running the full max_rounds —
+        # so fight LENGTH becomes an emergent output (see rounds_elapsed).  Default
+        # None = the legacy fixed-length model (enemy on the threshold model / inf HP),
+        # which keeps every prior combat byte-identical.  max_rounds stays the cap.
+        self._enemy_ids: "set[int] | None" = set(enemy_ids) if enemy_ids else None
+        # How many rounds this combat actually ran (== max_rounds in the legacy model;
+        # < max_rounds when the enemy dropped early in finite-HP mode).  Set by run().
+        self.rounds_elapsed: int = 0
 
         self.queue = EventQueue()
         self._registry: dict[str, list[Handler]] = {}
@@ -275,6 +286,19 @@ class Scheduler:
                 for handler in handlers:
                     seq_counter = handler(event, self.rng, self.queue, seq_counter)  # type: ignore[call-arg]
 
+            # Finite-HP termination: HP only changes inside a DamageEvent handler
+            # (take_damage), so by here the latest hit is applied.  Once every
+            # opposition entity is functionally dead the combat is over — stop popping
+            # events (the rest of this turn / the enemy's queued turns are moot) and let
+            # the post-loop block finalise the partial round's accounting.
+            if self._enemy_ids is not None and self._all_enemies_dead():
+                log.info("Enemy down — combat ends in round %d (emergent length).", current_round)
+                break
+
+        # The combat ran through `current_round` (the round of the last processed
+        # event), capped at max_rounds.  This is the emergent fight length.
+        self.rounds_elapsed = min(current_round, self.max_rounds)
+
         # Capture last round
         if round_damage > 0 or current_round <= self.max_rounds:
             log.info("--- Round %d ended, total damage this round: %d ---", current_round, round_damage)
@@ -283,6 +307,16 @@ class Scheduler:
                 self.damage_received[eid].append(self._round_damage_received[eid])
 
         return self._damage_log
+
+    def _all_enemies_dead(self) -> bool:
+        """True when every designated opposition entity is functionally dead (hp <= 0).
+
+        Only entities whose id is in ``self._enemy_ids`` AND present in the roster are
+        considered; an empty intersection returns False (nothing to end the combat on).
+        An inf-HP enemy (mis-set finite-HP mode) never satisfies ``hp <= 0``, so the
+        combat simply runs to the cap — a safe degenerate case."""
+        present = [e for e in self.entities if e.id in self._enemy_ids]  # type: ignore[operator]
+        return bool(present) and all(e.hp <= 0 for e in present)
 
     # ------------------------------------------------------------------
     # Post-roll decision point: build a miss-decider for one attack
