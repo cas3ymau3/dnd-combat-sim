@@ -250,13 +250,17 @@ green. NOT byte-identical (the intended behaviour changes below):**
      made with the spell stat — the EK / True Strike gotcha) so the rider still
      rides it.
    - Searing Arc's policy-local "weapon Attack action" boolean → derived from the
-     emitted action Choice via `is_attack_action(modality, cost)` (Guiding Bolt is
-     tagged `modality="Magic"`, so it reads False).
-2. **`origin` / `range_` / `modality` set explicitly at the build call sites**
-   (starfire_scion profiles: GB/Archer `range_="ranged"` + `modality="Magic"`,
-   Archer `origin="feature"`, unarmed `origin="unarmed"`, Shillelagh
-   `origin="weapon"`; silvertail shocking grasp `origin="spell"` + `modality=
-   "Magic"`).  A Choice that omits `origin` now defaults to `"weapon"`.
+     emitted action Choice via `is_attack_action(modality, cost)` (Guiding Bolt
+     derives `modality="Magic"` from its spell origin, so it reads False).
+2. **`origin` / `range_` set explicitly at the build call sites** (starfire_scion
+   profiles: GB/Archer `range_="ranged"`, Archer `origin="feature"`, unarmed
+   `origin="unarmed"`, Shillelagh `origin="weapon"`; silvertail shocking grasp
+   `origin="spell"`).  A Choice that omits `origin` now defaults to `"weapon"`.
+   **`modality` for an attack is AUTO-DERIVED from origin** — a spell-/feature-
+   origin attack is the Magic modality, a weapon/unarmed swing is Attack — so
+   spell-attacks need no explicit `modality` tag and `is_attack_action` reads
+   False for them.  Explicit call sites still override (a future EK War-Magic True
+   Strike sets `modality="Magic"` despite `origin="weapon"`).
 3. **Range gate exercised by a real ranged attacker** (`tests/test_ranged_melee_
    gate.py`): the melee-only Fire-Shield thorns (Scion) and Flourish Parry (War
    Angel) correctly do NOT fire on a ranged hit (and DO on melee / an untagged

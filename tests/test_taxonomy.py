@@ -145,6 +145,34 @@ def test_choice_buff_cast_has_no_origin():
     assert ch.range_ is None
 
 
+def test_attack_modality_derived_from_origin():
+    # An ATTACK Choice derives modality from origin: a spell- or feature-origin
+    # attack is the Magic modality (Guiding Bolt, Starry-Form Archer); a weapon /
+    # unarmed swing is Attack.  So a spell-attack needs no explicit modality tag,
+    # and is_attack_action reads False for it.
+    gb = Choice(action_type="attack", cost="action", origin="spell",
+                damage_type="radiant", range_="ranged")
+    assert gb.modality == "Magic"
+    assert not taxonomy.is_attack_action(gb.modality, gb.cost)
+
+    archer = Choice(action_type="attack", cost="bonus_action", origin="feature",
+                    damage_dice=(1, 8), range_="ranged")
+    assert archer.modality == "Magic"
+
+    swing = Choice(action_type="attack", cost="action")            # origin → weapon
+    assert swing.modality == "Attack"
+    assert taxonomy.is_attack_action(swing.modality, swing.cost)
+
+    unarmed = Choice(action_type="attack", cost="none", origin="unarmed")
+    assert unarmed.modality == "Attack"
+
+    # Explicit override survives: the EK War-Magic True Strike is a WEAPON attack
+    # (origin="weapon") but the Magic modality (it casts a cantrip).
+    true_strike = Choice(action_type="attack", cost="none", origin="weapon",
+                         modality="Magic")
+    assert true_strike.modality == "Magic"
+
+
 def test_use_ability_modality_explicit():
     # A non-magical class feature (Rage) is the Use Ability modality — set
     # explicitly by the call site (not derivable from action_type alone).

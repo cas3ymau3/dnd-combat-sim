@@ -279,15 +279,24 @@ class Choice:
         # Archer set range_="ranged").  Left None for non-attack Choices.
         if self.range_ is None and self.resolution == "attack_roll":
             self.range_ = "melee"
-        # Modality: derive a reasonable default from the dispatch discriminator.
-        # "attack" → Attack; spell/effect casts → Magic.  Capability features
-        # (Rage etc.) are Use Ability — call sites set that explicitly.
+        # Modality: derive a reasonable default from the dispatch discriminator +
+        # origin.  A save/effect cast is Magic.  An ATTACK is Magic when its source
+        # is a spell or a magical feature (Guiding Bolt, Starry-Form Archer) and
+        # Attack otherwise (a weapon / unarmed swing) — so a spell-attack no longer
+        # needs an explicit modality tag, and is_attack_action(modality, cost)
+        # reads False for it without one.  Call sites still OVERRIDE: a non-magical
+        # capability feature (Rage) sets modality="Use Ability"; the EK War-Magic
+        # True Strike sets modality="Magic" despite origin="weapon".
         if self.modality is None:
-            self.modality = {
-                "attack": "Attack",
-                "save_spell": "Magic",
-                "cast_effect": "Magic",
-            }.get(self.action_type or "")
+            if self.action_type == "attack":
+                self.modality = (
+                    "Magic" if self.origin in ("spell", "feature") else "Attack"
+                )
+            else:
+                self.modality = {
+                    "save_spell": "Magic",
+                    "cast_effect": "Magic",
+                }.get(self.action_type or "")
 
 
 # ---------------------------------------------------------------------------

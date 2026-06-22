@@ -288,12 +288,12 @@ LEVELS: dict[int, dict] = {
         # origin="feature" (NOT "spell") and Fueled Spellfire (L5+) does NOT fuel it.
         "archer":       {"dice": (1, 8), "bonus": 3, "weapon_stat": "spell_attack_bonus",
                           "damage_type": "radiant", "origin": "feature",
-                          "range_": "ranged", "modality": "Magic"},
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         # Guiding Bolt: 4d6 radiant SPELL, ranged spell attack, no damage modifier.
         # radiant + origin="spell" → a Fueled-Spellfire target at L5+.
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
                           "damage_type": "radiant", "origin": "spell",
-                          "range_": "ranged", "modality": "Magic"},
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": True,
         "resources": {
             "spellfire_spark": (2, 0),     # x PB / LR
@@ -318,10 +318,10 @@ LEVELS: dict[int, dict] = {
                           "origin": "unarmed"},
         "archer":       {"dice": (1, 8), "bonus": 4, "weapon_stat": "spell_attack_bonus",
                           "damage_type": "radiant", "origin": "feature",  # radiant FEATURE (not a spell)
-                          "range_": "ranged", "modality": "Magic"},
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
                           "damage_type": "radiant", "origin": "spell",
-                          "range_": "ranged", "modality": "Magic"},
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": True,
         "resources": {
             "spellfire_spark": (3, 0),     # x PB / LR (PB 3 now)
@@ -373,7 +373,7 @@ LEVELS: dict[int, dict] = {
         # back to archer; only Sacred Flame / unarmed.
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
                           "damage_type": "radiant", "origin": "spell",
-                          "range_": "ranged", "modality": "Magic"},
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": False,
         "resources": {
             "spellfire_spark":  (4, 0),    # Sacred Flame as a BA, x PB / LR (PB 4)
@@ -421,7 +421,7 @@ LEVELS: dict[int, dict] = {
         # archer profile here; the BA falls back to an unarmed strike.
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
                           "damage_type": "radiant", "origin": "spell",
-                          "range_": "ranged", "modality": "Magic"},
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": False,
         # Searing Arc Strike (Sun-Soul Monk-6): upcast Burning Hands.  FP cost = 2
         # base + 1 per upcast slot level, capped at floor(monk_level / 2) = 3 FP at
@@ -472,7 +472,7 @@ LEVELS: dict[int, dict] = {
         "shillelagh":   {"bonus": 4, "weapon_stat": "spell_attack_bonus"},
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
                           "damage_type": "radiant", "origin": "spell",
-                          "range_": "ranged", "modality": "Magic"},
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": False,
         # Searing Arc Strike unchanged from L10: monk-7 cap = floor(7/2) = 3 FP →
         # slot 2 = 4d6 (FP cost 3).  (5d6 waits for monk-8 at L12.)
@@ -513,7 +513,7 @@ LEVELS: dict[int, dict] = {
         "shillelagh":   {"bonus": 5, "weapon_stat": "spell_attack_bonus"},
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
                           "damage_type": "radiant", "origin": "spell",
-                          "range_": "ranged", "modality": "Magic"},
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": False,
         # monk-8: cap = floor(8/2) = 4 FP → upcast Burning Hands to slot 3 = 5d6
         # (guide line 106 — "upcast burning hands at lvl-03 (5d6)").  slot_level = 3.
@@ -563,7 +563,7 @@ LEVELS: dict[int, dict] = {
         "shillelagh":   {"bonus": 5, "weapon_stat": "spell_attack_bonus"},
         "guiding_bolt": {"dice": (4, 6), "bonus": 0, "weapon_stat": "spell_attack_bonus",
                           "damage_type": "radiant", "origin": "spell",
-                          "range_": "ranged", "modality": "Magic"},
+                          "range_": "ranged"},   # modality="Magic" derived from origin
         "starry_form": False,
         # Searing Arc Strike: monk-8 cap floor(8/2)=4 FP → slot 3 = 5d6 (as L12).
         "searing_arc_strike": {"slot_level": 3, "fp_cost": 4},

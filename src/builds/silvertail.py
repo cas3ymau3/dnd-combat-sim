@@ -142,8 +142,8 @@ LEVELS: dict[int, dict] = {
         # shocking grasp: WIS spell attack, 1d8 lightning, no damage modifier.
         "shocking_grasp": {"dice": (1, 8), "bonus": 0,
                            "weapon_stat": "spell_attack_bonus",
-                           "damage_type": "lightning", "origin": "spell",
-                           "modality": "Magic"},   # melee touch spell (range_ default melee)
+                           "damage_type": "lightning", "origin": "spell"},
+                           # melee touch spell: range_ defaults melee, modality="Magic" from origin
         # Beast of the Land (ranger-3): AC 13+WIS, HP 5+5*ranger, Beast's Strike
         # 1d8+2+WIS, to-hit = spell attack modifier (+5), charge +1d6.
         "beast": {
@@ -194,8 +194,8 @@ LEVELS: dict[int, dict] = {
         "resources": {"spell_slot": (3, 0)},
         "shocking_grasp": {"dice": (2, 8), "bonus": 0,
                            "weapon_stat": "spell_attack_bonus",
-                           "damage_type": "lightning", "origin": "spell",
-                           "modality": "Magic"},   # melee touch spell (range_ default melee)
+                           "damage_type": "lightning", "origin": "spell"},
+                           # melee touch spell: range_ defaults melee, modality="Magic" from origin
         # Beast of the Land (ranger-4): AC 13+WIS=17, HP 5+5*4=25, Beast's Strike
         # 1d8+2+WIS=1d8+6, to-hit = spell attack mod (+7), charge +1d6.
         "beast": {
@@ -249,8 +249,8 @@ LEVELS: dict[int, dict] = {
         "resources": {"spell_slot": (3, 0)},
         "shocking_grasp": {"dice": (2, 8), "bonus": 0,
                            "weapon_stat": "spell_attack_bonus",
-                           "damage_type": "lightning", "origin": "spell",
-                           "modality": "Magic"},   # melee touch spell (range_ default melee)
+                           "damage_type": "lightning", "origin": "spell"},
+                           # melee touch spell: range_ defaults melee, modality="Magic" from origin
         # Beast of the Land (ranger-4): AC 17, HP 25, Beast's Strike 1d8+2+WIS=1d8+6,
         # to-hit = spell attack mod (+8 at PB4+WIS4), charge +1d6.
         "beast": {
