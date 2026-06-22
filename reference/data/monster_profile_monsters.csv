@@ -1,0 +1,47 @@
+monster,cr,cr_band,type,size,damage_vulnerabilities,damage_resistances,damage_immunities,condition_immunities,has_legendary,legendary_action_count,has_lair,notes
+Adult Black Dragon,14,11-16,Dragon,Huge,,,acid,,y,3,y,
+Adult Blue Dragon,16,11-16,Dragon,Huge,,,lightning,,y,3,y,
+Adult Brass Dragon,13,11-16,Dragon,Huge,,,fire,,y,3,y,
+Adult Bronze Dragon,15,11-16,Dragon,Huge,,,lightning,,y,3,y,
+Adult Copper Dragon,14,11-16,Dragon,Huge,,,acid,,y,3,y,
+Adult Green Dragon,15,11-16,Dragon,Huge,,,poison,poisoned,y,3,y,
+Adult Silver Dragon,16,11-16,Dragon,Huge,,,cold,,y,3,y,
+Adult White Dragon,13,11-16,Dragon,Huge,,,cold,,y,3,y,
+Arcanaloth,12,11-16,Fiend,Medium,,cold;fire;lightning,acid;poison,charmed;poisoned,n,0,n,
+Archmage,12,11-16,Humanoid,Medium,,,psychic,charmed,n,0,n,
+Archpriest,12,11-16,Humanoid,Medium,,,,,n,0,n,
+Bandit Crime Lord,11,11-16,Humanoid,Medium,,,,,n,0,n,has Evasion
+Behir,11,11-16,Monstrosity,Huge,,,lightning,,n,0,n,
+Beholder,13,11-16,Aberration,Large,,,,prone,y,3,y,eye-ray menu approximated
+Dao,11,11-16,Elemental,Large,,,,petrified,n,0,n,
+Death Knight Aspirant,11,11-16,Undead,Medium,,,necrotic;poison,exhaustion;frightened;poisoned,n,0,n,
+Death Tyrant,14,11-16,Undead,Large,,,poison,charmed;exhaustion;paralyzed;petrified;poisoned;prone,y,3,y,eye-ray menu approximated
+Djinni,11,11-16,Elemental,Large,,,lightning;thunder,,n,0,n,
+Efreeti,11,11-16,Elemental,Large,,,fire,,n,0,n,
+Erinyes,12,11-16,Fiend,Medium,,cold,fire;poison,poisoned,n,0,n,
+Githyanki Dracomancer,16,11-16,Aberration,Medium,,,,,n,0,n,
+Githzerai Psion,12,11-16,Aberration,Medium,,,,,n,0,n,
+Gulthias Blight,16,11-16,Plant,Gargantuan,,fire;necrotic,,deafened,n,0,n,
+Horned Devil,11,11-16,Fiend,Large,,cold,fire;poison,poisoned,n,0,n,
+Ice Devil,14,11-16,Fiend,Large,,,cold;fire;poison,poisoned,n,0,n,
+Iron Golem,16,11-16,Construct,Large,,,fire;poison;psychic,charmed;exhaustion;frightened;paralyzed;petrified;poisoned,n,0,n,Fire Absorption (heals from fire)
+Marid,11,11-16,Elemental,Large,,acid;cold;lightning,,,n,0,n,
+Marilith,16,11-16,Fiend,Large,,cold;fire;lightning,poison,poisoned,n,0,n,
+Mind Flayer Arcanist,11,11-16,Aberration,Medium,,,psychic,charmed;frightened,n,0,y,
+Mummy Lord,15,11-16,Undead,Medium,fire,,necrotic;poison,charmed;exhaustion;frightened;paralyzed;poisoned,y,3,y,
+Nalfeshnee,13,11-16,Fiend,Large,,cold;fire;lightning,poison,frightened;poisoned,n,0,n,
+Pirate Admiral,12,11-16,Humanoid,Medium,,,,,n,0,n,
+Planetar,16,11-16,Celestial,Large,,radiant,,charmed;exhaustion;frightened,n,0,n,
+Purple Worm,15,11-16,Monstrosity,Gargantuan,,,,,n,0,n,
+Questing Knight,12,11-16,Humanoid,Medium,,,,charmed;frightened,n,0,n,
+Rakshasa,13,11-16,Fiend,Medium,,,,charmed;frightened,n,0,n,vuln: piercing from Bless-blessed weapons (special; not a standard type)
+Remorhaz,11,11-16,Monstrosity,Huge,,,cold;fire,,n,0,n,
+Roc,11,11-16,Monstrosity,Gargantuan,,,,,n,0,n,
+Salamander Inferno Master,15,11-16,Elemental,Large,cold,,fire,,n,0,n,
+Shadow Dragon (Huge),13,11-16,Dragon,Huge,,,necrotic,,y,3,y,Living Shadow: conditional resistance in dim light/darkness (not a fixed type)
+Shadow Dragon (Large),13,11-16,Dragon,Large,,,necrotic,,y,3,y,size variant of Shadow Dragon (Huge); Living Shadow conditional resistance
+Sphinx of Lore,11,11-16,Celestial,Large,,necrotic;radiant,psychic,charmed;frightened,y,3,y,
+Storm Giant,13,11-16,Giant,Huge,,cold,lightning;thunder,,n,0,n,
+Ultroloth,13,11-16,Fiend,Medium,,cold;fire;lightning,acid;poison,charmed;frightened;poisoned,n,0,y,
+Vampire,13,11-16,Undead,Medium,,necrotic,,,y,3,y,
+Vampire Umbral Lord,15,11-16,Undead,Medium,,,cold;necrotic,charmed;exhaustion,y,3,y,
