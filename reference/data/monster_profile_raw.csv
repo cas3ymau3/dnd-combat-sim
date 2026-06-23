@@ -275,3 +275,36 @@ Spirit Naga,8,5-10,multiattack-swing,Necrotic Ray,attack,ranged,n,necrotic,,,,1.
 Vrock,6,5-10,multiattack-swing,Shred,attack,melee,n,piercing;poison,,,,2,at-will,
 Vrock,6,5-10,action,Spores,save,melee,y,poison,CON,negates,poisoned,1,6,20ft emanation; ongoing poison
 Yochlol,10,5-10,multiattack-swing,Caustic Lash,attack,both,n,acid,,,,2,at-will,+Spellcasting Web/Dominate (no-dmg)
+Air Elemental,5,5-10,multiattack-swing,Thunderous Slam,attack,melee,n,thunder,,,,2,at-will,
+Air Elemental,5,5-10,action,Whirlwind,save,melee,n,thunder,STR,half,prone,1,4-6,single target in space
+Azer Pyromancer,6,5-10,multiattack-swing,Flame Burst,attack,both,n,fire,,,,2,at-will,1/Day Fireball + Hellish Rebuke 2/Day omitted
+Cloud Giant,9,5-10,multiattack-swing,Thunderous Mace,attack,melee,n,bludgeoning;thunder,,,,1,at-will,Mace or Thundercloud any combo (split); replace1 spell unmodeled
+Cloud Giant,9,5-10,multiattack-swing,Thundercloud,attack,ranged,n,thunder,,,incapacitated,1,at-will,split
+Cyclops Oracle,10,5-10,multiattack-swing,Radiant Strike,attack,melee,n,radiant,,,,1.5,at-will,Radiant Strike or Flash of Light any combo (split)
+Cyclops Oracle,10,5-10,multiattack-swing,Flash of Light,attack,ranged,n,radiant,,,,1.5,at-will,split; disadvantage rider
+Cyclops Sentry,6,5-10,multiattack-swing,Stone Club,attack,melee,n,bludgeoning,,,prone,1,at-will,Club or Rock any combo (split)
+Cyclops Sentry,6,5-10,multiattack-swing,Rock,attack,ranged,n,bludgeoning,,,,1,at-will,split
+Earth Elemental,5,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,,1,at-will,Slam or Rock Launch any combo (split)
+Earth Elemental,5,5-10,multiattack-swing,Rock Launch,attack,ranged,n,bludgeoning,,,prone,1,at-will,split
+Fire Elemental,5,5-10,multiattack-swing,Burn,attack,melee,n,fire,,,,2,at-will,ongoing burning
+Fire Giant,9,5-10,multiattack-swing,Flame Sword,attack,melee,n,slashing;fire,,,,1,at-will,Sword or Hammer Throw any combo (split)
+Fire Giant,9,5-10,multiattack-swing,Hammer Throw,attack,ranged,n,bludgeoning;fire,,,,1,at-will,split
+Fomorian,8,5-10,multiattack-swing,Stone Club,attack,melee,n,bludgeoning,,,,1,at-will,replace1 attack w/ Warping Hex
+Fomorian,8,5-10,action,Warping Hex,save,ranged,n,psychic,WIS,half,exhaustion,1,4-6,single target within 120ft
+Frost Giant,8,5-10,multiattack-swing,Frost Axe,attack,melee,n,slashing;cold,,,,1,at-will,Axe or Great Bow any combo (split)
+Frost Giant,8,5-10,multiattack-swing,Great Bow,attack,ranged,n,piercing;cold,,,,1,at-will,split; speed-decrease rider
+Galeb Duhr,6,5-10,action,Avalanche Slam,attack,melee,n,bludgeoning,,,prone,1,at-will,prone conditional on charge; no multiattack
+Hill Giant,5,5-10,multiattack-swing,Tree Club,attack,melee,n,bludgeoning,,,prone,1,at-will,Club or Trash Lob any combo (split)
+Hill Giant,5,5-10,multiattack-swing,Trash Lob,attack,ranged,n,bludgeoning,,,poisoned,1,at-will,split
+Invisible Stalker,6,5-10,multiattack-swing,Wind Swipe,attack,melee,n,force,,,,2,at-will,replace1 attack w/ Vortex
+Invisible Stalker,6,5-10,action,Vortex,save,melee,n,thunder,CON,negates,grappled,1,at-will,single target in space; ongoing thunder
+Merfolk Wavebender,6,5-10,multiattack-swing,Aquatic Burst,attack,both,n,cold,,,prone,2,at-will,+Spellcasting (control/limited) omitted
+Salamander,5,5-10,multiattack-swing,Flame Spear,attack,both,n,piercing;fire,,,,1,at-will,replace1 attack w/ Constrict
+Salamander,5,5-10,action,Constrict,save,melee,n,bludgeoning;fire,STR,negates,grappled,1,at-will,single target within 10ft
+Stone Giant,7,5-10,multiattack-swing,Stone Club,attack,melee,n,bludgeoning,,,,1,at-will,Club or Boulder any combo (split)
+Stone Giant,7,5-10,multiattack-swing,Boulder,attack,ranged,n,bludgeoning,,,prone,1,at-will,split; Deflect Missile reaction omitted
+Troll,5,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,3,at-will,
+Water Elemental,5,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,prone,2,at-will,
+Water Elemental,5,5-10,action,Whelm,save,melee,y,bludgeoning,STR,half,grappled,1,4-6,each creature in space
+Xorn,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,
+Xorn,5,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,,3,at-will,
