@@ -384,3 +384,13 @@ Tree Blight,7,5-10,action,Grasping Root,save,melee,n,bludgeoning,STR,negates,gra
 Tree Blight,7,5-10,bonus,Gnash,save,melee,n,piercing,DEX,half,,1,at-will,needs grappled target
 Violet Fungus Necrohulk,7,5-10,multiattack-swing,Rotting Slam,attack,melee,n,bludgeoning;necrotic,,,,2,at-will,
 Violet Fungus Necrohulk,7,5-10,action,Spore Bomb (Recharge 5-6),save,ranged,y,necrotic,CON,half,poisoned,1,5-6,20ft-radius sphere at 60ft; Absorb Body (no-dmg bonus) not tagged
+Centaur Warden,7,5-10,multiattack-swing,Forest Staff,attack,melee,n,bludgeoning;poison,,,,1,at-will,Forest Staff/Sun Ray any combo (split)
+Centaur Warden,7,5-10,multiattack-swing,Sun Ray,attack,ranged,n,radiant,,,blinded,1,at-will,split
+Centaur Warden,7,5-10,bonus,Entangling Trail (Recharge 5-6),save,melee,y,bludgeoning,STR,negates,restrained,1,5-6,move-through; each creature within 5ft
+Dire Worg,10,5-10,multiattack-swing,Bite,attack,melee,n,piercing;poison,,,poisoned,3,at-will,
+Dire Worg,10,5-10,action,Dreadful Howl (Recharge 5-6),save,ranged,y,psychic,WIS,half,frightened,1,5-6,30ft emanation
+Hobgoblin Warlord,6,5-10,multiattack-swing,Javelin,attack,both,n,piercing,,,,1.5,at-will,Javelin/Longsword any combo (split); speed-reduce rider
+Hobgoblin Warlord,6,5-10,multiattack-swing,Longsword,attack,melee,n,slashing,,,,1.5,at-will,split
+Pixie Wonderbringer,5,5-10,multiattack-swing,Faerie Dust,attack,both,n,radiant,,,charmed;poisoned,2,at-will,choice charmed/poisoned rider; spells (no-dmg) not tagged
+Satyr Revelmaster,6,5-10,multiattack-swing,Prance,attack,melee,n,bludgeoning,,,charmed,3,at-will,
+Satyr Revelmaster,6,5-10,action,Fey Melody (Recharge 4-6),save,ranged,y,psychic,WIS,negates,frightened,1,4-6,60ft emanation; frightening mode (charming mode no-dmg)
