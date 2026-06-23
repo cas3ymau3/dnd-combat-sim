@@ -88,14 +88,22 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 
 - **Last reviewed for reset: session 30 (2026-06-22).**
 - **Permission allowlist** — `.claude/settings.local.json` → `permissions.allow` (GITIGNORED,
-  per-machine, NOT committed). Holds `Bash(git/gh/python/py/pytest *)` + 7 Claude-in-Chrome
-  tools: `computer`/`find`/`form_input` (older) + **`javascript_tool`/`navigate`/
-  `select_browser`/`list_connected_browsers` (added s30)**. WHY the s30 add: the census's
-  browser calls were prompting once per step, and **Chrome-MCP permission prompts do NOT push
-  to the phone via remote control** (so the user was chained to the desk); pre-authorizing them
-  removes the prompt entirely. TRADEOFF to re-examine: `javascript_tool` lets Claude run
-  arbitrary JS in the connected tab without asking. REVERT: delete those lines from the `allow`
-  array.
+  per-machine, NOT committed). Holds `Bash(git/gh/python/py/pytest *)` + 8 Claude-in-Chrome
+  tools: `computer`/`find`/`form_input` (older) + `javascript_tool`/`navigate`/
+  `select_browser`/`list_connected_browsers` (added s30) + **`tabs_context_mcp` (added s31)** +
+  **10 read-only/data Bash utils `cat`/`echo`/`wc`/`awk`/`grep`/`head`/`tail`/`sort`/`uniq`/`ls`
+  (added s31)**. WHY the s30 Chrome add: browser calls prompted once per step, and **Chrome-MCP
+  permission prompts do NOT push to the phone via remote control** (user chained to the desk);
+  pre-authorizing removes the prompt. WHY the s31 add (user request — survey all session tools so
+  each either runs without auth OR pushes to remote): `tabs_context_mcp` was the last un-allowlisted
+  Chrome tool used (doesn't push → had to be pre-authorized); the 10 Bash utils were the bulk of the
+  remaining laptop ctrl+enter — the census's `cat >> *.csv <<EOF` appends + `wc`/`awk`/`grep` verifies
+  (and compound `cat … && python … && git …` chains, which need every segment allowlisted to
+  auto-run). TRADEOFFS to re-examine: `javascript_tool` runs arbitrary JS in the tab without asking;
+  `Bash(cat *)` includes `cat >> anyfile` (a write primitive); `Bash(grep/awk *)` can read any file.
+  All per-machine + gitignored. NOTE: `Edit`/`Write` were left OUT — their prompts already PUSH to
+  remote (criterion ii), so they didn't need allowlisting. REVERT: delete those lines from the
+  `allow` array.
 - **MCP connectors disabled** — app-level, user-toggled via **Claude app → Settings →
   Connectors** (Claude CANNOT change these from settings.json). Google Drive *disconnected*;
   computer-use / Claude_Preview / scheduled-tasks / mcp-registry off-recommended;
