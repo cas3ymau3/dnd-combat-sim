@@ -319,9 +319,10 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
    band's many one-action-per-round monsters). The instance unit is "expected uses at full
    action economy," so the count must respect that a monster takes ONE action per round.
    - **Monster WITH a Multiattack** → tag the multiattack swings at full + its recharge
-     signature AoE at 1 (the accepted recharge over-count). A SEPARATE at-will alternative
-     action that *replaces* the multiattack (Bulette Deadly Leap, Yuan-ti Constrict) is NOT
-     additionally tagged — counting it would triple-count one action. Flag it in `notes`.
+     signature AoE at 1 (the accepted recharge over-count). A SEPARATE **at-will** alternative
+     damaging action that *replaces* the multiattack (Bulette Deadly Leap, Yuan-ti Constrict,
+     and the s30-OMITTED spell alternatives) is handled by **refinement 10 (1b)** below — it
+     is NOT omitted anymore. (Non-damaging alternatives stay untagged; flag in `notes`.)
    - **Gaze/rider folded INTO a Multiattack** ("uses its Chilling Gaze AND makes two
      attacks" — Abominable Yeti) IS additive — it is part of the same multiattack line, so
      tag the gaze + the swings together.
@@ -330,3 +331,45 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
      recharge signature AoE at 1; SKIP the situational finisher (Extract Brain) it can only
      use against an already-grappled target. This keeps a once-per-round actor near ~1–2
      instances, not one row per option.
+
+10. **At-will alternatives (1b) + symmetric limited-use (2a)** — adopted session 32
+    (2026-06-23), STARTING with the 0-4 band. These SUPERSEDE the s30/s31 "OMIT at-will
+    damaging-spell alternatives" call and the s31 "spell-vs-action 1/Day asymmetry." Motive:
+    the OMIT rule dropped the ENTIRE elemental/AoE/save mass of every spell-capable monster —
+    tolerable when casters are rare (higher bands), NOT in the spellcaster/humanoid-heavy 0-4
+    band (303 monsters).
+    - **(1b) At-will damaging spell/AoE alternative to a multiattack** (the s30-OMITTED list:
+      Night Hag at-will Magic Missile, Kuo-toa Destructive Wave, at-will Scorching Ray,
+      Performer Legend/Maestro/Beguiling songs, Treant Hail of Bark, Beholder Zombie Bite,
+      …). These compete EVERY round, so model **50/50 mixing**: tag the alternative at **×0.5
+      of its own per-use instance count** AND each multiattack swing at **×0.5**. (Single-
+      instance alt → 0.5; a 3-ray Scorching Ray → 1.5; the halved multiattack of two swings →
+      2×0.5 = 1.0.) Multiple at-will alternatives ("cast one of A/B/C") → split the 0.5
+      alternative-share evenly across them (per refinement 7). NOTE: the existing "replace
+      ONE/N attacks with X" PARTIAL-replacement rule (Adult Black Dragon → Rend×2 + spell×1)
+      is UNCHANGED — 1b is only for FULL-action replacement.
+    - **(2a) Limited-use (1/Day, 2/Day, …) damaging abilities** → tag at **per-use 1, ON TOP
+      of the full multiattack, exactly like a breath weapon** (the accepted v1 over-count; the
+      `recharge` column preserves the truth). **Symmetric**: identical whether printed as a
+      Spellcasting-list spell (Mage's 1/Day Fireball) or a named statblock Action (Smoke Bomb
+      1/Day). NO multiattack reduction for 2a (only the every-round at-will case (1b) gets the
+      0.5 reduction; limited-use fires occasionally, so the breath-weapon analogy holds).
+    - **Worked example — 2024 Mage** (Multiattack: Arcane Burst ×2; 1/Day Fireball; 1/Day Cone
+      of Cold): Arcane Burst ×2 at full **+** Fireball @1 **+** Cone of Cold @1. Deliberately
+      over-counted, like a dragon's breath — but the elemental/AoE/save mass the OMIT rule
+      dropped is now on the books.
+
+> **⚠️ v2 CROSS-BAND RECONCILIATION TODO (flagged session 32, before the 0-4 census).**
+> Refinement 10 (1b + 2a) is being applied STARTING with 0-4, so the four bands are NOT yet
+> internally consistent: bands **11-16 (s28)**, **17+ (s29)**, and **5-10 (s30-31)** were
+> tagged under the OLD rules (at-will spell alternatives OMITTED; 1/Day spell-list damage
+> spells omitted while statblock 1/Day actions tagged). For an apples-to-apples final
+> census, a back-application pass must re-tag those three bands' affected monsters under
+> refinement 10. Candidates to revisit (from the bands' own `notes`/simplification logs):
+> Night Hag & Kuo-toa (at-will Magic Missile / Destructive Wave), any caster NPC with 1/Day
+> damage spells (Mage/Archmage/Priest-likes), Performer/Treant/Beholder-Zombie at-will
+> alternatives, plus a scan for "Instead of … can cast" / "Spellcasting" damage lists in the
+> higher bands. EFFORT to be estimated at this session's close-out. Until that pass lands,
+> cross-band comparisons of elemental/AoE/save shares are NOT strictly comparable (0-4 will
+> read higher on those axes purely from the rule change — keep that in mind reading the
+> aggregator).

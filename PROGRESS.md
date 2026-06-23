@@ -86,7 +86,9 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 30 (2026-06-22).**
+- **Last reviewed for reset: session 32 (2026-06-23).** (s32: user reviewed, chose KEEP ALL —
+  the allowlist + disabled connectors + remote control are mid-census conveniences; revisit after
+  the 0-4 band finishes the whole census arc.)
 - **Permission allowlist** — `.claude/settings.local.json` → `permissions.allow` (GITIGNORED,
   per-machine, NOT committed). Holds `Bash(git/gh/python/py/pytest *)` + 8 Claude-in-Chrome
   tools: `computer`/`find`/`form_input` (older) + `javascript_tool`/`navigate`/
