@@ -253,7 +253,27 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
   Pit Fiend's Hellfire Spellcasting IS tagged (Fireball ×2 recharge — its signature AoE,
   like a breath weapon), unlike the omitted 1/Day filler spells; (d) HP-max-drain-only
   actions with no damage type (Energy Drain) → not tagged (control).
-- **Bands TODO:** 0-4 (303), 5-10 (126).
+- **Band PARTIAL: 5-10 (76 of 126 done)** — tagged 2026-06-22 (session 30), batched by
+  creature type. **DONE types:** Dragon (12), Fiend (17), Giant (9), Elemental (10),
+  Aberration (14), Monstrosity (14). 143 damaging actions, 209 instances/round so far.
+  Headline (partial): physical 56.8% / elemental 43.2% (elemental LOWER than 11-16's 60%
+  and 17+'s 65% — climbs with CR as expected); **attack-resolution 88.5%** (save only 11.5%
+  — far below the top tiers; DEX 44% / CON 33% of saves), reach melee 71.8% / ranged 16.5% /
+  both 11.7%, AoE 8.6%, legendary 1.3% (only Aboleth), no meaningful vulnerabilities;
+  res cold 28% / fire 21% / lightning 20% (elemental-resistant fiends/slaads/elementals),
+  poison immunity 29%, poisoned cond-imm 30%. 5-10 simplifications (flagged in `notes`):
+  (a) **"any combination" / "X OR Y" multiattacks** (Cambion, Mezzoloth, most giants,
+  Medusa, Barbed Devil) → split the attack budget evenly across the named options (extends
+  refinement 4 from "X of A OR Y of B" to N-way "any combination"); (b) **Half-Dragon's
+  chosen Draconic Origin type** (claw rider + breath) → split evenly across the 5 chromatic
+  elements (acid/cold/fire/lightning/poison), per refinement 7; (c) **at-will damaging
+  SPELLS offered as an alternative to the multiattack** (Night Hag Magic Missile L4, Kuo-toa
+  Destructive Wave) → OMITTED, multiattack kept at full (consistent with treating the
+  multiattack as core output + the dragons' replace-with-spell convention; flagged for a
+  v2 global pass on at-will damage spells); (d) **single-action alternative actions** — see
+  refinement 9 below. **TODO types (50):** Humanoid (16), Undead (8), Beast (7), Construct
+  (6), Fey (5), Celestial (4), Plant (4). Clean resume point.
+- **Bands TODO:** 0-4 (303), 5-10 (50 remaining — see above).
 
 ## Codebook refinements surfaced by the pilot (folded into the codebook above)
 
@@ -290,3 +310,18 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
    1/Day filler spells. **Attack-then-save riders** (Pit Fiend Bite: hit, then a CON save
    vs ongoing poison) → `resolution=both`. **No-damage drains** (Demilich Energy Drain =
    HP-max reduction with no damage type) → not tagged (control).
+9. **Single-action economy — alternative actions are NOT additive** (firmed up by the 5-10
+   band's many one-action-per-round monsters). The instance unit is "expected uses at full
+   action economy," so the count must respect that a monster takes ONE action per round.
+   - **Monster WITH a Multiattack** → tag the multiattack swings at full + its recharge
+     signature AoE at 1 (the accepted recharge over-count). A SEPARATE at-will alternative
+     action that *replaces* the multiattack (Bulette Deadly Leap, Yuan-ti Constrict) is NOT
+     additionally tagged — counting it would triple-count one action. Flag it in `notes`.
+   - **Gaze/rider folded INTO a Multiattack** ("uses its Chilling Gaze AND makes two
+     attacks" — Abominable Yeti) IS additive — it is part of the same multiattack line, so
+     tag the gaze + the swings together.
+   - **Monster with NO Multiattack and several alternative actions** (Mind Flayer:
+     Tentacles / Mind Blast / Extract Brain) → tag its primary at-will attack at 1 + its
+     recharge signature AoE at 1; SKIP the situational finisher (Extract Brain) it can only
+     use against an already-grappled target. This keeps a once-per-round actor near ~1–2
+     instances, not one row per option.

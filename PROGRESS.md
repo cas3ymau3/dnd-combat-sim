@@ -71,10 +71,10 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none confirmed. NOTE: session 28
+> **Currently disabled (re-enable before exit):** none confirmed. NOTE: sessions 28-30
 > NEEDED **Claude-in-Chrome** (MM scrape) — recommend KEEPING it on for the next
-> session too (more census). The others (computer-use / Claude_Preview /
-> scheduled-tasks / mcp-registry / Google Drive) stay off-recommended.
+> session too (CR 5-10 census continues + 0-4 grind). The others (computer-use /
+> Claude_Preview / scheduled-tasks / mcp-registry / Google Drive) stay off-recommended.
 >
 > **Session scope (2026-06-22, session 27) — DONE (ATTACK-TAXONOMY GATE MIGRATION —
 > the axes now do REAL runtime work + full legacy-alias removal):** made the session-25
@@ -735,6 +735,45 @@ type, condition, resource, …):
 ---
 
 ## Done
+
+- **EMPIRICAL ENEMY PROFILE — CR 5-10 CENSUS (PARTIAL, 76/126) (2026-06-22, session 30).**
+  Third band of the census (`design/enemy_profile.md` arc); DATA only, no engine wiring.
+  Branch `design/enemy-profile-tables` (continued, not a fresh branch; was 0 behind main).
+  **76 of 126** CR 5-10 monsters tagged into the two CSVs (now **157 monsters / 379 action
+  rows** total across the 5-10/11-16/17+ bands). No code touched — pure data + docs + the
+  existing aggregator, so per `full-suite-foreground-only` the suite was SKIPPED (data/docs
+  only); the aggregator was re-run clean after every batch.
+  - **Scope settled up front (2 Qs): batch by creature type, commit every batch, stop when
+    slow.** Mid-session checkpoint at 76 → user chose **STOP at 76** (clean type boundary).
+  - **Types DONE (committed batch-by-batch):** Dragon (12), Fiend (17), Giant (9),
+    Elemental (10), Aberration (14), Monstrosity (14). **Types TODO (50):** Humanoid (16),
+    Undead (8), Beast (7), Construct (6), Fey (5), Celestial (4), Plant (4).
+  - **Workflow (s29 throughput trick):** one `fetch()` pass cached all 126 statblocks'
+    `innerText` + parsed type/size onto `window.__sb`; defense rows pulled a whole type-group
+    at once, offense read few-at-a-time under the output cap. (The 126-fetch loop tripped the
+    45s CDP timeout but completed in the renderer — verified `window.__sb.length===126` and
+    continued.) All parsing LOCAL after the one fetch pass.
+  - **Findings (partial, vs higher bands):** physical 56.8% / elemental 43.2% (elemental
+    LOWER than 11-16's 60% / 17+'s 65% — climbs with CR as expected); **attack-resolution
+    88.5%** (save only 11.5% — far below 17+'s 32%; DEX 44 / CON 33 of saves); reach melee
+    71.8% / ranged 16.5% / both 11.7%; AoE 8.6%; **legendary just 1.3%** (only Aboleth);
+    res cold 28 / fire 21 / lightning 20 (elemental-resistant fiends/slaads/elementals),
+    poison immunity 29%, poisoned cond-imm 30%, ~no vulnerabilities.
+  - **Codebook firmed up (folded into the note):** new **refinement 9 — single-action
+    economy** (alternative actions are NOT additive: a monster takes one action/round, so a
+    separate at-will action that replaces the multiattack is not tagged on top of it; a gaze
+    folded INTO a multiattack IS additive; a no-multiattack monster gets its primary attack +
+    recharge AoE, skipping a grapple-gated finisher). Also recorded: N-way "any combination"
+    multiattacks split evenly (extends ref 4); Half-Dragon's chosen Draconic Origin split
+    across the 5 chromatic elements (ref 7); at-will damage SPELLS offered as a multiattack
+    alternative (Night Hag Magic Missile, Kuo-toa) OMITTED + flagged for a v2 global pass.
+  - **Per-feature reflection:** PENDING (ask at close-out / next session — methodology was
+    re-applied, not a new mechanic, but ref 9 + the at-will-spell question are worth a check).
+  - **NEXT:** finish CR 5-10 — Humanoid (16) then the small-type group (Undead/Beast/
+    Construct/Fey/Celestial/Plant = 34) — into the same two CSVs via the locked workflow,
+    then `python -m src.builds.monster_profile`. Then the big **0-4 (303)** grind. After the
+    whole census: wire the static profile into `BaselineEnemyPolicy`, grounding the
+    `enemy_stats.py` `SAVE_TYPE_WEIGHTS` / `SAVE_ROUND_PROB` placeholders.
 
 - **EMPIRICAL ENEMY PROFILE — CR 17+ CENSUS (2026-06-22, session 29).** Second band of
   the census (`design/enemy_profile.md` arc); DATA only, no engine wiring. Branch
