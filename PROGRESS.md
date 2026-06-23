@@ -74,9 +74,9 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none confirmed. NOTE: sessions 28-30
+> **Currently disabled (re-enable before exit):** none confirmed. NOTE: sessions 28-31
 > NEEDED **Claude-in-Chrome** (MM scrape) — recommend KEEPING it on for the next
-> session too (CR 5-10 census continues + 0-4 grind). The others (computer-use /
+> session too (only the **0-4 band (303)** census remains). The others (computer-use /
 > Claude_Preview / scheduled-tasks / mcp-registry / Google Drive) stay off-recommended.
 
 ### CONFIG/SETTINGS LEDGER — review for reset every ~2 sessions (don't let the user forget)
@@ -763,6 +763,41 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **EMPIRICAL ENEMY PROFILE — CR 5-10 CENSUS COMPLETE (126/126) (2026-06-23, session 31).**
+  Finished the third band of the census (`design/enemy_profile.md` arc); DATA only, no engine
+  wiring. Branch `design/enemy-profile-tables` (continued, 0 behind main). Tagged the
+  **remaining 50** CR 5-10 monsters into the two CSVs, batched + committed by creature type:
+  **Beast (7), Construct (6), Plant (4), Fey (5), Celestial (4), Undead (8), Humanoid (16).**
+  No code touched — pure data + docs + the existing aggregator, so per `full-suite-foreground-only`
+  the suite was SKIPPED (data/docs only); the aggregator was re-run clean after every batch.
+  - **Scope settled up front (1 Q): finish all 50 CR 5-10, no 0-4 this session.** Hit it cleanly.
+  - **Full-band totals now: 208 monster rows / 453 action rows across all four bands; the 5-10
+    band itself = 126 monsters, 239 damaging actions, 340.5 instances/round.** Aggregator clean,
+    no duplicate monsters, all 50 new rows 15-field.
+  - **Workflow (same s30 trick):** rebuilt the index (510, incremental to survive the 300s CDP
+    timeout — the full 26-page loop trips it but completes in the renderer), cached all 126
+    statblocks' `innerText` on `window.__sb` (one fetch pass, ~18/batch), parsed type/size with
+    a fixed meta-line matcher (the first naive parser mis-typed "Giant Ape/Shark/…" beasts and
+    "Elemental/Fiend Cultist" humanoids off the NAME line — fixed by requiring size+type on the
+    same statblock line, which reproduced the expected 7/4/6/5/16/4/8 split exactly). Defenses
+    pulled a whole type-group at once; offense read few-at-a-time under the ~1450-char cap.
+  - **Codebook calls this session (all consistent with locked refinements 1-9):** choice-of-5-
+    element attacks (Elemental Cultist Flail+Claw) split 5 ways like Half-Dragon (ref 7); at-will
+    AoE actions offered as alternatives to a multiattack (Performer Legend/Maestro Songs, Treant
+    Hail of Bark, Beholder Zombie Bite) OMITTED like at-will alt spells (ref 9 + s30 call); caster
+    NPCs' 1/Day & 2/Day damage spells omitted as per-round-negligible, BUT a native limited AoE
+    statblock action (Spy Master Smoke Bomb 1/Day) tagged at per-use 1 per the weighting rule;
+    Beholder Zombie's 4-ray menu split (3 damaging rays @0.5); Unicorn has_legendary=y/3 but its
+    Charging Horn is a re-attack (not tagged, ref 6). Many no-damage control glares/cones/charms
+    (Gorgon Petrifying Breath, Revenant Vengeful Glare, Pirate Captain's Charm, etc.) not tagged.
+  - **Per-feature reflection:** PENDING (ask at close-out — methodology re-applied, not a new
+    mechanic; the at-will-AoE-alternative omission + the 1/Day-native-vs-spell distinction are
+    worth a confirm before the 0-4 grind).
+  - **NEXT:** the last band — **0-4 (303 monsters)**, the big grind, into the same two CSVs via
+    the locked workflow, then `python -m src.builds.monster_profile`. After the whole census:
+    wire the static profile into `BaselineEnemyPolicy`, grounding the `enemy_stats.py`
+    `SAVE_TYPE_WEIGHTS` / `SAVE_ROUND_PROB` placeholders.
 
 - **EMPIRICAL ENEMY PROFILE — CR 5-10 CENSUS (PARTIAL, 76/126) (2026-06-22, session 30).**
   Third band of the census (`design/enemy_profile.md` arc); DATA only, no engine wiring.

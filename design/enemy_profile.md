@@ -253,27 +253,32 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
   Pit Fiend's Hellfire Spellcasting IS tagged (Fireball ×2 recharge — its signature AoE,
   like a breath weapon), unlike the omitted 1/Day filler spells; (d) HP-max-drain-only
   actions with no damage type (Energy Drain) → not tagged (control).
-- **Band PARTIAL: 5-10 (76 of 126 done)** — tagged 2026-06-22 (session 30), batched by
-  creature type. **DONE types:** Dragon (12), Fiend (17), Giant (9), Elemental (10),
-  Aberration (14), Monstrosity (14). 143 damaging actions, 209 instances/round so far.
-  Headline (partial): physical 56.8% / elemental 43.2% (elemental LOWER than 11-16's 60%
-  and 17+'s 65% — climbs with CR as expected); **attack-resolution 88.5%** (save only 11.5%
-  — far below the top tiers; DEX 44% / CON 33% of saves), reach melee 71.8% / ranged 16.5% /
-  both 11.7%, AoE 8.6%, legendary 1.3% (only Aboleth), no meaningful vulnerabilities;
-  res cold 28% / fire 21% / lightning 20% (elemental-resistant fiends/slaads/elementals),
-  poison immunity 29%, poisoned cond-imm 30%. 5-10 simplifications (flagged in `notes`):
+- **Band DONE: 5-10 (126 monsters)** — started 2026-06-22 (session 30, 76 monsters),
+  COMPLETED 2026-06-23 (session 31, +50). Batched by creature type. **All 14 types tagged:**
+  Dragon (12), Fiend (17), Giant (9), Elemental (10), Aberration (14), Monstrosity (14),
+  Humanoid (16), Undead (8), Beast (7), Construct (6), Fey (5), Celestial (4), Plant (4).
+  **239 damaging actions, 340.5 instances/round** (full band). Headline: physical 55.7% /
+  elemental 44.3% (elemental LOWER than 11-16's 60% and 17+'s 65% — climbs with CR as
+  expected; bludgeoning 14.7% / piercing 18.7% / slashing 22.4% lead); **attack-resolution
+  86.9%** (save only 13.1% — far below the top tiers; DEX 36% / CON 30% / STR 16% / WIS 12%
+  of saves), reach melee 70.0% / ranged 17.2% / both 12.8%, AoE 7.9%, legendary just 1.6%
+  (Aboleth + Unicorn), no meaningful vulnerabilities; res cold 18% / fire 14% / lightning
+  12%, poison immunity 28%, poisoned cond-imm 29% (then exhaustion 17% / charmed 16% /
+  paralyzed+petrified 14% — golem/undead heavy). 5-10 simplifications (flagged in `notes`):
   (a) **"any combination" / "X OR Y" multiattacks** (Cambion, Mezzoloth, most giants,
-  Medusa, Barbed Devil) → split the attack budget evenly across the named options (extends
-  refinement 4 from "X of A OR Y of B" to N-way "any combination"); (b) **Half-Dragon's
-  chosen Draconic Origin type** (claw rider + breath) → split evenly across the 5 chromatic
-  elements (acid/cold/fire/lightning/poison), per refinement 7; (c) **at-will damaging
-  SPELLS offered as an alternative to the multiattack** (Night Hag Magic Missile L4, Kuo-toa
-  Destructive Wave) → OMITTED, multiattack kept at full (consistent with treating the
-  multiattack as core output + the dragons' replace-with-spell convention; flagged for a
-  v2 global pass on at-will damage spells); (d) **single-action alternative actions** — see
-  refinement 9 below. **TODO types (50):** Humanoid (16), Undead (8), Beast (7), Construct
-  (6), Fey (5), Celestial (4), Plant (4). Clean resume point.
-- **Bands TODO:** 0-4 (303), 5-10 (50 remaining — see above).
+  Medusa, Barbed Devil, Stone Golem, all martial NPC commanders) → split the attack budget
+  evenly across the named options (extends refinement 4 from "X of A OR Y of B" to N-way
+  "any combination"); (b) **choice-of-type attacks** (Half-Dragon's chosen Draconic Origin,
+  Elemental Cultist's 5-element Flail+Claw) → split evenly across the element options, per
+  refinement 7; (c) **at-will damaging SPELLS / AoE actions offered as an alternative to the
+  multiattack** (Night Hag Magic Missile, Kuo-toa Destructive Wave, Fiend Cultist Scorching
+  Ray, Performer Legend/Maestro Majestic/Beguiling Song, Treant Hail of Bark, Beholder Zombie
+  Bite) → OMITTED, multiattack kept at full (flagged for a v2 global pass on at-will damage
+  alternatives); (d) **single-action alternative actions** — see refinement 9. Caster NPCs'
+  limited (1/Day, 2/Day) damage spells omitted as per-round-negligible (Mage Fireball/Cone
+  of Cold etc.); native limited AoE statblock actions (Spy Master Smoke Bomb 1/Day) ARE
+  tagged at per-use 1 per the weighting rule.
+- **Bands TODO:** 0-4 (303) — only band remaining.
 
 ## Codebook refinements surfaced by the pilot (folded into the codebook above)
 
