@@ -33,6 +33,9 @@ At the start of every session, before diving into the work:
    stopping point — or on end-of-session signals ("let's end here", "good place to
    stop"), or when Claude recognizes the milestone is complete — **prompt the user to
    re-enable** the disabled connectors, and clear the line.
+4. **Check the CONFIG/SETTINGS LEDGER (below).** If its `Last reviewed for reset` marker
+   is ≥2 sessions old, prompt the user to consider resetting the accumulated config tweaks
+   (permission allowlist, disabled MCP connectors, remote control), then bump the marker.
 
 ## Session close-out ritual (do this last, every session)
 
@@ -75,7 +78,32 @@ type, condition, resource, …):
 > NEEDED **Claude-in-Chrome** (MM scrape) — recommend KEEPING it on for the next
 > session too (CR 5-10 census continues + 0-4 grind). The others (computer-use /
 > Claude_Preview / scheduled-tasks / mcp-registry / Google Drive) stay off-recommended.
->
+
+### CONFIG/SETTINGS LEDGER — review for reset every ~2 sessions (don't let the user forget)
+
+Environment/permission tweaks made to streamline these modeling sessions. **At each session
+start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset any of these
+config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
+(session 30) so these don't silently accumulate.
+
+- **Last reviewed for reset: session 30 (2026-06-22).**
+- **Permission allowlist** — `.claude/settings.local.json` → `permissions.allow` (GITIGNORED,
+  per-machine, NOT committed). Holds `Bash(git/gh/python/py/pytest *)` + 7 Claude-in-Chrome
+  tools: `computer`/`find`/`form_input` (older) + **`javascript_tool`/`navigate`/
+  `select_browser`/`list_connected_browsers` (added s30)**. WHY the s30 add: the census's
+  browser calls were prompting once per step, and **Chrome-MCP permission prompts do NOT push
+  to the phone via remote control** (so the user was chained to the desk); pre-authorizing them
+  removes the prompt entirely. TRADEOFF to re-examine: `javascript_tool` lets Claude run
+  arbitrary JS in the connected tab without asking. REVERT: delete those lines from the `allow`
+  array.
+- **MCP connectors disabled** — app-level, user-toggled via **Claude app → Settings →
+  Connectors** (Claude CANNOT change these from settings.json). Google Drive *disconnected*;
+  computer-use / Claude_Preview / scheduled-tasks / mcp-registry off-recommended;
+  **Claude-in-Chrome KEPT ON** (needed for the census). REVERT: re-enable in the app.
+- **Remote control** — ON (the user authorizes tool prompts from their phone). KNOWN LIMITATION:
+  Chrome-MCP prompts are not pushed to the phone (platform behavior) — the allowlist above is the
+  workaround, not a fix to remote control itself.
+
 > **Session scope (2026-06-22, session 27) — DONE (ATTACK-TAXONOMY GATE MIGRATION —
 > the axes now do REAL runtime work + full legacy-alias removal):** made the session-25
 > modality taxonomy (origin / range_ / modality) DRIVE the runtime gates instead of the
