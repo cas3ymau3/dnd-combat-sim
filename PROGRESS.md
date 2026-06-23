@@ -736,6 +736,39 @@ type, condition, resource, …):
 
 ## Done
 
+- **EMPIRICAL ENEMY PROFILE — CR 17+ CENSUS (2026-06-22, session 29).** Second band of
+  the census (`design/enemy_profile.md` arc); DATA only, no engine wiring. Branch
+  `design/enemy-profile-tables` (continued, not a fresh branch). All **35** CR-17+
+  monsters tagged into the two CSVs (now 81 monsters / 213 action rows total across both
+  bands); **525 tests green** (no code touched — pure data + docs + the existing
+  aggregator).
+  - **Scope settled up front (2 Qs): CR 17+ only (35), with leave to push into 5-10 if
+    fast.** 17+ chosen as the smallest remaining band, completing the high-CR picture.
+  - **Workflow:** the locked Claude-in-Chrome `fetch()` workflow, made faster by caching
+    all 35 statblocks' `innerText` on a `window` global (one fetch pass), then parsing
+    sections locally (defense table in 2 slices; per-monster actions read few-at-a-time
+    under the ~1450-char output cap). Dragon-family (12 dragons + 2 dracoliches + dragon
+    turtle = 15) tagged off a verified template (Rend×3 + Breath + native legendary);
+    each dragon's Rend secondary type + breath save verified by direct extraction, not
+    memory.
+  - **Findings (vs 11-16):** elemental climbs to **65%** (fire 15% dominant); save-
+    resolution up to **32%** with **DEX 53 / CON 37** and WIS+INT damaging saves ≈ 0
+    (the WIS roars here are pure control) — reinforces "CON underweighted, WIS over" in
+    the `enemy_stats.py` placeholders; AoE **26%**; **legendary 89%**; **zero
+    vulnerabilities**; condition-immunity frightened 51% / charmed 46% / poisoned 40%.
+  - **Codebook firmed up (folded into the note, refinements 6-8):** legendary-action
+    tagging rule (native damaging only; skip spell-recasts + extra-attack legendaries);
+    choice-of-type / random-menu actions split their instance weight evenly across
+    options; signature recharge spell-AoEs (Pit Fiend Fireball ×2) tagged like breaths;
+    attack-then-save → `resolution=both`; no-damage drains not tagged.
+  - **Per-feature reflection:** PENDING (ask at close-out).
+  - **NEXT:** census the remaining bands — **5-10 (126)** then the big **0-4 (303)**
+    grind (likely multi-session, batch by creature type) — into the same two CSVs via the
+    locked workflow, then `python -m src.builds.monster_profile`. After the census: wire
+    the static profile into `BaselineEnemyPolicy`, grounding the `enemy_stats.py`
+    `SAVE_TYPE_WEIGHTS` / `SAVE_ROUND_PROB` placeholders. See `design/enemy_profile.md`
+    "Downstream arc".
+
 - **EMPIRICAL ENEMY PROFILE — METHODOLOGY LOCKED + CR 11-16 PILOT CENSUS (2026-06-22,
   session 28).** First working slice of the next major arc (`design/enemy_profile.md`
   SEED → LOCKED). DATA + design note, NOT engine wiring. Branch
