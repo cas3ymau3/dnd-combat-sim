@@ -744,3 +744,36 @@ Vampire Familiar,3,0-4,multiattack-swing,Umbral Dagger,attack,both,n,piercing;ne
 Warrior Infantry,1/8,0-4,multiattack-swing,Spear,attack,both,n,piercing,,,,1,at-will,
 Warrior Veteran,3,0-4,multiattack-swing,Greatsword,attack,melee,n,slashing,,,,1,at-will,
 Warrior Veteran,3,0-4,multiattack-swing,Heavy Crossbow,attack,ranged,n,piercing,,,,1,at-will,
+Banshee,4,0-4,multiattack-swing,Corrupting Touch,attack,melee,n,necrotic,,,,2,at-will,
+Banshee,4,0-4,action,Deathly Wail (1/Day),save,melee,y,psychic,CON,negates,,1,1/day,native limited AoE action
+Bone Naga,4,0-4,multiattack-swing,Bite,attack,melee,n,piercing;necrotic,,,,1,at-will,
+Bone Naga,4,0-4,multiattack-swing,Serpentine Gaze,save,melee,n,psychic,WIS,negates,charmed,1,at-will,replace one attack
+Bone Naga,4,0-4,action,Lightning Bolt (1/Day),save,ranged,y,lightning,DEX,half,,1,1/day,2a limited spell (SRD stats)
+Crawling Claw,0,0-4,multiattack-swing,Slam,attack,melee,n,necrotic,,,,1,at-will,
+Flameskull,4,0-4,multiattack-swing,Fire Ray,attack,both,n,fire,,,,2,at-will,
+Flameskull,4,0-4,action,Magic Missile (2/Day),auto,ranged,n,force,,,,1,2/day,2a limited spell (auto-hit; SRD)
+Flameskull,4,0-4,action,Fireball (1/Day),save,ranged,y,fire,DEX,half,,1,1/day,2a limited spell (SRD stats)
+Flaming Skeleton,3,0-4,multiattack-swing,Flame Scepter,attack,melee,n,bludgeoning;fire,,,,1,at-will,
+Flaming Skeleton,3,0-4,multiattack-swing,Hurl Flame,attack,ranged,n,fire,,,,1,at-will,
+Ghast,2,0-4,multiattack-swing,Bite,attack,melee,n,piercing;necrotic,,,,1,at-will,
+Ghost,4,0-4,multiattack-swing,Withering Touch,attack,melee,n,necrotic,,,,1,at-will,
+Ghost,4,0-4,multiattack-swing,Horrific Visage,save,ranged,y,psychic,WIS,negates,frightened,0.5,at-will,1b at-will alt
+Ghoul,1,0-4,multiattack-swing,Bite,attack,melee,n,piercing;necrotic,,,,1,at-will,
+Ghoul,1,0-4,multiattack-swing,Claw,both,melee,n,slashing,CON,negates,paralyzed,0.5,at-will,1b at-will alt
+Lacedon Ghoul,1,0-4,multiattack-swing,Icy Bite,attack,melee,n,cold,,,,1,at-will,
+Lacedon Ghoul,1,0-4,multiattack-swing,Claw,both,melee,n,slashing,CON,negates,paralyzed,0.5,at-will,1b at-will alt
+Minotaur Skeleton,2,0-4,multiattack-swing,Gore,attack,melee,n,piercing,,,prone,1,at-will,
+Mummy,3,0-4,multiattack-swing,Rotting Fist,attack,melee,n,bludgeoning;necrotic,,,,2,at-will,
+Ogre Zombie,2,0-4,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,,1,at-will,
+Poltergeist,2,0-4,multiattack-swing,Object Slam,attack,both,n,bludgeoning,,,,1,at-will,
+Poltergeist,2,0-4,multiattack-swing,Telekinetic Thrust,save,melee,n,force,STR,negates,,1,at-will,folded into multiattack
+Shadow,1/2,0-4,multiattack-swing,Draining Swipe,attack,melee,n,necrotic,,,,1,at-will,
+Skeleton,1/4,0-4,multiattack-swing,Shortsword,attack,melee,n,piercing,,,,1,at-will,
+Specter,1,0-4,multiattack-swing,Life Drain,attack,melee,n,necrotic,,,,1,at-will,
+Swarm of Crawling Claws,3,0-4,multiattack-swing,Swarm of Grasping Hands,attack,melee,n,necrotic,,,prone,1,at-will,
+Warhorse Skeleton,1/2,0-4,multiattack-swing,Hooves,attack,melee,n,bludgeoning,,,prone,1,at-will,
+Wight,3,0-4,multiattack-swing,Necrotic Sword,attack,melee,n,slashing;necrotic,,,,0.5,at-will,1b at-will alt
+Wight,3,0-4,multiattack-swing,Necrotic Bow,attack,ranged,n,piercing;necrotic,,,,0.5,at-will,1b at-will alt
+Wight,3,0-4,multiattack-swing,Life Drain,save,melee,n,necrotic,CON,negates,,0.5,at-will,1b at-will alt
+Will-o’-Wisp,2,0-4,multiattack-swing,Shock,attack,melee,n,lightning,,,,1,at-will,
+Zombie,1/4,0-4,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,,1,at-will,
