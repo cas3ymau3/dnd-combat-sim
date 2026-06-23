@@ -376,3 +376,11 @@ Clay Golem,9,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning;acid,,,,2,at
 Stone Golem,10,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning;force,,,,1,at-will,Slam/Force Bolt any combo (split)
 Stone Golem,10,5-10,multiattack-swing,Force Bolt,attack,ranged,n,force,,,,1,at-will,split
 Shield Guardian,7,5-10,multiattack-swing,Fist,attack,melee,n,bludgeoning;force,,,,2,at-will,Protection (no-dmg reaction) not tagged
+Shambling Mound,5,5-10,multiattack-swing,Charged Tendril,attack,melee,n,bludgeoning;lightning,,,,2,at-will,replace1 attack w/ Engulf
+Shambling Mound,5,5-10,action,Engulf,save,melee,n,lightning,STR,negates,grappled;blinded;restrained,1,at-will,ongoing lightning while grappled
+Treant,9,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,,2,at-will,Hail of Bark (alt ranged action) not tagged
+Tree Blight,7,5-10,multiattack-swing,Branch,attack,melee,n,bludgeoning,,,,2,at-will,
+Tree Blight,7,5-10,action,Grasping Root,save,melee,n,bludgeoning,STR,negates,grappled,1,at-will,folded into multiattack; ongoing bludg while grappled
+Tree Blight,7,5-10,bonus,Gnash,save,melee,n,piercing,DEX,half,,1,at-will,needs grappled target
+Violet Fungus Necrohulk,7,5-10,multiattack-swing,Rotting Slam,attack,melee,n,bludgeoning;necrotic,,,,2,at-will,
+Violet Fungus Necrohulk,7,5-10,action,Spore Bomb (Recharge 5-6),save,ranged,y,necrotic,CON,half,poisoned,1,5-6,20ft-radius sphere at 60ft; Absorb Body (no-dmg bonus) not tagged

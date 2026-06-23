@@ -169,3 +169,7 @@ Flesh Golem,5,5-10,Construct,Medium,,,lightning;poison,charmed;exhaustion;fright
 Gorgon,5,5-10,Construct,Large,,,,exhaustion;petrified,n,0,n,
 Shield Guardian,7,5-10,Construct,Large,,,poison,charmed;exhaustion;frightened;paralyzed;petrified;poisoned,n,0,n,
 Stone Golem,10,5-10,Construct,Large,,,poison;psychic,charmed;exhaustion;frightened;paralyzed;petrified;poisoned,n,0,n,
+Shambling Mound,5,5-10,Plant,Large,,cold;fire,lightning,deafened;exhaustion,n,0,n,
+Treant,9,5-10,Plant,Huge,fire,bludgeoning;piercing,,,n,0,n,
+Tree Blight,7,5-10,Plant,Huge,,,,deafened,n,0,n,
+Violet Fungus Necrohulk,7,5-10,Plant,Large,,,necrotic;poison,blinded;charmed;deafened;frightened;poisoned,n,0,n,
