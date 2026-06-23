@@ -367,3 +367,12 @@ Mammoth,6,5-10,bonus,Trample,save,melee,n,bludgeoning,DEX,half,,1,at-will,needs 
 Triceratops,5,5-10,multiattack-swing,Gore,attack,melee,n,piercing,,,prone,2,at-will,extra 2d8 pierce + prone on 20ft charge
 Tyrannosaurus Rex,8,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,grappled,1,at-will,
 Tyrannosaurus Rex,8,5-10,multiattack-swing,Tail,attack,melee,n,bludgeoning,,,prone,1,at-will,
+Brazen Gorgon,9,5-10,multiattack-swing,Gore,attack,melee,n,piercing;fire,,,,2,at-will,
+Brazen Gorgon,9,5-10,action,Smelting Charge (Recharge 5-6),save,melee,y,piercing;fire,DEX,negates,grappled;restrained;prone,1,5-6,move-through line; pulls+grapples
+Gorgon,5,5-10,action,Gore,attack,melee,n,piercing,,,prone,1,at-will,no multiattack; Petrifying Breath (no-dmg cone) not tagged
+Gorgon,5,5-10,bonus,Trample,save,melee,n,bludgeoning,DEX,half,,1,at-will,needs prone target within 5ft
+Flesh Golem,5,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning;lightning,,,,2,at-will,
+Clay Golem,9,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning;acid,,,,2,at-will,3rd Slam only if Hasten used (omitted); HP-max drain rider
+Stone Golem,10,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning;force,,,,1,at-will,Slam/Force Bolt any combo (split)
+Stone Golem,10,5-10,multiattack-swing,Force Bolt,attack,ranged,n,force,,,,1,at-will,split
+Shield Guardian,7,5-10,multiattack-swing,Fist,attack,melee,n,bludgeoning;force,,,,2,at-will,Protection (no-dmg reaction) not tagged
