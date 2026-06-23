@@ -394,3 +394,10 @@ Hobgoblin Warlord,6,5-10,multiattack-swing,Longsword,attack,melee,n,slashing,,,,
 Pixie Wonderbringer,5,5-10,multiattack-swing,Faerie Dust,attack,both,n,radiant,,,charmed;poisoned,2,at-will,choice charmed/poisoned rider; spells (no-dmg) not tagged
 Satyr Revelmaster,6,5-10,multiattack-swing,Prance,attack,melee,n,bludgeoning,,,charmed,3,at-will,
 Satyr Revelmaster,6,5-10,action,Fey Melody (Recharge 4-6),save,ranged,y,psychic,WIS,negates,frightened,1,4-6,60ft emanation; frightening mode (charming mode no-dmg)
+Deva,10,5-10,multiattack-swing,Holy Mace,attack,melee,n,bludgeoning;radiant,,,,2,at-will,
+Guardian Naga,10,5-10,multiattack-swing,Bite,attack,melee,n,piercing;poison,,,,1,at-will,replace any attack w/ Poisonous Spittle
+Guardian Naga,10,5-10,action,Poisonous Spittle,save,ranged,n,poison,CON,half,blinded,1,at-will,single target within 60ft
+Sphinx of Secrets,8,5-10,multiattack-swing,Claw,attack,melee,n,slashing;radiant,,,,2,at-will,replace1 attack w/ Curse of the Riddle
+Sphinx of Secrets,8,5-10,action,Curse of the Riddle,save,ranged,n,psychic,INT,negates,,1,at-will,curse rider (disadv; not a std condition)
+Unicorn,5,5-10,multiattack-swing,Hooves,attack,melee,n,bludgeoning,,,,1,at-will,
+Unicorn,5,5-10,multiattack-swing,Radiant Horn,attack,melee,n,radiant,,,,1,at-will,legendary Charging Horn (re-attack) not tagged per ref6
