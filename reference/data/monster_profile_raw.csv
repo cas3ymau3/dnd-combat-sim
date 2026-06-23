@@ -414,3 +414,40 @@ Vampire Nightbringer,8,5-10,multiattack-swing,Shadow Strike,attack,melee,n,slash
 Vampire Spawn,5,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,grappled,2,at-will,
 Vampire Spawn,5,5-10,action,Bite,save,melee,n,piercing;necrotic,CON,negates,,1,at-will,folded in multiattack; HP drain; needs grappled/willing target
 Wraith,5,5-10,action,Life Drain,attack,melee,n,necrotic,,,,1,at-will,no multiattack; HP drain; Create Specter (summon) not tagged
+Gladiator,5,5-10,multiattack-swing,Spear,attack,both,n,piercing,,,,2,at-will,replace1 attack w/ Shield Bash
+Gladiator,5,5-10,action,Shield Bash,save,melee,n,bludgeoning,STR,negates,prone,1,at-will,
+Assassin,8,5-10,multiattack-swing,Shortsword,attack,melee,n,piercing;poison,,,poisoned,1.5,at-will,Shortsword/Light Crossbow any combo (split)
+Assassin,8,5-10,multiattack-swing,Light Crossbow,attack,ranged,n,piercing;poison,,,,1.5,at-will,split
+Bandit Deceiver,7,5-10,multiattack-swing,Dagger,attack,both,n,piercing;poison,,,,3,at-will,
+Bandit Deceiver,7,5-10,action,Blinding Flash (Recharge 4-6),save,ranged,y,radiant,CON,half,blinded,1,4-6,10ft-radius sphere at 120ft
+Berserker Commander,8,5-10,multiattack-swing,Greataxe,attack,melee,n,slashing;thunder,,,,1.5,at-will,Greataxe/Javelin any combo (split)
+Berserker Commander,8,5-10,multiattack-swing,Javelin,attack,both,n,piercing,,,,1.5,at-will,split; speed-reduce rider
+Pirate Captain,6,5-10,multiattack-swing,Rapier,attack,melee,n,piercing,,,,1.5,at-will,Rapier/Pistol any combo (split); Captains Charm (no-dmg) + Riposte (cond reaction) not tagged
+Pirate Captain,6,5-10,multiattack-swing,Pistol,attack,ranged,n,piercing,,,,1.5,at-will,split
+Warrior Commander,10,5-10,multiattack-swing,Greatsword,attack,melee,n,slashing,,,,1.5,at-will,Greatsword/Longbow any combo (split); Sap/Maneuver control riders
+Warrior Commander,10,5-10,multiattack-swing,Longbow,attack,ranged,n,piercing,,,,1.5,at-will,split; speed-reduce rider
+Mage,6,5-10,multiattack-swing,Arcane Burst,attack,both,n,force,,,,3,at-will,2/Day Fireball + 1/Day Cone of Cold omitted
+Aberrant Cultist,8,5-10,multiattack-swing,Tentacle Lash,attack,melee,n,slashing;psychic,,,grappled;restrained,1,at-will,replace any attack w/ Mind Rot
+Aberrant Cultist,8,5-10,action,Mind Rot,save,ranged,n,psychic,WIS,half,poisoned,1,at-will,single target within 90ft
+Death Cultist,8,5-10,multiattack-swing,Dread Scythe,attack,melee,n,slashing;necrotic,,,,1.5,at-will,Dread Scythe/Deathly Ray any combo (split); no-heal rider
+Death Cultist,8,5-10,multiattack-swing,Deathly Ray,attack,ranged,n,necrotic,,,,1.5,at-will,split
+Death Cultist,8,5-10,bonus,Spirit Wail (Recharge 5-6),save,ranged,y,psychic,WIS,half,frightened,1,5-6,20ft emanation
+Elemental Cultist,8,5-10,multiattack-swing,Elemental Flail,attack,melee,n,acid,,,,0.3,at-will,Flail/Claw any combo (split2); choice-of-type split5
+Elemental Cultist,8,5-10,multiattack-swing,Elemental Flail,attack,melee,n,cold,,,,0.3,at-will,choice-of-type split5
+Elemental Cultist,8,5-10,multiattack-swing,Elemental Flail,attack,melee,n,fire,,,,0.3,at-will,choice-of-type split5
+Elemental Cultist,8,5-10,multiattack-swing,Elemental Flail,attack,melee,n,lightning,,,,0.3,at-will,choice-of-type split5
+Elemental Cultist,8,5-10,multiattack-swing,Elemental Flail,attack,melee,n,thunder,,,,0.3,at-will,choice-of-type split5
+Elemental Cultist,8,5-10,multiattack-swing,Elemental Claw,attack,ranged,n,acid,,,,0.3,at-will,Flail/Claw any combo (split2); choice-of-type split5; forced-move rider
+Elemental Cultist,8,5-10,multiattack-swing,Elemental Claw,attack,ranged,n,cold,,,,0.3,at-will,choice-of-type split5
+Elemental Cultist,8,5-10,multiattack-swing,Elemental Claw,attack,ranged,n,fire,,,,0.3,at-will,choice-of-type split5
+Elemental Cultist,8,5-10,multiattack-swing,Elemental Claw,attack,ranged,n,lightning,,,,0.3,at-will,choice-of-type split5
+Elemental Cultist,8,5-10,multiattack-swing,Elemental Claw,attack,ranged,n,thunder,,,,0.3,at-will,choice-of-type split5
+Fiend Cultist,8,5-10,multiattack-swing,Pact Axe,attack,melee,n,slashing;fire,,,,3,at-will,at-will Scorching Ray + 2/Day Fireball omitted (alt to multiattack)
+Cultist Hierophant,10,5-10,multiattack-swing,Pact Blade,attack,melee,n,slashing;radiant,,,,1.5,at-will,Pact Blade/Radiant Ray any combo (split)
+Cultist Hierophant,10,5-10,multiattack-swing,Radiant Ray,attack,ranged,n,radiant,,,,1.5,at-will,split
+Noble Prodigy,10,5-10,multiattack-swing,Beguiling Strike,attack,both,n,psychic,,,charmed,3,at-will,
+Performer Legend,10,5-10,multiattack-swing,Bejeweled Baton,attack,melee,n,bludgeoning;psychic,,,,3,at-will,Majestic Song (at-will AoE alt to multiattack) not tagged
+Performer Maestro,6,5-10,multiattack-swing,Rapier,attack,melee,n,piercing;psychic,,,,3,at-will,Beguiling Song (at-will AoE alt to multiattack) not tagged
+Spy Master,10,5-10,multiattack-swing,Rapier,attack,melee,n,piercing;poison,,,,1.5,at-will,Rapier/Hand Crossbow any combo (split)
+Spy Master,10,5-10,multiattack-swing,Hand Crossbow,attack,ranged,n,piercing;poison,,,,1.5,at-will,split
+Spy Master,10,5-10,action,Smoke Bomb (1/Day),save,ranged,y,poison,CON,half,blinded,1,1/day,20ft-radius sphere at 30ft
