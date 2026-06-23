@@ -308,3 +308,23 @@ Water Elemental,5,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,prone
 Water Elemental,5,5-10,action,Whelm,save,melee,y,bludgeoning,STR,half,grappled,1,4-6,each creature in space
 Xorn,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,
 Xorn,5,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,,3,at-will,
+Aboleth,10,5-10,multiattack-swing,Tentacle,attack,melee,n,bludgeoning,,,grappled,2,at-will,
+Aboleth,10,5-10,action,Consume Memories,save,ranged,n,psychic,INT,half,,0.5,at-will,Consume or Dominate(no-dmg) 50/50; vs charmed/grappled; leg Lash/Psychic-Drain not tagged (extra-atk/recast)
+Blue Slaad,7,5-10,multiattack-swing,Mutating Claw,attack,melee,n,slashing;poison,,,,3,at-will,
+Cloaker,8,5-10,multiattack-swing,Attach,attack,melee,n,piercing,,,blinded,1,at-will,
+Cloaker,8,5-10,multiattack-swing,Tail,attack,melee,n,slashing,,,,2,at-will,
+Death Slaad,10,5-10,multiattack-swing,Chaos Blade,attack,melee,n,slashing;necrotic,,,,2,at-will,spellcasting (limited) omitted
+Githyanki Knight,8,5-10,multiattack-swing,Silver Sword,attack,melee,n,slashing;psychic,,,,3,at-will,replace1 w/ Telekinesis unmodeled
+Githzerai Zerth,6,5-10,multiattack-swing,Psi Strike,attack,melee,n,bludgeoning;psychic,,,,2,at-will,1/Day spells omitted
+Gray Slaad,9,5-10,multiattack-swing,Chaos Claw,attack,melee,n,slashing;necrotic,,,,2,at-will,spellcasting (limited) omitted
+Green Slaad,8,5-10,multiattack-swing,Chaos Staff,attack,both,n,force,,,,3,at-will,spellcasting (limited) omitted
+Grick Ancient,7,5-10,multiattack-swing,Beak,attack,melee,n,piercing,,,,1,at-will,
+Grick Ancient,7,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,prone,1,at-will,
+Grick Ancient,7,5-10,multiattack-swing,Tentacles,attack,melee,n,slashing,,,,1,at-will,
+Kuo-toa Archpriest,6,5-10,multiattack-swing,Strange Scepter,attack,both,n,lightning,,,,3,at-will,1/Day Destructive Wave omitted
+Mind Flayer,7,5-10,action,Tentacles,attack,melee,n,psychic,,,grappled;stunned,1,at-will,no multiattack (1 action/round); Extract Brain finisher not tagged
+Mind Flayer,7,5-10,action,Mind Blast,save,ranged,y,psychic,INT,half,stunned,1,5-6,60ft cone signature AoE
+Otyugh,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,poisoned,1,at-will,
+Otyugh,5,5-10,multiattack-swing,Tentacle,attack,melee,n,piercing,,,grappled,2,at-will,
+Red Slaad,5,5-10,multiattack-swing,Injecting Claw,attack,melee,n,piercing,,,,3,at-will,
+Roper,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,2,at-will,Tentacle (no-dmg ranged 60ft grapple+poison) not tagged
