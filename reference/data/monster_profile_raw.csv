@@ -806,3 +806,25 @@ Sea Hag,2,0-4,multiattack-swing,Claw,attack,melee,n,slashing,,,,1,at-will,
 Sea Hag,2,0-4,multiattack-swing,Death Glare (Recharge 5–6),save,melee,n,psychic,WIS,negates,frightened,1,5-6,
 Sprite,1/4,0-4,multiattack-swing,Needle Sword,attack,melee,n,piercing,,,,1,at-will,
 Worg,1/2,0-4,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,
+Chuul,4,0-4,multiattack-swing,Pincer,attack,melee,n,bludgeoning,,,grappled,2,at-will,
+Darkmantle,1/2,0-4,multiattack-swing,Crush,attack,melee,n,bludgeoning,,,blinded,1,at-will,
+Flumph,1/8,0-4,multiattack-swing,Tentacle,attack,melee,n,acid,,,,1,at-will,
+Gibbering Mouther,2,0-4,multiattack-swing,Bite,attack,melee,n,piercing,,,prone,1,at-will,
+Gibbering Mouther,2,0-4,multiattack-swing,Blinding Spittle (Recharge 5–6),save,ranged,y,radiant,DEX,negates,blinded,1,5-6,
+Githyanki Warrior,3,0-4,multiattack-swing,Psi Blade,attack,melee,n,slashing;psychic,,,,2,at-will,
+Githzerai Monk,2,0-4,multiattack-swing,Psi Strike,attack,melee,n,bludgeoning;psychic,,,,2,at-will,
+Grell,3,0-4,multiattack-swing,Beak,attack,melee,n,piercing,,,,1,at-will,
+Grell,3,0-4,multiattack-swing,Paralyzing Tentacles,both,melee,n,piercing,CON,negates,grappled;paralyzed;poisoned,1,at-will,
+Grick,2,0-4,multiattack-swing,Beak,attack,melee,n,piercing,,,,1,at-will,
+Grick,2,0-4,multiattack-swing,Tentacles,attack,melee,n,slashing,,,grappled,1,at-will,
+Grimlock,1/4,0-4,multiattack-swing,Bone Cudgel,attack,melee,n,bludgeoning;psychic,,,,1,at-will,
+Intellect Devourer,2,0-4,multiattack-swing,Claw,attack,melee,n,slashing,,,,1,at-will,Devour Intellect folded into multiattack
+Intellect Devourer,2,0-4,multiattack-swing,Devour Intellect,save,melee,n,psychic,INT,negates,stunned,1,at-will,folded into multiattack (additive)
+Kuo-toa,1/4,0-4,multiattack-swing,Spear,attack,both,n,piercing,,,,1,at-will,
+Kuo-toa Monitor,3,0-4,multiattack-swing,Bone Whip,attack,melee,n,slashing;lightning,,,,2,at-will,
+Kuo-toa Whip,1,0-4,multiattack-swing,Pincer Staff,attack,melee,n,piercing,,,grappled,1,at-will,
+Nothic,2,0-4,multiattack-swing,Claw,attack,melee,n,slashing,,,,1,at-will,1b at-will alt
+Nothic,2,0-4,multiattack-swing,Rotting Gaze,save,melee,n,necrotic,CON,half,,0.5,at-will,1b at-will alt
+Piercer,1/2,0-4,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,
+Slaad Tadpole,1/8,0-4,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,
+Spectator,3,0-4,multiattack-swing,Wounding Ray,save,ranged,n,necrotic,CON,half,,0.67,at-will,eye-ray menu 2 uses/3 rays; Wounding only damaging
