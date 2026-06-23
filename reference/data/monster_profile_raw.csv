@@ -104,3 +104,111 @@ Vampire,13,11-16,action,Bite,save,melee,n,necrotic,CON,other,,1,at-will,
 Vampire Umbral Lord,15,11-16,multiattack-swing,Grave Strike,attack,melee,n,slashing;necrotic,,,,1,at-will,split (grave strike/sickening ray)
 Vampire Umbral Lord,15,11-16,multiattack-swing,Sickening Ray,attack,ranged,n,necrotic,,,poisoned,1,at-will,split (grave strike/sickening ray)
 Vampire Umbral Lord,15,11-16,action,Sanguine Drain,save,melee,n,necrotic,CON,other,,1,at-will,
+Adult Gold Dragon,17,17+,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
+Adult Gold Dragon,17,17+,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Adult Gold Dragon,17,17+,legendary,Banish,save,ranged,n,force,CHA,other,incapacitated,1,at-will,
+Adult Red Dragon,17,17+,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
+Adult Red Dragon,17,17+,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Ancient Black Dragon,21,17+,multiattack-swing,Rend,attack,melee,n,slashing;acid,,,,3,at-will,
+Ancient Black Dragon,21,17+,action,Acid Breath,save,ranged,y,acid,DEX,half,,1,5-6,
+Ancient Black Dragon,21,17+,legendary,Cloud of Insects,save,ranged,n,poison,DEX,other,,1,at-will,
+Ancient Blue Dragon,23,17+,multiattack-swing,Rend,attack,melee,n,slashing;lightning,,,,3,at-will,
+Ancient Blue Dragon,23,17+,action,Lightning Breath,save,ranged,y,lightning,DEX,half,,1,5-6,
+Ancient Brass Dragon,20,17+,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
+Ancient Brass Dragon,20,17+,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Ancient Brass Dragon,20,17+,legendary,Scorching Sands,save,ranged,n,fire,DEX,other,,1,at-will,
+Ancient Bronze Dragon,22,17+,multiattack-swing,Rend,attack,melee,n,slashing;lightning,,,,3,at-will,
+Ancient Bronze Dragon,22,17+,action,Lightning Breath,save,ranged,y,lightning,DEX,half,,1,5-6,
+Ancient Bronze Dragon,22,17+,legendary,Thunderclap,save,ranged,y,thunder,CON,other,,1,at-will,
+Ancient Copper Dragon,21,17+,multiattack-swing,Rend,attack,melee,n,slashing;acid,,,,3,at-will,
+Ancient Copper Dragon,21,17+,action,Acid Breath,save,ranged,y,acid,DEX,half,,1,5-6,
+Ancient Copper Dragon,21,17+,legendary,Giggling Magic,save,ranged,n,psychic,CHA,other,incapacitated,1,at-will,type approx
+Ancient Gold Dragon,24,17+,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
+Ancient Gold Dragon,24,17+,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Ancient Gold Dragon,24,17+,legendary,Banish,save,ranged,n,force,CHA,other,incapacitated,1,at-will,
+Ancient Green Dragon,22,17+,multiattack-swing,Rend,attack,melee,n,slashing;poison,,,,3,at-will,
+Ancient Green Dragon,22,17+,action,Poison Breath,save,ranged,y,poison,CON,half,,1,5-6,
+Ancient Green Dragon,22,17+,legendary,Noxious Miasma,save,ranged,y,poison,CON,other,,1,at-will,
+Ancient Red Dragon,24,17+,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
+Ancient Red Dragon,24,17+,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Ancient Silver Dragon,23,17+,multiattack-swing,Rend,attack,melee,n,slashing;cold,,,,3,at-will,
+Ancient Silver Dragon,23,17+,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
+Ancient Silver Dragon,23,17+,legendary,Cold Gale,save,ranged,y,cold,DEX,other,,1,at-will,
+Ancient White Dragon,20,17+,multiattack-swing,Rend,attack,melee,n,slashing;cold,,,,3,at-will,
+Ancient White Dragon,20,17+,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
+Ancient White Dragon,20,17+,legendary,Freezing Burst,save,ranged,y,cold,CON,other,,1,at-will,
+Dracolich,17,17+,multiattack-swing,Rend,attack,melee,n,slashing;necrotic,,,,3,at-will,
+Dracolich,17,17+,action,Necrotic Breath,save,ranged,y,necrotic,CON,half,,1,5-6,
+Dracolich (Gargantuan),17,17+,multiattack-swing,Rend,attack,melee,n,slashing;necrotic,,,,3,at-will,
+Dracolich (Gargantuan),17,17+,action,Necrotic Breath,save,ranged,y,necrotic,CON,half,,1,5-6,
+Dragon Turtle,17,17+,multiattack-swing,Bite,attack,melee,n,piercing;fire,,,,2,at-will,
+Dragon Turtle,17,17+,multiattack-swing,Tail,attack,melee,n,bludgeoning,,,prone,1,at-will,replace-1
+Dragon Turtle,17,17+,action,Steam Breath,save,ranged,y,fire,CON,half,,1,5-6,
+Animal Lord,20,17+,multiattack-swing,Rend,attack,melee,n,slashing;force,,,,1,at-will,split 2 attacks Rend/Radiant Ray 50/50
+Animal Lord,20,17+,multiattack-swing,Radiant Ray,attack,ranged,n,radiant,,,,1,at-will,split 2 attacks Rend/Radiant Ray 50/50
+Animal Lord,20,17+,action,Animal Spirit,save,ranged,n,radiant,DEX,half,,1,at-will,
+Animal Lord (Forager),20,17+,multiattack-swing,Rend,attack,melee,n,slashing;force,,,,1,at-will,split 2 attacks Rend/Radiant Ray 50/50
+Animal Lord (Forager),20,17+,multiattack-swing,Radiant Ray,attack,ranged,n,radiant,,,,1,at-will,split 2 attacks Rend/Radiant Ray 50/50
+Animal Lord (Forager),20,17+,action,Animal Spirit,save,ranged,n,radiant,DEX,half,,1,at-will,
+Animal Lord (Hunter),20,17+,multiattack-swing,Rend,attack,melee,n,slashing;force,,,,1,at-will,split 2 attacks Rend/Radiant Ray 50/50
+Animal Lord (Hunter),20,17+,multiattack-swing,Radiant Ray,attack,ranged,n,radiant,,,,1,at-will,split 2 attacks Rend/Radiant Ray 50/50
+Animal Lord (Hunter),20,17+,action,Animal Spirit,save,ranged,n,radiant,DEX,half,,1,at-will,
+Animal Lord (Sage),20,17+,multiattack-swing,Rend,attack,melee,n,slashing;force,,,,1,at-will,split 2 attacks Rend/Radiant Ray 50/50
+Animal Lord (Sage),20,17+,multiattack-swing,Radiant Ray,attack,ranged,n,radiant,,,,1,at-will,split 2 attacks Rend/Radiant Ray 50/50
+Animal Lord (Sage),20,17+,action,Animal Spirit,save,ranged,n,radiant,DEX,half,,1,at-will,
+Arch-hag,21,17+,multiattack-swing,Spectral Claw,attack,both,n,force,,,prone,2,at-will,
+Arch-hag,21,17+,action,Crackling Wave,save,ranged,y,lightning,DEX,half,,1,at-will,curse=no-reactions (control)
+Arch-hag,21,17+,bonus,Witch Strike,auto,ranged,y,lightning,,,,1,at-will,hits cursed targets
+Balor,19,17+,multiattack-swing,Flame Whip,attack,melee,n,force;fire,,,prone,1,at-will,
+Balor,19,17+,multiattack-swing,Lightning Blade,attack,melee,n,force;lightning,,,,1,at-will,
+Balor,19,17+,trait,Fire Aura,auto,melee,y,fire,,,,1,at-will,Death Throes (death-only) not tagged
+Blob of Annihilation,23,17+,multiattack-swing,Pseudopod,attack,melee,n,force,,,,1,at-will,replace-1 (Restraining Glob control)
+Blob of Annihilation,23,17+,action,Engulf,save,melee,y,force,STR,other,restrained,1,at-will,engulfed=21 force/turn
+Blob of Annihilation,23,17+,legendary,Decay,auto,melee,y,necrotic,,,,1,at-will,to engulfed creatures
+Colossus,25,17+,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,,1.5,at-will,3 attacks split Slam/Radiant Ray 50/50
+Colossus,25,17+,multiattack-swing,Radiant Ray,attack,ranged,n,radiant,,,prone,1.5,at-will,3 attacks split Slam/Radiant Ray 50/50; legendary extra-attacks uncounted
+Colossus,25,17+,action,Divine Beam,save,ranged,y,radiant,DEX,half,,1,5-6,
+Death Knight,17,17+,multiattack-swing,Dread Blade,attack,melee,n,slashing;necrotic,,,,3,at-will,
+Death Knight,17,17+,action,Hellfire Orb,save,ranged,y,fire;necrotic,DEX,half,,1,5-6,
+Death Knight,17,17+,legendary,Fell Word,save,ranged,n,necrotic,CON,other,,1,at-will,
+Demilich,18,17+,multiattack-swing,Necrotic Burst,attack,both,n,necrotic,,,,3,at-will,
+Demilich,18,17+,action,Howl,save,melee,y,psychic,CON,negates,frightened,1,5-6,emanation->melee
+Elemental Cataclysm,22,17+,multiattack-swing,Elemental Burst,attack,both,n,acid,,,,0.4,at-will,2 attacks; type chosen from 5 (split)
+Elemental Cataclysm,22,17+,multiattack-swing,Elemental Burst,attack,both,n,cold,,,,0.4,at-will,2 attacks; type chosen from 5 (split)
+Elemental Cataclysm,22,17+,multiattack-swing,Elemental Burst,attack,both,n,fire,,,,0.4,at-will,2 attacks; type chosen from 5 (split)
+Elemental Cataclysm,22,17+,multiattack-swing,Elemental Burst,attack,both,n,lightning,,,,0.4,at-will,2 attacks; type chosen from 5 (split)
+Elemental Cataclysm,22,17+,multiattack-swing,Elemental Burst,attack,both,n,thunder,,,,0.4,at-will,2 attacks; type chosen from 5 (split)
+Elemental Cataclysm,22,17+,action,Clinging Flames,save,ranged,y,fire,DEX,half,,0.25,4-6,Cataclysmic Event 1of4 random (split)
+Elemental Cataclysm,22,17+,action,Freezing Waves,save,ranged,y,bludgeoning;cold,STR,half,prone,0.25,4-6,Cataclysmic Event 1of4 random (split)
+Elemental Cataclysm,22,17+,action,Raging Storm,save,ranged,y,lightning,DEX,half,blinded;deafened,0.25,4-6,Cataclysmic Event 1of4 random (split)
+Elemental Cataclysm,22,17+,action,Swallowing Earth,save,ranged,y,bludgeoning;acid,STR,half,prone;restrained,0.25,4-6,Cataclysmic Event 1of4 random (split)
+Empyrean (Celestial),23,17+,multiattack-swing,Sacred Weapon,attack,melee,n,force,,,stunned,1,at-will,
+Empyrean (Celestial),23,17+,multiattack-swing,Divine Ray,attack,ranged,n,necrotic,,,,0.5,at-will,type choice necrotic/radiant (split)
+Empyrean (Celestial),23,17+,multiattack-swing,Divine Ray,attack,ranged,n,radiant,,,,0.5,at-will,type choice necrotic/radiant (split)
+Empyrean (Celestial),23,17+,legendary,Shockwave of Glory,save,melee,y,force,CON,half,prone,1,at-will,emanation->melee
+Empyrean (Fiend),23,17+,multiattack-swing,Sacred Weapon,attack,melee,n,force,,,stunned,1,at-will,
+Empyrean (Fiend),23,17+,multiattack-swing,Divine Ray,attack,ranged,n,necrotic,,,,0.5,at-will,type choice necrotic/radiant (split)
+Empyrean (Fiend),23,17+,multiattack-swing,Divine Ray,attack,ranged,n,radiant,,,,0.5,at-will,type choice necrotic/radiant (split)
+Empyrean (Fiend),23,17+,legendary,Shockwave of Glory,save,melee,y,force,CON,half,prone,1,at-will,emanation->melee
+Goristro,17,17+,multiattack-swing,Brutal Gore,attack,melee,n,piercing,,,prone,1,at-will,
+Goristro,17,17+,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,,2,at-will,
+Kraken,23,17+,multiattack-swing,Tentacle,attack,melee,n,bludgeoning,,,grappled;restrained,2,at-will,
+Kraken,23,17+,action,Fling,save,ranged,n,bludgeoning,DEX,half,prone,0.33,at-will,1-of-3 choice (Fling/Lightning Strike/Swallow)
+Kraken,23,17+,action,Lightning Strike,save,ranged,n,lightning,DEX,half,,0.33,at-will,1-of-3 choice
+Kraken,23,17+,action,Swallow,save,melee,n,piercing,DEX,other,restrained,0.33,at-will,1-of-3 choice
+Lich,21,17+,multiattack-swing,Eldritch Burst,attack,both,n,force,,,,1.5,at-will,3 attacks split Eldritch Burst/Paralyzing Touch 50/50
+Lich,21,17+,multiattack-swing,Paralyzing Touch,attack,melee,n,cold,,,paralyzed,1.5,at-will,3 attacks split Eldritch Burst/Paralyzing Touch 50/50
+Lich,21,17+,legendary,Disrupt Life,save,melee,y,necrotic,CON,half,,1,at-will,emanation->melee
+Pit Fiend,20,17+,multiattack-swing,Bite,both,melee,n,piercing;poison,CON,other,poisoned,1,at-will,attack-then-save; ongoing poison
+Pit Fiend,20,17+,multiattack-swing,Devilish Claw,attack,melee,n,necrotic,,,,2,at-will,
+Pit Fiend,20,17+,multiattack-swing,Fiery Mace,attack,melee,n,force;fire,,,,1,at-will,
+Pit Fiend,20,17+,action,Hellfire Spellcasting,save,ranged,y,fire,DEX,half,,2,4-6,casts Fireball x2; replace-1 control option
+Solar,21,17+,multiattack-swing,Flying Sword,attack,both,n,slashing;radiant,,,,1,at-will,replace-1 (Slaying Bow)
+Solar,21,17+,action,Slaying Bow,save,ranged,n,piercing;radiant,DEX,other,,1,at-will,death if <=100 HP
+Solar,21,17+,legendary,Radiant Teleport,save,melee,y,radiant,DEX,half,,1,at-will,emanation->melee
+Sphinx of Valor,17,17+,multiattack-swing,Claw,attack,melee,n,slashing,,,,2,at-will,
+Sphinx of Valor,17,17+,action,Third Roar,save,melee,y,thunder,CON,half,prone,1,3/day,Roar 3/Day; first two roars control (untagged)
+Tarrasque,30,17+,multiattack-swing,Bite,attack,melee,n,piercing,,,grappled;restrained,1,at-will,
+Tarrasque,30,17+,multiattack-swing,Claw,attack,melee,n,slashing,,,,1.5,at-will,3 attacks split Claw/Tail 50/50
+Tarrasque,30,17+,multiattack-swing,Tail,attack,melee,n,bludgeoning,,,prone,1.5,at-will,3 attacks split Claw/Tail 50/50
+Tarrasque,30,17+,action,Thunderous Bellow,save,ranged,y,thunder,CON,half,deafened;frightened,1,5-6,

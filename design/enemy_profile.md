@@ -234,7 +234,26 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
   - **Approximate menu/choice attackers** — eye-ray menus stay at the 3-of-N weighting;
     dragons' "replace one attack with a spell" stays unmodeled. Both are a small share of
     total instances and are flagged in `notes`.
-- **Bands TODO:** 0-4 (303), 5-10 (126), 17+ (35).
+- **Band DONE: 17+ (35 monsters)** — tagged 2026-06-22 (session 29). 108 damaging
+  actions, 140 instances/round. Headline: physical 34.6% / elemental 65.4% (elemental
+  climbs vs 11-16's 60%; **fire 15.4%** dominant), save-resolution 32% (DEX 53% / CON
+  37%; WIS+INT damaging saves ≈ 0 — the WIS roars at this tier are pure control),
+  AoE 25.7%, **legendary 88.6%**, lairs 54.3%, **zero vulnerabilities**, heavy
+  condition-immunity (frightened 51% / charmed 46% / poisoned 40%). 17+ simplifications
+  (flagged in `notes`): (a) **legendary actions** — tag only NATIVE damaging save/attack
+  legendaries (Cloud of Insects, Banish, Fell Word, Disrupt Life, Shockwave of Glory,
+  Radiant Teleport, Decay); "uses Spellcasting to cast X" recasts (Sonic Boom, Fiery Rays,
+  Sickening Ray, Malicious Magic) and pure extra-attack legendaries (Pounce / Smite /
+  Stomp / Onslaught / Hag's Swipe / Tail Swipe / Lashing Goop) are NOT tagged — their
+  swing type is already in the multiattack rows. This systematically undercounts the 3
+  legendary uses/round at full economy (accepted v1, like recharge non-discount); (b)
+  **choice-of-type attacks** (Elemental Burst 5-way, Divine Ray necrotic/radiant) and
+  **random-menu actions** (Cataclysmic Event 4-way, Kraken Fling/Lightning Strike/Swallow)
+  → instance weight split evenly across options (mirrors the eye-ray 0.3 weighting); (c)
+  Pit Fiend's Hellfire Spellcasting IS tagged (Fireball ×2 recharge — its signature AoE,
+  like a breath weapon), unlike the omitted 1/Day filler spells; (d) HP-max-drain-only
+  actions with no damage type (Energy Drain) → not tagged (control).
+- **Bands TODO:** 0-4 (303), 5-10 (126).
 
 ## Codebook refinements surfaced by the pilot (folded into the codebook above)
 
@@ -251,3 +270,23 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
 5. **Special / conditional res-imm-vuln** (Rakshasa's "piercing from Bless-blessed
    weapons"; Shadow Dragon's dim-light Living Shadow) → NOT entered as a standard type;
    recorded in the monster `notes` so they don't distort prevalence.
+6. **Legendary-action tagging rule** (firmed up by the 17+ band, which is 89% legendary).
+   Tag a legendary option ONLY if it is a NATIVE damaging save/attack ability. Do NOT tag:
+   (a) "uses Spellcasting to cast X" recasts (treated like the unmodeled replace-with-spell
+   — they are minor options, not the monster's core output), or (b) pure extra-attack
+   legendaries (Pounce / Smite / Stomp / Onslaught / Tail Swipe / Hag's Swipe), whose swing
+   type is already represented in the multiattack rows. Tag the native one at 1 instance.
+   Known undercount: a legendary monster has ~3 uses/round; this captures ≤1 damaging use
+   (accepted v1, consistent with recharge non-discount).
+7. **Choice-of-type and random-menu actions** → split the action's instance weight evenly
+   across the options (generalizes the eye-ray menu rule). "Choose 1 of N damage types"
+   (Elemental Burst → 5×0.4 of one attack pair; Divine Ray necrotic/radiant → 2×0.5);
+   "random 1 of N effects" (Elemental Cataclysm's Cataclysmic Event → 4×0.25; Kraken's
+   Fling/Lightning Strike/Swallow → 3×0.33). Splitting keeps reach/resolution weights
+   correct (the N rows sum to the true per-round instance count) AND distributes the type
+   histogram honestly.
+8. **Recharge spell-casts that are the monster's signature AoE** (Pit Fiend's Hellfire
+   Spellcasting = Fireball ×2) ARE tagged like a breath weapon — distinct from the omitted
+   1/Day filler spells. **Attack-then-save riders** (Pit Fiend Bite: hit, then a CON save
+   vs ongoing poison) → `resolution=both`. **No-damage drains** (Demilich Energy Drain =
+   HP-max reduction with no damage type) → not tagged (control).
