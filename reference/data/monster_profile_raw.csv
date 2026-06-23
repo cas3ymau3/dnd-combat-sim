@@ -212,3 +212,36 @@ Tarrasque,30,17+,multiattack-swing,Bite,attack,melee,n,piercing,,,grappled;restr
 Tarrasque,30,17+,multiattack-swing,Claw,attack,melee,n,slashing,,,,1.5,at-will,3 attacks split Claw/Tail 50/50
 Tarrasque,30,17+,multiattack-swing,Tail,attack,melee,n,bludgeoning,,,prone,1.5,at-will,3 attacks split Claw/Tail 50/50
 Tarrasque,30,17+,action,Thunderous Bellow,save,ranged,y,thunder,CON,half,deafened;frightened,1,5-6,
+Half-Dragon,5,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,,2,at-will,
+Half-Dragon,5,5-10,multiattack-swing,Claw (Draconic rider),attack,melee,n,acid,,,,0.4,at-will,choice-of-type split5 (Draconic Origin)
+Half-Dragon,5,5-10,multiattack-swing,Claw (Draconic rider),attack,melee,n,cold,,,,0.4,at-will,choice-of-type split5 (Draconic Origin)
+Half-Dragon,5,5-10,multiattack-swing,Claw (Draconic rider),attack,melee,n,fire,,,,0.4,at-will,choice-of-type split5 (Draconic Origin)
+Half-Dragon,5,5-10,multiattack-swing,Claw (Draconic rider),attack,melee,n,lightning,,,,0.4,at-will,choice-of-type split5 (Draconic Origin)
+Half-Dragon,5,5-10,multiattack-swing,Claw (Draconic rider),attack,melee,n,poison,,,,0.4,at-will,choice-of-type split5 (Draconic Origin)
+Half-Dragon,5,5-10,action,Dragon's Breath,save,ranged,y,acid,DEX,half,,0.2,5-6,choice-of-type split5 (Draconic Origin); 30ft cone
+Half-Dragon,5,5-10,action,Dragon's Breath,save,ranged,y,cold,DEX,half,,0.2,5-6,choice-of-type split5 (Draconic Origin); 30ft cone
+Half-Dragon,5,5-10,action,Dragon's Breath,save,ranged,y,fire,DEX,half,,0.2,5-6,choice-of-type split5 (Draconic Origin); 30ft cone
+Half-Dragon,5,5-10,action,Dragon's Breath,save,ranged,y,lightning,DEX,half,,0.2,5-6,choice-of-type split5 (Draconic Origin); 30ft cone
+Half-Dragon,5,5-10,action,Dragon's Breath,save,ranged,y,poison,DEX,half,,0.2,5-6,choice-of-type split5 (Draconic Origin); 30ft cone
+Wyvern,6,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,
+Wyvern,6,5-10,multiattack-swing,Sting,attack,melee,n,piercing;poison,,,poisoned,1,at-will,
+Young Black Dragon,7,5-10,multiattack-swing,Rend,attack,melee,n,slashing;acid,,,,3,at-will,
+Young Black Dragon,7,5-10,action,Acid Breath,save,ranged,y,acid,DEX,half,,1,5-6,
+Young Blue Dragon,9,5-10,multiattack-swing,Rend,attack,melee,n,slashing;lightning,,,,3,at-will,
+Young Blue Dragon,9,5-10,action,Lightning Breath,save,ranged,y,lightning,DEX,half,,1,5-6,
+Young Brass Dragon,6,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,3,at-will,
+Young Brass Dragon,6,5-10,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Young Bronze Dragon,8,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,3,at-will,
+Young Bronze Dragon,8,5-10,action,Lightning Breath,save,ranged,y,lightning,DEX,half,,1,5-6,
+Young Copper Dragon,7,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,3,at-will,
+Young Copper Dragon,7,5-10,action,Acid Breath,save,ranged,y,acid,DEX,half,,1,5-6,
+Young Gold Dragon,10,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,3,at-will,
+Young Gold Dragon,10,5-10,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Young Green Dragon,8,5-10,multiattack-swing,Rend,attack,melee,n,slashing;poison,,,,3,at-will,
+Young Green Dragon,8,5-10,action,Poison Breath,save,ranged,y,poison,CON,half,,1,5-6,
+Young Red Dragon,10,5-10,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
+Young Red Dragon,10,5-10,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Young Silver Dragon,9,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,3,at-will,
+Young Silver Dragon,9,5-10,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
+Young White Dragon,6,5-10,multiattack-swing,Rend,attack,melee,n,slashing;cold,,,,3,at-will,
+Young White Dragon,6,5-10,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
