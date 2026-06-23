@@ -355,3 +355,15 @@ Werebear,5,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,0.5,at-will,sp
 Young Remorhaz,5,5-10,action,Bite,attack,melee,n,piercing;fire,,,,1,at-will,"single Bite, no multiattack"
 Yuan-ti Abomination,7,5-10,multiattack-swing,Bite,attack,melee,n,piercing;poison,,,,2,at-will,
 Yuan-ti Abomination,7,5-10,action,Poison Spray,save,ranged,y,poison,CON,half,poisoned,1,5-6,30ft cone; Constrict (alt action) not tagged
+Giant Ape,7,5-10,multiattack-swing,Fist,attack,melee,n,bludgeoning,,,,2,at-will,
+Giant Ape,7,5-10,action,Boulder Toss (Recharge 6),save,ranged,y,bludgeoning,DEX,half,prone,1,6,5-ft-radius sphere at 90ft
+Giant Crocodile,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,grappled,1,at-will,
+Giant Crocodile,5,5-10,multiattack-swing,Tail,attack,melee,n,bludgeoning,,,,1,at-will,
+Giant Shark,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,2,at-will,advantage vs damaged target
+Giant Squid,6,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,
+Giant Squid,6,5-10,multiattack-swing,Tentacle,attack,melee,n,bludgeoning,,,grappled,1,at-will,Ink Cloud (no-dmg reaction) not tagged
+Mammoth,6,5-10,multiattack-swing,Gore,attack,melee,n,piercing,,,prone,2,at-will,prone on 20ft charge
+Mammoth,6,5-10,bonus,Trample,save,melee,n,bludgeoning,DEX,half,,1,at-will,needs prone target within 5ft
+Triceratops,5,5-10,multiattack-swing,Gore,attack,melee,n,piercing,,,prone,2,at-will,extra 2d8 pierce + prone on 20ft charge
+Tyrannosaurus Rex,8,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,grappled,1,at-will,
+Tyrannosaurus Rex,8,5-10,multiattack-swing,Tail,attack,melee,n,bludgeoning,,,prone,1,at-will,
