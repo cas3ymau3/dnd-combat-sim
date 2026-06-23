@@ -245,3 +245,33 @@ Young Silver Dragon,9,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,3,a
 Young Silver Dragon,9,5-10,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
 Young White Dragon,6,5-10,multiattack-swing,Rend,attack,melee,n,slashing;cold,,,,3,at-will,
 Young White Dragon,6,5-10,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
+Barbed Devil,5,5-10,multiattack-swing,Claws,attack,melee,n,piercing,,,grappled,0.5,at-will,mode-split: Claws+Tail OR 2 Hurl Flame
+Barbed Devil,5,5-10,multiattack-swing,Tail,attack,melee,n,slashing,,,,0.5,at-will,mode-split
+Barbed Devil,5,5-10,multiattack-swing,Hurl Flame,attack,ranged,n,fire,,,,1,at-will,mode-split (2x0.5)
+Barlgura,5,5-10,multiattack-swing,Tormenting Bite,attack,melee,n,piercing;psychic,,,,1,at-will,
+Barlgura,5,5-10,multiattack-swing,Thrash,attack,melee,n,bludgeoning,,,prone,2,at-will,
+Bone Devil,9,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,,2,at-will,
+Bone Devil,9,5-10,multiattack-swing,Infernal Sting,attack,melee,n,piercing;poison,,,poisoned,1,at-will,
+Cambion,5,5-10,multiattack-swing,Claw,attack,melee,n,slashing;fire,,,,1,at-will,Claw or Fire Ray any combo (split)
+Cambion,5,5-10,multiattack-swing,Fire Ray,attack,ranged,n,fire,,,,1,at-will,split
+Chain Devil,8,5-10,multiattack-swing,Chain,attack,melee,n,slashing,,,grappled;restrained,2,at-will,
+Chain Devil,8,5-10,action,Conjure Infernal Chain,attack,melee,n,slashing,,,grappled;restrained,1,at-will,"animated chain, same profile"
+Chasme,6,5-10,action,Proboscis,attack,melee,n,piercing;necrotic,,,,1,at-will,HP-max reduction rider; no multiattack
+Glabrezu,9,5-10,multiattack-swing,Pincer,attack,melee,n,slashing,,,grappled,2,at-will,
+Glabrezu,9,5-10,action,Pummel,save,melee,n,bludgeoning,DEX,half,,0.5,at-will,Pummel OR Spellcasting(no-dmg) 50/50; vs grappled
+Gnoll Demoniac,8,5-10,multiattack-swing,Abyssal Strike,attack,both,n,poison,,,,2,at-will,
+Gnoll Demoniac,8,5-10,action,Hunger of Yeenoghu,save,ranged,y,necrotic,DEX,negates,,1,5-6,30ft cube zone
+Hezrou,8,5-10,multiattack-swing,Rend,attack,melee,n,slashing;poison,,,,3,at-will,
+Mezzoloth,5,5-10,multiattack-swing,Claws,attack,melee,n,slashing,,,grappled;restrained,1,at-will,Claws or Trident any combo (split)
+Mezzoloth,5,5-10,multiattack-swing,Mercurial Trident,attack,both,n,piercing;force,,,,1,at-will,split
+Night Hag,5,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,,2,at-will,at-will Magic Missile L4 (auto force) alt NOT modeled
+Nycaloth,9,5-10,multiattack-swing,Mercurial Axe,attack,both,n,slashing;force,,,,2,at-will,
+Oni,7,5-10,multiattack-swing,Claw,attack,melee,n,slashing;necrotic,,,,1,at-will,Claw or Nightmare Ray (split); replace 1 w/spell unmodeled
+Oni,7,5-10,multiattack-swing,Nightmare Ray,attack,ranged,n,psychic,,,frightened,1,at-will,split
+Sahuagin Baron,5,5-10,multiattack-swing,Trident,attack,both,n,piercing,,,,3,at-will,
+Sahuagin Baron,5,5-10,reaction,Fiendish Blood,save,melee,y,acid,CON,negates,,1,at-will,reaction on taking P/S dmg; 5ft emanation; cursed rider
+Spirit Naga,8,5-10,multiattack-swing,Bite,attack,melee,n,piercing;poison,,,,1.5,at-will,Bite or Necrotic Ray any combo (split)
+Spirit Naga,8,5-10,multiattack-swing,Necrotic Ray,attack,ranged,n,necrotic,,,,1.5,at-will,split; 2/Day Lightning Bolt omitted
+Vrock,6,5-10,multiattack-swing,Shred,attack,melee,n,piercing;poison,,,,2,at-will,
+Vrock,6,5-10,action,Spores,save,melee,y,poison,CON,negates,poisoned,1,6,20ft emanation; ongoing poison
+Yochlol,10,5-10,multiattack-swing,Caustic Lash,attack,both,n,acid,,,,2,at-will,+Spellcasting Web/Dominate (no-dmg)
