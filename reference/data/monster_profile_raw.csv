@@ -777,3 +777,32 @@ Wight,3,0-4,multiattack-swing,Necrotic Bow,attack,ranged,n,piercing;necrotic,,,,
 Wight,3,0-4,multiattack-swing,Life Drain,save,melee,n,necrotic,CON,negates,,0.5,at-will,1b at-will alt
 Will-o’-Wisp,2,0-4,multiattack-swing,Shock,attack,melee,n,lightning,,,,1,at-will,
 Zombie,1/4,0-4,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,,1,at-will,
+Blink Dog,1/4,0-4,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,
+Bugbear Stalker,3,0-4,multiattack-swing,Javelin,attack,both,n,piercing,,,,1,at-will,
+Bugbear Stalker,3,0-4,multiattack-swing,Morningstar,attack,melee,n,piercing,,,grappled,1,at-will,
+Bugbear Warrior,1,0-4,multiattack-swing,Grab,attack,melee,n,bludgeoning,,,grappled,1,at-will,
+Bullywug Bog Sage,4,0-4,multiattack-swing,Bog Staff,attack,melee,n,bludgeoning;poison,,,,1,at-will,1b halved (Ray of Sickness at-will)
+Bullywug Bog Sage,4,0-4,action,Ray of Sickness,attack,ranged,n,poison,,,poisoned,0.5,at-will,1b at-will spell alt (SRD)
+Bullywug Bog Sage,4,0-4,action,Vitriolic Sphere (1/Day),save,ranged,y,acid,DEX,half,,1,1/day,2a limited spell (SRD)
+Bullywug Warrior,1/4,0-4,multiattack-swing,Insectile Rapier,attack,melee,n,piercing;poison,,,,1,at-will,
+Centaur Trooper,2,0-4,multiattack-swing,Pike,attack,melee,n,piercing,,,,1,at-will,
+Centaur Trooper,2,0-4,multiattack-swing,Longbow,attack,ranged,n,piercing,,,,1,at-will,
+Centaur Trooper,2,0-4,bonus,Trampling Charge (Recharge 5–6),save,melee,n,bludgeoning,STR,negates,prone,1,5-6,
+Dryad,1,0-4,multiattack-swing,Vine Lash,attack,melee,n,slashing,,,,0.5,at-will,one attack choice split
+Dryad,1,0-4,multiattack-swing,Thorn Burst,attack,ranged,n,piercing,,,,0.5,at-will,one attack choice split
+Goblin Boss,1,0-4,multiattack-swing,Scimitar,attack,melee,n,slashing,,,,1,at-will,
+Goblin Boss,1,0-4,multiattack-swing,Shortbow,attack,ranged,n,piercing,,,,1,at-will,
+Goblin Hexer,3,0-4,multiattack-swing,Hex Stick,attack,both,n,psychic,,,,2,at-will,
+Goblin Minion,1/8,0-4,multiattack-swing,Dagger,attack,both,n,piercing,,,,1,at-will,
+Goblin Warrior,1/4,0-4,multiattack-swing,Scimitar,attack,melee,n,slashing,,,,1,at-will,
+Green Hag,3,0-4,multiattack-swing,Claw,attack,melee,n,slashing;poison,,,,1,at-will,1b halved (Ray of Sickness at-will)
+Green Hag,3,0-4,action,Ray of Sickness,attack,ranged,n,poison,,,poisoned,0.5,at-will,1b at-will spell alt (SRD)
+Hobgoblin Captain,3,0-4,multiattack-swing,Greatsword,attack,melee,n,slashing;poison,,,,1,at-will,
+Hobgoblin Captain,3,0-4,multiattack-swing,Longbow,attack,ranged,n,piercing;poison,,,,1,at-will,
+Hobgoblin Warrior,1/2,0-4,multiattack-swing,Longsword,attack,melee,n,slashing,,,,1,at-will,
+Pixie,1/4,0-4,multiattack-swing,Faerie Dust,attack,both,n,radiant,,,charmed;poisoned,1,at-will,
+Satyr,1/2,0-4,multiattack-swing,Hooves,attack,melee,n,bludgeoning,,,,1,at-will,
+Sea Hag,2,0-4,multiattack-swing,Claw,attack,melee,n,slashing,,,,1,at-will,
+Sea Hag,2,0-4,multiattack-swing,Death Glare (Recharge 5–6),save,melee,n,psychic,WIS,negates,frightened,1,5-6,
+Sprite,1/4,0-4,multiattack-swing,Needle Sword,attack,melee,n,piercing,,,,1,at-will,
+Worg,1/2,0-4,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,
