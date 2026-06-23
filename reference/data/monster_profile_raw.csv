@@ -401,3 +401,16 @@ Sphinx of Secrets,8,5-10,multiattack-swing,Claw,attack,melee,n,slashing;radiant,
 Sphinx of Secrets,8,5-10,action,Curse of the Riddle,save,ranged,n,psychic,INT,negates,,1,at-will,curse rider (disadv; not a std condition)
 Unicorn,5,5-10,multiattack-swing,Hooves,attack,melee,n,bludgeoning,,,,1,at-will,
 Unicorn,5,5-10,multiattack-swing,Radiant Horn,attack,melee,n,radiant,,,,1,at-will,legendary Charging Horn (re-attack) not tagged per ref6
+Beholder Zombie,5,5-10,action,Fear Ray,save,ranged,n,psychic,WIS,negates,frightened,0.5,at-will,Eye Rays x2 from 4-ray menu (split); Bite (alt) + Paralyzing Ray (no-dmg) not tagged
+Beholder Zombie,5,5-10,action,Enervation Ray,save,ranged,n,necrotic,CON,half,poisoned,0.5,at-will,eye-ray menu split
+Beholder Zombie,5,5-10,action,Disintegration Ray,save,ranged,n,force,DEX,half,,0.5,at-will,eye-ray menu split
+Ghast Gravecaller,6,5-10,multiattack-swing,Horrific Necrosis,attack,both,n,necrotic,,,frightened,1,at-will,replace1 attack w/ Claw
+Ghast Gravecaller,6,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,paralyzed,1,at-will,split
+Graveyard Revenant,7,5-10,multiattack-swing,Suffocate,attack,melee,n,bludgeoning;necrotic,,,grappled,2,at-will,Haunting Glare (no-dmg emanation) not tagged
+Haunting Revenant,10,5-10,multiattack-swing,Object Slam,attack,both,n,bludgeoning,,,,2,at-will,Invitation (no-dmg cone) not tagged
+Revenant,5,5-10,multiattack-swing,Slam,attack,melee,n,necrotic,,,,2,at-will,Vengeful Glare (no-dmg) folded in multiattack not tagged
+Vampire Nightbringer,8,5-10,multiattack-swing,Bite,attack,melee,n,piercing;necrotic,,,,1,at-will,HP drain
+Vampire Nightbringer,8,5-10,multiattack-swing,Shadow Strike,attack,melee,n,slashing;cold,,,,1,at-will,
+Vampire Spawn,5,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,grappled,2,at-will,
+Vampire Spawn,5,5-10,action,Bite,save,melee,n,piercing;necrotic,CON,negates,,1,at-will,folded in multiattack; HP drain; needs grappled/willing target
+Wraith,5,5-10,action,Life Drain,attack,melee,n,necrotic,,,,1,at-will,no multiattack; HP drain; Create Specter (summon) not tagged
