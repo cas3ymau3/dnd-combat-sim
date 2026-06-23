@@ -328,3 +328,30 @@ Otyugh,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,poisoned,1,at-wil
 Otyugh,5,5-10,multiattack-swing,Tentacle,attack,melee,n,piercing,,,grappled,2,at-will,
 Red Slaad,5,5-10,multiattack-swing,Injecting Claw,attack,melee,n,piercing,,,,3,at-will,
 Roper,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,2,at-will,Tentacle (no-dmg ranged 60ft grapple+poison) not tagged
+Abominable Yeti,9,5-10,action,Chilling Gaze,save,ranged,n,cold,CON,negates,paralyzed,1,at-will,part of multiattack (gaze + 2 atk)
+Abominable Yeti,9,5-10,multiattack-swing,Claw,attack,melee,n,slashing;cold,,,,1,at-will,Claw or Ice Throw any combo (split)
+Abominable Yeti,9,5-10,multiattack-swing,Ice Throw,attack,ranged,n,bludgeoning;cold,,,,1,at-will,split
+Bulette,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,2,at-will,Deadly Leap (alt action) not tagged
+Chimera,6,5-10,multiattack-swing,Ram,attack,melee,n,bludgeoning,,,prone,1,at-will,
+Chimera,6,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,
+Chimera,6,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,,1,at-will,
+Chimera,6,5-10,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,15ft cone; replaces Claw
+Cockatrice Regent,8,5-10,multiattack-swing,Petrifying Bite,attack,melee,n,piercing,,,petrified,1,at-will,CON save petrification rider
+Cockatrice Regent,8,5-10,multiattack-swing,Talons,attack,melee,n,slashing,,,,2,at-will,
+Drider,6,5-10,multiattack-swing,Foreleg,attack,melee,n,piercing,,,,1.5,at-will,Foreleg or Poison Burst any combo (split)
+Drider,6,5-10,multiattack-swing,Poison Burst,attack,ranged,n,poison,,,,1.5,at-will,split
+Giant Axe Beak,5,5-10,multiattack-swing,Sharpened Beak,attack,melee,n,slashing,,,,1,at-will,5ft splash slashing
+Giant Axe Beak,5,5-10,multiattack-swing,Talons,attack,melee,n,piercing,,,prone,1,at-will,
+Hydra,8,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,5,at-will,one Bite per head (5 heads)
+Medusa,6,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,,1,at-will,mode-split: 2Claw+SnakeHair OR 3 Poison Ray
+Medusa,6,5-10,multiattack-swing,Snake Hair,attack,melee,n,piercing;poison,,,,0.5,at-will,mode-split
+Medusa,6,5-10,multiattack-swing,Poison Ray,attack,ranged,n,poison,,,,1.5,at-will,mode-split; Petrifying Gaze (no-dmg) not tagged
+Primeval Owlbear,7,5-10,multiattack-swing,Ravage,attack,melee,n,slashing,,,,2,at-will,
+Thri-kreen Psion,8,5-10,multiattack-swing,Psionic Lance,attack,both,n,psychic,,,,3,at-will,1/Day Synaptic Static omitted
+Umber Hulk,5,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,3,at-will,Confusing Gaze (no-dmg) not tagged
+Werebear,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,replace1 attack w/ Bite
+Werebear,5,5-10,multiattack-swing,Handaxe,attack,both,n,slashing,,,,0.5,at-will,Handaxe or Rend any combo (split)
+Werebear,5,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,0.5,at-will,split
+Young Remorhaz,5,5-10,action,Bite,attack,melee,n,piercing;fire,,,,1,at-will,"single Bite, no multiattack"
+Yuan-ti Abomination,7,5-10,multiattack-swing,Bite,attack,melee,n,piercing;poison,,,,2,at-will,
+Yuan-ti Abomination,7,5-10,action,Poison Spray,save,ranged,y,poison,CON,half,poisoned,1,5-6,30ft cone; Constrict (alt action) not tagged
