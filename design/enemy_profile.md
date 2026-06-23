@@ -1,9 +1,12 @@
 # Empirical enemy profile — methodology (LOCKED v1) + profile tables
 
-> Status: **METHODOLOGY LOCKED (2026-06-22).** The codebook, CR bands, weighting
-> rule, data layout, and census workflow below are signed off and binding for the
-> census. The **profile tables are IN PROGRESS** — being filled band-by-band as the
-> census runs (pilot = CR 11–16 first; see "Census status" at the bottom). This note
+> Status: **METHODOLOGY LOCKED (2026-06-22). CENSUS COMPLETE (2026-06-23, session 32) —
+> all 510 Monster Manual monsters tagged across all four CR bands (851 action rows).** The
+> codebook, CR bands, weighting rule, data layout, and census workflow below are signed off
+> and binding. See "Census status" at the bottom for per-band headlines. Two follow-ups
+> remain: (1) the v2 refinement-10 cross-band reconciliation (re-tag 11-16/17+/5-10 under the
+> session-32 1b/2a rules); (2) downstream arc step 2 — wire the profile into the enemy policy.
+> This note
 > is the `design/buff_primitive.md`-style design-first contract for the enemy-profile
 > arc (project memory `enemy-profile-empirical-direction`; CLAUDE.md "design-first
 > for cross-cutting primitives").
@@ -278,7 +281,29 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
   limited (1/Day, 2/Day) damage spells omitted as per-round-negligible (Mage Fireball/Cone
   of Cold etc.); native limited AoE statblock actions (Spy Master Smoke Bomb 1/Day) ARE
   tagged at per-use 1 per the weighting rule.
-- **Bands TODO:** 0-4 (303) — only band remaining.
+- **Band DONE: 0-4 (303 monsters)** — tagged 2026-06-23 (session 32). Batched by creature
+  type. **All 14 types tagged:** Beast (84), Monstrosity (41), Fiend (25), Humanoid (24),
+  Undead (21), Fey (19), Aberration (17), Dragon (16), Elemental (16), Construct (12), Plant
+  (12), Celestial (7), Ooze (5), Giant (4). **399 damaging actions, 448.2 instances/round**
+  (full band). Headline: physical 63.1% / elemental 36.9% (LOWEST of all bands — the
+  elemental share climbs monotonically with CR: **0-4 37% < 5-10 44% < 11-16 60% < 17+ 65%**;
+  piercing 29.6% / slashing 20.3% / bludgeoning 13.2% lead); **attack-resolution 87.8%**
+  (save 9.1%, both 2.9%; of saves **CON 47.8% / DEX 31.7%** dominant, WIS 10.2% / STR 6.5% —
+  CON driven by poison/curse/breath saves); reach melee 79.8% / ranged 12.3% / both 7.8%;
+  AoE 6.6%; **zero legendary/lair** (none at this tier); poison immunity 19.1% (then fire 6%),
+  res cold 8% / piercing 7% / fire 6%; small fire/bludgeoning vulnerabilities; condition-imm
+  poisoned 19% / charmed 17% / exhaustion 14% / frightened 13%. 0-4 was the FIRST band tagged
+  under **refinement 10 (1b at-will alternatives + 2a symmetric limited-use)** — see the v2
+  reconciliation TODO above; cross-band elemental/save/AoE shares are not strictly comparable
+  until the higher bands are re-tagged. Tooling: a reusable browser-side auto-tagger (meta-line
+  type/size, defense extractor, multiattack-count + digit-anchored damage parser) handled the
+  bulk; per-monster overrides applied for combination MAs, lycanthrope replacements, 1b
+  alternatives, and the 2a damaging spells (Druid/Mage/Priest/Flameskull/Bone Naga/Bullywug/
+  Green Hag/Aarakocra; SRD spell stats since statblocks list names only).
+- **ALL FOUR BANDS DONE — FULL 510-MONSTER CENSUS COMPLETE (2026-06-23, session 32).**
+  510 monsters / 851 action rows. NEXT (downstream arc step 2): wire the static profile into
+  `BaselineEnemyPolicy`, grounding `enemy_stats.py` `SAVE_TYPE_WEIGHTS` / `SAVE_ROUND_PROB`.
+  Open: the v2 refinement-10 cross-band reconciliation pass (re-tag 11-16/17+/5-10).
 
 ## Codebook refinements surfaced by the pilot (folded into the codebook above)
 

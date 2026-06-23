@@ -90,11 +90,16 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   the allowlist + disabled connectors + remote control are mid-census conveniences; revisit after
   the 0-4 band finishes the whole census arc.)
 - **Permission allowlist** — `.claude/settings.local.json` → `permissions.allow` (GITIGNORED,
-  per-machine, NOT committed). Holds `Bash(git/gh/python/py/pytest *)` + 8 Claude-in-Chrome
-  tools: `computer`/`find`/`form_input` (older) + `javascript_tool`/`navigate`/
-  `select_browser`/`list_connected_browsers` (added s30) + **`tabs_context_mcp` (added s31)** +
+  per-machine, NOT committed). Holds `Bash(git/gh/python/py/pytest *)` + **the FULL (17-tool)
+  Claude-in-Chrome toolset**: `computer`/`find`/`form_input` (older) + `javascript_tool`/`navigate`/
+  `select_browser`/`list_connected_browsers` (added s30) + `tabs_context_mcp` (added s31) +
+  **`browser_batch`/`get_page_text`/`read_page`/`read_network_requests`/`read_console_messages`/
+  `tabs_create_mcp`/`tabs_close_mcp`/`switch_browser`/`resize_window` (added s32)** +
   **10 read-only/data Bash utils `cat`/`echo`/`wc`/`awk`/`grep`/`head`/`tail`/`sort`/`uniq`/`ls`
-  (added s31)**. WHY the s30 Chrome add: browser calls prompted once per step, and **Chrome-MCP
+  (added s31)**. WHY the s32 add (user request mid-census): the remaining Chrome tools don't push
+  their permission prompts to remote control either, so once the user steps away any un-allowlisted
+  browser call would silently block — allowlist the WHOLE Chrome toolset so the scrape never stalls.
+  WHY the s30 Chrome add: browser calls prompted once per step, and **Chrome-MCP
   permission prompts do NOT push to the phone via remote control** (user chained to the desk);
   pre-authorizing removes the prompt. WHY the s31 add (user request — survey all session tools so
   each either runs without auth OR pushes to remote): `tabs_context_mcp` was the last un-allowlisted
@@ -773,6 +778,44 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **EMPIRICAL ENEMY PROFILE — CR 0-4 CENSUS COMPLETE (303/303) → FULL 510-MONSTER CENSUS DONE
+  (2026-06-23, session 32).** Finished the LAST and biggest band; the whole four-band census is
+  complete. DATA + docs only, no engine wiring. Branch `design/enemy-profile-tables` (continued,
+  0 behind main). **510 monsters / 851 action rows total.** All 303 CR 0-4 monsters tagged into
+  the two CSVs, batched + committed by creature type: **Beast (84), Monstrosity (41), Construct/
+  Plant/Ooze/Giant/Celestial (40), Dragon (16), Fiend (25), Humanoid (24), Undead (21), Fey (19),
+  Aberration (17), Elemental (16).** No code touched (data + docs + the existing aggregator), so
+  per `full-suite-foreground-only` the suite was SKIPPED; aggregator re-run clean after every
+  batch; final integrity verified (303/303 in band, 510 total, no dup names, all monster rows
+  13-field / new raw rows 15-field).
+  - **Adopted codebook refinement 10 up front (user-confirmed):** (1b) at-will damaging
+    spell/AoE alternatives to a multiattack → 50/50 mix (alt ×0.5 + multiattack swings ×0.5),
+    superseding the old OMIT rule; (2a) limited-use (1/Day, 2/Day) damaging abilities → per-use
+    1 like a breath weapon, symmetric across spell-list spells and statblock actions. See
+    `design/enemy_profile.md` refinement 10 + the **v2 CROSS-BAND RECONCILIATION TODO** (11-16/
+    17+/5-10 were tagged under the OLD rules — must be re-tagged for apples-to-apples).
+  - **Band headline:** physical 63.1% / elemental 36.9% (lowest band — elemental climbs
+    monotonically with CR: 0-4 37% < 5-10 44% < 11-16 60% < 17+ 65%); attack 87.8% / save 9.1%
+    (CON 47.8 / DEX 31.7 dominant); AoE 6.6%; zero legendary/lair; poison immunity 19%.
+  - **Tooling built this session:** a reusable browser-side auto-tagger (meta-line type/size
+    parser that correctly handles "Giant X" beasts + 2024 re-typings + swarms; defense extractor
+    reading the line after each Immunities/Resistances header; offense parser with multiattack-
+    count resolution, digit-anchored damage matching, save/reach/aoe/rider detection). Pulled
+    CSV out via array returns to bypass the ~1450-char string cap. Per-monster overrides applied
+    by hand for combination MAs, lycanthrope replacements, 1b alternatives, eye-ray menus, and 2a
+    damaging spells (SRD stats, since statblocks list spell names only).
+  - **Config (session 32):** allowlisted the FULL Claude-in-Chrome toolset (incl. `browser:*`
+    action-name permissions, which is what the prompts key on — the `mcp__…` names weren't
+    matching), so the scrape never stalls under remote control. CONFIG LEDGER reviewed → user
+    KEEP ALL; marker bumped to s32.
+  - **Per-feature reflection:** PENDING (ask at close-out — methodology re-applied + refinement
+    10 first live use; the v2 reconciliation is the main open process item).
+  - **NEXT (downstream arc step 2):** wire the static profile into `BaselineEnemyPolicy` —
+    damage-type + save-type variety + enemy res/imm checks vs the character's damage — grounding
+    the `enemy_stats.py` `SAVE_TYPE_WEIGHTS` / `SAVE_ROUND_PROB` placeholders (every band shows
+    real CON≫, WIS≪). Validate as a MECHANISM. The v2 refinement-10 reconciliation can land
+    before or alongside the wiring.
 
 - **EMPIRICAL ENEMY PROFILE — CR 5-10 CENSUS COMPLETE (126/126) (2026-06-23, session 31).**
   Finished the third band of the census (`design/enemy_profile.md` arc); DATA only, no engine
