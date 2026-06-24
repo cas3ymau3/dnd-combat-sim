@@ -118,9 +118,12 @@ of the way at the top tier.
 
 ## 4. The grounded per-band knobs (the actionable payload for wiring)
 
-From the complete census (`python -m src.builds.monster_profile`). These are the
-values the wiring session installs; they will live in the frozen band table
-(§8), not be hand-typed into code.
+> **SOURCE OF TRUTH = the aggregator**, `python -m src.builds.monster_profile`
+> (→ frozen `monster_profile_by_band.csv`, §8). The numbers below are an
+> **illustrative snapshot** to convey the shape; do NOT treat them as canonical
+> or hand-type them into code — read them from the frozen table at wiring time,
+> and regenerate after the v2 reconciliation (§10). They will shift slightly when
+> the higher bands are re-tagged.
 
 | knob | 0-4 | 5-10 | 11-16 | 17+ |
 |---|---|---|---|---|
@@ -160,19 +163,14 @@ vulnerable → ×2 (gain 1.0); `P_*` are the band prevalences. This is literally
 "the fraction of your type-`t` damage that lands against the representative
 enemy" — the **defensive denominator on offense** the model has been missing.
 
-Worked example — **fire** by band: `mult = 1 − 0.5·res − imm + vuln`:
-
-| band | resist | immune | vuln | **fire mult** |
-|---|---|---|---|---|
-| 0-4 | 6.3% | 5.9% | 2.3% | **0.93** |
-| 5-10 | 14.3% | 9.5% | 0.8% | **0.84** |
-| 11-16 | 10.9% | 17.4% | 2.2% | **0.79** |
-| 17+ | 20.0% | 25.7% | 0% | **0.64** |
-
-A fire build keeps ~93% of its damage at low tiers but loses ~36% by CR 17+.
-That is the kind of priced-by-the-population number this model produces; the same
-table exists for every damage type (e.g. **poison** is brutal — 19/28/26/40%
-immune across bands — and **physical** is lightly resisted at the top tiers).
+Worked example — **fire** by band (illustrative snapshot; the live `P_*`
+prevalences come from the aggregator / frozen band table, §8): `mult = 1 −
+0.5·res − imm + vuln` yields roughly **0.93 / 0.84 / 0.79 / 0.64** across
+`0-4 / 5-10 / 11-16 / 17+` — a fire build keeps ~93% of its damage at low tiers
+but loses ~36% by CR 17+. The same multiplier exists for every damage type
+(e.g. **poison** is brutal — immune ~19/28/26/40% across bands — and **physical**
+is lightly resisted only at the top tiers). The policy computes `mult(t)` from
+the table's prevalences at runtime; it is not a hand-entered constant.
 
 **Condition-riders** are priced the same way: a rider imposing condition `c` is
 worth `1 − P_cond_immune(c)` of its nominal effect (e.g. frightened vs 17+:
