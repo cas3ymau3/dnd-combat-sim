@@ -2761,7 +2761,67 @@ Engine prerequisites, in the order we built them:
 - ~~Advantage/disadvantage + statuses + weapon mastery (sap/vex)~~ ✓  — `StatusSet`,
   `roll_d20`, sap/vex applied on hit and consumed on the holder's next roll.
 
-### NEXT STEP — NEW PHASE: declarative ability layer (War Angel validation CONCLUDED at L16)
+### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24)
+
+The project has two tracks. **Track 1 (current focus): "make the model produce
+honest, complete build evaluations"** — the enemy-profile arc through to a real
+end-to-end eval. **Track 2 (after): "prove the declarative-data thesis + add
+archetype breadth"** — the declarative ability layer + the Starfire Scion second
+build (the detailed plan is preserved below under "TRACK 2"). The enemy design
+contract is `design/enemy_model.md`; the per-step IDs (#1–#8) and dependency
+analysis are in the session-33 discussion.
+
+**Track 1 sequence (locked with the user, s33). Rationale: do ALL empirical /
+Chrome-dependent data work FIRST — so (a) the user can then reset the allowlist +
+turn off the expensive connectors for usage efficiency, and (b) #1 wires against
+FINAL data (no re-freeze / re-wire after the data changes underneath it).**
+
+1. **#3a — control-save CODEBOOK DESIGN** (a `design-first-for-cross-cutting-
+   primitives` mini-pass, like the damaging census got). Define: what counts as a
+   control ability, the HARD (turn-wasting) vs SOFT (output-reducing) taxonomy,
+   which save it keys on, the weighting. Streamlines the scrape. **Decision (user):
+   we WILL do the full control census — but design the codebook first to make it
+   efficient.** (Feeds the control-save channel in `design/enemy_model.md` §6,
+   replacing its designer prior with empirical data.)
+2. **#3b — full control-save CENSUS** + **#2 — v2 refinement-10 cross-band
+   reconciliation** (~30–45 monsters in 11-16/17+/5-10). BATCH these — both are the
+   last Chrome-dependent work. **After this step: tear down the Chrome connector +
+   reset the per-machine allowlist** (the CONFIG LEDGER tweaks were mid-census
+   conveniences). Everything after is pure Python.
+3. **Metrics DESIGN (before #1, substantive — not just a thin sketch).** Informed
+   by what #2/#3 reveal the enemy can emit: define the STRUCTURED TELEMETRY SEAM +
+   the emittable quantities (control uptime, typed-damage mitigated, save-fail
+   rates by type, lost-turn rate, …). Purpose: #1 emits through ONE structured
+   channel instead of the project's monkeypatch-telemetry habit (the slot audit /
+   parry budget / concentration count are evidence that debt is real). **NOTE: this
+   design + the #4 design pause are ONE effort with two checkpoints** — substantial
+   design here (seam + emittable set), lighter finalization before #4 (cross-build
+   reporting *principles*, once #1 produces real data). Decide at the #4 checkpoint
+   whether #4 still needs a full pause or just becomes build-out.
+4. **#1 — WIRE the enemy model into `BaselineEnemyPolicy`** (`design/enemy_model.md`
+   §12 step 3): freeze the (reconciled) `monster_profile_by_band.csv` + in-sync
+   test; ground `SAVE_ROUND_PROB` / `SAVE_TYPE_WEIGHTS` (the latter a CORRECTION —
+   data says CON/DEX dominate, WIS≈0); add the `mult(t)` fractional defense
+   multiplier + force-damage mode; add the control-save channel; wire the toggles
+   (all default OFF/neutral so no baseline drift). Emit through the step-3 seam.
+   Validate as a MECHANISM ([[validate-mechanism-not-build-value]]).
+5. **Pause/design → #4 — outputs / reporting layer** (design.md §8): the DPR-by-
+   level curve + defensive summary + the 4×4 baseline comparison + per-build metric
+   generation. Likely lighter given step 3; confirm scope at the checkpoint.
+6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
+   (closest-to-complete), offense + profile-driven defense + control resilience, vs
+   the 4×4 baseline.
+7. **THEN Track 2.** WATCH-ITEM: Track 2 carries the project's #1 architectural bet
+   (declarative ability layer / "adding an ability = data") — it stays unproven at
+   breadth until the Starfire Scion lands, so "last" must not drift to "never."
+
+---
+
+### TRACK 2 (LATER) — declarative ability layer + Starfire Scion (War Angel validation CONCLUDED at L16)
+
+> **Re-prioritized to Track 2 (session 33):** this was the prior "NEXT MAJOR
+> FOCUS" but is now sequenced AFTER the Track 1 enemy/outputs/eval work above.
+> Content preserved as-is — it is the binding plan for when Track 2 begins.
 
 **War Angel validation is deliberately CONCLUDED at L16 (not abandoned — it did
 its job).** Phases A–E (L1–16) are done & validated; the engine-primitive

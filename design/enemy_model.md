@@ -238,15 +238,18 @@ failures → fewer lost turns → higher *effective* DPR. A build that buys
 "can't be charmed" or Aura-of-Protection now shows a measurable resilience gain;
 without §6 it showed none.
 
-**Data sourcing — designer prior now, optional census later (HONEST about this).**
-The census deliberately skipped pure-control actions, so the control channel's
-frequencies/weights/severity-split are a **designer prior** (the hierarchy above
-+ the mental→hard / physical→soft lean), tunable as toggles (§7) and explicitly
-flagged as NOT empirical. The empirical path, if we want it, is a **bounded
-supplementary control-save census**: tag each monster's control save-forcing
-abilities (save type + condition + hard/soft), mirroring the damaging census.
-Roadmap item (§10), not required to wire the channel — the prior makes the
-mechanism work; the census would only refine its numbers.
+**Data sourcing — PLANNED empirical census, ahead of wiring (decided s33).**
+The damaging census deliberately skipped pure-control actions, so the control
+channel's frequencies/weights/severity-split begin as a **designer prior** (the
+hierarchy above + the mental→hard / physical→soft lean), tunable as toggles (§7).
+**Decision (s33 roadmap): we WILL run a full supplementary control-save census
+BEFORE the wiring** — preceded by its own codebook-design pass (taxonomy,
+hard/soft classification, save keying, weighting; a
+`design-first-for-cross-cutting-primitives` mini-effort like the damaging
+census). So the channel wires against EMPIRICAL data, not the prior; the prior is
+the interim/fallback only if the census is later descoped. The census tags each
+monster's control save-forcing abilities (save type + condition + hard/soft),
+mirroring the damaging census. See PROGRESS NEXT-STEP Track 1 steps #3a/#3b.
 
 **Coupling to §5/§9.** The SOFT branch (restrained/prone/blinded) also makes the
 character easier to *hit* (attacks against it at advantage) — so the control
@@ -369,9 +372,10 @@ later arc.
   documented; reconcile as a separable data pass** (re-freeze the band table after).
   Until it lands, cross-band comparisons of elemental/AoE/save shares read slightly
   high for 0-4 purely from the rule change.
-- **Supplementary control-save census** (§6) — optional empirical grounding for the
-  control channel's prior. Bounded data task (tag control abilities: save type +
-  condition + hard/soft). Prior is sufficient to wire; census refines its numbers.
+- **Supplementary control-save census** (§6) — PLANNED (s33), preceded by a
+  control codebook-design pass, run BEFORE the wiring so the control channel uses
+  empirical data rather than the designer prior. Bounded data task (tag control
+  abilities: save type + condition + hard/soft). See PROGRESS Track 1 #3a/#3b.
 - **`both`-resolution riders** (attack-then-save): folded into attack rounds, not
   the binary damaging-save round, in v1 (§4 note). A refinement would let an attack
   round *also* force a save (modeling e.g. poison-on-bite) — defer until a build's
