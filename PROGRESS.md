@@ -779,6 +779,46 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 
 ## Done
 
+- **ENEMY-MODEL DESIGN CONTRACT — `design/enemy_model.md` (2026-06-24, session 33).** Design+planning
+  session (NOT code, per user scope call) deciding HOW the generalized enemy operates in combat,
+  grounded in the complete census. Branch `design/enemy-model` (off main). DOCS ONLY → suite SKIPPED
+  per `full-suite-foreground-only`. The note is the `design/buff_primitive.md`-style design-first
+  contract; companion to `design/enemy_profile.md` (the data) + `design.md` §8 (the outputs).
+  - **Decisions LOCKED (user-approved s33; don't re-litigate):** (1) enemy = INSTRUMENT not opponent
+    (representative average enemy of the char's CR band; representativeness/reproducibility/
+    interpretability beat realism). (2) Two-axis representation — MAGNITUDES per-level
+    (`monster_stats_by_level.csv`, unchanged) + qualitative MIX per-band (census); level→band picks
+    mix, level picks magnitudes; census stays instance-weighted (retires damage-weighting for the
+    policy). (3) **BLEND-ONLY** offense (user call) — the enemy IS the mean-field average monster, no
+    per-monster sampling mode; the key move = mean-field turns binary resistance into a CONTINUOUS
+    multiplier. (4) Defense pricing = `mult(t)=1−0.5·P_res−P_imm+P_vuln` on the CHARACTER's outgoing
+    damage (fire ≈ 0.93/0.84/0.79/0.64 by band), riders `1−P_cond_imm`; reuses substrate #4 with a
+    fractional twist. (5) **FORCE-DAMAGE mode** (user-added) — all incoming enemy damage→force,
+    isolating flat/untyped mitigation from typed resistances. (6) **CONTROL-SAVE CHANNEL** (user-added)
+    — a 2nd independent save channel for incapacitation pressure the DAMAGING census can't see (pure
+    control = no damage = untagged, so the census save weights are honestly CON/DEX-dominant, WIS≈0);
+    char rolls its REAL save vs the per-level DC, fail → HARD control (turn wasted, output→0) or SOFT
+    (output×factor), severity skewed mental→hard / physical→soft; prices mental-save investment the
+    damaging weights value at zero; DESIGNER PRIOR now (DEX≈WIS>CON>INT≈CHA≈STR), optional supplementary
+    control census later. (7) Consolidated dataset = 3 live tables (keep `monster_stats_by_level.csv`;
+    NEW frozen `monster_profile_by_band.csv` = aggregator output, in-sync-tested like
+    `enemy_stats.regenerate()`, what the policy reads; keep raw census CSVs as source; RETIRE
+    `monster_ac_and_saves_by_level.csv` to provenance). (8) Toggles (all default OFF/neutral so nothing
+    silently moves baselines). (9) Movement connects to census reach (kiting stub); targeting is a
+    tactical-prior layer that does NOT fall out of typing data.
+  - **Correction surfaced:** the live `enemy_stats.py` placeholder `SAVE_TYPE_WEIGHTS` (DEX=WIS>STR>CON)
+    is WRONG vs the data — CON/DEX dominate as DAMAGING saves; WIS is near-zero (its effects are pure
+    control). Grounding the weights is a correction, and mental-save importance now lives in the new
+    control channel, not the damaging weights.
+  - **Per-feature reflection:** done in-session (design, not a new rules mechanic — the "verify rules
+    text" half N/A). Process note raised to user: the design doc duplicates per-band knob numbers that
+    will also live in the frozen band CSV + aggregator (staleness risk) — left as the user's call on
+    whether to cite the aggregator as source-of-truth and carry fewer hard numbers.
+  - **NEXT (downstream arc step 3): WIRE the design into `BaselineEnemyPolicy`** — freeze the band
+    table, ground SAVE_ROUND_PROB/SAVE_TYPE_WEIGHTS, add the `mult(t)` defense multiplier + force-mode
+    + the control channel + the toggles; validate as a MECHANISM. The v2 refinement-10 cross-band
+    reconciliation (~30-45 monsters) can land before/alongside (policy code is identical either way).
+
 - **EMPIRICAL ENEMY PROFILE — CR 0-4 CENSUS COMPLETE (303/303) → FULL 510-MONSTER CENSUS DONE
   (2026-06-23, session 32).** Finished the LAST and biggest band; the whole four-band census is
   complete. DATA + docs only, no engine wiring. Branch `design/enemy-profile-tables` (continued,
