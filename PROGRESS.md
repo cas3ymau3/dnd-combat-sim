@@ -157,7 +157,25 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > before/after each band). **Per-feature reflection DONE** (DDB-index≠census-set workflow lesson;
 > the `git+files=real save` truncation near-miss; refinement-10 1b bluntness). **EMPIRICAL/CHROME
 > ARC CLOSED:** allowlist reset to baseline + Chrome turned OFF + CONFIG LEDGER bumped (see above).
-> **NEXT (pure Python): the substantive METRICS DESIGN (Track 1 step 3), THEN #1 wiring
+> **s36 FOLLOW-UP (same session, pure-Python analysis on the frozen tables, no Chrome):** captured two
+> facets the user asked about. (1) **Monster SIZE distribution per band** — now surfaced by the
+> aggregator (`band_profile()["size_distribution"]`), preserved RAW/uninterpreted (source = the `size`
+> column of `monster_profile_monsters.csv`); strongly CR-dependent (17+ ≈ 49% Gargantuan), relevant
+> later to size-gated mechanics (grapple/shove/forced movement) — turning it into a knob is DEFERRED.
+> (2) **Three-prong action mix** (attack-for-damage / save-for-damage / control-save) — new
+> `resolution_three_way(harmonized=)` + `print_three_way()` combine the damaging + control censuses.
+> The control census is already cadence-discounted at source, so the HARMONIZED table re-weights the
+> damaging rows onto the same basis (the apples-to-apples version to build the enemy decision tree on):
+> atk/save-dmg/control = 0-4 83/5/12, 5-10 78/9/13, 11-16 69/17/14, 17+ 61/24/16 — **control sits a
+> steady ~12-16% across all tiers.** Documented in `enemy_model.md` §4a (+ refreshed §4 to final
+> post-reconciliation numbers). **DEFERRED to the metrics-design + wiring discussion (user-agreed):**
+> the three prongs are NOT disjoint — ~24-44% of control rows (by band) are damage-coupled control
+> (the `also_damages` flag), double-counting between the save-dmg and control prongs; resolving the
+> structure of the enemy action decision tree (4th "damage+control" branch vs split the weight) is part
+> of formalizing enemy behavior, NOT a data fix. **525 tests green** (aggregator is analysis tooling;
+> CODE changed → suite run per [[full-suite-foreground-only]]). Branch `analysis/size-and-cadence-capture`.
+> **NEXT (pure Python): the substantive METRICS DESIGN (Track 1 step 3) — which now explicitly INCLUDES
+> settling the 3-prong overlap + the enemy action decision-tree structure — THEN #1 wiring
 > (`enemy_model.md` §12 step 3) against the now-FINAL band tables.**
 >
 > **Session scope (2026-06-25, session 35) — DONE (#3b CONTROL-SAVE CENSUS — all four
@@ -2925,7 +2943,12 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    design + the #4 design pause are ONE effort with two checkpoints** — substantial
    design here (seam + emittable set), lighter finalization before #4 (cross-build
    reporting *principles*, once #1 produces real data). Decide at the #4 checkpoint
-   whether #4 still needs a full pause or just becomes build-out.
+   whether #4 still needs a full pause or just becomes build-out. **ALSO settle here
+   (folded in s36):** the **enemy action decision-tree structure** — the three-prong
+   attack-dmg / save-dmg / control-save mix is grounded (`enemy_model.md` §4a,
+   HARMONIZED table), but the prongs OVERLAP (damage-coupled control ≈ 24-44% of
+   control rows), so the tree's branch structure (4th combined branch vs split
+   weight) must be decided before §6 wiring consumes it.
 4. **#1 — WIRE the enemy model into `BaselineEnemyPolicy`** (`design/enemy_model.md`
    §12 step 3): freeze the (reconciled) `monster_profile_by_band.csv` + in-sync
    test; ground `SAVE_ROUND_PROB` / `SAVE_TYPE_WEIGHTS` (the latter a CORRECTION —

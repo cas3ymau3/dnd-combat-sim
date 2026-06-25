@@ -27,6 +27,7 @@ from pathlib import Path
 _DATA = Path(__file__).resolve().parents[2] / "reference" / "data"
 _RAW = _DATA / "monster_profile_raw.csv"
 _MON = _DATA / "monster_profile_monsters.csv"
+_CONTROL = _DATA / "monster_profile_control.csv"
 
 BANDS = ("0-4", "5-10", "11-16", "17+")
 PHYSICAL = {"bludgeoning", "piercing", "slashing"}
@@ -35,10 +36,31 @@ DAMAGE_TYPES = (
     "piercing", "poison", "psychic", "radiant", "slashing", "thunder",
 )
 SAVE_ABILITIES = ("STR", "DEX", "CON", "INT", "WIS", "CHA")
+SIZES = ("Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan")
 
 
 def _split(field: str) -> list[str]:
     return [x.strip() for x in (field or "").split(";") if x.strip()]
+
+
+def _wnum(s: str) -> float:
+    try:
+        return float(s or 0)
+    except ValueError:
+        return 0.0
+
+
+def cadence_factor(recharge: str) -> float:
+    """The control census's cadence discount (at-will 1.0 / recharge 0.5 / limited
+    0.25), exposed so the DAMAGING census (which counts every use at full) can be
+    re-weighted onto the same basis. ``recharge`` is the raw CSV value: ``at-will``,
+    a recharge range (``5-6``/``4-6``/``6``/``recharge``), or ``N/day``."""
+    r = (recharge or "").strip().lower()
+    if r in ("", "at-will"):
+        return 1.0
+    if "/day" in r:
+        return 0.25
+    return 0.5  # any recharge band
 
 
 def _load_rows(path: Path) -> list[dict]:
@@ -132,6 +154,13 @@ def band_profile(band: str, actions: list[dict], monsters: list[dict]) -> dict:
         for c in _split(m["condition_immunities"]):
             cond_prev[c] += 1
 
+    # 10. size distribution (per monster, % of band) — preserved raw, NOT interpreted.
+    # Strongly CR-dependent; relevant later to size-gated mechanics (grapple/shove/forced
+    # movement). The per-monster `size` source stays in monster_profile_monsters.csv.
+    size_counts: dict[str, int] = defaultdict(int)
+    for m in mons:
+        size_counts[m["size"]] += 1
+
     return {
         "band": band,
         "n_monsters": n_mon,
@@ -156,6 +185,7 @@ def band_profile(band: str, actions: list[dict], monsters: list[dict]) -> dict:
         "immunity_prevalence": {k: _pct(v, n_mon) for k, v in sorted(imm_prev.items(), key=lambda kv: -kv[1])},
         "vulnerability_prevalence": {k: _pct(v, n_mon) for k, v in sorted(vul_prev.items(), key=lambda kv: -kv[1])},
         "condition_immunity_prevalence": {k: _pct(v, n_mon) for k, v in sorted(cond_prev.items(), key=lambda kv: -kv[1])},
+        "size_distribution": {s: _pct(size_counts[s], n_mon) for s in SIZES if size_counts[s]},
     }
 
 
@@ -187,7 +217,68 @@ def print_profiles() -> None:
         print(f"  Damage IMMUNITY prevalence    : {_fmt_dist(p['immunity_prevalence'])}")
         print(f"  Damage VULNERABILITY prevalence: {_fmt_dist(p['vulnerability_prevalence'])}")
         print(f"  CONDITION-IMMUNITY prevalence  : {_fmt_dist(p['condition_immunity_prevalence'])}")
+        print(f"  SIZE distribution             : {_fmt_dist(p['size_distribution'])}")
+
+
+def resolution_three_way(harmonized: bool = False) -> dict[str, dict]:
+    """Per-band three-prong enemy-action mix — **attack-for-damage / save-for-damage /
+    control-save** — combining the damaging census (``resolution`` field) with the
+    control census (``monster_profile_control.csv``). Reported both as expected
+    instances/round for the average band-monster and as shares.
+
+    Weighting bases (the control census is ALREADY cadence-discounted at source —
+    at-will 1.0 / recharge 0.5 / limited 0.25 — so it is used as stored in BOTH modes):
+      - ``harmonized=False`` (raw): damaging rows at full weight. This MISMATCHES the
+        control side (the damaging census never discounts recharge/limited uses), so
+        the damage prongs are mildly inflated and the control share reads as a floor.
+      - ``harmonized=True``: apply ``cadence_factor`` to the damaging rows too, putting
+        both censuses on the same cadence-discounted basis. This is the apples-to-apples
+        table.
+
+    CAVEAT — the prongs are NOT disjoint (deferred to the enemy-behavior formalization /
+    metrics-design + wiring discussion): a damage-coupled control ability (Mind Blast =
+    save-for-damage AND stun) is counted in BOTH the save-for-damage and control prongs
+    (the control CSV's ``also_damages`` flag marks these). See design/enemy_model.md.
+    """
+    actions, monsters = load()
+    control = _load_rows(_CONTROL)
+    nmon = {b: sum(1 for m in monsters if m["cr_band"] == b) for b in BANDS}
+    out: dict[str, dict] = {}
+    for b in BANDS:
+        if not nmon[b]:
+            continue
+        atk = save = 0.0
+        for r in actions:
+            if r["cr_band"] != b:
+                continue
+            w = _wnum(r["instances_per_round"]) * (cadence_factor(r["recharge"]) if harmonized else 1.0)
+            if r["resolution"] == "save":
+                save += w
+            else:  # attack / both / auto — the non-pure-save (has-attack-or-auto) prong
+                atk += w
+        ctl = sum(_wnum(r["instances_per_round"]) for r in control if r["cr_band"] == b)
+        tot = atk + save + ctl
+        out[b] = {
+            "atk_dmg_per_mon": round(atk / nmon[b], 2),
+            "save_dmg_per_mon": round(save / nmon[b], 2),
+            "control_per_mon": round(ctl / nmon[b], 2),
+            "share_atk_dmg": _pct(atk, tot),
+            "share_save_dmg": _pct(save, tot),
+            "share_control": _pct(ctl, tot),
+        }
+    return out
+
+
+def print_three_way() -> None:
+    for label, harm in (("RAW (damaging census NOT cadence-discounted — control share is a floor)", False),
+                        ("HARMONIZED (both censuses cadence-discounted — apples-to-apples)", True)):
+        print(f"\n{'-'*72}\nTHREE-PRONG ACTION MIX — {label}\n{'-'*72}")
+        print(f"  {'band':<7}{'atk-dmg/rd':>11}{'save-dmg/rd':>12}{'ctrl/rd':>9}   share (atk / save-dmg / control)")
+        for b, d in resolution_three_way(harmonized=harm).items():
+            print(f"  {b:<7}{d['atk_dmg_per_mon']:>11}{d['save_dmg_per_mon']:>12}{d['control_per_mon']:>9}   "
+                  f"{d['share_atk_dmg']:>4.0f}% / {d['share_save_dmg']:>4.0f}% / {d['share_control']:>4.0f}%")
 
 
 if __name__ == "__main__":
     print_profiles()
+    print_three_way()
