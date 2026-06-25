@@ -264,7 +264,10 @@ Gnoll Demoniac,8,5-10,action,Hunger of Yeenoghu,save,ranged,y,necrotic,DEX,negat
 Hezrou,8,5-10,multiattack-swing,Rend,attack,melee,n,slashing;poison,,,,3,at-will,
 Mezzoloth,5,5-10,multiattack-swing,Claws,attack,melee,n,slashing,,,grappled;restrained,1,at-will,Claws or Trident any combo (split)
 Mezzoloth,5,5-10,multiattack-swing,Mercurial Trident,attack,both,n,piercing;force,,,,1,at-will,split
-Night Hag,5,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,,2,at-will,at-will Magic Missile L4 (auto force) alt NOT modeled
+Mezzoloth,5,5-10,action,Cloudkill (1/Day),save,ranged,y,poison,CON,half,,1,1/day,2a limited spell (SRD)
+Night Hag,5,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,,1,at-will,at-will Magic Missile L4 (auto force) alt NOT modeled
+Night Hag,5,5-10,action,Magic Missile (at-will),auto,ranged,n,force,,,,0.5,at-will,1b at-will spell alt (auto-hit; SRD)
+Night Hag,5,5-10,action,Phantasmal Killer (2/Day),save,ranged,n,psychic,WIS,negates,frightened,1,2/day,2a limited spell (single-target; SRD)
 Nycaloth,9,5-10,multiattack-swing,Mercurial Axe,attack,both,n,slashing;force,,,,2,at-will,
 Oni,7,5-10,multiattack-swing,Claw,attack,melee,n,slashing;necrotic,,,,1,at-will,Claw or Nightmare Ray (split); replace 1 w/spell unmodeled
 Oni,7,5-10,multiattack-swing,Nightmare Ray,attack,ranged,n,psychic,,,frightened,1,at-will,split
@@ -272,12 +275,14 @@ Sahuagin Baron,5,5-10,multiattack-swing,Trident,attack,both,n,piercing,,,,3,at-w
 Sahuagin Baron,5,5-10,reaction,Fiendish Blood,save,melee,y,acid,CON,negates,,1,at-will,reaction on taking P/S dmg; 5ft emanation; cursed rider
 Spirit Naga,8,5-10,multiattack-swing,Bite,attack,melee,n,piercing;poison,,,,1.5,at-will,Bite or Necrotic Ray any combo (split)
 Spirit Naga,8,5-10,multiattack-swing,Necrotic Ray,attack,ranged,n,necrotic,,,,1.5,at-will,split; 2/Day Lightning Bolt omitted
+Spirit Naga,8,5-10,action,Lightning Bolt (2/Day L4),save,ranged,y,lightning,DEX,half,,1,2/day,2a limited spell (SRD)
 Vrock,6,5-10,multiattack-swing,Shred,attack,melee,n,piercing;poison,,,,2,at-will,
 Vrock,6,5-10,action,Spores,save,melee,y,poison,CON,negates,poisoned,1,6,20ft emanation; ongoing poison
 Yochlol,10,5-10,multiattack-swing,Caustic Lash,attack,both,n,acid,,,,2,at-will,+Spellcasting Web/Dominate (no-dmg)
 Air Elemental,5,5-10,multiattack-swing,Thunderous Slam,attack,melee,n,thunder,,,,2,at-will,
 Air Elemental,5,5-10,action,Whirlwind,save,melee,n,thunder,STR,half,prone,1,4-6,single target in space
 Azer Pyromancer,6,5-10,multiattack-swing,Flame Burst,attack,both,n,fire,,,,2,at-will,1/Day Fireball + Hellish Rebuke 2/Day omitted
+Azer Pyromancer,6,5-10,action,Fireball (1/Day),save,ranged,y,fire,DEX,half,,1,1/day,2a limited spell (SRD)
 Cloud Giant,9,5-10,multiattack-swing,Thunderous Mace,attack,melee,n,bludgeoning;thunder,,,,1,at-will,Mace or Thundercloud any combo (split); replace1 spell unmodeled
 Cloud Giant,9,5-10,multiattack-swing,Thundercloud,attack,ranged,n,thunder,,,incapacitated,1,at-will,split
 Cyclops Oracle,10,5-10,multiattack-swing,Radiant Strike,attack,melee,n,radiant,,,,1.5,at-will,Radiant Strike or Flash of Light any combo (split)
@@ -314,14 +319,19 @@ Blue Slaad,7,5-10,multiattack-swing,Mutating Claw,attack,melee,n,slashing;poison
 Cloaker,8,5-10,multiattack-swing,Attach,attack,melee,n,piercing,,,blinded,1,at-will,
 Cloaker,8,5-10,multiattack-swing,Tail,attack,melee,n,slashing,,,,2,at-will,
 Death Slaad,10,5-10,multiattack-swing,Chaos Blade,attack,melee,n,slashing;necrotic,,,,2,at-will,spellcasting (limited) omitted
+Death Slaad,10,5-10,action,Blight (1/Day L8),save,ranged,n,necrotic,CON,half,,1,1/day,2a limited spell (single-target; SRD)
+Death Slaad,10,5-10,action,Cloudkill (1/Day L6),save,ranged,y,poison,CON,half,,1,1/day,2a limited spell (SRD)
 Githyanki Knight,8,5-10,multiattack-swing,Silver Sword,attack,melee,n,slashing;psychic,,,,3,at-will,replace1 w/ Telekinesis unmodeled
 Githzerai Zerth,6,5-10,multiattack-swing,Psi Strike,attack,melee,n,bludgeoning;psychic,,,,2,at-will,1/Day spells omitted
 Gray Slaad,9,5-10,multiattack-swing,Chaos Claw,attack,melee,n,slashing;necrotic,,,,2,at-will,spellcasting (limited) omitted
+Gray Slaad,9,5-10,action,Cloudkill (1/Day),save,ranged,y,poison,CON,half,,1,1/day,2a limited spell (SRD)
 Green Slaad,8,5-10,multiattack-swing,Chaos Staff,attack,both,n,force,,,,3,at-will,spellcasting (limited) omitted
+Green Slaad,8,5-10,action,Fireball (1/Day),save,ranged,y,fire,DEX,half,,1,1/day,2a limited spell (SRD)
 Grick Ancient,7,5-10,multiattack-swing,Beak,attack,melee,n,piercing,,,,1,at-will,
 Grick Ancient,7,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,prone,1,at-will,
 Grick Ancient,7,5-10,multiattack-swing,Tentacles,attack,melee,n,slashing,,,,1,at-will,
 Kuo-toa Archpriest,6,5-10,multiattack-swing,Strange Scepter,attack,both,n,lightning,,,,3,at-will,1/Day Destructive Wave omitted
+Kuo-toa Archpriest,6,5-10,action,Destructive Wave (1/Day),save,melee,y,thunder;radiant,CON,half,,1,1/day,2a limited spell (self-emanation; SRD)
 Mind Flayer,7,5-10,action,Tentacles,attack,melee,n,psychic,,,grappled;stunned,1,at-will,no multiattack (1 action/round); Extract Brain finisher not tagged
 Mind Flayer,7,5-10,action,Mind Blast,save,ranged,y,psychic,INT,half,stunned,1,5-6,60ft cone signature AoE
 Otyugh,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,poisoned,1,at-will,
@@ -348,6 +358,7 @@ Medusa,6,5-10,multiattack-swing,Snake Hair,attack,melee,n,piercing;poison,,,,0.5
 Medusa,6,5-10,multiattack-swing,Poison Ray,attack,ranged,n,poison,,,,1.5,at-will,mode-split; Petrifying Gaze (no-dmg) not tagged
 Primeval Owlbear,7,5-10,multiattack-swing,Ravage,attack,melee,n,slashing,,,,2,at-will,
 Thri-kreen Psion,8,5-10,multiattack-swing,Psionic Lance,attack,both,n,psychic,,,,3,at-will,1/Day Synaptic Static omitted
+Thri-kreen Psion,8,5-10,action,Synaptic Static (1/Day),save,ranged,y,psychic,INT,half,,1,1/day,2a limited spell (SRD)
 Umber Hulk,5,5-10,multiattack-swing,Rend,attack,melee,n,slashing,,,,3,at-will,Confusing Gaze (no-dmg) not tagged
 Werebear,5,5-10,multiattack-swing,Bite,attack,melee,n,piercing,,,,1,at-will,replace1 attack w/ Bite
 Werebear,5,5-10,multiattack-swing,Handaxe,attack,both,n,slashing,,,,0.5,at-will,Handaxe or Rend any combo (split)
@@ -378,7 +389,8 @@ Stone Golem,10,5-10,multiattack-swing,Force Bolt,attack,ranged,n,force,,,,1,at-w
 Shield Guardian,7,5-10,multiattack-swing,Fist,attack,melee,n,bludgeoning;force,,,,2,at-will,Protection (no-dmg reaction) not tagged
 Shambling Mound,5,5-10,multiattack-swing,Charged Tendril,attack,melee,n,bludgeoning;lightning,,,,2,at-will,replace1 attack w/ Engulf
 Shambling Mound,5,5-10,action,Engulf,save,melee,n,lightning,STR,negates,grappled;blinded;restrained,1,at-will,ongoing lightning while grappled
-Treant,9,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,,2,at-will,Hail of Bark (alt ranged action) not tagged
+Treant,9,5-10,multiattack-swing,Slam,attack,melee,n,bludgeoning,,,,1,at-will,Hail of Bark (alt ranged action) not tagged
+Treant,9,5-10,action,Hail of Bark,attack,ranged,n,piercing,,,,0.5,at-will,1b at-will action alt (x0.5)
 Tree Blight,7,5-10,multiattack-swing,Branch,attack,melee,n,bludgeoning,,,,2,at-will,
 Tree Blight,7,5-10,action,Grasping Root,save,melee,n,bludgeoning,STR,negates,grappled,1,at-will,folded into multiattack; ongoing bludg while grappled
 Tree Blight,7,5-10,bonus,Gnash,save,melee,n,piercing,DEX,half,,1,at-will,needs grappled target
@@ -397,13 +409,15 @@ Satyr Revelmaster,6,5-10,action,Fey Melody (Recharge 4-6),save,ranged,y,psychic,
 Deva,10,5-10,multiattack-swing,Holy Mace,attack,melee,n,bludgeoning;radiant,,,,2,at-will,
 Guardian Naga,10,5-10,multiattack-swing,Bite,attack,melee,n,piercing;poison,,,,1,at-will,replace any attack w/ Poisonous Spittle
 Guardian Naga,10,5-10,action,Poisonous Spittle,save,ranged,n,poison,CON,half,blinded,1,at-will,single target within 60ft
+Guardian Naga,10,5-10,action,Flame Strike (1/Day L6),save,ranged,y,fire;radiant,DEX,half,,1,1/day,2a limited spell (SRD)
 Sphinx of Secrets,8,5-10,multiattack-swing,Claw,attack,melee,n,slashing;radiant,,,,2,at-will,replace1 attack w/ Curse of the Riddle
 Sphinx of Secrets,8,5-10,action,Curse of the Riddle,save,ranged,n,psychic,INT,negates,,1,at-will,curse rider (disadv; not a std condition)
 Unicorn,5,5-10,multiattack-swing,Hooves,attack,melee,n,bludgeoning,,,,1,at-will,
 Unicorn,5,5-10,multiattack-swing,Radiant Horn,attack,melee,n,radiant,,,,1,at-will,legendary Charging Horn (re-attack) not tagged per ref6
-Beholder Zombie,5,5-10,action,Fear Ray,save,ranged,n,psychic,WIS,negates,frightened,0.5,at-will,Eye Rays x2 from 4-ray menu (split); Bite (alt) + Paralyzing Ray (no-dmg) not tagged
-Beholder Zombie,5,5-10,action,Enervation Ray,save,ranged,n,necrotic,CON,half,poisoned,0.5,at-will,eye-ray menu split
-Beholder Zombie,5,5-10,action,Disintegration Ray,save,ranged,n,force,DEX,half,,0.5,at-will,eye-ray menu split
+Beholder Zombie,5,5-10,action,Fear Ray,save,ranged,n,psychic,WIS,negates,frightened,0.25,at-will,Eye Rays x2 from 4-ray menu (split); Bite (alt) + Paralyzing Ray (no-dmg) not tagged
+Beholder Zombie,5,5-10,action,Enervation Ray,save,ranged,n,necrotic,CON,half,poisoned,0.25,at-will,eye-ray menu split
+Beholder Zombie,5,5-10,action,Disintegration Ray,save,ranged,n,force,DEX,half,,0.25,at-will,eye-ray menu split
+Beholder Zombie,5,5-10,action,Bite,attack,melee,n,piercing,,,,0.5,at-will,1b at-will alt (Bite vs eye-ray menu x0.5)
 Ghast Gravecaller,6,5-10,multiattack-swing,Horrific Necrosis,attack,both,n,necrotic,,,frightened,1,at-will,replace1 attack w/ Claw
 Ghast Gravecaller,6,5-10,multiattack-swing,Claw,attack,melee,n,slashing,,,paralyzed,1,at-will,split
 Graveyard Revenant,7,5-10,multiattack-swing,Suffocate,attack,melee,n,bludgeoning;necrotic,,,grappled,2,at-will,Haunting Glare (no-dmg emanation) not tagged
@@ -427,6 +441,8 @@ Pirate Captain,6,5-10,multiattack-swing,Pistol,attack,ranged,n,piercing,,,,1.5,a
 Warrior Commander,10,5-10,multiattack-swing,Greatsword,attack,melee,n,slashing,,,,1.5,at-will,Greatsword/Longbow any combo (split); Sap/Maneuver control riders
 Warrior Commander,10,5-10,multiattack-swing,Longbow,attack,ranged,n,piercing,,,,1.5,at-will,split; speed-reduce rider
 Mage,6,5-10,multiattack-swing,Arcane Burst,attack,both,n,force,,,,3,at-will,2/Day Fireball + 1/Day Cone of Cold omitted
+Mage,6,5-10,action,Fireball (2/Day L4),save,ranged,y,fire,DEX,half,,1,2/day,2a limited spell (SRD)
+Mage,6,5-10,action,Cone of Cold (1/Day),save,ranged,y,cold,CON,half,,1,1/day,2a limited spell (SRD)
 Aberrant Cultist,8,5-10,multiattack-swing,Tentacle Lash,attack,melee,n,slashing;psychic,,,grappled;restrained,1,at-will,replace any attack w/ Mind Rot
 Aberrant Cultist,8,5-10,action,Mind Rot,save,ranged,n,psychic,WIS,half,poisoned,1,at-will,single target within 90ft
 Death Cultist,8,5-10,multiattack-swing,Dread Scythe,attack,melee,n,slashing;necrotic,,,,1.5,at-will,Dread Scythe/Deathly Ray any combo (split); no-heal rider
@@ -442,12 +458,17 @@ Elemental Cultist,8,5-10,multiattack-swing,Elemental Claw,attack,ranged,n,cold,,
 Elemental Cultist,8,5-10,multiattack-swing,Elemental Claw,attack,ranged,n,fire,,,,0.3,at-will,choice-of-type split5
 Elemental Cultist,8,5-10,multiattack-swing,Elemental Claw,attack,ranged,n,lightning,,,,0.3,at-will,choice-of-type split5
 Elemental Cultist,8,5-10,multiattack-swing,Elemental Claw,attack,ranged,n,thunder,,,,0.3,at-will,choice-of-type split5
-Fiend Cultist,8,5-10,multiattack-swing,Pact Axe,attack,melee,n,slashing;fire,,,,3,at-will,at-will Scorching Ray + 2/Day Fireball omitted (alt to multiattack)
+Fiend Cultist,8,5-10,multiattack-swing,Pact Axe,attack,melee,n,slashing;fire,,,,1.5,at-will,at-will Scorching Ray + 2/Day Fireball omitted (alt to multiattack)
+Fiend Cultist,8,5-10,action,Scorching Ray (at-will L5),attack,ranged,n,fire,,,,3,at-will,1b at-will spell alt (6 rays x0.5; SRD)
+Fiend Cultist,8,5-10,action,Fireball (2/Day L6),save,ranged,y,fire,DEX,half,,1,2/day,2a limited spell (SRD)
 Cultist Hierophant,10,5-10,multiattack-swing,Pact Blade,attack,melee,n,slashing;radiant,,,,1.5,at-will,Pact Blade/Radiant Ray any combo (split)
 Cultist Hierophant,10,5-10,multiattack-swing,Radiant Ray,attack,ranged,n,radiant,,,,1.5,at-will,split
 Noble Prodigy,10,5-10,multiattack-swing,Beguiling Strike,attack,both,n,psychic,,,charmed,3,at-will,
-Performer Legend,10,5-10,multiattack-swing,Bejeweled Baton,attack,melee,n,bludgeoning;psychic,,,,3,at-will,Majestic Song (at-will AoE alt to multiattack) not tagged
-Performer Maestro,6,5-10,multiattack-swing,Rapier,attack,melee,n,piercing;psychic,,,,3,at-will,Beguiling Song (at-will AoE alt to multiattack) not tagged
+Noble Prodigy,10,5-10,action,Shatter (1/Day L7),save,ranged,y,thunder,CON,half,,1,1/day,2a limited spell (SRD)
+Performer Legend,10,5-10,multiattack-swing,Bejeweled Baton,attack,melee,n,bludgeoning;psychic,,,,1.5,at-will,Majestic Song (at-will AoE alt to multiattack) not tagged
+Performer Legend,10,5-10,action,Majestic Song,save,ranged,y,psychic,WIS,negates,charmed;frightened,0.5,at-will,1b at-will AoE alt (x0.5)
+Performer Maestro,6,5-10,multiattack-swing,Rapier,attack,melee,n,piercing;psychic,,,,1.5,at-will,Beguiling Song (at-will AoE alt to multiattack) not tagged
+Performer Maestro,6,5-10,action,Beguiling Song,save,ranged,y,psychic,WIS,negates,charmed,0.5,at-will,1b at-will AoE alt (x0.5)
 Spy Master,10,5-10,multiattack-swing,Rapier,attack,melee,n,piercing;poison,,,,1.5,at-will,Rapier/Hand Crossbow any combo (split)
 Spy Master,10,5-10,multiattack-swing,Hand Crossbow,attack,ranged,n,piercing;poison,,,,1.5,at-will,split
 Spy Master,10,5-10,action,Smoke Bomb (1/Day),save,ranged,y,poison,CON,half,blinded,1,1/day,20ft-radius sphere at 30ft
