@@ -119,8 +119,10 @@ Vampire Umbral Lord,15,11-16,action,Sanguine Drain,save,melee,n,necrotic,CON,oth
 Adult Gold Dragon,17,17+,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
 Adult Gold Dragon,17,17+,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
 Adult Gold Dragon,17,17+,legendary,Banish,save,ranged,n,force,CHA,other,incapacitated,1,at-will,
+Adult Gold Dragon,17,17+,action,Flame Strike (1/Day),save,ranged,y,fire;radiant,DEX,half,,1,1/day,2a limited spell (SRD)
 Adult Red Dragon,17,17+,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
 Adult Red Dragon,17,17+,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Adult Red Dragon,17,17+,action,Fireball (1/Day),save,ranged,y,fire,DEX,half,,1,1/day,2a limited spell (SRD)
 Ancient Black Dragon,21,17+,multiattack-swing,Rend,attack,melee,n,slashing;acid,,,,3,at-will,
 Ancient Black Dragon,21,17+,action,Acid Breath,save,ranged,y,acid,DEX,half,,1,5-6,
 Ancient Black Dragon,21,17+,legendary,Cloud of Insects,save,ranged,n,poison,DEX,other,,1,at-will,
@@ -138,19 +140,23 @@ Ancient Copper Dragon,21,17+,legendary,Giggling Magic,save,ranged,n,psychic,CHA,
 Ancient Gold Dragon,24,17+,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
 Ancient Gold Dragon,24,17+,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
 Ancient Gold Dragon,24,17+,legendary,Banish,save,ranged,n,force,CHA,other,incapacitated,1,at-will,
+Ancient Gold Dragon,24,17+,action,Flame Strike (1/Day L6),save,ranged,y,fire;radiant,DEX,half,,1,1/day,2a limited spell (SRD)
 Ancient Green Dragon,22,17+,multiattack-swing,Rend,attack,melee,n,slashing;poison,,,,3,at-will,
 Ancient Green Dragon,22,17+,action,Poison Breath,save,ranged,y,poison,CON,half,,1,5-6,
 Ancient Green Dragon,22,17+,legendary,Noxious Miasma,save,ranged,y,poison,CON,other,,1,at-will,
 Ancient Red Dragon,24,17+,multiattack-swing,Rend,attack,melee,n,slashing;fire,,,,3,at-will,
 Ancient Red Dragon,24,17+,action,Fire Breath,save,ranged,y,fire,DEX,half,,1,5-6,
+Ancient Red Dragon,24,17+,action,Fireball (1/Day L6),save,ranged,y,fire,DEX,half,,1,1/day,2a limited spell (SRD)
 Ancient Silver Dragon,23,17+,multiattack-swing,Rend,attack,melee,n,slashing;cold,,,,3,at-will,
 Ancient Silver Dragon,23,17+,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
 Ancient Silver Dragon,23,17+,legendary,Cold Gale,save,ranged,y,cold,DEX,other,,1,at-will,
+Ancient Silver Dragon,23,17+,action,Ice Storm (1/Day L7),save,ranged,y,bludgeoning;cold,DEX,half,,1,1/day,2a limited spell (SRD)
 Ancient White Dragon,20,17+,multiattack-swing,Rend,attack,melee,n,slashing;cold,,,,3,at-will,
 Ancient White Dragon,20,17+,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
 Ancient White Dragon,20,17+,legendary,Freezing Burst,save,ranged,y,cold,CON,other,,1,at-will,
 Dracolich,17,17+,multiattack-swing,Rend,attack,melee,n,slashing;necrotic,,,,3,at-will,
 Dracolich,17,17+,action,Necrotic Breath,save,ranged,y,necrotic,CON,half,,1,5-6,
+Dracolich,17,17+,action,Finger of Death (1/Day),save,ranged,n,necrotic,CON,half,,1,1/day,2a limited spell (single-target; SRD)
 Dracolich (Gargantuan),17,17+,multiattack-swing,Rend,attack,melee,n,slashing;necrotic,,,,3,at-will,
 Dracolich (Gargantuan),17,17+,action,Necrotic Breath,save,ranged,y,necrotic,CON,half,,1,5-6,
 Dragon Turtle,17,17+,multiattack-swing,Bite,attack,melee,n,piercing;fire,,,,2,at-will,
@@ -183,6 +189,7 @@ Colossus,25,17+,action,Divine Beam,save,ranged,y,radiant,DEX,half,,1,5-6,
 Death Knight,17,17+,multiattack-swing,Dread Blade,attack,melee,n,slashing;necrotic,,,,3,at-will,
 Death Knight,17,17+,action,Hellfire Orb,save,ranged,y,fire;necrotic,DEX,half,,1,5-6,
 Death Knight,17,17+,legendary,Fell Word,save,ranged,n,necrotic,CON,other,,1,at-will,
+Death Knight,17,17+,action,Destructive Wave (2/Day),save,melee,y,thunder;necrotic,CON,half,,1,2/day,2a limited spell (Necrotic; self-emanation; SRD)
 Demilich,18,17+,multiattack-swing,Necrotic Burst,attack,both,n,necrotic,,,,3,at-will,
 Demilich,18,17+,action,Howl,save,melee,y,psychic,CON,negates,frightened,1,5-6,emanation->melee
 Elemental Cataclysm,22,17+,multiattack-swing,Elemental Burst,attack,both,n,acid,,,,0.4,at-will,2 attacks; type chosen from 5 (split)
@@ -208,9 +215,13 @@ Kraken,23,17+,multiattack-swing,Tentacle,attack,melee,n,bludgeoning,,,grappled;r
 Kraken,23,17+,action,Fling,save,ranged,n,bludgeoning,DEX,half,prone,0.33,at-will,1-of-3 choice (Fling/Lightning Strike/Swallow)
 Kraken,23,17+,action,Lightning Strike,save,ranged,n,lightning,DEX,half,,0.33,at-will,1-of-3 choice
 Kraken,23,17+,action,Swallow,save,melee,n,piercing,DEX,other,restrained,0.33,at-will,1-of-3 choice
-Lich,21,17+,multiattack-swing,Eldritch Burst,attack,both,n,force,,,,1.5,at-will,3 attacks split Eldritch Burst/Paralyzing Touch 50/50
-Lich,21,17+,multiattack-swing,Paralyzing Touch,attack,melee,n,cold,,,paralyzed,1.5,at-will,3 attacks split Eldritch Burst/Paralyzing Touch 50/50
+Lich,21,17+,multiattack-swing,Eldritch Burst,attack,both,n,force,,,,0.75,at-will,3 attacks split Eldritch Burst/Paralyzing Touch 50/50
+Lich,21,17+,multiattack-swing,Paralyzing Touch,attack,melee,n,cold,,,paralyzed,0.75,at-will,3 attacks split Eldritch Burst/Paralyzing Touch 50/50
 Lich,21,17+,legendary,Disrupt Life,save,melee,y,necrotic,CON,half,,1,at-will,emanation->melee
+Lich,21,17+,action,Fireball (at-will L5),save,ranged,y,fire,DEX,half,,0.25,at-will,1b at-will spell alt (0.5 share split 2 spells; SRD)
+Lich,21,17+,action,Lightning Bolt (at-will L5),save,ranged,y,lightning,DEX,half,,0.25,at-will,1b at-will spell alt (0.5 share split 2 spells; SRD)
+Lich,21,17+,action,Chain Lightning (1/Day),save,ranged,n,lightning,DEX,half,,1,1/day,2a limited spell (up to 4 targets; SRD)
+Lich,21,17+,action,Finger of Death (1/Day),save,ranged,n,necrotic,CON,half,,1,1/day,2a limited spell (single-target; SRD)
 Pit Fiend,20,17+,multiattack-swing,Bite,both,melee,n,piercing;poison,CON,other,poisoned,1,at-will,attack-then-save; ongoing poison
 Pit Fiend,20,17+,multiattack-swing,Devilish Claw,attack,melee,n,necrotic,,,,2,at-will,
 Pit Fiend,20,17+,multiattack-swing,Fiery Mace,attack,melee,n,force;fire,,,,1,at-will,
