@@ -35,3 +35,31 @@ Sphinx of Lore,11,11-16,action,Mind-Rending Roar,WIS,negates,incapacitated,hard,
 Sphinx of Lore,11,11-16,legendary,Weight of Years,CON,negates,exhaustion,soft,n,1.0,at-will,,native control legendary
 Ultroloth,13,11-16,action,Hypnotic Gaze,WIS,negates,stunned,hard,y,1.0,at-will,1 turn,
 Vampire,13,11-16,action,Charm,WIS,ends,charmed,hard,n,0.5,5-6,24 hours,casts Charm Person (spell-cast control; scanner-added)
+Adult Gold Dragon,17,17+,legendary,Banish,CHA,negates,incapacitated,hard,y,1.0,at-will,while-banished,native control legendary
+Ancient Brass Dragon,20,17+,action,Sleep Breath,CON,ends,unconscious;incapacitated,hard,y,1.0,at-will,save-ends,cumulative-failure breath
+Ancient Bronze Dragon,22,17+,action,Repulsion Breath,STR,negates,prone,soft,n,1.0,at-will,,push + prone
+Ancient Gold Dragon,24,17+,legendary,Banish,CHA,negates,incapacitated,hard,y,1.0,at-will,while-banished,native control legendary
+Ancient Silver Dragon,23,17+,action,Paralyzing Breath,CON,ends,paralyzed;incapacitated,hard,n,1.0,at-will,save-ends,cumulative-failure breath
+Animal Lord,20,17+,trait,Lordly Presence: Captivated (Forager),WIS,ends,charmed;incapacitated,hard,n,0.33,at-will,1 turn,form-locked gaze aura (1 of 3 forms; Sage form=bewildered untracked)
+Animal Lord,20,17+,trait,Lordly Presence: Fearful (Hunter),WIS,ends,frightened,soft,n,0.33,at-will,1 turn,form-locked gaze aura
+Blob of Annihilation,23,17+,action,Engulf,STR,ends,restrained,soft,y,0.5,at-will,until-escape,two competing control actions split 0.5
+Blob of Annihilation,23,17+,action,Restraining Glob,DEX,partial,restrained,soft,y,0.5,at-will,until-escape,competing control action
+Demilich,18,17+,action,Howl,CON,negates,frightened,soft,y,0.5,5-6,1 turn,
+Demilich,18,17+,legendary,Grave-Dust Flight,CON,negates,blinded,soft,n,1.0,at-will,1 turn,
+Dracolich,17,17+,legendary,Terrifying Presence,WIS,negates,frightened,soft,y,1.0,at-will,1 min,
+Dracolich (Gargantuan),17,17+,legendary,Terrifying Presence,WIS,negates,frightened,soft,y,1.0,at-will,1 min,
+Elemental Cataclysm,22,17+,legendary,Rumbling Movement,CON,negates,prone,soft,n,1.0,at-will,,
+Elemental Cataclysm,22,17+,action,Cataclysmic Event: Freezing Waves,STR,partial,prone,soft,y,0.125,4-6,,1d4 menu (x0.25) on recharge (x0.5)
+Elemental Cataclysm,22,17+,action,Cataclysmic Event: Swallowing Earth,STR,partial,prone;restrained,soft,y,0.125,4-6,,1d4 menu (x0.25) on recharge
+Empyrean (Celestial),23,17+,legendary,Shockwave of Glory,CON,partial,prone,soft,y,1.0,at-will,,
+Empyrean (Fiend),23,17+,legendary,Shockwave of Glory,CON,partial,prone,soft,y,1.0,at-will,,
+Kraken,23,17+,action,Fling,DEX,partial,prone,soft,y,1.0,at-will,,grappled is targeting prereq; imposes prone
+Kraken,23,17+,legendary,Toxic Ink,CON,negates,blinded;poisoned,soft,n,1.0,at-will,1 turn,
+Pit Fiend,20,17+,trait,Fear Aura,WIS,negates,frightened,soft,n,1.0,at-will,1 turn,incapacitated in text was self-reference
+Pit Fiend,20,17+,action,Bite,CON,negates,poisoned,soft,y,1.0,at-will,save-ends,attack-then-save ongoing poison (no HP regain)
+Solar,21,17+,legendary,Blinding Gaze,CON,negates,blinded,soft,n,1.0,at-will,1 turn,
+Sphinx of Valor,17,17+,action,First Roar,WIS,negates,frightened,soft,n,0.33,at-will,1 min,sequential roar (1 of 3 stages)
+Sphinx of Valor,17,17+,action,Second Roar,WIS,ends,paralyzed,hard,n,0.33,at-will,save-ends,sequential roar
+Sphinx of Valor,17,17+,action,Third Roar,CON,partial,prone,soft,y,0.33,at-will,,sequential roar
+Sphinx of Valor,17,17+,legendary,Weight of Years,CON,negates,exhaustion,soft,n,1.0,at-will,,native control legendary
+Tarrasque,30,17+,action,Thunderous Bellow,CON,negates,frightened,soft,y,0.5,5-6,1 turn,deafened co-condition is NONE-severity
