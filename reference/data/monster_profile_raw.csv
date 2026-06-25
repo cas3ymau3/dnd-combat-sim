@@ -159,6 +159,7 @@ Dracolich,17,17+,action,Necrotic Breath,save,ranged,y,necrotic,CON,half,,1,5-6,
 Dracolich,17,17+,action,Finger of Death (1/Day),save,ranged,n,necrotic,CON,half,,1,1/day,2a limited spell (single-target; SRD)
 Dracolich (Gargantuan),17,17+,multiattack-swing,Rend,attack,melee,n,slashing;necrotic,,,,3,at-will,
 Dracolich (Gargantuan),17,17+,action,Necrotic Breath,save,ranged,y,necrotic,CON,half,,1,5-6,
+Dracolich (Gargantuan),17,17+,action,Finger of Death (1/Day),save,ranged,n,necrotic,CON,half,,1,1/day,2a limited spell (single-target; SRD; size variant of Dracolich)
 Dragon Turtle,17,17+,multiattack-swing,Bite,attack,melee,n,piercing;fire,,,,2,at-will,
 Dragon Turtle,17,17+,multiattack-swing,Tail,attack,melee,n,bludgeoning,,,prone,1,at-will,replace-1
 Dragon Turtle,17,17+,action,Steam Breath,save,ranged,y,fire,CON,half,,1,5-6,
@@ -174,6 +175,7 @@ Animal Lord (Hunter),20,17+,action,Animal Spirit,save,ranged,n,radiant,DEX,half,
 Animal Lord (Sage),20,17+,multiattack-swing,Rend,attack,melee,n,slashing;force,,,,1,at-will,split 2 attacks Rend/Radiant Ray 50/50
 Animal Lord (Sage),20,17+,multiattack-swing,Radiant Ray,attack,ranged,n,radiant,,,,1,at-will,split 2 attacks Rend/Radiant Ray 50/50
 Animal Lord (Sage),20,17+,action,Animal Spirit,save,ranged,n,radiant,DEX,half,,1,at-will,
+Animal Lord (Sage),20,17+,action,Sunburst (1/Day),save,ranged,y,radiant,CON,half,blinded,1,1/day,2a limited spell (Sage-only; base/Forager/Hunter do not cast it; SRD)
 Arch-hag,21,17+,multiattack-swing,Spectral Claw,attack,both,n,force,,,prone,2,at-will,
 Arch-hag,21,17+,action,Crackling Wave,save,ranged,y,lightning,DEX,half,,1,at-will,curse=no-reactions (control)
 Arch-hag,21,17+,bonus,Witch Strike,auto,ranged,y,lightning,,,,1,at-will,hits cursed targets

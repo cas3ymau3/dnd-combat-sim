@@ -3,7 +3,7 @@
 > Status: **METHODOLOGY LOCKED (2026-06-22). CENSUS COMPLETE (2026-06-23, session 32) —
 > all 510 Monster Manual monsters tagged across all four CR bands. V2 REFINEMENT-10
 > CROSS-BAND RECONCILIATION COMPLETE (2026-06-25, session 36) — 5-10/11-16/17+ re-tagged
-> under the same 1b/2a rules as 0-4; all four bands now internally consistent (895 action
+> under the same 1b/2a rules as 0-4; all four bands now internally consistent (897 action
 > rows).** The codebook, CR bands, weighting rule, data layout, and census workflow below are
 > signed off and binding. See "Census status" at the bottom for per-band headlines. One
 > follow-up remains: downstream arc step 2 — wire the profile into the enemy policy. This note
@@ -306,10 +306,12 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
   33 affected casters/alternative-action monsters in 5-10 (17), 11-16 (8), 17+ (8) under the
   same 1b/2a rules as 0-4, via the locked Chrome `fetch()` workflow (index regen + a spell-NAME
   scan over all 207 higher-band statblocks → precise candidate set → band-by-band edit, one
-  commit per band). +44 rows → **895 action rows total.** **All four bands now apples-to-apples:**
-  the elemental / save-resolution / AoE shares climb monotonically and consistently —
-  elemental 36.9 / 46.8 / 61.4 / 66.9; save-res 9.1 / 16.9 / 29.0 / 36.8; AoE 6.6 / 11.6 / 23.5 /
-  28.7 (0-4 / 5-10 / 11-16 / 17+). **Key tagging calls:** (1) dragons' at-will partial-replacement
+  commit per band) + a follow-up catch of 2 size/form variants the DDB index had collapsed
+  (Dracolich (Gargantuan) → Finger of Death; Animal Lord (Sage) → Sunburst, Sage-only). +46 rows
+  → **897 action rows total.** **All four bands now apples-to-apples:** the elemental /
+  save-resolution / AoE shares climb monotonically and consistently — elemental 36.9 / 46.8 /
+  61.4 / 67.2; save-res 9.1 / 16.9 / 29.0 / 37.7; AoE 6.6 / 11.6 / 23.5 / 29.0 (0-4 / 5-10 /
+  11-16 / 17+). **Key tagging calls:** (1) dragons' at-will partial-replacement
   spells (Melf's Acid Arrow / Scorching Ray / Guiding Bolt / Ice Knife named in the Multiattack)
   stay UNMODELED (Rend x3 unchanged) — 1b is full-action replacement only; only the 6 dragons with
   a *standalone* 1/Day damage spell (Adult Silver, Adult/Ancient Gold/Red, Ancient Silver) got a 2a
@@ -317,9 +319,12 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
   3.0), Treant (Hail of Bark), Performer Legend/Maestro (Majestic/Beguiling Song — damaging psychic
   AoE; control census already had their charm/fear), Beholder Zombie (Bite vs eye-ray menu), and the
   Lich (user-confirmed mechanical 50/50 even though its Eldritch Burst multiattack dominates). (3)
-  reactions (Hellish Rebuke) NOT tagged (reaction economy, not an action). (4) EXCLUDED as out of
-  scope: Animal Lord base (Sunburst is "Sage Only") and the Animal Lord (Sage) / Dracolich
-  (Gargantuan) size-variants (no rows in raw.csv — a coverage gap, NOT refinement-10). SRD damage
+  reactions (Hellish Rebuke) NOT tagged (reaction economy, not an action). (4) Size/form variants:
+  the DDB monster index collapses some (Animal Lord → base + Sage only; Dracolich → base only)
+  even though the census's monsters/action tables carry all of them. Animal Lord base/Forager/
+  Hunter do NOT cast Sunburst (it is "Sage Only") so only **Animal Lord (Sage)** got the Sunburst
+  2a row; **Dracolich (Gargantuan)** got the same Finger of Death 2a row as its base. (A DDB-index
+  artifact briefly made these two look untagged — caught and fixed.) SRD damage
   dice/types/saves used where statblocks list spell names only (as the 0-4 census did). Damage
   dice/types verified against D&D Beyond spell pages for the uncertain ones (Flame Strike = DEX
   fire+radiant; Ice Storm = DEX bludgeoning+cold; Harm/Finger of Death = CON necrotic single-target;
@@ -421,6 +426,6 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
 > **✅ v2 CROSS-BAND RECONCILIATION DONE (session 36, 2026-06-25).** Bands 11-16 (s28), 17+ (s29),
 > and 5-10 (s30-31) — originally tagged under the OLD rules (at-will spell alternatives OMITTED;
 > 1/Day spell-list damage spells omitted) — were re-tagged under refinement 10 (1b + 2a) to match
-> the 0-4 band. 33 monsters / +44 rows. The previous caveat ("0-4 reads higher on
+> the 0-4 band. 33 base candidates + 2 size variants / +46 rows. The previous caveat ("0-4 reads higher on
 > elemental/AoE/save purely from the rule change") is RESOLVED: the four bands' shares are now
 > strictly comparable and climb monotonically with CR.
