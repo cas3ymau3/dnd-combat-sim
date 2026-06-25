@@ -384,6 +384,13 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
       over-counted, like a dragon's breath — but the elemental/AoE/save mass the OMIT rule
       dropped is now on the books.
 
+> **STATUS (s35):** the **sibling CONTROL-SAVE census is COMPLETE** (`design/
+> enemy_control_census.md`; `reference/data/monster_profile_control.csv`, 218 rows). The
+> v2 reconciliation below (a DAMAGING-census fix) was batched with #3b but **DEFERRED to
+> its own session** when #3b ran long — it is the LAST Chrome-dependent work; do it, THEN
+> tear down the Chrome connector + per-machine allowlist (the planned end of the empirical
+> arc). Re-freeze nothing until #2 lands (wiring #1 depends on the reconciled band table).
+>
 > **⚠️ v2 CROSS-BAND RECONCILIATION TODO (flagged session 32, before the 0-4 census).**
 > Refinement 10 (1b + 2a) is being applied STARTING with 0-4, so the four bands are NOT yet
 > internally consistent: bands **11-16 (s28)**, **17+ (s29)**, and **5-10 (s30-31)** were

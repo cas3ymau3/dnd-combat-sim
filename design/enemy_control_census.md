@@ -1,6 +1,9 @@
 # Supplementary CONTROL-SAVE census — methodology (LOCKED v1) + codebook
 
-> Status: **CODEBOOK LOCKED (2026-06-25, session 34). CENSUS NOT YET RUN.** This is
+> Status: **CODEBOOK LOCKED (s34). CENSUS COMPLETE (s35, 2026-06-25) — 218 control
+> rows across all four bands in `reference/data/monster_profile_control.csv`; see
+> "Census status" at the bottom for headlines + the two execution-time methodology
+> calls.** This is
 > the `design/buff_primitive.md`-style design-first contract for the supplementary
 > control-save census — the empirical grounding for the **control-save channel** in
 > `design/enemy_model.md` §6, which today runs on a designer prior. It is the
@@ -300,19 +303,63 @@ end of the empirical arc; everything downstream is pure Python.
 
 ## Census status
 
-- **Codebook:** LOCKED (s34). **Census:** NOT STARTED.
-- **Bands DONE:** none yet. Run order TBD at #3b (suggest mirroring the damaging
-  census: a band at a time, batched by creature type within a band).
-- **Batched with:** the #2 v2 cross-band reconciliation of the damaging census (both
-  are the last Chrome-dependent work; see PROGRESS Track 1 #3b/#2).
+- **Codebook:** LOCKED (s34). **Census: COMPLETE (s35, 2026-06-25).** All four bands
+  tagged into `reference/data/monster_profile_control.csv` — **218 control rows**.
+- **Bands DONE:** **11-16 (36 rows / 25 of 46 monsters), 17+ (28 rows / 19 of 35),
+  5-10 (55 rows / 48 of 126), 0-4 (66 native rows / 61 monsters)** + **33 cross-band
+  spell-cast rows** (see below).
+- **Headline (preview aggregation, instance-weighted):** `control_save_prob` RISES
+  monotonically with CR exactly as predicted — **0-4 = 0.19 / 5-10 = 0.38 / 11-16 =
+  0.54 / 17+ = 0.68** control saves per band-monster per round. **`control_save_weights`:
+  WIS is now a top-2 save (30-35% across bands), CON also high** — the mental-save mass
+  the damaging census's CON/DEX-dominant weights could not price (the whole reason for
+  this second census). `hard_vs_soft` varies by band (hard 26-53%; 17+ is soft-dominant
+  74%, driven by dragon/giant frightened+prone).
+- **Batched with:** the #2 v2 cross-band reconciliation of the damaging census (done
+  same session; see PROGRESS Track 1 #3b/#2).
+
+### Scanner + two methodology calls made during execution (s35)
+
+A browser-side scanner (`enemy_profile.md` §"Census workflow" `fetch()`) collected, per
+statblock, ability blocks containing **both** a `... Saving Throw:` line **and** a
+control-condition keyword, across `<p>` AND `<ol>`/`<li>` (eye-ray menu) layouts. Two
+calls beyond the codebook, both documented here as part of the executed census:
+
+1. **Non-standard conditions excluded.** Effects that reduce output but impose **no
+   tracked condition** (Confusion, Slowing Ray, "bewildered", "grafted"-as-such) are NOT
+   tagged — consistent with the codebook's named-condition table. Documented undercount of
+   confusion/slow-style control.
+2. **Spell-cast control IS tagged (refinement-10 symmetry) — the one scope extension.**
+   Control delivered by **casting a spell** (Frightful Presence = *Fear*; "At Will: Hold
+   Person"; Succubus *Dominate Person*; Vampire *Charm Person*) has no inline `Saving
+   Throw:` line, so the native scan missed it. Rather than leave it as the codebook's
+   "don't tag recasts" undercount (which is scoped to **legendary** recasts, mirroring
+   damaging refinement 6), these were tagged for **non-legendary** actions per the
+   damaging census's **refinement 10** (which symmetrically tags at-will/limited spell-cast
+   *damage*): a dedicated spell-NAME scan over all 510 statblocks → a spell->save/condition
+   lookup (all WIS saves) at refinement-10 cadence (at-will alternative 0.5 / limited-use
+   0.25). 33 rows. Legendary spell-recasts remain untagged (codebook rule preserved).
+   **Caveat for a v2 verification pass:** dragon Frightful-Presence coverage was data-driven
+   (only Black/White carry *Fear*, Silver *Hold Monster* — Red/Blue/Green/Brass/Copper/
+   Gold/Bronze verified to have none); and generic caster *Spellcasting-list* control beyond
+   the matched spell set may be lightly under-scanned.
+
+**False positives dropped (per band, recorded so the census is reproducible):** Evasion /
+Avoidance / Prone-Deficiency self-referential traits; Aura-of-Authority / Marshal-Undead
+auras (no save); targeting-prerequisite conditions ("a creature **Grappled by** … " +
+HP-drain: Vampire/Vampire-Spawn Bite, Glabrezu Pummel, Tree Blight Gnash, Aboleth Consume
+Memories, Succubus Draining Kiss); situational finishers on an already-grappled/
+incapacitated target (Mind Flayer Extract Brain, Intellect Devourer Steal Body, and swallow
+finishers where the monster already has other save-control: Behir, Kraken, Tarrasque).
 
 ---
 
 ## Downstream sequence
 
 1. **This note** — control codebook design (s34, #3a). DONE.
-2. **#3b — run the control census** (+ #2 damaging reconciliation, batched). Then
-   tear down Chrome + the allowlist.
+2. **#3b — run the control census** (+ #2 damaging reconciliation, batched). **DONE
+   (s35):** 218 rows in `monster_profile_control.csv`. Chrome + allowlist torn down at
+   session close (the planned end of the empirical arc).
 3. **Metrics design**, then **#1 — wire** `control_save_prob` / `control_save_weights`
    / `hard_vs_soft` into the §6 control channel (default OFF/neutral so no baseline
    drift), mechanism-validated (`validate-mechanism-not-build-value`).

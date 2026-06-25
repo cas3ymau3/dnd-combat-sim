@@ -74,10 +74,13 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none confirmed. NOTE: sessions 28-31
-> NEEDED **Claude-in-Chrome** (MM scrape) — recommend KEEPING it on for the next
-> session too (only the **0-4 band (303)** census remains). The others (computer-use /
-> Claude_Preview / scheduled-tasks / mcp-registry / Google Drive) stay off-recommended.
+> **Currently disabled (re-enable before exit):** none confirmed. NOTE: sessions 28-35
+> NEEDED **Claude-in-Chrome** (MM scrape). s35 finished #3b (control census) but **DEFERRED
+> #2 (damaging-census v2 reconciliation) to its own session** — #2 re-reads damaging-spell
+> statblocks, so **KEEP Claude-in-Chrome ON + the full per-machine allowlist for the next
+> (#2) session**; the empirical-arc tear-down (allowlist reset + Chrome off) is the END of
+> THAT session. The others (computer-use / Claude_Preview / scheduled-tasks / mcp-registry /
+> Google Drive) stay off-recommended.
 
 ### CONFIG/SETTINGS LEDGER — review for reset every ~2 sessions (don't let the user forget)
 
@@ -120,6 +123,38 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   Chrome-MCP prompts are not pushed to the phone (platform behavior) — the allowlist above is the
   workaround, not a fix to remote control itself.
 
+> **Session scope (2026-06-25, session 35) — DONE (#3b CONTROL-SAVE CENSUS — all four
+> bands; #2 reconciliation DEFERRED):** ran the supplementary control-save census per the
+> LOCKED codebook (`design/enemy_control_census.md`), the empirical grounding for
+> `enemy_model.md` §6's control channel. **Result: 218 control rows in NEW
+> `reference/data/monster_profile_control.csv`** (reused `monster_profile_monsters.csv`
+> unchanged). Per-band: 11-16 = 36 rows/25 monsters, 17+ = 28/19, 5-10 = 55/48, 0-4 = 66
+> native + **33 cross-band spell-cast rows**. **Headline (validates the whole reason for a
+> 2nd census): `control_save_prob` RISES monotonically with CR — 0.19 / 0.38 / 0.54 / 0.68
+> control saves per band-monster per round; `control_save_weights` lift WIS to a top-2 save
+> (30-35%) vs the damaging census's CON/DEX dominance** — the mental-save mass the damaging
+> census could not price. `hard_vs_soft` varies by band (hard 26-53%). **Method:** the
+> LOCKED Chrome `fetch()` workflow + a browser-side scanner collecting `... Saving Throw:` +
+> control-condition blocks across `<p>` AND `<ol>`/`<li>` (eye-ray menu) layouts; band at a
+> time, batched, append-and-commit per band (resumable). **Two execution-time methodology
+> calls (documented in the codebook "Census status"):** (1) non-standard conditions excluded
+> (Confusion/Slowing/bewildered/grafted — not in the tracked table); (2) **spell-cast control
+> IS tagged** (Frightful Presence=*Fear*, At-Will *Hold Person*, Succubus *Dominate Person*,
+> Vampire *Charm Person*) via a dedicated spell-NAME scan over all 510 statblocks + a
+> spell->save/condition lookup (all WIS saves) at refinement-10 cadence — the native scan
+> missed these (no inline `Saving Throw:` line); legendary spell-recasts stay untagged
+> (codebook rule preserved). Cadence-discounted weights (at-will 1.0 / recharge 0.5 / limited
+> 0.25; menus split: beholder 3-of-10 -> 0.3/ray, etc.); false positives dropped per band
+> (Evasion-type traits, no-save auras, targeting-prereq HP-drains, situational
+> finishers). **5 commits on branch `data/control-census-and-v2-reconciliation`** (one per
+> band + the spell-cast pass + the codebook status). **No engine/code changed -> test suite
+> not run (DATA-only).** **#2 (v2 damaging-census refinement-10 reconciliation, ~30-45
+> casters in 11-16/17+/5-10) DEFERRED to its own session** (this one ran long on #3b; user
+> chose to split). **Chrome stays ON** for that #2 session (it re-reads damaging-spell
+> statblocks); the planned **empirical-arc tear-down (allowlist reset + Chrome off + CONFIG
+> LEDGER bump) moves to the END of the #2 session.** NEXT: #2, then the substantive METRICS
+> DESIGN, then #1 wiring (`enemy_model.md` §12 step 3).
+>
 > **Session scope (2026-06-22, session 27) — DONE (ATTACK-TAXONOMY GATE MIGRATION —
 > the axes now do REAL runtime work + full legacy-alias removal):** made the session-25
 > modality taxonomy (origin / range_ / modality) DRIVE the runtime gates instead of the
@@ -2820,11 +2855,14 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    damaging aggregator clean); reuses the LOCKED Chrome `fetch()` workflow + the
    unchanged `monster_profile_monsters.csv`. Feeds §6's `control_save_prob` /
    `control_save_weights` / `hard_vs_soft`.
-2. **#3b — full control-save CENSUS** + **#2 — v2 refinement-10 cross-band
-   reconciliation** (~30–45 monsters in 11-16/17+/5-10). BATCH these — both are the
-   last Chrome-dependent work. **After this step: tear down the Chrome connector +
-   reset the per-machine allowlist** (the CONFIG LEDGER tweaks were mid-census
-   conveniences). Everything after is pure Python.
+2. ~~**#3b — full control-save CENSUS**~~ **DONE (s35):** 218 control rows across all
+   four bands in `reference/data/monster_profile_control.csv` (see the s35 Done entry +
+   `design/enemy_control_census.md` "Census status"). **#2 — v2 refinement-10 cross-band
+   reconciliation** (~30–45 casters/at-will-alt monsters in 11-16/17+/5-10) was
+   **DEFERRED to its own session** (s35 ran long on #3b; user chose to split). #2 STILL
+   NEEDS CHROME (it re-reads damaging-spell statblocks), so the **Chrome tear-down +
+   allowlist reset is now deferred to the END of the #2 session** — Chrome stays ON until
+   then. Everything after #2 is pure Python.
 3. **Metrics DESIGN (before #1, substantive — not just a thin sketch).** Informed
    by what #2/#3 reveal the enemy can emit: define the STRUCTURED TELEMETRY SEAM +
    the emittable quantities (control uptime, typed-damage mitigated, save-fail
