@@ -1,12 +1,12 @@
 # Empirical enemy profile — methodology (LOCKED v1) + profile tables
 
 > Status: **METHODOLOGY LOCKED (2026-06-22). CENSUS COMPLETE (2026-06-23, session 32) —
-> all 510 Monster Manual monsters tagged across all four CR bands (851 action rows).** The
-> codebook, CR bands, weighting rule, data layout, and census workflow below are signed off
-> and binding. See "Census status" at the bottom for per-band headlines. Two follow-ups
-> remain: (1) the v2 refinement-10 cross-band reconciliation (re-tag 11-16/17+/5-10 under the
-> session-32 1b/2a rules); (2) downstream arc step 2 — wire the profile into the enemy policy.
-> This note
+> all 510 Monster Manual monsters tagged across all four CR bands. V2 REFINEMENT-10
+> CROSS-BAND RECONCILIATION COMPLETE (2026-06-25, session 36) — 5-10/11-16/17+ re-tagged
+> under the same 1b/2a rules as 0-4; all four bands now internally consistent (897 action
+> rows).** The codebook, CR bands, weighting rule, data layout, and census workflow below are
+> signed off and binding. See "Census status" at the bottom for per-band headlines. One
+> follow-up remains: downstream arc step 2 — wire the profile into the enemy policy. This note
 > is the `design/buff_primitive.md`-style design-first contract for the enemy-profile
 > arc (project memory `enemy-profile-empirical-direction`; CLAUDE.md "design-first
 > for cross-cutting primitives").
@@ -301,9 +301,41 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
   alternatives, and the 2a damaging spells (Druid/Mage/Priest/Flameskull/Bone Naga/Bullywug/
   Green Hag/Aarakocra; SRD spell stats since statblocks list names only).
 - **ALL FOUR BANDS DONE — FULL 510-MONSTER CENSUS COMPLETE (2026-06-23, session 32).**
-  510 monsters / 851 action rows. NEXT (downstream arc step 2): wire the static profile into
-  `BaselineEnemyPolicy`, grounding `enemy_stats.py` `SAVE_TYPE_WEIGHTS` / `SAVE_ROUND_PROB`.
-  Open: the v2 refinement-10 cross-band reconciliation pass (re-tag 11-16/17+/5-10).
+  510 monsters / 851 action rows.
+- **V2 REFINEMENT-10 CROSS-BAND RECONCILIATION DONE (2026-06-25, session 36).** Re-tagged the
+  33 affected casters/alternative-action monsters in 5-10 (17), 11-16 (8), 17+ (8) under the
+  same 1b/2a rules as 0-4, via the locked Chrome `fetch()` workflow (index regen + a spell-NAME
+  scan over all 207 higher-band statblocks → precise candidate set → band-by-band edit, one
+  commit per band) + a follow-up catch of 2 size/form variants the DDB index had collapsed
+  (Dracolich (Gargantuan) → Finger of Death; Animal Lord (Sage) → Sunburst, Sage-only). +46 rows
+  → **897 action rows total.** **All four bands now apples-to-apples:** the elemental /
+  save-resolution / AoE shares climb monotonically and consistently — elemental 36.9 / 46.8 /
+  61.4 / 67.2; save-res 9.1 / 16.9 / 29.0 / 37.7; AoE 6.6 / 11.6 / 23.5 / 29.0 (0-4 / 5-10 /
+  11-16 / 17+). **Key tagging calls:** (1) dragons' at-will partial-replacement
+  spells (Melf's Acid Arrow / Scorching Ray / Guiding Bolt / Ice Knife named in the Multiattack)
+  stay UNMODELED (Rend x3 unchanged) — 1b is full-action replacement only; only the 6 dragons with
+  a *standalone* 1/Day damage spell (Adult Silver, Adult/Ancient Gold/Red, Ancient Silver) got a 2a
+  row. (2) 1b applied to Night Hag (Magic Missile), Fiend Cultist (Scorching Ray L5 = 6 rays x0.5 =
+  3.0), Treant (Hail of Bark), Performer Legend/Maestro (Majestic/Beguiling Song — damaging psychic
+  AoE; control census already had their charm/fear), Beholder Zombie (Bite vs eye-ray menu), and the
+  Lich (user-confirmed mechanical 50/50 even though its Eldritch Burst multiattack dominates). (3)
+  reactions (Hellish Rebuke) NOT tagged (reaction economy, not an action). (4) Size/form variants:
+  the DDB monster index collapses some (Animal Lord → base + Sage only; Dracolich → base only)
+  even though the census's monsters/action tables carry all of them. Animal Lord base/Forager/
+  Hunter do NOT cast Sunburst (it is "Sage Only") so only **Animal Lord (Sage)** got the Sunburst
+  2a row; **Dracolich (Gargantuan)** got the same Finger of Death 2a row as its base. (A DDB-index
+  artifact briefly made these two look untagged — caught and fixed.) SRD damage
+  dice/types/saves used where statblocks list spell names only (as the 0-4 census did). Damage
+  dice/types verified against D&D Beyond spell pages for the uncertain ones (Flame Strike = DEX
+  fire+radiant; Ice Storm = DEX bludgeoning+cold; Harm/Finger of Death = CON necrotic single-target;
+  Chain Lightning = DEX lightning; Phantasmal Killer = WIS psychic). NEXT (downstream arc step 2):
+  wire the static profile into `BaselineEnemyPolicy`, grounding `enemy_stats.py`
+  `SAVE_TYPE_WEIGHTS` / `SAVE_ROUND_PROB`.
+- **Latent data note (not fixed — out of scope):** one pre-existing row has an unquoted comma in
+  its `notes` (Erinyes "Entangling Rope (restrained) is control-only, not tagged" → 16 fields).
+  Benign for the aggregator (DictReader sends the overflow to a `None` restkey; all named fields
+  parse correctly), but it breaks naive DictWriter round-trips. Quote or de-comma it if the CSV is
+  ever rewritten programmatically.
 
 ## Codebook refinements surfaced by the pilot (folded into the codebook above)
 
@@ -384,24 +416,16 @@ top-level `await` in `javascript_tool` errors — wrap in `(async()=>{…})()`.
       over-counted, like a dragon's breath — but the elemental/AoE/save mass the OMIT rule
       dropped is now on the books.
 
-> **STATUS (s35):** the **sibling CONTROL-SAVE census is COMPLETE** (`design/
-> enemy_control_census.md`; `reference/data/monster_profile_control.csv`, 218 rows). The
-> v2 reconciliation below (a DAMAGING-census fix) was batched with #3b but **DEFERRED to
-> its own session** when #3b ran long — it is the LAST Chrome-dependent work; do it, THEN
-> tear down the Chrome connector + per-machine allowlist (the planned end of the empirical
-> arc). Re-freeze nothing until #2 lands (wiring #1 depends on the reconciled band table).
+> **STATUS (s36):** the **v2 CROSS-BAND RECONCILIATION is COMPLETE** — all four bands are now
+> tagged under refinement 10 and apples-to-apples (see "Census status" above for the monotonic
+> elemental/save/AoE progression and the per-band tagging calls). This was the LAST
+> Chrome-dependent work in the empirical arc; the Chrome connector + per-machine allowlist were
+> torn down at this session's close. Both census tables are now frozen; the next step is wiring
+> #1 (the reconciled band table → `BaselineEnemyPolicy`), which is pure Python.
 >
-> **⚠️ v2 CROSS-BAND RECONCILIATION TODO (flagged session 32, before the 0-4 census).**
-> Refinement 10 (1b + 2a) is being applied STARTING with 0-4, so the four bands are NOT yet
-> internally consistent: bands **11-16 (s28)**, **17+ (s29)**, and **5-10 (s30-31)** were
-> tagged under the OLD rules (at-will spell alternatives OMITTED; 1/Day spell-list damage
-> spells omitted while statblock 1/Day actions tagged). For an apples-to-apples final
-> census, a back-application pass must re-tag those three bands' affected monsters under
-> refinement 10. Candidates to revisit (from the bands' own `notes`/simplification logs):
-> Night Hag & Kuo-toa (at-will Magic Missile / Destructive Wave), any caster NPC with 1/Day
-> damage spells (Mage/Archmage/Priest-likes), Performer/Treant/Beholder-Zombie at-will
-> alternatives, plus a scan for "Instead of … can cast" / "Spellcasting" damage lists in the
-> higher bands. EFFORT to be estimated at this session's close-out. Until that pass lands,
-> cross-band comparisons of elemental/AoE/save shares are NOT strictly comparable (0-4 will
-> read higher on those axes purely from the rule change — keep that in mind reading the
-> aggregator).
+> **✅ v2 CROSS-BAND RECONCILIATION DONE (session 36, 2026-06-25).** Bands 11-16 (s28), 17+ (s29),
+> and 5-10 (s30-31) — originally tagged under the OLD rules (at-will spell alternatives OMITTED;
+> 1/Day spell-list damage spells omitted) — were re-tagged under refinement 10 (1b + 2a) to match
+> the 0-4 band. 33 base candidates + 2 size variants / +46 rows. The previous caveat ("0-4 reads higher on
+> elemental/AoE/save purely from the rule change") is RESOLVED: the four bands' shares are now
+> strictly comparable and climb monotonically with CR.

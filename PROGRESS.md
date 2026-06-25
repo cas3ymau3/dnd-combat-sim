@@ -74,13 +74,13 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
-> **Currently disabled (re-enable before exit):** none confirmed. NOTE: sessions 28-35
-> NEEDED **Claude-in-Chrome** (MM scrape). s35 finished #3b (control census) but **DEFERRED
-> #2 (damaging-census v2 reconciliation) to its own session** — #2 re-reads damaging-spell
-> statblocks, so **KEEP Claude-in-Chrome ON + the full per-machine allowlist for the next
-> (#2) session**; the empirical-arc tear-down (allowlist reset + Chrome off) is the END of
-> THAT session. The others (computer-use / Claude_Preview / scheduled-tasks / mcp-registry /
-> Google Drive) stay off-recommended.
+> **Currently disabled (re-enable before exit):** none. **EMPIRICAL/CHROME ARC CLOSED (s36).**
+> Sessions 28-36 needed **Claude-in-Chrome** (MM scrape); s36 finished #2 (the last
+> Chrome-dependent work) and **tore the arc down: the per-machine allowlist was reset to the
+> git/gh/python baseline (all 17 Chrome tools + Browser: aliases + the 10 read-only Bash utils
+> removed), and the user was prompted to turn Claude-in-Chrome OFF.** Everything from here is
+> pure Python — no connectors needed. (computer-use / Claude_Preview / scheduled-tasks /
+> mcp-registry / Google Drive stay off-recommended as before.)
 
 ### CONFIG/SETTINGS LEDGER — review for reset every ~2 sessions (don't let the user forget)
 
@@ -89,10 +89,12 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 34 (2026-06-25).** (s34: reviewed, chose DEFER the reset —
-  the allowlist + Chrome are needed for the imminent #3b control census + #2 reconciliation. The
-  PLANNED reset moment is the post-#3b/#2 tear-down, which ends the empirical arc. s32: user
-  reviewed, chose KEEP ALL — mid-census conveniences.)
+- **Last reviewed for reset: session 36 (2026-06-25) — RESET DONE.** s36 completed #2 (the last
+  Chrome work) and executed the planned empirical-arc tear-down: **allowlist reset to the
+  git/gh/python/pytest baseline** (removed all 17 Chrome tools + the Browser: aliases + the 10
+  read-only Bash utils cat/echo/wc/awk/grep/head/tail/sort/uniq/ls), and prompted the user to
+  turn Claude-in-Chrome OFF. The accumulated census-era tweaks are now cleared. (s34: reviewed,
+  chose DEFER until the post-#2 tear-down. s32: user chose KEEP ALL — mid-census conveniences.)
 - **Permission allowlist** — `.claude/settings.local.json` → `permissions.allow` (GITIGNORED,
   per-machine, NOT committed). Holds `Bash(git/gh/python/py/pytest *)` + **the FULL (17-tool)
   Claude-in-Chrome toolset**: `computer`/`find`/`form_input` (older) + `javascript_tool`/`navigate`/
@@ -123,6 +125,41 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   Chrome-MCP prompts are not pushed to the phone (platform behavior) — the allowlist above is the
   workaround, not a fix to remote control itself.
 
+> **Session scope (2026-06-25, session 36) — DONE (#2 v2 REFINEMENT-10 CROSS-BAND
+> RECONCILIATION — the LAST Chrome-dependent work; empirical/Chrome arc CLOSED):** re-tagged
+> the damaging census (`reference/data/monster_profile_raw.csv`) so bands 5-10 / 11-16 / 17+
+> match how 0-4 was tagged under refinement 10 (1b at-will alternatives + 2a limited-use damage
+> spells), making all four bands internally consistent. **Method (per the LOCKED Chrome `fetch()`
+> workflow):** regenerated the 510-monster index; re-derived a browser-side spell-NAME scanner
+> over ALL 207 higher-band statblocks (At Will / N-Day cadence lines + "instead of" alternatives +
+> multiattack structure) → a precise 33-monster candidate set, **confirmed with the user before
+> editing**; then edited `raw.csv` band-by-band with a list-based CSV migration (preserving CRLF +
+> the one pre-existing malformed row), **one commit per band (resumable).** **+46 rows → 897
+> total.** **Result — the cross-band shares now climb monotonically and are apples-to-apples:**
+> elemental 36.9 / 46.8 / 61.4 / 67.2; save-resolution 9.1 / 16.9 / 29.0 / 37.7; AoE 6.6 / 11.6 /
+> 23.5 / 29.0 (0-4 / 5-10 / 11-16 / 17+) — the previous "0-4 reads artificially higher" caveat is
+> RESOLVED. **Key tagging calls (user-confirmed where consequential):** (1) **1b** (halve
+> multiattack + add at-will alt ×0.5): Night Hag (Magic Missile), Fiend Cultist (Scorching Ray L5 =
+> 6 rays → 3.0), Treant (Hail of Bark), Performer Legend/Maestro (Majestic/Beguiling Song —
+> damaging psychic AoE), Beholder Zombie (Bite vs eye-ray menu), and the **Lich** (user chose the
+> mechanical 50/50 even though its Eldritch-Burst multiattack dominates — a known refinement-10
+> bluntness, kept for census consistency). (2) **2a** (add limited 1-2/Day damage spell @1,
+> breath-weapon style; SRD stats since statblocks list names only): ~24 casters incl. Mage,
+> Archmage, the Slaads, Mind Flayer Arcanist, Mummy Lord, Ultroloth, Death Knight(s), and **6
+> dragons** with a *standalone* 1/Day damage spell (Adult Silver, Adult/Ancient Gold/Red, Ancient
+> Silver). (3) **Dragons' at-will partial-replacement spells stay UNMODELED** (Rend ×3 unchanged) —
+> 1b is full-action replacement only (the explicit rule); only the standalone 1/Day spell gets a 2a
+> row. (4) **Reactions** (Hellish Rebuke) NOT tagged. (5) **DDB-index gotcha caught:** the live DDB
+> monster index collapses some size/form variants, so a follow-up pass added the 2 the scan missed
+> (Dracolich (Gargantuan) → Finger of Death; Animal Lord (Sage) → Sunburst, Sage-only). **6 commits
+> on branch `data/v2-damaging-reconciliation`** (5-10 / 11-16 / 17+ / doc / variant-fix). **DATA-only
+> → test suite SKIPPED** (`monster_profile.py` aggregator unchanged; sanity-checked by running it
+> before/after each band). **Per-feature reflection DONE** (DDB-index≠census-set workflow lesson;
+> the `git+files=real save` truncation near-miss; refinement-10 1b bluntness). **EMPIRICAL/CHROME
+> ARC CLOSED:** allowlist reset to baseline + Chrome turned OFF + CONFIG LEDGER bumped (see above).
+> **NEXT (pure Python): the substantive METRICS DESIGN (Track 1 step 3), THEN #1 wiring
+> (`enemy_model.md` §12 step 3) against the now-FINAL band tables.**
+>
 > **Session scope (2026-06-25, session 35) — DONE (#3b CONTROL-SAVE CENSUS — all four
 > bands; #2 reconciliation DEFERRED):** ran the supplementary control-save census per the
 > LOCKED codebook (`design/enemy_control_census.md`), the empirical grounding for
@@ -814,6 +851,21 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **EMPIRICAL ENEMY-PROFILE ARC — CLOSED (2026-06-25, session 36, Track 1 #2 + tear-down).**
+  Final Chrome-dependent step: the **v2 refinement-10 cross-band reconciliation** of the damaging
+  census (`reference/data/monster_profile_raw.csv`). Re-tagged 33 casters/at-will-alt monsters + 2
+  size variants in bands 5-10 / 11-16 / 17+ under the same 1b/2a rules as 0-4 (+46 rows → 897 total),
+  so all four bands are now apples-to-apples (elemental/save/AoE shares climb monotonically with CR).
+  Method = the LOCKED Chrome `fetch()` workflow (index regen + a spell-NAME scanner over all 207
+  higher-band statblocks → user-confirmed candidate set → list-based CSV migration, one commit per
+  band). Dragons' at-will partial-replacement spells stay unmodeled (only standalone 1/Day damage
+  spells → 2a); reactions untagged; the Lich's at-will AoE got the mechanical 50/50 (user call). Both
+  census tables (`monster_profile_raw.csv` + `monster_profile_control.csv`) are now FROZEN — the
+  binding input for #1 policy wiring. **Tore down the empirical-arc config:** allowlist reset to the
+  git/gh/python baseline + Chrome turned off + CONFIG LEDGER bumped. Branch
+  `data/v2-damaging-reconciliation` (6 commits). DATA + docs only → suite skipped (aggregator
+  unchanged). See `design/enemy_profile.md` "Census status" + the s36 session-scope block above.
 
 - **CONTROL-SAVE CENSUS CODEBOOK — `design/enemy_control_census.md` (2026-06-25, session 34, Track 1 #3a).**
   Design-only mini-pass (no scraping) settling the codebook for the supplementary control-save census
@@ -2857,12 +2909,13 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    `control_save_weights` / `hard_vs_soft`.
 2. ~~**#3b — full control-save CENSUS**~~ **DONE (s35):** 218 control rows across all
    four bands in `reference/data/monster_profile_control.csv` (see the s35 Done entry +
-   `design/enemy_control_census.md` "Census status"). **#2 — v2 refinement-10 cross-band
-   reconciliation** (~30–45 casters/at-will-alt monsters in 11-16/17+/5-10) was
-   **DEFERRED to its own session** (s35 ran long on #3b; user chose to split). #2 STILL
-   NEEDS CHROME (it re-reads damaging-spell statblocks), so the **Chrome tear-down +
-   allowlist reset is now deferred to the END of the #2 session** — Chrome stays ON until
-   then. Everything after #2 is pure Python.
+   `design/enemy_control_census.md` "Census status"). ~~**#2 — v2 refinement-10 cross-band
+   reconciliation**~~ **DONE (s36):** re-tagged 33 casters/at-will-alt monsters + 2 size
+   variants in 5-10/11-16/17+ under refinement 10; +46 rows → 897 total; **all four bands
+   now apples-to-apples** (elemental/save/AoE climb monotonically). See the s36 Done entry +
+   `design/enemy_profile.md` "Census status". **This ENDED the empirical/Chrome arc** —
+   the Chrome connector + per-machine allowlist were torn down at the s36 close. Everything
+   after #2 is pure Python.
 3. **Metrics DESIGN (before #1, substantive — not just a thin sketch).** Informed
    by what #2/#3 reveal the enemy can emit: define the STRUCTURED TELEMETRY SEAM +
    the emittable quantities (control uptime, typed-damage mitigated, save-fail
