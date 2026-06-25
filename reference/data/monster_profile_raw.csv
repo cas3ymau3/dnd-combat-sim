@@ -19,14 +19,18 @@ Adult Green Dragon,15,11-16,legendary,Noxious Miasma,save,ranged,y,poison,CON,ot
 Adult Silver Dragon,16,11-16,multiattack-swing,Rend,attack,melee,n,slashing;cold,,,,3,at-will,
 Adult Silver Dragon,16,11-16,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
 Adult Silver Dragon,16,11-16,legendary,Cold Gale,save,ranged,y,cold,DEX,other,,1,at-will,
+Adult Silver Dragon,16,11-16,action,Ice Storm (1/Day L5),save,ranged,y,bludgeoning;cold,DEX,half,,1,1/day,2a limited spell (SRD)
 Adult White Dragon,13,11-16,multiattack-swing,Rend,attack,melee,n,slashing;cold,,,,3,at-will,
 Adult White Dragon,13,11-16,action,Cold Breath,save,ranged,y,cold,CON,half,,1,5-6,
 Adult White Dragon,13,11-16,legendary,Freezing Burst,save,ranged,y,cold,CON,other,,1,at-will,
 Arcanaloth,12,11-16,multiattack-swing,Fiendish Burst,attack,both,n,necrotic,,,,2,at-will,
 Arcanaloth,12,11-16,action,Banishing Claw,attack,melee,n,slashing;psychic,,,,1,at-will,replace-1
 Archmage,12,11-16,multiattack-swing,Arcane Burst,attack,both,n,force,,,,4,at-will,1/Day damage spells omitted (negligible per-round)
+Archmage,12,11-16,action,Lightning Bolt (2/Day L7),save,ranged,y,lightning,DEX,half,,1,2/day,2a limited spell (SRD)
+Archmage,12,11-16,action,Cone of Cold (1/Day L9),save,ranged,y,cold,CON,half,,1,1/day,2a limited spell (SRD)
 Archpriest,12,11-16,multiattack-swing,Radiant Burst,attack,both,n,radiant,,,,3,at-will,
 Archpriest,12,11-16,action,Holy Word,save,melee,y,radiant,WIS,other,incapacitated,1,4-6,
+Archpriest,12,11-16,action,Flame Strike (1/Day L6),save,ranged,y,fire;radiant,DEX,half,,1,1/day,2a limited spell (SRD)
 Bandit Crime Lord,11,11-16,multiattack-swing,Scimitar,attack,melee,n,slashing;poison,,,,1.5,at-will,split of 3 attacks (scimitar/pistol)
 Bandit Crime Lord,11,11-16,multiattack-swing,Pistol,attack,ranged,n,piercing;poison,,,,1.5,at-will,split of 3 attacks (scimitar/pistol)
 Behir,11,11-16,multiattack-swing,Bite,attack,melee,n,piercing;lightning,,,,1,at-will,
@@ -40,6 +44,7 @@ Dao,11,11-16,multiattack-swing,Earthen Maul,attack,melee,n,bludgeoning,,,,1.5,at
 Dao,11,11-16,multiattack-swing,Earth Burst,attack,ranged,n,bludgeoning,,,,1,at-will,split (3 maul or 2 burst)
 Death Knight Aspirant,11,11-16,multiattack-swing,Dread Blade,attack,melee,n,slashing;necrotic,,,,3,at-will,
 Death Knight Aspirant,11,11-16,action,Hellfire Orb,save,ranged,y,fire,DEX,half,,1,recharge,
+Death Knight Aspirant,11,11-16,action,Destructive Wave (1/Day),save,melee,y,thunder;necrotic,CON,half,,1,1/day,2a limited spell (Necrotic; self-emanation; SRD)
 Death Tyrant,14,11-16,action,Charm Ray (eye),save,ranged,n,psychic,WIS,other,charmed,0.3,at-will,eye-ray menu approx
 Death Tyrant,14,11-16,action,Enervation Ray (eye),save,ranged,n,necrotic,CON,other,,0.3,at-will,eye-ray menu approx
 Death Tyrant,14,11-16,action,Disintegration Ray (eye),save,ranged,n,force,DEX,other,,0.3,at-will,eye-ray menu approx
@@ -48,6 +53,7 @@ Djinni,11,11-16,multiattack-swing,Storm Blade,attack,melee,n,slashing;lightning,
 Djinni,11,11-16,multiattack-swing,Storm Bolt,attack,ranged,n,thunder,,,,1.5,at-will,split (storm blade/bolt)
 Efreeti,11,11-16,multiattack-swing,Heated Blade,attack,melee,n,slashing;fire,,,,1.5,at-will,split (blade/hurl flame)
 Efreeti,11,11-16,multiattack-swing,Hurl Flame,attack,ranged,n,fire,,,,1.5,at-will,split (blade/hurl flame)
+Efreeti,11,11-16,action,Wall of Fire (1/Day L7),save,ranged,y,fire,DEX,half,,1,1/day,2a limited spell (SRD)
 Erinyes,12,11-16,multiattack-swing,Withering Sword,attack,melee,n,slashing;necrotic,,,,3,at-will,Entangling Rope (restrained) is control-only, not tagged
 Githyanki Dracomancer,16,11-16,multiattack-swing,Draconic Strike,attack,both,n,slashing;psychic,,,,3,at-will,2nd damage type approx
 Githzerai Psion,12,11-16,multiattack-swing,Psychic Warp,attack,both,n,psychic,,,,3,at-will,
@@ -67,8 +73,12 @@ Marilith,16,11-16,multiattack-swing,Pact Blade,attack,melee,n,slashing;necrotic,
 Marilith,16,11-16,action,Constrict,save,melee,n,bludgeoning,STR,other,grappled,1,at-will,
 Mind Flayer Arcanist,11,11-16,multiattack-swing,Arcane Tentacles,attack,both,n,psychic,,,,3,at-will,
 Mind Flayer Arcanist,11,11-16,action,Mind Burst,save,melee,y,psychic,INT,half,stunned,1,recharge,
+Mind Flayer Arcanist,11,11-16,action,Fireball (1/Day L5),save,ranged,y,fire,DEX,half,,1,1/day,2a limited spell (SRD)
+Mind Flayer Arcanist,11,11-16,action,Lightning Bolt (1/Day L5),save,ranged,y,lightning,DEX,half,,1,1/day,2a limited spell (SRD)
 Mummy Lord,15,11-16,multiattack-swing,Rotting Fist,attack,melee,n,bludgeoning;necrotic,,,,0.5,at-will,split (fist or channel) + Dreadful Glare (control)
 Mummy Lord,15,11-16,multiattack-swing,Channel Negative Energy,attack,ranged,n,necrotic,,,,0.5,at-will,split (fist or channel)
+Mummy Lord,15,11-16,action,Insect Plague (1/Day L7),save,ranged,y,piercing,CON,half,,1,1/day,2a limited spell (SRD)
+Mummy Lord,15,11-16,action,Harm (1/Day),save,ranged,n,necrotic,CON,half,,1,1/day,2a limited spell (single-target; SRD)
 Nalfeshnee,13,11-16,multiattack-swing,Rend,attack,melee,n,slashing;force,,,,3,at-will,
 Nalfeshnee,13,11-16,bonus,Horror Nimbus,save,melee,y,psychic,WIS,half,frightened,1,recharge,
 Pirate Admiral,12,11-16,multiattack-swing,Scimitar,attack,melee,n,slashing;poison,,,,1.5,at-will,split (scimitar/pistol)
@@ -99,6 +109,8 @@ Storm Giant,13,11-16,multiattack-swing,Thunderbolt,attack,ranged,n,lightning,,,b
 Storm Giant,13,11-16,action,Lightning Storm,save,ranged,y,lightning,DEX,half,,1,recharge,
 Ultroloth,13,11-16,multiattack-swing,Mercurial Whip,attack,melee,n,force,,,,2,at-will,
 Ultroloth,13,11-16,action,Hypnotic Gaze,save,ranged,y,psychic,WIS,other,charmed,1,at-will,
+Ultroloth,13,11-16,action,Fireball (1/Day L5),save,ranged,y,fire,DEX,half,,1,1/day,2a limited spell (SRD)
+Ultroloth,13,11-16,action,Wall of Fire (1/Day),save,ranged,y,fire,DEX,half,,1,1/day,2a limited spell (SRD)
 Vampire,13,11-16,multiattack-swing,Grave Strike,attack,melee,n,bludgeoning;necrotic,,,,2,at-will,
 Vampire,13,11-16,action,Bite,save,melee,n,necrotic,CON,other,,1,at-will,
 Vampire Umbral Lord,15,11-16,multiattack-swing,Grave Strike,attack,melee,n,slashing;necrotic,,,,1,at-will,split (grave strike/sickening ray)
