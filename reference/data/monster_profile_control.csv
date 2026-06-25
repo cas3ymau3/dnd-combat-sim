@@ -63,3 +63,58 @@ Sphinx of Valor,17,17+,action,Second Roar,WIS,ends,paralyzed,hard,n,0.33,at-will
 Sphinx of Valor,17,17+,action,Third Roar,CON,partial,prone,soft,y,0.33,at-will,,sequential roar
 Sphinx of Valor,17,17+,legendary,Weight of Years,CON,negates,exhaustion,soft,n,1.0,at-will,,native control legendary
 Tarrasque,30,17+,action,Thunderous Bellow,CON,negates,frightened,soft,y,0.5,5-6,1 turn,deafened co-condition is NONE-severity
+Aberrant Cultist,8,5-10,action,Mind Rot,WIS,negates,poisoned,soft,y,1.0,at-will,1 turn,
+Aboleth,10,5-10,action,Dominate Mind,WIS,ends,charmed,hard,y,0.25,2/day,until-removed,
+Abominable Yeti,9,5-10,action,Chilling Gaze,CON,negates,paralyzed,hard,y,1.0,at-will,1 turn,gaze folded into multiattack (additive)
+Air Elemental,5,5-10,action,Whirlwind,STR,negates,prone,soft,y,0.5,4-6,,
+Bandit Deceiver,7,5-10,action,Blinding Flash,CON,negates,blinded,soft,y,0.5,4-6,1 turn,
+Beholder Zombie,5,5-10,action,Eye Ray: Paralyzing,CON,ends,paralyzed,hard,n,0.5,at-will,save-ends,Eye Rays menu (2 of 4 rays/round -> 0.5)
+Beholder Zombie,5,5-10,action,Eye Ray: Fear,WIS,negates,frightened,soft,y,0.5,at-will,1 turn,Eye Rays menu
+Beholder Zombie,5,5-10,action,Eye Ray: Enervation,CON,negates,poisoned,soft,y,0.5,at-will,1 turn,Eye Rays menu
+Brazen Gorgon,9,5-10,action,Smelting Charge,DEX,negates,restrained;prone,soft,y,0.5,5-6,,
+Bulette,5,5-10,action,Deadly Leap,DEX,negates,prone,soft,y,1.0,at-will,,
+Centaur Warden,7,5-10,bonus,Entangling Trail,STR,negates,restrained,soft,y,0.5,5-6,until-escape,
+Chain Devil,8,5-10,action,Conjure Infernal Chain,DEX,negates,restrained,soft,y,1.0,at-will,until-escape,
+Chain Devil,8,5-10,reaction,Unnerving Gaze,WIS,negates,frightened,soft,n,1.0,at-will,1 turn,
+Chasme,6,5-10,bonus,Drone,CON,negates,unconscious,hard,y,1.0,at-will,1 min,
+Cloaker,8,5-10,bonus,Moan,WIS,negates,frightened,soft,n,1.0,at-will,1 turn,
+Cockatrice Regent,8,5-10,action,Petrifying Bite,CON,ends,petrified;restrained,hard,y,1.0,at-will,save-ends,cumulative-failure
+Death Cultist,8,5-10,bonus,Spirit Wail,WIS,negates,frightened,soft,y,0.5,5-6,1 turn,
+Dire Worg,10,5-10,action,Dreadful Howl,WIS,negates,frightened,soft,y,0.5,5-6,1 turn,
+Fomorian,8,5-10,action,Warping Hex,WIS,negates,exhaustion,soft,y,0.5,4-6,,
+Ghast Gravecaller,6,5-10,trait,Stench,CON,negates,poisoned,soft,n,1.0,at-will,1 turn,aura
+Giant Ape,7,5-10,action,Boulder Toss,DEX,negates,prone,soft,y,0.5,6,,
+Gladiator,5,5-10,action,Shield Bash,STR,negates,prone,soft,y,1.0,at-will,,
+Gorgon,5,5-10,action,Petrifying Breath,CON,ends,petrified;restrained,hard,n,0.5,5-6,save-ends,cumulative-failure
+Gorgon,5,5-10,bonus,Trample,DEX,negates,prone,soft,y,1.0,at-will,,
+Graveyard Revenant,7,5-10,action,Haunting Glare,WIS,negates,paralyzed,hard,n,0.5,5-6,1 turn,
+Guardian Naga,10,5-10,action,Poisonous Spittle,CON,negates,blinded,soft,y,1.0,at-will,1 turn,
+Haunting Revenant,10,5-10,action,Invitation,CHA,negates,restrained,soft,n,1.0,at-will,until-escape,cone teleport+swallow (swallowed=restrained)
+Hezrou,8,5-10,trait,Stench,CON,negates,poisoned,soft,n,1.0,at-will,1 turn,aura
+Invisible Stalker,6,5-10,action,Vortex,CON,negates,grappled,soft,y,1.0,at-will,until-escape,
+Mammoth,6,5-10,bonus,Trample,DEX,negates,prone,soft,y,1.0,at-will,,
+Medusa,6,5-10,bonus,Petrifying Gaze,CON,ends,petrified;restrained,hard,n,0.5,5-6,save-ends,cumulative-failure
+Mind Flayer,7,5-10,action,Mind Blast,INT,negates,stunned,hard,y,0.5,5-6,1 turn,
+Otyugh,5,5-10,action,Bite,CON,negates,poisoned,soft,y,1.0,at-will,save-ends,
+Otyugh,5,5-10,action,Tentacle Slam,CON,negates,stunned;grappled,hard,y,1.0,at-will,1 turn,most-severe stunned
+Performer Legend,10,5-10,action,Majestic Song,WIS,negates,charmed;frightened,hard,y,1.0,at-will,1 min,most-severe charmed
+Performer Legend,10,5-10,reaction,Warding Charm,WIS,negates,charmed,hard,n,1.0,at-will,1 turn,
+Performer Maestro,6,5-10,action,Beguiling Song,WIS,negates,charmed,hard,y,1.0,at-will,1 min,
+Pirate Captain,6,5-10,bonus,Captain's Charm,WIS,negates,charmed,hard,n,1.0,at-will,1 turn,
+Primeval Owlbear,7,5-10,action,Screech,CON,negates,incapacitated,hard,y,0.5,5-6,1 turn,
+Revenant,5,5-10,action,Vengeful Glare,WIS,negates,paralyzed;frightened,hard,n,1.0,at-will,1 turn,most-severe paralyzed
+Salamander,5,5-10,action,Constrict,STR,negates,restrained;grappled,soft,y,1.0,at-will,until-grapple-ends,
+Shambling Mound,5,5-10,action,Engulf,STR,negates,blinded;restrained;grappled,soft,y,1.0,at-will,until-escape,
+Spy Master,10,5-10,action,Smoke Bomb,CON,negates,blinded,soft,y,0.25,1/day,1 turn,
+Tree Blight,7,5-10,action,Grasping Root,STR,negates,grappled,soft,y,1.0,at-will,until-escape,
+Violet Fungus Necrohulk,7,5-10,action,Spore Bomb,CON,negates,poisoned,soft,y,0.5,5-6,1 turn,
+Violet Fungus Necrohulk,7,5-10,bonus,Absorb Body,STR,negates,restrained,soft,n,1.0,at-will,until-removed,grafted (custom restrain-like)
+Vrock,6,5-10,action,Spores,CON,negates,poisoned,soft,y,0.5,6,save-ends,
+Vrock,6,5-10,action,Stunning Screech,CON,negates,stunned,hard,y,0.25,1/day,1 turn,
+Water Elemental,5,5-10,action,Whelm,STR,negates,restrained;grappled,soft,y,0.5,4-6,until-escape,
+Yochlol,10,5-10,reaction,Toxic Escape,CON,negates,poisoned,soft,n,1.0,at-will,1 turn,reaction poison cloud on being hit
+Young Brass Dragon,6,5-10,action,Sleep Breath,CON,ends,unconscious;incapacitated,hard,y,1.0,at-will,save-ends,cumulative-failure breath
+Young Bronze Dragon,8,5-10,action,Repulsion Breath,STR,negates,prone,soft,n,1.0,at-will,,push + prone
+Young Silver Dragon,9,5-10,action,Paralyzing Breath,CON,ends,paralyzed;incapacitated,hard,n,1.0,at-will,save-ends,cumulative-failure breath
+Yuan-ti Abomination,7,5-10,action,Constrict,STR,negates,restrained;grappled,soft,y,1.0,at-will,until-grapple-ends,
+Yuan-ti Abomination,7,5-10,action,Poison Spray,CON,negates,blinded;poisoned,soft,y,0.5,5-6,1 turn,
