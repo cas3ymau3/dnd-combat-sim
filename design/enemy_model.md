@@ -121,17 +121,18 @@ of the way at the top tier.
 > **SOURCE OF TRUTH = the aggregator**, `python -m src.builds.monster_profile`
 > (→ frozen `monster_profile_by_band.csv`, §8). The numbers below are an
 > **illustrative snapshot** to convey the shape; do NOT treat them as canonical
-> or hand-type them into code — read them from the frozen table at wiring time,
-> and regenerate after the v2 reconciliation (§10). They will shift slightly when
-> the higher bands are re-tagged.
+> or hand-type them into code — read them from the frozen table at wiring time.
+> **Updated to the FINAL post-reconciliation data (s36):** the v2 refinement-10
+> cross-band reconciliation (§10) is DONE, so the four bands are now apples-to-apples
+> and these numbers are stable (no further re-tag pending).
 
 | knob | 0-4 | 5-10 | 11-16 | 17+ |
 |---|---|---|---|---|
-| **save_round_prob** (save-resolution instance share)¹ | 0.09 | 0.13 | 0.24 | 0.32 |
-| **save weights** STR/DEX/CON/INT/WIS/CHA | 7/32/48/4/10/0 | 16/36/30/6/12/0 | 5/41/34/3/15/3 | 3/53/37/0/0/7 |
-| elemental share (of all damage instances) | 37% | 44% | 60% | 65% |
+| **save_round_prob** (save-resolution instance share)¹ | 0.09 | 0.17 | 0.29 | 0.38 |
+| **save weights** STR/DEX/CON/INT/WIS/CHA | 7/32/48/4/10/0 | 12/36/34/6/12/0 | 4/41/34/2/15/3 | 3/55/36/0/0/5 |
+| elemental share (of all damage instances) | 37% | 47% | 61% | 67% |
 | reach ranged+both | 20% | 30% | 42% | 40% |
-| AoE share | 7% | 8% | 18% | 26% |
+| AoE share | 7% | 12% | 24% | 29% |
 | legendary prevalence | 0% | 2% | 35% | 89% |
 
 ¹ **save_round_prob** is set to the band's **save**-resolution instance share.
@@ -147,6 +148,73 @@ charms — which the census does not tag, by design). So grounding these weights
 a *correction*, not just a fill-in. **The mental-save importance everyone feels
 in play lives in the CONTROL channel (§6), not here** — these damaging-save
 weights are correctly CON/DEX-dominant.
+
+---
+
+## 4a. Two more grounded facets (captured s36): size distribution + three-prong mix
+
+Both are reproducible from the frozen census via `python -m src.builds.monster_profile`
+(`band_profile(...)["size_distribution"]` and `resolution_three_way(harmonized=...)` /
+`print_three_way()`). Snapshots below; read from the aggregator at wiring time.
+
+### Monster SIZE distribution per band (per-monster, % of band)
+
+Preserved raw — **not interpreted into a mechanic here.** Source = the `size` column of
+`monster_profile_monsters.csv`; surfaced per-band by the aggregator. It is strongly
+CR-dependent (so an aggregate average is misleading), which is why it is banded like
+everything else. Relevant later to size-gated mechanics (grapple / shove / some forced
+movement); how — if at all — to turn it into a knob is deferred to the enemy-behavior
+formalization.
+
+| size | 0-4 | 5-10 | 11-16 | 17+ |
+|---|---|---|---|---|
+| Tiny | 10.6% | 0.8% | 0% | 2.9% |
+| Small | 11.2% | 0% | 0% | 0% |
+| Medium | 52.8% | 36.5% | 34.8% | 17.1% |
+| Large | 23.1% | 43.7% | 32.6% | 11.4% |
+| Huge | 2.3% | 18.3% | 26.1% | 20.0% |
+| Gargantuan | 0% | 0.8% | 6.5% | **48.6%** |
+
+### Three-prong action mix — attack-for-damage / save-for-damage / control-save
+
+The enemy's per-round action splits three ways for a decision tree: an **attack-roll**
+damage ability, a **save-for-damage** ability, or a **control-save** ability. Built by
+combining the damaging census (`resolution`) with the control census. The "attack" prong
+folds in the small `both` (attack-then-save) and `auto` (no-roll, e.g. Magic Missile)
+shares — i.e. it is "has an attack roll or auto-delivery," the not-pure-save bucket.
+
+**Two weighting bases** (the control census is ALREADY cadence-discounted at source —
+at-will 1.0 / recharge 0.5 / limited 0.25 — so it is used as stored in both):
+
+- **RAW** — damaging rows at full weight. MISMATCHED: the damaging census never discounts
+  recharge/limited uses, so the damage prongs are inflated and **control reads as a floor.**
+
+| band | atk-dmg | save-dmg | control |
+|---|---|---|---|
+| 0-4 | 80% | 8% | 12% |
+| 5-10 | 73% | 15% | 12% |
+| 11-16 | 62% | 25% | 13% |
+| 17+ | 54% | 32% | 14% |
+
+- **HARMONIZED** (apples-to-apples — **prefer this for the decision tree**) — the same
+  cadence discount applied to the damaging rows too. Much of the high-CR "save-for-damage"
+  mass is recharge breath weapons + limited spells, which now discount down; the at-will
+  multiattacks (attack prong) do not, so the attack share rises and control ticks up:
+
+| band | atk-dmg | save-dmg | control |
+|---|---|---|---|
+| 0-4 | 83% | 5% | 12% |
+| 5-10 | 78% | 9% | 13% |
+| 11-16 | 69% | 17% | 14% |
+| 17+ | 61% | 24% | 16% |
+
+**Read:** as CR rises the damage side rotates attack → save-for-damage, while **control
+sits at a steady ~12–16%** of save-or-attack actions across all tiers. ⚠️ **The three
+prongs are NOT disjoint** — a damage-coupled control ability (Mind Blast = save-for-damage
+AND stun) is counted in BOTH the save-for-damage and control prongs (the control CSV's
+`also_damages` flag marks these; overlap ≈ 24–44% of control rows by band). Resolving the
+double-count is **deferred to the metrics-design + enemy-wiring discussion** (§10) — it is
+a decision about how the enemy-action decision tree is structured, not a data fix.
 
 ---
 
@@ -373,19 +441,22 @@ later arc.
 
 ## 10. Open items, sequencing, and deferrals
 
-- **v2 cross-band reconciliation** (open follow-up from the census; refinement 10).
-  Bands 11-16/17+/5-10 were tagged under the OLD omit rules; only ~30-45 monsters
-  (casters-with-damaging-spells + at-will damaging alternatives) are affected.
-  **The policy code is identical whether or not this lands** — reconciliation only
-  changes the numbers in the frozen band table (#2). So: **wire with the caveat
-  documented; reconcile as a separable data pass** (re-freeze the band table after).
-  Until it lands, cross-band comparisons of elemental/AoE/save shares read slightly
-  high for 0-4 purely from the rule change.
-- **Supplementary control-save census** (§6) — codebook LOCKED (s34, #3a:
-  `design/enemy_control_census.md`); the census itself runs at #3b, BEFORE the
-  wiring, so the control channel uses empirical data rather than the designer prior.
-  Bounded data task (tag save-forcing control: save type + condition + hard/soft,
-  cadence-discounted). See PROGRESS Track 1 #3b.
+- ~~**v2 cross-band reconciliation**~~ **DONE (s36, refinement 10).** All four bands
+  re-tagged on the same basis; the §4 snapshot is now final. (33 monsters + 2 size
+  variants; +46 rows → 897.)
+- ~~**Supplementary control-save census**~~ **DONE (s35, #3b).** 218 rows in
+  `monster_profile_control.csv`; the control channel (§6) now reads empirical data.
+- **Three-prong action-mix overlap** (§4a) — the attack-dmg / save-dmg / control-save
+  prongs are NOT disjoint: ~24–44% of control rows (by band) are damage-coupled control
+  (the `also_damages` flag), so they double-count between the save-dmg and control prongs.
+  **Resolve as part of the metrics-design + enemy-wiring discussion** (it is a structural
+  decision about the enemy action decision tree — fourth "damage+control" branch vs split
+  the weight — not a data fix). The HARMONIZED three-prong table (§4a) is the apples-to-
+  apples weighting to build that tree on.
+- **Monster size as a knob** (§4a) — the per-band size distribution is now captured raw
+  (aggregator + `monster_profile_monsters.csv`), deliberately NOT interpreted. Whether to
+  gate size-dependent character mechanics (grapple/shove/forced movement) on a per-band
+  size scalar is deferred to the enemy-behavior formalization.
 - **`both`-resolution riders** (attack-then-save): folded into attack rounds, not
   the binary damaging-save round, in v1 (§4 note). A refinement would let an attack
   round *also* force a save (modeling e.g. poison-on-bite) — defer until a build's
