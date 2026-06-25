@@ -1,0 +1,37 @@
+monster,cr,cr_band,section,ability,save_ability,save_effect,condition,hard_soft,also_damages,instances_per_round,recharge,duration,notes
+Adult Brass Dragon,13,11-16,action,Sleep Breath,CON,ends,unconscious;incapacitated,hard,y,1.0,at-will,save-ends,cumulative-failure breath (incap then unconscious)
+Adult Bronze Dragon,15,11-16,action,Repulsion Breath,STR,negates,prone,soft,n,1.0,at-will,,push 60ft + prone
+Adult Silver Dragon,16,11-16,action,Paralyzing Breath,CON,ends,paralyzed;incapacitated,hard,n,1.0,at-will,save-ends,cumulative-failure breath
+Arcanaloth,12,11-16,action,Banishing Claw,CHA,negates,incapacitated,hard,y,1.0,at-will,while-trapped,Requires Soul Tome; attack-then-save demiplane trap
+Archpriest,12,11-16,action,Holy Word,WIS,partial,stunned,hard,y,0.5,4-6,1 turn,
+Behir,11,11-16,action,Constrict,STR,negates,restrained;grappled,soft,y,1.0,at-will,until-grapple-ends,save-to-avoid grapple+restrain
+Beholder,13,11-16,action,Eye Ray: Charm,WIS,ends,charmed,hard,y,0.3,at-will,1 hour,Eye Rays menu (3 of 10 rays/round -> 0.3 each)
+Beholder,13,11-16,action,Eye Ray: Paralyzing,CON,ends,paralyzed,hard,n,0.3,at-will,1 min,Eye Rays menu
+Beholder,13,11-16,action,Eye Ray: Fear,WIS,negates,frightened,soft,y,0.3,at-will,1 turn,Eye Rays menu
+Beholder,13,11-16,action,Eye Ray: Enervation,CON,negates,poisoned,soft,y,0.3,at-will,1 turn,Eye Rays menu
+Beholder,13,11-16,action,Eye Ray: Telekinetic,STR,negates,restrained,soft,n,0.3,at-will,until-next-turn,Eye Rays menu
+Beholder,13,11-16,action,Eye Ray: Sleep,WIS,negates,unconscious,hard,n,0.3,at-will,1 min,Eye Rays menu
+Beholder,13,11-16,action,Eye Ray: Petrification,CON,ends,petrified,hard,n,0.3,at-will,save-ends,Eye Rays menu
+Death Tyrant,14,11-16,action,Eye Ray: Charm,WIS,ends,charmed,hard,y,0.3,at-will,1 hour,Eye Rays menu (3 of 10/round -> 0.3); beholder variant
+Death Tyrant,14,11-16,action,Eye Ray: Paralyzing,CON,ends,paralyzed,hard,n,0.3,at-will,1 min,Eye Rays menu
+Death Tyrant,14,11-16,action,Eye Ray: Fear,WIS,negates,frightened,soft,y,0.3,at-will,1 turn,Eye Rays menu
+Death Tyrant,14,11-16,action,Eye Ray: Enervation,CON,negates,poisoned,soft,y,0.3,at-will,1 turn,Eye Rays menu
+Death Tyrant,14,11-16,action,Eye Ray: Telekinetic,STR,negates,restrained,soft,n,0.3,at-will,until-next-turn,Eye Rays menu
+Death Tyrant,14,11-16,action,Eye Ray: Sleep,WIS,negates,unconscious,hard,n,0.3,at-will,1 min,Eye Rays menu
+Death Tyrant,14,11-16,action,Eye Ray: Petrification,CON,ends,petrified,hard,n,0.3,at-will,save-ends,Eye Rays menu
+Djinni,11,11-16,action,Create Whirlwind,STR,ends,restrained,soft,y,1.0,at-will,save-ends,
+Erinyes,12,11-16,action,Entangling Rope,STR,negates,restrained,soft,y,1.0,at-will,until-rope-destroyed,Requires Magic Rope
+Gulthias Blight,16,11-16,action,Life-Draining Root,CON,negates,restrained;grappled,soft,y,1.0,at-will,until-grapple-ends,
+Marid,11,11-16,action,Water Jet,DEX,partial,prone,soft,y,1.0,at-will,,
+Marilith,16,11-16,action,Constrict,STR,negates,restrained;grappled,soft,y,1.0,at-will,until-grapple-ends,
+Mind Flayer Arcanist,11,11-16,action,Mind Burst,INT,partial,stunned,hard,y,0.5,5-6,1 turn,
+Mummy Lord,15,11-16,action,Dreadful Glare,WIS,negates,paralyzed,hard,y,1.0,at-will,1 min,
+Nalfeshnee,13,11-16,bonus,Horror Nimbus,WIS,negates,frightened,soft,y,0.5,5-6,1 turn,
+Purple Worm,15,11-16,bonus,Swallow,STR,negates,blinded;restrained,soft,y,1.0,at-will,until-escape,only save-control; situational (needs grappled target)
+Rakshasa,13,11-16,action,Baleful Command,WIS,negates,incapacitated;frightened,hard,y,0.5,5-6,1 turn,
+Remorhaz,11,11-16,bonus,Swallow,STR,negates,blinded;restrained,soft,y,1.0,at-will,until-escape,only save-control; situational
+Salamander Inferno Master,15,11-16,action,Inferno Blast,DEX,partial,exhaustion,soft,y,0.5,5-6,,
+Sphinx of Lore,11,11-16,action,Mind-Rending Roar,WIS,negates,incapacitated,hard,y,0.5,5-6,1 turn,
+Sphinx of Lore,11,11-16,legendary,Weight of Years,CON,negates,exhaustion,soft,n,1.0,at-will,,native control legendary
+Ultroloth,13,11-16,action,Hypnotic Gaze,WIS,negates,stunned,hard,y,1.0,at-will,1 turn,
+Vampire,13,11-16,action,Charm,WIS,ends,charmed,hard,n,0.5,5-6,24 hours,casts Charm Person (spell-cast control; scanner-added)
