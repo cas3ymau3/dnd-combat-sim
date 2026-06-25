@@ -86,9 +86,10 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 32 (2026-06-23).** (s32: user reviewed, chose KEEP ALL —
-  the allowlist + disabled connectors + remote control are mid-census conveniences; revisit after
-  the 0-4 band finishes the whole census arc.)
+- **Last reviewed for reset: session 34 (2026-06-25).** (s34: reviewed, chose DEFER the reset —
+  the allowlist + Chrome are needed for the imminent #3b control census + #2 reconciliation. The
+  PLANNED reset moment is the post-#3b/#2 tear-down, which ends the empirical arc. s32: user
+  reviewed, chose KEEP ALL — mid-census conveniences.)
 - **Permission allowlist** — `.claude/settings.local.json` → `permissions.allow` (GITIGNORED,
   per-machine, NOT committed). Holds `Bash(git/gh/python/py/pytest *)` + **the FULL (17-tool)
   Claude-in-Chrome toolset**: `computer`/`find`/`form_input` (older) + `javascript_tool`/`navigate`/
@@ -778,6 +779,39 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **CONTROL-SAVE CENSUS CODEBOOK — `design/enemy_control_census.md` (2026-06-25, session 34, Track 1 #3a).**
+  Design-only mini-pass (no scraping) settling the codebook for the supplementary control-save census
+  that grounds `enemy_model.md` §6's control channel (replacing its designer prior with empirical data).
+  Branch `design/control-save-codebook` (off main). DOCS ONLY → suite SKIPPED per
+  `full-suite-foreground-only`. Mirrors the `enemy_profile.md` methodology-LOCKED style; restates only the
+  deltas from the damaging census.
+  - **Decisions LOCKED (user-approved s34; don't re-litigate):** (B) a **SEPARATE
+    `monster_profile_control.csv`** (one row per control ability) — keeps the damaging aggregator
+    (`monster_profile.py`) clean (control rows would otherwise pollute/force-filter the damage-type/
+    resolution/reach distributions); the monster-level `monster_profile_monsters.csv` is reused unchanged
+    (cond-immunity already prices whether control lands). (C) SCOPE = **save-forcing control incl.
+    damage-coupled** — any ability forcing a save vs a HARD/SOFT condition, even if it also deals damage
+    (Mind Blast tags here for its stun AND has a damage row in raw.csv; the two censuses are orthogonal,
+    no double-count). control.csv is self-contained → §6 reads it ALONE. EXCLUDES no-save on-hit riders
+    (stay as raw.csv `riders`, a §9 positioning concern) and NONE-severity (deafened). (F) WEIGHTING =
+    **cadence-discounted** `instances_per_round` (at-will 1.0 / recharge 0.5 / limited 0.25; `recharge`
+    column preserves raw cadence) — a DELIBERATE divergence from the damaging census's no-discount rule,
+    because control is cadence-DOMINATED (a 1/Day Dominate ≠ every round; counting it at 1.0 would inflate
+    control_save_prob, §6's headline knob, exactly where the big control lives).
+  - **Also settled:** HARD/SOFT per-condition classification table (paralyzed/petrified/stunned/unconscious/
+    incapacitated/charmed/dominated = HARD; frightened/blinded/restrained/poisoned/prone/grappled/
+    exhaustion = SOFT; deafened = NONE) — because we tag the actual condition, the hard/soft split is now
+    MEASURED, a strict upgrade over §6's "mental→hard / physical→soft" prior skew. Save keying verbatim.
+    Reuses the LOCKED Chrome `fetch()` workflow (only delta: scan each already-fetched statblock for
+    save-forcing control; raw.csv's save/both rows SEED the damage-coupled entries → small effort).
+  - **Aggregation → §6:** `control_save_prob[band]` (Σ instances ÷ n_monsters = expected control saves/round),
+    `control_save_weights[band]` (STR..CHA instance-weighted — expected to lift WIS/CHA/INT vs the CON/DEX
+    damaging weights), `hard_vs_soft[band]` (+ optional per-save-type severity). Freeze-table merge (append
+    columns to monster_profile_by_band.csv vs sibling monster_control_by_band.csv) deferred to wiring #1.
+  - **NEXT (Track 1 #3b):** run the control census + the #2 damaging cross-band reconciliation, BATCHED
+    (last Chrome-dependent work) → THEN tear down Chrome + the per-machine allowlist (planned end of the
+    empirical arc). `enemy_model.md` §6/§8/§10 pointers + this NEXT-STEP marker updated.
 
 - **ENEMY-MODEL DESIGN CONTRACT — `design/enemy_model.md` (2026-06-24, session 33).** Design+planning
   session (NOT code, per user scope call) deciding HOW the generalized enemy operates in combat,
@@ -2776,13 +2810,16 @@ Chrome-dependent data work FIRST — so (a) the user can then reset the allowlis
 turn off the expensive connectors for usage efficiency, and (b) #1 wires against
 FINAL data (no re-freeze / re-wire after the data changes underneath it).**
 
-1. **#3a — control-save CODEBOOK DESIGN** (a `design-first-for-cross-cutting-
-   primitives` mini-pass, like the damaging census got). Define: what counts as a
-   control ability, the HARD (turn-wasting) vs SOFT (output-reducing) taxonomy,
-   which save it keys on, the weighting. Streamlines the scrape. **Decision (user):
-   we WILL do the full control census — but design the codebook first to make it
-   efficient.** (Feeds the control-save channel in `design/enemy_model.md` §6,
-   replacing its designer prior with empirical data.)
+1. ~~**#3a — control-save CODEBOOK DESIGN**~~ **DONE (s34):**
+   `design/enemy_control_census.md` (codebook LOCKED). Settled: scope =
+   save-forcing control incl. damage-coupled (self-contained; §6 reads it alone);
+   HARD/SOFT per-condition table (MEASURED, upgrading §6's prior skew); save keying
+   verbatim; **cadence-discounted** weighting (at-will 1.0 / recharge 0.5 / limited
+   0.25 — a deliberate divergence from the damaging census because control is
+   cadence-dominated); a **separate `monster_profile_control.csv`** (keeps the
+   damaging aggregator clean); reuses the LOCKED Chrome `fetch()` workflow + the
+   unchanged `monster_profile_monsters.csv`. Feeds §6's `control_save_prob` /
+   `control_save_weights` / `hard_vs_soft`.
 2. **#3b — full control-save CENSUS** + **#2 — v2 refinement-10 cross-band
    reconciliation** (~30–45 monsters in 11-16/17+/5-10). BATCH these — both are the
    last Chrome-dependent work. **After this step: tear down the Chrome connector +

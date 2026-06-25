@@ -238,18 +238,22 @@ failures → fewer lost turns → higher *effective* DPR. A build that buys
 "can't be charmed" or Aura-of-Protection now shows a measurable resilience gain;
 without §6 it showed none.
 
-**Data sourcing — PLANNED empirical census, ahead of wiring (decided s33).**
+**Data sourcing — empirical census, ahead of wiring (codebook LOCKED s34).**
 The damaging census deliberately skipped pure-control actions, so the control
 channel's frequencies/weights/severity-split begin as a **designer prior** (the
 hierarchy above + the mental→hard / physical→soft lean), tunable as toggles (§7).
 **Decision (s33 roadmap): we WILL run a full supplementary control-save census
-BEFORE the wiring** — preceded by its own codebook-design pass (taxonomy,
-hard/soft classification, save keying, weighting; a
-`design-first-for-cross-cutting-primitives` mini-effort like the damaging
-census). So the channel wires against EMPIRICAL data, not the prior; the prior is
-the interim/fallback only if the census is later descoped. The census tags each
-monster's control save-forcing abilities (save type + condition + hard/soft),
-mirroring the damaging census. See PROGRESS NEXT-STEP Track 1 steps #3a/#3b.
+BEFORE the wiring** — its codebook-design pass is now **DONE and LOCKED**:
+`design/enemy_control_census.md` (s34, #3a) settles the scope (save-forcing
+control incl. damage-coupled), the HARD/SOFT per-condition table, save keying, the
+**cadence-discounted** weighting (a deliberate divergence from the damaging census
+— control is cadence-dominated), and a **separate `monster_profile_control.csv`**
+(keeps the damaging aggregator clean). So the channel wires against EMPIRICAL
+`control_save_prob` / `control_save_weights` / `hard_vs_soft` (and the per-condition
+hard/soft split is now MEASURED, upgrading the prior skew above); the prior becomes
+the interim/fallback + toggle default only. See PROGRESS NEXT-STEP Track 1 #3b for
+the census run. The census tags each monster's control save-forcing abilities (save
+type + condition + hard/soft), mirroring the damaging census.
 
 **Coupling to §5/§9.** The SOFT branch (restrained/prone/blinded) also makes the
 character easier to *hit* (attacks against it at advantage) — so the control
@@ -311,9 +315,14 @@ two axes**, plus a retired provenance file:
    project's "table is the source of truth" philosophy (`enemy_stats.py`). Kept
    **in-sync-tested** against `monster_profile.all_profiles()` exactly like
    `enemy_stats.regenerate()` has a sync test — regenerate via a `--write` entry
-   point on `monster_profile.py`. (The **control-channel prior** of §6 is NOT in
-   this census-derived table — it is a designer prior; keep it as a separate
-   small constants table / module so the empirical and prior data never blur.)
+   point on `monster_profile.py`. (The §6 **control channel** becomes
+   census-derived once the supplementary control census runs
+   (`design/enemy_control_census.md`, codebook LOCKED s34); at wiring time #1
+   decide whether its `control_save_prob` / `control_save_weights` / `hard_vs_soft`
+   columns append to this band table or freeze to a sibling
+   `monster_control_by_band.csv`. Until that census lands, §6 uses the designer
+   prior — kept as a separate small constants module so prior and empirical never
+   blur.)
 3. **Raw census** (the regenerable empirical record) —
    `reference/data/monster_profile_{monsters,raw}.csv`. Source of #2; kept as the
    normalized ground truth. Not read by the policy.
@@ -372,10 +381,11 @@ later arc.
   documented; reconcile as a separable data pass** (re-freeze the band table after).
   Until it lands, cross-band comparisons of elemental/AoE/save shares read slightly
   high for 0-4 purely from the rule change.
-- **Supplementary control-save census** (§6) — PLANNED (s33), preceded by a
-  control codebook-design pass, run BEFORE the wiring so the control channel uses
-  empirical data rather than the designer prior. Bounded data task (tag control
-  abilities: save type + condition + hard/soft). See PROGRESS Track 1 #3a/#3b.
+- **Supplementary control-save census** (§6) — codebook LOCKED (s34, #3a:
+  `design/enemy_control_census.md`); the census itself runs at #3b, BEFORE the
+  wiring, so the control channel uses empirical data rather than the designer prior.
+  Bounded data task (tag save-forcing control: save type + condition + hard/soft,
+  cadence-discounted). See PROGRESS Track 1 #3b.
 - **`both`-resolution riders** (attack-then-save): folded into attack rounds, not
   the binary damaging-save round, in v1 (§4 note). A refinement would let an attack
   round *also* force a save (modeling e.g. poison-on-bite) — defer until a build's
