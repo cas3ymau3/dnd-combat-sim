@@ -3038,7 +3038,13 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    - **(4) §5 `mult(t)` fractional defense multiplier + force-damage mode** — emit the
      typed-mitigation channel. NEXT.
    - **(5) §6 control-save channel** — pure/bundled split + closed-form expected-duration;
-     emit the control channel.
+     emit the control channel. ⚠️ **WATCH (flagged s38):** at band 0-4 the bundled-control
+     mass (≈0.084/mon) exceeds the save-for-damage budget it rides on (≈0.007/mon), so the
+     "bundled rides on save-dmg rounds" placement can't host it at low CR — spill the
+     overflow to an independent any-round draw (bottom-band-only patch; see enemy_model.md
+     §4b/§10). Corollary confirmed s38: low-CR save pressure is ~11% of rounds, almost all
+     CONTROL — so saving-throw protection prices into low-level builds via §6, not the
+     near-zero low-CR damaging-save rate.
    - **(6) §7 toggles** (all default OFF/neutral so no baseline drift).
    Emit every quantity through the step-1 seam; validate as a MECHANISM
    ([[validate-mechanism-not-build-value]]).

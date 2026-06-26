@@ -303,7 +303,16 @@ the per-turn budget.
   `save_round_prob` (save-dmg rate) fixed — "the monster controls instead of swinging."
   (Now empirically grounded by the action-level re-tab, not a heuristic carve.)
 - **Bundled rider placement:** conditioned on save-for-damage rounds (its real home),
-  not an independent any-round draw.
+  not an independent any-round draw. ⚠️ **LOW-CR reconciliation (flagged s38, decide at
+  step-5 wiring):** the action-level re-tab (`monster_profile.action_budget`) shows that
+  at band **0-4** the bundled-control mass (`bundled_control_per_mon ≈ 0.084`) is LARGER
+  than the save-for-damage budget it is meant to ride on (`save_dmg_per_mon ≈ 0.007`) —
+  there simply aren't enough save-for-damage rounds at low CR to host all the bundled
+  control. "Bundled rides on save-dmg rounds, rate bounded ≤ 1" therefore *cannot absorb
+  it* in the bottom band. Fix at step 5: where `bundled_per_mon > save_dmg_per_mon`, let
+  the overflow fall back to its own independent any-round draw (i.e. treat the excess as
+  pure-control-style on-top pressure) rather than silently capping/dropping it. The
+  higher bands reconcile fine (save-dmg ≫ bundled), so this is a bottom-band-only patch.
 - **Save-type weights:** one `control_save_weights` for both the pure and bundled control
   saves; a per-half split is a deferred refinement (likely over-fitting).
 
@@ -598,6 +607,14 @@ later arc.
 - **Control-save-weights per-half split** (§4b) — pure vs bundled control may differ in
   save-type distribution; v1 uses one `control_save_weights` for both. Split only if a
   build's defenses make the difference matter (likely over-fitting).
+- **Low-CR bundled-control overflow** (§4b, flagged s38) — at band 0-4 the bundled-control
+  mass exceeds the save-for-damage budget it rides on (`bundled ≈ 0.084` vs `save-dmg ≈
+  0.007` per monster), so the "rides on save-dmg rounds" placement can't host it in the
+  bottom band. Step-5 fix: spill the overflow to an independent any-round draw. A
+  bottom-band-only patch (higher bands have save-dmg ≫ bundled). This is also the
+  empirical confirmation that **low-CR save pressure is dominated by CONTROL** (≈11% of
+  rounds force a save — almost all control), so saving-throw protection still prices into
+  low-level builds via §6, not via the (near-zero) low-CR damaging-save rate.
 
 ---
 
