@@ -220,6 +220,39 @@ def band_save_weights(level: int) -> dict[str, int]:
     return {k: v for k, v in weights.items() if v > 0}
 
 
+# The 13 damage types the band table carries res_/imm_/vul_ prevalence columns for.
+_DAMAGE_TYPES = ("acid", "bludgeoning", "cold", "fire", "force", "lightning",
+                 "necrotic", "piercing", "poison", "psychic", "radiant",
+                 "slashing", "thunder")
+
+
+def band_damage_multiplier(level: int, damage_type: str) -> float:
+    """The §5 fractional damage multiplier `mult(t)` for *damage_type* at *level*'s band:
+
+        mult(t) = 1 − 0.5·P_resist(t) − P_immune(t) + P_vulnerable(t)
+
+    derived from the band's res/imm/vul PREVALENCES (none→×1, resist→×0.5, immune→×0,
+    vulnerable→×2), read from the frozen `monster_profile_by_band.csv` (`res_`/`imm_`/
+    `vul_<type>`, stored as PERCENTAGES → ÷100 here).  This is literally "the fraction of
+    your type-*t* damage that lands against the representative enemy" — the defensive
+    denominator on offense (§5).  E.g. fire ≈ 0.93/0.84/0.79/0.64 across the four bands.
+    A type with no prevalence columns (unknown / never-resisted) → 1.0."""
+    row = _band_table()[band_for_level(level)]
+    if f"res_{damage_type}" not in row:
+        return 1.0
+    res = row[f"res_{damage_type}"] / 100.0
+    imm = row[f"imm_{damage_type}"] / 100.0
+    vul = row[f"vul_{damage_type}"] / 100.0
+    return 1.0 - 0.5 * res - imm + vul
+
+
+def band_damage_multipliers(level: int) -> dict[str, float]:
+    """The full per-type fractional `mult(t)` profile (§5) for *level*'s band — the
+    mean-field resistance profile installed on the enemy dummy's `damage_multiplier`
+    when the §7 res/imm/vuln check is ON (default OFF → not installed → no drift)."""
+    return {t: band_damage_multiplier(level, t) for t in _DAMAGE_TYPES}
+
+
 # ---------------------------------------------------------------------------
 # Enemy-policy tuning constants (used by BaselineEnemyPolicy, not stored per level)
 # ---------------------------------------------------------------------------

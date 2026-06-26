@@ -67,6 +67,7 @@ class Entity:
         base_stats: dict[str, int | float | tuple] | None = None,
         resources: ResourcePool | None = None,
         damage_response: dict[str, str] | None = None,
+        damage_multiplier: dict[str, float] | None = None,
     ) -> None:
         self.id: int = next(_id_counter)
         self.name = name
@@ -98,6 +99,19 @@ class Entity:
         #     by effect_source and swept at the combat boundary like the modifiers.
         self.damage_response: dict[str, str] = dict(damage_response or {})
         self._effect_damage_response: dict[str, dict[str, str]] = {}
+        # FRACTIONAL per-type damage multiplier (enemy_model.md §5 — the mean-field
+        # band `mult(t)`).  The third, CONTINUOUS layer of substrate #4: where
+        # `damage_response` above is the binary D&D ×0.5/×2/×0, this is a real factor
+        # in roughly [0, 2] — "the fraction of incoming type-t damage that LANDS
+        # against the representative enemy of this CR band" (1 − 0.5·P_resist −
+        # P_immune + P_vulnerable).  Blend-only mean-field turns the population's
+        # binary resistances into one continuous multiplier (§3), so the average
+        # enemy can resist fire 6.4/10 of the way.  INTRINSIC to the enemy dummy
+        # (set at construction from its band, never swept — mirrors `damage_response`
+        # the trait), read defender-side in resolve_damage AFTER the categorical
+        # response.  Empty (the default everywhere) → inert → no baseline drift:
+        # installing it IS the §7 res/imm/vuln-check toggle turning ON.
+        self.damage_multiplier: dict[str, float] = dict(damage_multiplier or {})
         # Statuses installed by the cast_effect primitive (substrate #3), labelled
         # by effect_source: source → [status name, ...].  StatusSet is keyed by
         # status NAME (not source), so this index is what lets remove_effect drop a
@@ -343,6 +357,20 @@ class Entity:
         if has_vuln:
             return "vulnerability"
         return None
+
+    def damage_multiplier_for(self, damage_type: str | None) -> float | None:
+        """The effective FRACTIONAL multiplier for *damage_type* (enemy_model.md §5
+        `mult(t)`), or None if no fractional profile applies to this type.
+
+        Distinct from `damage_response_for` (the binary kind): this is the continuous
+        mean-field band factor.  None damage_type (untyped weapon hits) → None: an
+        untyped hit declares no type to price, so it is never mitigated.  A target with
+        an empty profile (the default — res/imm/vuln check OFF) also returns None, so
+        resolve_damage's fractional step is inert on every existing path.
+        """
+        if damage_type is None or not self.damage_multiplier:
+            return None
+        return self.damage_multiplier.get(damage_type)
 
     # ------------------------------------------------------------------
     # Repr

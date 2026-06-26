@@ -213,6 +213,40 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > step 3. Both threads (telemetry seam §13 + decision-tree structure §4b + control duration §6.5)
 > are LOCKED in `enemy_model.md`.
 >
+> **Session scope (2026-06-26, session 39) — DONE (#1 WIRING STEP 4, Track 1 roadmap step 4 /
+> `enemy_model.md` §12 step 3 — step 4 of 6: the §5 `mult(t)` fractional defense multiplier):**
+> scope settled with the user up front as **step 4 only**, plus a reconciliation of the two
+> "force mode" framings the step title conflated. Branch `feature/enemy-model-mult-t`, **556 tests
+> green (+16).** **The mechanism (3 layers):** **(1) `Entity.damage_multiplier`** — a third,
+> CONTINUOUS layer of substrate #4 (the binary `damage_response` ×0.5/×2/×0 → a real per-type
+> factor), intrinsic to the enemy (constructor param + `damage_multiplier_for()`, mirrors
+> `damage_response` the trait; never swept). Empty (the default EVERYWHERE) → `None` → inert →
+> zero baseline drift. **(2) `enemy_stats.band_damage_multiplier(level, type)` /
+> `band_damage_multipliers(level)`** — compute `mult(t) = 1 − 0.5·P_resist − P_immune +
+> P_vulnerable` from the frozen `monster_profile_by_band.csv` res/imm/vul prevalences (÷100).
+> **Fire reproduces the documented 0.93 / 0.84 / 0.79 / 0.64 exactly; force = 1.0 in every band**
+> (nothing resists force → the OUTGOING force-build behavior falls out of the lookup, no separate
+> toggle). **(3) `resolve_damage` phase 7b** — apply the fractional multiplier AFTER the binary
+> categorical response, **rounded** to the nearest int (mean-field expectation — round not floor,
+> so it integrates to the documented mean), emitting the §13 **mitigation** channel (outgoing
+> before/after by type; previously scaffolded). **FORCE-MODE RECONCILIATION (decided with user):**
+> §5's `mult(t)` is the ENEMY's intake on the character's OFFENSE (enemy defense — step 4's
+> payload); §7's "force-damage mode" is on the INCOMING axis (it types the ENEMY's *offense* so the
+> char's typed resistance never applies) — and it's a **no-op today because the enemy deals UNTYPED
+> damage** (`enemy.py` `_damage_type` defaults `None`). So §7 force-mode was **DEFERRED to the
+> incoming-damage-type-mix knob / step 6**, NOT built here. The §7 res/imm/vuln-check toggle IS
+> built: installing the profile = ON, the default (not installed) = OFF. **Validation
+> ([[validate-mechanism-not-build-value]]):** NEW `test_enemy_mult_t.py` (16 tests) — formula
+> matches the frozen table, reduces typed outgoing by the documented factor, mitigation records
+> before/after, res-check OFF → multiplier 1.0 + no records + no drift, untyped never priced,
+> per-type independence, end-to-end through the scheduler telemetry. **No new D&D *mechanic*** (the
+> ×0.5/×2/×0 RAW is substrate #4, already verified; `mult(t)` is a modeling construct) → no rules
+> web-verify needed ([[per-feature-ritual-verify-and-reflect]]). CODE changed → full suite run
+> FOREGROUND once, 556 green ([[full-suite-foreground-only]]). One deferral flagged: Elemental
+> Adept doesn't yet drop the `0.5·P_resist` term on the fractional path (§10, edge case).
+> **NEXT: #1 step 5** (§6 control-save channel — incl. the low-CR bundled-overflow patch), then
+> step 6 (§7 toggles). Merge to main pending user OK.
+>
 > **Session scope (2026-06-26, session 38) — DONE (#1 WIRING FOUNDATIONS, Track 1 roadmap step 4 /
 > `enemy_model.md` §12 step 3 — steps 1-3 of 6; first CODE since the empirical arc):** scope settled
 > with the user up front as foundations-only (the 6-step #1 is a big lift, split). Branch
@@ -3035,8 +3069,15 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      `SAVE_TYPE_WEIGHTS` → documented fallback). The §4 correction lands (CON/DEX dominate,
      WIS≈0). NOTE the magnitude: per-ACTION `save_round_prob` is far lower than the instance
      share at low CR (0-4: 9.1% → 0.7%) — user-accepted as the honest §4b correction.
-   - **(4) §5 `mult(t)` fractional defense multiplier + force-damage mode** — emit the
-     typed-mitigation channel. NEXT.
+   - ~~**(4) §5 `mult(t)` fractional defense multiplier**~~ **DONE (s39):**
+     `Entity.damage_multiplier` (substrate #4's continuous third layer) +
+     `enemy_stats.band_damage_multiplier(s)` (`1 − 0.5·res − imm + vul` from the frozen
+     table; fire reproduces 0.93/0.84/0.79/0.64, force = 1.0) + `resolve_damage` phase 7b
+     (round, mean-field) emitting the §13 mitigation channel (outgoing before/after by type).
+     Empty profile = the §7 res-check OFF default → inert → no drift. **§7 INCOMING
+     force-mode DEFERRED** (decided with user): it types the ENEMY's *offense* (zeroing the
+     char's incoming typed resistance) and is a no-op today (the enemy deals untyped damage),
+     so it belongs with the incoming-damage-type-mix knob (step 6), NOT mult(t).
    - **(5) §6 control-save channel** — pure/bundled split + closed-form expected-duration;
      emit the control channel. ⚠️ **WATCH (flagged s38):** at band 0-4 the bundled-control
      mass (≈0.084/mon) exceeds the save-for-damage budget it rides on (≈0.007/mon), so the
