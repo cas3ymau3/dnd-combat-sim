@@ -47,8 +47,8 @@ from typing import TYPE_CHECKING
 
 from ..policy import Choice, GameState
 from .enemy_stats import (
-    SAVE_ROUND_PROB,
-    SAVE_TYPE_WEIGHTS,
+    band_save_round_prob,
+    band_save_weights,
     baseline_aoe_dice,
     baseline_attack_dice,
     baseline_n_attacks,
@@ -200,7 +200,7 @@ class BaselineEnemyPolicy:
         fallback: "Entity | None" = None,
         n_attacks: "int | None" = None,
         rounds_per_combat: int = 4,
-        save_round_prob: float = SAVE_ROUND_PROB,
+        save_round_prob: "float | None" = None,
         save_weights: "dict[str, int] | None" = None,
         dc_stat: str = "enemy_save_dc",
         damage_type: "str | None" = None,
@@ -211,8 +211,14 @@ class BaselineEnemyPolicy:
         self._n_attacks = max(1, n_attacks if n_attacks is not None
                               else baseline_n_attacks(level))
         self._rounds = rounds_per_combat
+        # Damaging-save knobs default to the band-EMPIRICAL values (enemy_model.md §4/§4b):
+        # the per-action save-for-damage share and the CON/DEX-dominant save-type mix for
+        # this level's CR band.  An explicit arg still overrides (toggles / tests).
+        if save_round_prob is None:
+            save_round_prob = band_save_round_prob(level)
         self._save_round_pct = int(round(save_round_prob * 100))
-        self._save_weights = dict(save_weights or SAVE_TYPE_WEIGHTS)
+        self._save_weights = dict(save_weights) if save_weights is not None \
+            else band_save_weights(level)
         self._dc_stat = dc_stat
         self._damage_type = damage_type
         # Per-level damage DICE (the chart, ÷1.5, re-diced): one multiattack swing

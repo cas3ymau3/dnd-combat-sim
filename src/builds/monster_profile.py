@@ -37,6 +37,18 @@ DAMAGE_TYPES = (
 )
 SAVE_ABILITIES = ("STR", "DEX", "CON", "INT", "WIS", "CHA")
 SIZES = ("Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan")
+# The tracked condition vocabulary (the 2024 status set the censuses tag, used both as
+# riders and as condition immunities).  Closed list → fixed columns in the frozen table.
+CONDITIONS = (
+    "blinded", "charmed", "deafened", "exhaustion", "frightened", "grappled",
+    "incapacitated", "paralyzed", "petrified", "poisoned", "prone", "restrained",
+    "stunned", "unconscious",
+)
+# Map the census's uppercase save-ability tag to the engine's save_stat key.
+_SAVE_STAT = {ab: f"{ab.lower()}_save" for ab in SAVE_ABILITIES}
+
+# The frozen band table (the §8 enemy-model INPUT the policy reads at runtime).
+_BAND_TABLE_PATH = _DATA / "monster_profile_by_band.csv"
 
 
 def _split(field: str) -> list[str]:
@@ -269,6 +281,217 @@ def resolution_three_way(harmonized: bool = False) -> dict[str, dict]:
     return out
 
 
+def action_budget(harmonized: bool = True) -> dict[str, dict]:
+    """Per-band ACTION-LEVEL re-tabulation (design/enemy_model.md §4b) — the ternary
+    per-turn action budget the enemy decision tree draws from: **attack / save-for-damage
+    / pure-control**, plus the **bundled-control** rider rate.
+
+    The crucial difference from ``resolution_three_way`` (which counts damage INSTANCES,
+    so a 3-swing multiattack counts as 3): this counts action-economy SLOTS once — a
+    monster's whole multiattack collapses to ONE attack action, cadence-weighting the
+    alternatives (breath / limited spells discount). This yields the true per-turn mix
+    and, as a side effect, **corrects ``save_round_prob`` from the instance basis to the
+    per-action basis** (§4b): the runtime treats a round as one action choice, not N
+    swings, so the save-for-damage SHARE belongs on the action basis.
+
+    Sourcing rules (§4b implementation notes):
+      - group a monster's ``multiattack-swing`` rows into ONE attack action (weight =
+        the cadence of the multiattack, at-will → 1.0);
+      - keep only the PRIMARY action slot — ``legendary`` is the separate cadence-bump
+        knob (§10), ``bonus`` / ``trait`` / ``reaction`` are out of the per-turn budget;
+      - each ``action``-section damaging row is a separate alternative action, weight =
+        ``cadence_factor(recharge)`` (breath 0.5, limited 0.25); routed by ``resolution``
+        — ``save`` → save-for-damage prong, else (attack / both / auto) → attack prong;
+      - pure control (control census, ``also_damages == n``) → its stored
+        cadence-discounted ``instances_per_round`` → the third budget prong; it
+        DISPLACES attack (so ``save_dmg_action_share`` is invariant to control on/off);
+      - bundled control (``also_damages == y``) is NOT in the budget — it rides as a
+        second save on save-for-damage rounds (§4b), reported separately as a per-mon
+        rate.
+
+    ``harmonized`` cadence-discounts the damaging action rows; True (default) is
+    apples-to-apples with the already-discounted control census. The collapsed
+    multiattack is at-will either way, so harmonization mainly discounts breath/spells.
+    """
+    actions, monsters = load()
+    control = _load_rows(_CONTROL)
+    nmon = {b: sum(1 for m in monsters if m["cr_band"] == b) for b in BANDS}
+
+    # Group damaging action rows by (band, monster) so a multiattack collapses to one.
+    by_mon: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    for r in actions:
+        by_mon[(r["cr_band"], r["monster"])].append(r)
+
+    out: dict[str, dict] = {}
+    for b in BANDS:
+        if not nmon[b]:
+            continue
+        attack_w = save_w = 0.0
+        for (band, _mon), rows in by_mon.items():
+            if band != b:
+                continue
+            ma = [r for r in rows if r["section"] == "multiattack-swing"]
+            if ma:
+                # one attack action; multiattacks are at-will → cadence 1.0 (use the
+                # strongest cadence among them if a row were ever discounted).
+                attack_w += max(cadence_factor(r["recharge"]) for r in ma)
+            for r in rows:
+                if r["section"] != "action":
+                    continue  # primary action slot only (§4b (b))
+                w = cadence_factor(r["recharge"]) if harmonized else 1.0
+                if r["resolution"] == "save":
+                    save_w += w
+                else:  # attack / both / auto — the non-pure-save prong
+                    attack_w += w
+        pure_w = sum(_wnum(r["instances_per_round"]) for r in control
+                     if r["cr_band"] == b and r["also_damages"] == "n")
+        bundled_w = sum(_wnum(r["instances_per_round"]) for r in control
+                        if r["cr_band"] == b and r["also_damages"] == "y")
+        tot = attack_w + save_w + pure_w
+        out[b] = {
+            "attack_per_mon": round(attack_w / nmon[b], 3),
+            "save_dmg_per_mon": round(save_w / nmon[b], 3),
+            "pure_control_per_mon": round(pure_w / nmon[b], 3),
+            "bundled_control_per_mon": round(bundled_w / nmon[b], 3),
+            "share_attack": _pct(attack_w, tot),
+            "share_save_dmg": _pct(save_w, tot),       # the corrected save_round_prob
+            "share_pure_control": _pct(pure_w, tot),
+        }
+    return out
+
+
+def print_action_budget() -> None:
+    print(f"\n{'-'*72}\nACTION-LEVEL BUDGET (multiattack collapsed to 1 slot — §4b; "
+          f"corrects save_round_prob)\n{'-'*72}")
+    print(f"  {'band':<7}{'atk':>8}{'save-dmg':>10}{'pure-ctl':>10}{'bundled':>9}   "
+          f"share (atk / save-dmg / pure-ctl)")
+    for b, d in action_budget(harmonized=True).items():
+        print(f"  {b:<7}{d['attack_per_mon']:>8}{d['save_dmg_per_mon']:>10}"
+              f"{d['pure_control_per_mon']:>10}{d['bundled_control_per_mon']:>9}   "
+              f"{d['share_attack']:>4.0f}% / {d['share_save_dmg']:>4.0f}% / "
+              f"{d['share_pure_control']:>4.0f}%")
+
+
+# ---------------------------------------------------------------------------
+# Frozen per-band table (design/enemy_model.md §8) — the policy's runtime INPUT
+# ---------------------------------------------------------------------------
+#
+# One row per band carrying everything the enemy policy reads: the action-budget
+# shares (incl. the corrected save_round_prob), the six damaging-save weights, the
+# damage-type mix, reach/AoE shares, the per-type res/imm/vuln prevalences (→ §5
+# mult(t)), the per-condition immunity prevalences (→ rider pricing), and legendary
+# cadence.  Frozen to CSV (not computed at import) so it is eyeball-able / hand-editable,
+# matching enemy_stats.py's "table is the source of truth" philosophy, and kept
+# in-sync-tested against the live aggregator (test_enemy_band_table.py), exactly like
+# enemy_stats.regenerate() has a sync test.  Columns are built programmatically from the
+# closed vocabularies so the writer and loader stay symmetric.
+
+
+def band_table_columns() -> list[str]:
+    """The fixed column order of the frozen band table."""
+    cols = [
+        "band", "n_monsters", "n_actions", "total_instances",
+        "phys_share", "elem_share",
+        # action-level budget (§4b); save_dmg_action_share IS the corrected save_round_prob
+        "attack_action_share", "save_dmg_action_share", "pure_control_action_share",
+        "bundled_control_per_mon",
+        "save_round_prob_instance",   # the §4-footnote instance share, kept for eyeballing
+        "aoe_share",
+        "pct_with_legendary", "avg_legendary_actions", "pct_with_lair",
+    ]
+    cols += [f"savew_{ab}" for ab in SAVE_ABILITIES]
+    cols += [f"dmix_{t}" for t in DAMAGE_TYPES]
+    cols += [f"reach_{r}" for r in ("melee", "ranged", "both")]
+    cols += [f"res_{t}" for t in DAMAGE_TYPES]
+    cols += [f"imm_{t}" for t in DAMAGE_TYPES]
+    cols += [f"vul_{t}" for t in DAMAGE_TYPES]
+    cols += [f"cimm_{c}" for c in CONDITIONS]
+    return cols
+
+
+def _band_flat(profile: dict, budget: dict) -> dict:
+    """Flatten one band's nested ``band_profile`` + ``action_budget`` into the fixed
+    column schema (missing dict keys → 0.0)."""
+    p, b = profile, budget
+    row: dict[str, float | str] = {
+        "band": p["band"],
+        "n_monsters": p["n_monsters"],
+        "n_actions": p["n_actions"],
+        "total_instances": p["total_instances"],
+        "phys_share": p["phys_vs_elem"]["physical"],
+        "elem_share": p["phys_vs_elem"]["elemental_special"],
+        "attack_action_share": b["share_attack"],
+        "save_dmg_action_share": b["share_save_dmg"],
+        "pure_control_action_share": b["share_pure_control"],
+        "bundled_control_per_mon": b["bundled_control_per_mon"],
+        "save_round_prob_instance": p["resolution_mix"].get("save", 0.0),
+        "aoe_share": p["aoe_share"],
+        "pct_with_legendary": p["legendary"]["pct_with_legendary"],
+        "avg_legendary_actions": p["legendary"]["avg_legendary_actions"],
+        "pct_with_lair": p["legendary"]["pct_with_lair"],
+    }
+    for ab in SAVE_ABILITIES:
+        row[f"savew_{ab}"] = p["save_type_mix"].get(ab, 0.0)
+    for t in DAMAGE_TYPES:
+        row[f"dmix_{t}"] = p["damage_type_mix"].get(t, 0.0)
+    for r in ("melee", "ranged", "both"):
+        row[f"reach_{r}"] = p["reach_mix"].get(r, 0.0)
+    for t in DAMAGE_TYPES:
+        row[f"res_{t}"] = p["resistance_prevalence"].get(t, 0.0)
+    for t in DAMAGE_TYPES:
+        row[f"imm_{t}"] = p["immunity_prevalence"].get(t, 0.0)
+    for t in DAMAGE_TYPES:
+        row[f"vul_{t}"] = p["vulnerability_prevalence"].get(t, 0.0)
+    for c in CONDITIONS:
+        row[f"cimm_{c}"] = p["condition_immunity_prevalence"].get(c, 0.0)
+    return row
+
+
+def band_table_rows() -> list[dict]:
+    """The frozen-table rows computed LIVE from the censuses (one per present band).
+    The writer freezes these; the in-sync test compares the committed CSV to these."""
+    profiles = all_profiles()
+    budgets = action_budget(harmonized=True)
+    return [_band_flat(profiles[b], budgets[b]) for b in BANDS
+            if b in profiles and b in budgets]
+
+
+def _write_band_csv(rows: list[dict]) -> None:
+    cols = band_table_columns()
+    with _BAND_TABLE_PATH.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=cols)
+        w.writeheader()
+        for r in rows:
+            w.writerow({c: r.get(c, 0.0) for c in cols})
+
+
+def regenerate_band_table(write: bool = True) -> list[dict]:
+    """Recompute the frozen per-band table from the censuses and, if *write*, rewrite
+    ``monster_profile_by_band.csv``.  The freeze entry point (mirror of
+    ``enemy_stats.regenerate``); run ``python -m src.builds.monster_profile --write``."""
+    rows = band_table_rows()
+    if write:
+        _write_band_csv(rows)
+    return rows
+
+
+def load_band_table() -> dict[str, dict]:
+    """Load the frozen band table → ``{band: {column: value}}`` (floats parsed).  The
+    runtime read path for the enemy policy (it never re-aggregates the raw census)."""
+    out: dict[str, dict] = {}
+    cols = set(band_table_columns())
+    with _BAND_TABLE_PATH.open(newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            row: dict[str, float | str] = {}
+            for k, v in r.items():
+                if k == "band":
+                    row[k] = v
+                elif k in cols:
+                    row[k] = float(v)
+            out[r["band"]] = row
+    return out
+
+
 def print_three_way() -> None:
     for label, harm in (("RAW (damaging census NOT cadence-discounted — control share is a floor)", False),
                         ("HARMONIZED (both censuses cadence-discounted — apples-to-apples)", True)):
@@ -280,5 +503,11 @@ def print_three_way() -> None:
 
 
 if __name__ == "__main__":
-    print_profiles()
-    print_three_way()
+    import sys
+    if "--write" in sys.argv:
+        regenerate_band_table(write=True)
+        print(f"wrote {_BAND_TABLE_PATH}")
+    else:
+        print_profiles()
+        print_three_way()
+        print_action_budget()

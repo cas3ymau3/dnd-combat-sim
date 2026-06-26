@@ -39,6 +39,7 @@ from dataclasses import dataclass, field
 from typing import Callable, TYPE_CHECKING
 
 from .scheduler import Scheduler
+from .telemetry import CombatTelemetry
 
 if TYPE_CHECKING:
     from .entity import Entity
@@ -73,6 +74,10 @@ class CombatResult:
     # equals rounds_per_combat; in finite-HP mode it is the EMERGENT length — the round
     # the enemy dropped (≤ the round cap).  The new capacity-axis output.
     rounds_elapsed: int = 0
+    # Structured telemetry for this combat (design §13): saves / control / mitigation /
+    # economy, written by resolution.  Defaults to an empty accumulator so a CombatResult
+    # built by hand (tests) always carries one.
+    telemetry: CombatTelemetry = field(default_factory=CombatTelemetry)
 
 
 @dataclass
@@ -110,6 +115,17 @@ class DayResult:
         """Total rounds fought across the day — the denominator for a true per-round
         DPR once fights end on the enemy's death (emergent length)."""
         return sum(c.rounds_elapsed for c in self.combats)
+
+    @property
+    def telemetry(self) -> CombatTelemetry:
+        """The day's structured telemetry (design §13): each combat's CombatTelemetry
+        summed via ``merge``, exactly like the damage ledgers aggregate.  This is what
+        the §5 reporting layer and the §11 mechanism tests read instead of re-deriving
+        from entity internals."""
+        agg = CombatTelemetry()
+        for c in self.combats:
+            agg.merge(c.telemetry)
+        return agg
 
     def damage_received_by(self, entity_id: int) -> int:
         """Total damage dealt TO a specific entity across the day.
@@ -499,4 +515,5 @@ class DayRunner:
             damage_received=dict(scheduler.damage_received),
             damage_by_source_target=dict(scheduler.damage_by_source_target),
             rounds_elapsed=scheduler.rounds_elapsed,
+            telemetry=scheduler.telemetry,
         )

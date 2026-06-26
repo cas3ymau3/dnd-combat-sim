@@ -480,6 +480,7 @@ def resolve_save_damage(
     next_sequence: int,
     save_advantage: bool = False,
     negate_on_save: bool = False,
+    telemetry: "object | None" = None,
 ) -> int:
     """Resolve a save-FOR-damage spell.  Returns the next available sequence.
 
@@ -522,6 +523,11 @@ def resolve_save_damage(
     target.saving_throws_made += 1
     if not saved:
         target.saving_throws_failed += 1
+    # Structured seam (design §13): the DAMAGE save channel, keyed by ability.  The
+    # entity counters above stay (existing callers read them); this is the folded
+    # home.  None sink = a direct caller that doesn't pass telemetry → no-op.
+    if telemetry is not None:
+        telemetry.record_save(event.save_stat, "damage", saved)
 
     # Buff aura: a successful save vs a save-for-half spell takes NO damage instead
     # of half (Circle of Power).  Only changes the SUCCESS branch — a fail still
@@ -566,6 +572,7 @@ def resolve_damage(
     next_sequence: int,
     save_reroll_decider: "Callable[[int, int], int | None] | None" = None,
     rider_decider: "Callable[[str | None, str | None, bool], list[tuple[int, int]]] | None" = None,
+    telemetry: "object | None" = None,
 ) -> tuple[int, int]:
     """Resolve damage for a confirmed hit.  Returns (total_damage, next_sequence).
 
@@ -699,7 +706,7 @@ def resolve_damage(
 
     if target is not None:
         target.take_damage(total)
-        _check_concentration(target, total, rng, save_reroll_decider)
+        _check_concentration(target, total, rng, save_reroll_decider, telemetry)
 
     # Damage REDIRECT (substrate #7 / 7c, Warding Bond): the bearer is warded, so a
     # share of the amount IT JUST TOOK (post-resistance — phase 7 already halved it)
@@ -736,6 +743,7 @@ def _check_concentration(
     damage: int,
     rng: "SeededRNG",
     save_reroll_decider: "Callable[[int, int], int | None] | None" = None,
+    telemetry: "object | None" = None,
 ) -> None:
     """Force a concentration save when a concentrating entity takes damage.
 
@@ -758,11 +766,16 @@ def _check_concentration(
     # 10 on this concentration save (guide 41:308).  None when not in Dragon form.
     d20_floor = entity.statuses.get("concentration_save_floor")
     entity.concentration_checks += 1
-    if not resolve_saving_throw(
+    held = resolve_saving_throw(
         entity, "con_save", dc, rng, advantage=advantage,
         reroll_decider=save_reroll_decider,
         d20_floor=d20_floor,
-    ):
+    )
+    if not held:
         log.info("%s LOSES concentration on %s", entity.name, entity.concentration)
         entity.remove_effect(entity.concentration)
         entity.concentration_breaks += 1
+    # Structured seam (design §13): the ECONOMY channel — concentration checks
+    # forced by incoming damage and how many broke a spell.  None sink = no-op.
+    if telemetry is not None:
+        telemetry.record_concentration(broke=not held)

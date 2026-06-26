@@ -40,6 +40,7 @@ from .events import (
 )
 from .verbs import resolve_attack_roll, resolve_damage, resolve_save_damage, resolve_saving_throw
 from .taxonomy import is_spell_origin
+from .telemetry import CombatTelemetry
 
 if TYPE_CHECKING:
     from .entity import Entity
@@ -127,6 +128,14 @@ class Scheduler:
         # character's column here equals its damage_received[dummy] number — the
         # invariant that keeps the prior test corpus bit-comparable.
         self.damage_by_source_target: dict[tuple[int, int], int] = {}
+
+        # Structured output seam (design/enemy_model.md §13).  RESOLUTION writes it as
+        # events resolve (saves forced/failed, concentration checks/breaks, and — once
+        # the §5/§6 channels wire — typed mitigation + control lost-turns); the policy
+        # never touches it (CLAUDE.md #7).  Carried out on CombatResult and summed onto
+        # DayResult like the damage ledgers.  Recording is pure observation, so it moves
+        # no DPR baseline.
+        self.telemetry = CombatTelemetry()
 
         # Active zones (substrate #7 / 7b — design.md §3.1).  name → Zone Object,
         # installed by a cast_effect's `zones` payload.  At each entity's turn
@@ -227,7 +236,7 @@ class Scheduler:
                 # ACTOR's policy as this damage resolves.
                 rider_decider = self._make_deal_damage_decider(event)
                 for handler in handlers:
-                    result = handler(event, self.rng, self.queue, seq_counter, save_decider, rider_decider)  # type: ignore[call-arg]
+                    result = handler(event, self.rng, self.queue, seq_counter, save_decider, rider_decider, self.telemetry)  # type: ignore[call-arg]
                     if isinstance(result, tuple):
                         total_dmg, seq_counter = result
                         round_damage += total_dmg
@@ -275,6 +284,7 @@ class Scheduler:
                     seq_counter = handler(  # type: ignore[call-arg]
                         event, self.rng, self.queue, seq_counter,
                         save_advantage=save_adv, negate_on_save=negate,
+                        telemetry=self.telemetry,
                     )
 
             elif isinstance(event, RoundEndEvent):
