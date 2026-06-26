@@ -168,7 +168,8 @@ def test_baseline_enemy_attack_round_emits_n_swings():
     enemy = Entity(name="enemy", hp=10**9,
                    base_stats={"attack_bonus": 8, "enemy_save_dc": 16})
     pol = BaselineEnemyPolicy(level=8, primary=beast, rounds_per_combat=1)
-    # roll_one(100)=50 > 35 → an ATTACK round (no save pick consumed).
+    # roll_one(100)=50 > 19 (L8 band-grounded save_round_prob ≈ 0.19) → an ATTACK
+    # round (no save pick consumed).
     pol.on_combat_start(0, FakeRNG([50]))
     choices = pol.decide(_snap(enemy, beast, 1))
     assert [c.action_type for c in choices] == ["attack", "attack"]
@@ -184,9 +185,11 @@ def test_baseline_enemy_save_round_forces_a_weighted_save():
     enemy = Entity(name="enemy", hp=10**9,
                    base_stats={"attack_bonus": 8, "enemy_save_dc": 16})
     pol = BaselineEnemyPolicy(level=8, primary=beast, rounds_per_combat=1)
-    # roll_one(100)=10 ≤ 35 → a SAVE round; then _weighted_save roll_one(100)=5 lands
-    # in the first bucket (dex_save, weight 30).
-    pol.on_combat_start(0, FakeRNG([10, 5]))
+    # roll_one(100)=10 ≤ 19 (L8 band-grounded save_round_prob ≈ 0.19) → a SAVE round.
+    # The grounded 5-10 damaging-save weights (×10) are STR 117 / DEX 364 / CON 339 /
+    # INT 59 / WIS 121 (total 1000): a _weighted_save roll of 200 falls in the DEX
+    # bucket (118–481), the empirically-dominant damaging save.
+    pol.on_combat_start(0, FakeRNG([10, 200]))
     choices = pol.decide(_snap(enemy, beast, 1))
     assert len(choices) == 1
     c = choices[0]

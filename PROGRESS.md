@@ -89,7 +89,10 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 36 (2026-06-25) — RESET DONE.** s36 completed #2 (the last
+- **Last reviewed for reset: session 38 (2026-06-26) — nothing to reset (confirmed with user).** The
+  s36 tear-down stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). The empirical arc
+  is closed and s38 was pure Python, so nothing accumulated; marker bumped per the ≥2-session rule.
+- **Prior — session 36 (2026-06-25) — RESET DONE.** s36 completed #2 (the last
   Chrome work) and executed the planned empirical-arc tear-down: **allowlist reset to the
   git/gh/python/pytest baseline** (removed all 17 Chrome tools + the Browser: aliases + the 10
   read-only Bash utils cat/echo/wc/awk/grep/head/tail/sort/uniq/ls), and prompted the user to
@@ -208,9 +211,42 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > CODE changed → suite run per [[full-suite-foreground-only]]). Branch `analysis/size-and-cadence-capture`.
 > **METRICS DESIGN (Track 1 step 3) — DONE (s37).** See the s37 Done entry below + the roadmap
 > step 3. Both threads (telemetry seam §13 + decision-tree structure §4b + control duration §6.5)
-> are LOCKED in `enemy_model.md`. **NEXT: #1 — WIRE the enemy model into `BaselineEnemyPolicy`**
-> (roadmap step 4 / `enemy_model.md` §12 step 3): build the §13 seam first, then the §4b action
-> budget + §5 `mult(t)` + §6 control channel + §7 toggles, all default-OFF, mechanism-validated.
+> are LOCKED in `enemy_model.md`.
+>
+> **Session scope (2026-06-26, session 38) — DONE (#1 WIRING FOUNDATIONS, Track 1 roadmap step 4 /
+> `enemy_model.md` §12 step 3 — steps 1-3 of 6; first CODE since the empirical arc):** scope settled
+> with the user up front as foundations-only (the 6-step #1 is a big lift, split). Branch
+> `feature/enemy-model-wiring-foundations`, **540 tests green (+15).** **(1) §13 telemetry seam** —
+> NEW `src/telemetry.py` `CombatTelemetry`: a typed accumulator with a CLOSED 4-channel vocabulary
+> (saves / control / mitigation / economy), carried on `CombatResult` and aggregated onto `DayResult`
+> via `merge()` like the damage ledgers. Written by RESOLUTION only (verbs/scheduler), never policy
+> (CLAUDE.md #7); wired ADDITIVELY — the verbs take an optional `telemetry` sink defaulting to `None`,
+> so every direct caller is byte-identical, and the pre-existing entity counters were KEPT (the full
+> "fold into one home" migration is a documented deferral — memory
+> [[telemetry-seam-additive-not-migration]]). Populated now: the damage-save channel
+> (`resolve_save_damage`) + the economy concentration counters (`_check_concentration`); control +
+> mitigation are scaffolded for steps 4-5. **(2) freeze `monster_profile_by_band.csv`** — the §8 frozen
+> input the policy reads at runtime (no re-aggregation): `regenerate_band_table()`/`--write` +
+> `load_band_table()` (mirror of `enemy_stats.regenerate`), one row per band × **90 columns** (action
+> budget, six save weights, damage-type mix, reach/AoE, per-type res/imm/vuln, per-condition immunity,
+> legendary cadence), built programmatically from the closed vocabularies; in-sync-tested against the
+> live aggregator. **(3) action-level re-tabulation + band-grounded knobs** — `monster_profile.action_budget()`
+> collapses each monster's multiattack to ONE attack slot and cadence-weights the alternatives → the
+> ternary attack/save-dmg/pure-control budget, **correcting `save_round_prob` from the instance basis
+> to the per-action basis** (§4b). `enemy_stats` gains `band_for_level` / `band_save_round_prob` /
+> `band_save_weights` reading the frozen table; `BaselineEnemyPolicy` now defaults its damaging-save
+> rate + weights to these band-empirical values (the §4 correction: CON/DEX dominate, WIS≈0 for
+> *damaging* saves — the mental-save mass is the §6 control channel's job, step 5). `SAVE_ROUND_PROB` /
+> `SAVE_TYPE_WEIGHTS` kept as documented fallback. **Notable (user-accepted as-is):** the per-ACTION
+> `save_round_prob` is far lower than the instance share at low CR (band 0-4: 9.1% → **0.7%**) — the
+> honest §4b correction (a low-CR average monster almost always just swings; save-for-damage actions are
+> rare and recharge/limited-discounted). **Tests:** NEW `test_telemetry.py` (seam unit + a
+> resolution-matches-entity-counters integration) + `test_enemy_band_table.py` (in-sync + action-budget
+> mechanism + band-grounded knobs); updated the two `BaselineEnemyPolicy` weighted-save tests to the
+> grounded weights. No new D&D *mechanic* → no rules web-verify needed
+> ([[per-feature-ritual-verify-and-reflect]]). Mechanism-validated throughout
+> ([[validate-mechanism-not-build-value]]). **NEXT: #1 step 4** (§5 `mult(t)` defense multiplier +
+> force-damage mode), then step 5 (§6 control channel), step 6 (§7 toggles). Merge to main pending user OK.
 >
 > **Session scope (2026-06-25, session 35) — DONE (#3b CONTROL-SAVE CENSUS — all four
 > bands; #2 reconciliation DEFERRED):** ran the supplementary control-save census per the
@@ -2985,12 +3021,27 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    the lighter second checkpoint (once #1 produces real data). **DESIGN-ONLY session — no
    code changed → no test run** ([[full-suite-foreground-only]]).
 4. **#1 — WIRE the enemy model into `BaselineEnemyPolicy`** (`design/enemy_model.md`
-   §12 step 3): freeze the (reconciled) `monster_profile_by_band.csv` + in-sync
-   test; ground `SAVE_ROUND_PROB` / `SAVE_TYPE_WEIGHTS` (the latter a CORRECTION —
-   data says CON/DEX dominate, WIS≈0); add the `mult(t)` fractional defense
-   multiplier + force-damage mode; add the control-save channel; wire the toggles
-   (all default OFF/neutral so no baseline drift). Emit through the step-3 seam.
-   Validate as a MECHANISM ([[validate-mechanism-not-build-value]]).
+   §12 step 3). 6 sub-steps; **FOUNDATIONS (steps 1-3) DONE (s38)**, remaining 4-6:
+   - ~~**(1) §13 telemetry seam**~~ **DONE (s38):** `src/telemetry.py` `CombatTelemetry`
+     (closed 4-channel vocab) on `CombatResult`→`DayResult`, written by RESOLUTION via an
+     OPTIONAL sink (additive → byte-identical). Damage-save + concentration channels live;
+     control/mitigation scaffolded.
+   - ~~**(2) freeze `monster_profile_by_band.csv`**~~ **DONE (s38):** 90 cols × 4 bands via
+     `regenerate_band_table()`/`--write` + `load_band_table()` + in-sync test.
+   - ~~**(3) action-level re-tab + ground save knobs**~~ **DONE (s38):**
+     `monster_profile.action_budget()` (collapse multiattack→1 slot, cadence-weight) corrects
+     `save_round_prob` to the per-action basis; `BaselineEnemyPolicy` now defaults its
+     damaging-save rate + weights to the band-empirical values (`SAVE_ROUND_PROB` /
+     `SAVE_TYPE_WEIGHTS` → documented fallback). The §4 correction lands (CON/DEX dominate,
+     WIS≈0). NOTE the magnitude: per-ACTION `save_round_prob` is far lower than the instance
+     share at low CR (0-4: 9.1% → 0.7%) — user-accepted as the honest §4b correction.
+   - **(4) §5 `mult(t)` fractional defense multiplier + force-damage mode** — emit the
+     typed-mitigation channel. NEXT.
+   - **(5) §6 control-save channel** — pure/bundled split + closed-form expected-duration;
+     emit the control channel.
+   - **(6) §7 toggles** (all default OFF/neutral so no baseline drift).
+   Emit every quantity through the step-1 seam; validate as a MECHANISM
+   ([[validate-mechanism-not-build-value]]).
 5. **Pause/design → #4 — outputs / reporting layer** (design.md §8): the DPR-by-
    level curve + defensive summary + the 4×4 baseline comparison + per-build metric
    generation. Likely lighter given step 3; confirm scope at the checkpoint.

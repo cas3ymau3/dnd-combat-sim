@@ -166,19 +166,78 @@ def level_table() -> dict[int, dict]:
 
 
 # ---------------------------------------------------------------------------
+# Band selection + band-grounded damaging-save knobs (enemy_model.md §8 join)
+# ---------------------------------------------------------------------------
+#
+# The §8 join: a character LEVEL selects its CR BAND; the band (the frozen
+# `monster_profile_by_band.csv`) supplies the qualitative MIX, the level table
+# above supplies the magnitudes.  These accessors are the band half of the
+# enemy-numeric facade — BaselineEnemyPolicy defaults its damaging-save knobs to
+# them, grounding the SAVE_ROUND_PROB / SAVE_TYPE_WEIGHTS placeholders below.
+
+_AB_TO_SAVE = {"STR": "str_save", "DEX": "dex_save", "CON": "con_save",
+               "INT": "int_save", "WIS": "wis_save", "CHA": "cha_save"}
+_BAND_TABLE_CACHE: "dict | None" = None
+
+
+def band_for_level(level: int) -> str:
+    """The CR band a character *level* faces (the §8 step function; do not interpolate)."""
+    lvl = max(1, min(20, level))
+    if lvl <= 4:
+        return "0-4"
+    if lvl <= 10:
+        return "5-10"
+    if lvl <= 16:
+        return "11-16"
+    return "17+"
+
+
+def _band_table() -> dict:
+    """The frozen per-band table, loaded once and cached (the policy never re-aggregates
+    the raw census — §8)."""
+    global _BAND_TABLE_CACHE
+    if _BAND_TABLE_CACHE is None:
+        from .monster_profile import load_band_table
+        _BAND_TABLE_CACHE = load_band_table()
+    return _BAND_TABLE_CACHE
+
+
+def band_save_round_prob(level: int) -> float:
+    """The enemy's per-ROUND probability of forcing a damaging save at *level* — the
+    action-level save-for-damage share (§4b corrects this from the instance basis to the
+    per-action basis: a round is one action choice, not N multiattack swings)."""
+    return _band_table()[band_for_level(level)]["save_dmg_action_share"] / 100.0
+
+
+def band_save_weights(level: int) -> dict[str, int]:
+    """The damaging-save TYPE weights at *level*, read from the band table (the §4
+    correction: CON/DEX dominate, WIS≈0 for *damaging* saves — the mental-save mass
+    lives in the control channel, §6).  Percentages are scaled ×10 to int relative
+    weights (roll_one needs an int total); zero-weight saves are dropped."""
+    row = _band_table()[band_for_level(level)]
+    weights = {_AB_TO_SAVE[ab]: int(round(row[f"savew_{ab}"] * 10))
+               for ab in ("STR", "DEX", "CON", "INT", "WIS", "CHA")}
+    return {k: v for k, v in weights.items() if v > 0}
+
+
+# ---------------------------------------------------------------------------
 # Enemy-policy tuning constants (used by BaselineEnemyPolicy, not stored per level)
 # ---------------------------------------------------------------------------
 
-# Default split of save-forcing effects across the SIX save types.  PLACEHOLDER values
-# (unsubstantiated — user-approved as a knob to ground later from real 2024 monster
-# data), ordered by the user's prevalence ranking: DEX == WIS > STR > CON > INT == CHA.
-# Weights are relative (need not sum to 1).
+# FALLBACK split of save-forcing effects across the SIX save types.  These were the
+# original PLACEHOLDER values (the user's prevalence guess DEX==WIS > STR > CON > INT==CHA);
+# as of the #1 wiring BaselineEnemyPolicy defaults to the band-EMPIRICAL `band_save_weights`
+# instead (the §4 correction: CON/DEX dominate, WIS≈0 for *damaging* saves).  Kept only as
+# the interim/fallback default and for tests that want a band-agnostic mix.  Weights are
+# relative (need not sum to 1).
 SAVE_TYPE_WEIGHTS: dict[str, int] = {
     "dex_save": 25, "wis_save": 25, "str_save": 15,
     "con_save": 10, "int_save": 5, "cha_save": 5,
 }
 
-# Fraction of an enemy's rounds spent forcing a SAVE rather than attacking.
+# FALLBACK fraction of an enemy's rounds spent forcing a SAVE rather than attacking.  The
+# live default is now the band-empirical `band_save_round_prob` (the §4b per-action
+# correction); this scalar remains the interim/fallback only.
 SAVE_ROUND_PROB = 0.35
 
 # Default HP divisor for the finite-HP combat mode (see baseline_hp).  Tuned so a SOLO

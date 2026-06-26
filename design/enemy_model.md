@@ -1,9 +1,14 @@
 # Enemy model — how the generalized enemy operates (design-first contract)
 
-> Status: **DESIGN (session 33, 2026-06-24; extended s37, 2026-06-26). Not yet
-> wired.** This is the `design/buff_primitive.md`-style design-first note for the
-> generalized enemy policy. It decides HOW the enemy behaves in combat before any
-> policy code is written. Companion to `design/enemy_profile.md` (the empirical
+> Status: **DESIGN (session 33, 2026-06-24; extended s37, 2026-06-26). WIRING IN
+> PROGRESS — foundations (steps 1-3) wired s38.** This is the
+> `design/buff_primitive.md`-style design-first note for the generalized enemy
+> policy. It decides HOW the enemy behaves in combat before any policy code is
+> written. **s38 wired the foundations (§12 step 3, steps 1-3 of 6):** the §13
+> telemetry seam (`src/telemetry.py`, additive), the frozen `monster_profile_by_band.csv`
+> (§8) + in-sync test, and the action-level re-tab (`monster_profile.action_budget`)
+> grounding `BaselineEnemyPolicy`'s damaging-save rate/weights (§4 correction). REMAINING:
+> step 4 §5 `mult(t)` + force-mode; step 5 §6 control channel; step 6 §7 toggles. Companion to `design/enemy_profile.md` (the empirical
 > census — the DATA this consumes) and `design/design.md` §8 (the outputs this must
 > drive). The census is COMPLETE (510 monsters, 897 action rows + 218 control rows,
 > four CR bands); this note turns that data into enemy decisions.
@@ -624,13 +629,15 @@ the way the census (and the measured control data) says.
 1. ~~Census + methodology~~ DONE (s28–32).
 2. **This note** — enemy-model design (s33); decision-tree structure + telemetry
    seam + control-duration model added (s37, §4b / §6 / §13).
-3. **Wire the blend into `BaselineEnemyPolicy`** — add the §13 telemetry seam first;
-   freeze the band table (§8); add the action-level re-tabulation accessor (§4b) →
-   ground the ternary action budget (corrects `save_round_prob` to the action basis) +
-   save weights; add the `mult(t)` enemy-defense multiplier + force-mode; add the
-   control-save channel (§6) with the pure/bundled split and the expected-duration model;
-   wire the toggles (§7); emit every quantity through the §13 channels;
-   mechanism-validated (§11). NEXT session.
+3. **Wire the blend into `BaselineEnemyPolicy`** — 6 sub-steps. **FOUNDATIONS DONE
+   (s38):** ~~add the §13 telemetry seam~~ (`src/telemetry.py`); ~~freeze the band table
+   (§8)~~ (`monster_profile_by_band.csv` + in-sync test); ~~add the action-level
+   re-tabulation accessor (§4b) → ground the ternary action budget (corrects
+   `save_round_prob` to the action basis) + save weights~~ (`monster_profile.action_budget`
+   + `enemy_stats.band_save_*`; `BaselineEnemyPolicy` defaults grounded). **REMAINING:** add
+   the `mult(t)` enemy-defense multiplier + force-mode (step 4); add the control-save channel
+   (§6) with the pure/bundled split and the expected-duration model (step 5); wire the toggles
+   (§7, step 6); emit every quantity through the §13 channels; mechanism-validated (§11).
 4. Positioning / kiting + targeting arc (§9) — its own multi-session lift.
 5. Reporting / aggregation layer (design.md §8 outputs) + the 4×4 baseline
    comparison — consumes the §13 telemetry channels.
