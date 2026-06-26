@@ -2996,7 +2996,14 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    generation. Likely lighter given step 3; confirm scope at the checkpoint.
 6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
    (closest-to-complete), offense + profile-driven defense + control resilience, vs
-   the 4×4 baseline.
+   the 4×4 baseline. **Comparison idea (s37):** also reproduce **Treantmonk's tier
+   baselines** in the model — `design/build-guides/36_the_reanimating_bloodshot.txt`
+   (~line 107) already carries a "Treantmonk Damage Classes by Tier" column + a full
+   DPR-by-level breakdown of his baselines. Pinning each baseline's combat policy +
+   progression (feats/ASIs and WHEN) needs detail from his YouTube videos: Claude can't
+   watch video but CAN analyze a transcript (`pip install yt-dlp` for captions, or paste
+   the "Show transcript" panel). Set up when we reach this step. (Memory:
+   `treantmonk-baselines-for-build-eval`.)
 7. **THEN Track 2.** WATCH-ITEM: Track 2 carries the project's #1 architectural bet
    (declarative ability layer / "adding an ability = data") — it stays unproven at
    breadth until the Starfire Scion lands, so "last" must not drift to "never."
