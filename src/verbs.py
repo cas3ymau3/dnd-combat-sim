@@ -686,6 +686,28 @@ def resolve_damage(
     elif damage_response == "immunity":
         total = 0
 
+    # Phase 7b: FRACTIONAL mean-field band multiplier (enemy_model.md §5 `mult(t)`).
+    # The continuous extension of the binary response above (substrate #4's third
+    # layer): the representative enemy of the character's CR band carries a per-type
+    # fractional resistance profile, so a typed hit on it lands at `mult(t)` of its
+    # value (e.g. fire ≈ 0.64 at CR 17+ — a fire build bleeds value climbing into
+    # fire-immune tiers).  Applied to the post-categorical total and ROUNDED to the
+    # nearest int (mean-field expectation — round, not floor, so it integrates to the
+    # documented mean rather than systematically under-counting).  None (untyped hit,
+    # or no profile installed — the §7 res/imm/vuln check OFF, the default) → inert, so
+    # this is byte-identical on every existing damage path.  Emitted through the §13
+    # mitigation channel: the build's OUTGOING typed damage before vs after the
+    # multiplier (the typed-damage-mitigated figure), keyed by type, so the res-check
+    # ON/OFF state and the per-type loss are interpretable downstream.
+    mult = target.damage_multiplier_for(event.damage_type) if target is not None else None
+    if mult is not None:
+        before = total
+        total = int(round(total * mult))
+        if telemetry is not None:
+            telemetry.record_mitigation(
+                event.damage_type, outgoing_before=before, outgoing_after=total,
+            )
+
     log.info(
         "%s deals %d damage to %s  [%dd%d%s rolls=%s%s bonus=%d%s]",
         actor.name,
