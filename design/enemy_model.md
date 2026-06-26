@@ -7,8 +7,12 @@
 > written. **s38 wired the foundations (§12 step 3, steps 1-3 of 6):** the §13
 > telemetry seam (`src/telemetry.py`, additive), the frozen `monster_profile_by_band.csv`
 > (§8) + in-sync test, and the action-level re-tab (`monster_profile.action_budget`)
-> grounding `BaselineEnemyPolicy`'s damaging-save rate/weights (§4 correction). REMAINING:
-> step 4 §5 `mult(t)` + force-mode; step 5 §6 control channel; step 6 §7 toggles. Companion to `design/enemy_profile.md` (the empirical
+> grounding `BaselineEnemyPolicy`'s damaging-save rate/weights (§4 correction). **s39 wired
+> step 4:** the §5 `mult(t)` fractional defense multiplier — `Entity.damage_multiplier`
+> (substrate #4's continuous third layer) + `enemy_stats.band_damage_multiplier(s)` +
+> `resolve_damage` phase 7b emitting the §13 mitigation channel; the §7 INCOMING force-mode
+> was DEFERRED (it's enemy-offense typing, a no-op until the incoming-damage-type-mix knob /
+> step 6). REMAINING: step 5 §6 control channel; step 6 §7 toggles. Companion to `design/enemy_profile.md` (the empirical
 > census — the DATA this consumes) and `design/design.md` §8 (the outputs this must
 > drive). The census is COMPLETE (510 monsters, 897 action rows + 218 control rows,
 > four CR bands); this note turns that data into enemy decisions.
@@ -353,9 +357,14 @@ worth `1 − P_cond_immune(c)` of its nominal effect (e.g. frightened vs 17+:
 as doing anything — but it names the seam so rider value is priced when riders
 land.
 
-**Mechanism (named, not built):** the enemy carries a **per-type fractional
-resistance profile** for its band, applied at the enemy's damage-*intake* during
-damage resolution. Reuse / extend the existing incoming-resistance substrate
+**Mechanism (named s33, BUILT s39 — roadmap step 4):** the enemy carries a
+**per-type fractional resistance profile** for its band (`Entity.damage_multiplier`,
+built by `enemy_stats.band_damage_multipliers(level)`), applied at the enemy's
+damage-*intake* during damage resolution (`resolve_damage` phase **7b**, after the
+binary categorical response), **rounded** to the nearest int (mean-field expectation),
+and emitted through the §13 mitigation channel (outgoing before/after by type). Empty
+profile (the default — the §7 res/imm/vuln check OFF) → inert → no baseline drift.
+Reuse / extend the existing incoming-resistance substrate
 (#4, already built for the character side — Fire Shield etc.) rather than invent
 a new one; the only twist is that the multiplier is **fractional** (`mult(t)`)
 instead of the binary ×0.5. It folds in at the damage-resolution multiplicative
@@ -607,6 +616,13 @@ later arc.
 - **Control-save-weights per-half split** (§4b) — pure vs bundled control may differ in
   save-type distribution; v1 uses one `control_save_weights` for both. Split only if a
   build's defenses make the difference matter (likely over-fitting).
+- **Elemental Adept vs the fractional `mult(t)`** (flagged s39) — the binary categorical path
+  honors `ignore_resistance` (Elemental Adept bypasses *resistance*, not immunity/vuln), but the
+  step-4 fractional multiplier does NOT yet drop its `0.5·P_resist` term when the attacker has
+  Elemental Adept for that type (the multiplier is precomputed per type, not split into
+  components at apply time). A small refinement — recompute `mult` without the resist term, or
+  store the three components — deferred until a build pairs Elemental Adept with the band-defense
+  toggle ON (an edge case today; the enemy dummy defaults to no profile).
 - **Low-CR bundled-control overflow** (§4b, flagged s38) — at band 0-4 the bundled-control
   mass exceeds the save-for-damage budget it rides on (`bundled ≈ 0.084` vs `save-dmg ≈
   0.007` per monster), so the "rides on save-dmg rounds" placement can't host it in the
@@ -651,10 +667,12 @@ the way the census (and the measured control data) says.
    (§8)~~ (`monster_profile_by_band.csv` + in-sync test); ~~add the action-level
    re-tabulation accessor (§4b) → ground the ternary action budget (corrects
    `save_round_prob` to the action basis) + save weights~~ (`monster_profile.action_budget`
-   + `enemy_stats.band_save_*`; `BaselineEnemyPolicy` defaults grounded). **REMAINING:** add
-   the `mult(t)` enemy-defense multiplier + force-mode (step 4); add the control-save channel
-   (§6) with the pure/bundled split and the expected-duration model (step 5); wire the toggles
-   (§7, step 6); emit every quantity through the §13 channels; mechanism-validated (§11).
+   + `enemy_stats.band_save_*`; `BaselineEnemyPolicy` defaults grounded). **s39 DONE:**
+   ~~add the `mult(t)` enemy-defense multiplier (step 4)~~ (`Entity.damage_multiplier` +
+   `enemy_stats.band_damage_multiplier(s)` + `resolve_damage` phase 7b → §13 mitigation
+   channel; §7 incoming force-mode deferred to step 6). **REMAINING:** add the control-save
+   channel (§6) with the pure/bundled split and the expected-duration model (step 5); wire the
+   toggles (§7, step 6); emit every quantity through the §13 channels; mechanism-validated (§11).
 4. Positioning / kiting + targeting arc (§9) — its own multi-session lift.
 5. Reporting / aggregation layer (design.md §8 outputs) + the 4×4 baseline
    comparison — consumes the §13 telemetry channels.
