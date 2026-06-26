@@ -1,12 +1,19 @@
 # Enemy model — how the generalized enemy operates (design-first contract)
 
-> Status: **DESIGN (session 33, 2026-06-24). Not yet wired.** This is the
-> `design/buff_primitive.md`-style design-first note for the generalized enemy
-> policy. It decides HOW the enemy behaves in combat before any policy code is
-> written. Companion to `design/enemy_profile.md` (the empirical census — the
-> DATA this consumes) and `design/design.md` §8 (the outputs this must drive).
-> The census is COMPLETE (510 monsters, 851 action rows, four CR bands); this
-> note turns that data into enemy decisions.
+> Status: **DESIGN (session 33, 2026-06-24; extended s37, 2026-06-26). Not yet
+> wired.** This is the `design/buff_primitive.md`-style design-first note for the
+> generalized enemy policy. It decides HOW the enemy behaves in combat before any
+> policy code is written. Companion to `design/enemy_profile.md` (the empirical
+> census — the DATA this consumes) and `design/design.md` §8 (the outputs this must
+> drive). The census is COMPLETE (510 monsters, 897 action rows + 218 control rows,
+> four CR bands); this note turns that data into enemy decisions.
+>
+> **s37 (this metrics-design pass) added three LOCKED decisions ahead of #1 wiring:**
+> §4b (the enemy action decision tree — ternary action budget + `also_damages` rider,
+> resolving the §4a three-prong overlap; action budget sourced by an empirical
+> action-level re-tabulation, not a carve), §6 step 5 (control persistence as a
+> closed-form expected-duration grounded by the census `duration` column), and §13
+> (the structured-telemetry seam #1 emits through, replacing the monkeypatch habit).
 >
 > Project memory: `enemy-profile-empirical-direction`,
 > `standardized-dpr-baseline-not-realism`, `validate-mechanism-not-build-value`,
@@ -212,9 +219,95 @@ at-will 1.0 / recharge 0.5 / limited 0.25 — so it is used as stored in both):
 sits at a steady ~12–16%** of save-or-attack actions across all tiers. ⚠️ **The three
 prongs are NOT disjoint** — a damage-coupled control ability (Mind Blast = save-for-damage
 AND stun) is counted in BOTH the save-for-damage and control prongs (the control CSV's
-`also_damages` flag marks these; overlap ≈ 24–44% of control rows by band). Resolving the
-double-count is **deferred to the metrics-design + enemy-wiring discussion** (§10) — it is
-a decision about how the enemy-action decision tree is structured, not a data fix.
+`also_damages` flag marks these; overlap ≈ 24–44% of control rows by band). **RESOLVED in
+§4b (s37):** the runtime does NOT consume these prongs as a disjoint partition — the
+`also_damages` flag *splits* the control mass into a pure-control prong (in the action
+budget) and a bundled rider (on save-for-damage rounds), so the overlap is intentional
+cross-axis pressure, not a double-count to net out.
+
+---
+
+## 4b. The enemy action decision tree — the structure §3/§6 wire to (s37, LOCKED)
+
+> Design-pass decision (session 37). Settles how the per-band knobs (§4) and the
+> control channel (§6) compose into the enemy's per-round behavior BEFORE the §12
+> step-3 wiring consumes them. The three-prong overlap (§4a) and the carve-vs-census
+> question are resolved here.
+
+**The governing reframe: TWO independent per-axis pressure channels, not a partition.**
+The §4a "three prongs summing to 100%" is *descriptive census color* for the action
+MIX; it is NOT the object the runtime draws from. §3 (damaging) and §6 (control) are
+**independent channels** — control fires *on top of* the damaging choice, not in
+competition with it for a single action slot. Once you stop forcing the prongs to sum
+to 100%, an `also_damages` ability is not double-counted by two branches fighting over
+one slot: it contributes its *damage* to the damaging channel and its *control* to the
+control channel — two different consequences feeding two different measurements. This is
+the **B1** decision (s37): two saves for one bundled ability is the *better instrument*,
+because each consequence is priced against the build's *relevant* defense (a no-Evasion /
+high-mental-save build correctly eats Mind Blast's damage but dodges its stun — a single
+netted save would mis-attribute one of the two). Realism (one save, coupled consequences)
+is deprioritized per §1/§3, exactly as sampling was.
+
+**The action budget — a ternary draw, one per round, sums to 1.** The control census
+has two structurally different populations (`also_damages` flag), routed differently:
+
+1. **(i) attack round** — multiattack vs AC (the existing attack branch).
+2. **(ii) save-for-damage round** — one AoE, half on a save (the existing save branch).
+3. **(iii) pure-control round** (`also_damages = N`) — the enemy spends its WHOLE action
+   on a control effect and deals **no damage** (Hold Person, Dominate, a fear-only gaze).
+   This **displaces** a damage action — the new prong.
+
+**The bundled-control rider — on top of (ii).** Bundled control (`also_damages = Y`,
+e.g. Mind Blast) IS a save-for-damage ability, so it lives in channel (ii): a
+save-for-damage round has some probability its AoE *also* imposes control on the failed
+save (a SECOND, control save — the agreed B1 cross-axis double-save), **conditioned on
+save-for-damage rounds** (its true home; the rate is then naturally bounded ≤ 1).
+
+**Why this resolves the save-frequency inflation.** The census control rate splits, it
+does not stack. Worked at 17+ (harmonized control = 16%, overlap ≈ 40%):
+- pure = 16 × 0.6 = **9.6%** → action-budget prong (iii), *displaces* a damage action;
+- bundled = 16 × 0.4 = **6.4%** → rides on save-dmg rounds (6.4/24 ≈ 27% of them also stun).
+- Total control saves/round = 9.6% + 6.4% = **16%, the original rate, fully preserved.**
+
+Only the **6.4% bundled** portion adds an "extra save on top," and that is the *intended*
+cross-axis double-save (price Evasion and mental-saves independently). The **9.6% pure**
+portion *replaces* a damage action instead of stacking on it — so a turn the enemy spends
+dominating you is not also a turn it breathes fire. Naive "all control on top" dumped the
+full 16% on top (9.6% of it spurious) AND left the displaced damage in place; this model
+cuts on-top inflation to the intended 6.4% and correctly zeroes damage on pure-control
+rounds. So the §4a harmonized table is **promoted** from descriptive color to the *source
+of the action budget*, with `also_damages` doing the pure-vs-rider split.
+
+**Sourcing the action budget — EMPIRICAL action-level re-tabulation, not a carve (s37).**
+The action budget is NOT obtained by arbitrarily carving the pure-control share out of the
+attack share. It is re-tabulated from the **frozen** census at the ACTION level (no new
+census): the damaging census stores a whole Multiattack as ONE `multiattack-swing` row
+(with `instances_per_round = N`), so counting action-economy *slots* once — collapsing the
+per-monster multiattack-swing rows into a single attack action, cadence-weighting the
+alternatives — yields the true per-turn attack / save-dmg / pure-control budget. This also
+**corrects `save_round_prob`**: §4 grounds it on the save *instance* share, but the runtime
+treats a round as one *action* choice, so it belongs on the *action* basis (multiattack
+counted once, not N times) — the re-tab fixes that for free. Implementation notes (deferred
+to #1, a new accessor over frozen data like `resolution_three_way`): (a) group a monster's
+multiattack-swing rows into one attack action; (b) keep only the PRIMARY action slot —
+`legendary` is the separate cadence-bump knob (§10), `bonus`/`trait`/`reaction` are out of
+the per-turn budget.
+
+**Sub-decisions (s37, resolved):**
+- **What pure-control displaces:** carve from the **attack** share, leaving the grounded
+  `save_round_prob` (save-dmg rate) fixed — "the monster controls instead of swinging."
+  (Now empirically grounded by the action-level re-tab, not a heuristic carve.)
+- **Bundled rider placement:** conditioned on save-for-damage rounds (its real home),
+  not an independent any-round draw.
+- **Save-type weights:** one `control_save_weights` for both the pure and bundled control
+  saves; a per-half split is a deferred refinement (likely over-fitting).
+
+**Default discipline / no baseline drift.** Control OFF ⇒ p(iii) = 0 and no rider ⇒ the
+exact current binary attack/save behavior. Turning control ON has a *coupled* effect by
+design — incoming damage drops (pure-control rounds displace attacks) while lost-turns
+rise — which is physically real (a turn spent dominating is not a turn spent hitting); it
+is documented rather than fought. A build wanting to isolate only the lost-turn effect can
+set the displacement knob to ride-on-top instead of displace.
 
 ---
 
@@ -277,7 +370,11 @@ investments zero value.
 damaging-save channel:
 
 1. **`control_save_prob[band]`** — probability per round the enemy forces a
-   *control* save (rises with CR; control density climbs at the top tiers).
+   *control* save (rises with CR; control density climbs at the top tiers). Per §4b
+   this rate is *split* by the `also_damages` flag: the **pure-control** portion is a
+   prong of the ternary action budget (it displaces a damage action), the **bundled**
+   portion rides as a second save on save-for-damage rounds. The two channels are
+   independent — control is not a slice of one action budget shared with damage.
 2. **`control_save_weights`** — the save-type distribution for control effects,
    DISTINCT from the damaging-save weights. Reflects the in-play hierarchy +
    physical control: `DEX ≈ WIS > CON > INT ≈ CHA ≈ STR` (community rule of
@@ -300,6 +397,25 @@ damaging-save channel:
      the HARD branch; physical control (STR/DEX/CON — grapple/restrain/poison)
      leans SOFT. So a failed WIS save is *probably* a lost turn; a failed STR save
      is *probably* a debuff.
+
+**5. Duration — a closed-form EXPECTED-duration multiplier (s37, LOCKED), grounded by
+the census `duration` column.** A failed control does not cost exactly one turn — the
+scariest control *persists* (Dominate / Hold are `save-ends`; ~50% of the hard-control
+census is `save-ends` or `1 min`), and truncating every effect to one turn would gut the
+exact thing this channel exists to price. v1 models persistence as a **mean-field expected
+number of affected turns** (no stateful status object — that is the §10-deferred fidelity
+step), grounded by the *measured* `duration` tag on each control row:
+   - `1 turn` → 1 affected turn.
+   - `save-ends` → the character RE-saves with its OWN bonus each turn, so
+     `E[turns] = 1/s` (s = the build's save-success prob). This **double-prices** save
+     investment: good saves both fail the initial save less *and* recover faster
+     (s = 0.6 → ~0.67 turns; s = 0.3 → ~2.3 turns), which a flat one-turn model cannot do.
+   - `1 min` / `until-escape` / `until-removed` → capped fixed durations (cap at the
+     remaining combat length; the per-tag mapping is a #1 wiring detail).
+   A failed HARD control then costs `E[turns]` lost (output 0 each); a failed SOFT control
+   reduces output by `soft_factor` for `E[turns]`. Stays low-variance (deterministic
+   expectation, no duration roll). The full `StatusSet` save-ends re-roll engine (an
+   *ongoing-save* system with emergent duration) remains the §10 fidelity deferral.
 
 **How it prices investment.** Better mental-save bonuses → fewer control
 failures → fewer lost turns → higher *effective* DPR. A build that buys
@@ -347,10 +463,12 @@ values; each can be overridden per evaluation run.
 | **condition-immunity check** | ON / OFF | rider pricing on or off |
 | **incoming damage-type mix** | empirical[band] / untyped / single-type / **force** | gates the character's *incoming* typed resistance |
 | **— force-damage mode** | (a value of the row above) | all enemy damage → force ⇒ NO character typed resistance applies; **isolates flat/untyped mitigation** (raw AC, Uncanny Dodge, temp HP, heals) from typed mitigation — the delta vs res-check-on is the value of the build's typed defenses |
-| **control channel** | ON / OFF | §6 incapacitation pressure on or off |
-| **control_save_prob** | prior[band] / 0 / high | how much control pressure |
-| **control_save_weights** | prior / uniform / single-type | single-type (e.g. all-WIS) isolates one mental-save investment |
-| **hard_control_frac / soft_factor** | prior (type-skewed) / scalar | lost-turn share vs debuff factor |
+| **control channel** | ON / OFF | §6 incapacitation pressure on or off (OFF ⇒ ternary budget collapses to the binary attack/save-dmg, no rider — zero baseline drift) |
+| **control_save_prob** | band (census) / 0 / high | how much control pressure; splits into pure-control (budget prong iii) + bundled rider per `also_damages` (§4b) |
+| **control displacement** | displace-attack (default) / ride-on-top | whether a pure-control round *replaces* a damage action (real, coupled) or stacks on top (isolates the lost-turn effect alone) — §4b |
+| **control_save_weights** | census / uniform / single-type | single-type (e.g. all-WIS) isolates one mental-save investment |
+| **hard_control_frac / soft_factor** | census (type-skewed) / scalar | lost-turn share vs debuff factor |
+| **control duration** | census `duration` (`save-ends`→`1/s`) / fixed-1-turn | expected lost-turns; fixed-1-turn de-prices the save-ends recovery, isolating the initial-fail effect (§6 step 5) |
 | **ranged-kiting fraction** | 0 (full melee uptime) / band ranged share / custom | melee build uptime loss vs ranged/kiting share — STUB now (see §9/§10) |
 | **AoE share** | empirical[band] / 0 | matters for Evasion / multi-target defenses |
 | **legendary cadence** | OFF / band bump | extra incoming actions/round at 11-16 / 17+ |
@@ -446,13 +564,13 @@ later arc.
   variants; +46 rows → 897.)
 - ~~**Supplementary control-save census**~~ **DONE (s35, #3b).** 218 rows in
   `monster_profile_control.csv`; the control channel (§6) now reads empirical data.
-- **Three-prong action-mix overlap** (§4a) — the attack-dmg / save-dmg / control-save
-  prongs are NOT disjoint: ~24–44% of control rows (by band) are damage-coupled control
-  (the `also_damages` flag), so they double-count between the save-dmg and control prongs.
-  **Resolve as part of the metrics-design + enemy-wiring discussion** (it is a structural
-  decision about the enemy action decision tree — fourth "damage+control" branch vs split
-  the weight — not a data fix). The HARMONIZED three-prong table (§4a) is the apples-to-
-  apples weighting to build that tree on.
+- ~~**Three-prong action-mix overlap**~~ **RESOLVED (s37, §4b).** The prongs are NOT a
+  disjoint partition the runtime consumes; the `also_damages` flag *splits* the control
+  mass into a pure-control action-budget prong (displaces damage) and a bundled rider (on
+  save-for-damage rounds). The overlap is intentional cross-axis pressure, not a
+  double-count. The action budget is sourced by an empirical action-level re-tabulation of
+  the frozen census (collapse multiattack, cadence-weight), NOT a heuristic carve — which
+  also corrects `save_round_prob` to a per-action basis. Derivation accessor deferred to #1.
 - **Monster size as a knob** (§4a) — the per-band size distribution is now captured raw
   (aggregator + `monster_profile_monsters.csv`), deliberately NOT interpreted. Whether to
   gate size-dependent character mechanics (grapple/shove/forced movement) on a per-band
@@ -467,9 +585,14 @@ later arc.
   incoming actions/round), grounded to band prevalence; the census deliberately
   captures ≤1 damaging legendary use (documented undercount). Default OFF.
 - **Rider / control effects modeled as real status objects.** v1 prices control as
-  an output-factor / lost-turn (§6) and riders via a multiplier (§5). Modeling them
-  as actual `StatusSet` conditions with durations (save-ends re-rolls, etc.) is a
-  later fidelity step; the seam is named.
+  an output-factor / lost-turn over a **closed-form expected duration** (§6 step 5,
+  grounded by the census `duration` column — `save-ends` → `1/s` on the character's own
+  save), and riders via a multiplier (§5). Modeling them as actual `StatusSet` conditions
+  with real per-turn save-ends re-rolls (an *ongoing-save* system with emergent, variance-
+  carrying duration) is the later fidelity step; the seam is named.
+- **Control-save-weights per-half split** (§4b) — pure vs bundled control may differ in
+  save-type distribution; v1 uses one `control_save_weights` for both. Split only if a
+  build's defenses make the difference matter (likely over-fitting).
 
 ---
 
@@ -480,26 +603,87 @@ DPR value. Specifically — the blend fires damaging-save vs attack rounds at th
 band rate over many seeds; save-type frequencies match the band weights; the
 `mult(t)` multiplier reduces typed outgoing damage by the documented factor;
 force-mode zeroes the effect of a typed character resistance; the control channel
-fires control saves at the prior rate and a failed save costs a turn (hard) or
+fires control saves at the band rate and a failed save costs a turn (hard) or
 scales output (soft) as configured; each toggle flips the corresponding behavior
 (all-attack → zero save rounds; res check OFF → multiplier 1.0; control OFF → no
 lost turns; band override → the other band's mix); the frozen band table is in
-sync with the aggregator. We do NOT assert that "fire build DPR at CR17 is
-correct" — only that the model prices it the way the census (and the stated
-control prior) says.
+sync with the aggregator. Plus the §4b/§6 structure (s37): the ternary action budget
+fires attack / save-dmg / pure-control at the band's *action-level* shares; a
+pure-control round deals zero damage (displaces); a bundled (`also_damages`) round
+forces BOTH a damage save and a control save; control OFF restores the exact binary
+attack/save behavior (no baseline drift); a `save-ends` control's expected lost-turns
+scales as `1/s` with the character's save (a high-save build recovers in fewer turns);
+the structured-telemetry channels (§13) emit the same counts the mechanism asserts. We
+do NOT assert that "fire build DPR at CR17 is correct" — only that the model prices it
+the way the census (and the measured control data) says.
 
 ---
 
 ## 12. Downstream sequence (extends `enemy_profile.md`)
 
 1. ~~Census + methodology~~ DONE (s28–32).
-2. **This note** — enemy-model design (s33).
-3. **Wire the blend into `BaselineEnemyPolicy`** — freeze the band table (§8),
-   ground save_round_prob + save weights, add the `mult(t)` enemy-defense
-   multiplier + force-mode, add the control-save channel (§6), and the toggles
-   (§7), mechanism-validated (§11). NEXT session.
+2. **This note** — enemy-model design (s33); decision-tree structure + telemetry
+   seam + control-duration model added (s37, §4b / §6 / §13).
+3. **Wire the blend into `BaselineEnemyPolicy`** — add the §13 telemetry seam first;
+   freeze the band table (§8); add the action-level re-tabulation accessor (§4b) →
+   ground the ternary action budget (corrects `save_round_prob` to the action basis) +
+   save weights; add the `mult(t)` enemy-defense multiplier + force-mode; add the
+   control-save channel (§6) with the pure/bundled split and the expected-duration model;
+   wire the toggles (§7); emit every quantity through the §13 channels;
+   mechanism-validated (§11). NEXT session.
 4. Positioning / kiting + targeting arc (§9) — its own multi-session lift.
 5. Reporting / aggregation layer (design.md §8 outputs) + the 4×4 baseline
-   comparison.
+   comparison — consumes the §13 telemetry channels.
 6. First honest end-to-end build evaluation (offense + profile-driven defense +
    control resilience).
+
+---
+
+## 13. Structured telemetry seam — the single channel #1 emits through (s37, LOCKED)
+
+> Design-pass decision (session 37), the Thread-A half of the metrics design. Settles
+> HOW the enemy model (and, going forward, every build) reports the quantities a
+> cross-build evaluation needs, BEFORE #1 wiring starts emitting them. The §8 frozen
+> band table is the model's INPUT; this is its OUTPUT seam.
+
+**The debt this pays down.** Today the only structured outputs are the damage ledgers on
+`CombatResult` / `DayResult` (`damage_log`, `damage_received`, `damage_by_source_target`,
+`rounds_elapsed`). *Everything else* a build's resilience depends on — slots spent,
+concentration checks, parry / AoO budget — is audited by reaching into resource pools and
+policy internals from tests (`char.resources.available(...)`, `p1._aoo_round`). That
+monkeypatch-telemetry habit is fine for a one-off assertion but is the wrong substrate for
+the enemy model, which needs a pile of *new* quantities that have no home at all: control
+uptime, lost-turn rate, save-fail rates by type, typed-damage mitigated. So the seam is a
+structural prerequisite for #1, not just cleanup.
+
+**Shape — a typed accumulator with a small CLOSED channel vocabulary** (the chosen option,
+s37; mirrors the project's "closed verb set" + "table is the source of truth" philosophy —
+NOT a free-form `record(channel, key, value)` event sink, and NOT ad-hoc flat fields that
+churn the result dataclass per metric). A `CombatTelemetry` object is carried on
+`CombatResult` and aggregated onto `DayResult` exactly like the damage ledgers. The fixed
+channels (extend deliberately, like adding a verb — not casually):
+
+| channel | records | prices / feeds |
+|---|---|---|
+| **saves** | saves forced / passed / failed, keyed by (ability type, channel ∈ {damage, control}) | save-bonus + Evasion + typed-resistance investment; the §4b cross-axis split is *visible* here (saves split by channel, so the bundled double-save is interpretable, not hidden) |
+| **control** | turns lost (hard) and turns reduced (soft) + the `soft_factor` applied + the expected-duration realized, by save type | mental-save investment, "can't be charmed", Aura of Protection (§6) — the lost-turn rate / control-uptime outputs |
+| **mitigation** | outgoing damage before vs after `mult(t)`, by damage type (typed-damage mitigated); incoming damage by type | the §5 defensive denominator; the character's typed incoming resistance |
+| **economy** | resources spent (slots, war_priest, brutality, …), concentration checks forced / failed, reactions used | folds the existing slot-audit / parry-budget / concentration-count monkeypatches into ONE home |
+
+**Who writes it — RESOLUTION only, never policy (preserves CLAUDE.md #7).** The seam is
+written by the scheduler / verb handlers as they roll dice and mutate state — they already
+know the outcome (this save failed, this much was mitigated, this turn was lost). The
+policy stays a pure read: the *enemy* policy CHOOSES which save to force; the *scheduler*
+RECORDS the result. Recording is pure observation — it must never change a die or an
+outcome, so adding a channel cannot move a DPR baseline.
+
+**Granularity — typed aggregate counters / distributions per combat, summed across the
+day** (matching the mean-field, low-variance, interpretable values of §1), NOT a per-event
+log. Per-round resolution is kept only where an output needs it (e.g. control uptime as a
+fraction of rounds). One structured surface; the §5 reporting layer (step 5) and the
+mechanism tests (§11) both read it instead of re-deriving from internals.
+
+**Checkpoint coupling (per the roadmap).** This is the *substantial* half of the metrics
+design (seam + emittable set). The lighter finalization — cross-build reporting
+*principles* once #1 produces real data — is the #4 pause; decide there whether #4 stays a
+full design pause or becomes build-out.

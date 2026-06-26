@@ -157,6 +157,38 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > before/after each band). **Per-feature reflection DONE** (DDB-index≠census-set workflow lesson;
 > the `git+files=real save` truncation near-miss; refinement-10 1b bluntness). **EMPIRICAL/CHROME
 > ARC CLOSED:** allowlist reset to baseline + Chrome turned OFF + CONFIG LEDGER bumped (see above).
+> **Session scope (2026-06-26, session 37) — DONE (METRICS DESIGN, Track 1 step 3 — DESIGN
+> ONLY, no code):** settled the two coupled threads the s36 follow-up deferred and wrote them into
+> `design/enemy_model.md` as three LOCKED sections. **(A) Thread A — the STRUCTURED TELEMETRY SEAM
+> (§13):** a typed `CombatTelemetry` accumulator with a CLOSED channel vocabulary (saves / control /
+> mitigation / economy), carried on `CombatResult` + aggregated on `DayResult` like the damage
+> ledgers, **written by RESOLUTION only (never policy → preserves CLAUDE.md #7)**; it folds the
+> existing slot-audit / parry-budget / concentration-count monkeypatches into one home and gives #1's
+> new quantities (control uptime, lost-turn rate, save-fail-by-type, typed-damage-mitigated) a
+> structured channel. Chosen over a free-form event sink and over ad-hoc flat fields. **(B) Thread B
+> — the enemy action DECISION TREE (§4b):** the key reframe — §3 (damaging) + §6 (control) are TWO
+> INDEPENDENT per-axis pressure channels, NOT a partition; the §4a three-prong table is descriptive
+> color, promoted to the *source* of the action budget. **B1 (two saves for a bundled ability) is the
+> better instrument** — each consequence priced against the build's relevant defense; realism (one
+> netted save) is deprioritized per §1/§3. The user sharpened it: split the control census by
+> `also_damages` → **ternary action budget (attack / save-dmg / PURE-control-displaces-damage) + a
+> bundled-control RIDER on save-dmg rounds.** This KILLS the save-frequency inflation: pure control
+> displaces a damage action (9.6% at 17+), only the bundled portion rides on top (6.4% — the intended
+> cross-axis double-save), total control rate preserved. Action budget sourced by an **empirical
+> action-level re-tabulation** of the frozen census (the `multiattack-swing` row stores the whole
+> multiattack as 1 row → collapse + cadence-weight; NO new census), which also CORRECTS
+> `save_round_prob` from the instance basis to the per-action basis. Sub-decisions: pure control
+> carves from the attack share (save-dmg knob fixed); rider conditioned on save-dmg rounds; one
+> `control_save_weights` for both halves. **(C) §6 step 5 — control DURATION:** the control census
+> already has a populated `duration` column (68 `1 turn`, 39 `save-ends`, 30 `1 min`, …), so v1 = a
+> **closed-form EXPECTED-duration** multiplier (no status object): `1 turn`→1, `save-ends`→`1/s` on
+> the character's OWN save (double-prices save investment — fail less AND recover faster), capped
+> fixed durations otherwise. Full `StatusSet` save-ends re-roll engine stays the §10 fidelity
+> deferral. **All default-OFF → zero baseline drift.** Updated `enemy_model.md` §4/§4a/§6/§7/§10/§11/
+> §12 + status header to reconcile; PROGRESS roadmap step 3 flipped to DONE. **No code → no test run**
+> ([[full-suite-foreground-only]]). Branch `design/enemy-metrics-seam-and-decision-tree`. **NEXT: #1
+> wiring (roadmap step 4).**
+>
 > **s36 FOLLOW-UP (same session, pure-Python analysis on the frozen tables, no Chrome):** captured two
 > facets the user asked about. (1) **Monster SIZE distribution per band** — now surfaced by the
 > aggregator (`band_profile()["size_distribution"]`), preserved RAW/uninterpreted (source = the `size`
@@ -174,9 +206,11 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > structure of the enemy action decision tree (4th "damage+control" branch vs split the weight) is part
 > of formalizing enemy behavior, NOT a data fix. **525 tests green** (aggregator is analysis tooling;
 > CODE changed → suite run per [[full-suite-foreground-only]]). Branch `analysis/size-and-cadence-capture`.
-> **NEXT (pure Python): the substantive METRICS DESIGN (Track 1 step 3) — which now explicitly INCLUDES
-> settling the 3-prong overlap + the enemy action decision-tree structure — THEN #1 wiring
-> (`enemy_model.md` §12 step 3) against the now-FINAL band tables.**
+> **METRICS DESIGN (Track 1 step 3) — DONE (s37).** See the s37 Done entry below + the roadmap
+> step 3. Both threads (telemetry seam §13 + decision-tree structure §4b + control duration §6.5)
+> are LOCKED in `enemy_model.md`. **NEXT: #1 — WIRE the enemy model into `BaselineEnemyPolicy`**
+> (roadmap step 4 / `enemy_model.md` §12 step 3): build the §13 seam first, then the §4b action
+> budget + §5 `mult(t)` + §6 control channel + §7 toggles, all default-OFF, mechanism-validated.
 >
 > **Session scope (2026-06-25, session 35) — DONE (#3b CONTROL-SAVE CENSUS — all four
 > bands; #2 reconciliation DEFERRED):** ran the supplementary control-save census per the
@@ -2934,21 +2968,22 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    `design/enemy_profile.md` "Census status". **This ENDED the empirical/Chrome arc** —
    the Chrome connector + per-machine allowlist were torn down at the s36 close. Everything
    after #2 is pure Python.
-3. **Metrics DESIGN (before #1, substantive — not just a thin sketch).** Informed
-   by what #2/#3 reveal the enemy can emit: define the STRUCTURED TELEMETRY SEAM +
-   the emittable quantities (control uptime, typed-damage mitigated, save-fail
-   rates by type, lost-turn rate, …). Purpose: #1 emits through ONE structured
-   channel instead of the project's monkeypatch-telemetry habit (the slot audit /
-   parry budget / concentration count are evidence that debt is real). **NOTE: this
-   design + the #4 design pause are ONE effort with two checkpoints** — substantial
-   design here (seam + emittable set), lighter finalization before #4 (cross-build
-   reporting *principles*, once #1 produces real data). Decide at the #4 checkpoint
-   whether #4 still needs a full pause or just becomes build-out. **ALSO settle here
-   (folded in s36):** the **enemy action decision-tree structure** — the three-prong
-   attack-dmg / save-dmg / control-save mix is grounded (`enemy_model.md` §4a,
-   HARMONIZED table), but the prongs OVERLAP (damage-coupled control ≈ 24-44% of
-   control rows), so the tree's branch structure (4th combined branch vs split
-   weight) must be decided before §6 wiring consumes it.
+3. ~~**Metrics DESIGN (before #1, substantive)**~~ **DONE (s37).** Both coupled threads
+   settled and written into `enemy_model.md` (3 new LOCKED sections): **§13** the
+   STRUCTURED TELEMETRY SEAM — a typed `CombatTelemetry` accumulator with a closed channel
+   vocabulary (saves / control / mitigation / economy), carried on `CombatResult`, written
+   by RESOLUTION only (never policy), replacing the monkeypatch habit; **§4b** the enemy
+   action DECISION TREE — reframed as two independent per-axis channels (not a partition),
+   a ternary action budget (attack / save-dmg / **pure-control displaces damage**) + a
+   bundled-control rider on save-dmg rounds via the `also_damages` split (resolves the §4a
+   overlap: pure control displaces, bundled rides → only the intended cross-axis double-save
+   adds saves; inflation killed). Action budget sourced by an **empirical action-level
+   re-tabulation** of the frozen census (collapse multiattack, cadence-weight — NOT a carve;
+   also corrects `save_round_prob` to a per-action basis); **§6 step 5** control persistence
+   as a **closed-form expected-duration** grounded by the census `duration` column
+   (`save-ends` → `1/s` on the character's own save). The #4 reporting-principles pause is
+   the lighter second checkpoint (once #1 produces real data). **DESIGN-ONLY session — no
+   code changed → no test run** ([[full-suite-foreground-only]]).
 4. **#1 — WIRE the enemy model into `BaselineEnemyPolicy`** (`design/enemy_model.md`
    §12 step 3): freeze the (reconciled) `monster_profile_by_band.csv` + in-sync
    test; ground `SAVE_ROUND_PROB` / `SAVE_TYPE_WEIGHTS` (the latter a CORRECTION —
