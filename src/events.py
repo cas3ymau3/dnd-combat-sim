@@ -268,6 +268,49 @@ class SaveDamageEvent(Event):
 
 
 @dataclass
+class ControlSaveEvent(Event):
+    """A CONTROL save delivery (design/enemy_model.md §6) — the incapacitation-pressure
+    mirror of SaveDamageEvent, but it deals NO damage: the TARGET rolls a saving throw
+    vs the actor's DC and, on a FAILURE, loses output for an expected number of turns
+    (hard control → turn wasted; soft control → output × soft_factor).
+
+    v1 models the cost as an OUTPUT-FACTOR recorded through the §13 control-telemetry
+    channel — NOT a stateful status object and NOT the character policy skipping its
+    action (that ongoing-save fidelity is the §10 deferral).  resolve_control_save rolls
+    the save, records it (saves channel, "control"), and on a fail computes the
+    closed-form expected affected turns and records turns_lost / turns_reduced.
+
+    Fields
+    ------
+    save_stat:
+        The TARGET's saving-throw stat, e.g. "wis_save".  Chosen by the enemy policy
+        from the control save-type weights (WIS-heavy — charm / fear / dominate).
+    dc_stat:
+        The ACTOR's stat supplying the DC ("enemy_save_dc" on the baseline enemy).
+    hard_frac:
+        Fraction of this control that is HARD (turn-ending) vs SOFT (output × factor).
+        The failed-save cost splits: turns_lost = hard_frac·E[turns], turns_reduced =
+        (1−hard_frac)·E[turns] (both EXPECTED affected turns; §13 control channel).
+    dur_short / dur_save_ends / dur_fixed:
+        The duration-bucket probabilities (sum ≈ 1) feeding the closed-form E[turns]
+        (§6 step 5): SHORT→1 turn, SAVE_ENDS→1/s on the char's OWN save (double-prices
+        save investment), FIXED→capped at ``rounds_remaining``.
+    rounds_remaining:
+        Rounds left in the combat from the affected turn — the cap on FIXED / save-ends
+        durations (a `1 min` control at our ~4-round scale lasts the rest of the fight).
+    """
+    save_stat: str = "wis_save"
+    dc_stat: str = "enemy_save_dc"
+    hard_frac: float = 1.0
+    dur_short: float = 1.0
+    dur_save_ends: float = 0.0
+    dur_fixed: float = 0.0
+    rounds_remaining: int = 1
+    cost: str = "action"
+    kind: str = field(default="control_save", init=False)
+
+
+@dataclass
 class RoundEndEvent(Event):
     """Fired after all entities have taken their turns in a round.
 

@@ -254,6 +254,76 @@ def band_damage_multipliers(level: int) -> dict[str, float]:
 
 
 # ---------------------------------------------------------------------------
+# Band-grounded CONTROL knobs (enemy_model.md §6 — the incapacitation channel)
+# ---------------------------------------------------------------------------
+#
+# DISTINCT from the damaging-save knobs above.  These read the control columns of the
+# frozen band table (appended in step 5): the pure-control action-budget prong, the
+# bundled-control rider rate, the control-DISTINCT save-type weights (WIS lifts to a top
+# save), the hard-vs-soft split, and the duration mix feeding the closed-form E[turns].
+# BaselineEnemyPolicy defaults its control knobs to these when the §7 control channel is
+# turned ON (default OFF → no baseline drift).
+
+
+def band_control_save_prob(level: int) -> float:
+    """Per-ROUND probability the enemy forces a PURE-control save at *level* — the
+    pure-control prong of the ternary action budget (§4b: it DISPLACES a damage
+    action).  The bundled rider is separate (``band_bundled_control_rider``)."""
+    return _band_table()[band_for_level(level)]["pure_control_action_share"] / 100.0
+
+
+def band_control_weights(level: int) -> dict[str, int]:
+    """The CONTROL save-type weights at *level* (§6) — DISTINCT from the damaging-save
+    weights: control lifts WIS to a top save (charm / fear / dominate) and spreads
+    STR/DEX for physical control.  Percentages ×10 → int relative weights (roll_one
+    needs an int total); zero-weight saves dropped."""
+    row = _band_table()[band_for_level(level)]
+    weights = {_AB_TO_SAVE[ab]: int(round(row[f"ctrlw_{ab}"] * 10))
+               for ab in ("STR", "DEX", "CON", "INT", "WIS", "CHA")}
+    return {k: v for k, v in weights.items() if v > 0}
+
+
+def band_control_hard_frac(level: int) -> float:
+    """The fraction of control that is HARD (turn-ending) vs SOFT (debuff) at *level*
+    (§6): a failed HARD save loses the whole turn, a SOFT save reduces output."""
+    return _band_table()[band_for_level(level)]["control_hard_frac"]
+
+
+def band_control_duration_mix(level: int) -> tuple[float, float, float]:
+    """The control-duration split ``(short, save_ends, fixed)`` as FRACTIONS at *level*
+    (§6 step 5): SHORT→1 turn, SAVE_ENDS→1/s on the char's own save, FIXED→capped at
+    the rounds remaining.  Feeds the closed-form expected-duration model."""
+    row = _band_table()[band_for_level(level)]
+    return (row["ctrldur_short"] / 100.0,
+            row["ctrldur_save_ends"] / 100.0,
+            row["ctrldur_fixed"] / 100.0)
+
+
+def band_bundled_control_rider(level: int) -> tuple[float, float]:
+    """The BUNDLED-control placement at *level* (§4b) → ``(rider_frac, overflow_prob)``.
+
+    Bundled control (``also_damages=y``, e.g. Mind Blast) is a save-for-damage ability
+    that ALSO imposes control, so it rides as a second (control) save on save-for-damage
+    rounds — with per-save-round probability ``rider_frac = min(bundled/save_dmg, 1)``.
+
+    The ⚠️ low-CR overflow patch (flagged s38): at band 0-4 the bundled mass
+    (≈0.084/mon) EXCEEDS the save-for-damage budget it rides on (≈0.007/mon), so the
+    save-for-damage rounds cannot host it all.  The hosted part saturates the rider at
+    1.0 and the EXCESS ``overflow = max(0, bundled − save_dmg)`` spills to an independent
+    ANY-round draw (per-round probability, clamped ≤ 1).  The higher bands have
+    ``save_dmg ≫ bundled`` → ``rider_frac < 1``, ``overflow = 0`` (a bottom-band patch)."""
+    row = _band_table()[band_for_level(level)]
+    bundled = row["bundled_control_per_mon"]
+    save_dmg = row["save_dmg_per_mon"]
+    if save_dmg > 0:
+        rider_frac = min(bundled / save_dmg, 1.0)
+    else:
+        rider_frac = 0.0                       # no save-dmg rounds to host it → all spills
+    overflow = max(0.0, bundled - save_dmg)
+    return rider_frac, min(overflow, 1.0)
+
+
+# ---------------------------------------------------------------------------
 # Enemy-policy tuning constants (used by BaselineEnemyPolicy, not stored per level)
 # ---------------------------------------------------------------------------
 
@@ -272,6 +342,13 @@ SAVE_TYPE_WEIGHTS: dict[str, int] = {
 # live default is now the band-empirical `band_save_round_prob` (the §4b per-action
 # correction); this scalar remains the interim/fallback only.
 SAVE_ROUND_PROB = 0.35
+
+# The SOFT-control output factor (§6 / §7): a failed SOFT control save reduces the
+# character's output for the affected turns to this fraction (blinded / restrained /
+# frightened — the character still acts, at reduced effect).  A documented MODELING
+# KNOB, surfaced for the reporting layer; the control channel records the AFFECTED turns
+# and the reporting step applies this factor.  Overridable per BaselineEnemyPolicy.
+SOFT_FACTOR = 0.5
 
 # Default HP divisor for the finite-HP combat mode (see baseline_hp).  Tuned so a SOLO
 # build's emergent fight length lands in a ~3-5 round window (the DMG HP is built for a

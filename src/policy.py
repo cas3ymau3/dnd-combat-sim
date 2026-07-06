@@ -93,6 +93,25 @@ class ApplicationSave:
     on_success: str = "negate"
 
 
+@dataclass(frozen=True)
+class ControlSpec:
+    """The payload of a ``control_save`` Choice (design/enemy_model.md §6): the
+    qualitative shape of one control effect the enemy forces on the character.  Carried
+    as DATA on the Choice (the policy read it from the band table at construction — no
+    decision, no roll); resolution (``resolve_control_save``) rolls the save and, on a
+    fail, computes the closed-form expected lost/reduced turns from these fields.
+
+    ``hard_frac`` splits the failed-save cost into HARD (turn wasted) vs SOFT (output
+    reduced).  ``dur_short`` / ``dur_save_ends`` / ``dur_fixed`` are the duration-bucket
+    probabilities feeding ``E[turns]`` (§6 step 5).  ``rounds_remaining`` caps the FIXED
+    / save-ends durations at the rest of the combat."""
+    hard_frac: float = 1.0
+    dur_short: float = 1.0
+    dur_save_ends: float = 0.0
+    dur_fixed: float = 0.0
+    rounds_remaining: int = 1
+
+
 # ---------------------------------------------------------------------------
 # Choice — what the policy wants to do
 # ---------------------------------------------------------------------------
@@ -178,6 +197,12 @@ class Choice:
     damage_dice: "tuple[int, int] | None" = None
     damage_bonus: int = 0
     on_save: str = "none"
+    # --- control_save: a CONTROL save the enemy forces (§6, incapacitation) ---
+    # action_type="control_save" makes the TARGET roll `save_stat` vs the actor's
+    # `dc_stat`; on a fail the character loses expected turns of output (recorded via
+    # the §13 control channel — no damage, no status object).  `control` carries the
+    # qualitative shape (hard/soft split + duration mix + rounds_remaining).
+    control: "ControlSpec | None" = None
     # Damage type, threaded to the spawned event → DamageEvent.  The caster-side
     # Fueled-Spellfire decision point gates on "spell radiant damage"
     # (damage_type == "radiant" and origin == "spell").  So Guiding Bolt / Sacred
@@ -295,6 +320,7 @@ class Choice:
             else:
                 self.modality = {
                     "save_spell": "Magic",
+                    "control_save": "Magic",
                     "cast_effect": "Magic",
                 }.get(self.action_type or "")
 

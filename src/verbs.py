@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 from typing import Callable, TYPE_CHECKING
 
-from .events import AttackRollEvent, DamageEvent, SaveDamageEvent, make_tick
+from .events import AttackRollEvent, ControlSaveEvent, DamageEvent, SaveDamageEvent, make_tick
 from .taxonomy import is_spell_origin
 
 if TYPE_CHECKING:
@@ -558,6 +558,92 @@ def resolve_save_damage(
     )
     queue.push(damage_event)
     next_sequence += 1
+    return next_sequence
+
+
+# ---------------------------------------------------------------------------
+# Control-save resolution (design/enemy_model.md §6 — incapacitation pressure)
+# ---------------------------------------------------------------------------
+
+def save_success_prob(bonus: int, dc: int) -> float:
+    """Closed-form ``P(save succeeds) = P(d20 + bonus >= dc)`` — the mean-field
+    save-success probability ``s`` that feeds the §6 ``save-ends`` expected duration
+    ``E[turns] = 1/s`` (double-pricing save investment: a good save both fails less AND
+    recovers faster).  A save meets the DC on ``d20 >= dc − bonus``, so ``21 − needed``
+    of the 20 faces succeed.  Clamped to ``[0.05, 1.0]``: the 0.05 floor keeps ``1/s``
+    finite (it is capped by ``rounds_remaining`` anyway) and stands in for a fluke
+    success; the 1.0 ceiling caps an easy save."""
+    needed = dc - bonus
+    s = (21 - needed) / 20.0
+    return max(0.05, min(1.0, s))
+
+
+def resolve_control_save(
+    event: "ControlSaveEvent",
+    rng: "SeededRNG",
+    queue: "EventQueue",
+    next_sequence: int,
+    telemetry: "object | None" = None,
+) -> int:
+    """Resolve one CONTROL save (design/enemy_model.md §6).  Returns next_sequence
+    unchanged — a control save spawns NO follow-on event (it deals no damage; v1 models
+    the cost as an output factor recorded through telemetry, not a status object).
+
+    The TARGET rolls its OWN save vs the actor's DC (so condition-immunity /
+    advantage-on-saves / a high save bonus all bite here — the seam that prices
+    mental-save investment).  On a FAILURE the character loses an expected number of
+    turns of output, split HARD (turn wasted → ``turns_lost``) vs SOFT (output reduced →
+    ``turns_reduced``) by ``hard_frac``, over the closed-form expected duration:
+
+        E[turns] = dur_short·1 + dur_save_ends·min(1/s, cap) + dur_fixed·cap
+
+    where ``s`` is the character's closed-form save-success prob and ``cap`` is the
+    rounds remaining in the combat.  Both costs are recorded as EXPECTED AFFECTED TURNS
+    through the §13 control channel; the reporting layer applies ``soft_factor`` to the
+    reduced turns.  The initial save is ALSO recorded in the saves channel under the
+    "control" tag, so a bundled (also-damages) ability's TWO saves are visible in both
+    channels (the §4b cross-axis double-save, not hidden)."""
+    actor = event.actor
+    target = event.target
+    if target is None:
+        return next_sequence
+
+    dc = int(actor.stat(event.dc_stat, tick=event.tick))
+    saved = resolve_saving_throw(target, event.save_stat, dc, rng)
+
+    # Entity counters (kept alongside the structured seam, like resolve_save_damage).
+    target.saving_throws_made += 1
+    if not saved:
+        target.saving_throws_failed += 1
+    # Structured seam (§13): the CONTROL save channel, keyed by ability.  None sink =
+    # a direct caller not passing telemetry → no-op.
+    if telemetry is not None:
+        telemetry.record_save(event.save_stat, "control", saved)
+
+    if saved:
+        log.info("%s SAVES vs %s's control (%s DC %d) — no turns lost",
+                 target.name, actor.name, event.save_stat, dc)
+        return next_sequence
+
+    # Failed control → closed-form expected affected turns (§6 step 5).  The save bonus
+    # is the flat folded stat (rolled save-bonus dice like Bless are ignored in the
+    # closed form — a documented mean-field simplification).
+    bonus = int(target.stat(event.save_stat))
+    s = save_success_prob(bonus, dc)
+    cap = max(1, event.rounds_remaining)
+    e_saveends = min(1.0 / s, cap)
+    e_turns = (event.dur_short * 1.0
+               + event.dur_save_ends * e_saveends
+               + event.dur_fixed * cap)
+    turns_lost = event.hard_frac * e_turns
+    turns_reduced = (1.0 - event.hard_frac) * e_turns
+    if telemetry is not None:
+        telemetry.record_control(event.save_stat, turns_lost=turns_lost,
+                                 turns_reduced=turns_reduced)
+    log.info(
+        "%s FAILS vs %s's control (%s DC %d) → E[turns]=%.2f (lost %.2f / reduced %.2f)",
+        target.name, actor.name, event.save_stat, dc, e_turns, turns_lost, turns_reduced,
+    )
     return next_sequence
 
 

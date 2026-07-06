@@ -240,5 +240,6 @@ def derive_resolution(action_type: str | None) -> str | None:
     return {
         "attack": "attack_roll",
         "save_spell": "saving_throw",
+        "control_save": "saving_throw",
         "cast_effect": "automatic",
     }.get(action_type or "")
