@@ -89,7 +89,10 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 38 (2026-06-26) — nothing to reset (confirmed with user).** The
+- **Last reviewed for reset: session 40 (2026-07-06) — nothing to reset (confirmed with user).** The
+  s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s38/s39/s40
+  were all pure Python, so nothing accumulated; marker bumped per the ≥2-session rule.
+- **Prior — session 38 (2026-06-26) — nothing to reset (confirmed with user).** The
   s36 tear-down stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). The empirical arc
   is closed and s38 was pure Python, so nothing accumulated; marker bumped per the ≥2-session rule.
 - **Prior — session 36 (2026-06-25) — RESET DONE.** s36 completed #2 (the last
@@ -212,6 +215,41 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > **METRICS DESIGN (Track 1 step 3) — DONE (s37).** See the s37 Done entry below + the roadmap
 > step 3. Both threads (telemetry seam §13 + decision-tree structure §4b + control duration §6.5)
 > are LOCKED in `enemy_model.md`.
+>
+> **Session scope (2026-07-06, session 40) — DONE (#1 WIRING STEP 5, Track 1 roadmap step 4 /
+> `enemy_model.md` §12 step 3 — step 5 of 6: the §6 CONTROL-SAVE channel):** scope settled with
+> the user up front as step 5 only. Four design forks settled first (all as recommended): a lost
+> turn is an OUTPUT-FACTOR on telemetry (no status object, char turn not actually skipped — the
+> §10 fidelity deferral stands); control sourcing is CENSUS-EMPIRICAL (the s35 218-row census),
+> prior as fallback; the control columns APPEND to `monster_profile_by_band.csv` (not a sibling);
+> config ledger left as-is (bumped to s40). Branch `feature/enemy-model-control-channel`, **574
+> tests green (+18).** **The mechanism (4 pieces):** **(1) `monster_profile.control_profile`** —
+> aggregates the control census → WIS-heavy `control_save_weights` (the mental-save mass the
+> DAMAGING census can't see), `hard_frac`, and the SHORT/SAVE_ENDS/FIXED `duration_mix`; appended
+> as control columns to the frozen band table (regenerated + in-sync-tested). **(2)
+> `enemy_stats.band_control_*`** — the band-grounded control knobs + `band_bundled_control_rider`
+> (the low-CR overflow split: the per-save-round rider saturates at 1.0 and `overflow = max(0,
+> bundled − save_dmg)` spills) + `SOFT_FACTOR` default. **(3) `BaselineEnemyPolicy(control=…)`,
+> default OFF** — the §4b TERNARY action budget: a PURE-control round DISPLACES a damage action
+> (deals zero), a save-for-damage round may add a BUNDLED second (control) save, and at band 0-4
+> the overflow spills to an independent any-round draw; `control_displacement="displace"|"ride"`
+> toggle. **(4) new `control_save` action → `ControlSaveEvent` → `resolve_control_save`** — rolls
+> the char's OWN save vs the enemy DC and, on a fail, prices the closed-form `E[turns] = short·1 +
+> save_ends·min(1/s, cap) + fixed·cap` (cap = rounds remaining), split hard/soft → the §13 control
+> channel (`turns_lost` / `turns_reduced`). **The `soft_factor`→DPR conversion is DEFERRED to the
+> reporting layer** (user-confirmed) — telemetry records AFFECTED TURNS only. **Headline mechanism
+> proof ([[validate-mechanism-not-build-value]]):** a +10 WIS build lost ~46 turns vs a −2 WIS
+> build's ~764 over 200 forced saves — fails ~5× less AND recovers faster via `1/s` → ~16× fewer
+> lost turns (the double-pricing the channel exists for). **Tests:** NEW `test_enemy_control_channel.py`
+> (16 — save_success_prob formula/clamp, deterministic duration math, hard/soft split, control OFF =
+> no drift, displace-zeroes-damage vs ride-keeps-it, bundled double-save in BOTH channels, low-CR
+> overflow spill, WIS lift over the damaging mix) + 2 in `test_enemy_band_table.py` (control-column
+> schema + overflow bottom-band-only). **No new D&D mechanic** (conditions + hard/soft were MEASURED
+> in the s34/s35 control census) → no web-verify ([[per-feature-ritual-verify-and-reflect]]). CODE
+> changed → full suite FOREGROUND once, 574 green ([[full-suite-foreground-only]]). Memory saved:
+> [[control-channel-is-output-factor-not-status]]. RESOLVED the s38 low-CR overflow watch-item.
+> **NEXT: #1 step 6** (§7 toggles), then the reporting layer + first end-to-end eval. Merge to main
+> pending user OK.
 >
 > **Session scope (2026-06-26, session 39) — DONE (#1 WIRING STEP 4, Track 1 roadmap step 4 /
 > `enemy_model.md` §12 step 3 — step 4 of 6: the §5 `mult(t)` fractional defense multiplier):**
@@ -3078,14 +3116,15 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      force-mode DEFERRED** (decided with user): it types the ENEMY's *offense* (zeroing the
      char's incoming typed resistance) and is a no-op today (the enemy deals untyped damage),
      so it belongs with the incoming-damage-type-mix knob (step 6), NOT mult(t).
-   - **(5) §6 control-save channel** — pure/bundled split + closed-form expected-duration;
-     emit the control channel. ⚠️ **WATCH (flagged s38):** at band 0-4 the bundled-control
-     mass (≈0.084/mon) exceeds the save-for-damage budget it rides on (≈0.007/mon), so the
-     "bundled rides on save-dmg rounds" placement can't host it at low CR — spill the
-     overflow to an independent any-round draw (bottom-band-only patch; see enemy_model.md
-     §4b/§10). Corollary confirmed s38: low-CR save pressure is ~11% of rounds, almost all
-     CONTROL — so saving-throw protection prices into low-level builds via §6, not the
-     near-zero low-CR damaging-save rate.
+   - ~~**(5) §6 control-save channel**~~ **DONE (s40):** `monster_profile.control_profile`
+     (WIS-heavy control weights + hard_frac + SHORT/SAVE_ENDS/FIXED duration mix, appended to
+     the frozen band table); `enemy_stats.band_control_*` + `band_bundled_control_rider` (the
+     low-CR overflow split); `BaselineEnemyPolicy(control=…)` ternary budget (pure-control
+     DISPLACES damage / bundled rider on save-dmg rounds / band-0-4 overflow spill to an
+     independent draw; `control_displacement` toggle); new `control_save` action →
+     `ControlSaveEvent` → `resolve_control_save` (closed-form E[turns] = 1-turn / `save-ends`→
+     1/s / capped-fixed, split hard/soft → §13 control channel). v1 is an OUTPUT FACTOR (no
+     status object). RESOLVED the s38 bottom-band overflow watch-item. All default-OFF → no drift.
    - **(6) §7 toggles** (all default OFF/neutral so no baseline drift).
    Emit every quantity through the step-1 seam; validate as a MECHANISM
    ([[validate-mechanism-not-build-value]]).

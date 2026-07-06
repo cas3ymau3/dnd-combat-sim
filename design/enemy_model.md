@@ -12,7 +12,15 @@
 > (substrate #4's continuous third layer) + `enemy_stats.band_damage_multiplier(s)` +
 > `resolve_damage` phase 7b emitting the §13 mitigation channel; the §7 INCOMING force-mode
 > was DEFERRED (it's enemy-offense typing, a no-op until the incoming-damage-type-mix knob /
-> step 6). REMAINING: step 5 §6 control channel; step 6 §7 toggles. Companion to `design/enemy_profile.md` (the empirical
+> step 6). **s40 wired step 5:** the §6 CONTROL-SAVE channel — the control-census
+> aggregation (`monster_profile.control_profile` → control columns appended to the frozen
+> band table), the band-grounded control knobs (`enemy_stats.band_control_*`), the ternary
+> action budget in `BaselineEnemyPolicy` (pure-control displaces damage / bundled rider on
+> save-dmg rounds / the band-0-4 overflow spill), and a new `control_save` action →
+> `ControlSaveEvent` → `resolve_control_save` computing the closed-form E[turns]
+> (1-turn / `save-ends`→1/s / capped-fixed) and emitting the §13 control channel
+> (turns_lost / turns_reduced). All control default-OFF → no drift. REMAINING: step 6 §7
+> toggles. Companion to `design/enemy_profile.md` (the empirical
 > census — the DATA this consumes) and `design/design.md` §8 (the outputs this must
 > drive). The census is COMPLETE (510 monsters, 897 action rows + 218 control rows,
 > four CR bands); this note turns that data into enemy decisions.
@@ -623,14 +631,25 @@ later arc.
   components at apply time). A small refinement — recompute `mult` without the resist term, or
   store the three components — deferred until a build pairs Elemental Adept with the band-defense
   toggle ON (an edge case today; the enemy dummy defaults to no profile).
-- **Low-CR bundled-control overflow** (§4b, flagged s38) — at band 0-4 the bundled-control
-  mass exceeds the save-for-damage budget it rides on (`bundled ≈ 0.084` vs `save-dmg ≈
-  0.007` per monster), so the "rides on save-dmg rounds" placement can't host it in the
-  bottom band. Step-5 fix: spill the overflow to an independent any-round draw. A
-  bottom-band-only patch (higher bands have save-dmg ≫ bundled). This is also the
+- ~~**Low-CR bundled-control overflow**~~ **RESOLVED (s40, step 5).** At band 0-4 the
+  bundled-control mass exceeds the save-for-damage budget it rides on (`bundled ≈ 0.084` vs
+  `save-dmg ≈ 0.007` per monster), so the "rides on save-dmg rounds" placement can't host it
+  in the bottom band. Fix as shipped: `enemy_stats.band_bundled_control_rider` saturates the
+  per-save-round rider at 1.0 and spills `overflow = max(0, bundled − save-dmg)` to an
+  independent any-round draw (`BaselineEnemyPolicy._overflow_fire`). A bottom-band-only patch
+  (higher bands have save-dmg ≫ bundled → `overflow = 0`), confirmed by test. This is also the
   empirical confirmation that **low-CR save pressure is dominated by CONTROL** (≈11% of
   rounds force a save — almost all control), so saving-throw protection still prices into
   low-level builds via §6, not via the (near-zero) low-CR damaging-save rate.
+- **`soft_factor` not yet in telemetry / applied to DPR** (flagged s40) — step 5 records the
+  control channel as EXPECTED AFFECTED TURNS (`turns_lost` hard, `turns_reduced` soft); the
+  `soft_factor` that converts reduced turns into a DPR delta is stored on the policy
+  (`BaselineEnemyPolicy._soft_factor`, default 0.5) but NOT threaded into the telemetry or
+  applied to output — that conversion is the reporting layer's job (roadmap step 5/#4). §13's
+  "record the soft_factor applied" is deferred to when the reporting layer consumes the
+  channel. Similarly the initial rolled save and the closed-form `s` can disagree at extreme
+  bonuses (RAW has no nat-20 auto-succeed on a save; `s` is floored at 0.05) — a documented
+  mean-field simplification that averages out.
 
 ---
 
@@ -670,9 +689,13 @@ the way the census (and the measured control data) says.
    + `enemy_stats.band_save_*`; `BaselineEnemyPolicy` defaults grounded). **s39 DONE:**
    ~~add the `mult(t)` enemy-defense multiplier (step 4)~~ (`Entity.damage_multiplier` +
    `enemy_stats.band_damage_multiplier(s)` + `resolve_damage` phase 7b → §13 mitigation
-   channel; §7 incoming force-mode deferred to step 6). **REMAINING:** add the control-save
-   channel (§6) with the pure/bundled split and the expected-duration model (step 5); wire the
-   toggles (§7, step 6); emit every quantity through the §13 channels; mechanism-validated (§11).
+   channel; §7 incoming force-mode deferred to step 6). ~~add the control-save
+   channel (§6) with the pure/bundled split and the expected-duration model (step 5)~~
+   **DONE (s40):** `control_profile` + control band columns; `enemy_stats.band_control_*`;
+   `BaselineEnemyPolicy(control=…)` ternary budget (pure-control displaces / bundled rider /
+   band-0-4 overflow spill); `control_save` action → `ControlSaveEvent` → `resolve_control_save`
+   (closed-form E[turns], §13 control channel). **REMAINING:** wire the remaining §7
+   toggles (step 6); emit every quantity through the §13 channels; mechanism-validated (§11).
 4. Positioning / kiting + targeting arc (§9) — its own multi-session lift.
 5. Reporting / aggregation layer (design.md §8 outputs) + the 4×4 baseline
    comparison — consumes the §13 telemetry channels.

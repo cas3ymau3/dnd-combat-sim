@@ -47,6 +47,19 @@ CONDITIONS = (
 # Map the census's uppercase save-ability tag to the engine's save_stat key.
 _SAVE_STAT = {ab: f"{ab.lower()}_save" for ab in SAVE_ABILITIES}
 
+# Control-duration buckets (design/enemy_model.md §6 step 5 — the closed-form
+# expected-duration model).  The census `duration` tag maps into three buckets:
+#   - SHORT (1 affected turn): a one-off effect (`1 turn`), an until-next-turn
+#     effect, or an instantaneous/immediate one (empty — push/prone-on-hit).
+#   - SAVE_ENDS: the character re-saves with its OWN bonus each turn → E[turns]=1/s.
+#   - FIXED: a fixed/until-X duration (`1 min`, `until-escape`, `until-removed`, …)
+#     that at our ~4-round combat scale lasts the rest of the fight → capped at the
+#     rounds remaining in the combat.
+_DUR_SHORT = ("1 turn", "until-next-turn", "")
+_DUR_SAVE_ENDS = ("save-ends",)
+# everything else falls into FIXED (the explicit list is documentation; the code
+# treats any tag not in SHORT/SAVE_ENDS as FIXED).
+
 # The frozen band table (the §8 enemy-model INPUT the policy reads at runtime).
 _BAND_TABLE_PATH = _DATA / "monster_profile_by_band.csv"
 
@@ -360,6 +373,64 @@ def action_budget(harmonized: bool = True) -> dict[str, dict]:
     return out
 
 
+def _dur_bucket(tag: str) -> str:
+    """Map a census ``duration`` tag to a control-duration bucket (§6 step 5)."""
+    t = (tag or "").strip()
+    if t in _DUR_SHORT:
+        return "short"
+    if t in _DUR_SAVE_ENDS:
+        return "save_ends"
+    return "fixed"
+
+
+def control_profile(band: str) -> dict:
+    """Per-band CONTROL-census aggregation (design/enemy_model.md §6) — the qualitative
+    shape of the incapacitation-pressure channel, DISTINCT from the damaging-save mix.
+
+    All figures are instance-weighted by the control census's ``instances_per_round``
+    (already cadence-discounted at source — at-will 1.0 / recharge 0.5 / limited 0.25),
+    so a rarely-used Dominate contributes less than an at-will gaze.  Returns:
+
+      - ``control_save_weights`` — the save-type distribution for control effects (%),
+        DISTINCT from the CON/DEX-dominant DAMAGING weights: control lifts WIS to a top
+        save (charms / fear / dominate) and spreads STR/DEX for physical control.
+      - ``hard_frac`` — the fraction of control mass that is HARD (turn-ending:
+        paralyzed / stunned / dominated) vs SOFT (debuff: frightened / restrained).
+      - ``duration_mix`` — the SHORT / SAVE_ENDS / FIXED split feeding the closed-form
+        expected-duration model (§6 step 5): SHORT→1 turn, SAVE_ENDS→1/s on the
+        character's own save, FIXED→capped at the rounds remaining.
+
+    Rate knobs (how OFTEN control fires) come from ``action_budget`` — pure-control is a
+    budget prong, bundled control rides on save-for-damage rounds — NOT from here; this
+    function supplies only the qualitative mix.
+    """
+    control = [r for r in _load_rows(_CONTROL) if r["cr_band"] == band]
+
+    save_w: dict[str, float] = defaultdict(float)
+    hard_w = 0.0
+    dur_w: dict[str, float] = defaultdict(float)
+    for r in control:
+        wt = _wnum(r["instances_per_round"])
+        ab = (r["save_ability"] or "").upper()
+        if ab in SAVE_ABILITIES:
+            save_w[ab] += wt
+        if (r["hard_soft"] or "").strip().lower() == "hard":
+            hard_w += wt
+        dur_w[_dur_bucket(r["duration"])] += wt
+
+    save_total = sum(save_w.values())
+    total = sum(dur_w.values())
+    return {
+        "band": band,
+        "n_control": len(control),
+        "control_save_weights": {ab: _pct(save_w.get(ab, 0.0), save_total)
+                                 for ab in SAVE_ABILITIES if save_w.get(ab)},
+        "hard_frac": round(hard_w / total, 3) if total else 0.0,
+        "duration_mix": {b: _pct(dur_w.get(b, 0.0), total)
+                         for b in ("short", "save_ends", "fixed")},
+    }
+
+
 def print_action_budget() -> None:
     print(f"\n{'-'*72}\nACTION-LEVEL BUDGET (multiattack collapsed to 1 slot — §4b; "
           f"corrects save_round_prob)\n{'-'*72}")
@@ -394,12 +465,15 @@ def band_table_columns() -> list[str]:
         "phys_share", "elem_share",
         # action-level budget (§4b); save_dmg_action_share IS the corrected save_round_prob
         "attack_action_share", "save_dmg_action_share", "pure_control_action_share",
-        "bundled_control_per_mon",
+        "bundled_control_per_mon", "save_dmg_per_mon",
         "save_round_prob_instance",   # the §4-footnote instance share, kept for eyeballing
         "aoe_share",
+        # control channel (§6) — the qualitative CONTROL mix (rates are the shares above)
+        "control_hard_frac", "ctrldur_short", "ctrldur_save_ends", "ctrldur_fixed",
         "pct_with_legendary", "avg_legendary_actions", "pct_with_lair",
     ]
     cols += [f"savew_{ab}" for ab in SAVE_ABILITIES]
+    cols += [f"ctrlw_{ab}" for ab in SAVE_ABILITIES]
     cols += [f"dmix_{t}" for t in DAMAGE_TYPES]
     cols += [f"reach_{r}" for r in ("melee", "ranged", "both")]
     cols += [f"res_{t}" for t in DAMAGE_TYPES]
@@ -409,10 +483,10 @@ def band_table_columns() -> list[str]:
     return cols
 
 
-def _band_flat(profile: dict, budget: dict) -> dict:
-    """Flatten one band's nested ``band_profile`` + ``action_budget`` into the fixed
-    column schema (missing dict keys → 0.0)."""
-    p, b = profile, budget
+def _band_flat(profile: dict, budget: dict, control: dict) -> dict:
+    """Flatten one band's nested ``band_profile`` + ``action_budget`` + ``control_profile``
+    into the fixed column schema (missing dict keys → 0.0)."""
+    p, b, c = profile, budget, control
     row: dict[str, float | str] = {
         "band": p["band"],
         "n_monsters": p["n_monsters"],
@@ -424,14 +498,20 @@ def _band_flat(profile: dict, budget: dict) -> dict:
         "save_dmg_action_share": b["share_save_dmg"],
         "pure_control_action_share": b["share_pure_control"],
         "bundled_control_per_mon": b["bundled_control_per_mon"],
+        "save_dmg_per_mon": b["save_dmg_per_mon"],
         "save_round_prob_instance": p["resolution_mix"].get("save", 0.0),
         "aoe_share": p["aoe_share"],
+        "control_hard_frac": c["hard_frac"],
+        "ctrldur_short": c["duration_mix"].get("short", 0.0),
+        "ctrldur_save_ends": c["duration_mix"].get("save_ends", 0.0),
+        "ctrldur_fixed": c["duration_mix"].get("fixed", 0.0),
         "pct_with_legendary": p["legendary"]["pct_with_legendary"],
         "avg_legendary_actions": p["legendary"]["avg_legendary_actions"],
         "pct_with_lair": p["legendary"]["pct_with_lair"],
     }
     for ab in SAVE_ABILITIES:
         row[f"savew_{ab}"] = p["save_type_mix"].get(ab, 0.0)
+        row[f"ctrlw_{ab}"] = c["control_save_weights"].get(ab, 0.0)
     for t in DAMAGE_TYPES:
         row[f"dmix_{t}"] = p["damage_type_mix"].get(t, 0.0)
     for r in ("melee", "ranged", "both"):
@@ -452,7 +532,7 @@ def band_table_rows() -> list[dict]:
     The writer freezes these; the in-sync test compares the committed CSV to these."""
     profiles = all_profiles()
     budgets = action_budget(harmonized=True)
-    return [_band_flat(profiles[b], budgets[b]) for b in BANDS
+    return [_band_flat(profiles[b], budgets[b], control_profile(b)) for b in BANDS
             if b in profiles and b in budgets]
 
 

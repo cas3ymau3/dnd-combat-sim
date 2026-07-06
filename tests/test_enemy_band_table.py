@@ -12,6 +12,11 @@ import pytest
 
 from src.builds import monster_profile as mp
 from src.builds.enemy_stats import (
+    band_bundled_control_rider,
+    band_control_duration_mix,
+    band_control_hard_frac,
+    band_control_save_prob,
+    band_control_weights,
     band_for_level,
     band_save_round_prob,
     band_save_weights,
@@ -119,3 +124,29 @@ def test_band_save_weights_are_con_dex_dominant_not_wis():
         assert set(top2) <= {"dex_save", "con_save"}
         # WIS is never a top-2 damaging save in any band
         assert "wis_save" not in top2
+
+
+# ---------------------------------------------------------------------------
+# Control-channel knobs read the frozen table (§6, step 5)
+# ---------------------------------------------------------------------------
+
+def test_control_columns_present_and_well_formed():
+    """The appended control columns (§6) parse into a valid hard-frac + duration mix in
+    every band — the qualitative shape the control channel reads at runtime."""
+    for lvl in (3, 8, 13, 18):
+        assert 0.0 <= band_control_hard_frac(lvl) <= 1.0
+        mix = band_control_duration_mix(lvl)
+        assert all(0.0 <= p <= 1.0 for p in mix)
+        assert sum(mix) == pytest.approx(1.0, abs=0.02)   # short + save_ends + fixed ≈ 1
+        assert 0.0 <= band_control_save_prob(lvl) <= 1.0
+
+
+def test_bundled_rider_overflow_is_bottom_band_only():
+    """§4b low-CR patch: only band 0-4 has bundled control exceeding its save-for-damage
+    budget, so only there does the rider saturate and spill an overflow any-round draw."""
+    _r0, overflow0 = band_bundled_control_rider(3)    # band 0-4
+    assert overflow0 > 0
+    for lvl in (8, 13, 18):                            # higher bands: no overflow
+        rider, overflow = band_bundled_control_rider(lvl)
+        assert overflow == pytest.approx(0.0)
+        assert 0.0 <= rider <= 1.0

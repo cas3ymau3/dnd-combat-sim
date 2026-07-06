@@ -31,6 +31,7 @@ from typing import Callable, TYPE_CHECKING
 
 from .events import (
     AttackRollEvent,
+    ControlSaveEvent,
     DamageEvent,
     EventQueue,
     RoundEndEvent,
@@ -38,7 +39,13 @@ from .events import (
     TurnStartEvent,
     make_tick,
 )
-from .verbs import resolve_attack_roll, resolve_damage, resolve_save_damage, resolve_saving_throw
+from .verbs import (
+    resolve_attack_roll,
+    resolve_control_save,
+    resolve_damage,
+    resolve_save_damage,
+    resolve_saving_throw,
+)
 from .taxonomy import is_spell_origin
 from .telemetry import CombatTelemetry
 
@@ -153,6 +160,7 @@ class Scheduler:
         self._subscribe("attack_roll", resolve_attack_roll)  # type: ignore[arg-type]
         self._subscribe("damage", resolve_damage)            # type: ignore[arg-type]
         self._subscribe("save_damage", resolve_save_damage)  # type: ignore[arg-type]
+        self._subscribe("control_save", resolve_control_save)  # type: ignore[arg-type]
 
         # Seed the queue with Round 1 turn starts
         self._enqueue_round(round_=1)
@@ -284,6 +292,19 @@ class Scheduler:
                     seq_counter = handler(  # type: ignore[call-arg]
                         event, self.rng, self.queue, seq_counter,
                         save_advantage=save_adv, negate_on_save=negate,
+                        telemetry=self.telemetry,
+                    )
+
+            elif isinstance(event, ControlSaveEvent):
+                # Control-save delivery (§6): the TARGET rolls its own save vs the
+                # enemy DC; resolve_control_save records the save + (on a fail) the
+                # closed-form expected lost/reduced turns.  No damage, no follow-on
+                # event — the cost is an output factor on the §13 control channel.
+                handlers = self._registry.get("control_save", [])
+                seq_counter = seq + 1
+                for handler in handlers:
+                    seq_counter = handler(  # type: ignore[call-arg]
+                        event, self.rng, self.queue, seq_counter,
                         telemetry=self.telemetry,
                     )
 
@@ -597,7 +618,7 @@ class Scheduler:
         Returns the total damage dealt this turn (0 at decision time —
         damage events resolve later in the same sequence).
         """
-        from .policy import GameState
+        from .policy import ControlSpec, GameState
 
         actor = event.actor
         round_, turn_idx, _ = event.tick
@@ -751,6 +772,28 @@ class Scheduler:
                     cost=cost,
                 )
                 self.queue.push(save_event)
+                seq += 1
+            elif choice.action_type == "control_save":
+                # Control-save delivery (§6): the target rolls its OWN save vs our DC;
+                # resolve_control_save records the save + (on a fail) the closed-form
+                # expected lost/reduced turns.  Deals no damage → pushes no follow-on
+                # event.  The ControlSpec payload carries the hard/soft split, duration
+                # mix, and rounds_remaining (all read from the band table by the policy).
+                spec = choice.control or ControlSpec()
+                ctrl_event = ControlSaveEvent(
+                    tick=make_tick(round_, turn_idx, seq),
+                    actor=acting,
+                    target=choice.target,
+                    save_stat=choice.save_stat or "wis_save",
+                    dc_stat=choice.dc_stat,
+                    hard_frac=spec.hard_frac,
+                    dur_short=spec.dur_short,
+                    dur_save_ends=spec.dur_save_ends,
+                    dur_fixed=spec.dur_fixed,
+                    rounds_remaining=spec.rounds_remaining,
+                    cost=cost,
+                )
+                self.queue.push(ctrl_event)
                 seq += 1
             elif choice.action_type == "cast_effect":
                 # First-class non-damaging cast (buff/debuff): the action economy
