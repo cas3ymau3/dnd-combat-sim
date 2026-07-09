@@ -216,6 +216,57 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > step 3. Both threads (telemetry seam §13 + decision-tree structure §4b + control duration §6.5)
 > are LOCKED in `enemy_model.md`.
 >
+> **Session scope (2026-07-09, session 41) — DONE (#1 WIRING STEP 6, Track 1 roadmap step 4 /
+> `enemy_model.md` §12 step 3 — step 6 of 6, the FINAL wiring step: the §7 sensitivity-toggle
+> interface):** scope settled with the user up front via three forks (all as recommended): (1)
+> toggle-interface shape = more `BaselineEnemyPolicy` constructor kwargs, matching the existing
+> `save_round_prob`/`control_save_prob`/etc. pattern, not a new config object; (2) build the
+> incoming damage-type-mix knob (+ resolve the s39 force-mode deferral) THIS session, not push to
+> the reporting arc; (3) ranged-kiting fraction + AoE share SKIPPED with a documented reason, not
+> stubbed — both need an injection point (character-side action economy; multi-character party)
+> that doesn't exist yet. Branch `feature/enemy-model-toggles`, **585 tests green (+9).** **Audit
+> first:** walking the §7 table against the live policy showed MOST toggles were already real
+> constructor args from s38-40 (save_round_prob/save_weights/control*) — only three rows were
+> genuinely unwired. **The mechanism (3 new pieces + 1 realization):** **(1) CR-band override** —
+> every `band_*()` accessor in `enemy_stats.py` gained an optional `band=` param (falls back to
+> `band_for_level(level)`); `BaselineEnemyPolicy(band_override=...)` threads it through every
+> lookup (save/control/damage-mix/legendary) while `level` still drives the magnitude axis (chart
+> dice/DC, §8) — stresses a build vs a harder/softer tier than its own level. **(2) incoming
+> damage-type mix** — NEW `enemy_stats.band_damage_type_mix` (reads the frozen table's `dmix_<type>`
+> columns, unused until now) + `BaselineEnemyPolicy(damage_type_mix=True)` (a per-round weighted
+> type draw, pre-rolled at `on_combat_start` like the save/control types, replacing the fixed
+> scalar for that round). **Realization: force-mode needed NO new code** — `damage_type="force"`
+> was already reachable via the existing scalar arg (any literal string); force just has no
+> res/imm/vul prevalence columns so §5's `mult(t)` is always 1.0 for it. The s39 deferral is
+> resolved by documentation, not a build. **(3) legendary cadence** — NEW
+> `enemy_stats.band_legendary_cadence` = `round(pct_with_legendary × avg_legendary_actions)`
+> (same mean-field ROUNDING convention as `mult(t)`, DELIBERATELY NOT a per-round Bernoulli — a
+> legendary monster gets ~avg_legendary_actions on EVERY round it's up, not a coin-flip of getting
+> one; an earlier `min(1.0, pct×avg)` draft silently lost multiplicity at high bands via clamping,
+> caught before committing) → 0/0/1/3 extra swings across 0-4/5-10/11-16/17+.
+> `BaselineEnemyPolicy(legendary_cadence=True)` adds that many extra `cost="none"` attack-dice
+> swings to EVERY round (deterministic, not gated by round type — legendary actions happen outside
+> the enemy's own turn). **Toggles NOT touched:** res/imm/vuln check was already wired (s39) as an
+> Entity-construction call-site pattern (`damage_multiplier=band_damage_multipliers(level, band=...)`),
+> just newly documented here; condition-immunity check confirmed INERT — §5 names it as a
+> forward-looking seam, no rider is modeled yet so there's nothing to flip. **Tests:** NEW
+> `test_enemy_toggles.py` (9) — band-override reaches every band lookup incl. the control block;
+> damage_type_mix OFF = byte-identical to the fixed scalar (no drift); ON with a monkeypatched
+> single-type mix isolates the per-round draw mechanism; ON with the real band table shows >1 type
+> across many rounds, all within the band's nonzero weights; force-mode regression (mult=1.0 in
+> every band); legendary_cadence OFF = no-op incl. vs the True-default; ON with a monkeypatched
+> cadence=2 adds exactly 2 extra cost="none" swings to EVERY round regardless of round type; the
+> real low-band table (0-4/5-10) is a no-op even with the toggle ON (confirms "near-zero" claim).
+> Existing `test_enemy_band_table.py`/`test_enemy_control_channel.py`/`test_enemy_mult_t.py`/
+> `test_scripted_enemy.py` (61) re-run clean — no drift. **No new D&D mechanic** (toggles are a
+> modeling/sensitivity-analysis construct, not rules content) → no web-verify needed
+> ([[per-feature-ritual-verify-and-reflect]]). CODE changed → full suite FOREGROUND once, 585 green
+> ([[full-suite-foreground-only]]). `enemy_model.md` §1/§7/§10/§12 updated (status line flipped to
+> WIRING COMPLETE — all 6 steps landed s38-s41). **#1 WIRING (Track 1 roadmap step 4) IS DONE.**
+> **NEXT: the reporting/aggregation layer** (`design.md` §8) + the first end-to-end eval — the
+> `soft_factor`→DPR conversion deferral (s40) and the §13 channel consumption both live there.
+> Merge to main pending user OK.
+>
 > **Session scope (2026-07-06, session 40) — DONE (#1 WIRING STEP 5, Track 1 roadmap step 4 /
 > `enemy_model.md` §12 step 3 — step 5 of 6: the §6 CONTROL-SAVE channel):** scope settled with
 > the user up front as step 5 only. Four design forks settled first (all as recommended): a lost

@@ -53,6 +53,8 @@ from .enemy_stats import (
     band_control_hard_frac,
     band_control_save_prob,
     band_control_weights,
+    band_damage_type_mix,
+    band_legendary_cadence,
     band_save_round_prob,
     band_save_weights,
     baseline_aoe_dice,
@@ -221,6 +223,32 @@ class BaselineEnemyPolicy:
     Keyed by the character ``level`` (CR == level; ``enemy_stats`` already applies the
     ÷1.5 party-size correction), so the per-level dice / to-hit / DC pair 1:1 with the
     AC/saves table.
+
+    §7 SENSITIVITY TOGGLES (step 6; all default OFF/None → the exact prior behavior):
+
+      - ``band_override`` — force every ``band_*()`` lookup above (save/control/
+        damage-mix/legendary) onto a DIFFERENT band's qualitative mix while ``level``
+        still drives the magnitude axis (chart dice/DC, §8) — stress a build vs a
+        harder/softer tier than its own level.
+      - ``damage_type_mix`` — a per-round weighted draw from the band-empirical
+        incoming damage-TYPE mix (``enemy_stats.band_damage_type_mix``), instead of the
+        fixed ``damage_type`` scalar.  ``untyped`` (``damage_type=None``), any
+        ``single-type`` value, and **force-mode** (``damage_type="force"`` — force has
+        no res/imm/vuln prevalence columns, so §5's ``mult(t)`` is always 1.0 for it,
+        isolating flat/untyped mitigation from typed) are already reachable through the
+        existing scalar and need no new toggle.
+      - ``legendary_cadence`` — a DETERMINISTIC (mean-field, not per-round-rolled)
+        number of extra cost="none" swings added to every round
+        (``enemy_stats.band_legendary_cadence`` — 0 at 0-4/5-10, 1 at 11-16, 3 at 17+),
+        pricing the 11-16+ legendary action-economy bump.
+
+    The res/imm/vuln check (§5 ``mult(t)``) is NOT a policy toggle — it lives on the
+    enemy Entity's ``damage_multiplier`` at construction time (pass
+    ``enemy_stats.band_damage_multipliers(level, band=...)`` when building the dummy;
+    default not-installed = OFF).  The condition-immunity check is a named but
+    currently-inert seam (§5/§10): riders aren't modeled as doing anything yet, so
+    there is nothing for that toggle to flip.  Ranged-kiting and AoE-share are deferred
+    to the positioning/multi-party arc (§9/§10) — no wiring here.
     """
 
     def __init__(
@@ -241,6 +269,9 @@ class BaselineEnemyPolicy:
         soft_factor: "float | None" = None,
         control_duration_mix: "tuple[float, float, float] | None" = None,
         control_displacement: str = "displace",
+        band_override: "str | None" = None,
+        damage_type_mix: bool = False,
+        legendary_cadence: bool = False,
     ) -> None:
         self._level = level
         self._primary = primary
@@ -248,16 +279,34 @@ class BaselineEnemyPolicy:
         self._n_attacks = max(1, n_attacks if n_attacks is not None
                               else baseline_n_attacks(level))
         self._rounds = rounds_per_combat
+        # §7 CR-band-override toggle: keeps *level*'s MAGNITUDES (chart dice/DC — the
+        # per-level table is the other axis, §8) while every band_*() lookup below reads
+        # a DIFFERENT band's qualitative MIX.  None (default) → the normal
+        # band_for_level(level) join, no drift.
+        self._band = band_override
         # Damaging-save knobs default to the band-EMPIRICAL values (enemy_model.md §4/§4b):
         # the per-action save-for-damage share and the CON/DEX-dominant save-type mix for
         # this level's CR band.  An explicit arg still overrides (toggles / tests).
         if save_round_prob is None:
-            save_round_prob = band_save_round_prob(level)
+            save_round_prob = band_save_round_prob(level, band=self._band)
         self._save_round_pct = int(round(save_round_prob * 100))
         self._save_weights = dict(save_weights) if save_weights is not None \
-            else band_save_weights(level)
+            else band_save_weights(level, band=self._band)
         self._dc_stat = dc_stat
         self._damage_type = damage_type
+        # §7 incoming damage-type-mix toggle, default OFF (no drift — self._damage_type
+        # stays the fixed scalar, which already covers untyped/single-type/force-mode).
+        # ON → a per-round weighted draw from the band-empirical type mix instead.
+        self._damage_type_mix = damage_type_mix
+        self._type_weights = band_damage_type_mix(level, band=self._band) \
+            if damage_type_mix else {}
+        self._round_damage_type: dict[int, str] = {}
+        # §7 legendary-cadence toggle, default OFF (no drift). ON → a DETERMINISTIC
+        # (mean-field, not per-round-rolled) number of extra cost="none" swings added to
+        # EVERY round, per band_legendary_cadence (round()'s to 0 at 0-4/5-10 → inert
+        # there; 1 at 11-16; 3 at 17+).
+        self._legendary_swings = band_legendary_cadence(level, band=self._band) \
+            if legendary_cadence else 0
         # --- Control channel (§6) — the incapacitation-pressure axis, default OFF so
         # turning it on is the ONLY thing that changes behavior (no baseline drift).
         # When ON, the per-round action budget goes TERNARY (attack / save-dmg /
@@ -269,19 +318,19 @@ class BaselineEnemyPolicy:
         self._control_displacement = control_displacement
         if control:
             cp = control_save_prob if control_save_prob is not None \
-                else band_control_save_prob(level)
+                else band_control_save_prob(level, band=self._band)
             self._control_prob_pct = int(round(cp * 100))
             self._control_weights = dict(control_weights) if control_weights is not None \
-                else band_control_weights(level)
+                else band_control_weights(level, band=self._band)
             self._control_hard_frac = control_hard_frac if control_hard_frac is not None \
-                else band_control_hard_frac(level)
+                else band_control_hard_frac(level, band=self._band)
             # soft_factor is surfaced for the reporting layer (it scales the reduced-turn
             # output); resolution records only the AFFECTED turns, so it is not threaded
             # into the event.  Stored so tests / reporting can read it.
             self._soft_factor = soft_factor if soft_factor is not None else SOFT_FACTOR
             self._control_dur = control_duration_mix if control_duration_mix is not None \
-                else band_control_duration_mix(level)
-            rider_frac, overflow = band_bundled_control_rider(level)
+                else band_control_duration_mix(level, band=self._band)
+            rider_frac, overflow = band_bundled_control_rider(level, band=self._band)
             self._rider_frac_pct = int(round(rider_frac * 100))
             self._overflow_pct = int(round(overflow * 100))
         # Per-level damage DICE (the chart, ÷1.5, re-diced): one multiattack swing
@@ -314,7 +363,15 @@ class BaselineEnemyPolicy:
         self._bundled_stat = {}
         self._overflow_fire = {}
         self._overflow_stat = {}
+        self._round_damage_type = {}
         for r in range(1, self._rounds + 1):
+            # §7 damage-type-mix toggle: independent of save/control/attack round type —
+            # a per-round weighted draw from the band-empirical incoming damage-type mix.
+            # OFF (empty self._type_weights, the default) → no-op, decide() falls back to
+            # the fixed scalar self._damage_type (already covers untyped/single/force).
+            if self._type_weights:
+                self._round_damage_type[r] = self._weighted_pick_stat(
+                    self._type_weights, rng)
             if not self._control:
                 # OFF: the exact prior binary attack/save pre-roll (no drift).
                 is_save = rng.roll_one(100) <= self._save_round_pct
@@ -428,6 +485,9 @@ class BaselineEnemyPolicy:
         r = snapshot.round_number
         rounds_remaining = max(1, self._rounds - r + 1)
         choices: list[Choice] = []
+        # §7 damage-type-mix toggle: the per-round empirical draw overrides the fixed
+        # scalar when ON; OFF (no draw for this round) falls back to self._damage_type.
+        dmg_type = self._round_damage_type.get(r, self._damage_type)
 
         # A pure-control round in DISPLACE mode replaces the damage action entirely
         # (§4b: "the monster controls instead of swinging" — deals no damage).
@@ -448,7 +508,7 @@ class BaselineEnemyPolicy:
                 damage_dice=self._aoe_dice,
                 damage_bonus=self._aoe_bonus,
                 on_save="half",
-                damage_type=self._damage_type,
+                damage_type=dmg_type,
             ))
             # Bundled control rider: a SECOND (control) save on the same action (§4b) —
             # cost "none" so it rides rather than costing a fresh action.
@@ -466,7 +526,7 @@ class BaselineEnemyPolicy:
                     weapon_stat="attack_bonus",
                     damage_dice=self._attack_dice,
                     damage_bonus=self._attack_bonus,
-                    damage_type=self._damage_type,
+                    damage_type=dmg_type,
                 ))
 
         # Extra control saves layered on top (cost "none"): ride-on-top pure control
@@ -478,4 +538,20 @@ class BaselineEnemyPolicy:
             if self._overflow_fire.get(r, False):
                 choices.append(self._control_choice(
                     target, self._overflow_stat[r], "none", rounds_remaining))
+
+        # §7 legendary-cadence toggle: a fixed number of extra cost="none" swings, EVERY
+        # round regardless of round type (legendary actions happen outside the enemy's
+        # own turn — real, deterministic action-economy pressure, not gated by whether
+        # this round was already an attack/save/control round).  0 (the default, and at
+        # bands 0-4/5-10) → no-op.
+        for _ in range(self._legendary_swings):
+            choices.append(Choice(
+                action_type="attack",
+                cost="none",
+                target=target,
+                weapon_stat="attack_bonus",
+                damage_dice=self._attack_dice,
+                damage_bonus=self._attack_bonus,
+                damage_type=dmg_type,
+            ))
         return choices

@@ -202,19 +202,24 @@ def _band_table() -> dict:
     return _BAND_TABLE_CACHE
 
 
-def band_save_round_prob(level: int) -> float:
+def band_save_round_prob(level: int, band: "str | None" = None) -> float:
     """The enemy's per-ROUND probability of forcing a damaging save at *level* — the
     action-level save-for-damage share (§4b corrects this from the instance basis to the
-    per-action basis: a round is one action choice, not N multiattack swings)."""
-    return _band_table()[band_for_level(level)]["save_dmg_action_share"] / 100.0
+    per-action basis: a round is one action choice, not N multiattack swings).
+
+    ``band`` (§7 CR-band-override toggle) forces a different band's MIX while *level*
+    still drives the magnitude axis (chart dice/DC) elsewhere — default None keeps the
+    normal ``band_for_level(level)`` join."""
+    return _band_table()[band or band_for_level(level)]["save_dmg_action_share"] / 100.0
 
 
-def band_save_weights(level: int) -> dict[str, int]:
+def band_save_weights(level: int, band: "str | None" = None) -> dict[str, int]:
     """The damaging-save TYPE weights at *level*, read from the band table (the §4
     correction: CON/DEX dominate, WIS≈0 for *damaging* saves — the mental-save mass
     lives in the control channel, §6).  Percentages are scaled ×10 to int relative
-    weights (roll_one needs an int total); zero-weight saves are dropped."""
-    row = _band_table()[band_for_level(level)]
+    weights (roll_one needs an int total); zero-weight saves are dropped.  ``band``
+    overrides the level→band join (§7)."""
+    row = _band_table()[band or band_for_level(level)]
     weights = {_AB_TO_SAVE[ab]: int(round(row[f"savew_{ab}"] * 10))
                for ab in ("STR", "DEX", "CON", "INT", "WIS", "CHA")}
     return {k: v for k, v in weights.items() if v > 0}
@@ -226,7 +231,7 @@ _DAMAGE_TYPES = ("acid", "bludgeoning", "cold", "fire", "force", "lightning",
                  "slashing", "thunder")
 
 
-def band_damage_multiplier(level: int, damage_type: str) -> float:
+def band_damage_multiplier(level: int, damage_type: str, band: "str | None" = None) -> float:
     """The §5 fractional damage multiplier `mult(t)` for *damage_type* at *level*'s band:
 
         mult(t) = 1 − 0.5·P_resist(t) − P_immune(t) + P_vulnerable(t)
@@ -236,8 +241,9 @@ def band_damage_multiplier(level: int, damage_type: str) -> float:
     `vul_<type>`, stored as PERCENTAGES → ÷100 here).  This is literally "the fraction of
     your type-*t* damage that lands against the representative enemy" — the defensive
     denominator on offense (§5).  E.g. fire ≈ 0.93/0.84/0.79/0.64 across the four bands.
-    A type with no prevalence columns (unknown / never-resisted) → 1.0."""
-    row = _band_table()[band_for_level(level)]
+    A type with no prevalence columns (unknown / never-resisted) → 1.0.  ``band`` overrides
+    the level→band join (§7 CR-band-override toggle)."""
+    row = _band_table()[band or band_for_level(level)]
     if f"res_{damage_type}" not in row:
         return 1.0
     res = row[f"res_{damage_type}"] / 100.0
@@ -246,11 +252,12 @@ def band_damage_multiplier(level: int, damage_type: str) -> float:
     return 1.0 - 0.5 * res - imm + vul
 
 
-def band_damage_multipliers(level: int) -> dict[str, float]:
+def band_damage_multipliers(level: int, band: "str | None" = None) -> dict[str, float]:
     """The full per-type fractional `mult(t)` profile (§5) for *level*'s band — the
     mean-field resistance profile installed on the enemy dummy's `damage_multiplier`
-    when the §7 res/imm/vuln check is ON (default OFF → not installed → no drift)."""
-    return {t: band_damage_multiplier(level, t) for t in _DAMAGE_TYPES}
+    when the §7 res/imm/vuln check is ON (default OFF → not installed → no drift).
+    ``band`` overrides the level→band join (§7 CR-band-override toggle)."""
+    return {t: band_damage_multiplier(level, t, band=band) for t in _DAMAGE_TYPES}
 
 
 # ---------------------------------------------------------------------------
@@ -265,41 +272,45 @@ def band_damage_multipliers(level: int) -> dict[str, float]:
 # turned ON (default OFF → no baseline drift).
 
 
-def band_control_save_prob(level: int) -> float:
+def band_control_save_prob(level: int, band: "str | None" = None) -> float:
     """Per-ROUND probability the enemy forces a PURE-control save at *level* — the
     pure-control prong of the ternary action budget (§4b: it DISPLACES a damage
-    action).  The bundled rider is separate (``band_bundled_control_rider``)."""
-    return _band_table()[band_for_level(level)]["pure_control_action_share"] / 100.0
+    action).  The bundled rider is separate (``band_bundled_control_rider``).  ``band``
+    overrides the level→band join (§7 CR-band-override toggle)."""
+    return _band_table()[band or band_for_level(level)]["pure_control_action_share"] / 100.0
 
 
-def band_control_weights(level: int) -> dict[str, int]:
+def band_control_weights(level: int, band: "str | None" = None) -> dict[str, int]:
     """The CONTROL save-type weights at *level* (§6) — DISTINCT from the damaging-save
     weights: control lifts WIS to a top save (charm / fear / dominate) and spreads
     STR/DEX for physical control.  Percentages ×10 → int relative weights (roll_one
-    needs an int total); zero-weight saves dropped."""
-    row = _band_table()[band_for_level(level)]
+    needs an int total); zero-weight saves dropped.  ``band`` overrides the level→band
+    join (§7 CR-band-override toggle)."""
+    row = _band_table()[band or band_for_level(level)]
     weights = {_AB_TO_SAVE[ab]: int(round(row[f"ctrlw_{ab}"] * 10))
                for ab in ("STR", "DEX", "CON", "INT", "WIS", "CHA")}
     return {k: v for k, v in weights.items() if v > 0}
 
 
-def band_control_hard_frac(level: int) -> float:
+def band_control_hard_frac(level: int, band: "str | None" = None) -> float:
     """The fraction of control that is HARD (turn-ending) vs SOFT (debuff) at *level*
-    (§6): a failed HARD save loses the whole turn, a SOFT save reduces output."""
-    return _band_table()[band_for_level(level)]["control_hard_frac"]
+    (§6): a failed HARD save loses the whole turn, a SOFT save reduces output.  ``band``
+    overrides the level→band join (§7 CR-band-override toggle)."""
+    return _band_table()[band or band_for_level(level)]["control_hard_frac"]
 
 
-def band_control_duration_mix(level: int) -> tuple[float, float, float]:
+def band_control_duration_mix(level: int, band: "str | None" = None) -> tuple[float, float, float]:
     """The control-duration split ``(short, save_ends, fixed)`` as FRACTIONS at *level*
     (§6 step 5): SHORT→1 turn, SAVE_ENDS→1/s on the char's own save, FIXED→capped at
-    the rounds remaining.  Feeds the closed-form expected-duration model."""
-    row = _band_table()[band_for_level(level)]
+    the rounds remaining.  Feeds the closed-form expected-duration model.  ``band``
+    overrides the level→band join (§7 CR-band-override toggle)."""
+    row = _band_table()[band or band_for_level(level)]
     return (row["ctrldur_short"] / 100.0,
             row["ctrldur_save_ends"] / 100.0,
             row["ctrldur_fixed"] / 100.0)
 
 
-def band_bundled_control_rider(level: int) -> tuple[float, float]:
+def band_bundled_control_rider(level: int, band: "str | None" = None) -> tuple[float, float]:
     """The BUNDLED-control placement at *level* (§4b) → ``(rider_frac, overflow_per_attack)``.
 
     Bundled control (``also_damages=y``, e.g. Mind Blast) is a save-for-damage ability
@@ -333,6 +344,38 @@ def band_bundled_control_rider(level: int) -> tuple[float, float]:
     attack_share = row["attack_action_share"] / 100.0
     overflow_per_attack = overflow / attack_share if attack_share > 0 else 0.0
     return rider_frac, min(overflow_per_attack, 1.0)
+
+
+def band_damage_type_mix(level: int, band: "str | None" = None) -> dict[str, int]:
+    """The band-empirical incoming-damage TYPE weights at *level* (§7 "incoming
+    damage-type mix" toggle) — the ``dmix_<type>`` columns of the frozen band table,
+    scaled ×10 to int relative weights (roll_one needs an int total); zero-weight types
+    dropped.  Feeds ``BaselineEnemyPolicy(damage_type_mix=True)``'s per-round weighted
+    type draw.  ``untyped`` and any fixed ``single-type`` value are already reachable via
+    the existing scalar ``damage_type`` constructor arg (incl. ``"force"`` for force-mode
+    — force has no res/imm/vul prevalence columns, so ``band_damage_multiplier`` returns
+    1.0 for it in every band, §5); this accessor is only the NEW empirical-mix value.
+    ``band`` overrides the level→band join (§7 CR-band-override toggle)."""
+    row = _band_table()[band or band_for_level(level)]
+    weights = {t: int(round(row[f"dmix_{t}"] * 10)) for t in _DAMAGE_TYPES}
+    return {k: v for k, v in weights.items() if v > 0}
+
+
+def band_legendary_cadence(level: int, band: "str | None" = None) -> int:
+    """The number of extra legendary-action swings ADDED to every round at *level*
+    (§7 "legendary cadence" toggle) — the mean-field DETERMINISTIC bump
+    ``round(pct_with_legendary × avg_legendary_actions)`` (same "round to nearest int
+    mean-field expectation" convention as §5's ``mult(t)``, not a per-round Bernoulli:
+    a legendary monster gets ~``avg_legendary_actions`` legendary actions on EVERY
+    round it's up, not a coin-flip of getting one).  A coarse cadence BUMP (documented
+    undercount, §10 — the census tags ≤1 damaging legendary use per monster), not a
+    precise legendary-economy model.  Near-zero at 0-4/5-10 (rounds to 0 → toggle is a
+    no-op there), real at 11-16/17+.  ``band`` overrides the level→band join (§7
+    CR-band-override toggle)."""
+    row = _band_table()[band or band_for_level(level)]
+    pct_with = row["pct_with_legendary"] / 100.0
+    avg_actions = row["avg_legendary_actions"]
+    return round(pct_with * avg_actions)
 
 
 # ---------------------------------------------------------------------------
