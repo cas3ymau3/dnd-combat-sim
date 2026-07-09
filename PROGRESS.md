@@ -248,8 +248,22 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > in the s34/s35 control census) → no web-verify ([[per-feature-ritual-verify-and-reflect]]). CODE
 > changed → full suite FOREGROUND once, 574 green ([[full-suite-foreground-only]]). Memory saved:
 > [[control-channel-is-output-factor-not-status]]. RESOLVED the s38 low-CR overflow watch-item.
-> **NEXT: #1 step 6** (§7 toggles), then the reporting layer + first end-to-end eval. Merge to main
-> pending user OK.
+> **NEXT: #1 step 6** (§7 toggles), then the reporting layer + first end-to-end eval. Merged to main
+> (4883f72).
+>
+> **s40 FOLLOW-UP — overflow gated to ATTACK rounds (branch `fix/overflow-attack-round-conditioning`,
+> 576 green).** User review of step 5 caught an artifact: the low-CR overflow was an independent
+> any-round draw, so on a pure-control round it could stack a SECOND control save on the enemy's one
+> control action (~0.75% of band-0-4 rounds) — two control saves from one control action, which no
+> single ability does. FIX: gate the overflow to ATTACK rounds only (bundled control is damage-COUPLED,
+> so with no save-for-damage round free it rides on the other damage round, the attack — NOT on a
+> pure-control round). Rescaled to a per-attack-round probability (`overflow ÷ attack_share`) so the
+> aggregate per-round mass is preserved (band 0-4: 100% of the 0.7% save-dmg rounds control + ≈8.6% of
+> the 89.6% attack rounds control = the same 7.7% aggregate). Now every round carries ≤ one control
+> save except the legit bundled case (one ability = damage + control). `band_bundled_control_rider`
+> returns the rescaled per-attack overflow; `on_combat_start` gates the draw. NEW tests: a pure-control
+> round forces exactly one control save; overflow never lands on a save/pure-control round.
+> `enemy_model.md` §4b/§10 updated. Merge to main pending user OK.
 >
 > **Session scope (2026-06-26, session 39) — DONE (#1 WIRING STEP 4, Track 1 roadmap step 4 /
 > `enemy_model.md` §12 step 3 — step 4 of 6: the §5 `mult(t)` fractional defense multiplier):**
