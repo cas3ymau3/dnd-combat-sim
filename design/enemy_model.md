@@ -1,7 +1,7 @@
 # Enemy model — how the generalized enemy operates (design-first contract)
 
-> Status: **DESIGN (session 33, 2026-06-24; extended s37, 2026-06-26). WIRING IN
-> PROGRESS — foundations (steps 1-3) wired s38.** This is the
+> Status: **DESIGN (session 33, 2026-06-24; extended s37, 2026-06-26). WIRING
+> COMPLETE — all 6 steps landed s38-s41 (pending merge).** This is the
 > `design/buff_primitive.md`-style design-first note for the generalized enemy
 > policy. It decides HOW the enemy behaves in combat before any policy code is
 > written. **s38 wired the foundations (§12 step 3, steps 1-3 of 6):** the §13
@@ -19,8 +19,18 @@
 > save-dmg rounds / the band-0-4 overflow spill), and a new `control_save` action →
 > `ControlSaveEvent` → `resolve_control_save` computing the closed-form E[turns]
 > (1-turn / `save-ends`→1/s / capped-fixed) and emitting the §13 control channel
-> (turns_lost / turns_reduced). All control default-OFF → no drift. REMAINING: step 6 §7
-> toggles. Companion to `design/enemy_profile.md` (the empirical
+> (turns_lost / turns_reduced). All control default-OFF → no drift. **s41 wired step 6:**
+> the §7 sensitivity-toggle interface — `band_override` (threads a CR-band override
+> through every `band_*()` lookup, level still drives magnitudes), `damage_type_mix`
+> (the empirical incoming-damage-type-mix knob, resolving the s39 force-mode deferral —
+> `damage_type="force"` was already reachable via the existing scalar, no new code
+> needed there), and `legendary_cadence` (a deterministic mean-field swing bump, same
+> rounding convention as `mult(t)`). Every other §7 row was already a constructor kwarg
+> from s38-40, now documented as such; res/imm/vuln check documented as the
+> Entity-construction call-site pattern; condition-immunity check confirmed INERT (no
+> rider is modeled yet — nothing to flip); ranged-kiting and AoE-share explicitly scoped
+> OUT (character-side / multi-party prerequisites that don't exist yet — §10). Companion
+> to `design/enemy_profile.md` (the empirical
 > census — the DATA this consumes) and `design/design.md` §8 (the outputs this must
 > drive). The census is COMPLETE (510 monsters, 897 action rows + 218 control rows,
 > four CR bands); this note turns that data into enemy decisions.
@@ -493,31 +503,39 @@ isolate hard axes; `validate-mechanism-not-build-value` — we test the toggle
 flips behavior, not that a DPR is "right"). Defaults are the band-grounded
 values; each can be overridden per evaluation run.
 
-| toggle | values | isolates / purpose |
-|---|---|---|
-| **CR-band override** | band ∈ {0-4,5-10,11-16,17+} | stress a build vs a harder/softer tier than its level |
-| **save_round_prob** | empirical[band] / 0 (all-attack) / high | how much pressure is damaging-save based; isolate Evasion etc. |
-| **save_type_weights** | empirical[band] / uniform / single-type | single-type (e.g. all-DEX) isolates Evasion / a save proficiency |
-| **res/imm/vuln check** | ON / OFF | the defensive-offense pricing (§5) on or off |
-| **condition-immunity check** | ON / OFF | rider pricing on or off |
-| **incoming damage-type mix** | empirical[band] / untyped / single-type / **force** | gates the character's *incoming* typed resistance |
-| **— force-damage mode** | (a value of the row above) | all enemy damage → force ⇒ NO character typed resistance applies; **isolates flat/untyped mitigation** (raw AC, Uncanny Dodge, temp HP, heals) from typed mitigation — the delta vs res-check-on is the value of the build's typed defenses |
-| **control channel** | ON / OFF | §6 incapacitation pressure on or off (OFF ⇒ ternary budget collapses to the binary attack/save-dmg, no rider — zero baseline drift) |
-| **control_save_prob** | band (census) / 0 / high | how much control pressure; splits into pure-control (budget prong iii) + bundled rider per `also_damages` (§4b) |
-| **control displacement** | displace-attack (default) / ride-on-top | whether a pure-control round *replaces* a damage action (real, coupled) or stacks on top (isolates the lost-turn effect alone) — §4b |
-| **control_save_weights** | census / uniform / single-type | single-type (e.g. all-WIS) isolates one mental-save investment |
-| **hard_control_frac / soft_factor** | census (type-skewed) / scalar | lost-turn share vs debuff factor |
-| **control duration** | census `duration` (`save-ends`→`1/s`) / fixed-1-turn | expected lost-turns; fixed-1-turn de-prices the save-ends recovery, isolating the initial-fail effect (§6 step 5) |
-| **ranged-kiting fraction** | 0 (full melee uptime) / band ranged share / custom | melee build uptime loss vs ranged/kiting share — STUB now (see §9/§10) |
-| **AoE share** | empirical[band] / 0 | matters for Evasion / multi-target defenses |
-| **legendary cadence** | OFF / band bump | extra incoming actions/round at 11-16 / 17+ |
+| toggle | values | isolates / purpose | wired as (step 6) |
+|---|---|---|---|
+| **CR-band override** | band ∈ {0-4,5-10,11-16,17+} | stress a build vs a harder/softer tier than its level | `BaselineEnemyPolicy(band_override=...)` — every `band_*()` lookup (save/control/damage-mix/legendary) reads the override; `level` still drives magnitudes (§8) |
+| **save_round_prob** | empirical[band] / 0 (all-attack) / high | how much pressure is damaging-save based; isolate Evasion etc. | `save_round_prob=` (already a constructor arg, s38) |
+| **save_type_weights** | empirical[band] / uniform / single-type | single-type (e.g. all-DEX) isolates Evasion / a save proficiency | `save_weights=` (already a constructor arg, s38; a one-key dict gives single-type) |
+| **res/imm/vuln check** | ON / OFF | the defensive-offense pricing (§5) on or off | NOT a policy arg — installed on the enemy `Entity` at construction: `damage_multiplier=enemy_stats.band_damage_multipliers(level, band=...)`; default not-installed = OFF (s39) |
+| **condition-immunity check** | ON / OFF | rider pricing on or off | **INERT — no wiring exists to flip.** §5 names this as a *forward-looking* seam ("most riders are not yet modeled as doing anything"); nothing in the engine consumes `cimm_<condition>` yet. Deferred until a rider is actually modeled (§10). |
+| **incoming damage-type mix** | empirical[band] / untyped / single-type / **force** | gates the character's *incoming* typed resistance | `untyped`/`single-type`/`force` were ALREADY reachable via the existing `damage_type=` scalar (any literal string, incl. `"force"`). Only `empirical` was missing — NEW `damage_type_mix=True` (a per-round weighted draw from `enemy_stats.band_damage_type_mix`, replacing the scalar for that round) |
+| **— force-damage mode** | (a value of the row above) | all enemy damage → force ⇒ NO character typed resistance applies; **isolates flat/untyped mitigation** (raw AC, Uncanny Dodge, temp HP, heals) from typed mitigation — the delta vs res-check-on is the value of the build's typed defenses | `damage_type="force"` — no new code (the s39 deferral is resolved: it was already a no-op reachable through the scalar, force just has no res/imm/vul columns so `mult(t)` is always 1.0 for it, §5) |
+| **control channel** | ON / OFF | §6 incapacitation pressure on or off (OFF ⇒ ternary budget collapses to the binary attack/save-dmg, no rider — zero baseline drift) | `control=` (already a constructor arg, s40) |
+| **control_save_prob** | band (census) / 0 / high | how much control pressure; splits into pure-control (budget prong iii) + bundled rider per `also_damages` (§4b) | `control_save_prob=` (already a constructor arg, s40) |
+| **control displacement** | displace-attack (default) / ride-on-top | whether a pure-control round *replaces* a damage action (real, coupled) or stacks on top (isolates the lost-turn effect alone) — §4b | `control_displacement=` (already a constructor arg, s40) |
+| **control_save_weights** | census / uniform / single-type | single-type (e.g. all-WIS) isolates one mental-save investment | `control_weights=` (already a constructor arg, s40) |
+| **hard_control_frac / soft_factor** | census (type-skewed) / scalar | lost-turn share vs debuff factor | `control_hard_frac=` / `soft_factor=` (already constructor args, s40) |
+| **control duration** | census `duration` (`save-ends`→`1/s`) / fixed-1-turn | expected lost-turns; fixed-1-turn de-prices the save-ends recovery, isolating the initial-fail effect (§6 step 5) | `control_duration_mix=` (already a constructor arg, s40) |
+| **ranged-kiting fraction** | 0 (full melee uptime) / band ranged share / custom | melee build uptime loss vs ranged/kiting share — STUB now (see §9/§10) | **DEFERRED (step 6 scope call, s41)** — kiting reduces the *character's* action economy (uptime), not the enemy's; it needs an injection point on the character-policy/scheduler side that doesn't exist yet. Belongs to the positioning arc (§9), not the enemy-policy toggle interface. No code this session. |
+| **AoE share** | empirical[band] / 0 | matters for Evasion / multi-target defenses | **DEFERRED (step 6 scope call, s41)** — only matters once the sim models a multi-character party (today: one character + summons, single-target); no wiring until that exists. |
+| **legendary cadence** | OFF / band bump | extra incoming actions/round at 11-16 / 17+ | NEW `legendary_cadence=True` — a DETERMINISTIC mean-field bump (`enemy_stats.band_legendary_cadence` = `round(pct_with_legendary × avg_legendary_actions)`, same rounding convention as §5's `mult(t)`), not a per-round coin-flip: 0 extra swings at 0-4/5-10 (no-op), 1 at 11-16, 3 at 17+ |
 
 **Default discipline:** the res/imm/vuln + condition-immunity checks, the control
-channel, force-mode, and the kiting fraction all default **OFF / neutral**
-(multiplier 1.0, no control, typed-as-empirical, full uptime) so wiring them does
+channel, force-mode, damage-type-mix, and legendary-cadence all default **OFF /
+neutral** (multiplier 1.0, no control, fixed scalar type, no bump) so wiring them does
 NOT silently move existing DPR baselines; they are opt-in measurements. The
 damaging-save split + weights default to the band-empirical values (they replace
 placeholders already in the live path, and the correction is wanted).
+
+**Step 6 status (s41, `feature/enemy-model-toggles`):** every toggle above is now
+either a real BaselineEnemyPolicy constructor kwarg, a documented Entity-construction
+call-site pattern (res/imm/vuln), or an explicitly-scoped-out deferral with a named
+reason (condition-immunity / kiting / AoE-share) — see §10 for the deferral entries.
+`tests/test_enemy_toggles.py` covers the three genuinely NEW pieces (band-override,
+damage-type-mix, legendary-cadence); the rest were already tested when their
+constructor args landed (s38-40).
 
 ---
 
@@ -662,6 +680,26 @@ later arc.
   channel. Similarly the initial rolled save and the closed-form `s` can disagree at extreme
   bonuses (RAW has no nat-20 auto-succeed on a save; `s` is floored at 0.05) — a documented
   mean-field simplification that averages out.
+- ~~**§7 sensitivity toggles**~~ **DONE (s41, roadmap step 6).** Band-override,
+  incoming damage-type-mix (+ force-mode), and legendary-cadence wired as
+  `BaselineEnemyPolicy` constructor kwargs (`band_override`, `damage_type_mix`,
+  `legendary_cadence`); res/imm/vuln check documented as an Entity-construction
+  call-site pattern (unchanged from s39, just newly documented here); every other §7
+  row was already a constructor arg from s38-40. Two rows scoped OUT with a named
+  reason (see §7 table + the two entries below), not silently skipped.
+- **Ranged-kiting fraction — NOT wired (step 6 scope call, s41).** §7 frames it as an
+  enemy-side toggle, but the actual mechanism is on the *character* side: a kiting
+  enemy forces a melee build to spend movement instead of attacking, which is
+  character-policy/scheduler action-economy, not something `BaselineEnemyPolicy` can
+  produce by itself (it has no lever over the character's turn). Needs a real
+  injection point from the positioning arc (§9) before it can be a toggle at all —
+  building a policy-side stub now would be dead config with nothing consuming it.
+- **AoE share — NOT wired (step 6 scope call, s41).** The census `aoe_share` column
+  is frozen and available (`enemy_stats` doesn't expose it because nothing consumes
+  it), but it only matters once the sim models a MULTI-character party (Evasion /
+  multi-target defenses need >1 target to differ from single-target). Today's sim is
+  one character + summons, single-target — deferred until multi-character party
+  support exists, likely alongside the positioning/targeting arc (§9).
 
 ---
 
@@ -706,8 +744,13 @@ the way the census (and the measured control data) says.
    **DONE (s40):** `control_profile` + control band columns; `enemy_stats.band_control_*`;
    `BaselineEnemyPolicy(control=…)` ternary budget (pure-control displaces / bundled rider /
    band-0-4 overflow spill); `control_save` action → `ControlSaveEvent` → `resolve_control_save`
-   (closed-form E[turns], §13 control channel). **REMAINING:** wire the remaining §7
-   toggles (step 6); emit every quantity through the §13 channels; mechanism-validated (§11).
+   (closed-form E[turns], §13 control channel). **DONE (s41, step 6):** the §7
+   sensitivity-toggle interface — `band_override`, `damage_type_mix` (resolving the s39
+   force-mode deferral), `legendary_cadence` as new `BaselineEnemyPolicy` kwargs; every
+   other §7 row documented as an already-existing kwarg or call-site pattern;
+   ranged-kiting + AoE-share explicitly scoped out (§10). **§3 WIRING COMPLETE.** Every
+   quantity is emitted through the §13 channels; mechanism-validated (§11,
+   `tests/test_enemy_*.py`).
 4. Positioning / kiting + targeting arc (§9) — its own multi-session lift.
 5. Reporting / aggregation layer (design.md §8 outputs) + the 4×4 baseline
    comparison — consumes the §13 telemetry channels.
