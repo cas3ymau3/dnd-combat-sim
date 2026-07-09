@@ -206,17 +206,40 @@ def test_bundled_round_forces_both_a_damage_and_a_control_save():
     assert tel.saves_forced("control") > 0          # bundled rider on the save-dmg rounds
 
 
-def test_low_cr_overflow_spills_to_an_independent_draw():
+def test_low_cr_overflow_spills_onto_attack_rounds():
     """At band 0-4 the bundled-control mass exceeds the save-for-damage budget it rides on,
-    so the overflow spills to an independent any-round draw (a bottom-band-only patch): with
-    NO save rounds and NO pure control, control still fires at low CR but not at higher CR."""
+    so the overflow spills onto the ATTACK rounds (a bottom-band-only patch): with NO save
+    rounds and NO pure control (⇒ every round is an attack round), control still fires at low
+    CR but not at higher CR."""
     rider_lo, overflow_lo = band_bundled_control_rider(2)
     rider_hi, overflow_hi = band_bundled_control_rider(8)
     assert overflow_lo > 0 and overflow_hi == 0     # the patch is band-0-4 only
     _d_lo, tel_lo = _run(2, control=True, control_save_prob=0.0, save_round_prob=0.0)
     _d_hi, tel_hi = _run(8, control=True, control_save_prob=0.0, save_round_prob=0.0)
-    assert tel_lo.saves_forced("control") > 0       # overflow spill fires
+    assert tel_lo.saves_forced("control") > 0       # overflow rides the attack rounds
     assert tel_hi.saves_forced("control") == 0      # no overflow above band 0-4
+
+
+def test_pure_control_round_never_carries_a_second_control_save():
+    """The overflow is gated to ATTACK rounds, so a pure-control round forces EXACTLY ONE
+    control save — never a second overflow rider stacked on the same control action (one
+    control action = one control save).  At band 0-4 (which HAS overflow), forcing every
+    round to be pure control ⇒ control saves == rounds exactly (no extras)."""
+    assert band_bundled_control_rider(2)[1] > 0     # band 0-4 has overflow that could stack
+    rounds = 300
+    _dmg, tel = _run(2, control=True, control_save_prob=1.0, save_round_prob=0.0,
+                     rounds=rounds)
+    assert tel.saves_forced("control") == rounds    # one per pure-control round, no overflow
+
+
+def test_overflow_never_lands_on_a_save_round():
+    """Overflow rides ATTACK rounds only: with a save forced every round (so there are NO
+    attack rounds), the band-0-4 overflow cannot fire — control comes ONLY from the bundled
+    rider on those save rounds (≤ one per round), never an extra stacked overflow draw."""
+    rounds = 300
+    _dmg, tel = _run(2, control=True, control_save_prob=0.0, save_round_prob=1.0,
+                     rounds=rounds)
+    assert tel.saves_forced("control") <= rounds    # no overflow stacked on save rounds
 
 
 # ---------------------------------------------------------------------------

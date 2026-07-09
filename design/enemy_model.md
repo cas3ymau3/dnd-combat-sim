@@ -321,10 +321,18 @@ the per-turn budget.
   than the save-for-damage budget it is meant to ride on (`save_dmg_per_mon ≈ 0.007`) —
   there simply aren't enough save-for-damage rounds at low CR to host all the bundled
   control. "Bundled rides on save-dmg rounds, rate bounded ≤ 1" therefore *cannot absorb
-  it* in the bottom band. Fix at step 5: where `bundled_per_mon > save_dmg_per_mon`, let
-  the overflow fall back to its own independent any-round draw (i.e. treat the excess as
-  pure-control-style on-top pressure) rather than silently capping/dropping it. The
-  higher bands reconcile fine (save-dmg ≫ bundled), so this is a bottom-band-only patch.
+  it* in the bottom band. **Fix as shipped (s40):** where `bundled_per_mon > save_dmg_per_mon`,
+  the hosted part saturates the rider at 1.0 and the excess `overflow = max(0, bundled −
+  save_dmg)` spills onto the **ATTACK rounds** — NOT an any-round draw. Bundled control is
+  damage-COUPLED (`also_damages`), so its home is a damage round; with no save-for-damage
+  round free, it rides on the other damage round (the attack). It is deliberately NOT
+  stacked onto a pure-control round: that would force a SECOND control save from a single
+  control action (one control action = one control save). The overflow is rescaled to a
+  per-attack-round probability (`overflow ÷ attack_share`) so, fired only on attack rounds,
+  the aggregate per-round overflow mass is preserved — so at band 0-4 the qualitative shape
+  is "100% of the (0.7%) save-dmg rounds also control" + "≈8.6% of the (89.6%) attack rounds
+  also control." The higher bands reconcile fine (save-dmg ≫ bundled), so this is a
+  bottom-band-only patch.
 - **Save-type weights:** one `control_save_weights` for both the pure and bundled control
   saves; a per-half split is a deferred refinement (likely over-fitting).
 
@@ -635,9 +643,13 @@ later arc.
   bundled-control mass exceeds the save-for-damage budget it rides on (`bundled ≈ 0.084` vs
   `save-dmg ≈ 0.007` per monster), so the "rides on save-dmg rounds" placement can't host it
   in the bottom band. Fix as shipped: `enemy_stats.band_bundled_control_rider` saturates the
-  per-save-round rider at 1.0 and spills `overflow = max(0, bundled − save-dmg)` to an
-  independent any-round draw (`BaselineEnemyPolicy._overflow_fire`). A bottom-band-only patch
-  (higher bands have save-dmg ≫ bundled → `overflow = 0`), confirmed by test. This is also the
+  per-save-round rider at 1.0 and spills `overflow = max(0, bundled − save-dmg)` onto the
+  **ATTACK rounds** (`BaselineEnemyPolicy._overflow_fire`, gated to attack rounds; the
+  overflow is rescaled by the attack share so the aggregate per-round mass is preserved).
+  Attack rounds — not an any-round draw — because bundled control is damage-coupled (its home
+  is a damage round) and stacking it on a pure-control round would force two control saves
+  from one control action. A bottom-band-only patch (higher bands have save-dmg ≫ bundled →
+  `overflow = 0`), confirmed by test (a pure-control round forces exactly one control save). This is also the
   empirical confirmation that **low-CR save pressure is dominated by CONTROL** (≈11% of
   rounds force a save — almost all control), so saving-throw protection still prices into
   low-level builds via §6, not via the (near-zero) low-CR damaging-save rate.

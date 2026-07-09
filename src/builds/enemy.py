@@ -192,7 +192,10 @@ class BaselineEnemyPolicy:
         Blast) — a second save on the same action, priced independently (the cross-axis
         double-save shows in both telemetry channels);
       - at band 0-4 the bundled mass exceeds the save-for-damage budget it rides on, so
-        the OVERFLOW spills to an independent any-round draw (a bottom-band-only patch).
+        the OVERFLOW spills onto the ATTACK rounds (bundled control is damage-coupled, so
+        with no save-for-damage round free it rides on the other damage round; a
+        bottom-band-only patch). It is NOT stacked onto a pure-control round — that would
+        force two control saves from one control action.
 
     The character rolls its OWN save (its build's bonus) vs the enemy DC; on a FAILURE it
     loses ``E[turns]`` of output (hard control → turn wasted; soft → output × soft_factor)
@@ -294,7 +297,7 @@ class BaselineEnemyPolicy:
         self._save_stat: dict[int, str] = {}
         # Control pre-rolls (only populated when self._control): the pure-control round
         # flag + its save type, the bundled-rider flag + save type (on save rounds), and
-        # the overflow independent-draw flag + save type (§4b low-CR patch / ride-on-top).
+        # the overflow flag + save type (§4b low-CR patch — on ATTACK rounds only).
         self._pure_control: dict[int, bool] = {}
         self._control_stat: dict[int, str] = {}
         self._bundled_fire: dict[int, bool] = {}
@@ -350,8 +353,17 @@ class BaselineEnemyPolicy:
                 self._bundled_stat[r] = self._weighted_control(rng)
 
             # Low-CR overflow (§4b patch): where bundled control exceeds the save-dmg
-            # budget it rides on, the excess spills to an independent any-round draw.
-            if self._overflow_pct and rng.roll_one(100) <= self._overflow_pct:
+            # budget it rides on, the excess spills to the ATTACK rounds (its per-attack
+            # probability is pre-rescaled so the aggregate per-round mass is preserved).
+            # Gated to attack rounds — NOT an any-round draw — so a pure-control round
+            # never carries a SECOND control save (one control action = one control save);
+            # bundled control is damage-coupled, so its home is a damage round, and with no
+            # save-for-damage round free it rides on the attack.  "Attack round" = neither a
+            # save-for-damage nor a pure-control round this round.
+            is_attack_round = not self._save_round.get(r, False) \
+                and not self._pure_control.get(r, False)
+            if self._overflow_pct and is_attack_round \
+                    and rng.roll_one(100) <= self._overflow_pct:
                 self._overflow_fire[r] = True
                 self._overflow_stat[r] = self._weighted_control(rng)
 

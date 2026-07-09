@@ -300,18 +300,26 @@ def band_control_duration_mix(level: int) -> tuple[float, float, float]:
 
 
 def band_bundled_control_rider(level: int) -> tuple[float, float]:
-    """The BUNDLED-control placement at *level* (§4b) → ``(rider_frac, overflow_prob)``.
+    """The BUNDLED-control placement at *level* (§4b) → ``(rider_frac, overflow_per_attack)``.
 
     Bundled control (``also_damages=y``, e.g. Mind Blast) is a save-for-damage ability
     that ALSO imposes control, so it rides as a second (control) save on save-for-damage
     rounds — with per-save-round probability ``rider_frac = min(bundled/save_dmg, 1)``.
 
-    The ⚠️ low-CR overflow patch (flagged s38): at band 0-4 the bundled mass
+    The ⚠️ low-CR overflow patch (flagged s38, refined s40): at band 0-4 the bundled mass
     (≈0.084/mon) EXCEEDS the save-for-damage budget it rides on (≈0.007/mon), so the
-    save-for-damage rounds cannot host it all.  The hosted part saturates the rider at
-    1.0 and the EXCESS ``overflow = max(0, bundled − save_dmg)`` spills to an independent
-    ANY-round draw (per-round probability, clamped ≤ 1).  The higher bands have
-    ``save_dmg ≫ bundled`` → ``rider_frac < 1``, ``overflow = 0`` (a bottom-band patch)."""
+    save-for-damage rounds cannot host it all.  The hosted part saturates the rider at 1.0
+    and the EXCESS ``overflow = max(0, bundled − save_dmg)`` spills to the **ATTACK
+    rounds** — because bundled control is damage-COUPLED (``also_damages``), its natural
+    home is a damage round, and with no save-for-damage round free it rides on the other
+    damage round (the attack).  Riding it on the pure-CONTROL round instead would force a
+    SECOND control save on a single control action (one ability = one control save), which
+    is why it is gated to attack rounds, NOT an any-round draw.  The returned
+    ``overflow_per_attack`` is the aggregate per-round overflow ``max(0, bundled − save_dmg)``
+    **rescaled by the attack share** so that, fired only on attack rounds, the aggregate
+    per-round overflow probability is preserved (``overflow_per_attack × attack_share =
+    overflow``).  Higher bands have ``save_dmg ≫ bundled`` → ``rider_frac < 1``,
+    ``overflow = 0`` (a bottom-band patch)."""
     row = _band_table()[band_for_level(level)]
     bundled = row["bundled_control_per_mon"]
     save_dmg = row["save_dmg_per_mon"]
@@ -320,7 +328,11 @@ def band_bundled_control_rider(level: int) -> tuple[float, float]:
     else:
         rider_frac = 0.0                       # no save-dmg rounds to host it → all spills
     overflow = max(0.0, bundled - save_dmg)
-    return rider_frac, min(overflow, 1.0)
+    # Rescale to a per-ATTACK-round probability (the overflow rides on attack rounds only)
+    # so the aggregate per-round mass is preserved.
+    attack_share = row["attack_action_share"] / 100.0
+    overflow_per_attack = overflow / attack_share if attack_share > 0 else 0.0
+    return rider_frac, min(overflow_per_attack, 1.0)
 
 
 # ---------------------------------------------------------------------------
