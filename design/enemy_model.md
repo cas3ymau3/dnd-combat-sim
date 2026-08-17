@@ -1,7 +1,10 @@
 # Enemy model — how the generalized enemy operates (design-first contract)
 
 > Status: **DESIGN (session 33, 2026-06-24; extended s37, 2026-06-26). WIRING
-> COMPLETE — all 6 steps landed s38-s41 (pending merge).** This is the
+> COMPLETE — all 6 steps landed s38-s41 (merged).** **Downstream (s42): the reporting
+> layer that consumes this is designed in `design/evaluation_framework.md`** — it
+> supersedes part of §6 (control cost is now APPLIED at runtime, not only recorded),
+> resolves §10's `soft_factor` deferral, and adds a 5th §13 channel (`attacks`). This is the
 > `design/buff_primitive.md`-style design-first note for the generalized enemy
 > policy. It decides HOW the enemy behaves in combat before any policy code is
 > written. **s38 wired the foundations (§12 step 3, steps 1-3 of 6):** the §13
@@ -466,6 +469,17 @@ step), grounded by the *measured* `duration` tag on each control row:
    expectation, no duration roll). The full `StatusSet` save-ends re-roll engine (an
    *ongoing-save* system with emergent duration) remains the §10 fidelity deferral.
 
+   > **SUPERSEDED IN PART (s42) — the cost is now APPLIED at runtime, not only recorded.**
+   > v1 as written above records `turns_lost` / `turns_reduced` through §13 and leaves the
+   > DPR conversion to the reporting layer. `design/evaluation_framework.md` §7 changes
+   > that: the same closed-form `E[turns]` is drawn down at runtime as a per-entity
+   > affected-turns account, so a suppressed turn produces no output **and spends no
+   > resources** (a post-hoc multiplier wrongly spends them, and wrongly assumes every
+   > turn is worth the same). The telemetry counts are still recorded — both readings.
+   > **What did NOT change:** the duration stays the mean-field closed form, so no new
+   > variance enters; the stateful save-ends re-roll engine is still the §10 deferral.
+   > Default remains OFF, so no existing baseline moves.
+
 **How it prices investment.** Better mental-save bonuses → fewer control
 failures → fewer lost turns → higher *effective* DPR. A build that buys
 "can't be charmed" or Aura-of-Protection now shows a measurable resilience gain;
@@ -671,6 +685,13 @@ later arc.
   empirical confirmation that **low-CR save pressure is dominated by CONTROL** (≈11% of
   rounds force a save — almost all control), so saving-throw protection still prices into
   low-level builds via §6, not via the (near-zero) low-CR damaging-save rate.
+- ~~**`soft_factor` not yet in telemetry / applied to DPR**~~ **RESOLVED BY DESIGN (s42);
+  build pending.** `design/evaluation_framework.md` §7 settles it: the control cost is
+  APPLIED at runtime (affected-turns account → suppressed turns spend no resources) rather
+  than converted post-hoc, and `soft_factor` is recorded in the report's `resolved`
+  provenance block. §13's "record the soft_factor applied" lands with it. Implementation is
+  step 5 of the framework build sequence (`evaluation_framework.md` §13). The original
+  entry is kept below for the reasoning it records.
 - **`soft_factor` not yet in telemetry / applied to DPR** (flagged s40) — step 5 records the
   control channel as EXPECTED AFFECTED TURNS (`turns_lost` hard, `turns_reduced` soft); the
   `soft_factor` that converts reduced turns into a DPR delta is stored on the policy
@@ -752,8 +773,13 @@ the way the census (and the measured control data) says.
    quantity is emitted through the §13 channels; mechanism-validated (§11,
    `tests/test_enemy_*.py`).
 4. Positioning / kiting + targeting arc (§9) — its own multi-session lift.
-5. Reporting / aggregation layer (design.md §8 outputs) + the 4×4 baseline
-   comparison — consumes the §13 telemetry channels.
+5. **Reporting / aggregation layer** (design.md §8 outputs) + the 4×4 baseline
+   comparison — consumes the §13 telemetry channels. **DESIGN LOCKED (s42):
+   `design/evaluation_framework.md`** — reframed by the user from "report on a build"
+   to a BUILD-AGNOSTIC evaluation framework (adapter/role-tagged-roster protocol,
+   config-as-provenance, metric registry, paired seeding, artifact pipeline → static
+   site). Also picks up the `soft_factor` deferral (§10) and adds a 5th §13 `attacks`
+   channel (§8's hit/crit/advantage counts). Build sequence in that note's §13.
 6. First honest end-to-end build evaluation (offense + profile-driven defense +
    control resilience).
 
@@ -789,6 +815,16 @@ channels (extend deliberately, like adding a verb — not casually):
 | **control** | turns lost (hard) and turns reduced (soft) + the `soft_factor` applied + the expected-duration realized, by save type | mental-save investment, "can't be charmed", Aura of Protection (§6) — the lost-turn rate / control-uptime outputs |
 | **mitigation** | outgoing damage before vs after `mult(t)`, by damage type (typed-damage mitigated); incoming damage by type | the §5 defensive denominator; the character's typed incoming resistance |
 | **economy** | resources spent (slots, war_priest, brutality, …), concentration checks forced / failed, reactions used | folds the existing slot-audit / parry-budget / concentration-count monkeypatches into ONE home |
+| **attacks** *(5th channel, added by design s42 — build pending)* | attack rolls made / hit / crit / at-advantage, by actor | `design.md` §8's hit % / crit % / advantage % — computed in `resolve_attack_roll` today and DISCARDED. See `evaluation_framework.md` §8.1 |
+
+> **Channel extension record.** The vocabulary is closed but not frozen — it extends
+> *deliberately, like adding a verb*. The **attacks** channel is the first such extension
+> (s42), justified in `design/evaluation_framework.md` §8.1: hit/crit/advantage rates are
+> core §8 outputs, among the most diagnostic numbers for explaining *why* a build's DPR is
+> what it is, and are already computed at an existing decision point (`verbs.py:277`) —
+> one record call, no new resolution logic. **Per-ability damage attribution was considered
+> and DEFERRED** in the same pass (it needs a label threaded `Choice → DamageEvent`, a much
+> wider change) — see `evaluation_framework.md` §8.2.
 
 **Who writes it — RESOLUTION only, never policy (preserves CLAUDE.md #7).** The seam is
 written by the scheduler / verb handlers as they roll dice and mutate state — they already

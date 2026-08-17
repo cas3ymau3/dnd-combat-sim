@@ -89,7 +89,10 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 40 (2026-07-06) — nothing to reset (confirmed with user).** The
+- **Last reviewed for reset: session 42 (2026-08-17) — nothing to reset (confirmed with user).** The
+  s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s41 and s42
+  were both pure Python / design work, so nothing accumulated; marker bumped per the ≥2-session rule.
+- **Prior — session 40 (2026-07-06) — nothing to reset (confirmed with user).** The
   s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s38/s39/s40
   were all pure Python, so nothing accumulated; marker bumped per the ≥2-session rule.
 - **Prior — session 38 (2026-06-26) — nothing to reset (confirmed with user).** The
@@ -215,6 +218,77 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > **METRICS DESIGN (Track 1 step 3) — DONE (s37).** See the s37 Done entry below + the roadmap
 > step 3. Both threads (telemetry seam §13 + decision-tree structure §4b + control duration §6.5)
 > are LOCKED in `enemy_model.md`.
+>
+> **Session scope (2026-08-17, session 42) — DONE (EVALUATION-FRAMEWORK DESIGN, Track 1
+> roadmap step 5 / #4 — DESIGN ONLY, no engine code):** the session opened on "start the
+> reporting/aggregation layer + first end-to-end eval" and the **user REFRAMED it in the
+> scoping fork**: not a report on a chosen build, but **a build-evaluation FRAMEWORK built
+> from fundamentals** — one that serves all three existing (partially-built, machinery-driven)
+> builds AND future builds not yet specified. That made it a
+> [[design-first-for-cross-cutting-primitives]] case; the deliverable is
+> **`design/evaluation_framework.md` (DESIGN LOCKED)**. **Grounding survey first** (the thing
+> that made the design concrete rather than hypothetical): the three builds diverge on FOUR
+> axes — factory name/signature (`make_day_runner` vs `make_silvertail_runner`), scenario axes
+> (0 / 5 / 4 build-specific kwargs), **roster shape read by TUPLE POSITION** (the specific
+> coupling that makes `src/validation.py` un-generalizable — it is hardcoded to War Angel),
+> and **sparse disjoint level sets** (WA 1-16 contiguous, Scion 8 scattered, Silvertail 4/8/10
+> → there is no shared level axis for a sweep). **Locked decisions:** (1) **adapt, don't
+> rewrite** — existing factories are untouched (they back validated baselines); each build
+> registers a thin `BuildAdapter` → `(DayRunner, Roster)` where `Roster` tags entities by ROLE
+> (characters/summons/allies/enemies), and `characters` is a LIST from day one (§7's AoE-share
+> + kiting toggles are blocked on multi-party; plural is free now, painful to retrofit).
+> (2) **`RunConfig` unifies the build's scenario axes with the enemy's §7 toggles as ONE
+> parameter space** — so sensitivity analysis works identically on both sides; it is
+> simultaneously run instruction, cache key, and provenance block. (3) **Provenance records
+> RESOLVED values, not requested ones** (the user's ask — outputs must document their own
+> assumptions, e.g. `soft_factor=None` → "0.5, from `enemy_stats.SOFT_FACTOR`"), **plus the
+> engine git commit** (artifacts are committed + displayed over time; without it you cannot
+> tell whether two reports are comparable). Needs a small `describe_parameters()` protocol
+> addition. This block generates the model-description / baseline-assumptions page. (4) **Metric
+> REGISTRY** (name/unit/denominator/source/definition) — keeps the metric set closed like the
+> verb set, and doubles as the website data dictionary. Forces the **denominator** question
+> open: a control-lost turn STAYS in the denominator (that's how control shows as reduced DPR),
+> and `fixed_length` is the standard basis while `finite_hp` is an alternate mode flagged
+> loudly (mixed-mode comparisons REFUSED, not silently rendered) per
+> [[standardized-dpr-baseline-not-realism]]. (5) **Paired seeding / common random numbers is
+> the comparison DEFAULT** — Claude raised it as the highest-regret omission: independent seeds
+> make a toggle delta carry BOTH runs' variance, while a shared seed stream collapses the
+> variance of the difference (often 10-100× effective sample size for exactly the §7 sensitivity
+> work). Nearly free now, awkward to retrofit. (6) **Every scalar metric carries
+> `(value, n, stderr, converged)`**, not just DPR — rare events (concentration breaks,
+> control failures vs a high-save build) are badly under-converged at day counts that look
+> generous for DPR. (7) **NO composite build score** (user) — headline = character-column DPR,
+> with an offense+defense PANEL beside it; roster/party totals stay separate and never merge
+> into the headline (the s17 decision, generalized to a permanent structural rule). (8) **Artifact
+> pipeline**: `sim → EvalReport → JSON + tidy CSV → analysis (R) / static site`, with the firm
+> line that **the sim never knows about the website** (same separation as engine-knows-no-spells);
+> artifact unit = ONE run record + a manifest, so an interactive site later needs no schema
+> change; `schema_version` mandatory. (9) YAML sweeps (config is data), **config-hash caching**
+> keyed on resolved-config + engine commit, single-process for now; day-count TIERS
+> (quick ~2k / standard ~50k / publication ~200k+) recorded in provenance. (10) **Baselines
+> registry separate from build data** — `target_dpr` currently lives inside `war_angel.LEVELS`,
+> but a target is an external REFERENCE, not a property of the build; separating it lets one run
+> be scored against a guide target, a Treantmonk baseline ([[treantmonk-baselines-for-build-eval]]),
+> or another build. **Two absorbed deferrals:** (a) **`soft_factor` → the control cost is now
+> APPLIED at RUNTIME** (user chose this over post-hoc scaling; Claude supplied the two reasons it
+> is right — post-hoc assumes every turn is worth the same, and it implicitly SPENDS the
+> resources of a turn that never happened). Mechanism: a deterministic affected-turns account —
+> whole suppressed turns skip the turn entirely (resources preserved), the fractional boundary
+> turn scales output. **Keeps the mean-field closed-form duration → NO new variance**; the
+> stateful save-ends re-roll engine stays the §10 deferral. This SUPERSEDES `enemy_model.md` §6's
+> "record but never apply" v1 and revises [[control-channel-is-output-factor-not-status]].
+> (b) **A 5th §13 telemetry channel, `attacks`** (rolls/hits/crits/at-advantage) — §8 asks for
+> hit%/crit%/advantage% and they are computed in `resolve_attack_roll` (`verbs.py:277`) and
+> DISCARDED; one record call at an existing decision point. **Per-ability damage attribution
+> DEFERRED** with the seam named (`Choice.label → DamageEvent.label`) — a much wider change.
+> **Docs reconciled** (the design note is not free-floating): `design.md` §8 now points at the
+> framework as its contract; `enemy_model.md` header + §6 (supersede note) + §10 (`soft_factor`
+> entry marked resolved-by-design, original reasoning preserved) + §12 step 5 + §13 (channel
+> table + an explicit "channel extension record" justifying the 5th channel like adding a verb).
+> **No code changed → no test run** ([[full-suite-foreground-only]]). **No new D&D mechanic** →
+> no rules-verification needed ([[per-feature-ritual-verify-and-reflect]]). Branch
+> `design/evaluation-framework`. **NEXT: build it — `evaluation_framework.md` §13 step 1**
+> (adapters + roster, proven by reproducing `validation.py`'s War Angel numbers exactly).
 >
 > **Session scope (2026-07-09, session 41) — DONE (#1 WIRING STEP 6, Track 1 roadmap step 4 /
 > `enemy_model.md` §12 step 3 — step 6 of 6, the FINAL wiring step: the §7 sensitivity-toggle
@@ -3190,12 +3264,30 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      `ControlSaveEvent` → `resolve_control_save` (closed-form E[turns] = 1-turn / `save-ends`→
      1/s / capped-fixed, split hard/soft → §13 control channel). v1 is an OUTPUT FACTOR (no
      status object). RESOLVED the s38 bottom-band overflow watch-item. All default-OFF → no drift.
-   - **(6) §7 toggles** (all default OFF/neutral so no baseline drift).
-   Emit every quantity through the step-1 seam; validate as a MECHANISM
-   ([[validate-mechanism-not-build-value]]).
-5. **Pause/design → #4 — outputs / reporting layer** (design.md §8): the DPR-by-
-   level curve + defensive summary + the 4×4 baseline comparison + per-build metric
-   generation. Likely lighter given step 3; confirm scope at the checkpoint.
+   - ~~**(6) §7 toggles**~~ **DONE (s41):** `band_override` / `damage_type_mix` (resolving
+     the s39 force-mode deferral) / `legendary_cadence` as new constructor kwargs; every
+     other §7 row was already a kwarg (s38-40) or the Entity-construction call-site pattern
+     (res/imm/vuln); condition-immunity INERT; ranged-kiting + AoE-share scoped OUT with
+     named prerequisites (§10). All default OFF/neutral → no baseline drift.
+   **#1 WIRING COMPLETE (all 6 steps, s38-s41).** Every quantity emits through the step-1
+   seam; validated as a MECHANISM ([[validate-mechanism-not-build-value]]).
+5. **#4 — outputs / reporting layer** (design.md §8). **DESIGN LOCKED (s42):
+   `design/evaluation_framework.md`.** The user REFRAMED this from "report on a build" to
+   a **build-agnostic evaluation FRAMEWORK** that must serve all three existing
+   (partially-built) builds AND unspecified future ones. Locked: per-build **adapters** +
+   a **role-tagged `Roster`** (never tuple positions — the coupling that makes
+   `validation.py` un-generalizable); `RunConfig` unifying build scenario axes with the §7
+   enemy toggles as one parameter space; **config-as-provenance** with RESOLVED values +
+   engine commit (the user's ask — outputs must document the assumptions behind them);
+   a **metric registry** with explicit denominators; **paired seeding** (common random
+   numbers) as the comparison default; **no composite build score**; artifact pipeline
+   (JSON + tidy CSV + console → static site, versioned schema); YAML sweeps + config-hash
+   caching; day-count tiers; a **baselines registry** separate from build data. Also picks
+   up two things this layer had to absorb: the s40 `soft_factor` deferral (now: control
+   applied at RUNTIME, superseding `enemy_model.md` §6 v1) and a **5th §13 `attacks`
+   channel** (§8's hit/crit/advantage rates). **BUILD SEQUENCE: `evaluation_framework.md`
+   §13** — 6 steps, starting with the adapter/roster layer proving itself by reproducing
+   `validation.py`'s War Angel numbers exactly.
 6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
    (closest-to-complete), offense + profile-driven defense + control resilience, vs
    the 4×4 baseline. **Comparison idea (s37):** also reproduce **Treantmonk's tier

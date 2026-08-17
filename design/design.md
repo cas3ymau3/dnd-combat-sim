@@ -435,3 +435,13 @@ concentrating and concentration-breaks; share of turns the character / party /
 summons / enemy are under specified statuses; average damage per use / on-hit /
 on-crit of each damaging ability; HP/damage taken by party and created allies;
 and (if specified) success rate of party/ally attacks and spells.
+
+> **How these are produced: `design/evaluation_framework.md` (DESIGN LOCKED, s42).**
+> That note is the contract for this section — the build-agnostic evaluation framework
+> (per-build adapters + a role-tagged roster, so a report is never build-specific), the
+> metric registry with explicit denominators, run provenance (resolved parameters +
+> engine commit), paired seeding for sensitivity comparisons, and the artifact pipeline
+> (JSON + tidy CSV → analysis / static site). It also maps which outputs above are
+> available today, which need the new §13 `attacks` channel (hit / crit / advantage
+> rates), and which are deferred (per-ability damage attribution, general status
+> uptime, HP recovered).
