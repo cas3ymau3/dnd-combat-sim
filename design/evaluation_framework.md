@@ -599,7 +599,10 @@ onto the framework only once step 1 reproduces its numbers exactly.
 - **General status-uptime metric** — §8 asks for "share of turns under specified
   statuses" in general; only the control channel is covered today. Needs `StatusSet`
   sampling at turn boundaries.
-- **HP recovered / healing — LARGER THAN IT LOOKS (re-scoped s44).** §8 lists this as a
+- **HP recovered / healing — NO LONGER DEFERRED: promoted to the next work item
+  (user, s44). Semantics LOCKED in `design/healing.md`.** Its *metrics* still wait on
+  the output-kinds design below, because healing-by-source is a keyed breakdown and the
+  registry does not have that shape yet. Summary of the finding that promoted it: §8 lists this as a
   missing channel, which understates it: **healing is not modelled at all.**
   `Entity.heal()` exists and has ZERO callers in `src/`; no verb, no `Choice`, and no
   policy path produces healing. What looks like healing in the build data is not — War
@@ -620,6 +623,18 @@ onto the framework only once step 1 reproduces its numbers exactly.
   4×4 comparison basis has to be settled before any of it is built.
 - **Full stateful control durations** — remains the `enemy_model.md` §10 fidelity
   deferral; §7 above deliberately keeps the mean-field expectation (§7.2).
+- **OUTPUT KINDS — scalars vs keyed breakdowns vs distributions** *(added s44; NEXT
+  DESIGN PASS, before step 3)*. The registry models ONE output kind, so 25 of its 51
+  entries are three keyed breakdowns flattened into one row per key (saves forced by
+  ability ×6, save fail rate by ability ×6, damage composition by type ×13), and a
+  further ~6 rows are algebraically derivable from others (`concentration_breaks_per_day`
+  = checks × break_rate; `typed_damage_per_round` = `dpr` × `typed_damage_share`;
+  `saves_forced_per_round` = the sum of its six; `party_dpr` = headline + summon + ally).
+  The irreducible set is roughly **20 scalars + 3 breakdowns**. **Decided (user, s44):
+  settle output kinds and prune BEFORE step 3 serializes anything** — §9 says a website
+  will be built against the artifact schema, and this session's §6.1 lesson was that
+  retrofitting after artifacts exist is the expensive path. The distribution entry below
+  is the third kind and folds into the same pass.
 - **Distribution shape (quantiles, spread)** *(added s44)* — every metric today is a
   mean with a standard error, which describes where the average lands and says nothing
   about consistency: two builds with identical mean DPR and very different day-to-day

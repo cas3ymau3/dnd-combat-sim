@@ -3533,7 +3533,24 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      was re-pointed at the registry's `dpr` metric and still matches `validation.run_level`
      BIT-IDENTICALLY on all six levels. See the s44 Done entry for the estimator design, the
      availability mechanism, and the three ex-post additions.
-   - **(3) NEXT — serialization** (§9): JSON + tidy CSV + console renderer, `schema_version`.
+   - **NEXT — HEALING SUBSYSTEM (inserted ahead of step 3; user, s44).** Not an eval-framework
+     step: healing is **entirely unmodelled** (`Entity.heal()` has ZERO callers; War Angel's
+     Prayer of Healing is a short-rest ENABLER, never HP restored), and 31 of the 33 guides
+     reference healing, so it is a cross-cutting primitive. **Semantics LOCKED in
+     `design/healing.md`: ledger always, apply to `hp` only where `hp` gates behaviour**
+     (mortal summons; enemies under finite_hp) — on a threshold-HP character `hp` is
+     max_hp − cumulative damage, unbounded below, so applying healing to it is incoherent,
+     not merely inert. Three pieces: (a) a healing EFFECT in the verb layer, (b) a
+     SOURCE-ATTRIBUTED (source,target) ledger + §13 channel, (c) metrics LAST — they wait on
+     the output-kinds design. Read `design/healing.md` §6 first: five questions the build
+     session must settle before coding, starting with the corpus survey.
+   - **THEN — OUTPUT-KINDS DESIGN + METRIC PRUNE (user, s44), before step 3.** The registry
+     models one output kind, so 25 of its 51 entries are three keyed breakdowns flattened
+     (saves by ability ×12, damage composition by type ×13) and ~6 more are algebraically
+     derivable. Irreducible set ≈ **20 scalars + 3 breakdowns**. Settle scalar / keyed
+     breakdown / distribution BEFORE serialization fixes the artifact shape a website will
+     be built against. Absorbs §14's distribution-shape deferral.
+   - **(3) THEN serialization** (§9): JSON + tidy CSV + console renderer, `schema_version`.
      The report is already a structured object with a provenance block, so this is a rendering
      step, not a redesign. Two things to carry: `EvalReport.influence` is deliberately NOT
      serialized (a per-day vector per metric, only a comparison consumes it), and §14's
