@@ -86,18 +86,14 @@ RunConfig:
 `RunConfig` is hashable and serializable — it is simultaneously the run instruction,
 the cache key (§10), and the provenance block (§4).
 
-**Amendment (s43, from building it): `enemy` needs a `"build_default"` member.** This
-section assumed the enemy is selectable independently of the build, but all three
-existing factories construct their enemy policy *internally* off the level's data row,
-and the §7 toggles are `BaselineEnemyPolicy` constructor kwargs no factory exposes. So
-`ENEMY_KINDS` is `("build_default", "baseline", "scripted", "none")`, and step 1
-honours only the first. `enemy_options`, the other three `enemy` values, and
-`mode="finite_hp"` all raise rather than being silently ignored: a config that *claimed*
-an assumption the run did not apply would poison the §4 provenance block, which is that
-block's whole purpose. They unlock when the framework grows its own enemy-construction
-seam. `combats_per_day` is validated `== 4` for the same reason — `DayRunner.run_day`
-hardcodes a four-combat day, so the field records the denominator (§5.2) but cannot yet
-vary.
+**Amendment (s43): `enemy` needs a `"build_default"` member — see §3.4.** This section
+assumed the enemy is selectable independently of the build; it is not, yet. `ENEMY_KINDS`
+is `("build_default", "baseline", "scripted", "none")` and step 1 honours only the first.
+`enemy_options`, the other three `enemy` values, and `mode="finite_hp"` all raise rather
+than being silently ignored: a config that *claimed* an assumption the run did not apply
+would poison the §4 provenance block, which is that block's whole purpose.
+`combats_per_day` is validated `== 4` — `DayRunner.run_day` hardcodes a four-combat day,
+so the field records the denominator (§5.2) but cannot yet vary.
 
 ### 3.2 `BuildAdapter` — the per-build seam
 
@@ -134,6 +130,40 @@ collapsed** (the session-17 decision, generalized): the headline DPR is always t
 character's own column, and any party/summon total is reported *beside* it under a
 different name. This is what stops a headline number from silently changing meaning
 when a build gains a summon.
+
+### 3.4 Enemy independence — the enemy is not a property of the build
+
+**Decision (user, s43). Character-build assumptions and enemy assumptions must be fully
+independent.** Today they are not, and the coupling is data-level, not cosmetic. Three
+distinct enemy concerns live inside the *character* build modules:
+
+1. **The enemy's stat block.** `war_angel.LEVELS[13]` carries `enemy_ac`, and
+   `enemy_attack = {attack_bonus: 11, damage: 28, n_attacks: 3, char_target_prob: 0.40}`
+   — hardcoded in the character's own level table.
+2. **Which enemy model is used at all.** War Angel and Starfire Scion construct
+   `ScriptedEnemyPolicy`; Silvertail constructs `BaselineEnemyPolicy` (the per-level table
+   plus the census bands). **The three builds do not currently face the same enemy model.**
+3. **Whether the enemy acts.** The switch is `LEVELS[level].get("enemy_attack")` — so
+   "at what level does the enemy fight back" is presently a *character-build* property.
+
+**Why this is load-bearing, not tidiness.** A War Angel L13 number and a Silvertail L8
+number are measured against enemies drawn from different sources under different models.
+Cross-build comparison — the entire purpose of a build-agnostic framework (§1) — is not
+valid today. No amount of report formatting fixes that; it has to be fixed at the seam.
+
+**The resolution (user, s43).** The framework grows its **own enemy-construction seam**,
+built *in parallel and deliberately redundantly* while the existing factories stay intact
+for benchmarking. `RunConfig.enemy` / `enemy_options` become live; the adapter's `build()`
+is told which enemy to install. Once the standardized enemy is in place, the enemy
+material is **migrated out of the character factories and the baked-in path is deleted**.
+
+**This is transitional, not a permanent two-mode split.** An earlier draft of this section
+argued for keeping a "guide-replication" mode alongside the standardized one. That was
+wrong on both halves — see §11.
+
+**Requirement while both paths exist:** provenance must record *which* enemy the run used,
+and reports from the two paths must not be silently compared. This is the same rule §5.2
+already applies to `fixed_length` vs `finite_hp` — an existing pattern, not a new one.
 
 ---
 
@@ -380,11 +410,28 @@ This is the same separation as the engine knowing nothing about specific spells.
 
 ## 11. Baselines as a separate registry
 
-`target_dpr` currently lives inside `war_angel.LEVELS`. A target is an **external
-reference**, not a property of the build. Pulling baselines into their own registry lets
-one run be scored against a guide target, a Treantmonk baseline (memory
-`treantmonk-baselines-for-build-eval`), or another build's report — without touching
-build data, and without a build implicitly owning the standard it is judged by.
+`target_dpr` currently lives inside `war_angel.LEVELS`. A target is a **reference**, not
+a property of the build. Pulling baselines into their own registry lets one run be scored
+against a Treantmonk baseline (memory `treantmonk-baselines-for-build-eval`) or another
+build's report — without touching build data, and without a build implicitly owning the
+standard it is judged by.
+
+**Correction (s43): the existing `target_dpr` values are NOT an external reference.** The
+user wrote all 33 documents in `design/build-guides/` *and* the R prototype, so every
+target in the build data traces to the user's own hand calculation. (CLAUDE.md described
+the guides as "curated," which reads as third-party and caused exactly this mistake; the
+wording is fixed.) Reproducing those numbers was a **one-time bootstrapping check** — "can
+this machinery reproduce a careful hand calculation?" — asked and answered across ~40
+sessions and the test suite. It is not a standard to keep re-meeting, and
+**guide-replication is retired** (§3.4).
+
+Two consequences for this registry. First, an external number plugged in later (e.g. a
+Treantmonk figure) is a **reference point, not a target to match**: it was produced under
+its author's own enemy assumptions, so the meaningful comparison is to recreate that build
+and run it against *our* standardized enemy. Second, after this retirement the project has
+**no external validation source at all** — everything is internal consistency plus face
+validity. That is not a reason to keep the old targets; it is a reason for the provenance
+block (§4) to make the model-relative nature of every number explicit.
 
 A baseline entry is `(source, build, level, metric, value, provenance)`; scoring is a
 report-layer operation.
@@ -407,9 +454,28 @@ Per `validate-mechanism-not-build-value` and `enemy_model.md` §11 — tests ass
 - the cache returns a hit for an identical config and a miss when the engine commit
   changes;
 - control-at-runtime: a fully suppressed turn deals zero damage **and spends no
-  resources**; telemetry's lost/reduced counts still match the closed-form expectation.
+  resources**; telemetry's lost/reduced counts still match the closed-form expectation;
+- **enemy independence (§3.4):** two different builds at the same level, configured with
+  the same `enemy` + `enemy_options`, face an enemy with identical resolved parameters;
+  and a run records which enemy path produced it, so the two are never silently compared.
 
 We do NOT assert that any build's evaluated DPR is "correct".
+
+**What replaces the retired guide targets (§11).** Dropping guide-replication removes the
+project's only end-to-end "did an engine change move the physics?" signal — the unit tests
+check mechanisms, not the composite. Three things carry that load instead:
+
+1. **Exact golden values.** Once each build runs against the standardized enemy, pin the
+   resulting per-level numbers as exact regression goldens. This is a *stricter* check than
+   the ±10% band it replaces: it detects any drift, not just large drift. It asserts
+   "nothing changed", never "this value is correct" — so it stays inside the
+   `validate-mechanism-not-build-value` rule.
+2. **The L1–4 closed-form check, kept.** At those levels the enemy is passive and only its
+   AC matters, so expected DPR is computable in closed form by hand. That check verifies
+   the attack pipeline against arithmetic and is independent of who authored what — it just
+   needs its expected values recomputed for the standardized enemy's AC.
+3. **The epistemic note, stated once in the outputs.** See §11: no external validation
+   source remains, and the provenance block is where that is said rather than left implicit.
 
 ---
 
@@ -428,8 +494,17 @@ We do NOT assert that any build's evaluated DPR is "correct".
 2. `EvalReport` + metric registry + statistics (stderr, convergence, paired seeding).
 3. Serialization: JSON + tidy CSV + console renderer; `schema_version`.
 4. The `attacks` telemetry channel (§8.1).
-5. Control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation.
-6. Sweep YAML + config-hash caching + baselines registry.
+5. **The enemy-construction seam (§3.4)** *(inserted s43, between the original steps 4 and
+   5)* — `RunConfig.enemy` / `enemy_options` become live; adapters are told which enemy to
+   install; the standardized enemy is built alongside the factories' baked-in one, then the
+   baked-in path is migrated out and deleted. Carries the three §12 replacements for the
+   retired guide targets. **Sequenced here because it is a hard prerequisite for step 6:**
+   control lives on `BaselineEnemyPolicy(control=True)`, and War Angel uses
+   `ScriptedEnemyPolicy`, which has no control channel at all — so War Angel's control
+   resilience, a core resilience-panel metric, is unmeasurable until this seam exists.
+   Placed after step 4 so the two enemy paths can be compared as artifacts, not by eye.
+6. Control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation.
+7. Sweep YAML + config-hash caching + baselines registry.
 
 `src/validation.py` **stays as-is** throughout as the regression check, and is migrated
 onto the framework only once step 1 reproduces its numbers exactly.
@@ -453,3 +528,7 @@ onto the framework only once step 1 reproduces its numbers exactly.
 - **Multi-character party** — `Roster.characters` is plural in anticipation, but no
   build produces more than one character yet; unblocks §7's AoE-share and kiting
   toggles when it lands (§3.3).
+- **Enemy material inside the character factories** — `enemy_ac` / `enemy_attack` rows and
+  the choice of enemy policy class still live in each build's `LEVELS` table (§3.4).
+  Scheduled for removal at step 5, not open-ended: the redundancy is transitional, and
+  the baked-in path is deleted once the standardized enemy is in place.

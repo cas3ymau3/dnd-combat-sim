@@ -14,6 +14,20 @@ Validation framing (PROGRESS.md):
   - Levels 1–4: EXACT target match expected (simple attack math).
   - Levels 5+: SOFT (±10%) — the prototype is a compass, not ground truth.
 
+RETIRED, s43 (read this before treating a target as ground truth).  The user WROTE
+both the build guide and the R prototype, so every ``target_dpr`` here traces to the
+user's own hand calculation — there is no external source.  Reproducing them was a
+one-time bootstrapping check ("can the machinery reproduce a careful hand
+calculation?"), asked and answered; it is not a standard to keep re-meeting.  See
+``design/evaluation_framework.md`` §11 (retirement) and §3.4 (the enemy is not a
+property of the build).
+
+This module is UNCHANGED and stays the regression check until the evaluation
+framework's enemy seam lands (that note's §13 step 5 — the enemy seam), at which point the
+end-to-end signal becomes exact golden values under the standardized enemy.
+``src/evaluation`` already reproduces every number below bit-identically at equal
+seed and day count (``tests/test_eval_framework.py``).
+
 Usage (from repo root):
     python -m src.validation            # validate all implemented levels
     python -m src.validation 1          # just level 1

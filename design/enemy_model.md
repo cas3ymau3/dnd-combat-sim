@@ -4,7 +4,14 @@
 > COMPLETE — all 6 steps landed s38-s41 (merged).** **Downstream (s42): the reporting
 > layer that consumes this is designed in `design/evaluation_framework.md`** — it
 > supersedes part of §6 (control cost is now APPLIED at runtime, not only recorded),
-> resolves §10's `soft_factor` deferral, and adds a 5th §13 channel (`attacks`). This is the
+> resolves §10's `soft_factor` deferral, and adds a 5th §13 channel (`attacks`).
+> **s43 addition — `evaluation_framework.md` §3.4 (ENEMY INDEPENDENCE):** this note assumes
+> the enemy is a property of the *scenario*, but in the code it is still partly a property
+> of the *character build* — `enemy_ac` / `enemy_attack` rows and the choice of enemy policy
+> class live inside each build's `LEVELS` table, and the three builds consequently do NOT
+> face the same enemy model. Until the framework's enemy seam lands (its §13 step 5 — the enemy seam),
+> §7's toggles are reachable only where a build happens to construct `BaselineEnemyPolicy`.
+> The seam makes them universally reachable and then deletes the baked-in path. This is the
 > `design/buff_primitive.md`-style design-first note for the generalized enemy
 > policy. It decides HOW the enemy behaves in combat before any policy code is
 > written. **s38 wired the foundations (§12 step 3, steps 1-3 of 6):** the §13
@@ -744,6 +751,13 @@ scales as `1/s` with the character's save (a high-save build recovers in fewer t
 the structured-telemetry channels (§13) emit the same counts the mechanism asserts. We
 do NOT assert that "fire build DPR at CR17 is correct" — only that the model prices it
 the way the census (and the measured control data) says.
+
+**s43 note — the enemy is the standard, and there is no external one.** Once
+`evaluation_framework.md` §3.4's seam lands, every build faces THIS enemy, and the old
+per-build `target_dpr` values are retired (they trace to the user's own hand calculations,
+not to any outside source — see that note's §11). The end-to-end regression signal becomes
+exact golden values under this enemy, which asserts "nothing changed", never "this value is
+correct" — still inside `validate-mechanism-not-build-value`.
 
 ---
 

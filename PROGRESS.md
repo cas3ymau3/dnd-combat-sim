@@ -278,6 +278,57 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 >   ([[per-feature-ritual-verify-and-reflect]]). **CONFIG LEDGER: not prompted** — last reviewed s42,
 >   one session old (<2). **NEXT: `evaluation_framework.md` §13 step 2** — `EvalReport` + the metric
 >   registry + statistics (stderr, convergence flag, paired seeding), replacing `runner.mean_dpr`.
+> - **POST-BUILD DECISION RECORD (s43, user-locked in discussion — the more consequential half of
+>   the session).** Claude's "§3.1 gap" note prompted the user to state the governing principle,
+>   and it goes further than the note did.
+>   - **(A) ENEMY INDEPENDENCE — `evaluation_framework.md` §3.4 (NEW).** Character-build
+>     assumptions and enemy assumptions must be **fully independent**. Today they are not, and the
+>     coupling is DATA-level: (1) the enemy's stat block lives in the CHARACTER's level table
+>     (`war_angel.LEVELS[13]` → `enemy_ac`, `enemy_attack = {+11, 28 dmg, 3 attacks, 40% target}`);
+>     (2) **the three builds don't even face the same enemy MODEL** — WA/Scion construct
+>     `ScriptedEnemyPolicy`, Silvertail constructs `BaselineEnemyPolicy` (the census-grounded one);
+>     (3) whether the enemy acts at all is `LEVELS[level].get("enemy_attack")` — a CHARACTER-build
+>     property. **Consequence that makes this load-bearing:** a WA L13 number and a Silvertail L8
+>     number are measured against different enemies under different models, so **cross-build
+>     comparison — the entire point of a build-agnostic framework — is not valid today.**
+>     **Resolution:** the framework grows its OWN enemy-construction seam, built in parallel and
+>     deliberately REDUNDANTLY while the factories stay intact for benchmarking; then the enemy
+>     material is migrated OUT of the character factories and the baked-in path is DELETED.
+>     Transitional, not a permanent two-mode split. While both exist, provenance must record WHICH
+>     enemy path a run used (same rule §5.2 applies to `fixed_length` vs `finite_hp`).
+>   - **(B) GUIDE-REPLICATION RETIRED — and WHY (the correction that settled it).** Claude argued
+>     for keeping a permanent "replicate the guide's assumptions" mode, on the grounds that guide
+>     targets are the project's only external validation. **Both halves were wrong.** (i) It
+>     conflated *scoring against a target number* with *replicating the conditions that produced
+>     it* — a Treantmonk figure is just a row in the §11 baselines registry and needs no enemy
+>     assumptions from us; the meaningful version (recreate his build, run it in OUR model)
+>     REQUIRES the enemy to be build-independent, so that argument points the other way. (ii) **THE
+>     USER WROTE ALL 33 BUILD GUIDES *AND* THE R PROTOTYPE.** Every `target_dpr` traces to the
+>     user's own hand calculation; there is **no external validation source anywhere in this
+>     project**. Claude inferred otherwise from CLAUDE.md calling the guides "curated" (fixed this
+>     session) and from `war_angel.py:294` attributing the DPR column to "the guide" — and had to
+>     be corrected twice. Reproducing those numbers was a **ONE-TIME BOOTSTRAPPING CHECK** ("can
+>     this machinery reproduce a careful hand calculation?"), answered across ~40 sessions and the
+>     test suite; it is not a standard to keep re-meeting. Memory
+>     [[build-selection-prioritizes-capacity]] updated so this cannot recur.
+>   - **(C) THREE THINGS THE RETIREMENT MUST NOT LOSE** (written into `evaluation_framework.md`
+>     §12): (1) **exact golden values** under the standardized enemy replace the 16 WA targets as
+>     the end-to-end drift signal — STRICTER than the ±10% band (detects any drift), and it asserts
+>     "nothing changed", never "this value is correct", so it stays inside
+>     [[validate-mechanism-not-build-value]]; (2) **keep the L1-4 closed-form check**, recomputed
+>     for the standardized enemy's AC — that one verifies the attack pipeline against arithmetic
+>     and is authorship-independent; (3) **state the epistemic position once in the outputs** — after
+>     this the project has NO external validation, only internal consistency + face validity, and
+>     the §4 provenance block is where that gets said rather than left implicit.
+>   - **(D) SEQUENCING — the seam is §13 STEP 5** (the old steps 5-6 shift to 6-7), after serialization (so the two enemy paths
+>     compare as artifacts) and BEFORE control-at-runtime. **It is a hard PREREQUISITE for step 5:**
+>     control lives on `BaselineEnemyPolicy(control=True)` and War Angel uses `ScriptedEnemyPolicy`,
+>     which has no control channel at all — so **War Angel's control resilience, a core
+>     resilience-panel metric, is unmeasurable until the seam exists.**
+>   - **Docs reconciled:** `evaluation_framework.md` (§3.1 amendment trimmed to a pointer, NEW §3.4,
+>     §11 corrected, §12 + §13 step 5 (renumbered) + §14 deferral), `enemy_model.md` (header + §11 notes),
+>     `CLAUDE.md` (the "curated" wording), `src/validation.py` (docstring note only — the module is
+>     still UNCHANGED and still the regression check).
 >
 > **Session scope (2026-08-17, session 42) — DONE (EVALUATION-FRAMEWORK DESIGN, Track 1
 > roadmap step 5 / #4 — DESIGN ONLY, no engine code):** the session opened on "start the
@@ -329,7 +380,9 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > registry separate from build data** — `target_dpr` currently lives inside `war_angel.LEVELS`,
 > but a target is an external REFERENCE, not a property of the build; separating it lets one run
 > be scored against a guide target, a Treantmonk baseline ([[treantmonk-baselines-for-build-eval]]),
-> or another build. **Two absorbed deferrals:** (a) **`soft_factor` → the control cost is now
+> or another build. **[CORRECTED s43 — see the s43 block above: the guide targets are NOT external.
+> The user wrote all 33 guides and the R prototype, so guide-replication is RETIRED; the registry
+> keeps only genuinely outside references.]** **Two absorbed deferrals:** (a) **`soft_factor` → the control cost is now
 > APPLIED at RUNTIME** (user chose this over post-hoc scaling; Claude supplied the two reasons it
 > is right — post-hoc assumes every turn is worth the same, and it implicitly SPENDS the
 > resources of a turn that never happened). Mechanism: a deterministic affected-turns account —
@@ -3360,8 +3413,14 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      as the comparison default. Replaces `evaluation/runner.mean_dpr`, which is marked in-code as
      the step-1 stand-in.
    - (3) serialization (JSON + tidy CSV + console, `schema_version`); (4) the `attacks` telemetry
-     channel (§8.1); (5) control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation;
-     (6) sweep YAML + config-hash caching + the baselines registry.
+     channel (§8.1); **(5) the ENEMY-CONSTRUCTION SEAM (§3.4, added s43 — the old 5/6 shift to 6/7)** — `RunConfig.enemy` /
+     `enemy_options` go live, the standardized enemy is built alongside the factories' baked-in
+     one, then the enemy material is migrated OUT of the character `LEVELS` tables and the
+     baked-in path deleted; carries the three §12 replacements for the retired guide targets.
+     **Hard prerequisite for (6)** — control lives on `BaselineEnemyPolicy` and War Angel uses
+     `ScriptedEnemyPolicy`, so WA control resilience is unmeasurable until this lands;
+     (6) control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation;
+     (7) sweep YAML + config-hash caching + the baselines registry.
 6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
    (closest-to-complete), offense + profile-driven defense + control resilience, vs
    the 4×4 baseline. **Comparison idea (s37):** also reproduce **Treantmonk's tier
