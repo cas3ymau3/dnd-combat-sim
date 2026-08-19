@@ -74,6 +74,40 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
+## Per-METRIC ritual (when adding anything to the evaluation registry)
+
+Added session 44, after three of the session's additions each shipped a first cut
+that measured the wrong entity. Every new metric must answer both questions BEFORE
+it counts as done:
+
+1. **WHOSE quantity is this? — the roster-scoping check.** Most of the engine's
+   ledgers are AGGREGATE: `DayResult.damage_by_combat` sums `damage_log`, which is
+   every actor's damage including the enemy's; `CombatResult.damage_received` is
+   keyed by target only; the §13 mitigation channel was keyed by damage type alone
+   until s44. A metric built naively on any of them silently pools the character's,
+   the summon's, and the ENEMY's numbers. So: name the scope in the metric's
+   `definition` (character / party / summon / all-actors), read a SOURCE-ATTRIBUTED
+   ledger wherever one exists, and **test it against Silvertail** (the only build
+   with a summon) — a character-scoped metric that a summon does not change is the
+   check that catches this. If the underlying ledger cannot attribute, say so in the
+   definition and name the seam rather than shipping the ambiguity.
+2. **Can this run actually produce it? — the availability check.** If the metric
+   reads a telemetry channel, declare an `availability` predicate returning a
+   REASON. A zero from an unwired channel reads as a measurement and is worse than
+   no row at all. Two builds blocked for different reasons get different reasons.
+
+## Periodic METRIC-SET REVIEW (every ~2 sessions that touch the registry)
+
+Added session 44 at the user's request. The registry grows easily — auto-generated
+families (per-ability saves, per-type damage shares) can double it in one commit —
+and the goal is a **parsimonious set of key outputs**, not maximal coverage. So at
+least every second registry-touching session, print the full list (name / unit /
+denominator / per-build availability) and walk it with the user asking of each row:
+does anyone read this, is it derivable from another row, and is it a genuine scalar
+or one cell of a breakdown that belongs in a single vector output? **Prune
+deliberately** — an unused metric is a maintenance and interpretation cost, and the
+registry is also the published data dictionary.
+
 > **Currently disabled (re-enable before exit):** none. **EMPIRICAL/CHROME ARC CLOSED (s36).**
 > Sessions 28-36 needed **Claude-in-Chrome** (MM scrape); s36 finished #2 (the last
 > Chrome-dependent work) and **tore the arc down: the per-machine allowlist was reset to the

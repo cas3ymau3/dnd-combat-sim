@@ -107,9 +107,24 @@ class DaySample:
     damage_taken: dict[int, int]
     telemetry: "CombatTelemetry"
 
+    @property
+    def own_roles(self) -> "tuple[str, ...]":
+        """The roles this run attributes to the build (``RunConfig.attribution``).
+
+        ``("characters",)`` or ``("characters", "summons")``. Read by every metric
+        that means "the build's own output", so the headline, its per-combat
+        decomposition and the typed-composition family can never disagree about
+        whose damage they are describing.
+        """
+        return self.config.own_roles
+
     def dealt(self, *roles: str) -> float:
         """Damage DEALT by every entity in the given roster roles."""
         return float(sum(self.damage_dealt[i] for i in self.roster.ids(*roles)))
+
+    def own_damage(self) -> float:
+        """Damage dealt by whatever this run attributes to the build."""
+        return self.dealt(*self.own_roles)
 
     def taken(self, *roles: str) -> float:
         """Damage RECEIVED by every entity in the given roster roles."""
@@ -133,21 +148,23 @@ class DaySample:
         return float(sum(getattr(t, attr) for t in self.telemetry.control.values()))
 
     def mitigation(self, attr: str, *, damage_type: "str | None" = None,
-                   roles: "tuple[str, ...]" = ("characters",)) -> float:
+                   roles: "tuple[str, ...] | None" = None) -> float:
         """A summed field of the §13 mitigation channel.
 
         Scoped to the given roster ROLES by default — the channel is keyed
         ``(actor_id, damage_type)`` precisely so a summon's radiant damage and a
         typed-damage enemy's swings do not pool into the character's composition.
         """
-        cells = self.telemetry.mitigation_by_type(set(self.roster.ids(*roles)))
+        cells = self.telemetry.mitigation_by_type(
+            set(self.roster.ids(*(roles if roles is not None else self.own_roles)))
+        )
         if damage_type is not None:
             cell = cells.get(damage_type)
             return float(getattr(cell, attr)) if cell is not None else 0.0
         return float(sum(getattr(m, attr) for m in cells.values()))
 
     def combat_damage(self, combat_num: int,
-                      *, roles: "tuple[str, ...]" = ("characters",)) -> float:
+                      *, roles: "tuple[str, ...] | None" = None) -> float:
         """Damage dealt in ONE of the day's combats (1-indexed) by the given roles.
 
         The four-combat day exists to expose resource depletion, and a day-level
@@ -162,7 +179,7 @@ class DaySample:
         combats = self.result.combats
         if len(combats) < combat_num:
             return 0.0
-        ids = set(self.roster.ids(*roles))
+        ids = set(self.roster.ids(*(roles if roles is not None else self.own_roles)))
         return float(sum(
             damage for (source, _target), damage
             in combats[combat_num - 1].damage_by_source_target.items()
@@ -325,14 +342,15 @@ DENOMINATORS["opening_rounds"] = Denominator(
     fixed=True,
     per_day=lambda s: float(s.config.combats_per_day),
 )
-DENOMINATORS["character_damage_dealt"] = Denominator(
-    name="character_damage_dealt",
+DENOMINATORS["own_damage_dealt"] = Denominator(
+    name="own_damage_dealt",
     description=(
-        "All damage the build's own characters dealt (the headline column's "
-        "numerator). The denominator for shares OF the build's output."
+        "All damage this run ATTRIBUTES to the build (the headline column's "
+        "numerator — characters, plus summons under attribution="
+        "'character_and_summons'). The denominator for shares OF the build's output."
     ),
     fixed=False,
-    per_day=lambda s: s.dealt("characters"),
+    per_day=lambda s: s.own_damage(),
 )
 DENOMINATORS["outgoing_typed_damage"] = Denominator(
     name="outgoing_typed_damage",
@@ -549,12 +567,16 @@ def _build_default_registry() -> MetricRegistry:
         name="dpr",
         unit="damage/round",
         denominator="rounds",
-        source="damage ledger — DayResult.damage_by_source, roster role 'characters'",
+        source="damage ledger — DayResult.damage_by_source, the attributed roles",
         definition=(
-            "Damage dealt by the build's OWN characters, per round of the "
-            "standardized day. Summons and allies are excluded by construction."
+            "Damage dealt by what this run attributes to the build, per round of "
+            "the standardized day. WHICH roles that is depends on "
+            "RunConfig.attribution: 'character' (the default and historical basis) "
+            "or 'character_and_summons'. Allies are excluded under both — an ally "
+            "is a party member the build does not command. The mode is recorded in "
+            "provenance and reports under different modes must not be compared."
         ),
-        numerator=lambda s: s.dealt("characters"),
+        numerator=lambda s: s.own_damage(),
         group="headline",
     ))
 
@@ -599,7 +621,11 @@ def _build_default_registry() -> MetricRegistry:
         unit="damage/round",
         denominator="rounds",
         source="damage ledger — DayResult.damage_received_by, role 'characters'",
-        definition="Damage the build's own characters absorb, per round.",
+        definition=(
+            "Damage the build's own CHARACTERS absorb, per round. Deliberately not "
+            "attribution-dependent: a summon soaking hits is a benefit reported in "
+            "its own column, not a cost to fold into the character's."
+        ),
         numerator=lambda s: s.taken("characters"),
     ))
     reg(MetricDef(
@@ -834,16 +860,16 @@ def _build_default_registry() -> MetricRegistry:
     reg(MetricDef(
         name="typed_damage_share",
         unit="fraction",
-        denominator="character_damage_dealt",
+        denominator="own_damage_dealt",
         source="§13 mitigation channel / damage ledger",
         definition=(
-            "Share of the character column that carries a declared damage type. "
+            "Share of the ATTRIBUTED column that carries a declared damage type. "
             "Reads 0 for a build whose damage is untyped in the model — which is "
             "worth knowing BEFORE reading any type share, and also means the §5 "
             "resistance multiplier can never touch that build's output."
         ),
         numerator=lambda s: s.mitigation("outgoing_before"),
-        events=lambda s: s.dealt("characters"),
+        events=lambda s: s.own_damage(),
         convergence=Convergence(rel_stderr=0.05, min_events=500.0),
     ))
     for damage_type in DAMAGE_TYPES:
@@ -873,7 +899,7 @@ def _build_default_registry() -> MetricRegistry:
             name=f"dpr_combat_{combat_num}",
             unit="damage/round",
             denominator="combat_rounds",
-            source=f"damage ledger — DayResult.damage_by_combat[{combat_num - 1}]",
+            source=f"damage ledger — per-(source,target), combat {combat_num}, attributed roles",
             definition=(
                 f"DPR within combat {combat_num} of the day. The 1-vs-4 gap is the "
                 f"resource-depletion curve: a build that front-loads its day looks "

@@ -244,6 +244,28 @@ assumptions the provenance block exists to expose.
   type, typed damage mitigated, limited resources per day, concentration uptime/breaks.
 - **Separate, never merged into the headline:** roster/party total, per-summon columns.
 
+**Amendment (user, s44): summon attribution is a declared AXIS, not a fixed rule.**
+The original rule — a summon's damage never enters the headline — protected against a
+build's number silently changing meaning when it gained a companion. That protection is
+real, but the rule overreached: whether a summon's damage is the summoner's damage is a
+modelling CHOICE. Most published build evaluations count it as the caster's, because the
+summon is what the caster's action economy bought; but when the question is "does casting
+this summon beat casting that spell", the separated columns are what make the comparison
+legible. Both readings are wanted, at different times.
+
+So `RunConfig.attribution` selects it: `"character"` (the default and historical basis) or
+`"character_and_summons"`. **Allies are excluded under both** — an ally is a party member
+the build does not command, so its damage was never the build's to claim. The toggle
+changes which number is the HEADLINE, never which numbers exist: `summon_dpr` and
+`party_dpr` stay registered and identical under both modes. The mode is recorded in
+provenance, and — like `mode` and the enemy path — reports under different attributions
+must not be compared, because it changes what the headline MEANS rather than its value.
+
+One definition serves every metric that means "the build's output" (`RunConfig.own_roles`),
+so the headline, its per-combat decomposition and the typed-composition family cannot drift
+apart. `damage_taken_per_round` deliberately does NOT follow it: a summon soaking hits is a
+benefit reported in its own column, not a cost to fold into the character's.
+
 ---
 
 ## 6. Statistical treatment
@@ -577,8 +599,25 @@ onto the framework only once step 1 reproduces its numbers exactly.
 - **General status-uptime metric** — §8 asks for "share of turns under specified
   statuses" in general; only the control channel is covered today. Needs `StatusSet`
   sampling at turn boundaries.
-- **HP recovered** — no dedicated channel; add to the economy channel when a healing
-  build makes it matter.
+- **HP recovered / healing — LARGER THAN IT LOOKS (re-scoped s44).** §8 lists this as a
+  missing channel, which understates it: **healing is not modelled at all.**
+  `Entity.heal()` exists and has ZERO callers in `src/`; no verb, no `Choice`, and no
+  policy path produces healing. What looks like healing in the build data is not — War
+  Angel's Prayer of Healing is modelled purely as a short-rest ENABLER (it buys an extra
+  SR's worth of resource recovery: see the `war_angel.LEVELS` resource comments), never as
+  HP restored. So "track healing, including healing provided by summons" (user, s44) is
+  three pieces of work, not a metric addition:
+  1. a healing EFFECT in the verb/effect layer that a `Choice` can produce and resolution
+     can apply, with its own place in the damage/heal phase ordering;
+  2. a **source-attributed** ledger — `(source, target)` like the damage ledger, NOT an
+     aggregate counter, so "healing provided by the summon" is answerable and the s44
+     roster-scoping lesson is not repeated;
+  3. only then the metrics, which should carry the same `attribution` axis as damage
+     (§5.3) so a summon's healing counts as the build's under the same declared mode.
+  **Needs its own decision first**: healing is only meaningful against a finite-HP model,
+  and the standardized basis is fixed-length with a threshold-HP character (memory
+  `standardized-dpr-baseline-not-realism`), so what a healing number would even MEAN in the
+  4×4 comparison basis has to be settled before any of it is built.
 - **Full stateful control durations** — remains the `enemy_model.md` §10 fidelity
   deferral; §7 above deliberately keeps the mean-field expectation (§7.2).
 - **Distribution shape (quantiles, spread)** *(added s44)* — every metric today is a

@@ -17,7 +17,7 @@ proof.
 """
 
 from .adapters import BuildAdapter, OptionSpec, available_builds, get_adapter, register
-from .config import DAY_TIERS, ENEMY_KINDS, MODES, RunConfig
+from .config import ATTRIBUTIONS, DAY_TIERS, ENEMY_KINDS, MODES, RunConfig
 from .metrics import DENOMINATORS, METRICS, Denominator, MetricDef, MetricRegistry
 from .report import Comparison, EvalReport, Provenance, build_report, compare
 from .roster import ROLES, Roster
@@ -34,6 +34,7 @@ __all__ = [
     "DAY_TIERS",
     "ENEMY_KINDS",
     "MODES",
+    "ATTRIBUTIONS",
     "Roster",
     "ROLES",
     "simulate",

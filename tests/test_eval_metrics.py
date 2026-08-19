@@ -239,7 +239,9 @@ def test_a_ratio_metrics_denominator_is_the_random_per_day_count():
     assert sum(checks) == output.telemetry.concentration_checks
 
 
-def test_the_headline_excludes_summon_damage_and_the_party_column_includes_it():
+def test_under_the_default_attribution_the_headline_excludes_summon_damage():
+    """The historical basis (``attribution="character"``) — see the attribution tests
+    below for the mode where a summon DOES count as the build's output."""
     report = run(RunConfig(build="silvertail", level=10, n_days=30, seed=3))
     headline = report.headline.value
     summon = report["summon_dpr"].value
@@ -615,3 +617,73 @@ def test_the_opening_round_metric_is_labelled_party_scoped():
     assert "party_dpr_opening_round" in METRICS
     assert METRICS["party_dpr_opening_round"].group == "column"
     assert "PARTY-scoped" in METRICS["party_dpr_opening_round"].definition
+
+
+# ---------------------------------------------------------------------------
+# Summon attribution (§3.3 as amended s44) — a declared axis, not a hidden rule
+# ---------------------------------------------------------------------------
+
+def test_the_default_attribution_is_the_historical_character_only_basis():
+    """No existing baseline moves: the toggle is opt-in."""
+    assert RunConfig(build="silvertail", level=10).attribution == "character"
+
+
+def test_attributing_summons_moves_the_headline_and_nothing_else():
+    """The toggle changes WHICH number is the headline, never which numbers exist:
+    the summon and party columns are registered and identical under both modes."""
+    base = RunConfig(build="silvertail", level=10, n_days=40, seed=3)
+    character = run(base)
+    with_summons = run(base.replace(attribution="character_and_summons"))
+
+    assert with_summons.headline.value == pytest.approx(
+        character.headline.value + character["summon_dpr"].value)
+    assert with_summons["summon_dpr"].value == character["summon_dpr"].value
+    assert with_summons["party_dpr"].value == character["party_dpr"].value
+
+
+def test_the_per_combat_decomposition_follows_the_attribution():
+    """One definition of "the build's output", read by every metric that means it —
+    so the headline and its decomposition cannot disagree about whose damage they
+    describe."""
+    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=3,
+                           attribution="character_and_summons"))
+    per_combat = [report[f"dpr_combat_{i}"].value for i in (1, 2, 3, 4)]
+
+    assert sum(per_combat) / 4 == pytest.approx(report.headline.value)
+
+
+def test_allies_are_excluded_under_both_attributions():
+    """An ally is a party member the build does not COMMAND, so its damage was never
+    the build's to claim — unlike a summon, which is what the build's action economy
+    bought."""
+    base = RunConfig(build="starfire_scion", level=15, n_days=20, seed=1,
+                     build_options={"with_party": True})
+    for attribution in ("character", "character_and_summons"):
+        report = run(base.replace(attribution=attribution))
+        ally = report["ally_dpr"]
+        assert ally.available is True
+        assert report.headline.value == pytest.approx(
+            report["party_dpr"].value - ally.value)
+
+
+def test_a_build_without_summons_is_unaffected_by_the_attribution():
+    base = RunConfig(build="war_angel", level=13, n_days=20, seed=11)
+    assert run(base).headline.value ==         run(base.replace(attribution="character_and_summons")).headline.value
+
+
+def test_an_unknown_attribution_is_rejected():
+    with pytest.raises(ValueError, match="attribution must be one of"):
+        RunConfig(build="silvertail", level=10, attribution="everything_nearby")
+
+
+def test_the_attribution_is_recorded_in_provenance_and_in_the_config_hash():
+    """§5.2's rule: it changes what the headline MEANS, so two modes must never be
+    compared silently, and they must not collide as cache keys."""
+    base = RunConfig(build="silvertail", level=10, n_days=4, seed=3)
+    other = base.replace(attribution="character_and_summons")
+
+    provenance = run(other).provenance
+    assert provenance.config["attribution"] == "character_and_summons"
+    assert provenance.coverage["attributed_roles"] == ["characters", "summons"]
+    assert "attribution" in provenance.coverage["comparability_warning"]
+    assert base.config_hash() != other.config_hash()

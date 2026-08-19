@@ -62,6 +62,30 @@ _SUPPORTED_ENEMY_KINDS = ("build_default",)
 MODES = ("fixed_length", "finite_hp")
 _SUPPORTED_MODES = ("fixed_length",)
 
+#: What counts as "the build's own output" for the headline column (§5.3).
+#:
+#: The s17/§3.3 rule was that a summon's damage NEVER enters the headline, so a
+#: build's number could not silently change meaning when it gained a companion.
+#: **Amended s44 (user): that is a real modelling CHOICE, not a fact.** A summoner
+#: casts a spell and a bear bites — most published build evaluations count that as
+#: the caster's damage, because the summon is what the caster's action economy
+#: bought. But when the question is "does casting THIS summon beat casting THAT
+#: spell", separating the columns is what makes the comparison legible.
+#:
+#: So the attribution becomes a declared, recorded axis rather than a hidden
+#: assumption. Allies are in NEITHER mode: an ally is a party member the build does
+#: not command, so its damage was never the build's to claim.
+#:
+#: The `summon_dpr` and `party_dpr` columns stay registered under both modes — the
+#: toggle changes which number is the HEADLINE, never which numbers exist.
+ATTRIBUTIONS = ("character", "character_and_summons")
+
+#: role tuples the attribution modes resolve to.
+ATTRIBUTION_ROLES: dict[str, tuple[str, ...]] = {
+    "character": ("characters",),
+    "character_and_summons": ("characters", "summons"),
+}
+
 #: The engine's fixed day shape (``DayRunner.run_day``).
 COMBATS_PER_DAY = 4
 
@@ -94,6 +118,12 @@ class RunConfig:
     mode:
         ``"fixed_length"`` is the standard, comparable basis; ``"finite_hp"`` is
         the alternate emergent-length mode (§5.2), not yet reachable.
+    attribution:
+        Whether a summon's damage counts as the build's own output — see
+        :data:`ATTRIBUTIONS`. Defaults to ``"character"``, the historical basis, so
+        no existing baseline moves; the value is recorded in provenance and reports
+        under different attributions must not be compared (§5.2's rule, the same one
+        that governs ``mode`` and the enemy path).
     """
 
     build: str
@@ -106,6 +136,7 @@ class RunConfig:
     n_days: int = DAY_TIERS["standard"]
     seed: int = 0
     mode: str = "fixed_length"
+    attribution: str = "character"
 
     # ------------------------------------------------------------------
     # Validation
@@ -129,6 +160,10 @@ class RunConfig:
                 f"mode={self.mode!r} is designed (evaluation_framework.md §5.2) but "
                 "not reachable in step 1: no build factory passes DayRunner(enemy_ids=…). "
                 f"Supported today: {_SUPPORTED_MODES}."
+            )
+        if self.attribution not in ATTRIBUTIONS:
+            raise ValueError(
+                f"attribution must be one of {ATTRIBUTIONS}, got {self.attribution!r}."
             )
         if self.enemy not in ENEMY_KINDS:
             raise ValueError(f"enemy must be one of {ENEMY_KINDS}, got {self.enemy!r}.")
@@ -186,6 +221,16 @@ class RunConfig:
         return self.combats_per_day * self.rounds_per_combat
 
     @property
+    def own_roles(self) -> "tuple[str, ...]":
+        """The roster roles whose damage this run counts as the build's OWN.
+
+        One definition, read by every "the build's output" metric — the headline,
+        its per-combat decomposition, and the typed-composition family — so the
+        modes cannot drift apart between metrics.
+        """
+        return ATTRIBUTION_ROLES[self.attribution]
+
+    @property
     def day_tier(self) -> str:
         """The §10 tier name for ``n_days``, or ``"custom"``."""
         for name, days in DAY_TIERS.items():
@@ -206,6 +251,7 @@ class RunConfig:
             "n_days": self.n_days,
             "seed": self.seed,
             "mode": self.mode,
+            "attribution": self.attribution,
         }
 
     def canonical_json(self) -> str:

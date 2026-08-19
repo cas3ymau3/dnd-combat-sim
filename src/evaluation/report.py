@@ -145,9 +145,13 @@ class Provenance:
                     "seam (§13 step 5)."
                 ),
                 "enemy_path": described.get("enemy_policy"),
+                "attribution": config.attribution,
+                "attributed_roles": list(config.own_roles),
                 "comparability_warning": (
                     "Runs whose enemy_path differs faced DIFFERENT enemy models and "
-                    "must not be compared (§3.4)."
+                    "must not be compared (§3.4). The same rule applies to "
+                    "'attribution' and 'mode': all three change what the headline "
+                    "number MEANS, not merely its value."
                 ),
             },
             roster=roster_summary,
