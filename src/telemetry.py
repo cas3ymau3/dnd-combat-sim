@@ -21,9 +21,19 @@ like adding a verb — not casually):
   - **control** — turns lost (hard) and turns reduced (soft), by save ability (§6).
     Scaffolded now; populated when the §6 control channel wires (roadmap step 5).
   - **mitigation** — outgoing damage before vs after ``mult(t)`` and incoming by type
-    (§5). Scaffolded now; populated when the §5 multiplier wires (roadmap step 4).
+    (§5), keyed ``(actor_id, damage_type)``. The ACTOR dimension was added in s44: the
+    cells answer two questions — "what did the enemy's resistances remove from this
+    build's output" (§5) and "what is this build's outgoing damage-type COMPOSITION"
+    — and the second is meaningless without knowing WHOSE damage a cell holds. On a
+    roster with a summon and a typed-damage enemy, a type-only key silently pools all
+    three actors' damage into one number.
   - **economy** — concentration checks forced / broken, reactions used, resources spent
     (folds the existing slot-audit / parry-budget / concentration-count monkeypatches).
+    The resource ledger went LIVE in s44: the scheduler records at every
+    ``resources.consume`` site (the six decider closures plus the main choice loop), so
+    "limited resources per day" (design.md §8) is measurable for every build. Keyed by
+    resource NAME and summed across entities — per-entity keying would be a deliberate
+    channel extension, not a free change.
 
 Who writes it — RESOLUTION only, never policy (preserves CLAUDE.md #7). The scheduler /
 verb handlers record outcomes as they roll dice and mutate state; the policy stays a pure
@@ -87,7 +97,13 @@ class MitigationTally:
     """One damage-type cell of the mitigation channel (§5): the build's OUTGOING
     damage of this type before vs after the enemy's fractional ``mult(t)`` (the
     typed-damage-mitigated figure), and INCOMING damage of this type taken by the
-    character. Scaffolded until the §5 multiplier wires (roadmap step 4)."""
+    character.
+
+    Recorded for EVERY typed hit since s44, not only hits a multiplier touched.
+    With no profile installed ``outgoing_before == outgoing_after``, and the cell is
+    then the build's outgoing damage-type COMPOSITION rather than a mitigation
+    figure — the same numbers answering a different question, which is why one
+    channel serves both."""
     outgoing_before: int = 0
     outgoing_after: int = 0
     incoming: int = 0
@@ -108,8 +124,8 @@ class CombatTelemetry:
     saves: dict[tuple[str, str], SaveTally] = field(default_factory=dict)
     # control: save ability -> ControlTally
     control: dict[str, ControlTally] = field(default_factory=dict)
-    # mitigation: damage type -> MitigationTally
-    mitigation: dict[str, MitigationTally] = field(default_factory=dict)
+    # mitigation: (actor id, damage type) -> MitigationTally
+    mitigation: dict[tuple[int, str], MitigationTally] = field(default_factory=dict)
     # economy
     concentration_checks: int = 0
     concentration_breaks: int = 0
@@ -138,11 +154,16 @@ class CombatTelemetry:
         t.turns_lost += turns_lost
         t.turns_reduced += turns_reduced
 
-    def record_mitigation(self, damage_type: str, *, outgoing_before: int = 0,
-                         outgoing_after: int = 0, incoming: int = 0) -> None:
-        """Record typed outgoing (before/after ``mult(t)``) or incoming damage (§5);
-        for roadmap step 4."""
-        m = self.mitigation.setdefault(damage_type, MitigationTally())
+    def record_mitigation(self, actor_id: int, damage_type: str, *,
+                         outgoing_before: int = 0, outgoing_after: int = 0,
+                         incoming: int = 0) -> None:
+        """Record typed outgoing (before/after ``mult(t)``) or incoming damage (§5).
+
+        Written by ``resolve_damage`` phase 7b on every TYPED hit — with a profile
+        installed the before/after pair prices the enemy's resistances; without one
+        it records the dealer's damage-type composition.  ``actor_id`` is WHO dealt
+        it, without which a roster's cells cannot be told apart."""
+        m = self.mitigation.setdefault((actor_id, damage_type), MitigationTally())
         m.outgoing_before += outgoing_before
         m.outgoing_after += outgoing_after
         m.incoming += incoming
@@ -170,6 +191,20 @@ class CombatTelemetry:
             self.resources_spent[name] = self.resources_spent.get(name, 0) + amount
 
     # -- convenience read-outs (the reporting layer / mechanism tests read these) -
+
+    def mitigation_by_type(self, actor_ids: "set[int] | None" = None
+                          ) -> dict[str, MitigationTally]:
+        """Mitigation cells collapsed to damage type, optionally for one set of actors.
+
+        ``actor_ids=None`` pools the whole combat, which is what "what did the enemy
+        resist" wants; passing the roster's character ids is what a build's own
+        damage-type composition needs."""
+        out: dict[str, MitigationTally] = {}
+        for (actor_id, damage_type), tally in self.mitigation.items():
+            if actor_ids is not None and actor_id not in actor_ids:
+                continue
+            out.setdefault(damage_type, MitigationTally()).merge(tally)
+        return out
 
     def saves_forced(self, channel: str | None = None) -> int:
         """Total saves forced, optionally filtered to one channel."""

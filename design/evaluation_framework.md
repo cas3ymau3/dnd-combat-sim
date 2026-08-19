@@ -264,6 +264,43 @@ reported delta is paired (and its stated interval means the paired thing).
 Designed in now because it is nearly free (reset the seed per config) and awkward to
 retrofit once artifacts exist.
 
+**Correction (s44, MEASURED): in this engine the pairing is worth ~1×, not 10–100×.**
+Five paired comparisons at 300 days each, comparing the paired standard error of the
+delta against the independent `sqrt(seA² + seB²)`:
+
+| comparison | delta | paired se | independent se | variance reduction |
+|---|---|---|---|---|
+| Starfire L15, FoM → Fire Shield | +3.132 | 0.2493 | 0.2700 | 1.17× |
+| Starfire L15, `with_party` on | +0.004 | 0.2729 | 0.2765 | 1.03× |
+| Silvertail L10, `mortal_beast` on | +0.019 | 0.1208 | 0.1177 | 0.95× |
+| Silvertail L10, `beast_effect=bless` | −0.061 | 0.1151 | 0.1174 | 1.04× |
+| Silvertail L10, `zone_effect` on | +5.601 | 0.1609 | 0.1586 | 0.97× |
+
+Row 2 is the diagnostic one: a toggle that moves DPR by **0.004** still carries the
+full 0.27 standard error. If pairing were working, a near-inert change would show a
+tiny delta *and* a tiny interval.
+
+**Why.** `SeededRNG` wraps ONE numpy generator, so all dice everywhere are a single
+tape read in order. The moment scenario B draws one more or one fewer die than A,
+every subsequent draw in B is offset by one position on that tape — and a tape read
+at a shifted offset is statistically no better than a fresh one. Pairing is therefore
+perfect up to the first divergence and worthless after it, and divergence normally
+happens in round 1 of combat 1 of day 1. The inert-toggle case still pairs exactly
+(delta `0 ± 0`), which is why the mechanism tests pass: the machinery is right, the
+engine cannot feed it.
+
+**The prerequisite for the real factor: RNG SUBSTREAMS.** Give each source of
+randomness its own stream (`numpy.random.SeedSequence.spawn()`), keyed per entity or
+per (entity, purpose). Then "the enemy's attack roll in round 3 of combat 2" draws
+the same value in both runs no matter what changed about the character's spell, and
+the enemy's entire contribution to the variance cancels exactly. **This is not a
+tweak**: it changes the dice every existing run consumes, so every seeded baseline
+moves and the §12 bit-identical parity proof against `validation.py` breaks. It gets
+its own roadmap step and its own decision record (§13 step 8).
+
+Pairing stays the DEFAULT meanwhile. It is never worse than independent seeding, it
+costs nothing, and it becomes valuable the moment substreams land.
+
 ### 6.2 Every scalar metric carries uncertainty
 
 `(value, n, stderr, converged: bool)` — **for every metric, not just DPR.** Metrics
@@ -491,7 +528,20 @@ check mechanisms, not the composite. Three things carry that load instead:
    `primal_strike_unarmed=None` → the level row's `raw_unarmed`, with the source path
    named); the enemy side (`describe_parameters()`) waits on the `enemy_options` seam.
    `evaluation/runner.mean_dpr` is an explicit, in-code-marked stand-in for step 2.
-2. `EvalReport` + metric registry + statistics (stderr, convergence, paired seeding).
+2. ~~`EvalReport` + metric registry + statistics (stderr, convergence, paired
+   seeding).~~ **DONE (s44)** — `src/evaluation/{statistics,metrics,report}.py`, 49
+   mechanism tests in `tests/test_eval_metrics.py`. `runner.mean_dpr` is gone; the §12
+   parity proof was re-pointed at the registry's `dpr` metric and still matches
+   `validation.run_level` bit-identically. 51 registered metrics. Two estimator kinds
+   (fixed vs random denominator) unified through per-day influence values. Three
+   channels declare themselves UNAVAILABLE rather than emitting zeros (control, for
+   two different per-build reasons; mitigation; and — until the same session wired it
+   — the resource ledger). Provenance reports the build side resolved and says
+   plainly that the enemy side is not. **Ex-post additions the same session:** the §13
+   resource ledger went live (7 scheduler `consume` sites); the mitigation channel
+   gained an ACTOR dimension and now records every typed hit, giving outgoing
+   damage-type composition; and per-combat / opening-round shape metrics landed off
+   the existing ledger.
 3. Serialization: JSON + tidy CSV + console renderer; `schema_version`.
 4. The `attacks` telemetry channel (§8.1).
 5. **The enemy-construction seam (§3.4)** *(inserted s43, between the original steps 4 and
@@ -505,6 +555,12 @@ check mechanisms, not the composite. Three things carry that load instead:
    Placed after step 4 so the two enemy paths can be compared as artifacts, not by eye.
 6. Control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation.
 7. Sweep YAML + config-hash caching + baselines registry.
+8. **RNG substreams** *(added s44)* — per-entity / per-(entity, purpose) generators via
+   `SeedSequence.spawn()`, the prerequisite for §6.1's paired seeding to actually buy
+   precision. Needs its own decision record: it moves every seeded baseline and breaks
+   the §12 bit-identical parity proof, so it must be a deliberate, versioned change.
+   Sequenced last because nothing else depends on it and the intervals reported before
+   it are honest, just wider than they could be.
 
 `src/validation.py` **stays as-is** throughout as the regression check, and is migrated
 onto the framework only once step 1 reproduces its numbers exactly.
@@ -525,6 +581,25 @@ onto the framework only once step 1 reproduces its numbers exactly.
   build makes it matter.
 - **Full stateful control durations** — remains the `enemy_model.md` §10 fidelity
   deferral; §7 above deliberately keeps the mean-field expectation (§7.2).
+- **Distribution shape (quantiles, spread)** *(added s44)* — every metric today is a
+  mean with a standard error, which describes where the average lands and says nothing
+  about consistency: two builds with identical mean DPR and very different day-to-day
+  spread are indistinguishable in this report. A quantile is not a ratio and has no
+  delta-method standard error, so it does not fit `MetricDef` — it needs a parallel
+  `DistributionMetric` kind with order-statistic or bootstrap intervals. **Decided
+  (user, s44): design it after step 3**, once serialization has fixed the artifact
+  shape; the seam is a second metric kind alongside the scalar registry, not a new
+  field on the existing one.
+- **Per-(round, source) damage ledger** *(added s44)* — `CombatResult.damage_received`
+  is per round but keyed by target only; `damage_by_source_target` is attributed by
+  source but per-combat cumulative. So no metric can say "how much did the CHARACTER
+  deal in round 1". `party_dpr_opening_round` is labelled party-scoped for exactly this
+  reason. Unblocks a character-scoped front-loading metric.
+- **Per-entity resource keying** *(added s44)* — the §13 economy channel keys
+  `resources_spent` by resource NAME and sums across the roster, so a summon build
+  cannot separate the master's slots from the companion's. A deliberate channel
+  extension when a build makes it matter, mirroring the actor dimension the mitigation
+  channel gained in s44.
 - **Multi-character party** — `Roster.characters` is plural in anticipation, but no
   build produces more than one character yet; unblocks §7's AoE-share and kiting
   toggles when it lands (§3.3).

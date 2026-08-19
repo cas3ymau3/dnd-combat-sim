@@ -32,7 +32,7 @@ from src.evaluation import (
     compare,
     run,
 )
-from src.evaluation.metrics import GROUPS, SAVE_STATS
+from src.evaluation.metrics import DAMAGE_TYPES, GROUPS, SAVE_STATS
 from src.evaluation.report import build_report
 from src.evaluation.runner import simulate
 from src.evaluation.statistics import (
@@ -327,14 +327,16 @@ def test_the_unavailability_reason_names_which_enemy_model_blocked_it():
     assert scripted != baseline
 
 
-def test_the_other_two_empty_channels_declare_themselves_too():
-    """Mitigation (no build installs a mult(t) profile) and the resource ledger
-    (``record_resource`` has no call site) are structurally empty in the same way."""
+def test_the_mitigation_channel_declares_itself_too():
+    """No build installs a mult(t) profile, so "damage mitigated" is structurally
+    unmeasurable in the same way control is.
+
+    (The resource ledger was the third such case until s44 wired
+    ``record_resource`` at the scheduler's consume sites; it is now measured, and
+    its test lives with the other s44 additions below.)"""
     report = run(RunConfig(build="war_angel", level=13, n_days=4, seed=1))
     assert report["damage_mitigated_per_round"].available is False
     assert "damage_multiplier" in report["damage_mitigated_per_round"].note
-    assert report["limited_resources_per_day"].available is False
-    assert "record_resource" in report["limited_resources_per_day"].note
 
 
 def test_an_unavailable_metric_costs_no_collection():
@@ -528,3 +530,88 @@ def test_an_unpairable_comparison_falls_back_and_says_so():
 def test_a_comparison_needs_something_to_compare():
     with pytest.raises(ValueError, match="at least two configs"):
         compare([RunConfig(build="war_angel", level=1, n_days=2, seed=0)])
+
+
+# ---------------------------------------------------------------------------
+# The s44 ex-post additions: resource ledger, damage-type composition, day shape
+# ---------------------------------------------------------------------------
+
+def test_the_resource_ledger_is_live_and_excludes_turn_level_action_economy():
+    """``record_resource`` now fires at every scheduler ``resources.consume`` site.
+
+    The exclusion matters: action / bonus_action / reaction are scheduler state,
+    not ``ResourcePool`` entries, so a "limited resources per day" figure that
+    counted them would be reporting "the character took its turns".
+
+    That the recording moved no die is proved by the §12 parity test in
+    ``test_eval_framework.py``: ``validation.run_level`` drives this same scheduler,
+    so a consumed or reordered roll would break its bit-identical comparison."""
+    output = simulate(RunConfig(build="war_angel", level=13, n_days=20, seed=11))
+    spent = output.telemetry.resources_spent
+
+    assert spent, "the ledger recorded nothing at all"
+    assert not ({"action", "bonus_action", "reaction"} & set(spent))
+    assert build_report(output)["limited_resources_per_day"].available is True
+
+
+def test_spell_slot_metric_counts_the_pact_chassis_too():
+    """The War Angel spends ``pact_magic_slot``; keying on the ``spell_slot_``
+    prefix alone would report a warlock chassis as casting nothing."""
+    report = run(RunConfig(build="war_angel", level=13, n_days=40, seed=11))
+    assert report["spell_slots_per_day"].value > 0
+
+
+def test_damage_type_composition_is_scoped_to_the_characters_own_output():
+    """The §13 mitigation channel is keyed ``(actor_id, damage_type)`` precisely so
+    a summon's typed damage and a typed-damage enemy's swings cannot pool into the
+    build's composition."""
+    output = simulate(RunConfig(build="silvertail", level=10, n_days=30, seed=3))
+    report = build_report(output)
+
+    character_ids = set(output.roster.ids("characters"))
+    everyone = output.telemetry.mitigation_by_type()
+    character_only = output.telemetry.mitigation_by_type(character_ids)
+
+    # The channel really does hold more than the character's damage…
+    assert sum(c.outgoing_before for c in everyone.values()) >            sum(c.outgoing_before for c in character_only.values())
+    # …and the composition shares are computed from the character's slice.
+    shares = [report[f"damage_share_{t}"].value for t in DAMAGE_TYPES]
+    assert sum(v for v in shares if v is not None) == pytest.approx(1.0)
+
+
+def test_typed_damage_share_reports_a_fully_untyped_build_as_zero():
+    """A real measurement with a real consequence: the War Angel's output carries no
+    damage type in the model, so §5's mult(t) can never price it."""
+    report = run(RunConfig(build="war_angel", level=13, n_days=20, seed=11))
+    assert report["typed_damage_share"].value == 0.0
+    assert report["typed_damage_per_round"].value == 0.0
+
+
+def test_per_combat_dpr_partitions_the_headline_exactly():
+    """The four per-combat figures are the headline decomposed, not a different
+    quantity: equal round counts, so their mean IS the day's DPR.  This is what
+    catches a per-combat metric that quietly reads an all-sources log."""
+    report = run(RunConfig(build="war_angel", level=13, n_days=60, seed=11))
+    per_combat = [report[f"dpr_combat_{i}"].value for i in (1, 2, 3, 4)]
+
+    assert sum(per_combat) / 4 == pytest.approx(report.headline.value)
+
+
+def test_per_combat_dpr_exposes_a_depletion_curve_the_daily_mean_hides():
+    """Mechanism, not value: the four numbers are allowed to differ from each other
+    and from the day mean.  A build that spends its day early is invisible at the
+    day level, which is the reason these are registered."""
+    report = run(RunConfig(build="war_angel", level=13, n_days=60, seed=11))
+    per_combat = [report[f"dpr_combat_{i}"].value for i in (1, 2, 3, 4)]
+
+    assert len(set(per_combat)) > 1
+    assert min(per_combat) < report.headline.value < max(per_combat)
+
+
+def test_the_opening_round_metric_is_labelled_party_scoped():
+    """The per-round log is keyed by target only, so round-1 damage cannot be
+    attributed to a source.  Rather than silently mixing a summon into a
+    character metric, it is named and grouped as a party column (§3.3)."""
+    assert "party_dpr_opening_round" in METRICS
+    assert METRICS["party_dpr_opening_round"].group == "column"
+    assert "PARTY-scoped" in METRICS["party_dpr_opening_round"].definition

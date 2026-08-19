@@ -392,6 +392,7 @@ class Scheduler:
                 return 0
             for n, a in response.resource_cost.items():
                 actor.resources.consume(n, a)
+                self.telemetry.record_resource(n, a)
             return response.bonus
 
         return decider
@@ -446,6 +447,7 @@ class Scheduler:
                 self._turn_economy[ac] -= 1
             for n, a in response.resource_cost.items():
                 actor.resources.consume(n, a)
+                self.telemetry.record_resource(n, a)
             # Apply any self-status (e.g. Brutality::bluff's save advantage),
             # lasting until the end of the actor's next turn (mirrors vex), and
             # consumed earlier by the next qualifying save.
@@ -511,6 +513,7 @@ class Scheduler:
                 return None
             for n, a in response.resource_cost.items():
                 target.resources.consume(n, a)
+                self.telemetry.record_resource(n, a)
             return response
 
         return intercept_decider
@@ -558,6 +561,7 @@ class Scheduler:
                 return None
             for n, a in response.resource_cost.items():
                 target.resources.consume(n, a)
+                self.telemetry.record_resource(n, a)
             return response.bonus
 
         return save_reroll_decider
@@ -604,6 +608,7 @@ class Scheduler:
                 return []
             for n, a in response.resource_cost.items():
                 actor.resources.consume(n, a)
+                self.telemetry.record_resource(n, a)
             return list(response.extra_damage_dice)
 
         return rider_decider
@@ -706,6 +711,7 @@ class Scheduler:
             if choice.resource_cost:
                 for name, amount in choice.resource_cost.items():
                     actor.resources.consume(name, amount)
+                    self.telemetry.record_resource(name, amount)
 
             # The entity that ACTS this choice.  For a COMMANDED action (substrate
             # #7 / 7a — the Beast Master directing the primal companion) the choice
