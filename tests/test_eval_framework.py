@@ -26,7 +26,7 @@ from src.evaluation import (
     Roster,
     available_builds,
     get_adapter,
-    mean_dpr,
+    run,
     simulate,
 )
 from src.evaluation.adapters import BuildAdapter, OptionSpec
@@ -54,12 +54,17 @@ def test_framework_reproduces_validation_exactly(level):
     of the validated range).
     """
     reference = validation.run_level(level, n_days=PARITY_DAYS, seed=11)
-    output = simulate(RunConfig(build="war_angel", level=level,
-                                n_days=PARITY_DAYS, seed=11))
-    framework_mean, framework_stderr = mean_dpr(output)
+    headline = run(RunConfig(build="war_angel", level=level,
+                             n_days=PARITY_DAYS, seed=11)).headline
 
-    assert framework_mean == reference.mean_dpr
-    assert framework_stderr == reference.stderr
+    # Step 2 routed this through the metric registry (the ``dpr`` MetricDef and
+    # the fixed-denominator estimator).  The assertion stays EXACT equality: the
+    # estimator deliberately mirrors validation.run_level's operation order, so an
+    # algebraically-equivalent rearrangement that drifts by one ULP is a
+    # regression, not a rounding detail.
+    assert headline.metric == "dpr"
+    assert headline.value == reference.mean_dpr
+    assert headline.stderr == reference.stderr
 
 
 def test_headline_column_is_the_characters_own_output():
