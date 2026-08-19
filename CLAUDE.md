@@ -30,7 +30,9 @@ design/
   design.md            ← the design contract (read first)
   ability_schema.md    ← the locked ability/content schema (read second)
   model_setup_notes.md
-  build-guides/        33 curated 2024-ruleset build guides (schema corpus)
+  build-guides/        33 2024-ruleset build guides (schema corpus). WRITTEN BY THE
+                       USER — these are not third-party material, and no DPR number in
+                       them is an external validation source (see below).
 reference/             Read-only prior art (R prototype + data tables). Do NOT
                        run, extend, or import from this — it informs the build.
   r-prototype/         Earlier R sims; war_angel_* is the best structural reference
