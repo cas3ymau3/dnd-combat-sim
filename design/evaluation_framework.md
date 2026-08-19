@@ -1,6 +1,7 @@
 # Evaluation framework — the reporting / aggregation layer
 
-> **Status: DESIGN LOCKED (session 42, 2026-08-17). No code yet.**
+> **Status: DESIGN LOCKED (session 42, 2026-08-17). §13 STEP 1 BUILT (session 43,
+> 2026-08-18) — `src/evaluation/`; steps 2–6 outstanding.**
 > This note settles the contract for `design.md` §8's outputs — how a build is
 > evaluated, what a report contains, how it is serialized, and how the numbers stay
 > comparable across builds, scenarios, and engine versions. It is the design-first
@@ -84,6 +85,19 @@ RunConfig:
 
 `RunConfig` is hashable and serializable — it is simultaneously the run instruction,
 the cache key (§10), and the provenance block (§4).
+
+**Amendment (s43, from building it): `enemy` needs a `"build_default"` member.** This
+section assumed the enemy is selectable independently of the build, but all three
+existing factories construct their enemy policy *internally* off the level's data row,
+and the §7 toggles are `BaselineEnemyPolicy` constructor kwargs no factory exposes. So
+`ENEMY_KINDS` is `("build_default", "baseline", "scripted", "none")`, and step 1
+honours only the first. `enemy_options`, the other three `enemy` values, and
+`mode="finite_hp"` all raise rather than being silently ignored: a config that *claimed*
+an assumption the run did not apply would poison the §4 provenance block, which is that
+block's whole purpose. They unlock when the framework grows its own enemy-construction
+seam. `combats_per_day` is validated `== 4` for the same reason — `DayRunner.run_day`
+hardcodes a four-combat day, so the field records the denominator (§5.2) but cannot yet
+vary.
 
 ### 3.2 `BuildAdapter` — the per-build seam
 
@@ -401,8 +415,16 @@ We do NOT assert that any build's evaluated DPR is "correct".
 
 ## 13. Build sequence
 
-1. `RunConfig` + `BuildAdapter` + `Roster` + the registry; adapters for the three
-   existing builds. Prove it by reproducing `validation.py`'s War Angel numbers.
+1. ~~`RunConfig` + `BuildAdapter` + `Roster` + the registry; adapters for the three
+   existing builds. Prove it by reproducing `validation.py`'s War Angel numbers.~~
+   **DONE (s43)** — `src/evaluation/{config,adapters,build_adapters,roster,runner}.py`,
+   39 mechanism tests in `tests/test_eval_framework.py`. The proof PASSED EXACTLY:
+   bit-identical mean *and* stderr against `validation.run_level` across all 16 War
+   Angel levels (400 days) and at 5,000 days on L13/L16, the enemy-strikes-back regime.
+   `describe()` already does real §4 resolution on the build side (Starfire's
+   `primal_strike_unarmed=None` → the level row's `raw_unarmed`, with the source path
+   named); the enemy side (`describe_parameters()`) waits on the `enemy_options` seam.
+   `evaluation/runner.mean_dpr` is an explicit, in-code-marked stand-in for step 2.
 2. `EvalReport` + metric registry + statistics (stderr, convergence, paired seeding).
 3. Serialization: JSON + tidy CSV + console renderer; `schema_version`.
 4. The `attacks` telemetry channel (§8.1).

@@ -219,6 +219,66 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 > step 3. Both threads (telemetry seam §13 + decision-tree structure §4b + control duration §6.5)
 > are LOCKED in `enemy_model.md`.
 >
+> **Session scope (2026-08-18, session 43) — DONE (EVALUATION FRAMEWORK STEP 1, Track 1
+> roadmap step 5 / `evaluation_framework.md` §13 step 1: the ADAPTER/ROSTER layer — the first
+> CODE of the framework s42 designed):** scope settled with the user up front via three forks
+> (all as recommended). New package `src/evaluation/` (5 modules) + `tests/test_eval_framework.py`
+> (39 tests). Branch `feature/eval-framework-adapters`.
+> - **What landed.** `roster.py` — `Roster` tags entities by ROLE (characters / summons / allies /
+>   enemies) with a closed `ROLES` vocabulary, exclusive roles, and `headline_source_ids` vs
+>   `party_source_ids` as SEPARATE named calls (§3.3's "never collapsed" rule enforced by API
+>   shape, not by a comment); `characters` is a LIST at length 1 from day one. `config.py` —
+>   `RunConfig` (build axes + enemy toggles as ONE parameter space), frozen, canonical JSON,
+>   `config_hash()`, hashable via the canonical form (the §10 cache key — `frozen=True`'s generated
+>   `__hash__` blows up on the dict fields, so it is replaced), plus §10 `DAY_TIERS` and a
+>   `day_tier` label. `adapters.py` — `BuildAdapter` Protocol + `OptionSpec` (a declared scenario
+>   axis: default, closed value set or open, description) + the registry (lazy built-in loading
+>   behind its own flag so a custom registration first does not suppress the shipped adapters).
+>   `build_adapters.py` — the three adapters. `runner.py` — `simulate()` → per-day columns keyed by
+>   ENTITY ID (never position), merged §13 telemetry, and `mean_dpr()` marked EXPLICITLY as a
+>   step-1 stand-in for the step-2 metric registry.
+> - **THE CORRECTNESS PROOF (§12) — PASSED EXACTLY.** The framework reproduces `validation.py`'s
+>   War Angel numbers bit-identically (mean AND stderr) at equal seed and day count: verified
+>   across **all 16 levels at 400 days**, and at **5,000 days on L13 and L16** (the
+>   enemy-strikes-back regime, where the headline column and "damage taken by the dummy" could
+>   have diverged). The parametrized test in the suite covers L1/4/5/12/13/16. `src/validation.py`
+>   is **UNTOUCHED** and stays the regression check per §13; migrating it onto the framework is a
+>   later step, not this one.
+> - **The factories are UNTOUCHED** (§2 "adapt, don't rewrite"). Two consequences handled honestly
+>   rather than papered over: Starfire Scion's `with_party` party member is appended to the runner's
+>   roster internally and never returned — the adapter recovers it by **set difference on entity
+>   ids**, not by index; and Silvertail's four-value return with the summon in the MIDDLE is exactly
+>   the shape that breaks a positional reader, so it is the adapter that proves the roster earns its
+>   keep (headline 1 column, summon its own column, party total beside — never merged).
+> - **Three scoping forks settled with the user (all "as recommended"):** (1) **`enemy` /
+>   `enemy_options` — field exists, non-empty REJECTED.** All three factories construct their enemy
+>   policy internally off the level's data row, and the §7 toggles are `BaselineEnemyPolicy` ctor
+>   kwargs no factory exposes. Only `enemy="build_default"` is honourable; everything else raises
+>   `NotImplementedError` with a message naming why. **Rejecting > ignoring**: a config that claimed
+>   an assumption the run never applied would poison the §4 provenance block, which is the entire
+>   point of that block. Unlocks when the framework grows its own enemy-construction seam.
+>   (2) **`combats_per_day` kept as a field but validated `== 4`** — `DayRunner.run_day` hardcodes
+>   `for i in range(4)`; the field belongs in provenance (it is the DPR denominator, §5.2) but
+>   cannot yet vary. (3) **`mode="finite_hp"` likewise rejected** — needs `DayRunner(enemy_ids=…)`,
+>   which no factory passes. **A GAP IN THE s42 DESIGN, named:** §3.1 assumed the enemy is selectable
+>   independently of the build, but every existing factory bakes it in; `"build_default"` was added
+>   to the §3.1 `ENEMY_KINDS` vocabulary to say so explicitly.
+> - **§4 provenance, partially real already.** `describe()` fills every declared axis with the value
+>   ACTUALLY used (never the word "default") and resolves genuine indirection: Starfire's
+>   `primal_strike_unarmed=None` is reported as the level row's `raw_unarmed` value **with its
+>   source path named**. The enemy-side half (`BaselineEnemyPolicy.describe_parameters()`) is the
+>   deferred piece, tied to the `enemy_options` fork above.
+> - **Validated as a MECHANISM** ([[validate-mechanism-not-build-value]]): role tagging, summon
+>   columns never merging into the headline, sparse+disjoint level sets (a level valid for one build
+>   rejected for another, error listing the actual set), config rejection paths, resolved-vs-requested
+>   describe values, config-hash identity/paired-seed groundwork, and **registering a brand-new build
+>   with an adapter alone** (the layer's central claim). **No test asserts a DPR value is "correct".**
+> - **CODE changed → FULL SUITE FOREGROUND, ONCE** ([[full-suite-foreground-only]]): **624 passed**
+>   (585 → 624, +39). **No new D&D mechanic** → no rules verification needed
+>   ([[per-feature-ritual-verify-and-reflect]]). **CONFIG LEDGER: not prompted** — last reviewed s42,
+>   one session old (<2). **NEXT: `evaluation_framework.md` §13 step 2** — `EvalReport` + the metric
+>   registry + statistics (stderr, convergence flag, paired seeding), replacing `runner.mean_dpr`.
+>
 > **Session scope (2026-08-17, session 42) — DONE (EVALUATION-FRAMEWORK DESIGN, Track 1
 > roadmap step 5 / #4 — DESIGN ONLY, no engine code):** the session opened on "start the
 > reporting/aggregation layer + first end-to-end eval" and the **user REFRAMED it in the
@@ -3288,6 +3348,20 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    channel** (§8's hit/crit/advantage rates). **BUILD SEQUENCE: `evaluation_framework.md`
    §13** — 6 steps, starting with the adapter/roster layer proving itself by reproducing
    `validation.py`'s War Angel numbers exactly.
+   - ~~**(1) adapter / roster layer**~~ **DONE (s43):** `src/evaluation/` — `RunConfig` +
+     `BuildAdapter`/`OptionSpec` + role-tagged `Roster` + the registry + adapters for all three
+     builds (factories UNTOUCHED). **The §12 correctness proof PASSED EXACTLY** — bit-identical
+     mean and stderr vs `validation.py` across all 16 War Angel levels (and at 5,000 days on
+     L13/L16). `src/validation.py` stays as-is as the regression check. `enemy`/`enemy_options`/
+     `mode="finite_hp"` are hard-rejected rather than silently ignored (the factories own their
+     enemy policy and combat loop); `combats_per_day` validated `== 4`. 39 mechanism tests.
+   - **(2) NEXT — `EvalReport` + metric registry + statistics** (§5, §6): declared metrics with
+     explicit denominators, `(value, n, stderr, converged)` on EVERY scalar, and paired seeding
+     as the comparison default. Replaces `evaluation/runner.mean_dpr`, which is marked in-code as
+     the step-1 stand-in.
+   - (3) serialization (JSON + tidy CSV + console, `schema_version`); (4) the `attacks` telemetry
+     channel (§8.1); (5) control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation;
+     (6) sweep YAML + config-hash caching + the baselines registry.
 6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
    (closest-to-complete), offense + profile-driven defense + control resilience, vs
    the 4×4 baseline. **Comparison idea (s37):** also reproduce **Treantmonk's tier
