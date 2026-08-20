@@ -94,6 +94,7 @@ from ..builds.enemy import BaselineEnemyPolicy
 from ..builds.enemy_stats import enemy_base_stats
 from ..day_runner import BetweenCombatsContext, DayRunner
 from ..entity import Entity
+from ..healing import HitDiceSpec, attach_hit_dice
 from ..modifiers import Modifier
 from ..policy import Choice, InterceptResponse, RedirectSpec
 from ..resources import ResourceEntry, ResourcePool
@@ -292,6 +293,34 @@ def _make_resources(data: dict) -> ResourcePool:
     return ResourcePool(entries)
 
 
+# ---------------------------------------------------------------------------
+# Hit Dice (design/healing.md §7 / §11.3)
+# ---------------------------------------------------------------------------
+# MASTER — class levels from the guide's progression (32_silvertails_blessing.txt):
+# Fighter (d10) / Ranger (d10) / Cleric (d8).  CON = 12 → CON modifier **+1** (the
+# guide dumps CON to 12 and buys HP back with Tough + fighter-1).
+_ST_CLASS_LEVELS: dict[int, tuple[int, int, int]] = {
+    #  char level: (fighter, ranger, cleric)
+    4: (1, 3, 0),
+    8: (1, 4, 3),
+    10: (1, 4, 5),
+}
+SILVERTAIL_CON_MOD = 1
+
+# BEAST — 2024 Beast of the Land statblock (verified 2026-08-20, Roll20 compendium):
+# "Hit Dice: a number of d8s equal to your ranger level"; HP = 5 + 5 x ranger level;
+# CON modifier +2 (consistent with BEAST_BASE_SAVES["con_save"], the base before PB).
+# So the companion DOES have Hit Dice in the PC sense — healing.md §10.5 was right to
+# refuse to assume it either way.  Its pool is ~one full heal's worth spread across a
+# four-combat day: enough to matter and small enough to run out, which is the
+# depletion curve §7(b2) exists to show.
+BEAST_CON_MOD = 2
+
+
+def _ranger_level(level: int) -> int:
+    return _ST_CLASS_LEVELS[level][1]
+
+
 def make_silvertail(level: int) -> Entity:
     """Build the Silvertail MASTER Entity (the controller) for the given level."""
     if level not in LEVELS:
@@ -308,11 +337,17 @@ def make_silvertail(level: int) -> Entity:
         "damage_bonus": 0,
     }
     base_stats.update(data.get("char_saves", {}))   # master saves (L8+: for retargeting)
-    return Entity(
-        name=f"Silvertail-L{level}",
-        hp=data["char_hp"],
-        base_stats=base_stats,
-        resources=_make_resources(data),
+    fighter, ranger, cleric = _ST_CLASS_LEVELS[level]
+    d10 = fighter + ranger
+    dice = ([(d10, 10)] if d10 else []) + ([(cleric, 8)] if cleric else [])
+    return attach_hit_dice(
+        Entity(
+            name=f"Silvertail-L{level}",
+            hp=data["char_hp"],
+            base_stats=base_stats,
+            resources=_make_resources(data),
+        ),
+        HitDiceSpec(dice=dice, con_mod=SILVERTAIL_CON_MOD, rule="character"),
     )
 
 
@@ -351,7 +386,16 @@ def make_primal_companion(level: int, mortal: bool = False) -> Entity:
         },
     )
     beast.dies_at_zero_hp = mortal
-    return beast
+    # The companion's own Hit Dice, under the SUMMON rule (§7b2): spent to its
+    # DEFICIT after each combat, bounded by the pool — never "top up to full", so
+    # once the pool empties later combats get nothing.  A different rule from the
+    # character one because it measures a different thing: the beast's HP genuinely
+    # gates its death and turn access, so this is ACTUAL healing.
+    return attach_hit_dice(
+        beast,
+        HitDiceSpec(dice=[(_ranger_level(level), 8)],
+                    con_mod=BEAST_CON_MOD, rule="summon"),
+    )
 
 
 def make_training_dummy(level: int) -> Entity:
@@ -432,7 +476,7 @@ class SilvertailPolicy:
         # ally that no longer exists cannot be ordered.
         if (
             res.get("bonus_action", 0) >= 1
-            and not self._beast.destroyed
+            and not self._beast.is_out_of_action
         ):
             choices.append(self._beast_strike_choice())
 

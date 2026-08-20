@@ -11,8 +11,8 @@ from tests. ``CombatTelemetry`` gives those quantities ONE structured home.
 Shape — a typed accumulator with a small CLOSED channel vocabulary (the §13 decision;
 mirrors the project's "closed verb set" + "table is the source of truth" philosophy —
 NOT a free-form ``record(channel, key, value)`` sink, and NOT ad-hoc flat fields that
-churn the result dataclass per metric). The four fixed channels (extend deliberately,
-like adding a verb — not casually):
+churn the result dataclass per metric). The five fixed channels (extend deliberately,
+like adding a verb — not casually; `healing` was the s45 addition):
 
   - **saves** — saves forced / passed / failed, keyed by ``(ability, channel)`` where
     ``channel`` is ``"damage"`` or ``"control"``. The §4b cross-axis split is VISIBLE
@@ -27,6 +27,15 @@ like adding a verb — not casually):
     — and the second is meaningless without knowing WHOSE damage a cell holds. On a
     roster with a summon and a typed-damage enemy, a type-only key silently pools all
     three actors' damage into one number.
+  - **healing** — hit points RESTORED, keyed ``(source_id, target_id, context)``
+    where context is ``"combat"`` or ``"between"`` (design/healing.md §9.2). Source
+    attribution is not optional: "healing provided by the summon" is a stated
+    requirement, and an aggregate ledger would pool the character's and the summon's
+    numbers exactly as the s44 per-metric lesson warned. The CONTEXT dimension is
+    the §11.1 survey's finding — healing under fire is a different quantity from
+    healing at leisure, and the corpus does most of its healing out of combat by
+    preference, so pooling the two into one per-round number would mislead. Records
+    the amount ACTUALLY APPLIED, never the amount rolled.
   - **economy** — concentration checks forced / broken, reactions used, resources spent
     (folds the existing slot-audit / parry-budget / concentration-count monkeypatches).
     The resource ledger went LIVE in s44: the scheduler records at every
@@ -54,6 +63,12 @@ from dataclasses import dataclass, field
 
 # The closed save-channel vocabulary (§13 / §4b): a damaging save vs a control save.
 SAVE_CHANNELS = ("damage", "control")
+
+# The closed healing-context vocabulary (design/healing.md §11.1 / §10.4): healing
+# resolved INSIDE a combat vs applied in a between-combat interval (Prayer of
+# Healing, Hit Dice at the short rest).  Kept as a key dimension rather than two
+# fields so the read-outs filter uniformly.
+HEAL_CONTEXTS = ("combat", "between")
 
 
 @dataclass
@@ -115,6 +130,17 @@ class MitigationTally:
 
 
 @dataclass
+class HealingTally:
+    """One ``(source, target, context)`` cell of the healing channel."""
+    healed: float = 0.0
+    events: int = 0
+
+    def merge(self, other: "HealingTally") -> None:
+        self.healed += other.healed
+        self.events += other.events
+
+
+@dataclass
 class CombatTelemetry:
     """The structured output accumulator for ONE combat (§13). Resolution records into
     it; ``DayResult`` sums combats via ``merge``. All channels default empty, so a
@@ -126,6 +152,8 @@ class CombatTelemetry:
     control: dict[str, ControlTally] = field(default_factory=dict)
     # mitigation: (actor id, damage type) -> MitigationTally
     mitigation: dict[tuple[int, str], MitigationTally] = field(default_factory=dict)
+    # healing: (source id, target id, context) -> HealingTally
+    healing: dict[tuple[int, int, str], HealingTally] = field(default_factory=dict)
     # economy
     concentration_checks: int = 0
     concentration_breaks: int = 0
@@ -168,6 +196,20 @@ class CombatTelemetry:
         m.outgoing_after += outgoing_after
         m.incoming += incoming
 
+    def record_healing(self, source_id: int, target_id: int, amount: float,
+                       context: str = "combat") -> None:
+        """Record hit points ACTUALLY RESTORED by *source* to *target*.
+
+        Written by RESOLUTION only (``healing.resolve_healing`` and the two Hit
+        Dice rules), never by a policy — a policy asks for a heal, it does not
+        record one (CLAUDE.md #7).  Recording is pure observation and cannot move
+        a die or an outcome, which is why the channel adds no baseline drift."""
+        if context not in HEAL_CONTEXTS:
+            raise ValueError(f"unknown heal context {context!r}; expected {HEAL_CONTEXTS}")
+        cell = self.healing.setdefault((source_id, target_id, context), HealingTally())
+        cell.healed += amount
+        cell.events += 1
+
     def record_reaction(self) -> None:
         self.reactions_used += 1
 
@@ -184,6 +226,8 @@ class CombatTelemetry:
             self.control.setdefault(key, ControlTally()).merge(ct)
         for key, mt in other.mitigation.items():
             self.mitigation.setdefault(key, MitigationTally()).merge(mt)
+        for key, ht in other.healing.items():
+            self.healing.setdefault(key, HealingTally()).merge(ht)
         self.concentration_checks += other.concentration_checks
         self.concentration_breaks += other.concentration_breaks
         self.reactions_used += other.reactions_used
@@ -204,6 +248,51 @@ class CombatTelemetry:
             if actor_ids is not None and actor_id not in actor_ids:
                 continue
             out.setdefault(damage_type, MitigationTally()).merge(tally)
+        return out
+
+    # -- healing read-outs (healing.md §8; the metrics layer reads these) -------
+
+    def _healing_cells(self, *, context: "str | None" = None,
+                       source_ids: "set[int] | None" = None,
+                       target_ids: "set[int] | None" = None):
+        for (src, tgt, ctx), cell in self.healing.items():
+            if context is not None and ctx != context:
+                continue
+            if source_ids is not None and src not in source_ids:
+                continue
+            if target_ids is not None and tgt not in target_ids:
+                continue
+            yield (src, tgt, ctx), cell
+
+    def healing_total(self, *, context: "str | None" = None,
+                      source_ids: "set[int] | None" = None,
+                      target_ids: "set[int] | None" = None) -> float:
+        """Hit points restored, filtered on any combination of the three key
+        dimensions.  ALWAYS pass a scope: an unfiltered total pools every actor's
+        healing, which is the aggregate-ledger trap the per-metric ritual names."""
+        return sum(c.healed for _k, c in self._healing_cells(
+            context=context, source_ids=source_ids, target_ids=target_ids))
+
+    def healing_by_source(self, **kw) -> dict[int, float]:
+        """``{source_id: hp restored}`` — "healing PROVIDED", including by a summon."""
+        out: dict[int, float] = {}
+        for (src, _t, _c), cell in self._healing_cells(**kw):
+            out[src] = out.get(src, 0.0) + cell.healed
+        return out
+
+    def healing_by_target(self, **kw) -> dict[int, float]:
+        """``{target_id: hp restored}`` — "healing RECEIVED"."""
+        out: dict[int, float] = {}
+        for (_s, tgt, _c), cell in self._healing_cells(**kw):
+            out[tgt] = out.get(tgt, 0.0) + cell.healed
+        return out
+
+    def healing_by_context(self, **kw) -> dict[str, float]:
+        """``{context: hp restored}`` — the in-combat / between-combat split that
+        §11.1 insists must not be pooled."""
+        out: dict[str, float] = {}
+        for (_s, _t, ctx), cell in self._healing_cells(**kw):
+            out[ctx] = out.get(ctx, 0.0) + cell.healed
         return out
 
     def saves_forced(self, channel: str | None = None) -> int:

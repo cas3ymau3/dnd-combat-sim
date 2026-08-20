@@ -80,6 +80,7 @@ def create_entity(
     re-summon (e.g. the primal companion recovered on a long rest) reanimates.
     """
     entity.destroyed = False
+    entity.downed = False        # a re-summon comes back UP, not dropped (healing.md §6)
     if entity not in entities:
         entities.append(entity)
     if policy is not None:

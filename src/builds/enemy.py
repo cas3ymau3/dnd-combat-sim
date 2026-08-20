@@ -451,9 +451,9 @@ class BaselineEnemyPolicy:
 
     def _current_target(self) -> "Entity | None":
         """Focus-fire the primary; shift to the fallback once the primary winks out."""
-        if not self._primary.destroyed:
+        if not self._primary.is_out_of_action:
             return self._primary
-        if self._fallback is not None and not self._fallback.destroyed:
+        if self._fallback is not None and not self._fallback.is_out_of_action:
             return self._fallback
         return None
 

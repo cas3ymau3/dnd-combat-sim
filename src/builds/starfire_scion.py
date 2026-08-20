@@ -138,6 +138,7 @@ from typing import TYPE_CHECKING
 from ..content import interpret_save_spell, interpret_scaled_dice, load_abilities
 from ..day_runner import DayRunner
 from ..entity import Entity
+from ..healing import HitDiceSpec, attach_hit_dice
 from ..modifiers import Modifier
 from ..policy import (
     Choice,
@@ -654,6 +655,25 @@ def _make_resources(data: dict) -> ResourcePool:
     return ResourcePool(entries)
 
 
+# CON = 14 (guide 41's point buy) → CON modifier **+2**.  Monk (d8) + Druid (d8), so
+# unlike the War Angel the pool is uniform: char-level d8s.
+SCION_CON_MOD = 2
+
+
+def _scion_hit_dice_available_for_healing(entity: "Entity") -> int:
+    """The Starfire Scion answers ZERO to "how many Hit Dice may be spent healing?".
+
+    This is the §7 contested-Hit-Dice case, and it is a BUILD-POLICY answer
+    ("policies are code"), which is why ``HitDiceSpec`` asks rather than assuming.
+    Fueled Spellfire expends up to 2 Hit Dice per turn into a radiant spell's damage,
+    and the guide is explicit that the build spends *all* of them that way and
+    replaces the lost healing with Cure Wounds casts.  Without this answer the
+    automatic spend-all at the short rest would silently drain the pool the build's
+    damage depends on and move its DPR — which would be a bug, not drift.
+    """
+    return 0
+
+
 def make_starfire_scion(level: int) -> Entity:
     """Build the Starfire Scion Entity for the given level (1, 4, 5, 9-12 for now)."""
     if level not in LEVELS:
@@ -661,7 +681,7 @@ def make_starfire_scion(level: int) -> Entity:
             f"Starfire Scion level {level} not yet implemented (have {sorted(LEVELS)})."
         )
     data = LEVELS[level]
-    return Entity(
+    scion = Entity(
         name=f"StarfireScion-L{level}",
         hp=data["char_hp"],
         base_stats={
@@ -677,6 +697,16 @@ def make_starfire_scion(level: int) -> Entity:
         },
         resources=_make_resources(data),
     )
+    n_hd = data.get("resources", {}).get("hit_dice", (0, 0))[0]
+    if n_hd:
+        # attach_hit_dice leaves the EXISTING `hit_dice` resource entry alone — the
+        # level table already created it for Fueled Spellfire, and it is the same
+        # single pool.  Only the SHAPE (d8s, CON +2) and the rule are added here.
+        attach_hit_dice(scion, HitDiceSpec(
+            dice=[(n_hd, 8)], con_mod=SCION_CON_MOD, rule="character",
+            available_for_healing=_scion_hit_dice_available_for_healing,
+        ))
+    return scion
 
 
 def make_training_dummy(level: int) -> Entity:

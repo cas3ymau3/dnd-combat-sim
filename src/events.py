@@ -268,6 +268,37 @@ class SaveDamageEvent(Event):
 
 
 @dataclass
+class HealEvent(Event):
+    """A HEALING delivery (design/healing.md §9.1) — the third first-class delivery
+    beside AttackRollEvent and SaveDamageEvent, and the one the engine had no way to
+    express at all before s45.
+
+    It rolls no attack and forces no save: healing simply lands.  ``healing.HealSpec``
+    carries the whole payload (dice / flat / the caster's ability modifier / the
+    targets), because the §11.1 corpus survey found the eleven corpus shapes differ
+    only in cost, target count and action economy — every one of which ``Choice``
+    already carries — so one event and one spec cover Second Wind, Healing Word, Cure
+    Wounds, Lay on Hands, Mass Cure Wounds and Divine Spark alike.
+
+    Being an EVENT is what gives healing a declared place relative to damage: it
+    occupies its own sequence number in the ``(round, turn_index, sequence)`` tick, so
+    it resolves strictly before or after any damage at that tick, exactly where the
+    policy ordered it — never interleaved into damage's own phase pipeline.
+
+    Fields
+    ------
+    spec:
+        The ``HealSpec``.  Its ``targets`` (empty = the actor heals itself) are what
+        the resolver uses; ``Event.target`` stays None for a self-heal.
+    cost:
+        Action-economy tag of the heal, for traceability (mirrors the other events).
+    """
+    spec: "object | None" = None
+    cost: str = "action"
+    kind: str = field(default="heal", init=False)
+
+
+@dataclass
 class ControlSaveEvent(Event):
     """A CONTROL save delivery (design/enemy_model.md §6) — the incapacitation-pressure
     mirror of SaveDamageEvent, but it deals NO damage: the TARGET rolls a saving throw

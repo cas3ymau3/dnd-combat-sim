@@ -68,7 +68,25 @@ type, condition, resource, …):
    up to 2 Hit Dice and add the total" + its worked `4d6+2d8 (23)` example
    confirmed the rider adds N d8 with NO ability modifier — easy to get wrong from
    memory.)
-2. **Reflect after building — STOP and ask.** Once the feature is built and green,
+2. **Before an ENGINE-LEVEL automatic rule spends an existing resource, ask which
+   builds already spend it.** Added session 45. The healing subsystem's "spend all
+   Hit Dice at the short rest" is an engine default with no policy behind it — and
+   the Starfire Scion already spends `hit_dice` on Fueled Spellfire, so the default
+   would have silently drained the pool its damage depends on and MOVED ITS DPR. The
+   fix is the project's own principle ("policies are code"): the spec ASKS the build
+   (`HitDiceSpec.available_for_healing`) rather than assuming. Generalize it —
+   grep for every existing consumer of a resource before an engine rule starts
+   spending it, and give the build a way to answer.
+3. **Any NEW DICE SOURCE OUTSIDE COMBAT breaks the parity proof — check before
+   adding one.** Added session 45; `design/healing.md` §7(a) argued this for Hit
+   Dice and it generalizes. Out-of-combat code runs at a point EVERY build passes
+   through, so one `rng.roll()` there shifts every subsequent die and the §12
+   bit-identical proof against `validation.run_level` dies. The standing rule, now
+   in CLAUDE.md and `src/healing.py`: **resolution inside combat rolls; anything
+   applied outside combat is MEAN-FIELD and draws nothing.** This is the problem
+   RNG substreams (`evaluation_framework.md` §13 step 8) exist to solve; until they
+   land, mean-field is the answer, not "roll it and re-baseline".
+4. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
    decision-record conventions). Capture the answers before moving on; process
@@ -1300,6 +1318,98 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **HEALING SUBSYSTEM — the §9 build plan, steps (a)-(d) (2026-08-20, session 45).**
+  `design/healing.md` §11 records the settlement of §10's six open questions and the
+  measured validation; the build is `src/healing.py` plus a fifth telemetry channel, a
+  summon-category enum, and Hit Dice build data for three entities. **704 tests green**
+  (679 + 25 new), full suite in FOREGROUND, once ([[full-suite-foreground-only]]).
+
+  **§10.1 — the corpus survey did the work a survey is supposed to do.** All 33 guides
+  scanned; 1,023 healing lines reduced to ~350 carrying policy language, then read. The
+  raw counts overstate combat relevance exactly as §1 predicted (the bulk are spell-list
+  entries and per-level feature restatements). **Eleven distinct shapes — and six of them
+  collapse to ONE verb.** Second Wind, Healing Word, Cure Wounds, Lay on Hands, Mass Cure
+  Wounds and Divine Spark all restore `Nd(S) + flat + ability modifier` and differ only in
+  cost, target count and action economy, all of which `Choice` already carries. Aura of
+  Vitality is the recurring-zone substrate (#7b). Arcane Vigor sources dice from a resource
+  pool that exists. The AMPLIFIERS (Chalice, Warrior of the Gods, Empowered Healing,
+  Periapt of Wound Closure) are the modifier stack with a phase tag. So the effect layer
+  needed **one `heal` verb + one modifier phase**, not a family of spell implementations —
+  the design-first rule paying for itself. **§10.3 decided: TEMP HP IS NOT HEALING** (a
+  damage buffer on the buff substrate; False Life alone has 91 mentions, so it earns its
+  own note later). **§10.4 confirmed:** the corpus insists on the in-combat / between-combat
+  split ("we really prefer to do the majority of our healing out of combat" — guide 41), so
+  the ledger carries a CONTEXT key rather than one pooled per-round number.
+
+  **§10.2 — Prayer of Healing, and a RULES CORRECTION to the handoff.** Verified 2024 text:
+  five creatures "gain the benefits of a Short Rest and also regain 2d8 Hit Points". So PoH
+  really is two effects and `war_angel.py:1263` modelled exactly one — **adding the RAW heal
+  does NOT double-count, it supplies the missing half.** The correction: the handoff assumed
+  "RAW PoH grants no Hit Dice"; it does, because spending Hit Dice is a benefit of a Short
+  Rest. Numerically inert (spend-all + LR-only restore, so one window and two give the same
+  total), so it is recorded as a rules fact, not a change. **Also verified: a 2024 Long Rest
+  restores ALL spent Hit Point Dice** — §7(d)'s flagged assumption is right and
+  `restore_lr()` was already correct.
+
+  **§10.5 — the beast HAS Hit Dice, and its CATEGORY goes against the archetype's
+  reputation.** Verified 2024 Beast of the Land: HP `5 + 5 x ranger level`, **Hit Dice = a
+  number of d8s equal to your ranger level**, CON +2 → pools of 19.5 / 26.0 / 26.0 hp at
+  char L4 / L8 / L10 against `max_hp` 20 / 25 / 25. Roughly one full heal's worth across a
+  four-combat day: enough to matter, small enough to run out. And revival needs a Magic
+  action, a slot and **1 MINUTE** (~10 rounds), so it can never land inside a 4-round fight
+  → the 2024 primal companion is **`vanishes`, not `downed`**. This confirms the §6
+  RULES-VERIFICATION FLAG in the direction it feared. **`downed` is still built** (the
+  taxonomy needs it; guide 36's reanimator companion is the corpus case) but **no modelled
+  build uses it**, so it is exercised by tests — stated plainly rather than discovered later.
+
+  **What was built.** (a) `src/healing.py`: `HealSpec` + `resolve_healing` with a declared
+  phase order **H1-H8** mirroring CLAUDE.md §8 (no crit doubling — the one real difference),
+  and a first-class `HealEvent` so a heal occupies its own sequence number and therefore has
+  a stated place relative to damage. (b) A **fifth §13 telemetry channel**, `healing`, keyed
+  `(source, target, context)` and recording the amount **ACTUALLY APPLIED**, never the amount
+  rolled — carried on `CombatResult` → `DayResult`, plus a `between_telemetry` accumulator
+  for what happens outside combats where no Scheduler is running. (c) The category enum on
+  `Entity.zero_hp_category` + reversible `downed` + `is_out_of_action` + an `on_zero_hp`
+  effect; `dies_at_zero_hp` survives as a property over the enum so every prior call site
+  landed unchanged. (d) Both Hit Dice rules, with build data for War Angel (mixed d10/d8 by
+  class level, CON -1), the Silvertail master (d10/d8, CON +1) and the beast. **Plus** War
+  Angel now casts PoH's RAW heal (2d8 + WIS, mean-field).
+
+  **THE LINE THAT KEEPS THE PARITY PROOF ALIVE — worth remembering.** *Healing resolved
+  INSIDE combat rolls its dice; healing applied OUTSIDE combat is MEAN-FIELD and draws
+  nothing.* §7(a) made this argument for Hit Dice; it generalizes, because ANY out-of-combat
+  dice source sits at a point every existing build passes through and would shift every
+  subsequent die. This is the same problem RNG substreams (`evaluation_framework.md` §13
+  step 8) exist to solve, and it is now stated as a rule in `src/healing.py` rather than
+  re-derived per feature.
+
+  **CONTESTED HIT DICE are a build-POLICY answer, and this nearly bit.** An unconditional
+  spend-all at the short rest would have drained the Starfire Scion's `hit_dice` pool — the
+  resource Fueled Spellfire runs on — and **moved its DPR**.
+  `HitDiceSpec.available_for_healing` asks the build; the Scion answers **0**. "Policies are
+  code" caught a real bug.
+
+  **VALIDATION (§11.4) — 36 scenarios diffed against `main`:** War Angel DPR + stderr at all
+  16 levels, Silvertail's full `level x mortal_beast x recast` matrix on BOTH damage columns,
+  Scion at every level. **Exactly one scenario family moved: `mortal_beast=True`** — the
+  non-default toggle §7(c) predicted — and all four of its cells moved (beast damage/day
+  +0.1 to +0.2 over 200 days). Everything else bit-identical, the §12 parity proof included.
+  **Traced end to end at seed 15 / L10:** the beast ends combat 2 alive at 2 HP; on `main` it
+  drops to the first hit in combat 3, the enemy retargets the master, which eats 86 and deals
+  16; on the branch it spends Hit Dice at that boundary, enters combat 3 at full, absorbs 34,
+  and the master takes 37 and deals 37. **Healing bought the companion live rounds, which
+  kept the enemy off the master, which raised the MASTER's output** — a knock-on no ledger
+  could report and only a behavioural change can produce. Caveat recorded: this is RARE (the
+  beast usually dies inside a combat, so it seldom reaches a boundary alive and damaged),
+  which is why the mechanism test with teeth uses a constructed scenario plus a
+  scheduler-level test that a `downed` summon healed above 0 re-enters the turn order.
+
+  **Deliberately NOT done:** step (e), the metrics — `healing_by_source` is a keyed
+  breakdown and the registry has no such shape until the output-kinds design. No flat rows
+  were added to a registry already flagged as bloated. Hit Dice are also kept OUT of the §13
+  economy channel: `resources_spent` measures what a POLICY chose to spend, and these dice
+  are spent automatically by the engine.
 
 - **EVALUATION FRAMEWORK STEP 2 — `EvalReport` + metric registry + statistics (2026-08-19,
   session 44).** `evaluation_framework.md` §13 step 2. `src/evaluation/` gains
@@ -3533,7 +3643,9 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      was re-pointed at the registry's `dpr` metric and still matches `validation.run_level`
      BIT-IDENTICALLY on all six levels. See the s44 Done entry for the estimator design, the
      availability mechanism, and the three ex-post additions.
-   - **NEXT — HEALING SUBSYSTEM (inserted ahead of step 3; user, s44).** Not an eval-framework
+   - ~~**HEALING SUBSYSTEM (inserted ahead of step 3; user, s44)**~~ **BUILT (s45)** — see the
+     s45 Done entry and `design/healing.md` §11. The design record below stands, with ONE
+     rules correction (§11.2) and one measured result (§11.4) noted inline. Not an eval-framework
      step: healing is **entirely unmodelled** (`Entity.heal()` has ZERO callers; War Angel's
      Prayer of Healing is abstracted as a short-rest-EQUIVALENT for resource recovery, never
      HP restored), and 31 of the 33 guides reference healing, so it is a cross-cutting
@@ -3556,7 +3668,10 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      - **Hit Dice (§7):** the CHARACTER and party spend all HD automatically at the short
        rest, uncapped, MEAN-FIELD (rolling would shift the RNG stream and break the §12
        parity proof). One SR is the ENGINE baseline; War Angel's second rest is BOUGHT via
-       its PoH hook, and RAW PoH grants no Hit Dice, so HD attach to the REAL short rest only.
+       its PoH hook. **CORRECTED s45 (§11.2): RAW PoH DOES grant a Hit Dice window** — it
+       grants "the benefits of a Short Rest", and spending Hit Dice is one of them.
+       Numerically inert under spend-all + LR-only restore, so HD now attach to BOTH windows
+       and the day total is unchanged.
        **SUMMONS instead spend HD after EACH COMBAT to heal their DEFICIT (`max_hp − hp`),
        bounded by the remaining pool** (user, 2026-08-20) — a deliberate RAW break that buys
        out of modelling summon damage/healing timing. Stated as a deficit it never overheals,
@@ -3566,12 +3681,13 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
        damage-responsive spending, and the interaction that external healing preserves the
        companion's own dice. Ordering: `recast` revives FIRST, then HD healing is a no-op.
        **Expect exactly ONE baseline move — Silvertail at `mortal_beast=True`** (a
-       non-default toggle); everything else must stay bit-identical.
+       non-default toggle); everything else must stay bit-identical. **CONFIRMED s45 by a
+       36-scenario diff against `main` (§11.4): only `mortal_beast=True` moved.**
      - **Metrics (§8) WAIT on the output-kinds design** — 3 scalars + 1 keyed breakdown.
-     Read `design/healing.md` §10 first: five questions to settle before coding, starting
-     with the corpus survey and the fact that **Prayer of Healing currently does two jobs**
-     and would be double-counted if its RAW effect were added naively.
-   - **THEN — OUTPUT-KINDS DESIGN + METRIC PRUNE (user, s44), before step 3.** The registry
+     §10's six questions were settled BEFORE coding and are written up in `healing.md` §11:
+     the corpus survey (§11.1), Prayer of Healing's two jobs (§11.2), the summons' Hit Dice
+     (§11.3), and the measured validation (§11.4).
+   - **NEXT — OUTPUT-KINDS DESIGN + METRIC PRUNE (user, s44), before step 3.** The registry
      models one output kind, so 25 of its 51 entries are three keyed breakdowns flattened
      (saves by ability ×12, damage composition by type ×13) and ~6 more are algebraically
      derivable. Irreducible set ≈ **20 scalars + 3 breakdowns**. Settle scalar / keyed

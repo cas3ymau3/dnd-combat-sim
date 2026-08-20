@@ -1,11 +1,11 @@
 # Healing — decision record and build plan
 
-> **Status: SEMANTICS LOCKED (session 44; revised twice after user review, most
-> recently 2026-08-20 on summon Hit Dice — §7(b2)).
-> NOT YET BUILT.** This is the design note that precedes the build, per the standing
-> rule that a broadly-reused primitive gets a corpus survey and a design note up front
-> rather than the usual forcing-function minimum. The build is the next work item; §7
-> lists what must be settled inside it.
+> **Status: BUILT (session 45). Semantics locked in session 44 and revised twice
+> after user review, most recently 2026-08-20 on summon Hit Dice — §7(b2).**
+> §§1-10 are the design record that preceded the build; **§11 is the session-45
+> settlement of §10's six open questions plus the measured validation.** Steps (a)-(d)
+> of the §9 build plan are done; step (e), the metrics, remains deliberately deferred
+> on the output-kinds design (§8).
 
 ---
 
@@ -319,3 +319,178 @@ Do not add flat rows to a registry already flagged as bloated.
    of change is a build that starts actually CASTING a healing spell in combat, since
    that spends an action or a slot that would otherwise have produced damage — a real
    modelling change, not drift.
+
+---
+
+## 11. §10 SETTLED — corpus survey + rules verification (session 45)
+
+Done BEFORE any code, per §10 and the design-first rule. Method: all 33 guides
+scanned for the healing vocabulary; 1,023 matching lines reduced to ~350 carrying
+policy language, then read. **The raw counts do overstate combat relevance** exactly
+as §1 predicted — the bulk are spell-list entries (`lvl-1 (cleric): cure wounds, …`)
+and per-level feature restatements (`lay on hands (25)`), which repeat one decision
+once per level. The distinct *policy* statements number in the low dozens.
+
+### 11.1 The effect layer's vocabulary (§10.1)
+
+Eleven shapes appear. The first eight are heals; #9–#11 are adjacent primitives that
+the survey separated out — and that separation is most of this section's value.
+
+| # | shape | corpus instances | in / between combat |
+|---|---|---|---|
+| 1 | **self-only, BA, non-spell, per-day uses** | Second Wind (1d10 + fighter level, x2-3/LR, +1/SR) — 9 guides | in-combat |
+| 2 | **single-target, BA, ranged, slot** | Healing Word — 11 guides | in-combat |
+| 3 | **single-target, ACTION, touch, slot, upcasts hard** | Cure Wounds (2d8+mod, +2d8/level) — the most-cited spell in the corpus | both |
+| 4 | **pool-based, BA, flat points, no roll** | Lay on Hands (5 x paladin level) — 5 guides; Healing Light (celestial warlock, Nd6 pool, SR-recharge) — guide 25 | in-combat |
+| 5 | **over-time, concentration, per-turn** | Aura of Vitality (2d6 on cast + 2d6 each turn, 1 min, up to 20d6) — 5 guides | between (explicitly) |
+| 6 | **interval, multi-target, + short-rest benefit** | Prayer of Healing — 9 guides | between only (10-min cast) |
+| 7 | **Hit-Dice-as-a-heal** | Arcane Vigor (BA, self, roll 1-2 unexpended HD + spellcasting mod) — 5 guides | in-combat |
+| 8 | **multi-target burst** | Mass Healing Word (BA), Mass Cure Wounds (action) — mostly "break glass" | in-combat |
+| 9 | **healing AMPLIFIERS (not heals)** | Chalice (+1d8 then 2d8+WIS when you restore HP with a slot), Warrior of the Gods (+1d12, CON x/day), Empowered Healing (add a psionic die), Periapt of Wound Closure (double HP from a Hit Die), Uncanny Metabolism | rider on any heal |
+| 10 | **at-will / resource-free heals** | Divine Spark (CD: 1d8+WIS), undying rite focus, Goodberry (10 x 1 HP; used as a *revive* utility) | both |
+| 11 | **TEMPORARY HP** | False Life (91 mentions), Armor of Agathys, Aid, Heightened Focus, Bolstering Performance | — |
+
+**What this buys the build: ONE new verb, not a family.** Shapes 1-4, 8 and 10 are all
+"restore `Nd(S) + mod` (or a flat pool draw) to a target" and differ only in cost,
+target count, and action economy — all of which `Choice` already carries. Shape 5 is a
+RECURRING heal, which is the existing zone/turn-boundary substrate (#7b), not a new
+primitive. Shape 7 sources its dice from a resource pool the engine already has. Shape
+9 is the modifier stack with a healing phase tag. So the effect layer needs:
+
+- a **`heal` verb** (dice + flat + ability modifier, targeted), and
+- a **healing phase** on the modifier hook so #9 folds in,
+
+and nothing else. This is the design-first payoff: surveying first turned what looked
+like six spell implementations into one verb plus reuse.
+
+**§10.4 — in-combat vs between-combat is REAL and the corpus insists on it.** The
+guides are strikingly consistent that healing is preferentially done out of combat
+("we really prefer to do the majority of our healing out of combat, if we can" —
+guide 41), and shapes 5 and 6 are between-combat by construction (concentration over
+1 minute; a 10-minute cast). Pooling these into one per-round number would be wrong.
+Healing is therefore ledgered with its combat context, not as a single day total.
+
+**§10.3 — TEMPORARY HP IS NOT HEALING. Decided, and out of scope here.** It is a
+damage BUFFER: it does not stack, it expires, it is consumed before HP, and it cannot
+be "overhealed". It belongs on the modifier/status substrate (`buff_primitive.md`),
+and Silvertail's Aid already bumps `max_hp`/`hp` as a buff (§1). The survey shows the
+temp-HP vocabulary is large enough (False Life alone: 91 mentions) to deserve its own
+note later; it is named here so it cannot drift into "healing".
+
+### 11.2 §10.2 — Prayer of Healing does two jobs, and the abstraction is HALF of it
+
+**Verified 2024 text** (aidedd 5.5e / D&D Beyond / Roll20, 2026-08-20): up to five
+creatures within 30 ft that remain there for the whole 10-minute casting "gain the
+benefits of a Short Rest and also regain 2d8 Hit Points"; +1d8 per slot level above
+2nd; a creature cannot be affected again until it finishes a Long Rest.
+
+So PoH genuinely IS two effects, and `war_angel.py:1263` models exactly one of them
+(the short-rest-equivalent recharge). **Adding the 2d8 + spellcasting-modifier HP
+therefore does NOT double-count** — it supplies the half that is missing. The
+double-count risk §10.2 flagged would only materialise if the RAW effect were added
+*alongside* a second `restore_sr()`; it is not.
+
+**RULES CORRECTION to §7(b)'s framing.** The handoff assumed "RAW PoH grants no Hit
+Dice, so character HD attach to the REAL short rest only." That is wrong: PoH grants
+*the benefits of a Short Rest*, and spending Hit Dice is one of those benefits. War
+Angel's PoH window is a genuine second Hit Dice window.
+
+**It is numerically inert, so nothing changes.** Under §7's spend-ALL rule the pool is
+drained at whichever window comes first and Hit Dice restore only on a Long Rest
+(verified below), so one window and two windows give the same day total. The
+correction is recorded because it is a real rules fact, not because it moves a number.
+
+**Also verified: 2024 Long Rest restores ALL spent Hit Point Dice** ("you regain all
+lost Hit Points and all spent Hit Point Dice") — the 2014 half-your-total rule is
+gone. §7(d)'s flagged assumption is CORRECT as stated, and `restore_lr()` is right.
+
+### 11.3 §10.5 — which summons have Hit Dice (load-bearing data)
+
+**Beast of the Land, 2024 statblock (verified, Roll20 compendium 2026-08-20):**
+AC 13 + your WIS modifier; **HP = 5 + (5 x ranger level)**; **Hit Dice = a number of
+d8s equal to your ranger level**. Its CON modifier is +2 (consistent with
+`BEAST_BASE_SAVES["con_save"] = 2`, which is the base before the master's PB).
+
+So the companion DOES have Hit Dice in the PC sense — the question §10.5 correctly
+refused to assume. Per modelled Silvertail level:
+
+| char level | ranger level | beast `max_hp` | Hit Dice | mean-field pool (`N x (4.5 + 2)`) |
+|---|---|---|---|---|
+| 4 | 3 | 20 | 3d8 | 19.5 |
+| 8 | 4 | 25 | 4d8 | 26.0 |
+| 10 | 4 | 25 | 4d8 | 26.0 |
+
+That is roughly ONE full heal's worth spread across a four-combat day — enough to
+matter and small enough to run out, which is exactly the depletion curve §7(b2) wants.
+
+**Summon CATEGORY, assigned from verified 2024 text (not archetype reputation).**
+Re-verified 2026-08-20: if the beast has died within the last hour the master may take
+a Magic action, touch it, and expend a spell slot; it returns to life **after 1 minute**
+at full HP. One minute is about 10 rounds, so revival can never land inside a 4-round
+combat. The companion therefore **cannot be healed back into a fight it dropped in**:
+
+- `mortal_beast=True` → **`vanishes`** (dies at 0; unhealable back within combat;
+  between-combats revival is the existing `recast` hook).
+- `mortal_beast=False` (the DEFAULT) → **`threshold`**, unchanged.
+
+**This confirms the §6 RULES-VERIFICATION FLAG in the direction it feared.** The 2024
+Beast Master is NOT a "downed and healable" companion. `downed` is still required by
+the taxonomy — the reanimator artificer's companion (guide 36) is the corpus case —
+but **no currently-modelled build uses it**, so it will be built and exercised by
+tests rather than by a build. That is worth stating plainly rather than discovering
+later.
+
+### 11.4 §10.6 — baseline movement, MEASURED (session 45)
+
+The subsystem was built and then diffed against `main` across **36 scenarios**: War
+Angel DPR + standard error at every level 1–16 (40 days, seed 11); Silvertail's full
+`level × mortal_beast × recast` matrix, both the character column and the summon
+column (25 days each); and Starfire Scion at every modelled level. **One scenario
+moved, and it is the predicted one.**
+
+Re-run at 200 days per scenario to see it clearly (mean damage per day,
+character / beast):
+
+| scenario | main | branch | moved |
+|---|---|---|---|
+| L8 `mortal=0` (either recast) | 93.40 / 141.28 | 93.40 / 141.28 | — |
+| L10 `mortal=0` (either recast) | 101.83 / 150.51 | 101.83 / 150.51 | — |
+| L8 `mortal=1 recast=0` | 93.19 / 17.76 | 93.17 / **17.84** | ✓ |
+| L8 `mortal=1 recast=1` | 95.31 / 68.89 | 95.19 / **69.11** | ✓ |
+| L10 `mortal=1 recast=0` | 103.21 / 14.71 | 103.37 / **14.84** | ✓ |
+| L10 `mortal=1 recast=1` | 101.75 / 60.59 | 102.02 / **60.74** | ✓ |
+
+**Movement is confined to `mortal_beast=True` — a non-default toggle — exactly as
+§7(c) predicted, and every other scenario is bit-identical.** The War Angel is
+bit-identical at all sixteen levels despite now casting PoH's RAW heal and spending
+its Hit Dice, because both are mean-field and a character's `hp` is behaviourally
+inert. The Starfire Scion is bit-identical because it answers **0** to
+`available_for_healing` — its dice belong to Fueled Spellfire. The default Silvertail
+path is bit-identical because a `threshold` summon's `hp` is a balance nothing reads.
+The §12 parity proof stayed green throughout.
+
+**The mechanism, traced.** Seed 15 at L10 with `mortal=1 recast=1` shows it end to
+end. The beast dies in combat 1 and `recast` revives it at full HP; combat 2 leaves
+it alive at 2 HP. On `main` it enters combat 3 at 2 HP and drops to the first hit,
+after which the enemy retargets the master, which eats 86 damage and deals 16. On the
+branch it spends Hit Dice at that boundary (deficit 23, pool 26.0) and enters combat 3
+at full, absorbs 34, and the master takes 37 and deals 37. **That is the whole point
+of the subsystem in one seed: healing bought the companion live rounds, the companion
+kept the enemy off the master, and the master's own output went up as a
+consequence** — a knock-on that no ledger could have reported and only a behavioural
+change can produce.
+
+**A caveat on how often it fires.** This is RARE. The rule needs the beast to end a
+combat *alive and damaged*, and Silvertail's usually dies inside one — over seeds 0–14
+it never happened at all. The day-level effect is therefore small (beast damage per
+day +0.1 to +0.2) and shows up as a measurement rather than a per-seed assertion. The
+mechanism test with teeth (`tests/test_healing.py`) is consequently built on a
+constructed scenario that reaches the boundary alive, plus a scheduler-level test that
+a `downed` summon healed above 0 re-enters the turn order.
+
+**What did NOT move, and why that is the interesting half.** The healing ledger is
+pure observation; character-side `hp` is inert; Hit Dice draw no dice; and
+out-of-combat healing is mean-field by the rule stated in `src/healing.py`. Adding a
+whole subsystem — a new verb, a new event, a new telemetry channel, a category enum,
+two Hit Dice rules, and a build that now actually casts a healing spell — moved
+exactly one non-default toggle. That is the design working, not luck.
