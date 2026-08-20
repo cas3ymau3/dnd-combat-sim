@@ -1,7 +1,7 @@
 """
 evaluation — the build-agnostic evaluation framework (design/evaluation_framework.md).
 
-Steps 1–2 of §13's build sequence: ``RunConfig`` + ``BuildAdapter`` + ``Roster`` +
+Steps 1–3 of §13's build sequence: ``RunConfig`` + ``BuildAdapter`` + ``Roster`` +
 the build registry (step 1), and the metric registry + ``EvalReport`` + the
 statistics layer with paired seeding (step 2).
 
@@ -17,7 +17,23 @@ proof.
 """
 
 from .adapters import BuildAdapter, OptionSpec, available_builds, get_adapter, register
+from .artifact import (
+    SCHEMA_VERSION,
+    STATUSES,
+    SUM_RULES,
+    WARNING_CODES,
+    csv_columns,
+    report_to_dict,
+    report_to_rows,
+    to_json,
+    warnings_for,
+    write_artifact,
+    write_csv,
+    write_json,
+    write_sweep_csv,
+)
 from .config import ATTRIBUTIONS, DAY_TIERS, ENEMY_KINDS, MODES, RunConfig
+from .console import print_report, render
 from .metrics import (
     ALL,
     DENOMINATORS,
@@ -77,4 +93,20 @@ __all__ = [
     "build_report",
     "compare",
     "Comparison",
+    # step 3 (§9) — serialization: JSON + tidy CSV + console, one schema_version
+    "SCHEMA_VERSION",
+    "STATUSES",
+    "SUM_RULES",
+    "WARNING_CODES",
+    "report_to_dict",
+    "report_to_rows",
+    "csv_columns",
+    "to_json",
+    "warnings_for",
+    "write_json",
+    "write_csv",
+    "write_artifact",
+    "write_sweep_csv",
+    "render",
+    "print_report",
 ]
