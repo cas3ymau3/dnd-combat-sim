@@ -26,7 +26,8 @@ from __future__ import annotations
 import logging
 from typing import Callable, TYPE_CHECKING
 
-from .events import AttackRollEvent, ControlSaveEvent, DamageEvent, SaveDamageEvent, make_tick
+from .events import (AttackRollEvent, ControlSaveEvent, DamageEvent, HealEvent,
+                     SaveDamageEvent, make_tick)
 from .taxonomy import is_spell_origin
 
 if TYPE_CHECKING:
@@ -853,6 +854,34 @@ def resolve_damage(
             )
 
     return total, next_sequence
+
+
+def resolve_heal_event(
+    event: "HealEvent",
+    rng: "SeededRNG",
+    queue: "EventQueue",
+    next_sequence: int,
+    telemetry: "object | None" = None,
+) -> int:
+    """Handler for a ``HealEvent`` — the in-combat healing delivery (healing.md §9.1).
+
+    A thin adapter: the phase order and the ledger live in ``healing.resolve_healing``
+    (declared there as H1-H8, the healing counterpart of CLAUDE.md §8), and this
+    handler exists so the heal is a scheduled EVENT with its own sequence number
+    rather than a mutation smuggled in from the choice loop.  In-combat healing ROLLS
+    its dice — only out-of-combat healing is mean-field (see healing.py's module
+    docstring on why that line is where the §12 parity proof lives).
+
+    Spawns no follow-on events, so ``next_sequence`` is returned unchanged.
+    """
+    from .healing import resolve_healing
+
+    if event.spec is not None:
+        resolve_healing(
+            event.actor, event.spec, rng,
+            tick=event.tick, telemetry=telemetry, context="combat",
+        )
+    return next_sequence
 
 
 def _check_concentration(

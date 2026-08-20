@@ -56,6 +56,8 @@ from ..day_runner import (
     DurationBuffTracker,
 )
 from ..entity import Entity
+from ..healing import (HealSpec, HitDiceSpec, attach_hit_dice, resolve_healing,
+                       spend_hit_dice_at_short_rest)
 from ..policy import (
     Choice,
     CounterSpec,
@@ -623,6 +625,44 @@ def _make_resources(data: dict) -> ResourcePool:
     return ResourcePool(entries)
 
 
+# ---------------------------------------------------------------------------
+# Hit Dice (design/healing.md §7 / §11.2)
+# ---------------------------------------------------------------------------
+# Class levels per character level, from the guide's progression summary
+# (38_the_war_angel.txt): Fighter (d10) / Warlock (d8) / Cleric (d8).  The pool is
+# MIXED, which is why HitDiceSpec takes a list rather than one die size — dice are
+# spent largest-first, as a player healing up would.
+#
+# CON = 8 (guide's point buy) → CON modifier **-1**.  The build dumps CON and buys
+# HP back with Dwarven Toughness + the Tough feat, neither of which touches Hit
+# Dice.  A negative modifier is exactly why HitDiceSpec floors each die at 0: RAW a
+# Hit Die can never reduce your hit points.  Mean-field per die: d10 → 4.5, d8 → 3.5.
+_WA_CLASS_LEVELS: dict[int, tuple[int, int, int]] = {
+    #  char level: (fighter, warlock, cleric)
+    1: (1, 0, 0),  2: (1, 1, 0),  3: (1, 1, 1),  4: (1, 1, 2),
+    5: (1, 1, 3),  6: (1, 1, 4),  7: (2, 1, 4),  8: (3, 1, 4),
+    9: (4, 1, 4), 10: (5, 1, 4), 11: (6, 1, 4), 12: (6, 1, 5),
+    13: (6, 1, 6), 14: (7, 1, 6), 15: (8, 1, 6), 16: (9, 1, 6),
+}
+WAR_ANGEL_CON_MOD = -1
+
+# WIS = 16 (guide's point buy, 38_the_war_angel.txt:23) → +3.  Prayer of Healing is a
+# CLERIC spell, so its "spellcasting ability modifier" is WIS, not the build's headline
+# CHA.  Kept as a module constant rather than a `wis_mod` base stat because nothing
+# else on this build reads WIS — adding a stat for one consumer would be the wrong
+# trade.
+WAR_ANGEL_WIS_MOD = 3
+
+
+def _war_angel_hit_dice(level: int) -> HitDiceSpec:
+    fighter, warlock, cleric = _WA_CLASS_LEVELS[level]
+    dice = [(fighter, 10)] if fighter else []
+    d8 = warlock + cleric
+    if d8:
+        dice.append((d8, 8))
+    return HitDiceSpec(dice=dice, con_mod=WAR_ANGEL_CON_MOD, rule="character")
+
+
 def make_war_angel(level: int) -> Entity:
     """Build the War Angel Entity for the given level (1–5 for now)."""
     if level not in LEVELS:
@@ -630,7 +670,7 @@ def make_war_angel(level: int) -> Entity:
             f"War Angel level {level} not yet implemented (have {sorted(LEVELS)})."
         )
     data = LEVELS[level]
-    return Entity(
+    return attach_hit_dice(Entity(
         name=f"WarAngel-L{level}",
         hp=data["char_hp"],
         base_stats={
@@ -643,7 +683,7 @@ def make_war_angel(level: int) -> Entity:
             **data.get("extra_base_stats", {}),
         },
         resources=_make_resources(data),
-    )
+    ), _war_angel_hit_dice(level))
 
 
 def make_training_dummy(level: int) -> Entity:
@@ -1261,6 +1301,31 @@ class WarAngelDailyPlan:
         self.character.resources.consume("spell_slot_2")
         for entity in ctx.entities:
             entity.resources.restore_sr()
+        # PRAYER OF HEALING DOES TWO JOBS, and until s45 this hook modelled only
+        # one of them (healing.md §11.2).  Verified 2024 text: up to five creatures
+        # "gain the benefits of a Short Rest and also regain 2d8 Hit Points"
+        # (+ the caster's spellcasting modifier).  The recharge above is the first
+        # half; the two lines below are the second and the third:
+        #
+        #  (i) the 2d8 + WIS heal.  MEAN-FIELD (12.0), not rolled — an out-of-combat
+        #      heal that drew from the shared RNG stream would shift every
+        #      subsequent die and break the §12 parity proof (healing.py's module
+        #      docstring).  Only the CHARACTER is healed: the roster is character +
+        #      enemy, and enemies are never healed (§5).  A real party roster would
+        #      extend the target list to five allies, which is why HealSpec takes a
+        #      list rather than a single target.
+        #  (ii) the Hit Dice window.  Spending Hit Dice IS one of the benefits of a
+        #      Short Rest, so RAW this is a genuine second window — correcting the
+        #      assumption that PoH grants none.  It costs nothing and changes no
+        #      number: spend-all drains the pool at whichever window comes first and
+        #      Hit Dice restore only on a LONG rest, so the second heals zero.
+        resolve_healing(
+            self.character,
+            HealSpec(dice=(2, 8), flat=WAR_ANGEL_WIS_MOD,
+                     targets=[self.character]),
+            mean_field=True, telemetry=ctx.telemetry, context="between",
+        )
+        spend_hit_dice_at_short_rest([self.character], ctx.telemetry)
         self._poh_cast = True
 
 

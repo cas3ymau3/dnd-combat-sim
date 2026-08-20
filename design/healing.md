@@ -1,11 +1,11 @@
 # Healing — decision record and build plan
 
-> **Status: SEMANTICS LOCKED (session 44; revised twice after user review, most
-> recently 2026-08-20 on summon Hit Dice — §7(b2)).
-> NOT YET BUILT.** This is the design note that precedes the build, per the standing
-> rule that a broadly-reused primitive gets a corpus survey and a design note up front
-> rather than the usual forcing-function minimum. The build is the next work item; §7
-> lists what must be settled inside it.
+> **Status: BUILT (session 45). Semantics locked in session 44 and revised twice
+> after user review, most recently 2026-08-20 on summon Hit Dice — §7(b2).**
+> §§1-10 are the design record that preceded the build; **§11 is the session-45
+> settlement of §10's six open questions plus the measured validation.** Steps (a)-(d)
+> of the §9 build plan are done; step (e), the metrics, remains deliberately deferred
+> on the output-kinds design (§8).
 
 ---
 
@@ -439,3 +439,58 @@ the taxonomy — the reanimator artificer's companion (guide 36) is the corpus c
 but **no currently-modelled build uses it**, so it will be built and exercised by
 tests rather than by a build. That is worth stating plainly rather than discovering
 later.
+
+### 11.4 §10.6 — baseline movement, MEASURED (session 45)
+
+The subsystem was built and then diffed against `main` across **36 scenarios**: War
+Angel DPR + standard error at every level 1–16 (40 days, seed 11); Silvertail's full
+`level × mortal_beast × recast` matrix, both the character column and the summon
+column (25 days each); and Starfire Scion at every modelled level. **One scenario
+moved, and it is the predicted one.**
+
+Re-run at 200 days per scenario to see it clearly (mean damage per day,
+character / beast):
+
+| scenario | main | branch | moved |
+|---|---|---|---|
+| L8 `mortal=0` (either recast) | 93.40 / 141.28 | 93.40 / 141.28 | — |
+| L10 `mortal=0` (either recast) | 101.83 / 150.51 | 101.83 / 150.51 | — |
+| L8 `mortal=1 recast=0` | 93.19 / 17.76 | 93.17 / **17.84** | ✓ |
+| L8 `mortal=1 recast=1` | 95.31 / 68.89 | 95.19 / **69.11** | ✓ |
+| L10 `mortal=1 recast=0` | 103.21 / 14.71 | 103.37 / **14.84** | ✓ |
+| L10 `mortal=1 recast=1` | 101.75 / 60.59 | 102.02 / **60.74** | ✓ |
+
+**Movement is confined to `mortal_beast=True` — a non-default toggle — exactly as
+§7(c) predicted, and every other scenario is bit-identical.** The War Angel is
+bit-identical at all sixteen levels despite now casting PoH's RAW heal and spending
+its Hit Dice, because both are mean-field and a character's `hp` is behaviourally
+inert. The Starfire Scion is bit-identical because it answers **0** to
+`available_for_healing` — its dice belong to Fueled Spellfire. The default Silvertail
+path is bit-identical because a `threshold` summon's `hp` is a balance nothing reads.
+The §12 parity proof stayed green throughout.
+
+**The mechanism, traced.** Seed 15 at L10 with `mortal=1 recast=1` shows it end to
+end. The beast dies in combat 1 and `recast` revives it at full HP; combat 2 leaves
+it alive at 2 HP. On `main` it enters combat 3 at 2 HP and drops to the first hit,
+after which the enemy retargets the master, which eats 86 damage and deals 16. On the
+branch it spends Hit Dice at that boundary (deficit 23, pool 26.0) and enters combat 3
+at full, absorbs 34, and the master takes 37 and deals 37. **That is the whole point
+of the subsystem in one seed: healing bought the companion live rounds, the companion
+kept the enemy off the master, and the master's own output went up as a
+consequence** — a knock-on that no ledger could have reported and only a behavioural
+change can produce.
+
+**A caveat on how often it fires.** This is RARE. The rule needs the beast to end a
+combat *alive and damaged*, and Silvertail's usually dies inside one — over seeds 0–14
+it never happened at all. The day-level effect is therefore small (beast damage per
+day +0.1 to +0.2) and shows up as a measurement rather than a per-seed assertion. The
+mechanism test with teeth (`tests/test_healing.py`) is consequently built on a
+constructed scenario that reaches the boundary alive, plus a scheduler-level test that
+a `downed` summon healed above 0 re-enters the turn order.
+
+**What did NOT move, and why that is the interesting half.** The healing ledger is
+pure observation; character-side `hp` is inert; Hit Dice draw no dice; and
+out-of-combat healing is mean-field by the rule stated in `src/healing.py`. Adding a
+whole subsystem — a new verb, a new event, a new telemetry channel, a category enum,
+two Hit Dice rules, and a build that now actually casts a healing spell — moved
+exactly one non-default toggle. That is the design working, not luck.

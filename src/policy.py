@@ -172,6 +172,12 @@ class Choice:
     # the per-(source,target) ledger).  None → the deciding entity acts (every
     # ordinary self-directed choice).
     actor: "Entity | None" = None
+    # HEALING payload (design/healing.md §9.1): a ``healing.HealSpec`` when this
+    # choice is a heal (``action_type="heal"``), else None.  The spec carries the
+    # dice / flat / ability modifier / targets; the COST and the action-economy tag
+    # stay on the Choice like every other delivery, which is exactly why the §11.1
+    # survey's eleven shapes needed only ONE verb.
+    heal: "object | None" = None
     weapon_stat: str = "attack_bonus"
     resource_cost: dict[str, int] | None = None
     extra_masteries: list[str] = field(default_factory=list)

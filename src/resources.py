@@ -153,6 +153,14 @@ class ResourcePool:
             entry.current = min(entry.maximum, entry.current + amount)
         log.debug("restore(%r) → %d/%d", name, entry.current, entry.maximum)
 
+    def add(self, name: str, entry: "ResourceEntry") -> None:
+        """Install a resource entry, replacing any existing one of that name.
+
+        Used by builds assembling a pool incrementally (e.g. attaching Hit Dice
+        after construction), not during combat — nothing in resolution creates a
+        resource."""
+        self._entries[name] = entry
+
     def restore_sr(self) -> None:
         """Apply a short rest (or SR-equivalent like Prayer of Healing).
 

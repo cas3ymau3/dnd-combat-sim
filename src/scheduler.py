@@ -35,6 +35,7 @@ from .events import (
     DamageEvent,
     EventQueue,
     RoundEndEvent,
+    HealEvent,
     SaveDamageEvent,
     TurnStartEvent,
     make_tick,
@@ -42,6 +43,7 @@ from .events import (
 from .verbs import (
     resolve_attack_roll,
     resolve_control_save,
+    resolve_heal_event,
     resolve_damage,
     resolve_save_damage,
     resolve_saving_throw,
@@ -161,6 +163,7 @@ class Scheduler:
         self._subscribe("damage", resolve_damage)            # type: ignore[arg-type]
         self._subscribe("save_damage", resolve_save_damage)  # type: ignore[arg-type]
         self._subscribe("control_save", resolve_control_save)  # type: ignore[arg-type]
+        self._subscribe("heal", resolve_heal_event)          # type: ignore[arg-type]
 
         # Seed the queue with Round 1 turn starts
         self._enqueue_round(round_=1)
@@ -292,6 +295,18 @@ class Scheduler:
                     seq_counter = handler(  # type: ignore[call-arg]
                         event, self.rng, self.queue, seq_counter,
                         save_advantage=save_adv, negate_on_save=negate,
+                        telemetry=self.telemetry,
+                    )
+
+            elif isinstance(event, HealEvent):
+                # Healing delivery (design/healing.md §9.1): no roll to beat, no save
+                # to force — the heal simply lands, at its OWN sequence number in this
+                # tick, which is what gives it a declared place relative to damage.
+                handlers = self._registry.get("heal", [])
+                seq_counter = seq + 1
+                for handler in handlers:
+                    seq_counter = handler(  # type: ignore[call-arg]
+                        event, self.rng, self.queue, seq_counter,
                         telemetry=self.telemetry,
                     )
 
@@ -800,6 +815,22 @@ class Scheduler:
                     cost=cost,
                 )
                 self.queue.push(ctrl_event)
+                seq += 1
+            elif choice.action_type == "heal":
+                # Healing (design/healing.md §9.1).  The action economy and any
+                # resource cost were drained above like every other choice; the
+                # HealSpec carries dice / flat / ability modifier / targets, so a
+                # bonus-action Healing Word and an action Cure Wounds differ only in
+                # `cost` — the whole point of the §11.1 one-verb collapse.
+                self.queue.push(
+                    HealEvent(
+                        tick=make_tick(round_, turn_idx, seq),
+                        actor=acting,               # commanded actor (7a) or self
+                        target=choice.target,
+                        spec=choice.heal,
+                        cost=cost,
+                    )
+                )
                 seq += 1
             elif choice.action_type == "cast_effect":
                 # First-class non-damaging cast (buff/debuff): the action economy

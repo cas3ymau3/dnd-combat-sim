@@ -174,6 +174,15 @@ class Entity:
         # this entity, invoked ONCE by take_damage on the crossing to <= 0 HP.  It is
         # RESOLUTION-side data supplied by a build, never a policy decision.
         self.on_zero_hp = None
+        # This entity's Hit Dice SHAPE (die sizes + CON modifier + which of the two
+        # §7 rules applies) — a ``healing.HitDiceSpec``, or None for an entity with
+        # no Hit Dice (the enemy dummy; a companion whose statblock lists none, in
+        # which case the rule simply degrades to "never heals this way" rather than
+        # needing a special case).  The COUNT is NOT here: it lives in
+        # ``resources["hit_dice"]``, the single source of truth, which already
+        # restores on a long rest and which the Starfire Scion already spends from
+        # for Fueled Spellfire.
+        self.hit_dice = None
         # Cumulative telemetry (design §8 outputs): concentration checks forced
         # by incoming damage and how many broke a spell.  Never auto-reset;
         # callers diff or average across runs.
@@ -258,7 +267,7 @@ class Entity:
         if self.on_zero_hp is not None:
             self.on_zero_hp(self)
 
-    def heal(self, amount: int | float) -> None:
+    def heal(self, amount: int | float) -> int | float:
         """Restore HP by *amount*, capped per this entity's 0-HP CATEGORY.
 
         The cap follows the CATEGORY, not the roster role (healing.md §4):
@@ -277,11 +286,15 @@ class Entity:
         ``vanishes`` summon that has already gone is beyond help and absorbs no
         healing at all, which is what makes the ledger's numbers honest.
 
-        Returns nothing; the AMOUNT ACTUALLY APPLIED is what resolution ledgers,
-        so see ``verbs.resolve_healing`` for the recorded figure.
+        Returns the AMOUNT ACTUALLY APPLIED, which is what the ledger records —
+        not the amount rolled.  A vanished summon absorbs 0; a capped one absorbs
+        only its deficit.  Reporting the applied figure is what keeps "healing
+        provided by the summon" honest instead of a gross number that overstates
+        what happened.
         """
-        if self.destroyed:
-            return
+        if self.destroyed or amount <= 0:
+            return 0
+        before = self.hp
         if self.zero_hp_category == "threshold":
             self.hp += amount
         else:
@@ -289,7 +302,10 @@ class Entity:
             if self.downed and self.hp > 0:
                 self.downed = False
                 log.info("%s is back up (healed above 0 HP)", self.name)
-        log.info("%s heals %s → hp=%s/%s", self.name, amount, self.hp, self.max_hp)
+        applied = self.hp - before
+        log.info("%s heals %s (applied %s) → hp=%s/%s",
+                 self.name, amount, applied, self.hp, self.max_hp)
+        return applied
 
     # -- the legacy boolean view of zero_hp_category ---------------------
     # Every existing call site (day_runner's long rest, silvertail's factory, the

@@ -38,6 +38,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Callable, TYPE_CHECKING
 
+from .healing import spend_hit_dice_at_short_rest, spend_summon_hit_dice
 from .scheduler import Scheduler
 from .telemetry import CombatTelemetry
 
@@ -86,6 +87,14 @@ class DayResult:
     combats: list[CombatResult]
     sr_after_combat: int        # which combat (1–3) the short rest follows
     combat_times: list[int]     # sampled start-minute for each of the 4 combats
+    # Telemetry for what happened OUTSIDE the four combats (design/healing.md §10.4):
+    # Prayer of Healing, Hit Dice at the short rest, and any other between-combats
+    # effect that produces a measurable quantity.  A separate accumulator because the
+    # per-combat CombatTelemetry objects have no room for it — no Scheduler is running
+    # — and because §11.1 found healing under fire is a different quantity from
+    # healing at leisure.  Merged into `telemetry` below, where the `context` key
+    # keeps the two distinguishable.
+    between_telemetry: CombatTelemetry = field(default_factory=CombatTelemetry)
 
     # Convenience aggregates
     @property
@@ -125,6 +134,7 @@ class DayResult:
         agg = CombatTelemetry()
         for c in self.combats:
             agg.merge(c.telemetry)
+        agg.merge(self.between_telemetry)     # PoH / Hit Dice (healing.md §10.4)
         return agg
 
     def damage_received_by(self, entity_id: int) -> int:
@@ -169,6 +179,33 @@ class DayResult:
             for c in self.combats
         )
 
+    # -- healing accounting (design/healing.md §4, §8) -----------------------
+    # These mirror the damage accessors above and read the SOURCE-ATTRIBUTED §13
+    # healing channel, because "healing provided by the summon" is a stated
+    # requirement and an aggregate would pool the character's and the summon's
+    # numbers (PROGRESS.md's per-metric ritual).  Every one takes an explicit
+    # scope; none of them offers an unfiltered total.
+
+    def healing_by_source(self, source_id: int, context: str | None = None) -> float:
+        """Hit points this source RESTORED across the day (to anyone, itself
+        included).  Optionally restricted to one context ("combat"/"between")."""
+        return self.telemetry.healing_total(source_ids={source_id}, context=context)
+
+    def healing_received_by(self, target_id: int, context: str | None = None) -> float:
+        """Hit points this target RECEIVED across the day, from any source."""
+        return self.telemetry.healing_total(target_ids={target_id}, context=context)
+
+    def healing_source_to(self, source_id: int, target_id: int) -> float:
+        """One (source, target) cell — e.g. what the character healed the beast for,
+        which is the quantity §7(b2)'s external-healing interaction turns on."""
+        return self.telemetry.healing_total(
+            source_ids={source_id}, target_ids={target_id})
+
+    def healing_party_total(self, source_ids) -> float:
+        """Roster/party healing total — the additive figure reported BESIDE the
+        build's own column, never merged into it (the session-17 rule)."""
+        return self.telemetry.healing_total(source_ids=set(source_ids))
+
     def party_total(self, source_ids) -> int:
         """Roster/party total: damage dealt by ANY source in ``source_ids`` across
         the day (character + summons + acting party members).  The additive figure
@@ -207,13 +244,24 @@ class BetweenCombatsContext:
         The full entity list — hook may call entity.resources.restore_sr()
         or entity.resources.consume() directly.
     rng:
-        The shared RNG — hook uses this if PoH healing needs dice rolled.
+        The shared RNG — but note that OUT-OF-COMBAT healing is MEAN-FIELD and must
+        NOT roll (design/healing.md §7a and healing.py's module docstring): drawing
+        from the shared stream here would shift every subsequent die for every build
+        and break the §12 bit-identical parity proof.  Pass ``mean_field=True`` to
+        ``resolve_healing``.  The RNG stays available for a hook that legitimately
+        needs a randomized CHOICE (which combat to pre-cast in, etc.).
+    telemetry:
+        The day's BETWEEN-COMBAT telemetry accumulator (§13).  A hook that produces a
+        measurable quantity out of combat — Prayer of Healing's 2d8 + modifier — hands
+        this to the resolver so the heal is ledgered with ``context="between"``,
+        keeping it distinguishable from healing under fire (§11.1).
     """
     after_combat_num: int
     sr_after_combat: int
     interval_length: int
     entities: list["Entity"]
     rng: "SeededRNG"
+    telemetry: CombatTelemetry = field(default_factory=CombatTelemetry)
 
 
 # Type alias for the hook.
@@ -366,7 +414,10 @@ class DayRunner:
             combat_times, sr_after_combat,
         )
 
-        # Step 3: combats
+        # Step 3: combats.  One accumulator for everything that happens BETWEEN
+        # them (healing.md §10.4) — no Scheduler is running there, so the per-combat
+        # CombatTelemetry objects have nowhere to put it.
+        between_telemetry = CombatTelemetry()
         combats: list[CombatResult] = []
         for i in range(4):
             combat_num = i + 1
@@ -389,6 +440,11 @@ class DayRunner:
             if sr_after_combat == combat_num:
                 log.info("Short rest fires after combat %d.", combat_num)
                 self._apply_sr()
+                # HIT DICE RULE (a) — characters and party spend ALL their dice here
+                # (healing.md §7a).  Mean-field, so it draws no dice and cannot move
+                # a baseline.  Summons are NOT covered by this rule; theirs fires
+                # after every combat, below.
+                spend_hit_dice_at_short_rest(self.entities, between_telemetry)
 
             # Between-combats hook (PoH, pre-cast spells, etc.)
             if self.between_combats is not None:
@@ -399,13 +455,24 @@ class DayRunner:
                     interval_length=interval,
                     entities=self.entities,
                     rng=self.rng,
+                    telemetry=between_telemetry,
                 )
                 self.between_combats(ctx)
+
+            # HIT DICE RULE (b2) — SUMMONS spend dice to their DEFICIT after EVERY
+            # combat, bounded by the remaining pool (healing.md §7b2).  Deliberately
+            # AFTER the hook, because `recast` revives the companion at FULL HP and
+            # this must then be a no-op on a zero deficit — the ordering the design
+            # note fixes.  A different rule from the character one because it
+            # measures a different thing: a summon's HP genuinely gates its death and
+            # turn access, so this is ACTUAL healing, not potential.
+            spend_summon_hit_dice(self.entities, between_telemetry)
 
         return DayResult(
             combats=combats,
             sr_after_combat=sr_after_combat,
             combat_times=combat_times,
+            between_telemetry=between_telemetry,
         )
 
     # ------------------------------------------------------------------
