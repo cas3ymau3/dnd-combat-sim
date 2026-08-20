@@ -68,7 +68,25 @@ type, condition, resource, …):
    up to 2 Hit Dice and add the total" + its worked `4d6+2d8 (23)` example
    confirmed the rider adds N d8 with NO ability modifier — easy to get wrong from
    memory.)
-2. **Reflect after building — STOP and ask.** Once the feature is built and green,
+2. **Before an ENGINE-LEVEL automatic rule spends an existing resource, ask which
+   builds already spend it.** Added session 45. The healing subsystem's "spend all
+   Hit Dice at the short rest" is an engine default with no policy behind it — and
+   the Starfire Scion already spends `hit_dice` on Fueled Spellfire, so the default
+   would have silently drained the pool its damage depends on and MOVED ITS DPR. The
+   fix is the project's own principle ("policies are code"): the spec ASKS the build
+   (`HitDiceSpec.available_for_healing`) rather than assuming. Generalize it —
+   grep for every existing consumer of a resource before an engine rule starts
+   spending it, and give the build a way to answer.
+3. **Any NEW DICE SOURCE OUTSIDE COMBAT breaks the parity proof — check before
+   adding one.** Added session 45; `design/healing.md` §7(a) argued this for Hit
+   Dice and it generalizes. Out-of-combat code runs at a point EVERY build passes
+   through, so one `rng.roll()` there shifts every subsequent die and the §12
+   bit-identical proof against `validation.run_level` dies. The standing rule, now
+   in CLAUDE.md and `src/healing.py`: **resolution inside combat rolls; anything
+   applied outside combat is MEAN-FIELD and draws nothing.** This is the problem
+   RNG substreams (`evaluation_framework.md` §13 step 8) exist to solve; until they
+   land, mean-field is the answer, not "roll it and re-baseline".
+4. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
    decision-record conventions). Capture the answers before moving on; process
