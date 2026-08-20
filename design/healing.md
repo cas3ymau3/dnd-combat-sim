@@ -247,27 +247,67 @@ independent days.
 
 ## 8. Metrics — deliberately small (3 scalars + 1 breakdown)
 
+**BUILT s46**, as the first customer of `evaluation_framework.md` §5.4's output kinds.
 Applying PROGRESS.md's parsimony rule. Note that under §2 there is no delivered /
 effective split for characters, which keeps this smaller than an earlier draft.
 
-- **`net_damage_taken_per_round`** — `(damage taken − healing received) / rounds`. The
-  defensive headline. **May be negative** (surplus healing capacity); the definition
-  must say so.
-- **`external_healing_required_per_day`** — `max(0, damage_taken − self_healing)`.
-  Literally the quantity a party healer would have to supply. The sharpest expression
-  of §2's dynamic.
-- **`healing_provided_to_others_per_day`** — output that saves the party's budget; zero
-  for a selfish build, large for a healer.
-- **breakdown: `healing_by_source`** — self / summon / ally, in one keyed vector rather
-  than N flat rows.
+Every one of these went through the per-METRIC ritual's question 1 — *whose quantity is
+this?* — and the answer is NOT the same for all four (settled with the user, s46):
+
+> **The two DEFENSIVE scalars are CHARACTER-scoped; the OUTPUT scalar follows
+> `RunConfig.attribution`.** Defence mirrors `damage_taken_per_round`'s deliberate rule
+> (§5.3): a summon self-healing is its own column, not a discount on the character's
+> cost. Output follows `own_roles`, so a healer-summon's contribution counts as the
+> build's under `attribution="character_and_summons"` — which is what
+> `evaluation_framework.md` §14 point 3 asked for.
+
+- **`net_damage_taken_per_round`** — `(damage taken by CHARACTERS − healing received by
+  CHARACTERS, any source) / rounds`. The defensive headline. **May be negative** — that
+  is surplus healing capacity, not an error, and the registered `definition` says so in
+  those words.
+- **`external_healing_required_per_day`** — `max(0, character damage taken − character
+  SELF-healing)`, where self-healing means `source ∈ characters AND target ∈ characters`.
+  Literally the quantity a party healer would have to supply; the sharpest expression of
+  §2's dynamic. **The clamp is PER DAY**, so the metric is the mean of the clamped
+  quantity, not the clamp of the mean — a consumer deriving it from two other means gets
+  a different number, and the definition says so.
+- **`healing_provided_to_others_per_day`** — healing whose SOURCE is in `own_roles` and
+  whose TARGET is not. Output that saves the party's budget; zero for a selfish build,
+  large for a healer. Carries an availability predicate: on a roster with no healable
+  entity outside `own_roles` (enemies are never healed, §5) the metric is **unavailable
+  with a stated reason**, not a zero — a 0 there would be roster poverty (§3.3's
+  multi-character party is deferred) misreported as a build property.
+- **breakdown: `healing_by_source`** — keyed **`source_role × context`** (3 × 2 cells),
+  per day. **NO margin over `context` is declared**, so no cell in the artifact ever sums
+  healing under fire with healing at leisure — §11.1 found the corpus does most of its
+  healing out of combat by preference, and the two are different quantities. The
+  don't-pool rule is thereby enforced by the SHAPE rather than by a comment. Collapsing
+  `source_role` IS declared, giving a per-context total.
 
 **Dropped as algebraically derivable:** `self_sufficiency` =
 `1 − external_required / damage_taken`; `net_hp_end_of_day` =
-`max_hp − rounds_per_day × net_damage_taken_per_round`.
+`max_hp − rounds_per_day × net_damage_taken_per_round`. (Both fail §5.4's survival rule
+on the second clause too: nobody reads them.)
 
-**These metrics WAIT on the output-kinds design.** `healing_by_source` is a keyed
-breakdown, and the registry has no such shape yet — see `evaluation_framework.md` §14.
-Do not add flat rows to a registry already flagged as bloated.
+### 8.1 What the three builds actually measure (s46, live)
+
+The per-METRIC ritual's Silvertail test, run against the shipped registry:
+
+| build | `healing_by_source` cells | reading |
+|---|---|---|
+| War Angel L13 | `characters × between` = 63.5 | PoH's mean-field 2d8+WIS plus Hit Dice at two short-rest windows |
+| Starfire Scion L15 | *none* | its Hit Dice are reserved for Fueled Spellfire (`available_for_healing=False`), so `external_healing_required_per_day` equals its FULL damage taken — the metric doing exactly §2's job |
+| Silvertail L10 | `characters × between` = 60.0, `summons × between` = 26.0 | the beast heals ITSELF from its own Hit Dice (§7 b2) |
+
+Two facts this pinned down. **The summon's 26.0 appears in the `summons` cell and moves
+no character-scoped scalar** — that is the roster-scoping check passing, and it is why
+Silvertail is the build the ritual names. And **every healing cell in the corpus today
+has `source == target`**, so `healing_provided_to_others_per_day` is 0 everywhere: a
+genuine measured zero for Silvertail (another entity exists and the character does not
+heal it) and an *unavailable* for War Angel and Starfire, whose rosters hold nothing
+healable but themselves. War Angel's Prayer of Healing heals five creatures RAW and one
+here purely because the roster has one — the availability predicate is what keeps that
+modelling limit visible instead of reporting it as selfishness.
 
 ## 9. Build plan
 
