@@ -881,6 +881,32 @@ def test_a_breakdowns_margins_are_kept_apart_from_its_cells():
         dpr_by_role["characters"].value + dpr_by_role["summons"].value)
 
 
+def test_is_margin_is_where_the_estimate_LIVES_not_whether_its_key_holds_a_star():
+    """Regression (found s47, building §9's CSV renderer).
+
+    An UNCROSSED breakdown materializes marginal PROFILES as its cells, so an
+    ordinary cell key holds ``ALL`` in the collapsed positions —
+    ``saves_forced_per_round[dex_save|*]`` is a cell, not a margin.  ``rows()``
+    originally flagged ``is_margin`` as ``ALL in key``, which labelled all 8 cells of
+    both uncrossed breakdowns as margins and left ONE unflagged row nowhere.  That
+    inverts the only filter a consumer has for keeping the two apart: selecting
+    ``is_margin == FALSE`` to get the cells returned an empty set, and selecting
+    ``TRUE`` returned cells and the total mixed together — which is precisely the
+    double-count the flag exists to prevent.
+    """
+    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11,
+                           build_options=ZONE))
+    saves = report.breakdown("saves_forced_per_round")
+    assert saves.definition.crossed is False
+
+    rows = {tuple(row[d] for d in saves.dimensions): row for row in saves.rows()}
+    # Every cell key carries a star, and NOT ONE of them is a margin.
+    assert all(ALL in key for key in saves.cells)
+    assert all(rows[key]["is_margin"] is False for key in saves.cells)
+    # The single declared margin is the only flagged row.
+    assert [key for key, row in rows.items() if row["is_margin"]] == [(ALL, ALL)]
+
+
 # ---------------------------------------------------------------------------
 # Healing (design/healing.md §8) — the first customer of the output kinds
 # ---------------------------------------------------------------------------

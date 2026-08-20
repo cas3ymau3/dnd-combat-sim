@@ -555,6 +555,104 @@ This is the same separation as the engine knowing nothing about specific spells.
 - **Console table** is a third renderer, not a special case.
 - **`schema_version`** is mandatory, because a site will be built against it.
 
+### 9.1 The artifact schema (LOCKED s47, `schema_version` 1)
+
+Locked BEFORE the writer was built, per the per-feature ritual's step 4 — the rule s46
+added for exactly this session. The unit is one run record; a sweep is a directory of
+them plus a manifest (step 7).
+
+```json
+{
+  "schema_version": 1,
+  "kind": "run_record",
+  "run_id": "war_angel@L13-8f2c1d0a4b6e7c95",
+  "config_hash": "8f2c1d0a4b6e7c95",
+  "warnings":   [ {"code": "...", "message": "..."} ],
+  "provenance": { "...the whole §4 block..." },
+  "results": {
+    "headline": "dpr",
+    "scalars":       [ ROW, ... ],
+    "breakdowns":    [ {"name": ..., "cells": [ROW...], "margins": [ROW...]}, ... ],
+    "distributions": []
+  },
+  "data_dictionary": { "scalars": [...], "breakdowns": [...], "distributions": [] }
+}
+```
+
+**Three sections from version 1, the third reserved and empty.** `distributions` is
+present and `[]` because §5.4's third kind is a reserved seam: §14's estimator lands
+later without a `schema_version` break. `MetricRegistry.distributions()` already returns
+`[]` for the same reason, so the reservation is one contract, not two.
+
+**One ROW shape** serves scalars, breakdown cells and margins — the same fields in the
+same order, so a consumer writes one parser:
+
+| field | meaning |
+|---|---|
+| `metric` | the flat cell name (`save_fail_rate[dex_save\|*]`) |
+| `breakdown` / `key` / `is_margin` | `null` for a scalar; for a cell, the breakdown name and the key as a **dict of dimension → value**, never a string to parse |
+| `unit` / `denominator` / `group` | the declaration, so a row is readable without the dictionary |
+| `status` | **the closed three-state vocabulary** (below) |
+| `value` / `stderr` / `ci95` | `null` unless `status == "measured"` |
+| `n` / `n_events` / `converged` / `note` | the §6.2 payload |
+
+**The three report states survive serialization DISTINCTLY** (§3.4), as one `status`
+field over a closed vocabulary, because collapsing any two of them is the failure the
+whole layer is built to avoid:
+
+- `measured` — the run produced a number.
+- `unavailable` — the run structurally *cannot* produce it; `note` carries the reason.
+- `unmeasured` — available, but the denominator was zero (no charisma save was forced).
+
+`value` is `null` for both non-measured states. **A serializer must never write 0 for
+either** — §3.4: a zero for control resilience reads as "this build resists control
+perfectly", which is the opposite of what is known.
+
+**Comparability warnings are TOP LEVEL, not buried in provenance.** §4's
+`coverage.comparability_warning` is the authority, but a reader who has to open the
+provenance block to find out that two artifacts are incomparable will not. The
+`warnings` array carries a closed `code` vocabulary a site can style:
+
+| code | raised when |
+|---|---|
+| `comparability` | always — names this run's resolved `mode` / `attribution` / `enemy_path`, the three that change what the headline MEANS |
+| `coverage_gap` | any `coverage` entry is not resolved (today: the enemy side, until §13 step 5) |
+| `engine_dirty` | the working tree had uncommitted changes: the artifact is not reproducible from its `engine_commit` |
+| `precision` | `day_tier == "quick"` — an iteration run, not a publishable one |
+| `unconverged` | ≥1 measured metric fails its own declared heuristic |
+
+**The summing trap is a FIELD, not a comment.** An uncrossed breakdown's cells do not
+partition its total — each dimension covers the whole quantity, so adding every cell
+double-counts. The artifact therefore carries `sum_rule` on each breakdown, over a closed
+two-value vocabulary:
+
+- `cells_partition_total` — crossed; the cells are disjoint and sum to the margin.
+- `cells_overlap_do_not_sum` — uncrossed (`save_fail_rate`, `saves_forced_per_round`);
+  a renderer must read the declared margin and must never add cells up.
+
+Cells and margins stay in **separate lists** in the JSON and are flagged `is_margin` in
+the CSV, so the two can never be concatenated by accident. Margins belong to the
+estimating layer (§5.4's corollary) and appear in the artifact only because they were
+computed there.
+
+**The tidy CSV gets one column per DIMENSION NAME** — the union over the registry's
+breakdowns (`ability`, `channel`, `damage_type`, `role`, `source_role`, `context`,
+`combat`), derived from the registry rather than hardcoded. Empty means *this row is not
+keyed by that dimension*; `*` means *margin over it*; the two are different facts and get
+different cell contents. The run-identifying columns repeat on every row, which is what
+makes a sweep's CSVs concatenate into one frame. Booleans are written `TRUE`/`FALSE` and
+non-measured values are written empty, so R reads them as `logical` and `NA` rather than
+as text and as zero.
+
+**What is NOT serialized:** `EvalReport.influence` — a per-day vector per metric, which
+at 200k days would be the bulk of the artifact for a quantity only a paired comparison
+consumes (§6.1). A comparison artifact is its own shape and its own decision, deferred.
+
+The **data dictionary is embedded by default**, so a single artifact is self-describing:
+a site or an R script renders units, definitions and refused-margin notes without
+importing the Python registry. §5.1's "the registry IS the data dictionary", delivered
+across the process boundary.
+
 ---
 
 ## 10. Sweeps, caching, day counts

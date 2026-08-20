@@ -232,19 +232,31 @@ class BreakdownValue:
 
         This is the shape §9's tidy CSV wants, and the reason the key had to stop
         living inside the metric name.
+
+        ``is_margin`` is read from WHICH MAP the estimate lives in, not from whether
+        :data:`ALL` appears in its key.  Those two are not the same test, and the
+        difference is exactly the uncrossed case: ``saves_forced_per_round``
+        materializes marginal profiles as its CELLS, so ``("dex_save", "*")`` holds
+        an ``ALL`` while being an ordinary cell.  Keying the flag off the key would
+        label all 8 cells of both uncrossed breakdowns as margins — inverting the
+        one filter a consumer uses to avoid double-counting them.
         """
         out: list[dict[str, Any]] = []
-        for key, value in list(self.cells.items()) + list(self.margins.items()):
-            row: dict[str, Any] = {"breakdown": self.name, "unit": self.unit}
-            row.update(dict(zip(self.dimensions, key)))
-            row["is_margin"] = ALL in key
-            row["value"] = value.value
-            row["stderr"] = value.stderr
-            row["n"] = value.n
-            row["converged"] = value.converged
-            row["note"] = value.note
-            out.append(row)
+        for value_map, is_margin in ((self.cells, False), (self.margins, True)):
+            out.extend(self._row(k, v, is_margin) for k, v in value_map.items())
         return out
+
+    def _row(self, key: tuple[str, ...], value: MetricValue,
+             is_margin: bool) -> dict[str, Any]:
+        row: dict[str, Any] = {"breakdown": self.name, "unit": self.unit}
+        row.update(dict(zip(self.dimensions, key)))
+        row["is_margin"] = is_margin
+        row["value"] = value.value
+        row["stderr"] = value.stderr
+        row["n"] = value.n
+        row["converged"] = value.converged
+        row["note"] = value.note
+        return row
 
 
 # ---------------------------------------------------------------------------
