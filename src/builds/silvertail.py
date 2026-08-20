@@ -432,7 +432,7 @@ class SilvertailPolicy:
         # ally that no longer exists cannot be ordered.
         if (
             res.get("bonus_action", 0) >= 1
-            and not self._beast.destroyed
+            and not self._beast.is_out_of_action
         ):
             choices.append(self._beast_strike_choice())
 

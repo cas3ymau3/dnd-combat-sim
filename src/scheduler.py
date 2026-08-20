@@ -966,8 +966,12 @@ class Scheduler:
     def _enqueue_round(self, round_: int) -> None:
         """Push TurnStartEvents for every entity that has a policy."""
         for turn_idx, entity in enumerate(self.entities):
-            if entity.destroyed:
-                continue  # a summon that has winked out takes no turns (design.md §1)
+            if entity.is_out_of_action:
+                # A summon that has winked out (`vanishes` -> destroyed, PERMANENT) or
+                # been dropped (`downed`, REVERSIBLE — healing.md §6) takes no turns
+                # (design.md §1).  One predicate covers both categories, so a heal
+                # that lifts a downed ally above 0 puts it straight back in the order.
+                continue
             if entity.id in self.policies:
                 self.queue.push(
                     TurnStartEvent(

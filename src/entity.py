@@ -25,6 +25,13 @@ log = logging.getLogger(__name__)
 
 _id_counter = itertools.count(1)
 
+#: What an entity does at 0 HP (design/healing.md §6).  A CLOSED three-value
+#: vocabulary — extending it is a deliberate act, like adding a verb.
+#:   "threshold" — nothing; `hp` is a signed balance nothing reads (the default)
+#:   "vanishes"  — removed permanently (`destroyed`), unhealable once gone
+#:   "downed"    — stops acting, `hp` floored at 0, healable back into the fight
+ZERO_HP_CATEGORIES = ("threshold", "vanishes", "downed")
+
 
 class Entity:
     """A character, enemy, or any game object that participates in combat.
@@ -144,15 +151,29 @@ class Entity:
         # scheduler skips a destroyed entity's turns and a controller checks it before
         # commanding.  False for every omnipresent entity (character / enemy / party).
         self.destroyed: bool = False
-        # Whether this entity WINKS OUT at 0 HP (substrate #7 / 7a summon survival).
-        # The character / enemy / party use the threshold model (HP never gates turns),
-        # so they leave this False.  A SUMMON (the primal companion) sets it True: when
-        # cumulative damage drops it to 0 HP, take_damage marks it `destroyed` so it
-        # stops acting / being commanded, and its DPR contribution disappears for the
-        # rest of the combat (a dead summon does nothing).  This is the 0-HP trigger
-        # that arms the already-present `destroyed` plumbing (scheduler skips destroyed
-        # turns; a commander checks `destroyed` before ordering).
-        self.dies_at_zero_hp: bool = False
+        # What happens to this entity AT 0 HP — design/healing.md §6.  A three-way
+        # enum, because a boolean cannot express the corpus:
+        #   "threshold" — nothing.  HP is a signed balance that never gates turns.
+        #                 The character / enemy / party model, and the DEFAULT.
+        #   "vanishes"  — removed PERMANENTLY (`destroyed`).  A summon-spell creature,
+        #                 and the 2024 primal companion (its revival needs a Magic
+        #                 action, a slot and 1 MINUTE, so it can never be healed back
+        #                 inside a 4-round combat — healing.md §11.3).
+        #   "downed"    — stops acting but REMAINS, `hp` floored at 0, and healing it
+        #                 above 0 returns it to the fight.  A REVERSIBLE state, which
+        #                 is why it cannot ride on `destroyed` (that is permanent).
+        # `dies_at_zero_hp` below is the legacy boolean view of this field, kept so
+        # every existing call site reads/writes the enum unchanged.
+        self.zero_hp_category: str = "threshold"
+        # The reversible half of "downed" (see above).  Distinct from `destroyed`:
+        # a downed entity is still in the roster, still healable, and clears this
+        # flag the moment a heal lifts it above 0 HP.
+        self.downed: bool = False
+        # Optional ON-ZERO effect (healing.md §6 case 3 — the reanimator artificer's
+        # companion fires a death effect but is still revivable).  A callable taking
+        # this entity, invoked ONCE by take_damage on the crossing to <= 0 HP.  It is
+        # RESOLUTION-side data supplied by a build, never a policy decision.
+        self.on_zero_hp = None
         # Cumulative telemetry (design §8 outputs): concentration checks forced
         # by incoming damage and how many broke a spell.  Never auto-reset;
         # callers diff or average across runs.
@@ -200,28 +221,96 @@ class Entity:
     # ------------------------------------------------------------------
 
     def take_damage(self, amount: int | float) -> None:
-        """Reduce HP by *amount*.  HP can go negative (threshold model).
+        """Reduce HP by *amount*, then apply this entity's 0-HP CATEGORY.
 
-        The sim never gates turn access on HP — entities always act for the
-        full scheduled rounds.  HP is a tracker; use is_functionally_dead to
-        detect death-proc thresholds (e.g. hungering hex on enemy kill).
+        The sim never gates turn access on HP for a ``threshold`` entity — it
+        always acts for the full scheduled rounds, and its HP is a signed balance
+        that may go arbitrarily negative.  Use is_functionally_dead to detect
+        death-proc thresholds (e.g. hungering hex on enemy kill).
 
-        The ONE exception is a SUMMON (``dies_at_zero_hp``): a controlled ally
-        winks out at 0 HP (substrate #7 / 7a summon survival).  Crossing to ≤ 0
-        sets ``destroyed`` here — the single 0-HP trigger; everything downstream
-        (the scheduler skipping its turns, the commander declining to order it)
-        already reads ``destroyed``.  Non-summons are unaffected (threshold model).
+        The two summon categories DO read HP (healing.md §6):
+          - ``vanishes`` → crossing to <= 0 sets ``destroyed`` (permanent), the
+            single 0-HP trigger; everything downstream (the scheduler skipping its
+            turns, a commander declining to order it) reads that flag.
+          - ``downed``  → crossing to <= 0 FLOORS ``hp`` at 0 and sets ``downed``
+            (reversible), so a later heal can lift it back into the fight.  The
+            floor is required: without it a heal after a large hit would have to
+            climb out of a 30-point hole before reviving anything.
+
+        An ``on_zero_hp`` effect, if set, fires ONCE on the crossing, for either
+        summon category (§6 case 3).
         """
         self.hp -= amount
         log.info("%s takes %s damage → hp=%s/%s", self.name, amount, self.hp, self.max_hp)
-        if self.dies_at_zero_hp and self.hp <= 0 and not self.destroyed:
+        if self.hp > 0:
+            return
+        if self.zero_hp_category == "vanishes" and not self.destroyed:
             self.destroyed = True
             log.info("%s WINKS OUT at 0 HP (summon death)", self.name)
+            self._fire_on_zero_hp()
+        elif self.zero_hp_category == "downed" and not self.downed:
+            self.hp = 0
+            self.downed = True
+            log.info("%s is DOWNED at 0 HP (healable back)", self.name)
+            self._fire_on_zero_hp()
+
+    def _fire_on_zero_hp(self) -> None:
+        if self.on_zero_hp is not None:
+            self.on_zero_hp(self)
 
     def heal(self, amount: int | float) -> None:
-        """Restore HP by *amount*.  Clamps at max_hp."""
-        self.hp = min(self.max_hp, self.hp + amount)
+        """Restore HP by *amount*, capped per this entity's 0-HP CATEGORY.
+
+        The cap follows the CATEGORY, not the roster role (healing.md §4):
+
+          - ``threshold`` → **no cap**.  Its ``hp`` is a signed balance that
+            nothing in the engine reads, so ``max_hp`` is not a ceiling on it and
+            capping would make a heal's recorded value depend on when damage
+            happened to land relative to it — a sequencing artifact (§2).  This
+            covers characters, party allies, and the default immortal summon.
+          - ``vanishes`` / ``downed`` → **capped at max_hp**, because there ``hp``
+            is live state gating death and turn access; healing past ``max_hp``
+            would make the creature genuinely tankier than it can be.
+
+        Healing a ``downed`` entity above 0 clears the flag and returns it to the
+        fight — the reversibility that ``destroyed`` cannot express.  A
+        ``vanishes`` summon that has already gone is beyond help and absorbs no
+        healing at all, which is what makes the ledger's numbers honest.
+
+        Returns nothing; the AMOUNT ACTUALLY APPLIED is what resolution ledgers,
+        so see ``verbs.resolve_healing`` for the recorded figure.
+        """
+        if self.destroyed:
+            return
+        if self.zero_hp_category == "threshold":
+            self.hp += amount
+        else:
+            self.hp = min(self.max_hp, self.hp + amount)
+            if self.downed and self.hp > 0:
+                self.downed = False
+                log.info("%s is back up (healed above 0 HP)", self.name)
         log.info("%s heals %s → hp=%s/%s", self.name, amount, self.hp, self.max_hp)
+
+    # -- the legacy boolean view of zero_hp_category ---------------------
+    # Every existing call site (day_runner's long rest, silvertail's factory, the
+    # summon-survival tests) speaks in "does this wink out at 0 HP?".  Keeping that
+    # as a property over the enum means the enum lands WITHOUT touching them, and
+    # `dies_at_zero_hp = True` still means exactly what it meant: "vanishes".
+
+    @property
+    def dies_at_zero_hp(self) -> bool:
+        return self.zero_hp_category == "vanishes"
+
+    @dies_at_zero_hp.setter
+    def dies_at_zero_hp(self, value: bool) -> None:
+        self.zero_hp_category = "vanishes" if value else "threshold"
+
+    @property
+    def is_out_of_action(self) -> bool:
+        """True when this entity takes no turns: destroyed (permanent) or downed
+        (reversible).  The single predicate the scheduler and any commander read,
+        so adding ``downed`` did not need a second check at every site."""
+        return self.destroyed or self.downed
 
     @property
     def is_functionally_dead(self) -> bool:
