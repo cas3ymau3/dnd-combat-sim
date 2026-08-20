@@ -98,7 +98,22 @@ type, condition, resource, …):
    [[design-first-for-cross-cutting-primitives]]: that one is about surveying the corpus
    before building a broadly-reused primitive; this one is about fixing a contract
    before publishing against it.
-5. **Reflect after building — STOP and ask.** Once the feature is built and green,
+5. **Test the BRANCH, not the convenient instance.** Added session 47, from the bug
+   that session found. When a feature adds a DECLARATION with more than one value —
+   `BreakdownDef.crossed` (crossed/uncrossed), `Denominator.fixed` (fixed/random),
+   `zero_hp_category`'s three-way enum, an availability predicate that can return a
+   reason or `None` — the test must exercise the value the code BRANCHES on, not the
+   instance that is easiest to reach for. s46 tested `BreakdownValue.rows()` against
+   `healing_by_source`, which is CROSSED; the `is_margin` flag was computed as
+   `ALL in key`, which is correct for a crossed breakdown and wrong for every uncrossed
+   one, so all 8 cells of both uncrossed breakdowns were labelled margins and the bug
+   was invisible for a whole session. **The check: for each declaration the change
+   touches, name which fixture covers each of its values.** If one value has no
+   fixture, that value is untested no matter how many tests exist. This is the same
+   instinct as the per-METRIC ritual's "test it against Silvertail" (the only build
+   with a summon) — that rule picks the fixture that exercises the roster-scoping
+   declaration; this one generalizes it to any declaration, at any layer.
+6. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
    decision-record conventions). Capture the answers before moving on; process
@@ -1428,10 +1443,14 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   now comes from WHICH MAP the estimate lives in, in both `report.py` and the writer.
   It went unnoticed in s46 because the only `rows()` test used `healing_by_source`, which
   is CROSSED — its cells carry no star, so the bug was invisible there. A regression test
-  now uses the uncrossed case. **Transferable lesson: a test written against the
-  convenient example does not cover the case the code branches on** — pick the fixture
-  that exercises the DECLARATION being tested (here, `crossed=False`), which is the same
-  instinct the per-METRIC ritual's "test it against Silvertail" encodes.
+  now uses the uncrossed case. **Transferable lesson, and the user's call at the s47
+  reflection: this became per-feature ritual step 5, "Test the BRANCH, not the convenient
+  instance."** A test written against the convenient example does not cover the case the
+  code branches on — for each declaration a change touches (`crossed`, `Denominator.fixed`,
+  `zero_hp_category`, an availability predicate), name which fixture covers each of its
+  VALUES; a value with no fixture is untested however many tests exist. It generalizes the
+  per-METRIC ritual's "test it against Silvertail" from the roster-scoping declaration to
+  any declaration at any layer.
 
   **The console is a third renderer, not a special case** (§9's phrasing, taken
   literally). It computes nothing and sums nothing. It labels a margin by its REAL reason,
