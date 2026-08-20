@@ -1349,6 +1349,104 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 
 ## Done
 
+- **EVALUATION FRAMEWORK STEP 3 — SERIALIZATION (2026-08-20, session 47).** §13 step 3
+  complete: JSON + tidy long CSV + console renderer under a declared `schema_version`.
+  **LOCKED in `evaluation_framework.md` §9.1** (written BEFORE the writer, per the
+  per-feature ritual's step 4 — the rule s46 added for exactly this session); built in
+  `src/evaluation/artifact.py` + `src/evaluation/console.py`, 44 mechanism tests in
+  `tests/test_eval_artifact.py`. **766 tests green** (721 + 44 + 1 regression), full suite
+  in FOREGROUND, once ([[full-suite-foreground-only]]). `src/validation.py` UNCHANGED and
+  the §12 parity proof still bit-identical.
+
+  **The architectural line §9 draws, honoured: the sim never knows about the website.**
+  The contract is the serialized artifact under `SCHEMA_VERSION`; the site is a downstream
+  consumer, the same separation as the engine knowing nothing about specific spells. All
+  three renderers read the SAME `EvalReport`, so JSON, CSV and console cannot disagree
+  about a number — the CSV is literally built from the rows the JSON serializes.
+
+  **THE FOUR THINGS s46 HANDED FORWARD, all discharged:**
+  1. **Three sections from version 1, the third RESERVED and EMPTY.** `results` is
+     `{headline, scalars, breakdowns, distributions}` with `distributions == []`, and
+     `data_dictionary()` reserves the identical third section. §14's quantile estimator
+     lands without a `schema_version` break; a test pins both halves of the reservation.
+  2. **The CSV was wiring, not design** — `BreakdownValue.rows()` already had the shape.
+     Confirmed, with one exception (see the bug below).
+  3. **`influence` is NOT serialized.** Asserted directly: the string `influence` does not
+     appear anywhere in the record. At a 200k-day tier it would be the bulk of the
+     artifact, for a quantity only a paired comparison consumes (§6.1).
+  4. **The uncrossed trap is a FIELD, not a comment.** Every breakdown carries `sum_rule`
+     ∈ {`cells_partition_total`, `cells_overlap_do_not_sum`}, and cells/margins are
+     serialized into SEPARATE lists. The test proves the flag is not decoration: naively
+     summing `saves_forced_per_round`'s cells overshoots its declared total by ~2x,
+     because the ability profile and the channel profile each cover the whole quantity.
+
+  **THE SCHEMA (§9.1), decided with the user at session start (all four recommendations
+  taken):**
+  - **One ROW shape** for scalars, cells and margins alike, so a consumer writes one
+    parser. A cell's key travels as a **dict of dimension → value** — nothing downstream
+    ever parses `damage_share[fire]` back into `("fire",)`, which is the exact failure
+    §5.4 removed from the registry and which re-introducing at the artifact boundary
+    would have undone.
+  - **THREE STATES, NEVER TWO** (§3.4). `status` ∈ {`measured`, `unavailable`,
+    `unmeasured`}, and `value`/`stderr`/`ci95` are ALL null for the latter two. The CSV
+    writes **empty, not 0**, so R reads `NA` — the load-bearing half: a zero written for
+    an unavailable control metric would be averaged into a mean, and reads as "this build
+    resists control perfectly". The Silvertail fixture exercises all three, and a test
+    asserts that it does, so the guard tests cannot silently become vacuous.
+  - **Warnings TOP LEVEL, not buried in provenance**, under a closed `code` vocabulary a
+    site can style: `comparability` / `coverage_gap` / `engine_dirty` / `precision` /
+    `unconverged`. **`comparability` is UNCONDITIONAL** — mode/attribution/enemy_path
+    change what the headline MEANS, not merely its value, so there is no run where it is
+    noise, and emitting it always is what makes its absence unambiguous.
+  - **Provenance serializes WHOLE**, including `coverage.enemy_side`'s explicit NOT
+    RESOLVED statement and the `EPISTEMIC_NOTE`. A serializer that trimmed provenance to
+    "the interesting parts" would invert the block's purpose, which is to make the gaps
+    visible.
+  - **Tidy CSV: one column per DIMENSION NAME** (the union over the registry's
+    breakdowns, DERIVED not hardcoded — adding a dimension adds a column, visibly).
+    **Blank and `*` are different facts**: blank = not keyed by that dimension at all,
+    `*` = margin over it. Conflating them would turn "not applicable" into "aggregated",
+    the same class of error as writing 0 for unmeasured. Run-identifying columns repeat on
+    every row, which is what makes a sweep's CSVs concatenate into one `group_by(run_id)`
+    frame (`write_sweep_csv`).
+  - **Data dictionary EMBEDDED by default**, so one artifact is self-describing: a site or
+    an R script renders units, definitions and refused-margin notes without importing the
+    Python registry. §5.1's "the registry IS the data dictionary", delivered across the
+    process boundary.
+  - **`run_id` = `build@Llevel-confighash`** — legible enough to read a directory by eye,
+    hashed so two scenarios cannot collide, and the hash is the SAME number §10's cache
+    key uses (asserted). The engine commit is deliberately NOT in it: it lives in
+    provenance, and folding it in would churn the id on every commit.
+
+  **BUG FOUND AND FIXED AT ITS SOURCE — `BreakdownValue.rows()` (s46 code).** `is_margin`
+  was computed as `ALL in key`. That is not the margin test: an UNCROSSED breakdown
+  materializes marginal PROFILES as its CELLS, so `saves_forced_per_round[dex_save|*]` is
+  an ordinary cell whose key holds a star. Result: **all 8 cells of both uncrossed
+  breakdowns were labelled margins**, inverting the one filter a consumer has for keeping
+  the two apart — `is_margin == FALSE` returned nothing, `TRUE` returned cells and the
+  total mixed, which is precisely the double-count the flag exists to prevent. The flag
+  now comes from WHICH MAP the estimate lives in, in both `report.py` and the writer.
+  It went unnoticed in s46 because the only `rows()` test used `healing_by_source`, which
+  is CROSSED — its cells carry no star, so the bug was invisible there. A regression test
+  now uses the uncrossed case. **Transferable lesson: a test written against the
+  convenient example does not cover the case the code branches on** — pick the fixture
+  that exercises the DECLARATION being tested (here, `crossed=False`), which is the same
+  instinct the per-METRIC ritual's "test it against Silvertail" encodes.
+
+  **The console is a third renderer, not a special case** (§9's phrasing, taken
+  literally). It computes nothing and sums nothing. It labels a margin by its REAL reason,
+  which differs by kind: for a CROSSED breakdown the margin does equal the sum in value
+  and what a consumer cannot rebuild is its standard error; for an UNCROSSED one the sum
+  is not even the right number. Saying "not a sum" in both places would have been false in
+  one of them. Scaffolding is ASCII (`+/-`, not `±`) because this prints to a cp1252
+  Windows console; the quoted registry text is not ASCII, so `print_report` degrades those
+  characters rather than letting a section sign in a footnote kill a whole run's output.
+
+  **Deferred deliberately:** a COMPARISON artifact (base + per-label `PairedDelta`). It is
+  its own shape and deserves its own settle-the-shape-first pass rather than riding along.
+  No CLI yet — step 7's sweep YAML is what would actually drive one, and its arg surface
+  would be rewritten now.
+
 - **OUTPUT-KINDS DESIGN + METRIC PRUNE + healing's metrics (2026-08-20, session 46).**
   The step the user inserted ahead of evaluation-framework step 3, and the gate
   `healing.md` §8 was waiting on. **LOCKED in `evaluation_framework.md` §5.4**; built in
@@ -3833,17 +3931,22 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      + 7 breakdowns), one row dropped outright. §14's distribution deferral is absorbed as a
      RESERVED SEAM (estimator still after step 3). Healing's §8 metrics landed as the first
      customer. See the s46 Done entry.
-   - **NEXT — (3) serialization** (§9): JSON + tidy CSV + console renderer, `schema_version`.
-     The report is already a structured object with a provenance block, so this is a rendering
-     step, not a redesign. **Four things to carry:** `EvalReport.influence` is deliberately NOT
-     serialized (a per-day vector per metric, only a comparison consumes it); §14's
-     distribution-shape deferral is scheduled for design AFTER this step fixes the artifact
-     shape (user, s44); **the artifact must carry three sections — `scalars` / `breakdowns` /
-     `distributions` — from `schema_version` 1**, with the third reserved-and-empty so the
-     quantile work needs no schema break (§5.4); and **`BreakdownValue.rows()` already emits
-     the tidy long form** the CSV renderer wants (key columns expanded, `is_margin` flagged),
-     so the CSV side is mostly wiring, not design.
-   - (4) the `attacks` telemetry channel (§8.1); **(5) the ENEMY-CONSTRUCTION SEAM (§3.4, added s43 — the old 5/6 shift to 6/7)** — `RunConfig.enemy` /
+   - ~~**(3) serialization** (§9)~~ **DONE (s47)** — `evaluation_framework.md` §9.1 LOCKS the
+     artifact schema at `schema_version` 1 (settled before the writer, per the per-feature
+     ritual's step 4); `src/evaluation/{artifact,console}.py` + 44 tests in
+     `tests/test_eval_artifact.py`. All four carried items discharged: three sections with
+     `distributions` reserved-and-empty; `influence` NOT serialized (asserted); the CSV was
+     wiring as predicted; §14's estimator can now land without a schema break. Also settled:
+     one ROW shape with the key as a dict, the THREE STATES as a closed `status` vocabulary
+     (never a zero), top-level `warnings` under a closed `code` set, whole provenance,
+     one CSV column per dimension NAME, and an embedded data dictionary. **Fixed a real s46
+     bug in passing:** `is_margin` was `ALL in key`, which mislabelled every cell of both
+     UNCROSSED breakdowns as a margin. See the s47 Done entry.
+   - **NEXT — §14's DISTRIBUTION-SHAPE DESIGN** (the third output kind's estimator:
+     order-statistic or bootstrap intervals). Scheduled for exactly here since s44 —
+     "after step 3 fixes the artifact shape" — and the seam is now reserved and tested, so
+     it can land without a `schema_version` break. Then (4) the `attacks` telemetry channel
+     (§8.1); **(5) the ENEMY-CONSTRUCTION SEAM (§3.4, added s43 — the old 5/6 shift to 6/7)** — `RunConfig.enemy` /
      `enemy_options` go live, the standardized enemy is built alongside the factories' baked-in
      one, then the enemy material is migrated OUT of the character `LEVELS` tables and the
      baked-in path deleted; carries the three §12 replacements for the retired guide targets.

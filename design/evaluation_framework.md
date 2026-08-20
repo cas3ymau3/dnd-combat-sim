@@ -772,7 +772,7 @@ check mechanisms, not the composite. Three things carry that load instead:
    gained an ACTOR dimension and now records every typed hit, giving outgoing
    damage-type composition; and per-combat / opening-round shape metrics landed off
    the existing ledger.
-3. Serialization: JSON + tidy CSV + console renderer; `schema_version`.
+3. ~~Serialization: JSON + tidy CSV + console renderer; `schema_version`.~~ **DONE (s47)** — `evaluation_framework.md` §9.1 locks the schema; `src/evaluation/{artifact,console}.py` + 44 tests.
 4. The `attacks` telemetry channel (§8.1).
 5. **The enemy-construction seam (§3.4)** *(inserted s43, between the original steps 4 and
    5)* — `RunConfig.enemy` / `enemy_options` become live; adapters are told which enemy to
@@ -848,8 +848,10 @@ onto the framework only once step 1 reproduces its numbers exactly.
   quantile is not a ratio and has no delta-method standard error, so it does not fit
   `MetricDef` — it needs a parallel `DistributionDef` kind with order-statistic or
   bootstrap intervals. **s46 named it as §5.4's third kind and reserved its artifact
-  section so it can land without a `schema_version` break; the estimator itself is still
-  scheduled for AFTER step 3**, once serialization has fixed the artifact shape.
+  section so it can land without a `schema_version` break; s47 BUILT that reservation —
+  §9.1's `results.distributions` is present and empty at `schema_version` 1, with a test
+  pinning it and the data dictionary's matching section. Step 3 is done, so the estimator
+  is now the NEXT item rather than a deferral.**
 - **Per-(round, source) damage ledger** *(added s44)* — `CombatResult.damage_received`
   is per round but keyed by target only; `damage_by_source_target` is attributed by
   source but per-combat cumulative. So no metric can say "how much did the CHARACTER
