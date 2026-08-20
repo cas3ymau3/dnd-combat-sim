@@ -3535,15 +3535,32 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      availability mechanism, and the three ex-post additions.
    - **NEXT — HEALING SUBSYSTEM (inserted ahead of step 3; user, s44).** Not an eval-framework
      step: healing is **entirely unmodelled** (`Entity.heal()` has ZERO callers; War Angel's
-     Prayer of Healing is a short-rest ENABLER, never HP restored), and 31 of the 33 guides
-     reference healing, so it is a cross-cutting primitive. **Semantics LOCKED in
-     `design/healing.md`: ledger always, apply to `hp` only where `hp` gates behaviour**
-     (mortal summons; enemies under finite_hp) — on a threshold-HP character `hp` is
-     max_hp − cumulative damage, unbounded below, so applying healing to it is incoherent,
-     not merely inert. Three pieces: (a) a healing EFFECT in the verb layer, (b) a
-     SOURCE-ATTRIBUTED (source,target) ledger + §13 channel, (c) metrics LAST — they wait on
-     the output-kinds design. Read `design/healing.md` §6 first: five questions the build
-     session must settle before coding, starting with the corpus survey.
+     Prayer of Healing is abstracted as a short-rest-EQUIVALENT for resource recovery, never
+     HP restored), and 31 of the 33 guides reference healing, so it is a cross-cutting
+     primitive. **SEMANTICS LOCKED in `design/healing.md`** (revised in-session after user
+     review — read it IN FULL, it supersedes an earlier draft on two points):
+     - **What it measures (§2):** not in-play healing decisions but **POTENTIAL healing**,
+       stacked against expected incoming damage — a standardized proxy for the party-healer
+       resources and consumables a self-sufficient build saves, which the 4×4 basis cannot
+       otherwise see.
+     - **Apply to the tracker; cap ONLY where `hp` is live (§4).** No `max_hp` cap for the
+       character and party (their `hp` is a signed balance — nothing in the engine reads it,
+       verified); cap AND a 0 floor for summons, whose `hp` gates death and turn access.
+       Enemies are NEVER healed. `net_damage_taken_per_round` may go negative = surplus
+       capacity, and must be labelled as such.
+     - **Summon categories (§6):** the `dies_at_zero_hp` boolean becomes an enum
+       `{threshold, vanishes, downed}` + an optional on-zero effect. `destroyed` is currently
+       PERMANENT, so `downed` needs a reversible state. Carries a RULES-VERIFICATION FLAG:
+       `silvertail.py:633`'s web-verified 2024 Primal Companion text says the beast DIES at 0
+       and revival needs 1 minute, which conflicts with "downed and healed in combat".
+     - **Hit Dice (§7):** all HD spent automatically at the short rest, MEAN-FIELD (rolling
+       would shift the RNG stream and break the §12 parity proof). One SR is the ENGINE
+       baseline; War Angel's second rest is BOUGHT via its PoH hook, and RAW PoH grants no
+       Hit Dice. Moves Silvertail's `mortal_beast` baseline only.
+     - **Metrics (§8) WAIT on the output-kinds design** — 3 scalars + 1 keyed breakdown.
+     Read `design/healing.md` §10 first: five questions to settle before coding, starting
+     with the corpus survey and the fact that **Prayer of Healing currently does two jobs**
+     and would be double-counted if its RAW effect were added naively.
    - **THEN — OUTPUT-KINDS DESIGN + METRIC PRUNE (user, s44), before step 3.** The registry
      models one output kind, so 25 of its 51 entries are three keyed breakdowns flattened
      (saves by ability ×12, damage composition by type ×13) and ~6 more are algebraically
