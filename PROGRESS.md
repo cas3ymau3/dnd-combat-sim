@@ -74,6 +74,40 @@ type, condition, resource, …):
    decision-record conventions). Capture the answers before moving on; process
    improvements compound and are cheapest to make while the context is fresh.
 
+## Per-METRIC ritual (when adding anything to the evaluation registry)
+
+Added session 44, after three of the session's additions each shipped a first cut
+that measured the wrong entity. Every new metric must answer both questions BEFORE
+it counts as done:
+
+1. **WHOSE quantity is this? — the roster-scoping check.** Most of the engine's
+   ledgers are AGGREGATE: `DayResult.damage_by_combat` sums `damage_log`, which is
+   every actor's damage including the enemy's; `CombatResult.damage_received` is
+   keyed by target only; the §13 mitigation channel was keyed by damage type alone
+   until s44. A metric built naively on any of them silently pools the character's,
+   the summon's, and the ENEMY's numbers. So: name the scope in the metric's
+   `definition` (character / party / summon / all-actors), read a SOURCE-ATTRIBUTED
+   ledger wherever one exists, and **test it against Silvertail** (the only build
+   with a summon) — a character-scoped metric that a summon does not change is the
+   check that catches this. If the underlying ledger cannot attribute, say so in the
+   definition and name the seam rather than shipping the ambiguity.
+2. **Can this run actually produce it? — the availability check.** If the metric
+   reads a telemetry channel, declare an `availability` predicate returning a
+   REASON. A zero from an unwired channel reads as a measurement and is worse than
+   no row at all. Two builds blocked for different reasons get different reasons.
+
+## Periodic METRIC-SET REVIEW (every ~2 sessions that touch the registry)
+
+Added session 44 at the user's request. The registry grows easily — auto-generated
+families (per-ability saves, per-type damage shares) can double it in one commit —
+and the goal is a **parsimonious set of key outputs**, not maximal coverage. So at
+least every second registry-touching session, print the full list (name / unit /
+denominator / per-build availability) and walk it with the user asking of each row:
+does anyone read this, is it derivable from another row, and is it a genuine scalar
+or one cell of a breakdown that belongs in a single vector output? **Prune
+deliberately** — an unused metric is a maintenance and interpretation cost, and the
+registry is also the published data dictionary.
+
 > **Currently disabled (re-enable before exit):** none. **EMPIRICAL/CHROME ARC CLOSED (s36).**
 > Sessions 28-36 needed **Claude-in-Chrome** (MM scrape); s36 finished #2 (the last
 > Chrome-dependent work) and **tore the arc down: the per-machine allowlist was reset to the
@@ -89,7 +123,10 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 42 (2026-08-17) — nothing to reset (confirmed with user).** The
+- **Last reviewed for reset: session 44 (2026-08-19) — nothing to reset (confirmed with user).** The
+  s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s43 and s44
+  were both pure Python, so nothing accumulated; marker bumped per the ≥2-session rule.
+- **Prior — session 42 (2026-08-17) — nothing to reset (confirmed with user).** The
   s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s41 and s42
   were both pure Python / design work, so nothing accumulated; marker bumped per the ≥2-session rule.
 - **Prior — session 40 (2026-07-06) — nothing to reset (confirmed with user).** The
@@ -1263,6 +1300,88 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **EVALUATION FRAMEWORK STEP 2 — `EvalReport` + metric registry + statistics (2026-08-19,
+  session 44).** `evaluation_framework.md` §13 step 2. `src/evaluation/` gains
+  `statistics.py`, `metrics.py`, `report.py`; `runner.mean_dpr` (the in-code-marked step-1
+  stand-in) is DELETED. **51 registered metrics**, every scalar carrying
+  `(value, n, stderr, converged)`. 49 new tests; full suite green.
+
+  **Statistics — two estimator kinds, one theory.** Every metric is a ratio with the DAY as
+  the independent replicate. A FIXED denominator (rounds/day = 16) is a plain mean; a RANDOM
+  denominator (saves actually forced, concentration checks actually made) is ratio-of-means
+  with the delta-method standard error (Cochran's ratio estimator, `survey::svyratio`). Both
+  are `se = sd(infl)/sqrt(N)` over per-day INFLUENCE VALUES `infl_d = (y_d − r·x_d)/mean(x)`,
+  and substituting a constant denominator collapses the second into the first — so they are
+  not rival methods. **Two code paths exist for one reason: floating-point exactness.**
+  `sd(y)/D/sqrt(N)` and `sd(y/D)/sqrt(N)` round differently, and the §12 parity proof asserts
+  BIT-IDENTICAL floats, so `fixed_estimate` mirrors `validation.run_level`'s operation order
+  exactly. A zero denominator yields `value=None`, never `0.0`. Influence values also make the
+  §6.1 paired delta uniform: `se(A−B) = sd(inflA − inflB)/sqrt(N)`, which is defined for ratio
+  metrics where a naive per-day difference is not.
+
+  **Denominators as a closed vocabulary (§5.2).** Not a scalar buried in an expression — a
+  named `Denominator` with its own description, carrying §5.2's rules (a control-lost turn
+  STAYS in `rounds`; `finite_hp` would change the basis and is a flagged alternate). The
+  declaration drives the estimator, so mis-declaring is a real bug, and it is tested by
+  varying `rounds_per_combat` and watching the denominator follow.
+
+  **Availability — the honesty mechanism (§3.4), and it was needed three times, not once.**
+  The prompt anticipated the control gap for War Angel; reading the code found the same class
+  of problem in three channels, none of them War-Angel-specific: (1) CONTROL — **no build
+  enables it**: War Angel/Scion use `ScriptedEnemyPolicy` (no control channel at all),
+  `silvertail.py:755` builds `BaselineEnemyPolicy` WITHOUT `control=`, and `enemy_options` is
+  hard-rejected, so it cannot be switched on from the framework; (2) MITIGATION — nothing
+  installs `Entity.damage_multiplier`; (3) the RESOURCE ledger — `record_resource` had no call
+  site. Each metric declares an availability predicate returning a REASON, and the two control
+  reasons are reported as DIFFERENT messages ("no channel at all" vs "channel switched off"
+  are different problems with different fixes). A fourth state is kept distinct:
+  available-but-zero-denominator (a `cha_save` fail rate on a run forcing no charisma save is
+  not a broken channel).
+
+  **Provenance (§4).** Build side resolved via the adapters' `describe()`; the enemy side
+  reported as an explicit `coverage` statement rather than a plausible-looking empty key, plus
+  `engine_commit`/`engine_dirty`, the day tier, the §6.1 pairing record, which enemy path
+  produced the run, and §11/§12's epistemic note (no external validation source exists) stated
+  once. §5.3's headline/panel/COLUMN split is structural, so a summon column cannot reach the
+  headline by a renderer's oversight.
+
+  **EX-POST REVIEW (user-requested step) — three additions built the same session.**
+  1. **Resource ledger LIVE**: `record_resource` wired at all 7 scheduler `resources.consume`
+     sites. Pure observation → byte-identical (proved by the parity test, which drives the same
+     scheduler). Turn-level action economy is correctly excluded (it is scheduler state, not a
+     `ResourcePool` entry). `spell_slots_per_day` counts `pact_magic_slot` too — the War Angel
+     spends that, so prefix-only keying would report a warlock chassis as casting nothing.
+  2. **Mitigation channel records EVERY typed hit, and gained an ACTOR dimension.** The first
+     half was the approved one-`if` change; testing it exposed that the channel is keyed by
+     damage type ALONE, so on a Silvertail run the character's, the summon's, and the
+     typed-damage ENEMY's output all pooled into one cell (a "share" read 3.72). Keys are now
+     `(actor_id, damage_type)` with a `mitigation_by_type(actor_ids)` reader — a deliberate §13
+     channel extension. Outgoing damage-type COMPOSITION now works per build: Silvertail 57.6%
+     radiant / 42.4% lightning; Starfire 67.7% typed, of that 59% radiant / 41% fire.
+  3. **Day-shape metrics** off the existing ledger: `dpr_combat_1..4` and
+     `party_dpr_opening_round`. Same defect class caught here too — `DayResult.damage_by_combat`
+     sums `damage_log`, which is ALL sources, so the first cut inflated War Angel L13 by the
+     enemy's own damage; they now read the per-(source, target) ledger and the four per-combat
+     figures partition the headline exactly. **These make a depletion curve visible that the
+     daily mean completely hides**: War Angel L13 runs 40.1 / 40.1 / 39.0 / **21.7** across the
+     day against a headline of 35.25.
+
+  **Two findings worth carrying forward.** (a) **War Angel's output is 100% UNTYPED** in the
+  model — so §5's `mult(t)` resistance model can never price any of its damage, and its
+  typed-composition metrics are structurally empty. (b) **§6.1's paired seeding buys ~1×, not
+  10–100×** — measured across five comparisons (table now in §6.1). One sequential RNG tape
+  desynchronizes the moment two runs draw a different NUMBER of dice, after which they are
+  effectively independent; the inert-toggle case still pairs exactly (`0 ± 0`), so the
+  machinery is right and the engine cannot feed it. **RNG substreams added as roadmap step 8**
+  with its own decision record required (it moves every seeded baseline and breaks the §12
+  bit-identical parity proof). Pairing stays the default — never worse, and valuable the moment
+  substreams land.
+
+  **Deferrals recorded (§14):** distribution shape / quantiles (needs a parallel
+  `DistributionMetric` kind — user decided to design it AFTER step 3 fixes the artifact shape);
+  a per-(round, source) damage ledger (why `party_dpr_opening_round` is labelled party-scoped);
+  per-entity resource keying. `src/validation.py` UNCHANGED throughout.
 
 - **EMPIRICAL ENEMY-PROFILE ARC — CLOSED (2026-06-25, session 36, Track 1 #2 + tear-down).**
   Final Chrome-dependent step: the **v2 refinement-10 cross-band reconciliation** of the damaging
@@ -3408,19 +3527,64 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      L13/L16). `src/validation.py` stays as-is as the regression check. `enemy`/`enemy_options`/
      `mode="finite_hp"` are hard-rejected rather than silently ignored (the factories own their
      enemy policy and combat loop); `combats_per_day` validated `== 4`. 39 mechanism tests.
-   - **(2) NEXT — `EvalReport` + metric registry + statistics** (§5, §6): declared metrics with
-     explicit denominators, `(value, n, stderr, converged)` on EVERY scalar, and paired seeding
-     as the comparison default. Replaces `evaluation/runner.mean_dpr`, which is marked in-code as
-     the step-1 stand-in.
-   - (3) serialization (JSON + tidy CSV + console, `schema_version`); (4) the `attacks` telemetry
-     channel (§8.1); **(5) the ENEMY-CONSTRUCTION SEAM (§3.4, added s43 — the old 5/6 shift to 6/7)** — `RunConfig.enemy` /
+   - ~~**(2) `EvalReport` + metric registry + statistics**~~ **DONE (s44):**
+     `src/evaluation/{statistics,metrics,report}.py`. 51 registered metrics, every scalar
+     carrying `(value, n, stderr, converged)`. `runner.mean_dpr` DELETED; the §12 parity proof
+     was re-pointed at the registry's `dpr` metric and still matches `validation.run_level`
+     BIT-IDENTICALLY on all six levels. See the s44 Done entry for the estimator design, the
+     availability mechanism, and the three ex-post additions.
+   - **NEXT — HEALING SUBSYSTEM (inserted ahead of step 3; user, s44).** Not an eval-framework
+     step: healing is **entirely unmodelled** (`Entity.heal()` has ZERO callers; War Angel's
+     Prayer of Healing is abstracted as a short-rest-EQUIVALENT for resource recovery, never
+     HP restored), and 31 of the 33 guides reference healing, so it is a cross-cutting
+     primitive. **SEMANTICS LOCKED in `design/healing.md`** (revised in-session after user
+     review — read it IN FULL, it supersedes an earlier draft on two points):
+     - **What it measures (§2):** not in-play healing decisions but **POTENTIAL healing**,
+       stacked against expected incoming damage — a standardized proxy for the party-healer
+       resources and consumables a self-sufficient build saves, which the 4×4 basis cannot
+       otherwise see.
+     - **Apply to the tracker; cap ONLY where `hp` is live (§4).** No `max_hp` cap for the
+       character and party (their `hp` is a signed balance — nothing in the engine reads it,
+       verified); cap AND a 0 floor for summons, whose `hp` gates death and turn access.
+       Enemies are NEVER healed. `net_damage_taken_per_round` may go negative = surplus
+       capacity, and must be labelled as such.
+     - **Summon categories (§6):** the `dies_at_zero_hp` boolean becomes an enum
+       `{threshold, vanishes, downed}` + an optional on-zero effect. `destroyed` is currently
+       PERMANENT, so `downed` needs a reversible state. Carries a RULES-VERIFICATION FLAG:
+       `silvertail.py:633`'s web-verified 2024 Primal Companion text says the beast DIES at 0
+       and revival needs 1 minute, which conflicts with "downed and healed in combat".
+     - **Hit Dice (§7):** all HD spent automatically at the short rest, MEAN-FIELD (rolling
+       would shift the RNG stream and break the §12 parity proof). One SR is the ENGINE
+       baseline; War Angel's second rest is BOUGHT via its PoH hook, and RAW PoH grants no
+       Hit Dice. Moves Silvertail's `mortal_beast` baseline only.
+     - **Metrics (§8) WAIT on the output-kinds design** — 3 scalars + 1 keyed breakdown.
+     Read `design/healing.md` §10 first: five questions to settle before coding, starting
+     with the corpus survey and the fact that **Prayer of Healing currently does two jobs**
+     and would be double-counted if its RAW effect were added naively.
+   - **THEN — OUTPUT-KINDS DESIGN + METRIC PRUNE (user, s44), before step 3.** The registry
+     models one output kind, so 25 of its 51 entries are three keyed breakdowns flattened
+     (saves by ability ×12, damage composition by type ×13) and ~6 more are algebraically
+     derivable. Irreducible set ≈ **20 scalars + 3 breakdowns**. Settle scalar / keyed
+     breakdown / distribution BEFORE serialization fixes the artifact shape a website will
+     be built against. Absorbs §14's distribution-shape deferral.
+   - **(3) THEN serialization** (§9): JSON + tidy CSV + console renderer, `schema_version`.
+     The report is already a structured object with a provenance block, so this is a rendering
+     step, not a redesign. Two things to carry: `EvalReport.influence` is deliberately NOT
+     serialized (a per-day vector per metric, only a comparison consumes it), and §14's
+     distribution-shape deferral is scheduled for design AFTER this step fixes the artifact
+     shape (user, s44).
+   - (4) the `attacks` telemetry channel (§8.1); **(5) the ENEMY-CONSTRUCTION SEAM (§3.4, added s43 — the old 5/6 shift to 6/7)** — `RunConfig.enemy` /
      `enemy_options` go live, the standardized enemy is built alongside the factories' baked-in
      one, then the enemy material is migrated OUT of the character `LEVELS` tables and the
      baked-in path deleted; carries the three §12 replacements for the retired guide targets.
      **Hard prerequisite for (6)** — control lives on `BaselineEnemyPolicy` and War Angel uses
      `ScriptedEnemyPolicy`, so WA control resilience is unmeasurable until this lands;
      (6) control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation;
-     (7) sweep YAML + config-hash caching + the baselines registry.
+     (7) sweep YAML + config-hash caching + the baselines registry; **(8) RNG SUBSTREAMS
+     (added s44)** — per-entity/per-purpose generators via `SeedSequence.spawn()`, the
+     prerequisite for §6.1's paired seeding to buy any precision at all (MEASURED: ~1×, not
+     the 10–100× the design assumed). Needs its own decision record: it moves every seeded
+     baseline and breaks the §12 bit-identical parity proof.
 6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
    (closest-to-complete), offense + profile-driven defense + control resilience, vs
    the 4×4 baseline. **Comparison idea (s37):** also reproduce **Treantmonk's tier

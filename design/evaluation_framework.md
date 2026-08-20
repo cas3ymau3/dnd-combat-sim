@@ -244,6 +244,28 @@ assumptions the provenance block exists to expose.
   type, typed damage mitigated, limited resources per day, concentration uptime/breaks.
 - **Separate, never merged into the headline:** roster/party total, per-summon columns.
 
+**Amendment (user, s44): summon attribution is a declared AXIS, not a fixed rule.**
+The original rule — a summon's damage never enters the headline — protected against a
+build's number silently changing meaning when it gained a companion. That protection is
+real, but the rule overreached: whether a summon's damage is the summoner's damage is a
+modelling CHOICE. Most published build evaluations count it as the caster's, because the
+summon is what the caster's action economy bought; but when the question is "does casting
+this summon beat casting that spell", the separated columns are what make the comparison
+legible. Both readings are wanted, at different times.
+
+So `RunConfig.attribution` selects it: `"character"` (the default and historical basis) or
+`"character_and_summons"`. **Allies are excluded under both** — an ally is a party member
+the build does not command, so its damage was never the build's to claim. The toggle
+changes which number is the HEADLINE, never which numbers exist: `summon_dpr` and
+`party_dpr` stay registered and identical under both modes. The mode is recorded in
+provenance, and — like `mode` and the enemy path — reports under different attributions
+must not be compared, because it changes what the headline MEANS rather than its value.
+
+One definition serves every metric that means "the build's output" (`RunConfig.own_roles`),
+so the headline, its per-combat decomposition and the typed-composition family cannot drift
+apart. `damage_taken_per_round` deliberately does NOT follow it: a summon soaking hits is a
+benefit reported in its own column, not a cost to fold into the character's.
+
 ---
 
 ## 6. Statistical treatment
@@ -263,6 +285,43 @@ reported delta is paired (and its stated interval means the paired thing).
 
 Designed in now because it is nearly free (reset the seed per config) and awkward to
 retrofit once artifacts exist.
+
+**Correction (s44, MEASURED): in this engine the pairing is worth ~1×, not 10–100×.**
+Five paired comparisons at 300 days each, comparing the paired standard error of the
+delta against the independent `sqrt(seA² + seB²)`:
+
+| comparison | delta | paired se | independent se | variance reduction |
+|---|---|---|---|---|
+| Starfire L15, FoM → Fire Shield | +3.132 | 0.2493 | 0.2700 | 1.17× |
+| Starfire L15, `with_party` on | +0.004 | 0.2729 | 0.2765 | 1.03× |
+| Silvertail L10, `mortal_beast` on | +0.019 | 0.1208 | 0.1177 | 0.95× |
+| Silvertail L10, `beast_effect=bless` | −0.061 | 0.1151 | 0.1174 | 1.04× |
+| Silvertail L10, `zone_effect` on | +5.601 | 0.1609 | 0.1586 | 0.97× |
+
+Row 2 is the diagnostic one: a toggle that moves DPR by **0.004** still carries the
+full 0.27 standard error. If pairing were working, a near-inert change would show a
+tiny delta *and* a tiny interval.
+
+**Why.** `SeededRNG` wraps ONE numpy generator, so all dice everywhere are a single
+tape read in order. The moment scenario B draws one more or one fewer die than A,
+every subsequent draw in B is offset by one position on that tape — and a tape read
+at a shifted offset is statistically no better than a fresh one. Pairing is therefore
+perfect up to the first divergence and worthless after it, and divergence normally
+happens in round 1 of combat 1 of day 1. The inert-toggle case still pairs exactly
+(delta `0 ± 0`), which is why the mechanism tests pass: the machinery is right, the
+engine cannot feed it.
+
+**The prerequisite for the real factor: RNG SUBSTREAMS.** Give each source of
+randomness its own stream (`numpy.random.SeedSequence.spawn()`), keyed per entity or
+per (entity, purpose). Then "the enemy's attack roll in round 3 of combat 2" draws
+the same value in both runs no matter what changed about the character's spell, and
+the enemy's entire contribution to the variance cancels exactly. **This is not a
+tweak**: it changes the dice every existing run consumes, so every seeded baseline
+moves and the §12 bit-identical parity proof against `validation.py` breaks. It gets
+its own roadmap step and its own decision record (§13 step 8).
+
+Pairing stays the DEFAULT meanwhile. It is never worse than independent seeding, it
+costs nothing, and it becomes valuable the moment substreams land.
 
 ### 6.2 Every scalar metric carries uncertainty
 
@@ -491,7 +550,20 @@ check mechanisms, not the composite. Three things carry that load instead:
    `primal_strike_unarmed=None` → the level row's `raw_unarmed`, with the source path
    named); the enemy side (`describe_parameters()`) waits on the `enemy_options` seam.
    `evaluation/runner.mean_dpr` is an explicit, in-code-marked stand-in for step 2.
-2. `EvalReport` + metric registry + statistics (stderr, convergence, paired seeding).
+2. ~~`EvalReport` + metric registry + statistics (stderr, convergence, paired
+   seeding).~~ **DONE (s44)** — `src/evaluation/{statistics,metrics,report}.py`, 49
+   mechanism tests in `tests/test_eval_metrics.py`. `runner.mean_dpr` is gone; the §12
+   parity proof was re-pointed at the registry's `dpr` metric and still matches
+   `validation.run_level` bit-identically. 51 registered metrics. Two estimator kinds
+   (fixed vs random denominator) unified through per-day influence values. Three
+   channels declare themselves UNAVAILABLE rather than emitting zeros (control, for
+   two different per-build reasons; mitigation; and — until the same session wired it
+   — the resource ledger). Provenance reports the build side resolved and says
+   plainly that the enemy side is not. **Ex-post additions the same session:** the §13
+   resource ledger went live (7 scheduler `consume` sites); the mitigation channel
+   gained an ACTOR dimension and now records every typed hit, giving outgoing
+   damage-type composition; and per-combat / opening-round shape metrics landed off
+   the existing ledger.
 3. Serialization: JSON + tidy CSV + console renderer; `schema_version`.
 4. The `attacks` telemetry channel (§8.1).
 5. **The enemy-construction seam (§3.4)** *(inserted s43, between the original steps 4 and
@@ -505,6 +577,12 @@ check mechanisms, not the composite. Three things carry that load instead:
    Placed after step 4 so the two enemy paths can be compared as artifacts, not by eye.
 6. Control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation.
 7. Sweep YAML + config-hash caching + baselines registry.
+8. **RNG substreams** *(added s44)* — per-entity / per-(entity, purpose) generators via
+   `SeedSequence.spawn()`, the prerequisite for §6.1's paired seeding to actually buy
+   precision. Needs its own decision record: it moves every seeded baseline and breaks
+   the §12 bit-identical parity proof, so it must be a deliberate, versioned change.
+   Sequenced last because nothing else depends on it and the intervals reported before
+   it are honest, just wider than they could be.
 
 `src/validation.py` **stays as-is** throughout as the regression check, and is migrated
 onto the framework only once step 1 reproduces its numbers exactly.
@@ -521,10 +599,61 @@ onto the framework only once step 1 reproduces its numbers exactly.
 - **General status-uptime metric** — §8 asks for "share of turns under specified
   statuses" in general; only the control channel is covered today. Needs `StatusSet`
   sampling at turn boundaries.
-- **HP recovered** — no dedicated channel; add to the economy channel when a healing
-  build makes it matter.
+- **HP recovered / healing — NO LONGER DEFERRED: promoted to the next work item
+  (user, s44). Semantics LOCKED in `design/healing.md`.** Its *metrics* still wait on
+  the output-kinds design below, because healing-by-source is a keyed breakdown and the
+  registry does not have that shape yet. Summary of the finding that promoted it: §8 lists this as a
+  missing channel, which understates it: **healing is not modelled at all.**
+  `Entity.heal()` exists and has ZERO callers in `src/`; no verb, no `Choice`, and no
+  policy path produces healing. What looks like healing in the build data is not — War
+  Angel's Prayer of Healing is modelled purely as a short-rest ENABLER (it buys an extra
+  SR's worth of resource recovery: see the `war_angel.LEVELS` resource comments), never as
+  HP restored. So "track healing, including healing provided by summons" (user, s44) is
+  three pieces of work, not a metric addition:
+  1. a healing EFFECT in the verb/effect layer that a `Choice` can produce and resolution
+     can apply, with its own place in the damage/heal phase ordering;
+  2. a **source-attributed** ledger — `(source, target)` like the damage ledger, NOT an
+     aggregate counter, so "healing provided by the summon" is answerable and the s44
+     roster-scoping lesson is not repeated;
+  3. only then the metrics, which should carry the same `attribution` axis as damage
+     (§5.3) so a summon's healing counts as the build's under the same declared mode.
+  **Needs its own decision first**: healing is only meaningful against a finite-HP model,
+  and the standardized basis is fixed-length with a threshold-HP character (memory
+  `standardized-dpr-baseline-not-realism`), so what a healing number would even MEAN in the
+  4×4 comparison basis has to be settled before any of it is built.
 - **Full stateful control durations** — remains the `enemy_model.md` §10 fidelity
   deferral; §7 above deliberately keeps the mean-field expectation (§7.2).
+- **OUTPUT KINDS — scalars vs keyed breakdowns vs distributions** *(added s44; NEXT
+  DESIGN PASS, before step 3)*. The registry models ONE output kind, so 25 of its 51
+  entries are three keyed breakdowns flattened into one row per key (saves forced by
+  ability ×6, save fail rate by ability ×6, damage composition by type ×13), and a
+  further ~6 rows are algebraically derivable from others (`concentration_breaks_per_day`
+  = checks × break_rate; `typed_damage_per_round` = `dpr` × `typed_damage_share`;
+  `saves_forced_per_round` = the sum of its six; `party_dpr` = headline + summon + ally).
+  The irreducible set is roughly **20 scalars + 3 breakdowns**. **Decided (user, s44):
+  settle output kinds and prune BEFORE step 3 serializes anything** — §9 says a website
+  will be built against the artifact schema, and this session's §6.1 lesson was that
+  retrofitting after artifacts exist is the expensive path. The distribution entry below
+  is the third kind and folds into the same pass.
+- **Distribution shape (quantiles, spread)** *(added s44)* — every metric today is a
+  mean with a standard error, which describes where the average lands and says nothing
+  about consistency: two builds with identical mean DPR and very different day-to-day
+  spread are indistinguishable in this report. A quantile is not a ratio and has no
+  delta-method standard error, so it does not fit `MetricDef` — it needs a parallel
+  `DistributionMetric` kind with order-statistic or bootstrap intervals. **Decided
+  (user, s44): design it after step 3**, once serialization has fixed the artifact
+  shape; the seam is a second metric kind alongside the scalar registry, not a new
+  field on the existing one.
+- **Per-(round, source) damage ledger** *(added s44)* — `CombatResult.damage_received`
+  is per round but keyed by target only; `damage_by_source_target` is attributed by
+  source but per-combat cumulative. So no metric can say "how much did the CHARACTER
+  deal in round 1". `party_dpr_opening_round` is labelled party-scoped for exactly this
+  reason. Unblocks a character-scoped front-loading metric.
+- **Per-entity resource keying** *(added s44)* — the §13 economy channel keys
+  `resources_spent` by resource NAME and sums across the roster, so a summon build
+  cannot separate the master's slots from the companion's. A deliberate channel
+  extension when a build makes it matter, mirroring the actor dimension the mitigation
+  channel gained in s44.
 - **Multi-character party** — `Roster.characters` is plural in anticipation, but no
   build produces more than one character yet; unblocks §7's AoE-share and kiting
   toggles when it lands (§3.3).

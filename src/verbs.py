@@ -786,13 +786,22 @@ def resolve_damage(
     # multiplier (the typed-damage-mitigated figure), keyed by type, so the res-check
     # ON/OFF state and the per-type loss are interpretable downstream.
     mult = target.damage_multiplier_for(event.damage_type) if target is not None else None
+    before = total
     if mult is not None:
-        before = total
         total = int(round(total * mult))
-        if telemetry is not None:
-            telemetry.record_mitigation(
-                event.damage_type, outgoing_before=before, outgoing_after=total,
-            )
+    # Record EVERY typed hit, not only the ones a multiplier touched (s44).  With a
+    # profile installed the cell carries before > after — the typed-damage-mitigated
+    # figure.  With NO profile it carries before == after, which is not a wasted
+    # record: it is the build's outgoing damage-type COMPOSITION, the number that
+    # makes "how much of this build's output is radiant?" answerable, and the input
+    # any later mitigation question needs anyway.  Untyped damage declares no type to
+    # key on and is skipped.  Recording is pure observation either way, so this moves
+    # no damage and no baseline.
+    if telemetry is not None and event.damage_type is not None:
+        telemetry.record_mitigation(
+            actor.id, event.damage_type,
+            outgoing_before=before, outgoing_after=total,
+        )
 
     log.info(
         "%s deals %d damage to %s  [%dd%d%s rolls=%s%s bonus=%d%s]",

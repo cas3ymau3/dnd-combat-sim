@@ -141,7 +141,7 @@ def test_mult_emits_mitigation_channel():
     enemy = Entity(name="enemy", hp=10**9, damage_multiplier=band_damage_multipliers(18))
     tel = CombatTelemetry()
     total = _resolve(_flat_damage_event(enemy, "fire", 100), telemetry=tel)
-    cell = tel.mitigation["fire"]
+    cell = tel.mitigation_by_type()["fire"]
     assert cell.outgoing_before == 100
     assert cell.outgoing_after == total
     assert cell.outgoing_after < cell.outgoing_before     # fire IS mitigated at 17+
@@ -154,7 +154,8 @@ def test_force_outgoing_recorded_but_not_mitigated():
     tel = CombatTelemetry()
     total = _resolve(_flat_damage_event(enemy, "force", 100), telemetry=tel)
     assert total == 100
-    assert tel.mitigation["force"].outgoing_before == tel.mitigation["force"].outgoing_after == 100
+    force = tel.mitigation_by_type()["force"]
+    assert force.outgoing_before == force.outgoing_after == 100
 
 
 # ---------------------------------------------------------------------------
@@ -168,11 +169,17 @@ def test_res_check_off_no_drift():
     assert _resolve(_flat_damage_event(enemy, "fire", 100)) == 100
 
 
-def test_res_check_off_records_no_mitigation():
+def test_res_check_off_records_composition_with_nothing_mitigated():
+    """No profile → the typed hit is recorded with before == after (s44).
+
+    The channel records every TYPED hit now, because those same numbers are the
+    build's outgoing damage-type COMPOSITION when nothing is being mitigated. The
+    invariant that matters is unchanged: with no profile, nothing is removed."""
     enemy = Entity(name="enemy", hp=10**9)
     tel = CombatTelemetry()
     _resolve(_flat_damage_event(enemy, "fire", 100), telemetry=tel)
-    assert tel.mitigation == {}
+    cell = tel.mitigation_by_type()["fire"]
+    assert cell.outgoing_before == cell.outgoing_after == 100
 
 
 def test_untyped_hit_unchanged_even_with_profile():
@@ -181,7 +188,7 @@ def test_untyped_hit_unchanged_even_with_profile():
     enemy = Entity(name="enemy", hp=10**9, damage_multiplier=band_damage_multipliers(18))
     tel = CombatTelemetry()
     assert _resolve(_flat_damage_event(enemy, None, 100), telemetry=tel) == 100
-    assert tel.mitigation == {}
+    assert tel.mitigation == {}          # untyped: no type to key the cell on
 
 
 # ---------------------------------------------------------------------------
@@ -200,6 +207,6 @@ def test_mitigation_flows_through_scheduler_telemetry():
         damage_dice=(0, 0), damage_bonus=100, damage_type="fire", cost="none",
     ))
     sched.run()
-    cell = sched.telemetry.mitigation["fire"]
+    cell = sched.telemetry.mitigation_by_type()["fire"]
     assert cell.outgoing_before == 100
     assert cell.outgoing_after == round(100 * band_damage_multiplier(18, "fire"))

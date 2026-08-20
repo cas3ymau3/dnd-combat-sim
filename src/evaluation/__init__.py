@@ -1,8 +1,9 @@
 """
 evaluation — the build-agnostic evaluation framework (design/evaluation_framework.md).
 
-Step 1 of §13's build sequence: ``RunConfig`` + ``BuildAdapter`` + ``Roster`` +
-the build registry, with adapters for the three builds that exist today.
+Steps 1–2 of §13's build sequence: ``RunConfig`` + ``BuildAdapter`` + ``Roster`` +
+the build registry (step 1), and the metric registry + ``EvalReport`` + the
+statistics layer with paired seeding (step 2).
 
 The layer's reason for existing (§1): ``src/validation.py`` is hardcoded to the
 War Angel and reads entities by tuple position, so it cannot be generalized in
@@ -16,9 +17,12 @@ proof.
 """
 
 from .adapters import BuildAdapter, OptionSpec, available_builds, get_adapter, register
-from .config import DAY_TIERS, ENEMY_KINDS, MODES, RunConfig
+from .config import ATTRIBUTIONS, DAY_TIERS, ENEMY_KINDS, MODES, RunConfig
+from .metrics import DENOMINATORS, METRICS, Denominator, MetricDef, MetricRegistry
+from .report import Comparison, EvalReport, Provenance, build_report, compare
 from .roster import ROLES, Roster
-from .runner import RunOutput, mean_dpr, simulate
+from .runner import RunOutput, run, simulate
+from .statistics import Convergence, MetricValue, PairedDelta
 
 __all__ = [
     "BuildAdapter",
@@ -30,9 +34,24 @@ __all__ = [
     "DAY_TIERS",
     "ENEMY_KINDS",
     "MODES",
+    "ATTRIBUTIONS",
     "Roster",
     "ROLES",
     "simulate",
+    "run",
     "RunOutput",
-    "mean_dpr",
+    # step 2 — metrics, statistics, report
+    "MetricDef",
+    "MetricRegistry",
+    "METRICS",
+    "Denominator",
+    "DENOMINATORS",
+    "MetricValue",
+    "Convergence",
+    "PairedDelta",
+    "EvalReport",
+    "Provenance",
+    "build_report",
+    "compare",
+    "Comparison",
 ]
