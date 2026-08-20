@@ -129,11 +129,20 @@ engine primitives. Module map (`src/`):
 - `modifiers.py` — Modifier + ModifierStack (fold-left, tick expiry, phase filter).
 - `resources.py` — ResourcePool/ResourceEntry (SR/LR restore; spell_slot_1..9).
 - `statuses.py` — StatusSet (tick-expiring flags keyed on (round, turn_index)).
+- `healing.py` — the healing substrate (design/healing.md): `HealSpec` + `resolve_healing`
+  (phase order H1-H8, the healing counterpart of #8 — no crit doubling), `HitDiceSpec` and
+  the TWO Hit Dice rules. **The rule to remember: healing resolved INSIDE combat rolls;
+  healing applied OUTSIDE combat is MEAN-FIELD and draws nothing** — any out-of-combat
+  dice source would shift the shared stream for every build and break the parity proof.
 - `entity.py` — Entity (threshold HP + base stats + modifier stack + pools); `stat()` folds the stack.
 - `events.py` — Tick, event dataclasses, EventQueue (heapq, insertion tiebreak). `AttackRollEvent`/`DamageEvent` carry `extra_flat_damage` (bleed); `AttackRollEvent.policy_riders` gates the actor's post-roll deciders.
 - `policy.py` — Policy protocol, GameState, Choice; post-roll Miss/Hit decision contexts (HitResponse carries `extra_damage_dice` AND `rider_damage` — substrate #6 outgoing riders, RiderDamageSpec); HitContext carries `origin`/`range_` (modality taxonomy) for rider gating; the DEFENDER-side intercept point (`on_incoming_hit` + IncomingAttackContext / InterceptResponse / CounterSpec); the failed-save reroll point (`on_failed_save` + FailedSaveContext / SaveRerollResponse — Indomitable); the caster post-damage rider (`on_deal_damage` — Fueled Spellfire); sample policies.
 - `verbs.py` — resolve_attack_roll (+ on_miss/on_hit/intercept deciders) + resolve_damage (phase-ordered, sums extra_flat_damage); roll_d20; resolve_saving_throw (+ optional `reroll_decider`); apply_masteries_on_hit. The on_hit decider returns `(extra_dice, extra_masteries, rider_damage)`: `extra_dice` folds into the weapon hit (smite), `rider_damage` spawns SEPARATE typed DamageEvents (substrate #6 — Fount of Moonlight, Primal Strike).
 - `scheduler.py` — pop-earliest loop + subscriber registry; decision-point → policy → enqueue; resource validation; status sweep; per-turn economy hung for mid-turn deciders; miss/hit/**intercept**/**save-reroll** decider closures (intercept = `intercept_event`, design §4 #15; save-reroll = Indomitable — both consult the *target's* policy).
+- `entity.py`'s `zero_hp_category` — the closed enum {threshold, vanishes, downed}
+  (design/healing.md §6) replacing the old `dies_at_zero_hp` boolean, which survives as a
+  property over it. `downed` is a REVERSIBLE state (`destroyed` is permanent); the
+  scheduler and every commander read `is_out_of_action`.
 - `summons.py` — substrate #7 / 7a: `SummonSpec` + `create_entity`/`destroy_entity` (verb 12) on an `(entities, policies)` roster (day-start or mid-combat); a controlled ally is a `create_entity`'d Actor, COMMANDED on its controller's turn via `Choice.actor` (the cost is the controller's, the event's actor is the commanded entity → its own per-summon DPR column). Teardown keyed to `effect_source` via `Entity.remove_effect` (a `destroyed` flag).
 - `day_runner.py` — one adventuring day (LR → 4 combats); samples combat times + SR placement; before/between-combat hooks.
 - `builds/war_angel.py` — first concrete build (per-level data + policy).
