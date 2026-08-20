@@ -249,37 +249,71 @@ def test_a_breakdown_can_never_become_the_headline():
 
 
 def test_the_per_ability_save_family_covers_the_closed_stat_vocabulary():
-    """§5.4: the family is now a KEY SPACE rather than 16 flat rows, and the
-    completeness argument is unchanged — every (ability, channel) pair exists, so a
-    zero is a measurement and not an absence."""
+    """§5.4: the family is a KEY SPACE, not 16 flat rows, and it is UNCROSSED — the
+    two dimensions are reported independently.  The completeness argument survives:
+    every ability and every channel has a cell, so a zero is a measurement."""
     saves = METRICS.breakdown("saves_forced_per_round")
     rates = METRICS.breakdown("save_fail_rate")
     for family in (saves, rates):
         assert family.key_space.names == ("ability", "channel")
-        assert set(family.key_space.cells()) == {
-            (stat, channel) for stat in SAVE_STATS for channel in SAVE_CHANNELS
-        }
-        # …plus the three declared margins: per-ability, per-channel, and total.
-        margins = set(family.margin_keys())
-        assert (ALL, ALL) in margins
-        assert all((stat, ALL) in margins for stat in SAVE_STATS)
-        assert all((ALL, channel) in margins for channel in SAVE_CHANNELS)
+        assert family.crossed is False
+        assert set(family.cell_keys()) == (
+            {(stat, ALL) for stat in SAVE_STATS}
+            | {(ALL, channel) for channel in SAVE_CHANNELS}
+        )
+        # The grid's cells ("dex saves forced by CONTROL specifically") are NOT
+        # materialized: the s46 review dropped them because their per-cell
+        # denominators are structurally near-zero.
+        assert (SAVE_STATS[0], SAVE_CHANNELS[0]) not in family.cell_keys()
+        assert family.margin_keys() == ((ALL, ALL),)
+
+
+def test_a_crossed_breakdown_materializes_the_grid_where_the_cross_tab_is_the_point():
+    """The other side of the same choice.  A summon healing UNDER FIRE is a
+    different fact from a summon healing at leisure (healing.md §11.1), so that
+    breakdown earns its grid — crossing is a declaration, not a default that
+    quietly multiplies cells."""
+    healing = METRICS.breakdown("healing_by_source")
+    assert healing.crossed is True
+    assert (("summons", "combat") in healing.cell_keys()
+            and ("summons", "between") in healing.cell_keys())
 
 
 def test_a_margin_is_computed_here_because_its_stderr_cannot_be_rebuilt_downstream():
-    """§5.4's survival rule, made concrete. The [*|*] margin's VALUE is the sum of
-    its cells, but its standard error is not any function of the cells' — that
-    needs their covariance, which only this layer sees."""
-    report = run(RunConfig(build="war_angel", level=13, n_days=40, seed=11))
+    """§5.4's survival rule, made concrete. The [*|*] margin's VALUE is recoverable
+    from one dimension's cells, but its standard error is not any function of
+    theirs — that needs their covariance, which only this layer sees."""
+    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=11,
+                           build_options=ZONE))
     forced = report.breakdown("saves_forced_per_round")
 
     total = forced.total()
-    cells = [v for v in forced.cells.values() if v.measured]
-    assert total is not None and total.measured
-    assert total.value == pytest.approx(sum(v.value for v in cells))
-    # The naive downstream reconstruction (independence) is NOT what we report.
-    naive = math.sqrt(sum(v.stderr ** 2 for v in cells))
-    assert total.stderr != pytest.approx(naive, rel=1e-9) or naive == 0.0
+    by_ability = [v for k, v in forced.cells.items() if k[1] == ALL]
+    assert total is not None and total.measured and total.value > 0
+    assert total.value == pytest.approx(sum(v.value for v in by_ability))
+    # The naive downstream reconstruction (assume independence) is NOT what we report.
+    naive = math.sqrt(sum(v.stderr ** 2 for v in by_ability))
+    assert total.stderr != pytest.approx(naive, rel=1e-6)
+
+
+def test_an_uncrossed_breakdowns_cells_do_not_partition_the_total():
+    """A warning the serializer has to respect: with the dimensions reported
+    INDEPENDENTLY, each dimension's profile covers the whole quantity on its own.
+    Adding every cell up double-counts — which is why the total is a declared
+    margin rather than something a renderer computes."""
+    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=11,
+                           build_options=ZONE))
+    forced = report.breakdown("saves_forced_per_round")
+
+    total = forced.total().value
+    by_ability = sum(v.value for k, v in forced.cells.items() if k[1] == ALL)
+    by_channel = sum(v.value for k, v in forced.cells.items()
+                     if k[0] == ALL and v.measured)
+    every_cell = sum(v.value for v in forced.cells.values() if v.measured)
+
+    assert by_ability == pytest.approx(total)
+    assert by_channel == pytest.approx(total)
+    assert every_cell == pytest.approx(2 * total)      # …and that is the trap
 
 
 def test_rate_metrics_declare_random_denominators_and_counts_declare_fixed_ones():
@@ -292,9 +326,11 @@ def test_rate_metrics_declare_random_denominators_and_counts_declare_fixed_ones(
     # denominator is the saves forced with THAT ability in THAT channel — not the
     # family total, which would make every cell a share of the same number.
     assert METRICS.cell("save_fail_rate", (ALL, ALL)).denominator_spec.fixed is False
-    assert METRICS.cell("save_fail_rate", ("dex_save", "control")).denominator \
-        == "saves_forced[dex_save|control]"
-    assert METRICS.cell("saves_forced_per_round", ("dex_save", "control")).denominator \
+    assert METRICS.cell("save_fail_rate", ("dex_save", ALL)).denominator \
+        == "saves_forced[dex_save|*]"
+    assert METRICS.cell("save_fail_rate", (ALL, "control")).denominator \
+        == "saves_forced[*|control]"
+    assert METRICS.cell("saves_forced_per_round", ("dex_save", ALL)).denominator \
         == "rounds"
 
 

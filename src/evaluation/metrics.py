@@ -548,6 +548,21 @@ class KeySpace:
         """Every full key — the Cartesian product, margins excluded."""
         return tuple(product(*(d.keys for d in self.dimensions)))
 
+    def marginal_cells(self) -> tuple[tuple[str, ...], ...]:
+        """One key per (dimension, key) pair, with :data:`ALL` in every OTHER
+        position — the dimensions reported INDEPENDENTLY rather than crossed.
+
+        For ``(ability, channel)`` that is the six per-ability profiles plus the
+        two per-channel ones: 8 keys instead of the grid's 12.  See
+        :attr:`BreakdownDef.crossed` for when a grid earns its cells.
+        """
+        out: list[tuple[str, ...]] = []
+        for position, dimension in enumerate(self.dimensions):
+            for key in dimension.keys:
+                out.append(tuple(key if i == position else ALL
+                                 for i in range(len(self.dimensions))))
+        return tuple(out)
+
     def index_of(self, dimension: str) -> int:
         try:
             return self.names.index(dimension)
@@ -607,6 +622,17 @@ class BreakdownDef:
     numerator: Callable[[DaySample, tuple[str, ...]], float]
     denominator: "str | Callable[[tuple[str, ...]], Denominator]"
     margins: tuple[tuple[str, ...], ...] = ()
+    #: Are the dimensions CROSSED (materialize the full grid) or INDEPENDENT
+    #: (materialize each dimension's own marginal profile)?  A grid must earn its
+    #: cells: crossing multiplies them, and a cell whose denominator is
+    #: structurally near-zero is a permanently-unmeasured row that a renderer still
+    #: has to lay out.  ``saves`` is uncrossed because the per-ability profile and
+    #: the damage/control split are the two questions anyone asks, while "dex saves
+    #: forced by CONTROL specifically" has a denominator that rarely survives.
+    #: ``healing_by_source`` IS crossed, because the cross-tab is the point: a
+    #: summon healing under fire is a different fact from a summon healing at
+    #: leisure (healing.md §11.1).
+    crossed: bool = True
     convergence: Convergence = DEFAULT_CONVERGENCE
     availability: Callable[[RunContext, tuple[str, ...]], "str | None"] = (
         lambda ctx, key: None
@@ -638,23 +664,35 @@ class BreakdownDef:
 
     # -- key expansion ----------------------------------------------------
 
+    def cell_keys(self) -> tuple[tuple[str, ...], ...]:
+        """The keys this breakdown MATERIALIZES, margins excluded."""
+        return (self.key_space.cells() if self.crossed
+                else self.key_space.marginal_cells())
+
     def margin_keys(self) -> tuple[tuple[str, ...], ...]:
-        """Every declared margin key, in declaration order, de-duplicated."""
+        """Every declared margin key, in declaration order, de-duplicated.
+
+        Computed by collapsing the MATERIALIZED cells, so an uncrossed breakdown's
+        margins are collapses of its marginal profiles rather than of a grid it
+        never built.  A collapse that lands back on an existing cell is skipped —
+        it would be the same number under two names.
+        """
+        cells = set(self.cell_keys())
         out: list[tuple[str, ...]] = []
         seen: set[tuple[str, ...]] = set()
         for collapse in self.margins:
             positions = {self.key_space.index_of(d) for d in collapse}
-            for key in self.key_space.cells():
+            for key in self.cell_keys():
                 margin = tuple(ALL if i in positions else v
                                for i, v in enumerate(key))
-                if margin not in seen:
+                if margin not in seen and margin not in cells:
                     seen.add(margin)
                     out.append(margin)
         return tuple(out)
 
     def keys(self) -> tuple[tuple[str, ...], ...]:
         """Cells first, then margins — the report's assembly order."""
-        return self.key_space.cells() + self.margin_keys()
+        return self.cell_keys() + self.margin_keys()
 
     def cell_name(self, key: tuple[str, ...]) -> str:
         return self.name + format_key(key)
@@ -702,7 +740,8 @@ class BreakdownDef:
             "source": self.source,
             "definition": self.definition,
             "group": self.group,
-            "cells": [list(k) for k in self.key_space.cells()],
+            "crossed": self.crossed,
+            "cells": [list(k) for k in self.cell_keys()],
             "margins": [list(k) for k in self.margin_keys()],
             "margin_note": self.margin_note,
             "convergence": self.convergence.describe(),
@@ -863,10 +902,13 @@ class MetricRegistry:
         """Every declaration, by output kind — §5.1's "the registry IS the data
         dictionary", extended to §5.4's kinds.
 
-        Note what got smaller in s46 and what did not: the number of DECLARATIONS
-        a human maintains fell from 51 to 22, while the number of estimated cells
-        rose (``ability × channel`` is a full grid where the flat registry carried
-        only its margins).  The declarations are the maintenance cost.
+        Note what the s46 review optimized, and what it did not: the number of
+        DECLARATIONS a human maintains fell from 51 to 22, while the number of
+        ESTIMATED CELLS rose from 51 to 66.  That is the honest trade — the
+        declarations carry the maintenance and interpretation cost, the cells are
+        just numbers.  A first draft crossed the saves dimensions and reached 90
+        cells; that grid was judged not to earn them, which is what
+        ``BreakdownDef.crossed`` exists to express.
         """
         return {
             "scalars": [d.describe() for d in self.scalars()],
@@ -964,6 +1006,7 @@ def _saves_cell_availability(ctx: RunContext, key: tuple[str, ...]) -> "str | No
     channel is not.  Per-cell availability is what keeps both facts in one
     breakdown instead of forcing the family back apart into flat rows."""
     return _requires_control_channel(ctx) if key[1] == "control" else None
+
 
 
 def _saves_forced_denominator(key: tuple[str, ...]) -> Denominator:
@@ -1313,12 +1356,16 @@ def _build_default_registry() -> MetricRegistry:
         definition=(
             "Saving throws forced per round, either direction (the build forcing "
             "them and the enemy forcing them both land in this channel). The "
-            "[*|*] margin is the total; [ability|*] is the per-ability exposure; "
-            "[*|channel] splits damaging pressure from control pressure."
+            "[ability|*] is the per-ability exposure and [*|channel] splits damaging "
+            "pressure from control pressure; the [*|*] margin is the total. "
+            "UNCROSSED (§5.4): the grid's 'dex saves forced by control specifically' "
+            "cells were dropped in the s46 review — they multiply the cell count and "
+            "their denominators rarely survive."
         ),
         numerator=lambda s, key: s.saves(stat=_opt(key[0]), channel=_opt(key[1])),
         denominator="rounds",
-        margins=(("channel",), ("ability",), ("ability", "channel")),
+        margins=(("ability", "channel"),),
+        crossed=False,
         availability=_saves_cell_availability,
     ))
     breakdown(BreakdownDef(
@@ -1330,15 +1377,18 @@ def _build_default_registry() -> MetricRegistry:
             "Share of forced saves that failed — the build's defensive profile "
             "against each kind of pressure. A ratio over a RANDOM per-cell "
             "denominator: each save weighs equally, not each day. [*|control] is "
-            "control resilience; [ability|*] is the per-ability weakness. Most "
-            "full cells will be UNMEASURED (their denominator is zero on a given "
-            "run) — the readable numbers are in the margins, and an unmeasured cell "
-            "is reported as such rather than as a zero."
+            "control resilience; [ability|*] is the per-ability weakness. UNCROSSED "
+            "(§5.4): the crossed grid's cells (a specific ability in a specific "
+            "channel) were dropped in the s46 review — their per-cell denominators "
+            "are structurally near-zero, so they would be permanently-unmeasured "
+            "rows a renderer still has to lay out. A cell with no forced saves is "
+            "still reported as unmeasured rather than as a zero."
         ),
         numerator=lambda s, key: s.saves(stat=_opt(key[0]), channel=_opt(key[1]),
                                          outcome="failed"),
         denominator=_saves_forced_denominator,
-        margins=(("channel",), ("ability",), ("ability", "channel")),
+        margins=(("ability", "channel"),),
+        crossed=False,
         events=lambda s, key: s.saves(stat=_opt(key[0]), channel=_opt(key[1])),
         availability=_saves_cell_availability,
         convergence=Convergence(rel_stderr=0.05, min_events=500.0),

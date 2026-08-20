@@ -86,7 +86,19 @@ type, condition, resource, …):
    applied outside combat is MEAN-FIELD and draws nothing.** This is the problem
    RNG substreams (`evaluation_framework.md` §13 step 8) exist to solve; until they
    land, mean-field is the answer, not "roll it and re-baseline".
-4. **Reflect after building — STOP and ask.** Once the feature is built and green,
+4. **Settle an output SHAPE before anything serializes it.** Added session 46,
+   generalizing that session's trigger. The metric registry modelled one output kind, so
+   25 of its 51 entries were keyed breakdowns with the key flattened into the metric
+   NAME — and the decisive cost was not row count but that `damage_share_acid` forces
+   every downstream consumer to parse names back into keys, while a tidy CSV and a
+   website both want the key as a COLUMN. The rule: **when a layer's output is about to
+   be written to an artifact that a consumer will be built against, settle its shape
+   FIRST** — retrofitting after artifacts exist is the expensive path, and it is the
+   same lesson §6.1's paired-seeding retrofit taught in s44. Sits alongside
+   [[design-first-for-cross-cutting-primitives]]: that one is about surveying the corpus
+   before building a broadly-reused primitive; this one is about fixing a contract
+   before publishing against it.
+5. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
    decision-record conventions). Capture the answers before moving on; process
@@ -125,6 +137,21 @@ does anyone read this, is it derivable from another row, and is it a genuine sca
 or one cell of a breakdown that belongs in a single vector output? **Prune
 deliberately** — an unused metric is a maintenance and interpretation cost, and the
 registry is also the published data dictionary.
+
+**THE SURVIVAL RULE — apply this, not "derivable ⇒ cut" (added s46).** The naive rule
+is wrong and the s46 review found the counter-example immediately:
+`concentration_breaks_per_day` equals `checks_per_day × break_rate` EXACTLY in value,
+but its standard error is not reconstructible by a consumer holding the other two —
+that needs their covariance, which only the estimating layer sees. So:
+
+> **A row survives if someone reads it AND (it is not derivable, OR its uncertainty
+> matters and cannot be reconstructed downstream).** Derivable-and-nobody-reads-it is
+> the cut.
+
+Two corollaries that generalize past this registry. **Margins belong to the estimating
+layer**, never to a renderer, for exactly the same reason. And **count DECLARATIONS,
+not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell only to
+66, because the maintenance and interpretation cost lives in the declarations.
 
 > **Currently disabled (re-enable before exit):** none. **EMPIRICAL/CHROME ARC CLOSED (s36).**
 > Sessions 28-36 needed **Claude-in-Chrome** (MM scrape); s36 finished #2 (the last
@@ -1378,11 +1405,21 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   concentration (all 3 KEPT under the survival rule); control + mitigation (all 4 KEPT as
   declared-unavailable — removing them would make the §3.4 gap invisible in the artifact).
   **Exactly ONE row dropped outright: `typed_damage_per_round`.**
-  **51 declarations → 22 (15 scalars + 7 breakdowns).** The CELL count rises to 90, because
-  `ability × channel` is a full grid where the flat registry carried only its margins —
-  named in the doc rather than hidden. Most `save_fail_rate` cells will be UNMEASURED (a
-  per-cell denominator of zero) and the readable numbers live in the margins; what got
-  smaller is the number of declarations a human maintains, which is the maintenance cost.
+  **51 declarations → 22 (15 scalars + 7 breakdowns); 51 estimated rows → 66 cells.**
+
+  **CROSSING IS A DECLARATION (`BreakdownDef.crossed`) — the user's call at the END of the
+  review, after the first draft shipped.** A multi-dimensional breakdown either
+  materializes the full grid (crossed) or each dimension's own marginal profile
+  (independent). The first cut crossed the saves dimensions and landed at 90 cells; the
+  user's read was that the grid did not earn them — "dex saves forced by CONTROL
+  specifically" is a permanently-unmeasured row a renderer still has to lay out. So
+  `save_fail_rate` and `saves_forced_per_round` are **INDEPENDENT** (8 cells + total each:
+  6 per-ability profiles + 2 per-channel), while **`healing_by_source` stays CROSSED**
+  because there the cross-tab IS the quantity — a summon healing under fire is a different
+  fact from a summon healing at leisure. **A consequence with teeth, now a test: an
+  independent breakdown's cells do NOT partition its total** (each dimension covers the
+  whole quantity on its own, so summing every cell double-counts) — a second reason the
+  total is a declared margin and never something a renderer adds up.
 
   **HEALING'S METRICS (healing.md §8) — the first customer, and the test of whether the
   kinds actually work.** Three scalars + one breakdown, every one through the per-METRIC

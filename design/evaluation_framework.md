@@ -308,6 +308,20 @@ context`, `damage_type`). Four properties are load-bearing:
   correlated cell estimates CANNOT reconstruct the aggregate's standard error — see the
   survival rule below. The same numerator function serves cells and margins, because
   `*` maps to "no filter" in the telemetry read-outs.
+- **CROSSING IS A DECLARATION, not a default** (`BreakdownDef.crossed`, added at the end
+  of the s46 review). A multi-dimensional breakdown either materializes the full grid
+  (**crossed**) or materializes each dimension's own marginal profile (**independent**).
+  A grid must earn its cells: crossing multiplies them, and a cell whose denominator is
+  structurally near-zero is a permanently-unmeasured row a renderer still has to lay out.
+  - `save_fail_rate` is **independent**: the per-ability profile and the damage/control
+    split are the two questions anyone asks, while "dex saves forced by CONTROL
+    specifically" almost never has a surviving denominator. 8 cells, not 12+9.
+  - `healing_by_source` is **crossed**: a summon healing under fire is a different fact
+    from a summon healing at leisure, so the cross-tab IS the quantity.
+  - **An independent breakdown's cells do not partition its total** — each dimension
+    covers the whole quantity on its own, so summing every cell double-counts. That is a
+    second reason the total is a declared margin and never something a renderer adds up,
+    and it is asserted as a test.
 
 **3. Distribution** — the third kind, **SEAM RESERVED, NOT BUILT (s46)**. §14's
 distribution-shape deferral stands: a quantile is not a ratio, has no delta-method
@@ -339,17 +353,16 @@ Everything else that "disappeared" became a cell or a declared margin.
 |---|---|---|
 | damage columns (`party`/`summon`/`ally_dpr`) | 3 scalars | `dpr_by_role` breakdown, `[*]` margin = party |
 | damage taken (character / summon) | 2 scalars | `damage_taken_per_round_by_role` breakdown |
-| saves (totals + per-channel + per-ability) | 16 scalars | 2 breakdowns keyed `ability × channel`, 3 margin families each |
+| saves (totals + per-channel + per-ability) | 16 scalars | 2 INDEPENDENT breakdowns over `ability`, `channel` (8 cells + total each) |
 | damage-type composition | 15 scalars | 1 breakdown keyed `damage_type` + `typed_damage_share` scalar |
 | per-combat DPR | 4 scalars | `dpr_by_combat` breakdown |
 | healing (§ healing.md §8) | — | 3 scalars + `healing_by_source` keyed `source_role × context` |
 
-**51 declarations → 22** (15 scalars + 7 breakdowns). The *cell* count rises to 90,
-because `ability × channel` is a full grid where the flat registry carried only its
-margins — an honest consequence, named rather than hidden: most `save_fail_rate` cells
-will be unmeasured (a per-cell denominator of zero), and the readable numbers live in the
-margins. The data dictionary is what got smaller, and the data dictionary is the thing
-humans maintain.
+**51 declarations → 22** (15 scalars + 7 breakdowns), and **51 estimated rows → 66
+cells**. The first draft of the review crossed the saves dimensions and landed at 90
+cells; the user's call at the end of the pass was that the grid did not earn them, which
+is what `crossed` exists to express. The declarations are what humans maintain, and they
+more than halved.
 
 #### Two rules a breakdown ENFORCES structurally
 
