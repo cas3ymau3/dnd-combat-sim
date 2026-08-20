@@ -1,6 +1,7 @@
 # Healing — decision record and build plan
 
-> **Status: SEMANTICS LOCKED (session 44, revised same session after user review).
+> **Status: SEMANTICS LOCKED (session 44; revised twice after user review, most
+> recently 2026-08-20 on summon Hit Dice — §7(b2)).
 > NOT YET BUILT.** This is the design note that precedes the build, per the standing
 > rule that a broadly-reused primitive gets a corpus survey and a design note up front
 > rather than the usual forcing-function minimum. The build is the next work item; §7
@@ -185,14 +186,44 @@ data comments. **HD spending attaches to REAL short rests only**: RAW, Prayer of
 Healing is not a short rest and grants no Hit Dice. So War Angel gets one HD window,
 not two.
 
-**(b2) Summon Hit Dice are NOT the same problem as character Hit Dice — see §10.6.**
-Spend-all is exact for an uncapped tracker and lossy for a capped one, so the summon
-case cannot reuse the character rule. Pinned for the build session (user, s44).
+**(b2) SUMMONS DO NOT SPEND HIT DICE (v1). DECIDED — user, s44 cont. 2026-08-20.**
+Because summons are capped (§4), the character's spend-all rule does not transfer:
+their HD healing would be bounded by damage already taken, unusable against damage
+taken later, and worthless once the summon is destroyed. All three are TIMING
+questions, and **the user's decision is that summon damage/healing timing is not worth
+modelling** — the complexity it would add buys too little.
 
-**(c) It will move Silvertail's `mortal_beast` baseline — and only that one.** A
-summon's `hp` is live, so healing it at the short rest changes whether it survives
-later combats, which changes behaviour and therefore dice. Correct, but it should be an
-expected diff rather than a surprise. Character-side HD healing moves nothing (§3).
+So the v1 rule is the simplest one that adds nothing: **a summon never expends Hit
+Dice.** It can still be healed by anything else (§4) — this is only about the automatic
+rest-time rule.
+
+**Why this candidate over the other.** The alternative the user raised was "a summon
+expends HD to heal to `max_hp` after EVERY combat, short rest or not" — a deliberate
+RAW break, bounded by its HD pool. It is not harder to build (the `between_combats`
+hook already exists), but it has two costs this one does not:
+
+1. **It would flatten the summon-survival axis.** `mortal_beast` and the `recast` hook
+   exist precisely to measure "does the companion die, and what does reviving cost"
+   (substrate #7, sessions 18–24). Topping up after every fight makes death rarer and
+   pushes `mortal_beast=True` toward the immortal case — degrading an axis the project
+   deliberately built. How much depends entirely on pool size versus incoming damage.
+2. **It moves a validated baseline; this one does not.** Summons receive no healing at
+   all today, so "summons do not spend HD" is *no change to summon behaviour* and
+   Silvertail's `mortal_beast` numbers stay exactly where they are.
+
+**What it costs.** It under-credits a build whose companion genuinely has Hit Dice, in
+the conservative direction — declining to invent survivability rather than inventing
+it. **Whether that matters is an empirical question we cannot answer yet**, because it
+is not established that the corpus's companions have Hit Dice in the PC sense at all
+(§10.5). So the upgrade is PRE-AGREED rather than reopened: **if the corpus survey
+finds HD-bearing companions where it matters, adopt the heal-to-max-after-each-combat
+rule as specified above.** It is a switch, not a redesign.
+
+**(c) Character-side HD healing moves NO baseline.** `hp` is behaviourally inert for
+characters and allies (§3), and under (b2) summons are untouched. Combined with (a)'s
+mean-field rule, **the Hit Dice piece should be byte-identical across every existing
+build** — which makes the §12 parity proof a precise check on it rather than an
+approximate one. If any baseline moves, something is wrong.
 
 **(d) Hit Dice are build data we mostly do not have.** Only Starfire Scion has a
 `hit_dice` pool. War Angel, Silvertail and the beast all need HD count, die size and
@@ -257,26 +288,19 @@ Do not add flat rows to a registry already flagged as bloated.
 4. **In-combat versus between-combat healing.** The day model has between-combat
    windows, and PoH occupies one. Healing under fire is a different quantity from
    healing at leisure and should not be pooled into one per-round number.
-5. **Summon Hit Dice interact badly with the cap — PINNED (user, s44).** The §7
-   spend-all rule is exact for the character precisely BECAUSE there is no cap: every
-   die adds its full value to the balance regardless of damage taken, which is the
-   standardized potential figure §2 wants. A summon is capped, and that breaks all
-   three properties at once:
-   - **Damage-dependent.** HD healing on a summon is bounded by the damage it has
-     already taken. Spend-all wastes dice whenever the summon is near full, so the
-     naive rule over-reports healing delivered while under-using the pool.
-   - **Timing-dependent.** Dice spent at the short rest cannot heal damage taken
-     AFTER it. So there is a genuine husbanding decision — which makes this a POLICY
-     question ("policies are code"), not a data rule, and the first place in the
-     healing design where a build has to decide something.
-   - **Survival-contingent, and front-loaded.** For a `vanishes` summon, HD healing
-     before it drops is the only thing that can prevent the wink-out; once destroyed
-     the dice are worthless. Its Hit Dice are therefore worth most early and worth
-     nothing after death — the opposite shape from a character's, whose dice are worth
-     the same whenever they are spent.
-   **Also verify:** whether the summons in the corpus even HAVE Hit Dice in the PC
-   sense, and whether they can take a short rest at all. Do not assume from the
-   character rule.
-6. **Verify no DPR baseline moves.** Piece 2 is pure observation; piece 1 mutates `hp`,
-   which is behaviourally inert for characters and allies (§3) and live only for
-   summons (§7c). The §12 parity proof is the canary and must stay green.
+5. **Do the corpus's summons actually HAVE Hit Dice?** The §7(b2) decision — summons
+   never expend HD in v1 — is deliberately conservative, and its cost is under-crediting
+   a companion that really does have dice to spend. That cost is only real if such
+   companions exist in the corpus, which is **not established**: it should not be
+   assumed from the character rule that a summoned creature has Hit Dice in the PC sense,
+   or can take a short rest at all. Settle this in the survey. If HD-bearing companions
+   turn out to matter, the pre-agreed upgrade in §7(b2) is a switch, not a redesign.
+
+6. **Verify no DPR baseline moves — and under these decisions, expect NONE.** Piece 2
+   is pure observation. Piece 1 mutates `hp`, which is behaviourally inert for
+   characters and allies (§3). Piece 4 is mean-field (no dice) and leaves summons alone
+   (§7 a, b2). So nothing here should shift a single die: the §12 parity proof is a
+   PRECISE check, not an approximate one, and any movement means something is wrong.
+   The one place a baseline can legitimately move is a build that starts actually
+   CASTING a healing spell in combat, since that spends an action or a slot that would
+   otherwise have produced damage — a real change, not drift.

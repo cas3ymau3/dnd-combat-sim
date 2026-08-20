@@ -3553,10 +3553,19 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
        PERMANENT, so `downed` needs a reversible state. Carries a RULES-VERIFICATION FLAG:
        `silvertail.py:633`'s web-verified 2024 Primal Companion text says the beast DIES at 0
        and revival needs 1 minute, which conflicts with "downed and healed in combat".
-     - **Hit Dice (§7):** all HD spent automatically at the short rest, MEAN-FIELD (rolling
-       would shift the RNG stream and break the §12 parity proof). One SR is the ENGINE
-       baseline; War Angel's second rest is BOUGHT via its PoH hook, and RAW PoH grants no
-       Hit Dice. Moves Silvertail's `mortal_beast` baseline only.
+     - **Hit Dice (§7):** the CHARACTER and party spend all HD automatically at the short
+       rest, MEAN-FIELD (rolling would shift the RNG stream and break the §12 parity proof).
+       One SR is the ENGINE baseline; War Angel's second rest is BOUGHT via its PoH hook,
+       and RAW PoH grants no Hit Dice, so HD attach to the REAL short rest only.
+       **SUMMONS NEVER SPEND HIT DICE in v1 (user, 2026-08-20)** — the capped case is all
+       TIMING questions (bounded by damage already taken, unusable against later damage,
+       worthless once destroyed) and the user decided that timing is not worth modelling.
+       The rejected alternative (heal to max after every combat, a deliberate RAW break)
+       would flatten the summon-SURVIVAL axis that `mortal_beast` + `recast` exist to
+       measure, and would move a validated baseline. It is PRE-AGREED as a switch if the
+       corpus survey finds HD-bearing companions where it matters. **Net effect: the whole
+       Hit Dice piece should be BYTE-IDENTICAL on every existing build** — no baseline
+       moves at all, which makes the §12 parity proof a precise check on it.
      - **Metrics (§8) WAIT on the output-kinds design** — 3 scalars + 1 keyed breakdown.
      Read `design/healing.md` §10 first: five questions to settle before coding, starting
      with the corpus survey and the fact that **Prayer of Healing currently does two jobs**
