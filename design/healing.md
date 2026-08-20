@@ -89,9 +89,14 @@ precisely what makes it safe to apply: it cannot move any DPR baseline.
 **Healing applies to the tracker. Cap only where `hp` is live. Enemies are never
 healed.**
 
+The cap follows the zero-HP CATEGORY (§6), not the roster role — a `threshold` summon
+is an unbounded tracker exactly like a character, which is what Silvertail's default
+(`mortal_beast=False`) immortal beast already is.
+
 | class | at ≤ 0 HP | `max_hp` cap on healing | healable |
 |---|---|---|---|
 | character, party ally | keeps acting; balance goes negative | **no cap** (§2) | yes |
+| summon — `threshold` | keeps acting; balance goes negative | **no cap** | yes |
 | summon — `vanishes` | removed permanently | **capped** | no, once gone |
 | summon — `downed` | stops acting; `hp` floored at 0 | **capped** | yes → resumes acting |
 | enemy | unchanged | — | **never** (§5) |
@@ -186,44 +191,52 @@ data comments. **HD spending attaches to REAL short rests only**: RAW, Prayer of
 Healing is not a short rest and grants no Hit Dice. So War Angel gets one HD window,
 not two.
 
-**(b2) SUMMONS DO NOT SPEND HIT DICE (v1). DECIDED — user, s44 cont. 2026-08-20.**
-Because summons are capped (§4), the character's spend-all rule does not transfer:
-their HD healing would be bounded by damage already taken, unusable against damage
-taken later, and worthless once the summon is destroyed. All three are TIMING
-questions, and **the user's decision is that summon damage/healing timing is not worth
-modelling** — the complexity it would add buys too little.
+**(b2) SUMMONS SPEND HIT DICE AFTER EACH COMBAT, TO THE DEFICIT. DECIDED — user,
+2026-08-20.** After every combat (the `between_combats` hook already fires after each,
+including combat 4), a summon spends Hit Dice to **heal its deficit — `max_hp − hp` —
+bounded by its remaining pool.** Not "top up to full": the pool is the binding
+constraint, and once it is empty the summon gets nothing after later combats.
 
-So the v1 rule is the simplest one that adds nothing: **a summon never expends Hit
-Dice.** It can still be healed by anything else (§4) — this is only about the automatic
-rest-time rule.
+**Stated as a deficit, this rule never overheals**, so the §4 cap question does not
+arise for Hit Dice at all — it is well-defined for any entity with a `max_hp`,
+including a `threshold` summon.
 
-**Why this candidate over the other.** The alternative the user raised was "a summon
-expends HD to heal to `max_hp` after EVERY combat, short rest or not" — a deliberate
-RAW break, bounded by its HD pool. It is not harder to build (the `between_combats`
-hook already exists), but it has two costs this one does not:
+**It deliberately breaks RAW** — Hit Dice are spent on short rests, and this spends
+them after every combat. Accepted (user): the alternative is modelling summon
+damage/healing TIMING, and the complexity that would add buys too little.
 
-1. **It would flatten the summon-survival axis.** `mortal_beast` and the `recast` hook
-   exist precisely to measure "does the companion die, and what does reviving cost"
-   (substrate #7, sessions 18–24). Topping up after every fight makes death rarer and
-   pushes `mortal_beast=True` toward the immortal case — degrading an axis the project
-   deliberately built. How much depends entirely on pool size versus incoming damage.
-2. **It moves a validated baseline; this one does not.** Summons receive no healing at
-   all today, so "summons do not spend HD" is *no change to summon behaviour* and
-   Silvertail's `mortal_beast` numbers stay exactly where they are.
+**Why this differs from the character rule, and why that is not an inconsistency.**
+The character spends all dice unconditionally and uncapped — *potential* healing,
+§2's survivability proxy, where every die counts because nothing reads a character's
+`hp`. A summon spends only what it needs — *actual* healing, mechanically real because
+its HP gates death and turn access. Two rules because they measure two different
+things; it is the §2/§4 split appearing again, not a rule that drifted.
 
-**What it costs.** It under-credits a build whose companion genuinely has Hit Dice, in
-the conservative direction — declining to invent survivability rather than inventing
-it. **Whether that matters is an empirical question we cannot answer yet**, because it
-is not established that the corpus's companions have Hit Dice in the PC sense at all
-(§10.5). So the upgrade is PRE-AGREED rather than reopened: **if the corpus survey
-finds HD-bearing companions where it matters, adopt the heal-to-max-after-each-combat
-rule as specified above.** It is a switch, not a redesign.
+**What this buys that a simpler rule would not.** Three things, and the third is the
+reason a "summons never spend HD" draft of this section was rejected:
+1. a **depletion curve** bounded by the pool — the same shape `dpr_combat_1..4`
+   exposes, and what the four-combat day exists to show;
+2. **damage-responsive spending** — a lightly-damaged companion keeps dice for later,
+   which makes the pool a real resource rather than a fixed bonus;
+3. **an interaction with external healing**: if the character heals the beast, the
+   beast spends fewer of its OWN dice. Character healing therefore has knock-on value
+   in preserving companion resources — exactly the kind of mechanism this subsystem
+   exists to surface, and one a never-spend rule would hide completely.
 
-**(c) Character-side HD healing moves NO baseline.** `hp` is behaviourally inert for
-characters and allies (§3), and under (b2) summons are untouched. Combined with (a)'s
-mean-field rule, **the Hit Dice piece should be byte-identical across every existing
-build** — which makes the §12 parity proof a precise check on it rather than an
-approximate one. If any baseline moves, something is wrong.
+**Ordering against the `recast` hook.** Both live in `between_combats`. Revive FIRST
+(`recast` restores the beast at full HP — `silvertail.py:649`), then apply HD healing,
+which is then a no-op because the deficit is zero. A `vanishes` summon that is
+destroyed and NOT revived cannot be helped by Hit Dice at all; a `downed` one can, and
+healing it above 0 is what returns it to acting (§6).
+
+**(c) One baseline moves: Silvertail at `mortal_beast=True`, and nothing else.**
+Character-side HD healing moves nothing — `hp` is behaviourally inert for characters
+and allies (§3) — and (a)'s mean-field rule draws no dice. Summon HD healing under
+(b2) DOES change behaviour, but only where a summon's HP gates something: that is
+`mortal_beast=True`, a NON-DEFAULT toggle (`mortal_beast` defaults to `False`). The
+default Silvertail path is a `threshold` summon whose `hp` nothing reads, so it moves
+no dice either. Expect exactly one intended diff, and treat any other movement as a
+bug.
 
 **(d) Hit Dice are build data we mostly do not have.** Only Starfire Scion has a
 `hit_dice` pool. War Angel, Silvertail and the beast all need HD count, die size and
@@ -288,19 +301,21 @@ Do not add flat rows to a registry already flagged as bloated.
 4. **In-combat versus between-combat healing.** The day model has between-combat
    windows, and PoH occupies one. Healing under fire is a different quantity from
    healing at leisure and should not be pooled into one per-round number.
-5. **Do the corpus's summons actually HAVE Hit Dice?** The §7(b2) decision — summons
-   never expend HD in v1 — is deliberately conservative, and its cost is under-crediting
-   a companion that really does have dice to spend. That cost is only real if such
-   companions exist in the corpus, which is **not established**: it should not be
-   assumed from the character rule that a summoned creature has Hit Dice in the PC sense,
-   or can take a short rest at all. Settle this in the survey. If HD-bearing companions
-   turn out to matter, the pre-agreed upgrade in §7(b2) is a switch, not a redesign.
+5. **Which summons have Hit Dice, and how many?** §7(b2) now makes a summon's pool
+   load-bearing — it sets both how much recovery the companion gets and how fast it
+   runs out — so this is DATA the build needs, not a footnote. It should not be assumed
+   from the character rule that a summoned creature has Hit Dice in the PC sense. Get
+   the count and die size per companion from verified 2024 text in the survey. A
+   companion with NO Hit Dice simply never heals this way, which is the rule degrading
+   gracefully rather than a special case.
 
-6. **Verify no DPR baseline moves — and under these decisions, expect NONE.** Piece 2
-   is pure observation. Piece 1 mutates `hp`, which is behaviourally inert for
-   characters and allies (§3). Piece 4 is mean-field (no dice) and leaves summons alone
-   (§7 a, b2). So nothing here should shift a single die: the §12 parity proof is a
-   PRECISE check, not an approximate one, and any movement means something is wrong.
-   The one place a baseline can legitimately move is a build that starts actually
-   CASTING a healing spell in combat, since that spends an action or a slot that would
-   otherwise have produced damage — a real change, not drift.
+6. **Verify baseline movement is confined to the ONE expected place.** The ledger is
+   pure observation; character-side `hp` is behaviourally inert (§3); Hit Dice are
+   mean-field and draw no dice (§7a). The only intended diff is **Silvertail at
+   `mortal_beast=True`**, where summon HD healing changes whether the companion
+   survives later combats (§7c) — a non-default toggle. The §12 parity proof
+   (bit-identical against `validation.run_level`) must stay green throughout, and any
+   movement outside that one scenario is a bug, not drift. The other legitimate source
+   of change is a build that starts actually CASTING a healing spell in combat, since
+   that spends an action or a slot that would otherwise have produced damage — a real
+   modelling change, not drift.
