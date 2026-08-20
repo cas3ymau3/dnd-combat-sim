@@ -185,6 +185,10 @@ data comments. **HD spending attaches to REAL short rests only**: RAW, Prayer of
 Healing is not a short rest and grants no Hit Dice. So War Angel gets one HD window,
 not two.
 
+**(b2) Summon Hit Dice are NOT the same problem as character Hit Dice — see §10.6.**
+Spend-all is exact for an uncapped tracker and lossy for a capped one, so the summon
+case cannot reuse the character rule. Pinned for the build session (user, s44).
+
 **(c) It will move Silvertail's `mortal_beast` baseline — and only that one.** A
 summon's `hp` is live, so healing it at the short rest changes whether it survives
 later combats, which changes behaviour and therefore dice. Correct, but it should be an
@@ -253,6 +257,26 @@ Do not add flat rows to a registry already flagged as bloated.
 4. **In-combat versus between-combat healing.** The day model has between-combat
    windows, and PoH occupies one. Healing under fire is a different quantity from
    healing at leisure and should not be pooled into one per-round number.
-5. **Verify no DPR baseline moves.** Piece 2 is pure observation; piece 1 mutates `hp`,
+5. **Summon Hit Dice interact badly with the cap — PINNED (user, s44).** The §7
+   spend-all rule is exact for the character precisely BECAUSE there is no cap: every
+   die adds its full value to the balance regardless of damage taken, which is the
+   standardized potential figure §2 wants. A summon is capped, and that breaks all
+   three properties at once:
+   - **Damage-dependent.** HD healing on a summon is bounded by the damage it has
+     already taken. Spend-all wastes dice whenever the summon is near full, so the
+     naive rule over-reports healing delivered while under-using the pool.
+   - **Timing-dependent.** Dice spent at the short rest cannot heal damage taken
+     AFTER it. So there is a genuine husbanding decision — which makes this a POLICY
+     question ("policies are code"), not a data rule, and the first place in the
+     healing design where a build has to decide something.
+   - **Survival-contingent, and front-loaded.** For a `vanishes` summon, HD healing
+     before it drops is the only thing that can prevent the wink-out; once destroyed
+     the dice are worthless. Its Hit Dice are therefore worth most early and worth
+     nothing after death — the opposite shape from a character's, whose dice are worth
+     the same whenever they are spent.
+   **Also verify:** whether the summons in the corpus even HAVE Hit Dice in the PC
+   sense, and whether they can take a short rest at all. Do not assume from the
+   character rule.
+6. **Verify no DPR baseline moves.** Piece 2 is pure observation; piece 1 mutates `hp`,
    which is behaviourally inert for characters and allies (§3) and live only for
    summons (§7c). The §12 parity proof is the canary and must stay green.
