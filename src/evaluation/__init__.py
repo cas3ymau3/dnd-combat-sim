@@ -18,8 +18,25 @@ proof.
 
 from .adapters import BuildAdapter, OptionSpec, available_builds, get_adapter, register
 from .config import ATTRIBUTIONS, DAY_TIERS, ENEMY_KINDS, MODES, RunConfig
-from .metrics import DENOMINATORS, METRICS, Denominator, MetricDef, MetricRegistry
-from .report import Comparison, EvalReport, Provenance, build_report, compare
+from .metrics import (
+    ALL,
+    DENOMINATORS,
+    METRICS,
+    BreakdownDef,
+    Denominator,
+    Dimension,
+    KeySpace,
+    MetricDef,
+    MetricRegistry,
+)
+from .report import (
+    BreakdownValue,
+    Comparison,
+    EvalReport,
+    Provenance,
+    build_report,
+    compare,
+)
 from .roster import ROLES, Roster
 from .runner import RunOutput, run, simulate
 from .statistics import Convergence, MetricValue, PairedDelta
@@ -46,6 +63,12 @@ __all__ = [
     "METRICS",
     "Denominator",
     "DENOMINATORS",
+    # §5.4 output kinds (s46): scalar / keyed breakdown / (reserved) distribution
+    "BreakdownDef",
+    "BreakdownValue",
+    "Dimension",
+    "KeySpace",
+    "ALL",
     "MetricValue",
     "Convergence",
     "PairedDelta",

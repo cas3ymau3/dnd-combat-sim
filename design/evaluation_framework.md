@@ -266,6 +266,116 @@ so the headline, its per-combat decomposition and the typed-composition family c
 apart. `damage_taken_per_round` deliberately does NOT follow it: a summon soaking hits is a
 benefit reported in its own column, not a cost to fold into the character's.
 
+### 5.4 Output kinds — scalar / keyed breakdown / distribution (LOCKED, s46)
+
+§5.1 declared a metric set but only ONE output kind: a scalar carrying
+`(value, n, stderr, converged)`. The registry grew to 51 entries under that single
+shape, and the s46 review found that **25 of them were not 25 quantities** — they were
+three keyed breakdowns with the key flattened into the metric NAME (`damage_share_acid`,
+`save_fail_rate_dex_save`). That is the shape problem this section settles, and it is
+settled BEFORE §9 serialization because §9 says a website will be built against the
+artifact schema, and retrofitting a shape after artifacts exist is the expensive path.
+
+**The decisive argument is not row count.** Flattening puts the key inside the name, so
+every downstream consumer has to parse `damage_share_acid` back into `("acid",)` to
+render a composition bar or a tidy CSV. A tidy CSV wants `metric, key, value` columns;
+a website wants a vector it can iterate. Both want the key as DATA.
+
+#### The three kinds
+
+**1. Scalar** — `MetricDef`, exactly as §5.1 declares it. One quantity, one number,
+one standard error. **The headline is always a scalar** (§5.3's "exactly one headline"
+only means something if it cannot be a cell of something larger).
+
+**2. Keyed breakdown** — `BreakdownDef`: ONE quantity over a CLOSED key space, where the
+key space is a product of named `Dimension`s (`ability × channel`, `source_role ×
+context`, `damage_type`). Four properties are load-bearing:
+
+- **Every cell is a real estimate.** A cell carries its own `(value, n, stderr,
+  converged)` from the same `statistics.py` machinery — a breakdown is not a dict of
+  bare floats.
+- **Availability is PER CELL, not per breakdown.** This is what lets the control-channel
+  cells keep their own "unmeasurable until the §13 step-5 enemy seam" reason while the
+  damage-channel cells of the same breakdown report normally, and what lets the
+  `summons` cell of a role-keyed breakdown say "this build's roster has no summons"
+  (§3.4's honesty requirement, preserved through the collapse).
+- **The denominator is a template over the key.** `save_fail_rate[dex_save|control]`
+  divides by the dex control saves actually forced, not by the family total. This
+  absorbs the hand-written per-key denominator family the flat registry needed.
+- **Margins are declared, not derived downstream.** A margin is a key tuple with `*` in
+  the collapsed positions (`save_fail_rate[*|control]` is the old
+  `control_save_fail_rate`). Margins are computed here because a consumer holding N
+  correlated cell estimates CANNOT reconstruct the aggregate's standard error — see the
+  survival rule below. The same numerator function serves cells and margins, because
+  `*` maps to "no filter" in the telemetry read-outs.
+- **CROSSING IS A DECLARATION, not a default** (`BreakdownDef.crossed`, added at the end
+  of the s46 review). A multi-dimensional breakdown either materializes the full grid
+  (**crossed**) or materializes each dimension's own marginal profile (**independent**).
+  A grid must earn its cells: crossing multiplies them, and a cell whose denominator is
+  structurally near-zero is a permanently-unmeasured row a renderer still has to lay out.
+  - `save_fail_rate` is **independent**: the per-ability profile and the damage/control
+    split are the two questions anyone asks, while "dex saves forced by CONTROL
+    specifically" almost never has a surviving denominator. 8 cells, not 12+9.
+  - `healing_by_source` is **crossed**: a summon healing under fire is a different fact
+    from a summon healing at leisure, so the cross-tab IS the quantity.
+  - **An independent breakdown's cells do not partition its total** — each dimension
+    covers the whole quantity on its own, so summing every cell double-counts. That is a
+    second reason the total is a declared margin and never something a renderer adds up,
+    and it is asserted as a test.
+
+**3. Distribution** — the third kind, **SEAM RESERVED, NOT BUILT (s46)**. §14's
+distribution-shape deferral stands: a quantile is not a ratio, has no delta-method
+standard error, and needs order-statistic or bootstrap intervals. What s46 fixes is that
+the artifact reserves a `distributions` section from `schema_version` 1, so the work can
+land later without a schema break. Designing the estimator remains scheduled for after
+§9 serialization.
+
+#### The survival rule for a prune (s46)
+
+The obvious rule — *derivable ⇒ cut* — is wrong, and the review found the
+counter-example immediately: `concentration_breaks_per_day` equals
+`concentration_checks_per_day × concentration_break_rate` EXACTLY in value, but its
+standard error is not reconstructible by a consumer holding the other two (that needs
+the covariance, which only this layer sees). The same holds for every margin.
+
+> **A row survives if someone reads it AND (it is not derivable, OR its uncertainty
+> matters and cannot be reconstructed downstream).** Derivable-and-nobody-reads-it is
+> the cut.
+
+Under that rule the s46 prune removed exactly ONE row outright —
+`typed_damage_per_round` (= `dpr × typed_damage_share`, and nothing reads it; the share
+is the interpretive quantity and the gate on reading the type breakdown at all).
+Everything else that "disappeared" became a cell or a declared margin.
+
+#### What the review settled, family by family
+
+| family | before | after |
+|---|---|---|
+| damage columns (`party`/`summon`/`ally_dpr`) | 3 scalars | `dpr_by_role` breakdown, `[*]` margin = party |
+| damage taken (character / summon) | 2 scalars | `damage_taken_per_round_by_role` breakdown |
+| saves (totals + per-channel + per-ability) | 16 scalars | 2 INDEPENDENT breakdowns over `ability`, `channel` (8 cells + total each) |
+| damage-type composition | 15 scalars | 1 breakdown keyed `damage_type` + `typed_damage_share` scalar |
+| per-combat DPR | 4 scalars | `dpr_by_combat` breakdown |
+| healing (§ healing.md §8) | — | 3 scalars + `healing_by_source` keyed `source_role × context` |
+
+**51 declarations → 22** (15 scalars + 7 breakdowns), and **51 estimated rows → 66
+cells**. The first draft of the review crossed the saves dimensions and landed at 90
+cells; the user's call at the end of the pass was that the grid did not earn them, which
+is what `crossed` exists to express. The declarations are what humans maintain, and they
+more than halved.
+
+#### Two rules a breakdown ENFORCES structurally
+
+- **`healing_by_source` declares NO margin over `context`.** `healing.md` §11.1 found
+  the corpus does most of its healing out of combat by preference, so healing under fire
+  and healing at leisure are different quantities. Refusing the margin means no cell in
+  the artifact ever sums them — the rule is enforced by the SHAPE, not by a comment
+  someone can ignore. (Collapsing `source_role` is fine and is declared.)
+- **`damage_share` declares no margin at all** — its total is 1.0 by construction, so a
+  margin would be a fabricated row. `typed_damage_share` is the meaningful aggregate and
+  is a separate scalar with a different denominator.
+
+
 ---
 
 ## 6. Statistical treatment
@@ -623,27 +733,25 @@ onto the framework only once step 1 reproduces its numbers exactly.
   4×4 comparison basis has to be settled before any of it is built.
 - **Full stateful control durations** — remains the `enemy_model.md` §10 fidelity
   deferral; §7 above deliberately keeps the mean-field expectation (§7.2).
-- **OUTPUT KINDS — scalars vs keyed breakdowns vs distributions** *(added s44; NEXT
-  DESIGN PASS, before step 3)*. The registry models ONE output kind, so 25 of its 51
-  entries are three keyed breakdowns flattened into one row per key (saves forced by
-  ability ×6, save fail rate by ability ×6, damage composition by type ×13), and a
-  further ~6 rows are algebraically derivable from others (`concentration_breaks_per_day`
-  = checks × break_rate; `typed_damage_per_round` = `dpr` × `typed_damage_share`;
-  `saves_forced_per_round` = the sum of its six; `party_dpr` = headline + summon + ally).
-  The irreducible set is roughly **20 scalars + 3 breakdowns**. **Decided (user, s44):
-  settle output kinds and prune BEFORE step 3 serializes anything** — §9 says a website
-  will be built against the artifact schema, and this session's §6.1 lesson was that
-  retrofitting after artifacts exist is the expensive path. The distribution entry below
-  is the third kind and folds into the same pass.
-- **Distribution shape (quantiles, spread)** *(added s44)* — every metric today is a
-  mean with a standard error, which describes where the average lands and says nothing
-  about consistency: two builds with identical mean DPR and very different day-to-day
-  spread are indistinguishable in this report. A quantile is not a ratio and has no
-  delta-method standard error, so it does not fit `MetricDef` — it needs a parallel
-  `DistributionMetric` kind with order-statistic or bootstrap intervals. **Decided
-  (user, s44): design it after step 3**, once serialization has fixed the artifact
-  shape; the seam is a second metric kind alongside the scalar registry, not a new
-  field on the existing one.
+- ~~**OUTPUT KINDS — scalars vs keyed breakdowns vs distributions**~~ **SETTLED AND
+  BUILT (s46) — see §5.4.** The registry modelled ONE output kind, so 25 of its 51
+  entries were three keyed breakdowns flattened into one row per key and ~6 more were
+  algebraically derivable. §5.4 locks the three kinds (scalar / keyed breakdown /
+  distribution), the per-cell availability and key-templated denominator rules, the
+  declared-margin rule, and the SURVIVAL RULE that replaced "derivable ⇒ cut" (a margin's
+  standard error is not reconstructible downstream, so derivability alone never justifies
+  a cut). Result: **51 declarations → 22** (15 scalars + 7 breakdowns), one row dropped
+  outright (`typed_damage_per_round`). Healing's §8 metrics were the first customer and
+  the test of whether the kinds work.
+- **Distribution shape (quantiles, spread)** *(added s44; SEAM RESERVED s46, ESTIMATOR
+  STILL DEFERRED)* — every scalar today is a mean with a standard error, which describes
+  where the average lands and says nothing about consistency: two builds with identical
+  mean DPR and very different day-to-day spread are indistinguishable in this report. A
+  quantile is not a ratio and has no delta-method standard error, so it does not fit
+  `MetricDef` — it needs a parallel `DistributionDef` kind with order-statistic or
+  bootstrap intervals. **s46 named it as §5.4's third kind and reserved its artifact
+  section so it can land without a `schema_version` break; the estimator itself is still
+  scheduled for AFTER step 3**, once serialization has fixed the artifact shape.
 - **Per-(round, source) damage ledger** *(added s44)* — `CombatResult.damage_received`
   is per round but keyed by target only; `damage_by_source_target` is attributed by
   source but per-combat cumulative. So no metric can say "how much did the CHARACTER

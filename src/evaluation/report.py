@@ -41,7 +41,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterable
 
-from .metrics import METRICS, MetricRegistry
+from .metrics import ALL, METRICS, BreakdownDef, MetricRegistry
 from .statistics import MetricValue, PairedDelta, paired_delta
 
 if TYPE_CHECKING:                                    # pragma: no cover
@@ -164,6 +164,90 @@ class Provenance:
 
 
 # ---------------------------------------------------------------------------
+# The structured view of a breakdown (§5.4)
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class BreakdownValue:
+    """One :class:`~src.evaluation.metrics.BreakdownDef`'s worth of answers.
+
+    The estimates themselves are ordinary :class:`MetricValue`s — a breakdown
+    changes the SHAPE of the output, not the statistics.  What this class adds is
+    that the key stays DATA: a renderer iterates ``cells`` and reads
+    ``key -> value``, and never has to parse ``damage_share_acid`` back into
+    ``("acid",)``.  That is the whole reason §5.4 made this a first-class kind
+    instead of sugar that expands into flat rows.
+
+    ``cells`` and ``margins`` are kept apart because they answer different
+    questions and a consumer must not sum the two: the margins ARE the sums, and
+    they are computed at this layer because N correlated cell estimates cannot be
+    combined into the aggregate's standard error downstream.
+    """
+
+    definition: BreakdownDef
+    cells: dict[tuple[str, ...], MetricValue]
+    margins: dict[tuple[str, ...], MetricValue]
+
+    @property
+    def name(self) -> str:
+        return self.definition.name
+
+    @property
+    def unit(self) -> str:
+        return self.definition.unit
+
+    @property
+    def dimensions(self) -> tuple[str, ...]:
+        return self.definition.key_space.names
+
+    def __getitem__(self, key: "tuple[str, ...] | str") -> MetricValue:
+        """Address a cell OR a margin by key (a bare string for a 1-D breakdown)."""
+        k = (key,) if isinstance(key, str) else tuple(key)
+        if k in self.cells:
+            return self.cells[k]
+        if k in self.margins:
+            return self.margins[k]
+        raise KeyError(
+            f"No cell {k} in breakdown {self.name!r}. "
+            f"Cells: {sorted(self.cells)}; margins: {sorted(self.margins)}."
+        )
+
+    def total(self) -> "MetricValue | None":
+        """The fully-collapsed margin, when the breakdown declares one.
+
+        ``None`` where the breakdown deliberately refuses it — ``damage_share``
+        (its total is 1.0 by construction) and ``healing_by_source`` (summing the
+        contexts would pool healing under fire with healing at leisure, which
+        healing.md §11.1 forbids).  Read ``definition.margin_note`` for the reason.
+        """
+        full = tuple(ALL for _ in self.dimensions)
+        return self.margins.get(full)
+
+    def measured(self) -> dict[tuple[str, ...], MetricValue]:
+        """Only the cells this run produced a number for."""
+        return {k: v for k, v in self.cells.items() if v.measured}
+
+    def rows(self) -> list[dict[str, Any]]:
+        """Long/tidy form: one dict per cell, key columns expanded.
+
+        This is the shape §9's tidy CSV wants, and the reason the key had to stop
+        living inside the metric name.
+        """
+        out: list[dict[str, Any]] = []
+        for key, value in list(self.cells.items()) + list(self.margins.items()):
+            row: dict[str, Any] = {"breakdown": self.name, "unit": self.unit}
+            row.update(dict(zip(self.dimensions, key)))
+            row["is_margin"] = ALL in key
+            row["value"] = value.value
+            row["stderr"] = value.stderr
+            row["n"] = value.n
+            row["converged"] = value.converged
+            row["note"] = value.note
+            out.append(row)
+        return out
+
+
+# ---------------------------------------------------------------------------
 # The report (§5.3)
 # ---------------------------------------------------------------------------
 
@@ -174,6 +258,11 @@ class EvalReport:
     provenance: Provenance
     registry: MetricRegistry
     values: dict[str, MetricValue]
+    #: §5.4's structured view: breakdown name -> its cells and margins, keys
+    #: intact.  The same estimates also appear in :attr:`values` under their flat
+    #: cell names, because the collector and the paired-delta machinery address
+    #: metrics by name; this is the view §9 serializes and a website renders.
+    breakdowns: dict[str, BreakdownValue] = field(default_factory=dict)
     #: Per-day influence values, kept for §6.1's paired deltas.  NOT part of the
     #: report's serialized form (step 3) — a 200k-day run would carry a per-metric
     #: vector into every artifact for a quantity only a comparison consumes.
@@ -201,13 +290,41 @@ class EvalReport:
 
     @property
     def panel(self) -> list[MetricValue]:
-        """The §5.3 panel — reported beside the headline, never folded into it."""
+        """The §5.3 panel SCALARS — beside the headline, never folded into it.
+
+        Scalars only; :meth:`panel_breakdowns` is the other half of the panel.
+        Returning breakdown cells here would flatten exactly the structure §5.4
+        exists to preserve.
+        """
         return self.group("panel")
 
     @property
     def columns(self) -> list[MetricValue]:
-        """Roster / per-summon columns — separate by construction (§3.3, §5.3)."""
+        """Roster / per-summon column SCALARS — separate by construction (§3.3, §5.3)."""
         return self.group("column")
+
+    def breakdown(self, name: str) -> BreakdownValue:
+        try:
+            return self.breakdowns[name]
+        except KeyError:
+            raise KeyError(
+                f"No breakdown {name!r} in this report. "
+                f"Registered: {sorted(self.breakdowns)}."
+            ) from None
+
+    def breakdowns_in_group(self, group: str) -> list[BreakdownValue]:
+        return [self.breakdowns[b.name]
+                for b in self.registry.breakdowns_in_group(group)]
+
+    @property
+    def panel_breakdowns(self) -> list[BreakdownValue]:
+        """The §5.3 panel's keyed half (§5.4)."""
+        return self.breakdowns_in_group("panel")
+
+    @property
+    def column_breakdowns(self) -> list[BreakdownValue]:
+        """The roster columns' keyed half — ``dpr_by_role`` and its party margin."""
+        return self.breakdowns_in_group("column")
 
     def measured(self) -> list[MetricValue]:
         """Metrics this run actually produced a number for."""
@@ -260,12 +377,28 @@ def build_report(output: "RunOutput", *,
         values[definition.name] = value
         influence[definition.name] = infl
 
+    # §5.4: regroup the cells under their declarations.  Nothing is recomputed
+    # here — a breakdown is a SHAPE over estimates that already exist, which is
+    # what let the second output kind land without touching the estimator.
+    breakdowns: dict[str, BreakdownValue] = {}
+    for definition in output.registry.breakdowns:
+        margin_keys = set(definition.margin_keys())
+        cells: dict[tuple[str, ...], MetricValue] = {}
+        margins: dict[tuple[str, ...], MetricValue] = {}
+        for key in definition.keys():
+            target = margins if key in margin_keys else cells
+            target[key] = values[definition.cell_name(key)]
+        breakdowns[definition.name] = BreakdownValue(
+            definition=definition, cells=cells, margins=margins,
+        )
+
     return EvalReport(
         provenance=Provenance.build(
             output.config, output.described, output.roster.summary(), pairing,
         ),
         registry=output.registry,
         values=values,
+        breakdowns=breakdowns,
         influence=influence,
     )
 

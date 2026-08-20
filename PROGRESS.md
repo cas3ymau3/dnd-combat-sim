@@ -86,7 +86,19 @@ type, condition, resource, …):
    applied outside combat is MEAN-FIELD and draws nothing.** This is the problem
    RNG substreams (`evaluation_framework.md` §13 step 8) exist to solve; until they
    land, mean-field is the answer, not "roll it and re-baseline".
-4. **Reflect after building — STOP and ask.** Once the feature is built and green,
+4. **Settle an output SHAPE before anything serializes it.** Added session 46,
+   generalizing that session's trigger. The metric registry modelled one output kind, so
+   25 of its 51 entries were keyed breakdowns with the key flattened into the metric
+   NAME — and the decisive cost was not row count but that `damage_share_acid` forces
+   every downstream consumer to parse names back into keys, while a tidy CSV and a
+   website both want the key as a COLUMN. The rule: **when a layer's output is about to
+   be written to an artifact that a consumer will be built against, settle its shape
+   FIRST** — retrofitting after artifacts exist is the expensive path, and it is the
+   same lesson §6.1's paired-seeding retrofit taught in s44. Sits alongside
+   [[design-first-for-cross-cutting-primitives]]: that one is about surveying the corpus
+   before building a broadly-reused primitive; this one is about fixing a contract
+   before publishing against it.
+5. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
    decision-record conventions). Capture the answers before moving on; process
@@ -126,6 +138,21 @@ or one cell of a breakdown that belongs in a single vector output? **Prune
 deliberately** — an unused metric is a maintenance and interpretation cost, and the
 registry is also the published data dictionary.
 
+**THE SURVIVAL RULE — apply this, not "derivable ⇒ cut" (added s46).** The naive rule
+is wrong and the s46 review found the counter-example immediately:
+`concentration_breaks_per_day` equals `checks_per_day × break_rate` EXACTLY in value,
+but its standard error is not reconstructible by a consumer holding the other two —
+that needs their covariance, which only the estimating layer sees. So:
+
+> **A row survives if someone reads it AND (it is not derivable, OR its uncertainty
+> matters and cannot be reconstructed downstream).** Derivable-and-nobody-reads-it is
+> the cut.
+
+Two corollaries that generalize past this registry. **Margins belong to the estimating
+layer**, never to a renderer, for exactly the same reason. And **count DECLARATIONS,
+not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell only to
+66, because the maintenance and interpretation cost lives in the declarations.
+
 > **Currently disabled (re-enable before exit):** none. **EMPIRICAL/CHROME ARC CLOSED (s36).**
 > Sessions 28-36 needed **Claude-in-Chrome** (MM scrape); s36 finished #2 (the last
 > Chrome-dependent work) and **tore the arc down: the per-machine allowlist was reset to the
@@ -141,7 +168,10 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 44 (2026-08-19) — nothing to reset (confirmed with user).** The
+- **Last reviewed for reset: session 46 (2026-08-20) — nothing to reset (confirmed with user).** The
+  s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s45 and s46
+  were both pure Python / design work, so nothing accumulated; marker bumped per the ≥2-session rule.
+- **Prior — session 44 (2026-08-19) — nothing to reset (confirmed with user).** The
   s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s43 and s44
   were both pure Python, so nothing accumulated; marker bumped per the ≥2-session rule.
 - **Prior — session 42 (2026-08-17) — nothing to reset (confirmed with user).** The
@@ -1318,6 +1348,115 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **OUTPUT-KINDS DESIGN + METRIC PRUNE + healing's metrics (2026-08-20, session 46).**
+  The step the user inserted ahead of evaluation-framework step 3, and the gate
+  `healing.md` §8 was waiting on. **LOCKED in `evaluation_framework.md` §5.4**; built in
+  `src/evaluation/{metrics,report}.py`. **719 tests green** (704 + 15), full suite in
+  FOREGROUND, once ([[full-suite-foreground-only]]). `src/validation.py` UNCHANGED and the
+  §12 parity proof still bit-identical — the `dpr` metric it runs through was deliberately
+  left out of the prune.
+
+  **The problem, restated precisely.** The registry modelled ONE output kind, so 25 of its
+  51 entries were three keyed breakdowns with the key flattened into the metric NAME. The
+  decisive argument for fixing it is NOT row count — it is that `damage_share_acid` forces
+  every downstream consumer to parse the key back out of the name, while a tidy CSV wants
+  `metric, key, value` columns and a website wants a vector it can iterate. Settled BEFORE
+  step 3 because §9 says a website will be built against the artifact schema.
+
+  **THE THREE KINDS (§5.4), two live:**
+  - **scalar** — `MetricDef` as before. **The headline is always one**: `BreakdownDef`
+    REFUSES the headline group, so §5.3's "exactly one headline" is now structural on both
+    sides — it cannot drift into a basket, and it cannot become one cell of something larger.
+  - **keyed breakdown** — `BreakdownDef`: one quantity over a closed `KeySpace` that may be
+    a PRODUCT of `Dimension`s. Four load-bearing properties: every cell is a real estimate
+    with its own stderr; **availability is PER CELL** (the control channel stays unmeasurable
+    while its damage sibling reports normally — this is what let the saves family collapse
+    without losing §3.4's reasons); the **denominator is a TEMPLATE over the key** (absorbing
+    the hand-written `_denominator_family`); and **margins are declared and computed HERE**.
+  - **distribution** — SEAM RESERVED, estimator still deferred to after step 3.
+    `MetricRegistry.distributions()` returns `[]` and the data dictionary carries the
+    section, so §14's quantile work lands without a `schema_version` break.
+
+  **The refactor cost NOTHING downstream, which is the design working.** Registering a
+  breakdown expands it into one `MetricDef` per cell (key carried as data), so `runner.py`
+  and `statistics.py` needed no changes at all — a breakdown is a SHAPE over estimates that
+  already exist. `report.py` regroups the cells under their declaration into `BreakdownValue`
+  (cells and margins in SEPARATE maps, so a consumer cannot sum them together), with a
+  `rows()` tidy-form emitter that is the shape step 3's CSV wants.
+
+  **THE SURVIVAL RULE — the review's most transferable output.** The obvious prune rule,
+  *derivable ⇒ cut*, is wrong, and the counter-example turned up immediately:
+  `concentration_breaks_per_day` equals `checks_per_day × break_rate` EXACTLY in value, but
+  its standard error is not reconstructible by a consumer holding the other two (that needs
+  their covariance, which only this layer sees). The rule that replaced it:
+
+  > **A row survives if someone reads it AND (it is not derivable, OR its uncertainty
+  > matters and cannot be reconstructed downstream).** Derivable-and-nobody-reads-it is
+  > the cut.
+
+  This is also why margins are computed at this layer rather than left to a renderer.
+
+  **THE PRUNE, family by family** (walked with the user in groups, all four calls his):
+  saves (16 rows → 2 breakdowns keyed `ability × channel`, 3 margin families each);
+  damage-type composition (15 → 1 breakdown + the `typed_damage_share` scalar); damage
+  columns (`party`/`summon`/`ally_dpr` → `dpr_by_role`, `[*]` margin = party); damage taken
+  (2 → `damage_taken_per_round_by_role`); per-combat DPR (4 → `dpr_by_combat`);
+  concentration (all 3 KEPT under the survival rule); control + mitigation (all 4 KEPT as
+  declared-unavailable — removing them would make the §3.4 gap invisible in the artifact).
+  **Exactly ONE row dropped outright: `typed_damage_per_round`.**
+  **51 declarations → 22 (15 scalars + 7 breakdowns); 51 estimated rows → 66 cells.**
+
+  **CROSSING IS A DECLARATION (`BreakdownDef.crossed`) — the user's call at the END of the
+  review, after the first draft shipped.** A multi-dimensional breakdown either
+  materializes the full grid (crossed) or each dimension's own marginal profile
+  (independent). The first cut crossed the saves dimensions and landed at 90 cells; the
+  user's read was that the grid did not earn them — "dex saves forced by CONTROL
+  specifically" is a permanently-unmeasured row a renderer still has to lay out. So
+  `save_fail_rate` and `saves_forced_per_round` are **INDEPENDENT** (8 cells + total each:
+  6 per-ability profiles + 2 per-channel), while **`healing_by_source` stays CROSSED**
+  because there the cross-tab IS the quantity — a summon healing under fire is a different
+  fact from a summon healing at leisure. **A consequence with teeth, now a test: an
+  independent breakdown's cells do NOT partition its total** (each dimension covers the
+  whole quantity on its own, so summing every cell double-counts) — a second reason the
+  total is a declared margin and never something a renderer adds up.
+
+  **HEALING'S METRICS (healing.md §8) — the first customer, and the test of whether the
+  kinds actually work.** Three scalars + one breakdown, every one through the per-METRIC
+  ritual. The scoping answer is deliberately NOT uniform (user, s46): the two DEFENSIVE
+  scalars are CHARACTER-scoped, mirroring `damage_taken_per_round`'s rule, while the OUTPUT
+  scalar follows `RunConfig.attribution` — which is what `evaluation_framework.md` §14
+  point 3 asked for.
+  - `net_damage_taken_per_round` — **MAY GO NEGATIVE and the definition says so in those
+    words.** Silvertail's default is the live case: the beast draws the enemy, so the
+    character takes NOTHING and still heals its Hit Dice → **−3.75**. Surplus capacity, not
+    an error.
+  - `external_healing_required_per_day` — **the clamp is PER DAY**, so this is the mean of
+    the clamped quantity and NOT the clamp of the mean; a consumer deriving it from two
+    other means gets a different number, and the definition says so.
+  - `healing_provided_to_others_per_day` — **UNAVAILABLE where the roster holds nobody
+    else.** A 0 there would report ROSTER POVERTY as a build property: War Angel's Prayer of
+    Healing heals five creatures RAW and heals one here only because the roster has one.
+    Silvertail, which HAS another entity, gets a genuine measured 0.
+  - `healing_by_source` — keyed **`source_role × context`**, and it declares **NO margin
+    over `context`**. §11.1 found the corpus does most of its healing OUT of combat by
+    preference, so healing under fire is a different quantity from healing at leisure: no
+    cell in the artifact ever sums them. **A comment can be ignored; a cell that does not
+    exist cannot** — the don't-pool rule is now enforced by the SHAPE.
+
+  **The Silvertail roster-scoping test PASSED and is now a test** ([[validate-mechanism-not-build-value]]):
+  the beast's 26 hp of self-healing lands in `healing_by_source[summons|between]` and moves
+  no character-scoped scalar (net = character-only −3.75, not the pooled −5.375).
+  **Three live findings worth keeping:** every healing cell in the corpus today has
+  `source == target` (nothing heals another entity, because no roster has one to heal);
+  the **Starfire Scion heals ZERO** because its Hit Dice are reserved for Fueled Spellfire
+  (`available_for_healing=False`), so its `external_healing_required_per_day` is its FULL
+  damage taken — the metric doing §2's job exactly; and War Angel's 63.5/day comes from PoH
+  plus Hit Dice at two short-rest windows.
+
+  **Startup ritual done:** MCP connectors recommended OFF (pure Python, nothing was
+  disabled); CONFIG LEDGER reviewed at s46 per the ≥2-session rule — **nothing to reset**,
+  marker bumped.
 
 - **HEALING SUBSYSTEM — the §9 build plan, steps (a)-(d) (2026-08-20, session 45).**
   `design/healing.md` §11 records the settlement of §10's six open questions and the
@@ -3687,18 +3826,23 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      §10's six questions were settled BEFORE coding and are written up in `healing.md` §11:
      the corpus survey (§11.1), Prayer of Healing's two jobs (§11.2), the summons' Hit Dice
      (§11.3), and the measured validation (§11.4).
-   - **NEXT — OUTPUT-KINDS DESIGN + METRIC PRUNE (user, s44), before step 3.** The registry
-     models one output kind, so 25 of its 51 entries are three keyed breakdowns flattened
-     (saves by ability ×12, damage composition by type ×13) and ~6 more are algebraically
-     derivable. Irreducible set ≈ **20 scalars + 3 breakdowns**. Settle scalar / keyed
-     breakdown / distribution BEFORE serialization fixes the artifact shape a website will
-     be built against. Absorbs §14's distribution-shape deferral.
-   - **(3) THEN serialization** (§9): JSON + tidy CSV + console renderer, `schema_version`.
+   - ~~**OUTPUT-KINDS DESIGN + METRIC PRUNE (user, s44), before step 3**~~ **DONE (s46)** —
+     `evaluation_framework.md` §5.4 locks the three kinds (scalar / keyed breakdown /
+     distribution), per-cell availability, key-templated denominators, declared margins, and
+     the SURVIVAL RULE that replaced "derivable ⇒ cut". **51 declarations → 22** (15 scalars
+     + 7 breakdowns), one row dropped outright. §14's distribution deferral is absorbed as a
+     RESERVED SEAM (estimator still after step 3). Healing's §8 metrics landed as the first
+     customer. See the s46 Done entry.
+   - **NEXT — (3) serialization** (§9): JSON + tidy CSV + console renderer, `schema_version`.
      The report is already a structured object with a provenance block, so this is a rendering
-     step, not a redesign. Two things to carry: `EvalReport.influence` is deliberately NOT
-     serialized (a per-day vector per metric, only a comparison consumes it), and §14's
+     step, not a redesign. **Four things to carry:** `EvalReport.influence` is deliberately NOT
+     serialized (a per-day vector per metric, only a comparison consumes it); §14's
      distribution-shape deferral is scheduled for design AFTER this step fixes the artifact
-     shape (user, s44).
+     shape (user, s44); **the artifact must carry three sections — `scalars` / `breakdowns` /
+     `distributions` — from `schema_version` 1**, with the third reserved-and-empty so the
+     quantile work needs no schema break (§5.4); and **`BreakdownValue.rows()` already emits
+     the tidy long form** the CSV renderer wants (key columns expanded, `is_margin` flagged),
+     so the CSV side is mostly wiring, not design.
    - (4) the `attacks` telemetry channel (§8.1); **(5) the ENEMY-CONSTRUCTION SEAM (§3.4, added s43 — the old 5/6 shift to 6/7)** — `RunConfig.enemy` /
      `enemy_options` go live, the standardized enemy is built alongside the factories' baked-in
      one, then the enemy material is migrated OUT of the character `LEVELS` tables and the

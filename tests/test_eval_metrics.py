@@ -32,7 +32,18 @@ from src.evaluation import (
     compare,
     run,
 )
-from src.evaluation.metrics import DAMAGE_TYPES, GROUPS, SAVE_STATS
+from src.evaluation.metrics import (
+    ALL,
+    ATTRIBUTABLE_ROLES,
+    DAMAGE_TYPES,
+    GROUPS,
+    HEAL_CONTEXTS,
+    SAVE_CHANNELS,
+    SAVE_STATS,
+    BreakdownDef,
+    Dimension,
+    KeySpace,
+)
 from src.evaluation.report import build_report
 from src.evaluation.runner import simulate
 from src.evaluation.statistics import (
@@ -104,7 +115,7 @@ def test_a_zero_denominator_has_no_value_rather_than_a_zero():
     value, stderr, influence = ratio_estimate([0.0, 0.0], [0.0, 0.0])
     assert value is None and stderr is None and influence == []
 
-    samples = MetricSamples(metric="save_fail_rate_cha_save", fixed_denominator=False)
+    samples = MetricSamples(metric="save_fail_rate[cha_save|*]", fixed_denominator=False)
     for _ in range(5):
         samples.record(0.0, 0.0, 0.0)
     metric_value, _ = samples.estimate(Convergence())
@@ -144,13 +155,45 @@ def test_a_zero_estimate_converges_only_when_every_day_agreed():
 # ---------------------------------------------------------------------------
 
 def test_every_registered_metric_declares_a_complete_data_dictionary_entry():
-    for entry in METRICS.data_dictionary():
+    """§5.4: the dictionary is now keyed by OUTPUT KIND, and both live kinds carry
+    a complete declaration."""
+    dictionary = METRICS.data_dictionary()
+    assert set(dictionary) == {"scalars", "breakdowns", "distributions"}
+
+    for entry in dictionary["scalars"]:
         assert entry["unit"], entry
         assert entry["definition"], entry
         assert entry["source"], entry
         assert entry["denominator"] in DENOMINATORS, entry
         assert entry["denominator_description"], entry
         assert entry["group"] in GROUPS, entry
+        assert entry["breakdown"] is None, entry      # a scalar is nobody's cell
+
+    for entry in dictionary["breakdowns"]:
+        assert entry["kind"] == "breakdown", entry
+        assert entry["unit"] and entry["definition"] and entry["source"], entry
+        assert entry["group"] in GROUPS, entry
+        assert entry["key_space"]["dimensions"], entry
+        for dimension in entry["key_space"]["dimensions"]:
+            assert dimension["keys"], dimension       # a CLOSED, non-empty vocabulary
+            assert dimension["description"], dimension
+        assert entry["cells"], entry
+
+    # Every cell of every breakdown is also an estimable metric with a real
+    # denominator — the expansion is what let the second kind reuse the estimator.
+    for breakdown in METRICS.breakdowns:
+        for key in breakdown.keys():
+            cell = METRICS[breakdown.cell_name(key)]
+            assert cell.denominator in DENOMINATORS, cell.name
+            assert cell.breakdown == breakdown.name
+            assert cell.key == key
+
+
+def test_the_distribution_kind_is_a_reserved_seam_not_a_built_one():
+    """§5.4 kind 3: s46 named it and reserved its artifact section so it can land
+    without a schema break; the estimator is still deferred to after step 3."""
+    assert METRICS.distributions() == []
+    assert METRICS.data_dictionary()["distributions"] == []
 
 
 def test_a_metric_cannot_declare_a_denominator_outside_the_closed_vocabulary():
@@ -183,15 +226,94 @@ def test_there_is_exactly_one_headline_and_it_is_the_character_column():
 
 def test_roster_totals_are_columns_so_they_cannot_reach_the_headline():
     """The §3.3 rule is structural: party and per-summon figures are in a different
-    report group, so no renderer can fold them into the headline by oversight."""
-    for name in ("party_dpr", "summon_dpr", "ally_dpr"):
-        assert METRICS[name].group == "column"
+    report group, so no renderer can fold them into the headline by oversight.
+
+    §5.4 collapsed the three flat rows into ``dpr_by_role``; the guarantee is
+    unchanged, because the whole breakdown carries the ``column`` group.
+    """
+    assert METRICS.breakdown("dpr_by_role").group == "column"
+    for key in METRICS.breakdown("dpr_by_role").keys():
+        assert METRICS.cell("dpr_by_role", key).group == "column"
+
+
+def test_a_breakdown_can_never_become_the_headline():
+    """§5.4's other half of the one-headline guard: §5.3 allows exactly one
+    headline, and a headline that is one cell of a larger object is not one."""
+    with pytest.raises(ValueError, match="cannot be the headline"):
+        BreakdownDef(
+            name="bogus", unit="x",
+            key_space=KeySpace((Dimension("role", ("characters",), "…"),)),
+            source="", definition="", numerator=lambda s, k: 0.0,
+            denominator="rounds", group="headline",
+        )
 
 
 def test_the_per_ability_save_family_covers_the_closed_stat_vocabulary():
-    for stat in SAVE_STATS:
-        assert f"saves_forced_per_round_{stat}" in METRICS
-        assert f"save_fail_rate_{stat}" in METRICS
+    """§5.4: the family is a KEY SPACE, not 16 flat rows, and it is UNCROSSED — the
+    two dimensions are reported independently.  The completeness argument survives:
+    every ability and every channel has a cell, so a zero is a measurement."""
+    saves = METRICS.breakdown("saves_forced_per_round")
+    rates = METRICS.breakdown("save_fail_rate")
+    for family in (saves, rates):
+        assert family.key_space.names == ("ability", "channel")
+        assert family.crossed is False
+        assert set(family.cell_keys()) == (
+            {(stat, ALL) for stat in SAVE_STATS}
+            | {(ALL, channel) for channel in SAVE_CHANNELS}
+        )
+        # The grid's cells ("dex saves forced by CONTROL specifically") are NOT
+        # materialized: the s46 review dropped them because their per-cell
+        # denominators are structurally near-zero.
+        assert (SAVE_STATS[0], SAVE_CHANNELS[0]) not in family.cell_keys()
+        assert family.margin_keys() == ((ALL, ALL),)
+
+
+def test_a_crossed_breakdown_materializes_the_grid_where_the_cross_tab_is_the_point():
+    """The other side of the same choice.  A summon healing UNDER FIRE is a
+    different fact from a summon healing at leisure (healing.md §11.1), so that
+    breakdown earns its grid — crossing is a declaration, not a default that
+    quietly multiplies cells."""
+    healing = METRICS.breakdown("healing_by_source")
+    assert healing.crossed is True
+    assert (("summons", "combat") in healing.cell_keys()
+            and ("summons", "between") in healing.cell_keys())
+
+
+def test_a_margin_is_computed_here_because_its_stderr_cannot_be_rebuilt_downstream():
+    """§5.4's survival rule, made concrete. The [*|*] margin's VALUE is recoverable
+    from one dimension's cells, but its standard error is not any function of
+    theirs — that needs their covariance, which only this layer sees."""
+    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=11,
+                           build_options=ZONE))
+    forced = report.breakdown("saves_forced_per_round")
+
+    total = forced.total()
+    by_ability = [v for k, v in forced.cells.items() if k[1] == ALL]
+    assert total is not None and total.measured and total.value > 0
+    assert total.value == pytest.approx(sum(v.value for v in by_ability))
+    # The naive downstream reconstruction (assume independence) is NOT what we report.
+    naive = math.sqrt(sum(v.stderr ** 2 for v in by_ability))
+    assert total.stderr != pytest.approx(naive, rel=1e-6)
+
+
+def test_an_uncrossed_breakdowns_cells_do_not_partition_the_total():
+    """A warning the serializer has to respect: with the dimensions reported
+    INDEPENDENTLY, each dimension's profile covers the whole quantity on its own.
+    Adding every cell up double-counts — which is why the total is a declared
+    margin rather than something a renderer computes."""
+    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=11,
+                           build_options=ZONE))
+    forced = report.breakdown("saves_forced_per_round")
+
+    total = forced.total().value
+    by_ability = sum(v.value for k, v in forced.cells.items() if k[1] == ALL)
+    by_channel = sum(v.value for k, v in forced.cells.items()
+                     if k[0] == ALL and v.measured)
+    every_cell = sum(v.value for v in forced.cells.values() if v.measured)
+
+    assert by_ability == pytest.approx(total)
+    assert by_channel == pytest.approx(total)
+    assert every_cell == pytest.approx(2 * total)      # …and that is the trap
 
 
 def test_rate_metrics_declare_random_denominators_and_counts_declare_fixed_ones():
@@ -199,8 +321,17 @@ def test_rate_metrics_declare_random_denominators_and_counts_declare_fixed_ones(
     a documentation slip."""
     assert METRICS["dpr"].denominator_spec.fixed is True
     assert METRICS["concentration_checks_per_day"].denominator_spec.fixed is True
-    assert METRICS["save_fail_rate"].denominator_spec.fixed is False
     assert METRICS["concentration_break_rate"].denominator_spec.fixed is False
+    # §5.4: a breakdown's denominator is a TEMPLATE over the key, so the per-cell
+    # denominator is the saves forced with THAT ability in THAT channel — not the
+    # family total, which would make every cell a share of the same number.
+    assert METRICS.cell("save_fail_rate", (ALL, ALL)).denominator_spec.fixed is False
+    assert METRICS.cell("save_fail_rate", ("dex_save", ALL)).denominator \
+        == "saves_forced[dex_save|*]"
+    assert METRICS.cell("save_fail_rate", (ALL, "control")).denominator \
+        == "saves_forced[*|control]"
+    assert METRICS.cell("saves_forced_per_round", ("dex_save", ALL)).denominator \
+        == "rounds"
 
 
 # ---------------------------------------------------------------------------
@@ -244,8 +375,8 @@ def test_under_the_default_attribution_the_headline_excludes_summon_damage():
     below for the mode where a summon DOES count as the build's output."""
     report = run(RunConfig(build="silvertail", level=10, n_days=30, seed=3))
     headline = report.headline.value
-    summon = report["summon_dpr"].value
-    party = report["party_dpr"].value
+    summon = report["dpr_by_role[summons]"].value
+    party = report["dpr_by_role[*]"].value
 
     assert summon > 0                       # the beast really does contribute
     assert party == pytest.approx(headline + summon)
@@ -281,12 +412,12 @@ def test_a_rare_event_metric_is_unconverged_where_dpr_is_converged():
     report = run(RunConfig(build="silvertail", level=10, n_days=DAYS, seed=3,
                            build_options=ZONE))
     dpr = report.headline
-    rare = report["save_fail_rate_int_save"]
+    rare = report["save_fail_rate[int_save|*]"]
 
     assert dpr.converged is True
     assert rare.measured is True              # it HAS a value…
     assert rare.converged is False            # …that is not yet worth reading
-    assert rare.n_events < METRICS["save_fail_rate_int_save"].convergence.min_events
+    assert rare.n_events < METRICS["save_fail_rate[int_save|*]"].convergence.min_events
     # Same run, same day count — the verdict differs because the heuristics do.
     assert rare.n == dpr.n
 
@@ -307,7 +438,7 @@ def test_control_resilience_is_declared_unavailable_never_a_silent_zero(build, l
     report = run(RunConfig(build=build, level=level, n_days=10, seed=1,
                            build_options=options))
     for name in ("control_turns_lost_per_round", "control_turns_reduced_per_round",
-                 "control_save_fail_rate"):
+                 "save_fail_rate[*|control]"):
         value = report[name]
         assert value.available is False
         assert value.value is None
@@ -322,8 +453,8 @@ def test_the_unavailability_reason_names_which_enemy_model_blocked_it():
     war_angel = run(RunConfig(build="war_angel", level=13, n_days=4, seed=1))
     silvertail = run(RunConfig(build="silvertail", level=10, n_days=4, seed=1))
 
-    scripted = war_angel["control_save_fail_rate"].note
-    baseline = silvertail["control_save_fail_rate"].note
+    scripted = war_angel["save_fail_rate[*|control]"].note
+    baseline = silvertail["save_fail_rate[*|control]"].note
     assert "ScriptedEnemyPolicy" in scripted
     assert "BaselineEnemyPolicy" in baseline and "control=False" in baseline
     assert scripted != baseline
@@ -343,15 +474,15 @@ def test_the_mitigation_channel_declares_itself_too():
 
 def test_an_unavailable_metric_costs_no_collection():
     output = simulate(RunConfig(build="war_angel", level=13, n_days=4, seed=1))
-    assert "control_save_fail_rate" in output.unavailable
-    assert "control_save_fail_rate" not in output.samples
+    assert "save_fail_rate[*|control]" in output.unavailable
+    assert "save_fail_rate[*|control]" not in output.samples
 
 
 def test_a_missing_role_column_is_unavailable_not_zero():
     """War Angel has no summon, so "summon DPR = 0" would be a category error."""
     report = run(RunConfig(build="war_angel", level=5, n_days=4, seed=1))
-    assert report["summon_dpr"].available is False
-    assert "summons" in report["summon_dpr"].note
+    assert report["dpr_by_role[summons]"].available is False
+    assert "summons" in report["dpr_by_role[summons]"].note
 
 
 def test_unmeasured_is_a_distinct_state_from_unavailable():
@@ -363,12 +494,12 @@ def test_unmeasured_is_a_distinct_state_from_unavailable():
     unmeasured = {v.metric for v in report.unmeasured()}
     unavailable = {v.metric for v in report.unavailable()}
 
-    assert "save_fail_rate_cha_save" in unmeasured
+    assert "save_fail_rate[cha_save|*]" in unmeasured
     assert not (unmeasured & unavailable)
-    assert report["save_fail_rate_cha_save"].available is True
+    assert report["save_fail_rate[cha_save|*]"].available is True
     # …while the count metric over the SAME empty channel is a real measured zero,
     # because its denominator (rounds) is never zero.
-    assert report["saves_forced_per_round_cha_save"].value == 0.0
+    assert report["saves_forced_per_round[cha_save|*]"].value == 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -509,7 +640,7 @@ def test_a_delta_against_an_unavailable_metric_reports_no_delta():
     base = RunConfig(build="war_angel", level=13, n_days=6, seed=1)
     alt = base.replace(level=12)
 
-    delta = compare([base, alt], labels=["l13", "l12"]).delta("l12", "control_save_fail_rate")
+    delta = compare([base, alt], labels=["l13", "l12"]).delta("l12", "save_fail_rate[*|control]")
 
     assert delta.delta is None and delta.stderr is None
     assert "no delta" in delta.note
@@ -577,7 +708,7 @@ def test_damage_type_composition_is_scoped_to_the_characters_own_output():
     # The channel really does hold more than the character's damage…
     assert sum(c.outgoing_before for c in everyone.values()) >            sum(c.outgoing_before for c in character_only.values())
     # …and the composition shares are computed from the character's slice.
-    shares = [report[f"damage_share_{t}"].value for t in DAMAGE_TYPES]
+    shares = [report[f"damage_share[{t}]"].value for t in DAMAGE_TYPES]
     assert sum(v for v in shares if v is not None) == pytest.approx(1.0)
 
 
@@ -586,7 +717,14 @@ def test_typed_damage_share_reports_a_fully_untyped_build_as_zero():
     damage type in the model, so §5's mult(t) can never price it."""
     report = run(RunConfig(build="war_angel", level=13, n_days=20, seed=11))
     assert report["typed_damage_share"].value == 0.0
-    assert report["typed_damage_per_round"].value == 0.0
+    # Every cell of the composition breakdown is unmeasured rather than zero: with
+    # no typed output at all the shares' denominator is zero, and "0% radiant" would
+    # be a fabricated answer to a question this run cannot answer.
+    composition = report.breakdown("damage_share")
+    assert composition.measured() == {}
+    # s46 dropped typed_damage_per_round: it was exactly dpr × typed_damage_share
+    # and nothing read it (§5.4's survival rule).
+    assert "typed_damage_per_round" not in METRICS
 
 
 def test_per_combat_dpr_partitions_the_headline_exactly():
@@ -594,7 +732,7 @@ def test_per_combat_dpr_partitions_the_headline_exactly():
     quantity: equal round counts, so their mean IS the day's DPR.  This is what
     catches a per-combat metric that quietly reads an all-sources log."""
     report = run(RunConfig(build="war_angel", level=13, n_days=60, seed=11))
-    per_combat = [report[f"dpr_combat_{i}"].value for i in (1, 2, 3, 4)]
+    per_combat = [report[f"dpr_by_combat[{i}]"].value for i in (1, 2, 3, 4)]
 
     assert sum(per_combat) / 4 == pytest.approx(report.headline.value)
 
@@ -604,7 +742,7 @@ def test_per_combat_dpr_exposes_a_depletion_curve_the_daily_mean_hides():
     and from the day mean.  A build that spends its day early is invisible at the
     day level, which is the reason these are registered."""
     report = run(RunConfig(build="war_angel", level=13, n_days=60, seed=11))
-    per_combat = [report[f"dpr_combat_{i}"].value for i in (1, 2, 3, 4)]
+    per_combat = [report[f"dpr_by_combat[{i}]"].value for i in (1, 2, 3, 4)]
 
     assert len(set(per_combat)) > 1
     assert min(per_combat) < report.headline.value < max(per_combat)
@@ -636,9 +774,9 @@ def test_attributing_summons_moves_the_headline_and_nothing_else():
     with_summons = run(base.replace(attribution="character_and_summons"))
 
     assert with_summons.headline.value == pytest.approx(
-        character.headline.value + character["summon_dpr"].value)
-    assert with_summons["summon_dpr"].value == character["summon_dpr"].value
-    assert with_summons["party_dpr"].value == character["party_dpr"].value
+        character.headline.value + character["dpr_by_role[summons]"].value)
+    assert with_summons["dpr_by_role[summons]"].value == character["dpr_by_role[summons]"].value
+    assert with_summons["dpr_by_role[*]"].value == character["dpr_by_role[*]"].value
 
 
 def test_the_per_combat_decomposition_follows_the_attribution():
@@ -647,7 +785,7 @@ def test_the_per_combat_decomposition_follows_the_attribution():
     describe."""
     report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=3,
                            attribution="character_and_summons"))
-    per_combat = [report[f"dpr_combat_{i}"].value for i in (1, 2, 3, 4)]
+    per_combat = [report[f"dpr_by_combat[{i}]"].value for i in (1, 2, 3, 4)]
 
     assert sum(per_combat) / 4 == pytest.approx(report.headline.value)
 
@@ -660,10 +798,10 @@ def test_allies_are_excluded_under_both_attributions():
                      build_options={"with_party": True})
     for attribution in ("character", "character_and_summons"):
         report = run(base.replace(attribution=attribution))
-        ally = report["ally_dpr"]
+        ally = report["dpr_by_role[allies]"]
         assert ally.available is True
         assert report.headline.value == pytest.approx(
-            report["party_dpr"].value - ally.value)
+            report["dpr_by_role[*]"].value - ally.value)
 
 
 def test_a_build_without_summons_is_unaffected_by_the_attribution():
@@ -687,3 +825,205 @@ def test_the_attribution_is_recorded_in_provenance_and_in_the_config_hash():
     assert provenance.coverage["attributed_roles"] == ["characters", "summons"]
     assert "attribution" in provenance.coverage["comparability_warning"]
     assert base.config_hash() != other.config_hash()
+
+
+# ---------------------------------------------------------------------------
+# §5.4's output kinds, exercised on the mechanism rather than on any value
+# ---------------------------------------------------------------------------
+
+def test_a_breakdown_cell_can_be_unavailable_while_its_siblings_report():
+    """PER-CELL availability is the property that let the saves family collapse.
+
+    The flat registry needed ``control_save_fail_rate`` as its own row purely so it
+    could carry its own "unmeasurable until the §13 step-5 enemy seam" reason. Under
+    §5.4 the reason rides on the CELL, so one breakdown holds a measurable damage
+    channel and an unmeasurable control channel at the same time.
+    """
+    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=11,
+                           build_options=ZONE))
+    rates = report.breakdown("save_fail_rate")
+
+    damage_side = rates[(ALL, "damage")]
+    control_side = rates[(ALL, "control")]
+    assert damage_side.available is True
+    assert control_side.available is False
+    assert "control" in control_side.note
+    # …and the two live under one declaration, not two.
+    assert rates.name == "save_fail_rate"
+
+
+def test_the_key_travels_as_data_so_nothing_downstream_parses_a_metric_name():
+    """§5.4's decisive argument. ``damage_share_acid`` forced every consumer to
+    parse the key back out of the name; the tidy rows carry it as a column."""
+    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    rows = report.breakdown("healing_by_source").rows()
+
+    assert rows, "a breakdown with a closed key space always has rows"
+    for row in rows:
+        assert set(row) >= {"breakdown", "source_role", "context", "is_margin",
+                            "value", "stderr", "n", "converged"}
+        assert row["source_role"] in ATTRIBUTABLE_ROLES + (ALL,)
+        assert row["context"] in HEAL_CONTEXTS
+    assert any(row["is_margin"] for row in rows)
+    assert any(not row["is_margin"] for row in rows)
+
+
+def test_a_breakdowns_margins_are_kept_apart_from_its_cells():
+    """A consumer must never sum cells and margins together: the margins ARE the
+    sums.  Keeping them in separate maps makes the mistake unavailable."""
+    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    dpr_by_role = report.breakdown("dpr_by_role")
+
+    assert set(dpr_by_role.cells) == {("characters",), ("summons",), ("allies",)}
+    assert set(dpr_by_role.margins) == {(ALL,)}
+    assert dpr_by_role.total() is dpr_by_role[(ALL,)]
+    assert dpr_by_role.total().value == pytest.approx(
+        dpr_by_role["characters"].value + dpr_by_role["summons"].value)
+
+
+# ---------------------------------------------------------------------------
+# Healing (design/healing.md §8) — the first customer of the output kinds
+# ---------------------------------------------------------------------------
+
+def test_healing_by_source_separates_the_summons_healing_from_the_characters():
+    """The per-METRIC ritual's roster-scoping check, on the only build with a summon.
+
+    Silvertail's beast heals ITSELF from its own Hit Dice (healing.md §7 b2). That
+    healing must land in the ``summons`` cell and nowhere else — a metric built on
+    an aggregate ledger would pool it with the character's.
+    """
+    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    healing = report.breakdown("healing_by_source")
+
+    assert healing[("characters", "between")].value > 0
+    assert healing[("summons", "between")].value > 0
+    assert healing[("characters", "between")].value != \
+        healing[("summons", "between")].value
+    # The party margin is the sum; the cells are not each other.
+    assert healing[(ALL, "between")].value == pytest.approx(
+        healing[("characters", "between")].value
+        + healing[("summons", "between")].value)
+
+
+def test_a_build_with_no_summon_reports_the_summon_cell_as_unavailable():
+    """The other half of the same check: a build the summon column does not exist
+    for says so, rather than reporting a zero that reads as 'heals nothing'."""
+    report = run(RunConfig(build="war_angel", level=13, n_days=10, seed=11))
+    cell = report.breakdown("healing_by_source")[("summons", "between")]
+    assert cell.available is False
+    assert "summons" in cell.note
+
+
+def test_healing_by_source_refuses_to_pool_the_two_contexts():
+    """healing.md §11.1: the corpus does most of its healing OUT of combat by
+    preference, so healing under fire is a different quantity from healing at
+    leisure.  §5.4 enforces that by SHAPE — the breakdown declares no margin over
+    ``context``, so no cell in the artifact ever sums them.  A comment can be
+    ignored; a cell that does not exist cannot."""
+    healing = METRICS.breakdown("healing_by_source")
+
+    assert healing.key_space.names == ("source_role", "context")
+    # Collapsing the source role IS declared…
+    assert all(ALL not in key[1:] for key in healing.margin_keys())
+    assert (ALL, "combat") in healing.margin_keys()
+    # …and the fully-collapsed total, which would pool the contexts, is refused.
+    assert (ALL, ALL) not in healing.margin_keys()
+    assert "context" in healing.margin_note
+    report = run(RunConfig(build="silvertail", level=10, n_days=10, seed=11))
+    assert report.breakdown("healing_by_source").total() is None
+
+
+def test_net_damage_taken_may_go_negative_and_says_so():
+    """healing.md §8: a negative value is not an error, it is surplus healing
+    capacity — the quantity §2 exists to measure.  Silvertail's default policy is
+    the live case: the beast draws the enemy, so the character takes nothing and
+    still heals its Hit Dice."""
+    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    net = report["net_damage_taken_per_round"]
+
+    assert net.value < 0
+    assert "NEGATIVE" in METRICS["net_damage_taken_per_round"].definition
+    assert "surplus" in METRICS["net_damage_taken_per_round"].definition
+
+
+def test_net_damage_taken_is_character_scoped_and_ignores_the_summons_healing():
+    """The roster-scoping check applied to a SCALAR, which is where s44 found the
+    bug three times.  The beast's self-healing appears in its own breakdown cell and
+    must not discount the character's cost."""
+    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    healing = report.breakdown("healing_by_source")
+    taken = report.breakdown("damage_taken_per_round_by_role")
+    rounds = RunConfig(build="silvertail", level=10).rounds_per_day
+
+    character_only = (taken["characters"].value
+                      - healing[("characters", "between")].value / rounds)
+    pooled = (taken["characters"].value
+              - healing[(ALL, "between")].value / rounds)
+
+    assert report["net_damage_taken_per_round"].value == pytest.approx(character_only)
+    assert report["net_damage_taken_per_round"].value != pytest.approx(pooled)
+
+
+def test_external_healing_required_is_clamped_and_never_negative():
+    """The clamp is PER DAY, so the metric is the mean of the clamped quantity and
+    not the clamp of the mean.  Silvertail is the case that shows the clamp firing:
+    the character heals more than it takes, and the answer is 0 rather than the
+    negative surplus that net_damage_taken_per_round reports."""
+    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    assert report["net_damage_taken_per_round"].value < 0        # surplus…
+    assert report["external_healing_required_per_day"].value == 0.0  # …clamped
+
+    # And where damage genuinely exceeds self-healing, it is the shortfall.
+    under_fire = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11,
+                               build_options=ZONE))
+    taken = under_fire.breakdown("damage_taken_per_round_by_role")["characters"].value
+    healed = under_fire.breakdown("healing_by_source")[("characters", "between")].value
+    rounds = RunConfig(build="silvertail", level=10).rounds_per_day
+    assert under_fire["external_healing_required_per_day"].value == pytest.approx(
+        taken * rounds - healed)
+
+
+def test_a_build_that_reserves_its_hit_dice_needs_its_full_damage_healed():
+    """The metric doing healing.md §2's job. The Starfire Scion spends its Hit Dice
+    on Fueled Spellfire (``available_for_healing=False``), so it heals NOTHING and a
+    party healer must cover every point it takes."""
+    report = run(RunConfig(build="starfire_scion", level=15, n_days=20, seed=11))
+    rounds = RunConfig(build="starfire_scion", level=15).rounds_per_day
+    taken = report.breakdown("damage_taken_per_round_by_role")["characters"].value
+
+    assert report.breakdown("healing_by_source").measured() != {}   # channel works…
+    assert all(v.value == 0.0                                       # …and is empty
+               for v in report.breakdown("healing_by_source").measured().values())
+    assert report["net_damage_taken_per_round"].value == pytest.approx(taken)
+    assert report["external_healing_required_per_day"].value == pytest.approx(
+        taken * rounds)
+
+
+def test_healing_provided_to_others_is_unavailable_where_there_is_no_other():
+    """A 0 here would report ROSTER POVERTY as a build property. War Angel's Prayer
+    of Healing heals five creatures RAW and heals one in this model only because the
+    roster HAS one — so the availability predicate keeps the modelling limit visible
+    instead of scoring the build as selfish."""
+    alone = run(RunConfig(build="war_angel", level=13, n_days=10, seed=11))
+    provided = alone["healing_provided_to_others_per_day"]
+    assert provided.available is False
+    assert "roster" in provided.note.lower()
+
+    # Silvertail HAS another entity, so the same zero is a real measurement: the
+    # character could heal the beast and does not.
+    with_summon = run(RunConfig(build="silvertail", level=10, n_days=10, seed=11))
+    measured = with_summon["healing_provided_to_others_per_day"]
+    assert measured.available is True
+    assert measured.value == 0.0
+
+
+def test_healing_provided_follows_the_attribution_axis():
+    """§14 point 3: a summon's healing counts as the build's under
+    'character_and_summons' — and at the same moment the summon stops being
+    "others", so there is nobody left to provide to."""
+    character = RunConfig(build="silvertail", level=10, n_days=10, seed=11)
+    with_summons = RunConfig(build="silvertail", level=10, n_days=10, seed=11,
+                             attribution="character_and_summons")
+
+    assert run(character)["healing_provided_to_others_per_day"].available is True
+    assert run(with_summons)["healing_provided_to_others_per_day"].available is False
