@@ -171,6 +171,32 @@ Key invariants to preserve when extending:
   `workflow`); git uses the `manager` credential helper over the HTTPS `origin`
   remote. Claude can push, open/merge PRs, and delete branches directly. (The
   prior note that auth "isn't visible to the sandboxed shell" was stale.)
+  - **THAT NOTE DESCRIBES THE LOCAL MACHINE. A CLOUD SESSION IS DIFFERENT (s48).**
+    Sessions started from the Claude app run in an ephemeral cloud container behind
+    an agent proxy, and two independent guards apply there that do not apply locally.
+    Diagnosed the hard way in s48 — twice mis-attributed before the 403 was found —
+    so it is written down rather than re-derived:
+    - **The agent proxy returns HTTP 403 for destructive ref updates and for
+      repository-settings writes.** `git push origin --delete <branch>` fails as
+      `RPC failed; HTTP 403` followed by `send-pack: unexpected disconnect`, which
+      reads like a network blip and is not one. `gh api -X PATCH repos/...` answers
+      plainly: *"Repository settings writes are not permitted through this proxy."*
+      A delete of a NONEXISTENT branch returns a clean GitHub error instead, which is
+      the cheap way to tell the two guards apart.
+    - **The auto-mode classifier blocks commands it reads as destructive** before
+      they reach the network: `--force-with-lease`, `gh api -X DELETE`.
+    - **Everything that matters is unaffected:** commit, push, create branch, open PR,
+      merge PR (via the `mcp__github__*` tools), and the full test suite all work
+      normally. The only casualties are branch deletion and repo-settings changes,
+      both of which are the user's to do in the GitHub UI.
+    - **CONVENTION, adopted s48: ONE FRESH BRANCH PER PR — never recycle a merged
+      branch name.** Reusing one after its PR squash-merges requires a force-push on
+      ANY machine, because a squash leaves the old commits as non-ancestors of `main`.
+      This is the convention that removes the only friction that actually cost
+      anything; it is good hygiene locally too. When a session ships a second PR, give
+      it a new branch rather than restarting the first one.
+    - Branch cleanup is best handled by the repo's **Settings → General →
+      "Automatically delete head branches"** rather than by Claude.
 - **Agreed git/GitHub autonomy (2026-06-12, updated): manage git on your own.**
   Claude commits changes as it makes them (no need to be told), branches off
   `main` for new work, pushes feature branches, and opens PRs autonomously.
