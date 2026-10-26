@@ -80,6 +80,24 @@ def _cell_line(row: dict[str, Any], dimensions: list[str]) -> str:
     return f"    {label:<32}{_fmt_value(row)}{_flag(row)}"
 
 
+def _dist_line(row: dict[str, Any]) -> str:
+    """One distribution point: ``value  [lo, hi]``, never ``value +/- half-width``.
+
+    A quantile's interval is asymmetric, so printing a +/- would be a lie about the
+    estimator even if the number beside it were right.  Printing the bracket is also
+    what makes the ABSENCE of one legible: a point whose interval could not be placed
+    shows the estimate and ``(no interval)``, not a tighter-looking bare number.
+    """
+    label = (row["key"] or {}).get("statistic", "?")
+    if row["status"] != STATUS_MEASURED:
+        return f"    {label:<10}{row['status'].upper()}"
+    ci = row["ci95"]
+    interval = (f"[{ci[0]:,.4g}, {ci[1]:,.4g}]" if ci
+                else "(no interval -- sample too small to place one)")
+    return (f"    {label:<10}{row['value']:>12,.4g}  {interval:<30}"
+            f"{row['method']}{_flag(row)}")
+
+
 def render(report: "EvalReport") -> str:
     """The whole report as one text block."""
     record = report_to_dict(report, include_data_dictionary=False)
@@ -163,10 +181,28 @@ def render(report: "EvalReport") -> str:
         elif block["margin_note"]:
             out.append(f"    (no margin declared: {block['margin_note']})")
 
+    # -- distributions (§5.4 kind 3) -------------------------------------
+    shapes = [b for b in results["distributions"]
+              if any(r["status"] == STATUS_MEASURED for r in b["points"])]
+    if shapes:
+        out.append("")
+        out.append("DISTRIBUTIONS   (the SHAPE of a per-day quantity, not its average)")
+        out.append(_THIN)
+    for block in shapes:
+        out.append("")
+        out.append(f"  {block['name']}  over {block['over']}"
+                   f"  unit={block['unit']}")
+        out.append("    (intervals are ASYMMETRIC and are not value +/- stderr; "
+                   "a quantile has none)")
+        out.extend(_dist_line(r) for r in block["points"]
+                   if r["status"] == STATUS_MEASURED)
+
     # -- the two non-measured states, kept apart (§3.4) ------------------
     every = list(results["scalars"])
     for block in results["breakdowns"]:
         every.extend(block["cells"] + block["margins"])
+    for block in results["distributions"]:
+        every.extend(block["points"])
     for status, title, blurb in (
         ("unavailable", "UNAVAILABLE",
          "this run structurally cannot produce these -- NOT a measured zero"),

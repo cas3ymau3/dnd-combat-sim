@@ -102,23 +102,28 @@ def test_the_record_round_trips_through_json(report):
 
 
 # ---------------------------------------------------------------------------
-# The three sections, the third RESERVED (§5.4 kind 3 / §14)
+# The three sections — the third reserved at s47, FILLED at s48 (§5.4 kind 3)
 # ---------------------------------------------------------------------------
 
-def test_results_carry_all_three_sections_with_distributions_reserved_and_empty(record):
-    """The s46 hand-off's first requirement: §14's quantile work must land without a
-    ``schema_version`` break, which is only true if the section exists at version 1."""
+def test_results_carry_all_three_sections_and_the_third_is_now_populated(record):
+    """The s46/s47 hand-off's first requirement, now discharged: §14's quantile work
+    had to land without a ``schema_version`` break.  It did — this asserts both halves
+    at once, so the reservation cannot be quietly abandoned by a later change."""
     assert list(record["results"]) == [
         "headline", "scalars", "breakdowns", "distributions",
     ]
-    assert record["results"]["distributions"] == []
+    assert record["results"]["distributions"], "the seam was filled at s48"
+    assert record["schema_version"] == 1 == SCHEMA_VERSION
 
 
-def test_the_data_dictionary_reserves_the_same_third_section(record):
-    """One reservation, expressed in two places — they must agree, or a consumer that
-    reads the dictionary's kinds would disagree with one that reads the results'."""
+def test_the_data_dictionary_describes_the_same_third_section(record):
+    """One contract, expressed in two places — they must agree, or a consumer reading
+    the dictionary's kinds would disagree with one reading the results'."""
     assert list(record["data_dictionary"]) == ["scalars", "breakdowns", "distributions"]
-    assert record["data_dictionary"]["distributions"] == []
+    declared = {d["name"] for d in record["data_dictionary"]["distributions"]}
+    assert declared == {b["name"] for b in record["results"]["distributions"]}
+    assert all(d["kind"] == "distribution"
+               for d in record["data_dictionary"]["distributions"])
 
 
 def test_the_data_dictionary_is_embedded_by_default_and_can_be_dropped(report):
@@ -159,6 +164,8 @@ def _all_rows(record):
     rows = list(record["results"]["scalars"])
     for block in record["results"]["breakdowns"]:
         rows.extend(block["cells"] + block["margins"])
+    for block in record["results"]["distributions"]:
+        rows.extend(block["points"])
     return rows
 
 
@@ -350,9 +357,16 @@ def test_an_unconverged_run_says_so_at_the_top_level(report):
 # ---------------------------------------------------------------------------
 
 def test_dimension_columns_are_derived_from_the_registry_not_hardcoded(report):
+    """Every KIND that keys its rows contributes its dimensions to the same union —
+    breakdowns by key space, distributions by ``key_dimensions``.  Asserting the union
+    rather than a literal list is what makes a new dimension show up as a column
+    automatically, and visibly, instead of needing the writer edited."""
     columns = dimension_columns(report.registry)
     declared = {d for b in report.registry.breakdowns for d in b.key_space.names}
+    declared |= {d for x in report.registry.distributions()
+                 for d in x.key_dimensions}
     assert set(columns) == declared
+    assert "statistic" in columns
     assert len(columns) == len(set(columns))       # union, de-duplicated
 
 
@@ -416,10 +430,13 @@ def test_the_csv_carries_the_sum_rule_onto_every_breakdown_row(report, tmp_path)
         rows = list(csv.DictReader(handle))
 
     for row in rows:
-        if row["kind"] == "scalar":
-            assert row["sum_rule"] == ""
-        else:
+        if row["kind"] == "breakdown":
             assert row["sum_rule"] in SUM_RULES
+        else:
+            # A scalar has no cells to sum; a DISTRIBUTION's points are not additive
+            # under any rule, so the field does not apply rather than taking a value
+            # from a two-value vocabulary that would imply a choice exists.
+            assert row["sum_rule"] == "", row["metric"]
     saves = [r for r in rows if r["breakdown"] == "saves_forced_per_round"]
     assert saves and all(r["sum_rule"] == SUM_RULE_OVERLAP for r in saves)
 

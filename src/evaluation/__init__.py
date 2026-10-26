@@ -41,6 +41,7 @@ from .metrics import (
     BreakdownDef,
     Denominator,
     Dimension,
+    DistributionDef,
     KeySpace,
     MetricDef,
     MetricRegistry,
@@ -48,6 +49,7 @@ from .metrics import (
 from .report import (
     BreakdownValue,
     Comparison,
+    DistributionValue,
     EvalReport,
     Provenance,
     build_report,
@@ -55,7 +57,18 @@ from .report import (
 )
 from .roster import ROLES, Roster
 from .runner import RunOutput, run, simulate
-from .statistics import Convergence, MetricValue, PairedDelta
+from .statistics import (
+    DEFAULT_STATISTICS,
+    IQR,
+    METHODS,
+    Convergence,
+    DistributionConvergence,
+    DistributionPoint,
+    MetricValue,
+    PairedDelta,
+    Statistic,
+    quantile_statistic,
+)
 
 __all__ = [
     "BuildAdapter",
@@ -79,12 +92,21 @@ __all__ = [
     "METRICS",
     "Denominator",
     "DENOMINATORS",
-    # §5.4 output kinds (s46): scalar / keyed breakdown / (reserved) distribution
+    # §5.4 output kinds: scalar / keyed breakdown (s46) / distribution (s48)
     "BreakdownDef",
     "BreakdownValue",
     "Dimension",
     "KeySpace",
     "ALL",
+    "DistributionDef",
+    "DistributionValue",
+    "DistributionPoint",
+    "DistributionConvergence",
+    "Statistic",
+    "quantile_statistic",
+    "DEFAULT_STATISTICS",
+    "IQR",
+    "METHODS",
     "MetricValue",
     "Convergence",
     "PairedDelta",
