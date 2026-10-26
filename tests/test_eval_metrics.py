@@ -24,6 +24,8 @@ import pytest
 from src.evaluation import (
     DENOMINATORS,
     METRICS,
+    SCALE_INTERVAL,
+    SCALE_RATIO,
     Convergence,
     MetricDef,
     MetricRegistry,
@@ -148,6 +150,108 @@ def test_a_zero_estimate_converges_only_when_every_day_agreed():
     heuristic = Convergence(min_days=1)
     assert heuristic.check(0.0, 0.0, n=100, n_events=100.0) is True
     assert heuristic.check(0.0, 0.01, n=100, n_events=100.0) is False
+
+
+# ---------------------------------------------------------------------------
+# The gate ORDER, and the measurement scale (§6.2, both s48)
+#
+# Branch roll call (per-feature ritual step 5) for what s48 changed here:
+#   gate order          exact-escape BEFORE min_events ... the regression test below
+#                       min_days still ahead of the escape ... same test, 3rd case
+#                       event floor still bites a NOISY estimate ... same test, 4th
+#   MetricDef.scale     ratio ... every other metric, and the default-value test
+#                       interval ... net_damage_taken_per_round, the only one;
+#                                    plus the disagreement test, which is the only
+#                                    place the two criteria are shown to differ
+#   invalid scale       rejected at construction ... test_an_unknown_scale_*
+# ---------------------------------------------------------------------------
+
+def test_an_exact_estimate_escapes_the_event_floor():
+    """THE s48 REGRESSION. ``min_events`` was checked BEFORE the exact-zero escape,
+    so a rare-event metric that is deterministically zero could never converge.
+
+    Live in shipped output: ``concentration_breaks_per_day`` reads an exact
+    0.0 +/- 0.0 on any build that never concentrates (war_angel L1, silvertail L10)
+    and was flagged unconverged forever — while ``concentration_checks_per_day``,
+    the identical number, was flagged converged because it declares no event floor.
+    The floor exists to catch the delta method being optimistic on few observations;
+    there is no delta method to be optimistic about when the variance is zero.
+    """
+    rare = Convergence(rel_stderr=0.10, min_events=200.0, min_days=100)
+
+    # Exact, and no events: converged. This is the case that was wrong.
+    assert rare.check(0.0, 0.0, n=2000, n_events=0.0) is True
+    # Exact and NON-zero is the same situation (net_damage_taken on a build the
+    # enemy never reaches): certainty does not depend on the value being zero.
+    assert rare.check(-0.28125, 0.0, n=2000, n_events=0.0) is True
+    # min_days still comes FIRST — a zero stderr off two days is an artefact of
+    # having almost no sample, not a measurement.
+    assert rare.check(0.0, 0.0, n=2, n_events=0.0) is False
+    # And the floor still does its job on an estimate that actually varies.
+    assert rare.check(1.0, 0.05, n=2000, n_events=199.0) is False
+
+
+@pytest.mark.parametrize("value, stderr, ratio_verdict, interval_verdict", [
+    # Comfortably resolved and comfortably precise: both agree.
+    (10.0,  0.05, True,  True),
+    # Near zero but PRECISE. The relative criterion reports an arbitrarily bad
+    # verdict for a good estimate; the sign is resolved 20 sigma out.
+    (0.20,  0.01, False, True),
+    # Far from zero but NOISY. The sign is obvious, the magnitude is not — so the
+    # interval-scale criterion is the more permissive one here, by design: it
+    # answers a different question, it is not a looser version of the same one.
+    (10.0,  2.00, False, True),
+    # Genuinely ambiguous: cannot tell which side of break-even this build is on.
+    (0.05,  0.10, False, False),
+])
+def test_the_scale_declaration_selects_the_criterion(value, stderr,
+                                                     ratio_verdict,
+                                                     interval_verdict):
+    """§6.2 (s48): ``se/|value|`` is only a precision statement for a quantity with
+    a TRUE ZERO. For a signed quantity whose zero is a break-even point it is a
+    category error — the value can sit near zero while the estimate is perfectly
+    precise. The interval-scale criterion asks instead whether the SIGN is resolved.
+
+    Row 2 is the diagnostic one, and the reason the declaration exists at all.
+    """
+    heuristic = Convergence(rel_stderr=0.02, min_days=1, resolution_sigmas=3.0)
+    assert heuristic.check(value, stderr, n=100, n_events=1e6,
+                           scale=SCALE_RATIO) is ratio_verdict
+    assert heuristic.check(value, stderr, n=100, n_events=1e6,
+                           scale=SCALE_INTERVAL) is interval_verdict
+
+
+def test_the_registry_declares_exactly_one_interval_scale_metric():
+    """A signed quantity is rare and worth knowing about by name. Asserting the SET
+    rather than just the one metric means adding another signed metric without
+    thinking about its convergence breaks this test deliberately."""
+    signed = {d.name for d in METRICS if d.scale == SCALE_INTERVAL}
+    assert signed == {"net_damage_taken_per_round"}
+    assert all(d.scale in (SCALE_RATIO, SCALE_INTERVAL) for d in METRICS)
+    assert METRICS["dpr"].scale == SCALE_RATIO          # the default
+
+
+def test_an_unknown_scale_is_rejected_at_declaration():
+    with pytest.raises(ValueError, match="scale must be one of"):
+        MetricDef(name="x", unit="u", denominator="rounds", source="s",
+                  definition="d", numerator=lambda s: 0.0, scale="ordinal")
+
+
+def test_breakdown_cells_inherit_their_breakdown_scale():
+    """The one place the declaration could silently default: a cell is built by the
+    breakdown, not written by hand."""
+    breakdown = METRICS.breakdown("dpr_by_role")
+    cells = breakdown.cell_definitions()
+    assert cells and all(c.scale == breakdown.scale for c in cells)
+
+
+def test_the_scale_is_published_in_the_data_dictionary():
+    """A reader deciding whether a 'converged' flag means what they assume needs to
+    know which criterion produced it."""
+    entry = next(d for d in METRICS.data_dictionary()["scalars"]
+                 if d["name"] == "net_damage_taken_per_round")
+    assert entry["scale"] == SCALE_INTERVAL
+    assert "resolution_sigmas" in entry["convergence"]
 
 
 # ---------------------------------------------------------------------------

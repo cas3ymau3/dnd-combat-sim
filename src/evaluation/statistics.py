@@ -140,6 +140,20 @@ class MetricValue:
 # Convergence — a DECLARED heuristic, living in the registry (§6.2)
 # ---------------------------------------------------------------------------
 
+#: A quantity with a TRUE ZERO, where "the standard error is 2% of the value" is a
+#: meaningful sentence: DPR, counts, rates, shares, hit points restored.  Zero means
+#: an absence, and doubling the value doubles the thing.
+SCALE_RATIO = "ratio"
+#: A SIGNED quantity whose zero is a break-even point rather than an absence —
+#: today only ``net_damage_taken_per_round`` (damage absorbed minus healing
+#: received, where a negative value is surplus healing capacity).  Relative error
+#: against one of these is a category error, not merely awkward: the value can sit
+#: near zero while the estimate is perfectly precise, and ``se/|value|`` then
+#: reports an arbitrarily bad verdict for an arbitrarily good estimate.
+SCALE_INTERVAL = "interval"
+
+SCALES = (SCALE_RATIO, SCALE_INTERVAL)
+
 @dataclass(frozen=True)
 class Convergence:
     """When a metric's estimate is precise enough to read at face value.
@@ -159,29 +173,66 @@ class Convergence:
     min_days:
         Minimum replicates.  A stderr from a handful of days is not trustworthy
         regardless of what it says about itself.
+    resolution_sigmas:
+        Used for :data:`SCALE_INTERVAL` quantities ONLY, where ``rel_stderr`` is not
+        defined.  For a signed quantity the interpretive content is the SIGN — is
+        this build net-positive or net-negative on damage taken? — so the estimate
+        is readable when it is resolved from zero by this many standard errors.
+        The default of 3.0 was reasoned about, not calibrated: no shipped build is
+        close enough to break-even to exercise it (§14).
     """
 
     rel_stderr: float = 0.02
     min_events: float = 0.0
     min_days: int = 100
+    resolution_sigmas: float = 3.0
 
     def check(self, value: "float | None", stderr: "float | None",
-              n: int, n_events: float) -> bool:
-        """The verdict.  Not measured → never converged."""
+              n: int, n_events: float, scale: str = SCALE_RATIO) -> bool:
+        """The verdict.  Not measured → never converged.
+
+        **The gate order is load-bearing (fixed s48).**  An EXACT estimate — every
+        replicate agreed, so the standard error is not merely small but zero —
+        escapes before the ``min_events`` floor, because that floor exists to catch
+        the delta method being optimistic on few observations and there is no delta
+        method to be optimistic when the variance is zero.  Checking the floor first
+        was a real defect in shipped output: ``concentration_breaks_per_day`` reads
+        an exact ``0.0 +/- 0.0`` on any build that never concentrates, and was
+        flagged UNCONVERGED forever, while ``concentration_checks_per_day`` — the
+        identical number — was flagged converged because it declares no event floor.
+        A report that says "do not trust this" about its one certain number teaches
+        a reader to ignore the flag.
+
+        This also SUBSUMES the old ``value == 0`` special case rather than sitting
+        beside it: a zero value with a zero standard error is exact and converges
+        here; a zero value with a positive standard error is a noisy number
+        straddling zero, which falls through to the relative test and fails it.
+        """
         if value is None or stderr is None:
             return False
-        if n < self.min_days or n_events < self.min_events:
+        if n < self.min_days:
             return False
+        if stderr == 0.0:
+            # Exact: every replicate agreed. No event floor applies to a quantity
+            # with no sampling variation, and no relative criterion is needed.
+            return True
+        if n_events < self.min_events:
+            return False
+        if scale == SCALE_INTERVAL:
+            # A fraction of the value means nothing for a signed quantity (shift it
+            # by a constant and the verdict changes). What a reader needs is whether
+            # the SIGN is resolved.
+            return abs(value) >= self.resolution_sigmas * stderr
         if value == 0.0:
-            # A relative criterion is undefined at zero.  Only an EXACTLY zero
-            # standard error (every day agreed) counts as converged; otherwise the
-            # estimate is a noisy number straddling zero and must say so.
-            return stderr == 0.0
+            # Zero with a POSITIVE stderr: a noisy number straddling zero. The
+            # relative criterion is undefined, and the honest verdict is "no".
+            return False
         return abs(stderr / value) <= self.rel_stderr
 
     def describe(self) -> dict:
         return {"rel_stderr": self.rel_stderr, "min_events": self.min_events,
-                "min_days": self.min_days}
+                "min_days": self.min_days,
+                "resolution_sigmas": self.resolution_sigmas}
 
 
 #: The default for a fast-converging ledger metric like DPR.
@@ -305,7 +356,8 @@ class MetricSamples:
             )
         return [y / x for y, x in zip(self.numerator, self.denominator)]
 
-    def estimate(self, convergence: Convergence) -> "tuple[MetricValue, list[float]]":
+    def estimate(self, convergence: Convergence,
+                 scale: str = SCALE_RATIO) -> "tuple[MetricValue, list[float]]":
         """``(MetricValue, influence_values)`` for this metric.
 
         The influence values are returned alongside rather than stored on the
@@ -328,7 +380,7 @@ class MetricSamples:
                 value=value,
                 n=self.n,
                 stderr=stderr,
-                converged=convergence.check(value, stderr, self.n, n_events),
+                converged=convergence.check(value, stderr, self.n, n_events, scale),
                 n_events=n_events,
                 available=True,
                 note=note,
@@ -723,13 +775,46 @@ class DistributionConvergence:
     take a ratio of, and "events" are not what a quantile rests on.  The three terms
     mirror it one for one over the quantities that DO exist.
 
+    **Why the interval is judged against the sample's SPREAD and not against the
+    point's value (s48).**  The first cut divided by ``abs(value)``, mirroring
+    ``rel_stderr``.  That criterion is not TRANSLATION-INVARIANT, and the defect is
+    not confined to values near zero — it is wrong everywhere, and merely becomes
+    infinite at zero.  Measured on ``net_damage_taken_per_round`` (war_angel L13,
+    2000 days): adding a flat +100 to every day's value, which changes nothing
+    whatever about the estimate's precision, moved the p90 verdict's input from
+    0.0932 to 0.0147 — the same estimate looking 6.3x more precise for being
+    relabelled.  Dividing by the sample's own p90 - p10 is invariant to both shift
+    and rescaling, needs no declared constant, and asks the question a reader
+    actually has: is this interval narrow compared with the spread it is describing?
+
+    It also does real work rather than collapsing into a day count.  ``width /
+    spread`` is roughly ``C / sqrt(n)`` where ``C`` depends on the density at that
+    quantile relative to the overall spread, so a tail legitimately needs more days
+    than the median — measured on war_angel L13 at n=2000, p50 lands at 0.044 and
+    p10 at 0.074.  (The same trick does NOT transfer to :class:`Convergence`: for a
+    MEAN, ``se/sd`` is exactly ``1/sqrt(n)``, so the analogous criterion would be a
+    day count wearing a disguise.  Measured across four builds, ``se/IQR`` for
+    ``dpr`` came out 0.01677 / 0.01676 / 0.01691 / 0.01692 — identical, because
+    every build's daily DPR is near-normal.  That is why the scalar case is fixed by
+    a DECLARATION (:data:`SCALE_INTERVAL`) instead.)
+
     Parameters
     ----------
-    rel_ci_width:
-        ``(hi - lo) / abs(value)`` must be at or below this — the question
-        ``rel_stderr`` asks, in the only form an asymmetric interval can answer.
-        Looser than the scalar default by construction: a quantile is a far noisier
-        functional of the same sample than its mean.
+    ci_width_vs_spread:
+        ``(hi - lo) / spread`` must be at or below this, where ``spread`` is the
+        SAMPLE's own p90 - p10 — not the point's value.  Renamed from
+        ``rel_ci_width`` at s48 because the old name did not say relative to WHAT,
+        which was the whole defect.  See the class docstring for why the value is
+        the wrong denominator.
+
+        **The DEFAULT is calibrated on a small sample (§14).**  0.10 was read off
+        four build/level points at two day counts, every one of which had a
+        near-normal daily distribution.  A strongly skewed or multi-modal daily
+        distribution widens ``width/spread`` at fixed N without the estimate being
+        any worse, so this constant is a stated convention rather than a measured
+        operating point — re-check it against a sweep before trusting it on a build
+        whose DPR is bimodal, or after the §13 step-5 enemy changes every build's
+        daily variance at once.
     min_tail_observations:
         ``n * statistic.tail_fraction``.  The guard that keeps an extreme quantile
         honest — a p90 off 60 days rests on six observations, and six observations
@@ -738,31 +823,38 @@ class DistributionConvergence:
         Minimum replicates, as above.
     """
 
-    rel_ci_width: float = 0.20
+    ci_width_vs_spread: float = 0.10
     min_tail_observations: float = 50.0
     min_days: int = 100
 
     def check(self, value: "float | None", ci95: "tuple[float, float] | None",
-              n: int, tail_observations: float) -> bool:
+              n: int, tail_observations: float, spread: "float | None") -> bool:
         """The verdict.  No value, or no interval, is never converged.
 
         An interval the estimator REFUSED to place (see
         :func:`order_statistic_interval`) fails here by construction, which is the
         behaviour we want: precision cannot be asserted without a bound.
+
+        ``spread`` is the SAME number for every point of one distribution, so a
+        verdict that differs between p10 and p50 says something about those two
+        estimates rather than about which denominator each happened to get.
         """
         if value is None or ci95 is None:
             return False
         if n < self.min_days or tail_observations < self.min_tail_observations:
             return False
         width = ci95[1] - ci95[0]
-        if value == 0.0:
-            # A relative criterion is undefined at zero; only an exactly degenerate
-            # interval (every resample agreed) counts.
+        if not spread:
+            # A point mass (p10 == p90): the distribution has no spread to resolve,
+            # so the only interval that can be read at face value is a point one.
+            # Falls out of the ratio rather than needing a special case for a zero
+            # VALUE, which is what the old criterion needed.
             return width == 0.0
-        return abs(width / value) <= self.rel_ci_width
+        return width / spread <= self.ci_width_vs_spread
 
     def describe(self) -> dict:
-        return {"rel_ci_width": self.rel_ci_width,
+        return {"ci_width_vs_spread": self.ci_width_vs_spread,
+                "spread_definition": "p90 - p10 of the per-day sample",
                 "min_tail_observations": self.min_tail_observations,
                 "min_days": self.min_days}
 
@@ -824,9 +916,14 @@ def estimate_distribution(distribution: str, values: "Iterable[float]",
     The sample is sorted ONCE and shared: both the point estimates and the
     order-statistic bounds are ranks into the same sorted vector, so they cannot
     disagree about which observation they mean.
+
+    The convergence SPREAD (p90 - p10) is likewise computed once and handed to
+    every point, so the yardstick is a property of the distribution rather than of
+    whichever point is being judged.
     """
     sample = sorted(float(v) for v in values)
     n = len(sample)
+    spread = (quantile(sample, 0.90) - quantile(sample, 0.10)) if n else None
     out: list[DistributionPoint] = []
 
     for statistic in statistics:
@@ -859,7 +956,7 @@ def estimate_distribution(distribution: str, values: "Iterable[float]",
             ci95=ci95,
             n=n,
             tail_observations=tail,
-            converged=convergence.check(value, ci95, n, tail),
+            converged=convergence.check(value, ci95, n, tail, spread),
             note=note,
         ))
     return out

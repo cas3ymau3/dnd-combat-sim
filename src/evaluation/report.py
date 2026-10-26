@@ -502,7 +502,8 @@ def build_report(output: "RunOutput", *,
                 definition.name, reason, n=output.n_days,
             )
             continue
-        value, infl = output.samples[definition.name].estimate(definition.convergence)
+        value, infl = output.samples[definition.name].estimate(
+            definition.convergence, definition.scale)
         values[definition.name] = value
         influence[definition.name] = infl
 

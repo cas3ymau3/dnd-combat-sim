@@ -441,9 +441,35 @@ it term for term over the quantities that do:
 
 | `Convergence` | `DistributionConvergence` | |
 |---|---|---|
-| `rel_stderr` | `rel_ci_width` | `(hi − lo) / abs(value)` — the same question an asymmetric interval can still answer |
+| `rel_stderr` | `ci_width_vs_spread` | `(hi − lo) / spread`, where `spread` is the SAMPLE's own p90 − p10 — **not** the point's value. See below. |
 | `min_events` | `min_tail_observations` | `N · min(p, 1−p)`. The real guard: a `p90` off 60 days rests on six observations, however tight its interval looks |
 | `min_days` | `min_days` | unchanged |
+
+**Why the denominator is the sample's SPREAD and not the point's value (corrected
+s48).** The first cut divided by `abs(value)`, mirroring `rel_stderr`. That criterion
+is **not translation-invariant**, and the defect is not confined to values near zero —
+it is wrong everywhere and merely becomes infinite there. Measured on
+`net_damage_taken_per_round` (war_angel L13, 2000 days): adding a flat +100 to every
+day, which changes nothing about the estimate's precision, moved the p90 criterion's
+input from **0.0932 to 0.0147** — the same estimate looking 6.3× more precise for
+being relabelled.
+
+Dividing by the sample's own p90 − p10 is invariant to shift and to rescaling, needs
+no declared constant, and asks the question a reader actually has: *is this interval
+narrow compared with the spread it is describing?* The spread is computed ONCE per
+distribution and shared by all its points, so a verdict that differs between p10 and
+p50 says something about those estimates rather than about which denominator each got.
+Two further properties:
+
+- **It does real work rather than collapsing into a day count.** `width / spread` is
+  roughly `C/√N` where `C` depends on the density at that quantile relative to the
+  overall spread, so a tail legitimately needs more days than the median — at N=2000,
+  war_angel L13 lands p50 at 0.044 and p10 at 0.074. Threshold **0.10**: the quick tier
+  (2,000 days) clears it except for genuinely lumpy discrete tails, and the standard
+  tier clears it by ~5×. **That number is calibrated on a small sample — see §14.**
+- **The degenerate case falls out instead of being special-cased.** `spread == 0` is a
+  point mass, so the only readable interval is a zero-width one — which is exactly the
+  rule the old criterion needed a separate `value == 0` branch to express.
 
 **1-D in v1, but shaped so keying is additive.** A distribution is not crossed with a
 breakdown key today. The s46 argument applies unchanged — a grid must earn its cells,
@@ -549,6 +575,42 @@ noisy rare-event number without an interval invites over-reading it.
 
 The convergence flag is a declared heuristic (e.g. relative stderr below a threshold,
 plus a minimum event count), recorded in the metric registry.
+
+**The MEASUREMENT SCALE is declared too, and it selects the criterion (s48).**
+`rel_stderr` is only a precision statement for a quantity with a TRUE ZERO, where "the
+standard error is 2% of the value" means something. `MetricDef.scale` makes that
+explicit the same way `Denominator.fixed` selects the estimator:
+
+- **`ratio`** (the default, and every metric but one) — DPR, counts, rates, shares,
+  hit points restored. Zero is an absence. `se/|value|` as before.
+- **`interval`** — a SIGNED quantity whose zero is a break-even point. Today only
+  `net_damage_taken_per_round` (damage absorbed minus healing received; a negative
+  value is surplus healing capacity). Relative error against one of these is a
+  category error, not merely awkward: the value can sit near zero while the estimate
+  is perfectly precise. The criterion instead asks whether the **sign is resolved**
+  (`|value| ≥ 3·stderr`), because for a signed quantity that is the interpretive
+  content — is this build net-positive or net-negative?
+
+It is DECLARED rather than inferred from observed signs: whether a quantity *can* go
+negative is a fact about what it measures, not about what one run happened to produce.
+
+**What was tried and rejected:** judging the scalar's `stderr` against the per-day
+sample's spread, the way a distribution does. For a MEAN that is degenerate — `se/sd`
+is exactly `1/√N` — and the measurement confirmed it: `se/IQR` for `dpr` came out
+0.01677 / 0.01676 / 0.01691 / 0.01692 across four different builds, because every
+build's daily DPR is near-normal. It would have been `min_days` wearing a disguise.
+The trick works for a quantile only because the density at the quantile and the
+overall spread are independent facts about the shape.
+
+**An ordering defect fixed at the same time.** `min_events` was checked BEFORE the
+exact-estimate escape, so a rare-event metric that is deterministically zero could
+never converge: `concentration_breaks_per_day` reads an exact `0.0 ± 0.0` on any build
+that never concentrates and was flagged unconverged forever, while
+`concentration_checks_per_day` — the identical number — was flagged converged because
+it declares no event floor. The floor exists to catch the delta method being optimistic
+on few observations, and there is no delta method to be optimistic about when the
+variance is zero. An exact estimate now escapes first, which also subsumes the old
+`value == 0` special case rather than sitting beside it.
 
 ---
 
@@ -970,6 +1032,21 @@ onto the framework only once step 1 reproduces its numbers exactly.
   **The s46/s47 reservation held: it landed at `schema_version` 1 with no break.** Two
   distributions ship (`dpr`, `net_damage_taken_per_round`). Still open below: a PAIRED
   quantile delta, and keying a distribution.
+- **The convergence THRESHOLDS are calibrated on a small sample** *(added s48)* — the
+  criteria themselves are principled (translation-invariant, no declared constants), but
+  the numbers in them are not derived from anything. `ci_width_vs_spread = 0.10` was read
+  off **four build/level points at two day counts**, all of which happened to have a
+  near-normal daily distribution; `resolution_sigmas = 3.0` and
+  `min_tail_observations = 50` were not calibrated against data at all, only reasoned
+  about. The threshold behaves sensibly at every tier measured, and the shape-awareness
+  it buys is real — but a strongly skewed or multi-modal daily distribution would widen
+  `width/spread` at fixed N for an estimate that is not actually worse, and 0.10 is the
+  first thing to re-check when one appears. **Two concrete triggers:** a build whose DPR
+  is bimodal (a nova that either lands or does not), and the §13 step-5 standardized
+  enemy, which changes every build's daily variance at once. The honest statement today
+  is that these are DECLARED heuristics in the §6.2 sense — a stated convention, not a
+  measured operating point — and the right fix when it matters is a sweep across builds
+  and tiers, not a nudge to the constant.
 - **Paired comparison ON A QUANTILE** *(added s48)* — §6.1's machinery runs on per-day
   influence values and a quantile has none, so `paired_delta` does not extend to it. The
   construction that WOULD work is named in §5.4 (a paired bootstrap over one shared

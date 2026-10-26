@@ -113,7 +113,41 @@ type, condition, resource, …):
    instinct as the per-METRIC ritual's "test it against Silvertail" (the only build
    with a summon) — that rule picks the fixture that exercises the roster-scoping
    declaration; this one generalizes it to any declaration, at any layer.
-6. **Reflect after building — STOP and ask.** Once the feature is built and green,
+
+   **THE ROLL CALL IS A REQUIRED ARTIFACT, not a way of thinking (promoted s48 at the
+   user's request).** Write the table into the test module's docstring BEFORE the
+   tests — one row per declaration the change touches, one column naming the fixture
+   that covers each VALUE. It is not documentation of work already done; it is the
+   instrument that finds the gap, and it only works ahead of time. Evidence from the
+   session that promoted it: writing s48's table first exposed TWO declaration values
+   with no production fixture at all — the inherited-unavailable path (both shipped
+   distributions are over always-available scalars) and the unmeasured path
+   (unreachable through `RunConfig`, which validates `n_days >= 1`). Both would have
+   shipped untested, and neither was visible from the code or from the list of tests;
+   they were visible only from an empty cell in a table. Keeping the table in the
+   docstring also means the next session inherits the map instead of re-deriving it —
+   see `tests/test_eval_distributions.py` for the shape.
+6. **Render ONE REAL OUTPUT by eye before calling it done.** Added session 48, from the
+   bug that session found. Run the feature on a real run at a realistic size and LOOK at
+   what it prints — not a fixture, not an assertion, the actual artifact a reader would
+   get. The s48 trigger: `quantile_statistic(0.90).tail_fraction` was `min(p, 1-p)` =
+   `0.09999999999999998`, so a p90 sitting exactly on the `min_tail_observations`
+   boundary failed its own convergence check by 1e-14 and printed `[unconverged]` beside
+   a perfectly good estimate. **All 54 tests were green.** The fixtures were all off the
+   boundary; the one 500-day smoke run happened to land on it. A verdict that flips on
+   the last bit of a subtraction is not a verdict, and nothing but reading the output
+   would have caught it.
+   - This is cheap and it catches a specific CLASS of defect the tests structurally
+     cannot: float-noise boundary flips, a label that renders wrong, a column of
+     plausible-looking zeros, a number whose MAGNITUDE is absurd. Tests assert what you
+     thought to assert; the output shows what you did not.
+   - Prefer a size near a real tier (§10: quick = 2,000 days) over a fixture's 2 or 60 —
+     boundary conditions live at realistic N, and a 2-day run exercises the degenerate
+     paths instead.
+   - Pair it with step 5 rather than treating them as alternatives: step 5 is "did I
+     cover every branch", this is "does the thing a reader sees look right". Neither
+     subsumes the other, and in s48 only this one found the bug.
+7. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
    decision-record conventions). Capture the answers before moving on; process
@@ -1369,6 +1403,81 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **CONVERGENCE CRITERIA CORRECTED + the two ritual promotions (2026-10-26, session 48,
+  after the s48 reflection).** Three changes the reflection produced, all at the user's
+  direction. **833 tests green** (820 + 13), full suite in FOREGROUND, once. §12 parity
+  still bit-identical.
+
+  **(1) PER-FEATURE RITUAL STEP 6 — "render ONE REAL OUTPUT by eye before calling it
+  done."** From s48's float-noise bug, which 54 green tests missed and one 500-day smoke
+  run caught. It earned its place TWICE within the hour of being written: rendering real
+  reports across four builds is what surfaced the `concentration_breaks_per_day` defect
+  below, which no test was looking for. Reflect renumbered 6 -> 7.
+
+  **(2) STEP 5's ROLL CALL is now a REQUIRED ARTIFACT**, written into the test module's
+  docstring BEFORE the tests. It is the instrument that finds the gap, not a record of
+  work done, and it only works ahead of time.
+
+  **(3) THE CONVERGENCE CRITERIA.** The user's prompt was "downweight values near zero".
+  Measuring first turned that into something sharper, and killed the fix I was about to
+  build.
+
+  **THE REAL DEFECT IS TRANSLATION-INVARIANCE, not zero.** `width/|value|` is wrong
+  everywhere and merely becomes infinite at zero. Measured: adding a flat +100/day to
+  `net_damage_taken_per_round` (war_angel L13, 2000 days) — which changes nothing about
+  the estimate's precision — moved the p90 criterion's input from **0.0932 to 0.0147**,
+  the same estimate looking 6.3x more precise for being relabelled. **Fix:**
+  `DistributionConvergence.rel_ci_width` -> `ci_width_vs_spread`, dividing by the
+  sample's own p90 - p10, computed once per distribution and shared by all its points.
+  Invariant to shift and scale, no declared constant, and it asks the question a reader
+  has. It also does real work rather than collapsing into a day count (`C/sqrt(N)` with
+  `C` set by the density at that quantile — p10 needs more days than p50, measurably),
+  and the point-mass case now falls out of the ratio instead of needing a `value == 0`
+  branch. Threshold **0.10**, calibrated from the tiers.
+
+  **THE SAME FIX DOES NOT TRANSFER TO SCALARS, and the measurement is why.** For a MEAN,
+  `se/sd` is exactly `1/sqrt(N)`, so a spread-relative criterion is `min_days` in
+  disguise — and the data confirmed it rather than leaving it a theoretical worry:
+  `se/IQR` for `dpr` came out **0.01677 / 0.01676 / 0.01691 / 0.01692** across four
+  builds, because every build's daily DPR is near-normal. I had proposed exactly this
+  and did not build it. **The scalar case is fixed by a DECLARATION instead:**
+  `MetricDef.scale` in {`ratio`, `interval`}, selecting the criterion the way
+  `Denominator.fixed` selects the estimator. `interval` is a signed quantity whose zero
+  is a break-even point — today exactly ONE metric, `net_damage_taken_per_round` — and
+  its criterion asks whether the **sign is resolved** (`|value| >= 3*stderr`), because
+  for a signed quantity that IS the interpretive content. Declared rather than inferred
+  from observed signs: whether a quantity CAN go negative is a fact about what it
+  measures.
+
+  **A LIVE BUG FOUND WHILE PROBING, not looked for.** `Convergence.check` tested
+  `min_events` BEFORE the exact-estimate escape, so a rare-event metric that is
+  deterministically zero could never converge. In shipped output:
+  `concentration_breaks_per_day` reads an exact `0.0 +/- 0.0` on any build that never
+  concentrates (war_angel L1, silvertail L10 — half the builds sampled) and was flagged
+  UNCONVERGED forever, while `concentration_checks_per_day`, the identical number, was
+  flagged converged because it declares no event floor. The floor exists to catch the
+  delta method being optimistic on few observations; there is no delta method to be
+  optimistic about when the variance is zero. An exact estimate now escapes first, which
+  **subsumes** the old `value == 0` special case rather than sitting beside it. A report
+  that says "do not trust this" about its one certain number teaches a reader to ignore
+  the flag.
+
+  **The transferable lesson, and the reason step 6 exists:** both defects were invisible
+  to the tests and visible in thirty seconds of reading real output. Tests assert what
+  you thought to assert.
+
+  **Still open (named, not silent), BOTH now §14 deferrals:** (a) a scalar quantity that
+  is signed AND genuinely ambiguous in sign will never converge under the new interval
+  criterion — honest, since you cannot read the sign, but a different failure mode from
+  the old one, and no shipped build exhibits it today; (b) **the THRESHOLDS are
+  calibrated on a small sample.** The criteria are principled; the constants in them are
+  not derived from anything. `ci_width_vs_spread = 0.10` was read off four build/level
+  points at two day counts, all near-normal; `resolution_sigmas = 3.0` and
+  `min_tail_observations = 50` were only reasoned about. A skewed or bimodal daily
+  distribution widens `width/spread` at fixed N without the estimate being worse, so the
+  first build whose DPR is bimodal — and the §13 step-5 enemy, which moves every build's
+  daily variance at once — are the triggers to re-check against a sweep.
 
 - **EVALUATION FRAMEWORK — §14's DISTRIBUTION-SHAPE ESTIMATOR, §5.4's THIRD OUTPUT KIND
   (2026-10-26, session 48).** The seam s46 reserved and s47 built is now filled, **at

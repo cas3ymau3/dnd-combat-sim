@@ -28,9 +28,13 @@ declaration (its values)        fixture that covers each value
    end / upper off the end)     upper off the end -> n=20 at p=0.9.
 ``bootstrap_interval``          n>=2 -> ``_normal_sample``; n<2 -> ``[7.0]``.
   (resamplable / not)
-``DistributionConvergence``     each of the five rejection paths plus the accept
-  (6 outcomes)                  path has its own case in
-                                ``test_distribution_convergence_*``.
+``DistributionConvergence``     each of the six rejection paths plus the accept
+  (7 outcomes, incl. the        path has its own case in
+   spread denominator added     ``test_distribution_convergence_*``; the
+   at s48)                      ``spread == 0`` point-mass branch has its own test,
+                                and the PROPERTY the spread denominator exists for
+                                (translation invariance) is asserted directly rather
+                                than inferred from the rejection table.
 ``register_distribution``       all six refusals + the accept path, one case
   (7 outcomes)                  each, in ``test_registration_refuses_*``.
 ``MetricSamples.per_day_values``fixed -> ``dpr``; random -> ``save_fail_rate``'s
@@ -290,23 +294,81 @@ def test_the_tail_fraction_is_not_hostage_to_float_noise():
 # ---------------------------------------------------------------------------
 
 def test_distribution_convergence_accepts_a_tight_well_supported_estimate():
-    rule = DistributionConvergence(rel_ci_width=0.2, min_tail_observations=50,
-                                   min_days=100)
-    assert rule.check(10.0, (9.5, 10.5), n=1000, tail_observations=100)
+    rule = DistributionConvergence(ci_width_vs_spread=0.1,
+                                   min_tail_observations=50, min_days=100)
+    assert rule.check(10.0, (9.5, 10.5), n=1000, tail_observations=100, spread=20.0)
 
 
-@pytest.mark.parametrize("value, ci, n, tail, why", [
-    (None, (9.5, 10.5), 1000, 100, "no value"),
-    (10.0, None,        1000, 100, "no interval could be placed"),
-    (10.0, (9.5, 10.5),   50, 100, "too few days"),
-    (10.0, (9.5, 10.5), 1000,  10, "too few tail observations"),
-    (10.0, (5.0, 15.0), 1000, 100, "interval too wide"),
-    (0.0,  (-1.0, 1.0), 1000, 100, "relative width undefined at zero"),
+@pytest.mark.parametrize("value, ci, n, tail, spread, why", [
+    (None, (9.5, 10.5), 1000, 100, 20.0, "no value"),
+    (10.0, None,        1000, 100, 20.0, "no interval could be placed"),
+    (10.0, (9.5, 10.5),   50, 100, 20.0, "too few days"),
+    (10.0, (9.5, 10.5), 1000,  10, 20.0, "too few tail observations"),
+    (10.0, (5.0, 15.0), 1000, 100, 20.0, "interval too wide for the spread"),
+    (10.0, (9.5, 10.5), 1000, 100,  0.0, "point mass, but the interval has width"),
+    (10.0, (9.5, 10.5), 1000, 100, None, "no spread at all (empty sample)"),
 ])
-def test_distribution_convergence_rejects_each_way_it_can(value, ci, n, tail, why):
-    rule = DistributionConvergence(rel_ci_width=0.2, min_tail_observations=50,
-                                   min_days=100)
-    assert not rule.check(value, ci, n=n, tail_observations=tail), why
+def test_distribution_convergence_rejects_each_way_it_can(value, ci, n, tail,
+                                                          spread, why):
+    rule = DistributionConvergence(ci_width_vs_spread=0.1,
+                                   min_tail_observations=50, min_days=100)
+    assert not rule.check(value, ci, n=n, tail_observations=tail,
+                          spread=spread), why
+
+
+def test_a_point_mass_converges_only_on_a_point_interval():
+    """``spread == 0`` means p10 == p90: there is nothing to resolve, so the only
+    readable interval is a degenerate one. This falls OUT of the ratio rather than
+    needing the special case for a zero VALUE that the old criterion required."""
+    rule = DistributionConvergence(ci_width_vs_spread=0.1,
+                                   min_tail_observations=1, min_days=1)
+    assert rule.check(7.0, (7.0, 7.0), n=100, tail_observations=50, spread=0.0)
+
+
+def test_the_convergence_criterion_is_translation_invariant():
+    """THE s48 REASON for dividing by the sample's spread instead of by the point's
+    value. ``width / abs(value)`` changes when you add a constant to every day —
+    which changes nothing whatever about the estimate's precision.
+
+    Measured on the real thing before the fix (net_damage_taken_per_round, war_angel
+    L13, 2000 days): a flat +100 per day moved the p90 criterion's input from 0.0932
+    to 0.0147, making the same estimate look 6.3x more precise for being relabelled.
+    Zero was never the real problem; it was only where the misbehaviour became
+    infinite.
+    """
+    base = _normal_sample(n=600, seed=11)
+    verdicts = {}
+    for shift in (0.0, 1000.0):
+        sample = [v + shift for v in base]
+        points = estimate_distribution(
+            "d", sample, DEFAULT_STATISTICS,
+            convergence=DistributionConvergence(min_days=1,
+                                                min_tail_observations=1),
+            seed=5)
+        verdicts[shift] = {p.statistic: p.converged for p in points}
+        # And the yardstick itself is unmoved by the shift.
+        shifted = sorted(sample)
+        assert quantile(shifted, 0.9) - quantile(shifted, 0.1) == pytest.approx(
+            quantile(sorted(base), 0.9) - quantile(sorted(base), 0.1))
+    assert verdicts[0.0] == verdicts[1000.0]
+
+
+def test_the_yardstick_is_shared_by_every_point_of_one_distribution():
+    """One spread per distribution, so 'p10 unconverged but p50 converged' says
+    something about those two ESTIMATES rather than about which denominator each
+    happened to be judged against.
+
+    Uses ``simulate`` rather than the module fixture because the check needs the
+    per-day samples, which an ``EvalReport`` deliberately does not carry.
+    """
+    output = simulate(RunConfig(build="war_angel", level=13, n_days=DAYS, seed=7))
+    shape = build_report(output).distribution("dpr_distribution")
+    sample = sorted(output.samples["dpr"].per_day_values())
+    spread = quantile(sample, 0.90) - quantile(sample, 0.10)
+    rule = DistributionConvergence()
+    for point in shape.points.values():
+        assert point.converged == rule.check(
+            point.value, point.ci95, point.n, point.tail_observations, spread)
 
 
 def test_a_refused_interval_is_never_converged():
