@@ -60,6 +60,9 @@ from typing import TYPE_CHECKING, Any, Callable, Iterator
 from ..telemetry import HEAL_CONTEXTS, SAVE_CHANNELS
 from .statistics import (
     DEFAULT_CONVERGENCE,
+    SCALE_INTERVAL,
+    SCALE_RATIO,
+    SCALES,
     DEFAULT_DISTRIBUTION_CONVERGENCE,
     DEFAULT_RESAMPLES,
     DEFAULT_STATISTICS,
@@ -474,10 +477,24 @@ class MetricDef:
     #: :data:`ALL` in a position means this cell is a declared MARGIN over that
     #: dimension.
     key: "tuple[str, ...] | None" = None
+    #: §6.2 (s48): the quantity's MEASUREMENT SCALE, which selects the convergence
+    #: criterion the same way ``Denominator.fixed`` selects the estimator.
+    #: :data:`SCALE_RATIO` (the default, and all but one metric) has a true zero, so
+    #: "the standard error is 2% of the value" is a meaningful sentence.
+    #: :data:`SCALE_INTERVAL` is a SIGNED quantity whose zero is a break-even point;
+    #: relative error against one is a category error, because the value can sit
+    #: near zero while the estimate is perfectly precise. Declared rather than
+    #: inferred from observed signs: whether a quantity CAN go negative is a fact
+    #: about what it measures, not about what this run happened to produce.
+    scale: str = SCALE_RATIO
 
     def __post_init__(self) -> None:
         if self.group not in GROUPS:
             raise ValueError(f"Metric {self.name!r}: group must be one of {GROUPS}.")
+        if self.scale not in SCALES:
+            raise ValueError(
+                f"Metric {self.name!r}: scale must be one of {SCALES}."
+            )
         if self.denominator not in DENOMINATORS:
             raise ValueError(
                 f"Metric {self.name!r} declares denominator {self.denominator!r}, "
@@ -504,6 +521,7 @@ class MetricDef:
             "source": self.source,
             "definition": self.definition,
             "group": self.group,
+            "scale": self.scale,
             "convergence": self.convergence.describe(),
             "breakdown": self.breakdown,
             "key": list(self.key) if self.key is not None else None,
@@ -638,6 +656,10 @@ class BreakdownDef:
     #: summon healing under fire is a different fact from a summon healing at
     #: leisure (healing.md §11.1).
     crossed: bool = True
+    #: As :attr:`MetricDef.scale`, applied to every cell. No shipped breakdown is
+    #: signed today; the field exists so a breakdown cannot be the one place the
+    #: declaration silently defaults.
+    scale: str = SCALE_RATIO
     convergence: Convergence = DEFAULT_CONVERGENCE
     availability: Callable[[RunContext, tuple[str, ...]], "str | None"] = (
         lambda ctx, key: None
@@ -727,6 +749,7 @@ class BreakdownDef:
                 convergence=self.convergence,
                 availability=(lambda ctx, _k=key: self.availability(ctx, _k)),
                 group=self.group,
+                scale=self.scale,
                 events=(None if self.events is None
                         else (lambda s, _k=key: self.events(s, _k))),
                 breakdown=self.name,
@@ -1447,6 +1470,12 @@ def _build_default_registry() -> MetricRegistry:
         ),
         numerator=lambda s: (s.taken("characters")
                              - s.healing(target_roles=("characters",))),
+        # The ONLY interval-scale metric in the registry (s48). Its zero is a
+        # break-even point, not an absence, so se/|value| is not a precision
+        # statement about it — a build healing almost exactly what it takes would
+        # report an arbitrarily bad verdict for an arbitrarily good estimate.
+        # Convergence asks instead whether the SIGN is resolved.
+        scale=SCALE_INTERVAL,
     ))
     reg(MetricDef(
         name="external_healing_required_per_day",
