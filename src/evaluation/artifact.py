@@ -13,11 +13,20 @@ spells.  Both renderers here — and the console one next door — render from t
 
 What §9.1 locked, and why each piece is load-bearing
 ----------------------------------------------------
-**Three result sections from version 1, the third reserved and EMPTY.**  §5.4's third
-output kind (distributions) has no estimator yet — a quantile is not a ratio and has no
-delta-method standard error — but the section exists now so §14's work lands without a
-``schema_version`` break.  :meth:`MetricRegistry.distributions` returns ``[]`` for the
-same reason; the reservation is one contract expressed in two places, not two contracts.
+**Three result sections from version 1 — and the third one FILLED at s48, still at
+version 1.**  s46 named §5.4's third output kind, s47 reserved its section empty, and
+s48 built the estimator into it without touching :data:`SCHEMA_VERSION`.  That is the
+reservation doing exactly the job it was for, and it worked for a reason worth keeping
+in view: the locked ROW shape already carried ``stderr`` and ``ci95`` as SEPARATE
+fields, so a quantile — which has no delta-method standard error and an asymmetric
+interval — was always representable in it.  A row shape that had stored a half-width
+instead would have forced a version bump here.
+
+A distribution block is ``{name, over, unit, group, statistics, points}``: the same
+declaration-then-rows layout as a breakdown, with ``points`` in place of
+``cells``/``margins`` because a distribution has neither, and with **no ``sum_rule``** —
+quantiles of one sample partition nothing and no sum of them means anything, so
+offering a value from that two-value vocabulary would imply a choice exists.
 
 **One ROW shape** for scalars, breakdown cells and margins alike, so a consumer writes
 one parser.  A cell's key travels as a DICT of dimension -> value.  Nothing downstream
@@ -59,10 +68,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterable
 
 from .metrics import MetricRegistry
-from .statistics import MetricValue
+from .statistics import DistributionPoint, MetricValue
 
 if TYPE_CHECKING:                                    # pragma: no cover
-    from .report import BreakdownValue, EvalReport
+    from .report import BreakdownValue, DistributionValue, EvalReport
 
 #: §9: *"mandatory, because a site will be built against it"*.  Bump this only for a
 #: change a version-1 consumer could not survive; ADDING the distributions section's
@@ -233,11 +242,13 @@ def _row(report: "EvalReport", name: str, *,
         "metric": name,
         "kind": "scalar" if breakdown is None else "breakdown",
         "breakdown": breakdown,
+        "distribution": None,
         "key": None if key is None else dict(zip(dimensions, key)),
         "is_margin": is_margin,
         "unit": definition.unit,
         "denominator": definition.denominator,
         "group": definition.group,
+        "method": None,
         "status": status,
         # None, never 0.0, for anything but `measured` — see the module docstring.
         "value": value.value if status == STATUS_MEASURED else None,
@@ -247,6 +258,76 @@ def _row(report: "EvalReport", name: str, *,
         "n_events": value.n_events,
         "converged": value.converged,
         "note": value.note,
+    }
+
+
+def _distribution_row(report: "EvalReport", distribution: "DistributionValue",
+                      point: DistributionPoint) -> dict[str, Any]:
+    """One distribution statistic, in the SAME row shape (§9.1).
+
+    Three fields behave differently here, and each difference is the honest one
+    rather than a convenience:
+
+    * **``stderr`` is always ``None``.**  A quantile is not a ratio; there is no
+      delta-method standard error to report.  Writing the interval's half-width
+      into it would invite a reader to rebuild a SYMMETRIC interval that the
+      estimator never produced.
+    * **``ci95`` is the whole of the uncertainty, and it is asymmetric.**  It can
+      also be ``None`` on a measured row — when the sample is too small to place a
+      bound (see ``order_statistic_interval``), the honest report is the estimate
+      without an interval, not an interval clamped to the sample's extreme.
+    * **``n_events`` carries the point's TAIL observations** — ``n × min(p, 1−p)``
+      rather than a declared event count.  The column's meaning is unchanged (the
+      observation count the convergence verdict rests on); only the way to compute
+      it differs by kind, exactly as the estimator does.
+
+    ``unit`` and ``denominator`` are inherited from the metric this describes, so a
+    distribution row reads on its own like every other row.
+    """
+    over = report.registry[distribution.over]
+    return {
+        "metric": distribution.definition.point_name(point.statistic),
+        "kind": "distribution",
+        "breakdown": None,
+        "distribution": distribution.name,
+        "key": {"statistic": point.statistic},
+        "is_margin": False,
+        "unit": distribution.unit,
+        "denominator": over.denominator,
+        "group": distribution.definition.group,
+        "method": point.method,
+        "status": (STATUS_UNAVAILABLE if not point.available
+                   else STATUS_MEASURED if point.measured else STATUS_UNMEASURED),
+        "value": point.value,
+        "stderr": None,
+        "ci95": list(point.ci95) if point.ci95 is not None else None,
+        "n": point.n,
+        "n_events": point.tail_observations,
+        "converged": point.converged,
+        "note": point.note,
+    }
+
+
+def _distribution_block(report: "EvalReport",
+                        distribution: "DistributionValue") -> dict[str, Any]:
+    """One distribution: its declaration, then its points.
+
+    No ``cells``/``margins`` split and no ``sum_rule``.  A breakdown needs both
+    because its margins are sums a consumer must not add to the cells; a
+    distribution has nothing of the kind, and handing it a field from the
+    two-value sum vocabulary would imply that summing quantiles is a question with
+    an answer.
+    """
+    definition = distribution.definition
+    return {
+        "name": distribution.name,
+        "over": distribution.over,
+        "unit": distribution.unit,
+        "group": definition.group,
+        "dimensions": list(definition.key_dimensions),
+        "statistics": [s.label for s in definition.statistics],
+        "points": [_distribution_row(report, distribution, point)
+                   for point in distribution.points.values()],
     }
 
 
@@ -329,9 +410,11 @@ def report_to_dict(report: "EvalReport", *,
             "breakdowns": [_breakdown_block(report, report.breakdowns[b.name])
                            for b in report.registry.breakdowns
                            if b.name in report.breakdowns],
-            # §5.4's third kind: RESERVED and empty from version 1, so §14's
-            # estimator lands without a schema break.
-            "distributions": list(report.registry.distributions()),
+            # §5.4's third kind. Reserved empty at s47, filled at s48 — and the
+            # reservation held: SCHEMA_VERSION is still 1.
+            "distributions": [_distribution_block(report, report.distributions[d.name])
+                              for d in report.registry.distributions()
+                              if d.name in report.distributions],
         },
     }
     if include_data_dictionary:
@@ -390,9 +473,13 @@ def write_json(report: "EvalReport", path: "str | Path", *,
 RUN_COLUMNS = ("run_id", "config_hash", "schema_version", "build", "level",
                "mode", "attribution", "day_tier", "engine_commit")
 
-#: What the row IS.
-META_COLUMNS = ("metric", "kind", "breakdown", "group", "unit", "denominator",
-                "is_margin", "sum_rule")
+#: What the row IS.  ``distribution`` and ``method`` joined at s48: a distribution
+#: row needs to name its parent without a consumer parsing ``dpr_distribution[p50]``
+#: (the reversal §5.4 exists to remove), and an ASYMMETRIC interval is unreadable
+#: without knowing how it was placed.  ``sum_rule`` is blank on them — quantiles are
+#: not additive under any rule, so the field does not apply rather than taking a value.
+META_COLUMNS = ("metric", "kind", "breakdown", "distribution", "group", "unit",
+                "denominator", "is_margin", "sum_rule", "method")
 
 #: What the row SAYS.
 VALUE_COLUMNS = ("status", "value", "stderr", "ci_low", "ci_high", "n", "n_events",
@@ -414,6 +501,14 @@ def dimension_columns(registry: MetricRegistry) -> tuple[str, ...]:
     names: list[str] = []
     for breakdown in registry.breakdowns:
         for dimension in breakdown.key_space.names:
+            if dimension not in names:
+                names.append(dimension)
+    # §5.4 kind 3 keys its points the same way, so its dimension joins the same
+    # union rather than getting a bespoke column. Today that is just 'statistic';
+    # a later KEYED distribution adds its dimensions here with no change to this
+    # function, which is the point of DistributionDef.key_dimensions.
+    for distribution in registry.distributions():
+        for dimension in distribution.key_dimensions:
             if dimension not in names:
                 names.append(dimension)
     return tuple(names)
@@ -455,11 +550,13 @@ def report_to_rows(report: "EvalReport") -> list[dict[str, Any]]:
             "metric": row["metric"],
             "kind": row["kind"],
             "breakdown": row["breakdown"],
+            "distribution": row["distribution"],
             "group": row["group"],
             "unit": row["unit"],
             "denominator": row["denominator"],
             "is_margin": row["is_margin"],
             "sum_rule": sum_rule,
+            "method": row["method"],
         })
         # Blank for a dimension this row is not keyed by; '*' where the key says so.
         for dimension in dimensions:
@@ -482,6 +579,9 @@ def report_to_rows(report: "EvalReport") -> list[dict[str, Any]]:
         rule = block["sum_rule"]
         rows.extend(flatten(r, rule) for r in block["cells"])
         rows.extend(flatten(r, rule) for r in block["margins"])
+    # sum_rule stays None for every distribution point: see META_COLUMNS.
+    for block in record["results"]["distributions"]:
+        rows.extend(flatten(r, None) for r in block["points"])
     return rows
 
 

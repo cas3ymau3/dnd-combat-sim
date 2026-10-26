@@ -53,15 +53,20 @@ dead code rather than an honest declaration.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from itertools import product
 from typing import TYPE_CHECKING, Any, Callable, Iterator
 
 from ..telemetry import HEAL_CONTEXTS, SAVE_CHANNELS
 from .statistics import (
     DEFAULT_CONVERGENCE,
+    DEFAULT_DISTRIBUTION_CONVERGENCE,
+    DEFAULT_RESAMPLES,
+    DEFAULT_STATISTICS,
     RARE_EVENT_CONVERGENCE,
     Convergence,
+    DistributionConvergence,
+    Statistic,
 )
 
 if TYPE_CHECKING:                                    # pragma: no cover
@@ -748,6 +753,123 @@ class BreakdownDef:
         }
 
 
+# ---------------------------------------------------------------------------
+# DistributionDef — the third output kind (§5.4 "Kind 3 in full", s48)
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class DistributionDef:
+    """§5.4's third output kind: the SHAPE of a per-day quantity.
+
+    Every other output in this registry is a mean with a standard error, which
+    says where the average lands and nothing about consistency — two builds with
+    identical mean DPR and very different day-to-day spread are indistinguishable
+    in all of it.
+
+    **A distribution is declared OVER a registered scalar**, never as a new
+    collected quantity, and that is what made the kind cheap.  It reads the per-day
+    samples :class:`~src.evaluation.statistics.MetricSamples` already keeps for
+    ``over``, so the runner, the collector and both estimators are untouched — the
+    same move :class:`BreakdownDef` made in s46.  Two consequences are worth
+    naming:
+
+    * **The distribution and the scalar cannot disagree.**  The mean of the per-day
+      vector IS the scalar's value, to the last bit, because it is the same vector.
+      A distribution with its own numerator could drift from the metric it claims
+      to describe.
+    * **Unavailability is inherited.**  If ``over`` is unavailable for a run, so is
+      this, with the same reason — §3.4's three states need no new vocabulary.
+
+    ``unit`` is NOT declared: :meth:`MetricRegistry.register_distribution` fills it
+    from ``over``.  It is the same quantity, so a second declaration of it could
+    only ever drift.
+
+    The interval method is not a field either — each
+    :class:`~src.evaluation.statistics.Statistic` carries its own, because a
+    quantile has an exact closed-form interval and an IQR does not.  See that
+    class for why that is a derivation rather than a knob.
+    """
+
+    name: str
+    #: The registered SCALAR metric whose per-day samples this describes.  Must
+    #: have a FIXED denominator — checked at registration, because a ratio metric
+    #: has no per-day value to take a quantile of.
+    over: str
+    definition: str
+    statistics: "tuple[Statistic, ...]" = DEFAULT_STATISTICS
+    convergence: DistributionConvergence = DEFAULT_DISTRIBUTION_CONVERGENCE
+    group: str = "panel"
+    #: Resamples for the bootstrap statistics.  Ignored by the exact method.
+    resamples: int = DEFAULT_RESAMPLES
+    #: Filled in at registration from ``over``; never declared by hand.
+    unit: str = ""
+
+    def __post_init__(self) -> None:
+        if self.group not in GROUPS:
+            raise ValueError(
+                f"Distribution {self.name!r}: group must be one of {GROUPS}."
+            )
+        if self.group == "headline":
+            raise ValueError(
+                f"Distribution {self.name!r} cannot be the headline: §5.3 allows "
+                f"exactly one headline and §5.4 keeps it a SCALAR. A build's "
+                f"headline is where its average lands; its spread is reported "
+                f"beside that, never as it."
+            )
+        if not self.statistics:
+            raise ValueError(
+                f"Distribution {self.name!r} declares no statistics; an empty "
+                f"distribution is a section header, not an output."
+            )
+        labels = [s.label for s in self.statistics]
+        if len(set(labels)) != len(labels):
+            raise ValueError(
+                f"Distribution {self.name!r} declares a duplicate statistic: {labels}."
+            )
+
+    @property
+    def key_dimensions(self) -> tuple[str, ...]:
+        """The dimensions a point's key carries — ``("statistic",)`` in v1.
+
+        A property rather than a literal at the call sites so the tidy CSV's
+        column derivation is UNIFORM across the kinds: it unions every breakdown's
+        key-space names with every distribution's key dimensions, which means a
+        later KEYED distribution (§5.4's named deferral) adds its column the same
+        way a new breakdown dimension does, rather than needing the writer edited.
+        """
+        return ("statistic",)
+
+    def point_name(self, statistic: str) -> str:
+        """The flat row name, matching a breakdown cell's convention."""
+        return self.name + format_key((statistic,))
+
+    def describe(self) -> dict[str, Any]:
+        """The data-dictionary entry for the third kind (§5.1's payoff, extended)."""
+        return {
+            "name": self.name,
+            "kind": "distribution",
+            "over": self.over,
+            "unit": self.unit,
+            "definition": self.definition,
+            "group": self.group,
+            "statistics": [s.describe() for s in self.statistics],
+            "resamples": self.resamples,
+            "convergence": self.convergence.describe(),
+            "interval_note": (
+                "Distribution points carry an ASYMMETRIC ci95 and NO stderr: a "
+                "quantile is not a ratio and has no delta-method standard error, so "
+                "value +/- 1.96*stderr is not available and would not be correct if "
+                "it were. The method field on each row says how the interval was "
+                "placed."
+            ),
+            "sum_note": (
+                "Points are NOT additive under any rule, which is why a distribution "
+                "carries no sum_rule: quantiles of one sample do not partition "
+                "anything and summing them is meaningless."
+            ),
+        }
+
+
 class MetricRegistry:
     """The closed metric set — §5.4's two live output kinds, in one home.
 
@@ -761,19 +883,26 @@ class MetricRegistry:
       artifact serializes and a website renders — so a consumer never parses a key
       back out of a metric NAME (§5.4).
 
-    The third kind, distributions, is a reserved seam and not yet registrable: see
-    :meth:`distributions`.
+    The third kind, distributions (s48), is registered here too but estimated
+    differently: a :class:`DistributionDef` expands into no cells, because it
+    describes the per-day samples of a metric that is ALREADY registered.  It
+    therefore never appears in the flat view — iterating the registry still yields
+    exactly the things the collector must sample.
     """
 
     def __init__(self, definitions: "list[MetricDef] | None" = None,
-                 breakdowns: "list[BreakdownDef] | None" = None) -> None:
+                 breakdowns: "list[BreakdownDef] | None" = None,
+                 distributions: "list[DistributionDef] | None" = None) -> None:
         self._defs: dict[str, MetricDef] = {}
         self._scalars: list[str] = []
         self._breakdowns: dict[str, BreakdownDef] = {}
+        self._distributions: dict[str, DistributionDef] = {}
         for definition in definitions or []:
             self.register(definition)
         for breakdown in breakdowns or []:
             self.register_breakdown(breakdown)
+        for distribution in distributions or []:
+            self.register_distribution(distribution)
 
     # -- registration -----------------------------------------------------
 
@@ -796,6 +925,65 @@ class MetricRegistry:
         for cell in breakdown.cell_definitions():
             self._add(cell)
         return breakdown
+
+    def register_distribution(self, distribution: DistributionDef) -> DistributionDef:
+        """Register one DISTRIBUTION (§5.4 kind 3) over an already-registered scalar.
+
+        Two refusals happen here rather than being left to the author's care, and
+        both are the kind of mistake that would otherwise produce a plausible
+        number:
+
+        * **``over`` must be a registered SCALAR.**  A breakdown CELL has per-day
+          samples too, but keying a distribution is deliberately out of scope for
+          v1 (§5.4) — accepting a cell name here would let one in by the side door
+          with no key on its rows.
+        * **``over`` must have a FIXED denominator.**  With a random denominator
+          there is no per-day value to take a quantile OF: a day that forced no
+          saves has no fail rate, and silently dropping those days would change the
+          estimand from "the rate" to "the rate among days that had one".  The
+          declaration ``Denominator.fixed`` already exists for the estimator's
+          sake; this is the same fact doing a second job.
+
+        ``unit`` is filled in from ``over`` rather than declared, so the two can
+        never drift apart — it is the same quantity.
+        """
+        if distribution.name in self._distributions:
+            raise ValueError(
+                f"Distribution {distribution.name!r} is already registered."
+            )
+        if distribution.name in self._defs:
+            raise ValueError(
+                f"Distribution {distribution.name!r} collides with a registered "
+                f"metric of the same name."
+            )
+        if distribution.over not in self._defs:
+            raise ValueError(
+                f"Distribution {distribution.name!r} is declared over "
+                f"{distribution.over!r}, which is not a registered metric. "
+                f"Registered scalars: {self._scalars}."
+            )
+        over = self._defs[distribution.over]
+        if over.breakdown is not None:
+            raise ValueError(
+                f"Distribution {distribution.name!r} is declared over "
+                f"{distribution.over!r}, which is a CELL of breakdown "
+                f"{over.breakdown!r}. §5.4 keeps distributions 1-D in v1: a "
+                f"distribution over a cell is a KEYED distribution, and its rows "
+                f"would carry no key to say which cell they describe."
+            )
+        if not over.denominator_spec.fixed:
+            raise ValueError(
+                f"Distribution {distribution.name!r} is declared over "
+                f"{distribution.over!r}, whose denominator "
+                f"{over.denominator!r} is RANDOM. There is no per-day value to take "
+                f"a quantile of: on a day whose denominator is zero the ratio is "
+                f"undefined, not zero, so the sample a quantile would read does not "
+                f"exist. Distributions are defined over fixed-denominator metrics "
+                f"only (§5.4)."
+            )
+        resolved = replace(distribution, unit=over.unit)
+        self._distributions[resolved.name] = resolved
+        return resolved
 
     def _add(self, definition: MetricDef) -> None:
         if definition.name in self._defs:
@@ -848,18 +1036,29 @@ class MetricRegistry:
                 f"Registered: {list(self._breakdowns)}."
             ) from None
 
-    def distributions(self) -> list[Any]:
-        """§5.4's third kind — the SEAM, deliberately empty (s46).
+    def distributions(self) -> list[DistributionDef]:
+        """§5.4's third kind (s48).
 
-        A quantile is not a ratio: it has no delta-method standard error and needs
-        order-statistic or bootstrap intervals, so it does not fit
-        :class:`MetricDef`.  s46 named the kind and reserved its place in the
-        artifact so it can land without a ``schema_version`` break; designing the
-        estimator is scheduled for after §9 serialization.  This method exists so
-        the reserved section is part of the CONTRACT rather than a promise in a
-        design note.
+        s46 named the kind and reserved its place in the artifact; s47 built the
+        reservation; s48 filled it — at ``schema_version`` 1, which is what the
+        reservation was for.  The method kept its name and its place through all
+        three, so the contract a consumer reads never moved.
         """
-        return []
+        return list(self._distributions.values())
+
+    def distribution(self, name: str) -> DistributionDef:
+        try:
+            return self._distributions[name]
+        except KeyError:
+            raise KeyError(
+                f"No distribution registered as {name!r}. "
+                f"Registered: {list(self._distributions)}."
+            ) from None
+
+    def distributions_in_group(self, group: str) -> list[DistributionDef]:
+        if group not in GROUPS:
+            raise KeyError(f"Unknown metric group {group!r}; expected {GROUPS}.")
+        return [d for d in self._distributions.values() if d.group == group]
 
     # -- grouping (§5.3) --------------------------------------------------
 
@@ -913,7 +1112,7 @@ class MetricRegistry:
         return {
             "scalars": [d.describe() for d in self.scalars()],
             "breakdowns": [b.describe() for b in self._breakdowns.values()],
-            "distributions": self.distributions(),
+            "distributions": [d.describe() for d in self._distributions.values()],
         }
 
 
@@ -1051,6 +1250,7 @@ def _build_default_registry() -> MetricRegistry:
     registry = MetricRegistry()
     reg = registry.register
     breakdown = registry.register_breakdown
+    distribution = registry.register_distribution
 
     # == SCALARS (§5.4 kind 1) ==========================================
 
@@ -1465,6 +1665,46 @@ def _build_default_registry() -> MetricRegistry:
             "no cell in the artifact ever sums them; a comment could be ignored, a "
             "missing cell cannot."
         ),
+    ))
+
+    # == DISTRIBUTIONS (§5.4 kind 3) ====================================
+
+    # Two, deliberately (user, s48). Each is declared over a scalar that is already
+    # registered above, so neither adds a sample column, an estimator path or a
+    # line of collection — the whole kind is a second READING of material the run
+    # already produced.
+    #
+    # Considered and not taken: external_healing_required_per_day (heavily tied at
+    # zero for most builds, so most of its quantiles would be an honest but
+    # uninformative 0) and party_dpr_opening_round (party-scoped, so its spread is
+    # not comparable to the headline's anyway). Both are one declaration away if a
+    # reader turns up for them.
+    distribution(DistributionDef(
+        name="dpr_distribution",
+        over="dpr",
+        definition=(
+            "The day-to-day SHAPE of the headline. Two builds with the same mean "
+            "DPR and very different spread are the same number in every other row "
+            "of this report, and they are not the same build: one wins the day it "
+            "rolls well, the other wins every day. p10 is the bad-day floor, the "
+            "quartiles bound a typical day, and the IQR is the single number that "
+            "separates a swingy build from a steady one. Describes exactly the "
+            "sample the dpr scalar averages, so its mean IS that scalar."
+        ),
+    ))
+    distribution(DistributionDef(
+        name="net_damage_taken_distribution",
+        over="net_damage_taken_per_round",
+        definition=(
+            "The shape of the defensive cost — and the one place where the mean is "
+            "most misleading, because the day that kills a character is a TAIL day, "
+            "not an average one. p90 is the spike a build must survive; p10 may be "
+            "NEGATIVE, which is not an error but surplus healing capacity "
+            "(healing.md §2), so this is also the distribution whose interval can "
+            "straddle zero. CHARACTER-scoped, inherited from the scalar it "
+            "describes."
+        ),
+        group="panel",
     ))
 
     return registry

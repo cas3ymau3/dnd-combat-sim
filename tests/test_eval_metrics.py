@@ -189,11 +189,18 @@ def test_every_registered_metric_declares_a_complete_data_dictionary_entry():
             assert cell.key == key
 
 
-def test_the_distribution_kind_is_a_reserved_seam_not_a_built_one():
-    """§5.4 kind 3: s46 named it and reserved its artifact section so it can land
-    without a schema break; the estimator is still deferred to after step 3."""
-    assert METRICS.distributions() == []
-    assert METRICS.data_dictionary()["distributions"] == []
+def test_the_distribution_seam_reserved_at_s46_is_now_filled():
+    """§5.4 kind 3: s46 named it, s47 reserved its artifact section, s48 built it.
+
+    The method kept its name and its place across all three sessions, which is what
+    the reservation was FOR — a consumer written against the empty version reads the
+    filled one without changing.
+    """
+    declared = METRICS.distributions()
+    assert [d.name for d in declared] == ["dpr_distribution",
+                                          "net_damage_taken_distribution"]
+    dictionary = METRICS.data_dictionary()["distributions"]
+    assert [d["name"] for d in dictionary] == [d.name for d in declared]
 
 
 def test_a_metric_cannot_declare_a_denominator_outside_the_closed_vocabulary():

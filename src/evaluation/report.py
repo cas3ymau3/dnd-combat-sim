@@ -41,8 +41,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterable
 
-from .metrics import ALL, METRICS, BreakdownDef, MetricRegistry
-from .statistics import MetricValue, PairedDelta, paired_delta
+from .metrics import ALL, METRICS, BreakdownDef, DistributionDef, MetricRegistry
+from .statistics import (
+    DistributionPoint,
+    MetricValue,
+    PairedDelta,
+    estimate_distribution,
+    paired_delta,
+)
 
 if TYPE_CHECKING:                                    # pragma: no cover
     from .config import RunConfig
@@ -260,6 +266,81 @@ class BreakdownValue:
 
 
 # ---------------------------------------------------------------------------
+# The structured view of a distribution (§5.4 kind 3, s48)
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class DistributionValue:
+    """One :class:`~src.evaluation.metrics.DistributionDef`'s worth of answers.
+
+    The parallel of :class:`BreakdownValue` for the third kind, with one shape
+    difference that matters: there are no cells and no margins, only ``points``.
+    A breakdown keeps those two apart because its margins ARE sums and a consumer
+    must not add them to the cells.  A distribution has nothing to keep apart —
+    quantiles of one sample do not partition anything, and no sum of them means
+    anything — so the artifact gives it no ``sum_rule`` field rather than offering
+    a value from a vocabulary that does not apply.
+
+    Points are :class:`~src.evaluation.statistics.DistributionPoint`, NOT
+    :class:`MetricValue`: the latter derives ``ci95`` as ``value +/- 1.96*stderr``,
+    and a quantile's interval is asymmetric.
+    """
+
+    definition: DistributionDef
+    points: dict[str, DistributionPoint]
+
+    @property
+    def name(self) -> str:
+        return self.definition.name
+
+    @property
+    def unit(self) -> str:
+        return self.definition.unit
+
+    @property
+    def over(self) -> str:
+        """The scalar metric whose per-day samples this describes."""
+        return self.definition.over
+
+    def __getitem__(self, statistic: str) -> DistributionPoint:
+        try:
+            return self.points[statistic]
+        except KeyError:
+            raise KeyError(
+                f"No statistic {statistic!r} in distribution {self.name!r}. "
+                f"Declared: {list(self.points)}."
+            ) from None
+
+    def measured(self) -> dict[str, DistributionPoint]:
+        """Only the statistics this run produced a number for."""
+        return {k: v for k, v in self.points.items() if v.measured}
+
+    def rows(self) -> list[dict[str, Any]]:
+        """Long/tidy form: one dict per statistic.
+
+        The statistic occupies the same slot a breakdown cell's key does, which is
+        what keeps a later KEYED distribution additive rather than a schema change
+        (§5.4): today ``{"statistic": "p50"}``, tomorrow
+        ``{"role": "summons", "statistic": "p50"}``.
+        """
+        return [
+            {
+                "distribution": self.name,
+                "over": self.over,
+                "unit": self.unit,
+                "statistic": point.statistic,
+                "method": point.method,
+                "value": point.value,
+                "ci95": list(point.ci95) if point.ci95 is not None else None,
+                "n": point.n,
+                "converged": point.converged,
+                "note": point.note,
+            }
+            for point in self.points.values()
+        ]
+
+
+# ---------------------------------------------------------------------------
 # The report (§5.3)
 # ---------------------------------------------------------------------------
 
@@ -275,6 +356,13 @@ class EvalReport:
     #: cell names, because the collector and the paired-delta machinery address
     #: metrics by name; this is the view §9 serializes and a website renders.
     breakdowns: dict[str, BreakdownValue] = field(default_factory=dict)
+    #: §5.4's third kind (s48): distribution name -> its estimated statistics.
+    #: Unlike a breakdown's cells these do NOT also appear in :attr:`values` —
+    #: a :class:`~src.evaluation.statistics.DistributionPoint` is not a
+    #: :class:`MetricValue` and carries an asymmetric interval instead of a
+    #: standard error, so flattening it into that map would hand the paired-delta
+    #: machinery something it cannot difference.
+    distributions: dict[str, DistributionValue] = field(default_factory=dict)
     #: Per-day influence values, kept for §6.1's paired deltas.  NOT part of the
     #: report's serialized form (step 3) — a 200k-day run would carry a per-metric
     #: vector into every artifact for a quantity only a comparison consumes.
@@ -333,6 +421,25 @@ class EvalReport:
         """The §5.3 panel's keyed half (§5.4)."""
         return self.breakdowns_in_group("panel")
 
+    def distribution(self, name: str) -> DistributionValue:
+        try:
+            return self.distributions[name]
+        except KeyError:
+            raise KeyError(
+                f"No distribution {name!r} in this report. "
+                f"Registered: {sorted(self.distributions)}."
+            ) from None
+
+    def distributions_in_group(self, group: str) -> list[DistributionValue]:
+        return [self.distributions[d.name]
+                for d in self.registry.distributions_in_group(group)
+                if d.name in self.distributions]
+
+    @property
+    def panel_distributions(self) -> list[DistributionValue]:
+        """The §5.3 panel's SHAPE half (§5.4 kind 3)."""
+        return self.distributions_in_group("panel")
+
     @property
     def column_breakdowns(self) -> list[BreakdownValue]:
         """The roster columns' keyed half — ``dpr_by_role`` and its party margin."""
@@ -370,10 +477,20 @@ def build_report(output: "RunOutput", *,
                  pairing: "dict[str, Any] | None" = None) -> EvalReport:
     """Assemble an :class:`EvalReport` from a completed run.
 
-    Pure post-processing: the run is over, no dice are rolled here, and calling it
-    twice on the same :class:`~src.evaluation.runner.RunOutput` gives the same
-    answer.  The registry used is the one the run collected against — asking for a
-    metric the run never sampled would be a fabrication, not a computation.
+    Pure post-processing: the run is over, and calling this twice on the same
+    :class:`~src.evaluation.runner.RunOutput` gives the same answer.  The registry
+    used is the one the run collected against — asking for a metric the run never
+    sampled would be a fabrication, not a computation.
+
+    **One qualification on "no dice are rolled here", added at s48.**  A bootstrap
+    statistic resamples, so this function does draw pseudo-random numbers — but
+    from a ``numpy.random.default_rng`` seeded per (run seed, distribution,
+    statistic), NEVER from the run's ``SeededRNG``.  That distinction is the whole
+    of per-feature ritual step 3: every die in a run comes off one tape, so a
+    single extra draw from it outside combat would shift every subsequent roll and
+    break §12's bit-identical parity proof.  Determinism is preserved on both
+    counts — the combat stream is untouched, and the resampler's own stream is a
+    pure function of the run's seed.
     """
     values: dict[str, MetricValue] = {}
     influence: dict[str, list[float]] = {}
@@ -404,6 +521,37 @@ def build_report(output: "RunOutput", *,
             definition=definition, cells=cells, margins=margins,
         )
 
+    # §5.4 kind 3: a SECOND READING of samples the run already produced. Nothing
+    # new is collected — the distribution describes the very vector whose mean is
+    # the scalar above, which is why the two can never disagree.
+    distributions: dict[str, DistributionValue] = {}
+    for definition in output.registry.distributions():
+        reason = output.unavailable.get(definition.over)
+        if reason is not None:
+            # §3.4's state is INHERITED: the distribution of a metric this run
+            # cannot produce is not a different kind of gap, it is the same gap.
+            points = {
+                statistic.label: DistributionPoint.unavailable(
+                    definition.name, statistic, reason, n=output.n_days,
+                )
+                for statistic in definition.statistics
+            }
+        else:
+            points = {
+                point.statistic: point
+                for point in estimate_distribution(
+                    definition.name,
+                    output.samples[definition.over].per_day_values(),
+                    definition.statistics,
+                    convergence=definition.convergence,
+                    seed=output.config.seed,
+                    resamples=definition.resamples,
+                )
+            }
+        distributions[definition.name] = DistributionValue(
+            definition=definition, points=points,
+        )
+
     return EvalReport(
         provenance=Provenance.build(
             output.config, output.described, output.roster.summary(), pairing,
@@ -411,6 +559,7 @@ def build_report(output: "RunOutput", *,
         registry=output.registry,
         values=values,
         breakdowns=breakdowns,
+        distributions=distributions,
         influence=influence,
     )
 
