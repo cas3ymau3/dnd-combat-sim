@@ -113,7 +113,41 @@ type, condition, resource, …):
    instinct as the per-METRIC ritual's "test it against Silvertail" (the only build
    with a summon) — that rule picks the fixture that exercises the roster-scoping
    declaration; this one generalizes it to any declaration, at any layer.
-6. **Reflect after building — STOP and ask.** Once the feature is built and green,
+
+   **THE ROLL CALL IS A REQUIRED ARTIFACT, not a way of thinking (promoted s48 at the
+   user's request).** Write the table into the test module's docstring BEFORE the
+   tests — one row per declaration the change touches, one column naming the fixture
+   that covers each VALUE. It is not documentation of work already done; it is the
+   instrument that finds the gap, and it only works ahead of time. Evidence from the
+   session that promoted it: writing s48's table first exposed TWO declaration values
+   with no production fixture at all — the inherited-unavailable path (both shipped
+   distributions are over always-available scalars) and the unmeasured path
+   (unreachable through `RunConfig`, which validates `n_days >= 1`). Both would have
+   shipped untested, and neither was visible from the code or from the list of tests;
+   they were visible only from an empty cell in a table. Keeping the table in the
+   docstring also means the next session inherits the map instead of re-deriving it —
+   see `tests/test_eval_distributions.py` for the shape.
+6. **Render ONE REAL OUTPUT by eye before calling it done.** Added session 48, from the
+   bug that session found. Run the feature on a real run at a realistic size and LOOK at
+   what it prints — not a fixture, not an assertion, the actual artifact a reader would
+   get. The s48 trigger: `quantile_statistic(0.90).tail_fraction` was `min(p, 1-p)` =
+   `0.09999999999999998`, so a p90 sitting exactly on the `min_tail_observations`
+   boundary failed its own convergence check by 1e-14 and printed `[unconverged]` beside
+   a perfectly good estimate. **All 54 tests were green.** The fixtures were all off the
+   boundary; the one 500-day smoke run happened to land on it. A verdict that flips on
+   the last bit of a subtraction is not a verdict, and nothing but reading the output
+   would have caught it.
+   - This is cheap and it catches a specific CLASS of defect the tests structurally
+     cannot: float-noise boundary flips, a label that renders wrong, a column of
+     plausible-looking zeros, a number whose MAGNITUDE is absurd. Tests assert what you
+     thought to assert; the output shows what you did not.
+   - Prefer a size near a real tier (§10: quick = 2,000 days) over a fixture's 2 or 60 —
+     boundary conditions live at realistic N, and a 2-day run exercises the degenerate
+     paths instead.
+   - Pair it with step 5 rather than treating them as alternatives: step 5 is "did I
+     cover every branch", this is "does the thing a reader sees look right". Neither
+     subsumes the other, and in s48 only this one found the bug.
+7. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
    decision-record conventions). Capture the answers before moving on; process
