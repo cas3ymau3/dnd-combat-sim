@@ -178,6 +178,8 @@ class Convergence:
         defined.  For a signed quantity the interpretive content is the SIGN — is
         this build net-positive or net-negative on damage taken? — so the estimate
         is readable when it is resolved from zero by this many standard errors.
+        The default of 3.0 was reasoned about, not calibrated: no shipped build is
+        close enough to break-even to exercise it (§14).
     """
 
     rel_stderr: float = 0.02
@@ -804,6 +806,15 @@ class DistributionConvergence:
         ``rel_ci_width`` at s48 because the old name did not say relative to WHAT,
         which was the whole defect.  See the class docstring for why the value is
         the wrong denominator.
+
+        **The DEFAULT is calibrated on a small sample (§14).**  0.10 was read off
+        four build/level points at two day counts, every one of which had a
+        near-normal daily distribution.  A strongly skewed or multi-modal daily
+        distribution widens ``width/spread`` at fixed N without the estimate being
+        any worse, so this constant is a stated convention rather than a measured
+        operating point — re-check it against a sweep before trusting it on a build
+        whose DPR is bimodal, or after the §13 step-5 enemy changes every build's
+        daily variance at once.
     min_tail_observations:
         ``n * statistic.tail_fraction``.  The guard that keeps an extreme quantile
         honest — a p90 off 60 days rests on six observations, and six observations

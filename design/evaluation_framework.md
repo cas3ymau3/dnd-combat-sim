@@ -466,7 +466,7 @@ Two further properties:
   overall spread, so a tail legitimately needs more days than the median — at N=2000,
   war_angel L13 lands p50 at 0.044 and p10 at 0.074. Threshold **0.10**: the quick tier
   (2,000 days) clears it except for genuinely lumpy discrete tails, and the standard
-  tier clears it by ~5×.
+  tier clears it by ~5×. **That number is calibrated on a small sample — see §14.**
 - **The degenerate case falls out instead of being special-cased.** `spread == 0` is a
   point mass, so the only readable interval is a zero-width one — which is exactly the
   rule the old criterion needed a separate `value == 0` branch to express.
@@ -1032,6 +1032,21 @@ onto the framework only once step 1 reproduces its numbers exactly.
   **The s46/s47 reservation held: it landed at `schema_version` 1 with no break.** Two
   distributions ship (`dpr`, `net_damage_taken_per_round`). Still open below: a PAIRED
   quantile delta, and keying a distribution.
+- **The convergence THRESHOLDS are calibrated on a small sample** *(added s48)* — the
+  criteria themselves are principled (translation-invariant, no declared constants), but
+  the numbers in them are not derived from anything. `ci_width_vs_spread = 0.10` was read
+  off **four build/level points at two day counts**, all of which happened to have a
+  near-normal daily distribution; `resolution_sigmas = 3.0` and
+  `min_tail_observations = 50` were not calibrated against data at all, only reasoned
+  about. The threshold behaves sensibly at every tier measured, and the shape-awareness
+  it buys is real — but a strongly skewed or multi-modal daily distribution would widen
+  `width/spread` at fixed N for an estimate that is not actually worse, and 0.10 is the
+  first thing to re-check when one appears. **Two concrete triggers:** a build whose DPR
+  is bimodal (a nova that either lands or does not), and the §13 step-5 standardized
+  enemy, which changes every build's daily variance at once. The honest statement today
+  is that these are DECLARED heuristics in the §6.2 sense — a stated convention, not a
+  measured operating point — and the right fix when it matters is a sweep across builds
+  and tiers, not a nudge to the constant.
 - **Paired comparison ON A QUANTILE** *(added s48)* — §6.1's machinery runs on per-day
   influence values and a quantile has none, so `paired_delta` does not extend to it. The
   construction that WOULD work is named in §5.4 (a paired bootstrap over one shared

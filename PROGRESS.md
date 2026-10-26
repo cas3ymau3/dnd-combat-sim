@@ -1467,10 +1467,17 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   to the tests and visible in thirty seconds of reading real output. Tests assert what
   you thought to assert.
 
-  **Still open (named, not silent):** a scalar quantity that is signed AND genuinely
-  ambiguous in sign will never converge under the new interval criterion. That is
-  honest — you cannot read the sign — but it is a different failure mode from the old
-  one, and no shipped build exhibits it today.
+  **Still open (named, not silent), BOTH now §14 deferrals:** (a) a scalar quantity that
+  is signed AND genuinely ambiguous in sign will never converge under the new interval
+  criterion — honest, since you cannot read the sign, but a different failure mode from
+  the old one, and no shipped build exhibits it today; (b) **the THRESHOLDS are
+  calibrated on a small sample.** The criteria are principled; the constants in them are
+  not derived from anything. `ci_width_vs_spread = 0.10` was read off four build/level
+  points at two day counts, all near-normal; `resolution_sigmas = 3.0` and
+  `min_tail_observations = 50` were only reasoned about. A skewed or bimodal daily
+  distribution widens `width/spread` at fixed N without the estimate being worse, so the
+  first build whose DPR is bimodal — and the §13 step-5 enemy, which moves every build's
+  daily variance at once — are the triggers to re-check against a sweep.
 
 - **EVALUATION FRAMEWORK — §14's DISTRIBUTION-SHAPE ESTIMATOR, §5.4's THIRD OUTPUT KIND
   (2026-10-26, session 48).** The seam s46 reserved and s47 built is now filled, **at
