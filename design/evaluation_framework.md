@@ -323,12 +323,10 @@ context`, `damage_type`). Four properties are load-bearing:
     second reason the total is a declared margin and never something a renderer adds up,
     and it is asserted as a test.
 
-**3. Distribution** — the third kind, **SEAM RESERVED, NOT BUILT (s46)**. §14's
-distribution-shape deferral stands: a quantile is not a ratio, has no delta-method
-standard error, and needs order-statistic or bootstrap intervals. What s46 fixes is that
-the artifact reserves a `distributions` section from `schema_version` 1, so the work can
-land later without a schema break. Designing the estimator remains scheduled for after
-§9 serialization.
+**3. Distribution** — `DistributionDef`: the SHAPE of a per-day quantity rather than
+where its average lands. **SEAM RESERVED s46, ESTIMATOR LOCKED AND BUILT s48** — see
+*Kind 3 in full* at the end of this section. The reservation held: the estimator landed
+at `schema_version` 1, unchanged.
 
 #### The survival rule for a prune (s46)
 
@@ -375,6 +373,114 @@ more than halved.
   margin would be a fabricated row. `typed_damage_share` is the meaningful aggregate and
   is a separate scalar with a different denominator.
 
+#### Kind 3 in full: the distribution estimator (LOCKED s48)
+
+Every other output in this framework is a MEAN with a standard error. That says where
+the average lands and nothing about consistency: two builds with identical mean DPR and
+very different day-to-day spread are indistinguishable in everything above. A quantile
+is not a ratio — it has no delta-method standard error — so it does not fit `MetricDef`
+and needed this parallel kind. The shape was settled with the user BEFORE the estimator
+was written (per-feature ritual step 4).
+
+**A distribution is declared OVER a registered scalar, not as a new collected
+quantity.**
+
+```python
+DistributionDef(name="dpr_distribution", over="dpr",
+                statistics=(P10, P25, P50, P75, P90, IQR))
+```
+
+That single choice is what made the kind cheap, and four consequences are load-bearing:
+
+- **Nothing upstream changed.** It reads the per-day samples `MetricSamples` already
+  keeps for `dpr`, so the runner, the collector and both estimators are untouched — the
+  same move `BreakdownDef` made in s46, which is the evidence that the three kinds
+  really are one registry and not three.
+- **The distribution and the scalar cannot disagree.** The mean of the per-day vector IS
+  the scalar's value, to the last bit, because it is the same vector. A distribution
+  declaring its own numerator could drift from the metric it claims to describe.
+- **Eligibility is STRUCTURAL, not a judgement.** A distribution requires
+  `Denominator.fixed == True`, checked at registration. A ratio metric has no per-day
+  value at all — a day that forced no saves has no fail rate — so "the distribution of
+  `save_fail_rate`" is not something to be careful about, it is something the registry
+  REFUSES. This reuses the declaration `statistics.py` already branches on.
+- **Unavailability is inherited.** If `over` is unavailable for a run, so is the
+  distribution, with the same reason. §3.4's three states need no new vocabulary.
+
+**THE STATISTIC SELECTS THE METHOD — it is not a per-distribution knob.** This is the
+section's main structural decision, and it is the direct analogue of `Denominator.fixed`
+selecting the estimator in `statistics.py`:
+
+| statistic | interval method | why that one |
+|---|---|---|
+| `quantile(p)` — `p10`/`p25`/`p50`/`p75`/`p90` | **order statistic** (exact binomial) | A distribution-free interval exists in closed form. It is exact at every N, costs nothing, and draws nothing. |
+| `iqr` = `p75 − p25` | **bootstrap** (percentile, 2000 resamples) | No closed form. Its uncertainty needs the covariance of the two quantiles — exactly what a consumer holding `p25` and `p75` cannot reconstruct. §5.4's survival rule, now applying to the third kind. |
+
+Making the method a declared option would have invited choosing a bootstrap where an
+exact answer was free. Deriving it also means **both branches have a real production
+consumer**, which is what makes the two-method requirement testable rather than a
+fixture built to exercise dead code (per-feature ritual step 5).
+
+**The interval is ASYMMETRIC, and that is why it is carried as an interval.** A
+quantile's order-statistic bounds are two order statistics straddling the estimate; they
+are not `value ± 1.96·se`, and on a skewed daily distribution they are visibly not
+centred. So a distribution row reports `stderr = null` and a real `ci95`. §9.1's locked
+ROW shape already carries those as separate fields, which is why filling this seam needs
+no `schema_version` break — the reservation was not merely a space in the JSON, it was a
+row contract that already fitted.
+
+**When the interval cannot be placed, say so rather than shrink it.** At small N the
+binomial bound for an extreme quantile falls off the end of the sample (there is no
+`X_(0)`). The honest report is a measured `value` with `ci95 = null`, a note naming the
+cause, and `converged = false` — never a bound silently clamped to the sample minimum,
+which would read as a precision the data does not have.
+
+**Convergence needs its own heuristic.** `Convergence` is written for
+`rel_stderr`/`min_events` and neither exists here, so `DistributionConvergence` mirrors
+it term for term over the quantities that do:
+
+| `Convergence` | `DistributionConvergence` | |
+|---|---|---|
+| `rel_stderr` | `rel_ci_width` | `(hi − lo) / abs(value)` — the same question an asymmetric interval can still answer |
+| `min_events` | `min_tail_observations` | `N · min(p, 1−p)`. The real guard: a `p90` off 60 days rests on six observations, however tight its interval looks |
+| `min_days` | `min_days` | unchanged |
+
+**1-D in v1, but shaped so keying is additive.** A distribution is not crossed with a
+breakdown key today. The s46 argument applies unchanged — a grid must earn its cells,
+and `dpr_by_role × 3 roles × 6 statistics` is 18 rows nobody has asked to read. But the
+row carries its statistic in the SAME `key` dict a breakdown cell uses
+(`{"statistic": "p50"}`), so adding a dimension later is `{"role": "summons",
+"statistic": "p50"}` and not a schema change.
+
+**What earns a distribution (user, s48).** Two, deliberately:
+
+| distribution | over | what it answers |
+|---|---|---|
+| `dpr_distribution` | `dpr` | offensive consistency — the headline's shape, the §14 question verbatim |
+| `net_damage_taken_distribution` | `net_damage_taken_per_round` | defensive spike risk: the day you take a huge spike is the day you die, and a mean hides it. Also the branch where the quantity can be NEGATIVE (surplus healing), so `rel_ci_width` is exercised against a value that can straddle zero |
+
+Considered and not taken: `external_healing_required_per_day` (heavily tied at zero for
+most builds — honest but uninformative rows) and `party_dpr_opening_round` (party-scoped,
+so not comparable to the headline anyway). Both remain one declaration away.
+
+**Paired comparison on a quantile: DEFERRED, with the construction named.** §6.1's
+machinery is built on per-day INFLUENCE VALUES, and a quantile has no influence-value
+representation, so `paired_delta` does not extend to it. The correct construction is a
+PAIRED BOOTSTRAP: resample day indices ONCE, apply the same index vector to both runs'
+per-day vectors, recompute the difference of quantiles, and take percentiles of the
+resampled differences — the pairing is preserved exactly because both runs are indexed
+identically. It is not built because §6.1 MEASURED that pairing is worth ~1× in this
+engine until RNG substreams land (§13 step 8), and because the comparison artifact is
+its own deferred shape. Naming the construction makes this a known path rather than an
+open question.
+
+**The bootstrap draws, and it must never draw from the combat stream.** Per-feature
+ritual step 3: any new dice source outside combat shifts the shared tape and kills §12's
+bit-identical parity proof. The resampler therefore uses its OWN
+`numpy.random.default_rng`, seeded from a stable hash of `(run seed, distribution name,
+statistic label)` — reproducible across processes, and structurally incapable of
+reaching `SeededRNG`. Resampling is also post-processing: it runs in `build_report`,
+after the last die of the run has been cast.
 
 ---
 
@@ -573,16 +679,29 @@ them plus a manifest (step 7).
     "headline": "dpr",
     "scalars":       [ ROW, ... ],
     "breakdowns":    [ {"name": ..., "cells": [ROW...], "margins": [ROW...]}, ... ],
-    "distributions": []
+    "distributions": [ {"name": ..., "over": ..., "points": [ROW...]}, ... ]
   },
-  "data_dictionary": { "scalars": [...], "breakdowns": [...], "distributions": [] }
+  "data_dictionary": { "scalars": [...], "breakdowns": [...], "distributions": [...] }
 }
 ```
 
-**Three sections from version 1, the third reserved and empty.** `distributions` is
-present and `[]` because §5.4's third kind is a reserved seam: §14's estimator lands
-later without a `schema_version` break. `MetricRegistry.distributions()` already returns
-`[]` for the same reason, so the reservation is one contract, not two.
+**Three sections from version 1. The third was reserved empty at s47 and FILLED at
+s48 — at `schema_version` 1, as promised.** A `distributions` entry is
+`{name, over, unit, group, statistics, points: [ROW...]}`: the same declaration-then-rows
+layout as a breakdown block, with `points` in place of `cells`/`margins` because a
+distribution has neither. There is deliberately **no `sum_rule`** on it — quantiles are
+not additive under any rule, so offering a field from that two-value vocabulary would
+imply a choice exists. The CSV's `sum_rule` column is blank for these rows, which is the
+same "blank means not applicable" convention the dimension columns already use.
+
+A distribution's ROW is the one locked row shape, with three things worth stating:
+`stderr` is **always null** (a quantile has no delta-method standard error), `ci95` is
+**asymmetric** and is the only uncertainty the row carries, and `key` is
+`{"statistic": "p50"}` — the same dict a breakdown cell uses, so a consumer's key parser
+is unchanged and a later keyed distribution is additive. Two columns join the tidy CSV:
+`statistic` (alongside the dimension columns, derived from the registry the same way)
+and `method` (`order_statistic` / `bootstrap`, a meta column beside `sum_rule`), because
+an asymmetric interval is unreadable without knowing how it was placed.
 
 **One ROW shape** serves scalars, breakdown cells and margins — the same fields in the
 same order, so a consumer writes one parser:
@@ -841,17 +960,29 @@ onto the framework only once step 1 reproduces its numbers exactly.
   a cut). Result: **51 declarations → 22** (15 scalars + 7 breakdowns), one row dropped
   outright (`typed_damage_per_round`). Healing's §8 metrics were the first customer and
   the test of whether the kinds work.
-- **Distribution shape (quantiles, spread)** *(added s44; SEAM RESERVED s46, ESTIMATOR
-  STILL DEFERRED)* — every scalar today is a mean with a standard error, which describes
-  where the average lands and says nothing about consistency: two builds with identical
-  mean DPR and very different day-to-day spread are indistinguishable in this report. A
-  quantile is not a ratio and has no delta-method standard error, so it does not fit
-  `MetricDef` — it needs a parallel `DistributionDef` kind with order-statistic or
-  bootstrap intervals. **s46 named it as §5.4's third kind and reserved its artifact
-  section so it can land without a `schema_version` break; s47 BUILT that reservation —
-  §9.1's `results.distributions` is present and empty at `schema_version` 1, with a test
-  pinning it and the data dictionary's matching section. Step 3 is done, so the estimator
-  is now the NEXT item rather than a deferral.**
+- ~~**Distribution shape (quantiles, spread)**~~ *(added s44; seam reserved s46, built
+  s47)* — **SETTLED AND BUILT (s48) — see §5.4's "Kind 3 in full".** `DistributionDef`
+  is declared OVER a registered fixed-denominator scalar, so the runner and both
+  estimators were untouched; the statistic SELECTS the interval method (quantiles →
+  exact binomial order statistics, IQR → percentile bootstrap), mirroring how
+  `Denominator.fixed` selects the estimator; `DistributionConvergence` mirrors
+  `Convergence` term for term (`rel_ci_width` / `min_tail_observations` / `min_days`).
+  **The s46/s47 reservation held: it landed at `schema_version` 1 with no break.** Two
+  distributions ship (`dpr`, `net_damage_taken_per_round`). Still open below: a PAIRED
+  quantile delta, and keying a distribution.
+- **Paired comparison ON A QUANTILE** *(added s48)* — §6.1's machinery runs on per-day
+  influence values and a quantile has none, so `paired_delta` does not extend to it. The
+  construction that WOULD work is named in §5.4 (a paired bootstrap over one shared
+  resampled index vector). Deferred because §6.1 measured pairing at ~1× in this engine
+  until RNG substreams land (§13 step 8), and because the comparison artifact is its own
+  deferred shape — building a paired quantile interval now would buy nothing measurable.
+- **A KEYED distribution** *(added s48)* — v1 is 1-D: quantiles of `dpr`, not quantiles
+  of `dpr_by_role[summons]`. The s46 "a grid must earn its cells" argument applies
+  unchanged. Non-blocking by construction: the row already carries its statistic in the
+  same `key` dict a breakdown cell uses, so adding a dimension is additive rather than a
+  schema change. The first real customer would be per-combat DPR spread, which also
+  wants a note that four combats within a day are not independent replicates the way
+  days are.
 - **Per-(round, source) damage ledger** *(added s44)* — `CombatResult.damage_received`
   is per round but keyed by target only; `damage_by_source_target` is attributed by
   source but per-combat cumulative. So no metric can say "how much did the CHARACTER
