@@ -183,7 +183,13 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 46 (2026-08-20) — nothing to reset (confirmed with user).** The
+- **Last reviewed for reset: session 48 (2026-10-26) — nothing to reset (confirmed with user).** The
+  s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s47 and s48
+  were both pure Python, so nothing accumulated; marker bumped per the ≥2-session rule. **One
+  environment note, NOT a tweak to reset:** this cloud session's `python` (3.13, with numpy) had no
+  `pytest`, so `pip install pytest` was needed before the suite would run — a property of the
+  container, not of the project, and nothing was added to the repo or the allowlist for it.
+- **Prior — session 46 (2026-08-20) — nothing to reset (confirmed with user).** The
   s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s45 and s46
   were both pure Python / design work, so nothing accumulated; marker bumped per the ≥2-session rule.
 - **Prior — session 44 (2026-08-19) — nothing to reset (confirmed with user).** The
@@ -1363,6 +1369,121 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **EVALUATION FRAMEWORK — §14's DISTRIBUTION-SHAPE ESTIMATOR, §5.4's THIRD OUTPUT KIND
+  (2026-10-26, session 48).** The seam s46 reserved and s47 built is now filled, **at
+  `schema_version` 1 — which is exactly what the reservation was for.** LOCKED in
+  `evaluation_framework.md` §5.4's new "Kind 3 in full" (written BEFORE the estimator, per
+  the per-feature ritual's step 4); built across `src/evaluation/{statistics,metrics,report,
+  artifact,console}.py`, 54 mechanism tests in `tests/test_eval_distributions.py`.
+  **820 tests green** (766 + 54), full suite in FOREGROUND, once
+  ([[full-suite-foreground-only]]). `src/validation.py` UNCHANGED and the §12 parity proof
+  still bit-identical.
+
+  **The problem, restated.** Every output in this framework was a MEAN with a standard
+  error. That says where the average lands and nothing about consistency: two builds with
+  identical mean DPR and very different day-to-day spread were the same number in every
+  row of the report. A quantile does not fit `MetricDef` — it is not a ratio, so there is
+  no linearization and no delta-method standard error — which is why this needed a
+  parallel kind rather than a flag.
+
+  **THE SHAPE, settled with the user at session start (all four recommendations taken).**
+  - **A distribution is declared OVER a registered scalar**, not as a new collected
+    quantity: `DistributionDef(name="dpr_distribution", over="dpr", statistics=(...))`. It
+    reads the per-day samples `MetricSamples` already keeps, so **the runner, the collector
+    and both estimators were untouched** — the same move `BreakdownDef` made in s46, and
+    the second piece of evidence that the three kinds really are one registry. Two
+    consequences are load-bearing: the distribution and the scalar **cannot disagree** (it
+    is the same vector, so its mean IS the scalar, bit for bit — asserted), and §3.4
+    unavailability is **inherited** rather than being a second kind of gap.
+  - **Eligibility is STRUCTURAL, not a judgement.** `Denominator.fixed` must be True,
+    checked at registration. A ratio metric has no per-day value at all — a day that forced
+    no saves has no fail rate, and dropping those days would change the estimand from "the
+    rate" to "the rate among days that had one" — so the registry REFUSES the declaration
+    instead of leaving a trap for an author to avoid. That declaration already existed to
+    select the estimator; this is the same fact doing a second job.
+  - **THE STATISTIC SELECTS THE METHOD — the session's main structural decision.**
+    `quantile(p)` → exact binomial order statistics (closed form, exact at every N, draws
+    nothing). `iqr` → percentile bootstrap (no closed form). The direct analogue of
+    `Denominator.fixed` selecting the estimator in `statistics.py`. Two payoffs: a declared
+    knob would have invited a bootstrap where an exact answer was free, and deriving it
+    means **both branches have a real production consumer** instead of one being exercised
+    only by a fixture built for it — which is what makes per-feature step 5 meaningful here.
+  - **`stderr` is always null and `ci95` is ASYMMETRIC.** `DistributionPoint` is a separate
+    type rather than a `MetricValue` with `stderr=None`, because that class DERIVES its
+    interval as `value ± 1.96·stderr` and would have symmetrized a quantile's bounds
+    silently. A test asserts the intervals are in fact not symmetric, so the type split is
+    not decoration.
+  - **1-D in v1, keyed later is ADDITIVE.** The statistic travels in the same `key` dict a
+    breakdown cell uses (`{"statistic": "p50"}`), and `DistributionDef.key_dimensions`
+    feeds the CSV's dimension union, so a keyed distribution adds its column the same way a
+    new breakdown dimension does rather than needing the writer edited.
+  - **What earns one (user):** `dpr` (the headline's shape — §14's question verbatim) and
+    `net_damage_taken_per_round` (spike risk; the day that kills a character is a TAIL day,
+    and this is also the branch whose value can be NEGATIVE). Declined:
+    `external_healing_required_per_day` (tied at zero for most builds — honest but
+    uninformative rows) and `party_dpr_opening_round` (party-scoped, so not comparable to
+    the headline anyway). Both are one declaration away.
+
+  **WHY NO `schema_version` BUMP — the reservation worked for a specific reason.** s47
+  locked a ROW shape carrying `stderr` and `ci95` as SEPARATE fields. A quantile has the
+  second and not the first, so it was always representable. **Had the row stored a
+  half-width instead of an interval — the obvious compression, since every value then had
+  one — this would have been a version 2.** Worth remembering as a general point: a row
+  shape that stores the DERIVED form of an uncertainty is narrower than one that stores
+  the interval, and the cost only shows up a session or two later.
+
+  **Honest refusals, in three places.** An order-statistic bound that falls off the end of
+  the sample is reported as `ci95 = null` with a reason and `converged = false`, never
+  clamped to the sample's extreme — the same rule as refusing to write 0 for an unmeasured
+  metric. A bootstrap on fewer than two observations refuses likewise. And a distribution
+  block carries **no `sum_rule`**: quantiles of one sample partition nothing, so offering a
+  value from that two-value vocabulary would imply a choice exists.
+
+  **`DistributionConvergence` mirrors `Convergence` term for term**, because neither of
+  that one's criteria is defined here: `rel_stderr` → `rel_ci_width` ((hi−lo)/|value|, the
+  question an asymmetric interval can still answer), `min_events` →
+  `min_tail_observations` (`n · min(p, 1−p)` — a p90 off 60 days rests on six observations
+  however tight its interval looks), `min_days` unchanged.
+
+  **NO NEW DICE OUTSIDE COMBAT — measured, not promised** (per-feature ritual step 3). The
+  bootstrap resamples from its own `numpy.random.default_rng`, seeded from a SHA of (run
+  seed, distribution, statistic) rather than `hash()`, which is salted per process and
+  would make an artifact's interval change between two renderings of the same report. Two
+  tests rather than an assurance: a **counting `SeededRNG`** shows the combat tape does not
+  advance while two full reports are built, and an **AST import check** proves the
+  uncertainty layer does not import the dice channel (parsed, not grepped — the module
+  discusses `SeededRNG` at length in its docstrings, and a test that cannot tell prose from
+  code is a test that gets deleted the next time someone edits a comment).
+
+  **TEST THE BRANCH, NOT THE CONVENIENT INSTANCE (per-feature step 5, applied
+  deliberately).** The test module opens with a ROLL CALL table naming which fixture covers
+  each VALUE of each new declaration. It found two values with no production fixture, both
+  of which would otherwise have shipped untested: the **inherited-unavailable** path (both
+  shipped distributions are over always-available scalars, so a bespoke registry was built
+  for it) and the **unmeasured** path (unreachable through `RunConfig`, which validates
+  `n_days >= 1`). The binomial arithmetic is also pinned against a PUBLISHED nonparametric
+  table — n=100, p=0.5 → `[X_(40), X_(61)]` — rather than only against itself, and the two
+  interval methods are cross-checked against each other on the same quantile, which is only
+  possible because both were built.
+
+  **One bug found and fixed while building, from the same family as s47's.**
+  `quantile_statistic(0.90).tail_fraction` was `min(p, 1−p)` = `0.09999999999999998`, so a
+  p90 at exactly the `min_tail_observations` boundary failed its convergence check by
+  1e-14. A verdict that flips on the last bit of a subtraction is not a verdict; the
+  fraction is now rounded, with the reason in a comment and a test. It surfaced only
+  because a 500-day smoke run happened to sit exactly on the boundary — the near-miss is
+  the argument for running one real report by eye before declaring a feature done, not just
+  the fixtures.
+
+  **Deferred deliberately, and named in §14 rather than left implicit:** a PAIRED quantile
+  delta (§6.1 runs on per-day influence values and a quantile has none; the construction
+  that WOULD work — a paired bootstrap over one shared resampled index vector — is written
+  down, and it is not built because §6.1 MEASURED pairing at ~1× in this engine until RNG
+  substreams land at step 8), and a KEYED distribution (the s46 "a grid must earn its
+  cells" argument, unchanged; its first real customer would be per-combat DPR spread, which
+  also wants a note that four combats within a day are not independent replicates the way
+  days are).
 
 - **EVALUATION FRAMEWORK STEP 3 — SERIALIZATION (2026-08-20, session 47).** §13 step 3
   complete: JSON + tidy long CSV + console renderer under a declared `schema_version`.
@@ -3961,11 +4082,20 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      one CSV column per dimension NAME, and an embedded data dictionary. **Fixed a real s46
      bug in passing:** `is_margin` was `ALL in key`, which mislabelled every cell of both
      UNCROSSED breakdowns as a margin. See the s47 Done entry.
-   - **NEXT — §14's DISTRIBUTION-SHAPE DESIGN** (the third output kind's estimator:
-     order-statistic or bootstrap intervals). Scheduled for exactly here since s44 —
-     "after step 3 fixes the artifact shape" — and the seam is now reserved and tested, so
-     it can land without a `schema_version` break. Then (4) the `attacks` telemetry channel
-     (§8.1); **(5) the ENEMY-CONSTRUCTION SEAM (§3.4, added s43 — the old 5/6 shift to 6/7)** — `RunConfig.enemy` /
+   - ~~**§14's DISTRIBUTION-SHAPE ESTIMATOR** (the third output kind)~~ **DONE (s48)** —
+     `evaluation_framework.md` §5.4's "Kind 3 in full" LOCKS it (settled with the user
+     before the estimator, per the per-feature ritual's step 4);
+     `src/evaluation/statistics.py` + `DistributionDef` in `metrics.py` +
+     `DistributionValue` in `report.py`, 54 tests in `tests/test_eval_distributions.py`.
+     **The s46/s47 reservation held: it landed at `schema_version` 1 with NO break**, and
+     the reason is worth keeping — the locked ROW shape already carried `stderr` and
+     `ci95` as separate fields, so a quantile (no standard error, asymmetric interval) was
+     always representable in it. Declared OVER a registered fixed-denominator scalar, so
+     the runner and both estimators were untouched; THE STATISTIC SELECTS THE METHOD
+     (quantile → exact binomial order statistics, IQR → percentile bootstrap). Two
+     distributions ship. See the s48 Done entry.
+   - **NEXT — (4) the `attacks` telemetry channel
+     (§8.1);** **(5) the ENEMY-CONSTRUCTION SEAM (§3.4, added s43 — the old 5/6 shift to 6/7)** — `RunConfig.enemy` /
      `enemy_options` go live, the standardized enemy is built alongside the factories' baked-in
      one, then the enemy material is migrated OUT of the character `LEVELS` tables and the
      baked-in path deleted; carries the three §12 replacements for the retired guide targets.
