@@ -11,10 +11,14 @@ Three rules this renderer exists to obey
 ----------------------------------------
 **It never fabricates a total.**  Margins are computed in the estimating layer because N
 correlated cell estimates cannot be combined downstream (§5.4).  A renderer that adds a
-column up would be inventing a standard error it has no covariance for — and for an
-UNCROSSED breakdown it would also be double-counting, since each dimension covers the
-whole quantity.  So the cells and the declared margin are printed as separate blocks,
-and an uncrossed breakdown prints an explicit do-not-sum line.
+column up would be inventing a standard error it has no covariance for — and for a
+breakdown whose cells OVERLAP it would also be double-counting.  So the cells and the
+declared margin are printed as separate blocks, and an overlapping breakdown prints an
+explicit do-not-sum line — in one of two wordings, because overlap has two causes: an
+UNCROSSED breakdown reports each dimension independently (every cell covers the whole
+quantity), while a CROSSED one can overlap because its keys are not disjoint (a crit is
+also a hit).  Telling a reader the wrong one of those is telling them something false
+about the shape of the data.
 
 **It shows the three states as three states** (§3.4).  Unavailable and unmeasured rows
 are printed with their reason, in their own section, never as ``0.00``.
@@ -160,8 +164,18 @@ def render(report: "EvalReport") -> str:
         out.append(f"  {block['name']}  [{' x '.join(dimensions)}]"
                    f"  unit={block['unit']}")
         if block["sum_rule"] == SUM_RULE_OVERLAP:
+            # Overlap has TWO causes and they are not the same warning (s49).  An
+            # UNCROSSED breakdown reports each dimension independently, so every
+            # cell covers the whole quantity.  A CROSSED one can still overlap
+            # because its KEYS are not disjoint -- attack_roll_rate's crit cell is a
+            # subset of its hit cell.  Printing "reported INDEPENDENTLY" over the
+            # second case tells a reader something false about the shape of the
+            # data, which is how this was caught: by reading one real report.
             out.append("    (dimensions reported INDEPENDENTLY -- cells overlap; "
-                       "do NOT sum them)")
+                       "do NOT sum them)"
+                       if not block["crossed"] else
+                       "    (cells are NOT disjoint -- one event can satisfy "
+                       "several; do NOT sum them)")
         cells = [r for r in block["cells"] if r["status"] == STATUS_MEASURED]
         out.extend(_cell_line(r, dimensions) for r in cells)
         margins = [r for r in block["margins"] if r["status"] == STATUS_MEASURED]

@@ -280,7 +280,7 @@ class Scheduler:
                 # to the attacker's riders.
                 intercept_decider = self._make_intercept_decider(event)
                 for handler in handlers:
-                    seq_counter = handler(event, self.rng, self.queue, seq_counter, decider, hit_decider, intercept_decider)  # type: ignore[call-arg]
+                    seq_counter = handler(event, self.rng, self.queue, seq_counter, decider, hit_decider, intercept_decider, self.telemetry)  # type: ignore[call-arg]
 
             elif isinstance(event, SaveDamageEvent):
                 # Save-for-damage delivery (an enemy spell, or a damaging zone's

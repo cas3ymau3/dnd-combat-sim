@@ -67,7 +67,12 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterable
 
-from .metrics import MetricRegistry
+from .metrics import (
+    SUM_RULE_OVERLAP,
+    SUM_RULE_PARTITION,
+    SUM_RULES,
+    MetricRegistry,
+)
 from .statistics import DistributionPoint, MetricValue
 
 if TYPE_CHECKING:                                    # pragma: no cover
@@ -113,26 +118,45 @@ def status_of(value: MetricValue) -> str:
 
 
 # ---------------------------------------------------------------------------
-# The summing rule (§5.4) — a CLOSED vocabulary
+# The summing rule (§5.4) — a CLOSED vocabulary, re-exported from the registry
 # ---------------------------------------------------------------------------
+# The vocabulary MOVED to ``metrics.py`` at s49 and is re-exported here so every
+# existing import site is unaffected.  Until then this module DERIVED the rule from
+# ``crossed``; the attacks breakdown (§8.1) is crossed AND overlapping, which showed
+# the two to be independent facts.  A serializer is the wrong place for a semantic
+# decision, so it now reads a declaration instead of making one.
 
-#: Crossed: the cells are disjoint and DO sum to the declared margin.
-SUM_RULE_PARTITION = "cells_partition_total"
-#: Uncrossed: each dimension covers the whole quantity independently, so adding every
-#: cell double-counts.  Read the declared margin; never sum the cells.
-SUM_RULE_OVERLAP = "cells_overlap_do_not_sum"
-
-SUM_RULES = (SUM_RULE_PARTITION, SUM_RULE_OVERLAP)
-
-_OVERLAP_NOTE = (
+_UNCROSSED_NOTE = (
     "This breakdown reports its dimensions INDEPENDENTLY (crossed=false): every cell "
     "covers the whole quantity along its own dimension, so summing the cells "
     "double-counts. Read the declared margin instead."
 )
 
+_NON_DISJOINT_NOTE = (
+    "This breakdown is crossed, but its KEYS are not disjoint: one roll or event can "
+    "satisfy several of them at once (a crit is also a hit), so summing the cells "
+    "double-counts. There is no aggregate to read instead — the cells are each a "
+    "share of the same denominator, and the denominator is the meaningful total."
+)
+
 
 def sum_rule_of(breakdown: "BreakdownValue") -> str:
-    return SUM_RULE_PARTITION if breakdown.definition.crossed else SUM_RULE_OVERLAP
+    """The breakdown's DECLARED summing rule (§5.4; a declaration since s49)."""
+    return breakdown.definition.sum_rule
+
+
+def sum_rule_note_of(breakdown: "BreakdownValue") -> "str | None":
+    """The prose a consumer needs when the cells do not sum — or ``None``.
+
+    Two different warnings, because overlap has two different causes and the remedy
+    differs: an uncrossed breakdown HAS a margin to read instead, and a crossed
+    non-disjoint one does not.  Collapsing them into one note would tell half of its
+    readers to go and read a cell that was deliberately never materialized.
+    """
+    if sum_rule_of(breakdown) != SUM_RULE_OVERLAP:
+        return None
+    return (_UNCROSSED_NOTE if not breakdown.definition.crossed
+            else _NON_DISJOINT_NOTE)
 
 
 # ---------------------------------------------------------------------------
@@ -354,8 +378,9 @@ def _breakdown_block(report: "EvalReport", breakdown: "BreakdownValue") -> dict[
             for k in breakdown.margins
         ],
     }
-    if not definition.crossed:
-        block["sum_rule_note"] = _OVERLAP_NOTE
+    note = sum_rule_note_of(breakdown)
+    if note is not None:
+        block["sum_rule_note"] = note
     return block
 
 

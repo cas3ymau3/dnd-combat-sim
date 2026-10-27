@@ -69,12 +69,18 @@ def test_merge_sums_all_channels():
     b.record_save("con_save", "damage", passed=True)
     b.record_concentration(broke=True)
     b.record_resource("war_priest", 2)
+    # the s49 channel is part of the closed vocabulary this test's name claims to
+    # cover, so merge has to fold it too (the deeper assertions are in
+    # tests/test_eval_attacks.py).
+    a.record_attack(4, hit=True, crit=False, advantage=True)
+    b.record_attack(4, hit=False, crit=False)
     a.merge(b)
     assert a.saves[("con_save", "damage")].forced == 2
     assert a.saves[("con_save", "damage")].passed == 1
     assert a.concentration_checks == 2
     assert a.concentration_breaks == 1
     assert a.resources_spent["war_priest"] == 3
+    assert (a.attacks[4].forced, a.attacks[4].hit, a.attacks[4].advantage) == (2, 1, 1)
 
 
 # ---------------------------------------------------------------------------

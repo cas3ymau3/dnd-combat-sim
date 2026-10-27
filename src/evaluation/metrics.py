@@ -45,10 +45,14 @@ Each metric therefore declares an ``availability`` predicate returning a REASON
 string when the run cannot produce it.  The report renders those as explicit
 "unavailable" rows (§3.4's requirement), never as zeros.
 
-Not registered here: the ``attacks`` channel (hit %, crit %, advantage %).  §8.1
-scopes it as step 4, and the ``CombatTelemetry`` field does not exist yet — a
-declared-unavailable metric whose extractor references a missing attribute would be
-dead code rather than an honest declaration.
+The ``attacks`` channel went LIVE in s49 (§13 step 4, shape locked in §8.1), which
+leaves control and mitigation as the two structurally-empty channels above.  It is
+worth recording what it cost to wire, because the number is the argument for the
+seam: ONE record call in ``resolve_attack_roll``, from values already in local
+variables, and the §12 parity proof did not move.  Its two declarations —
+``attacks_per_round`` and the ``attack_roll_rate`` breakdown — also forced
+``BreakdownDef.sum_rule`` from an inference to a declaration: it is the first
+breakdown that is CROSSED and still non-additive, because a crit is also a hit.
 """
 
 from __future__ import annotations
@@ -57,7 +61,7 @@ from dataclasses import dataclass, field, replace
 from itertools import product
 from typing import TYPE_CHECKING, Any, Callable, Iterator
 
-from ..telemetry import HEAL_CONTEXTS, SAVE_CHANNELS
+from ..telemetry import ATTACK_PROPERTIES, HEAL_CONTEXTS, SAVE_CHANNELS
 from .statistics import (
     DEFAULT_CONVERGENCE,
     SCALE_INTERVAL,
@@ -102,6 +106,33 @@ ATTRIBUTABLE_ROLES = ("characters", "summons", "allies")
 #: dimension", and every numerator maps it to "no filter".  One numerator function
 #: therefore serves both the cells and their declared margins.
 ALL = "*"
+
+# ---------------------------------------------------------------------------
+# The summing rule (§5.4) — a CLOSED vocabulary, DECLARED not inferred (s49)
+# ---------------------------------------------------------------------------
+# These lived in ``artifact.py`` until s49, where ``sum_rule_of`` DERIVED the rule
+# as ``crossed ? partition : overlap``.  Every breakdown shipped before s49 happened
+# to make that true, which is the only reason the inference survived — and the
+# attacks breakdown (§8.1) is the counter-example: it is CROSSED, because the cross
+# is the question, and its cells still do not partition, because a crit is a hit.
+#
+# Whether cells partition their total is a fact about WHAT THEY MEASURE, not about
+# how many dimensions they have, so it is now a field on ``BreakdownDef`` — the same
+# move s48 made with ``MetricDef.scale``, for the same reason.  They live here
+# rather than in the serializer because the serializer must not be the place a
+# semantic fact is decided; ``artifact`` re-exports them, so every existing import
+# site is unaffected.
+
+#: The cells are disjoint and DO sum to the declared margin.
+SUM_RULE_PARTITION = "cells_partition_total"
+#: Adding every cell double-counts.  Two independent reasons reach this value: an
+#: UNCROSSED breakdown, where each dimension covers the whole quantity on its own
+#: (read the declared margin instead), and a crossed breakdown whose KEYS are not
+#: disjoint (``attack_roll_rate``: a crit is also a hit, and advantage is a condition
+#: of the roll rather than an outcome of it, so there is nothing to read instead).
+SUM_RULE_OVERLAP = "cells_overlap_do_not_sum"
+
+SUM_RULES = (SUM_RULE_PARTITION, SUM_RULE_OVERLAP)
 
 
 # ---------------------------------------------------------------------------
@@ -225,6 +256,21 @@ class DaySample:
         if target_roles is not None:
             kwargs["target_ids"] = set(self.roster.ids(*target_roles))
         return float(self.telemetry.healing_total(context=context, **kwargs))
+
+    def attacks(self, attr: str = "forced",
+                *, roles: "tuple[str, ...] | None" = None) -> float:
+        """A field of the §13 attacks channel, scoped to roster ROLES (§8.1).
+
+        Scoped by role for a sharper reason than the other channels: the ledger is
+        keyed by actor and holds the character's rolls, a summon's and the ENEMY's,
+        and while a pooled damage TOTAL is still a total, a pooled hit RATE is a
+        roll-weighted average over several to-hit profiles and describes none of
+        them.  Defaults to the attributed roles, which is what the per-round COUNT
+        wants; every rate cell passes its own single role.
+        """
+        tally = self.telemetry.attacks_for(
+            set(self.roster.ids(*(roles if roles is not None else self.own_roles))))
+        return float(getattr(tally, attr))
 
     def other_roles(self) -> "tuple[str, ...]":
         """The healable roles this run does NOT attribute to the build.
@@ -660,6 +706,13 @@ class BreakdownDef:
     #: signed today; the field exists so a breakdown cannot be the one place the
     #: declaration silently defaults.
     scale: str = SCALE_RATIO
+    #: §5.4: do the cells PARTITION their total, or do they OVERLAP?  Declared, not
+    #: inferred from :attr:`crossed` (s49) — the two are independent, and
+    #: ``attack_roll_rate`` is both crossed and overlapping.  There is deliberately
+    #: NO default: every breakdown states it, because a wrong value here is the
+    #: double-count the field exists to prevent and a default is how one gets
+    #: shipped unnoticed.
+    sum_rule: str = ""
     convergence: Convergence = DEFAULT_CONVERGENCE
     availability: Callable[[RunContext, tuple[str, ...]], "str | None"] = (
         lambda ctx, key: None
@@ -679,6 +732,17 @@ class BreakdownDef:
                 f"Breakdown {self.name!r} cannot be the headline: §5.3 allows exactly "
                 f"one headline and §5.4 keeps it a SCALAR, so it can never be one cell "
                 f"of something larger."
+            )
+        # Checked AFTER the identity guards: a breakdown that cannot be a headline
+        # is malformed whatever its summing rule, and the more specific error is
+        # the more useful one to raise.
+        if self.sum_rule not in SUM_RULES:
+            raise ValueError(
+                f"Breakdown {self.name!r} must declare sum_rule as one of "
+                f"{SUM_RULES}; got {self.sum_rule!r}. It is not inferred from "
+                f"`crossed` (s49): a crossed breakdown whose keys are not disjoint "
+                f"still overlaps, and getting this wrong is exactly the "
+                f"double-count the field exists to prevent."
             )
         for collapse in self.margins:
             if not collapse:
@@ -769,6 +833,7 @@ class BreakdownDef:
             "definition": self.definition,
             "group": self.group,
             "crossed": self.crossed,
+            "sum_rule": self.sum_rule,
             "cells": [list(k) for k in self.cell_keys()],
             "margins": [list(k) for k in self.margin_keys()],
             "margin_note": self.margin_note,
@@ -1204,6 +1269,21 @@ COMBAT = Dimension(
 )
 
 
+ATTACK_PROPERTY = Dimension(
+    name="property",
+    keys=ATTACK_PROPERTIES,
+    description=(
+        "A property of ONE attack roll (§8.1): did it land (hit), was it a natural "
+        "20 that landed (crit), and was it rolled at advantage. NOT a partition — a "
+        "crit is also a hit, and advantage is a condition of the roll rather than an "
+        "outcome of it — which is why the breakdown over this dimension declares "
+        "sum_rule=cells_overlap_do_not_sum and refuses a margin. disadvantage is "
+        "recorded in the channel but absent here: no shipped build imposes "
+        "disadvantage on its OWN attacks, so the cells would be a column of zeros."
+    ),
+)
+
+
 def _opt(key: str) -> "str | None":
     """A key position as a FILTER: :data:`ALL` becomes "no filter".
 
@@ -1247,6 +1327,32 @@ def _saves_forced_denominator(key: tuple[str, ...]) -> Denominator:
         fixed=False,
         per_day=(lambda s, _a=_opt(ability), _c=_opt(channel):
                  s.saves(stat=_a, channel=_c)),
+    )
+
+
+def _attacks_made_denominator(key: tuple[str, ...]) -> Denominator:
+    """The per-cell random denominator for ``attack_roll_rate``: attack rolls made
+    by THIS ROLE (§8.1).
+
+    Keyed on the role ALONE and not on the property — all three property cells of a
+    role divide by the same roll count, which is the arithmetic statement of the
+    cells overlapping.  Registration de-duplicates by name, so the three cells
+    genuinely share one denominator entry rather than three identical ones.
+    """
+    role = key[0]
+    return Denominator(
+        name="attacks_made" + format_key((role,)),
+        description=(
+            f"Attack rolls actually made by roster role "
+            f"{'any attributable' if role == ALL else role} (§13 attacks channel). "
+            f"Random and correlated with the numerator, so rates over it use the "
+            f"ratio-of-means estimator. A role that made none has NO rate — "
+            f"reported as unmeasured, never as zero, because a build whose summon "
+            f"never swings has not got a 0% hit rate."
+        ),
+        fixed=False,
+        per_day=(lambda s, _r=role:
+                 s.attacks("forced", roles=(None if _r == ALL else (_r,)))),
     )
 
 
@@ -1428,6 +1534,26 @@ def _build_default_registry() -> MetricRegistry:
         )),
     ))
 
+    # -- panel: attack volume (§13 attacks channel, live since s49) --------
+    reg(MetricDef(
+        name="attacks_per_round",
+        unit="attacks/round",
+        denominator="rounds",
+        source="§13 attacks channel — AttackTally.forced, the attributed roles",
+        definition=(
+            "Attack rolls made per round by what this run attributes to the build "
+            "(§8.1) — the action-economy figure: Extra Attack, a bonus-action "
+            "swing, a summon's multiattack. A COUNT, so unlike the rates beside it "
+            "this one pools legitimately across the attributed roles: swings add. "
+            "It is also what makes a hit rate interpretable, because a build can "
+            "trade accuracy for volume and the two numbers only mean something "
+            "together. Save-for-damage output is NOT in here: an attack roll is an "
+            "attack roll, and a build that forces saves instead reads low on this "
+            "metric and high on saves_forced_per_round."
+        ),
+        numerator=lambda s: s.attacks("forced"),
+    ))
+
     # -- panel: how much of the build's output is even TYPED --------------
     reg(MetricDef(
         name="typed_damage_share",
@@ -1547,6 +1673,7 @@ def _build_default_registry() -> MetricRegistry:
         numerator=lambda s, key: (s.dealt(*ATTRIBUTABLE_ROLES) if key[0] == ALL
                                   else s.dealt(key[0])),
         denominator="rounds",
+        sum_rule=SUM_RULE_PARTITION,  # the roles are disjoint; the [*] margin is their sum
         margins=(("role",),),
         availability=_role_cell_availability(0),
         group="column",
@@ -1568,6 +1695,7 @@ def _build_default_registry() -> MetricRegistry:
         numerator=lambda s, key: (s.taken(*ATTRIBUTABLE_ROLES) if key[0] == ALL
                                   else s.taken(key[0])),
         denominator="rounds",
+        sum_rule=SUM_RULE_PARTITION,  # disjoint roles again
         margins=(("role",),),
         availability=_role_cell_availability(0),
     ))
@@ -1593,6 +1721,7 @@ def _build_default_registry() -> MetricRegistry:
         ),
         numerator=lambda s, key: s.saves(stat=_opt(key[0]), channel=_opt(key[1])),
         denominator="rounds",
+        sum_rule=SUM_RULE_OVERLAP,  # UNCROSSED: each dimension covers the whole quantity
         margins=(("ability", "channel"),),
         crossed=False,
         availability=_saves_cell_availability,
@@ -1616,6 +1745,7 @@ def _build_default_registry() -> MetricRegistry:
         numerator=lambda s, key: s.saves(stat=_opt(key[0]), channel=_opt(key[1]),
                                          outcome="failed"),
         denominator=_saves_forced_denominator,
+        sum_rule=SUM_RULE_OVERLAP,  # UNCROSSED, as above
         margins=(("ability", "channel"),),
         crossed=False,
         events=lambda s, key: s.saves(stat=_opt(key[0]), channel=_opt(key[1])),
@@ -1638,6 +1768,7 @@ def _build_default_registry() -> MetricRegistry:
         ),
         numerator=lambda s, key: s.mitigation("outgoing_before", damage_type=key[0]),
         denominator="outgoing_typed_damage",
+        sum_rule=SUM_RULE_PARTITION,  # the 13 types are disjoint and the shares sum to 1
         events=lambda s, key: s.mitigation("outgoing_before", damage_type=key[0]),
         convergence=Convergence(rel_stderr=0.05, min_events=500.0),
         margin_note=(
@@ -1663,6 +1794,7 @@ def _build_default_registry() -> MetricRegistry:
         ),
         numerator=lambda s, key: s.combat_damage(int(key[0])),
         denominator="combat_rounds",
+        sum_rule=SUM_RULE_PARTITION,  # the four combats are disjoint slices of the day
         margin_note="No margin: the day-level aggregate is the dpr scalar itself.",
     ))
 
@@ -1686,6 +1818,7 @@ def _build_default_registry() -> MetricRegistry:
         denominator="days",
         margins=(("source_role",),),
         availability=_role_cell_availability(0),
+        sum_rule=SUM_RULE_PARTITION,  # (source_role x context) cells are disjoint events
         margin_note=(
             "NO margin over 'context' — deliberately, and this is the rule the "
             "shape enforces. healing.md §11.1 found the corpus does most of its "
@@ -1693,6 +1826,41 @@ def _build_default_registry() -> MetricRegistry:
             "different quantity from healing at leisure. Refusing the margin means "
             "no cell in the artifact ever sums them; a comment could be ignored, a "
             "missing cell cannot."
+        ),
+    ))
+
+    # -- attack rolls, keyed (role × property) — §8.1 ----------------------
+    # The registry's first CROSSED and NON-ADDITIVE breakdown, which is what turned
+    # sum_rule from an inference into a declaration (s49).
+    breakdown(BreakdownDef(
+        name="attack_roll_rate",
+        unit="fraction",
+        key_space=KeySpace((ROLE, ATTACK_PROPERTY)),
+        source="§13 attacks channel — AttackTally, by (actor role, property)",
+        definition=(
+            "Share of this ROLE's attack rolls carrying each property — §8's hit %, "
+            "crit % and advantage %, read off the role whose rolls they describe. "
+            "Keyed by role because a rate cannot pool: one number over the "
+            "character's swings and a summon's is a roll-weighted average of two "
+            "different to-hit profiles and describes neither (contrast "
+            "attacks_per_round, a count, which pools fine). Recorded at the FINAL "
+            "outcome, so a Guided-Strike rescue counts as a hit and a parried hit "
+            "counts as a miss — which is what stops this ledger from ever "
+            "disagreeing with the damage ledger."
+        ),
+        numerator=lambda s, key: s.attacks(key[1], roles=(key[0],)),
+        denominator=_attacks_made_denominator,
+        # CROSSED — the cross is the question ("how often does the SUMMON crit")...
+        crossed=True,
+        # ...and OVERLAPPING all the same, because the keys are not disjoint.
+        sum_rule=SUM_RULE_OVERLAP,
+        events=lambda s, key: s.attacks("forced", roles=(key[0],)),
+        availability=_role_cell_availability(0),
+        convergence=Convergence(rel_stderr=0.05, min_events=500.0),
+        margin_note=(
+            "NO margin over 'role' (it would pool to-hit profiles) and none over "
+            "'property' (its cells overlap). The meaningful total is attack rolls "
+            "made, reported as the scalar attacks_per_round."
         ),
     ))
 

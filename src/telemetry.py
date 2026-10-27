@@ -11,8 +11,9 @@ from tests. ``CombatTelemetry`` gives those quantities ONE structured home.
 Shape — a typed accumulator with a small CLOSED channel vocabulary (the §13 decision;
 mirrors the project's "closed verb set" + "table is the source of truth" philosophy —
 NOT a free-form ``record(channel, key, value)`` sink, and NOT ad-hoc flat fields that
-churn the result dataclass per metric). The five fixed channels (extend deliberately,
-like adding a verb — not casually; `healing` was the s45 addition):
+churn the result dataclass per metric). The six fixed channels (extend deliberately,
+like adding a verb — not casually; `healing` was the s45 addition and `attacks` the
+s49 one):
 
   - **saves** — saves forced / passed / failed, keyed by ``(ability, channel)`` where
     ``channel`` is ``"damage"`` or ``"control"``. The §4b cross-axis split is VISIBLE
@@ -36,6 +37,20 @@ like adding a verb — not casually; `healing` was the s45 addition):
     healing at leisure, and the corpus does most of its healing out of combat by
     preference, so pooling the two into one per-round number would mislead. Records
     the amount ACTUALLY APPLIED, never the amount rolled.
+  - **attacks** — attack rolls made / hit / crit / at advantage / at disadvantage,
+    keyed by ``actor_id`` (evaluation_framework.md §8.1, the s49 addition). Hits and
+    crits were computed in ``resolve_attack_roll`` and thrown away; this keeps them,
+    and unlocks §8's hit % / crit % / advantage %. The ACTOR key is not optional and
+    the reason is sharper than it was for mitigation: a pooled AMOUNT still adds up,
+    but a pooled RATE does not — one ledger holding the character's swings, a summon's
+    and the ENEMY's gives a hit % that is a roll-weighted average over three different
+    to-hit profiles and describes none of them. Recorded at the FINAL outcome, after
+    the in-flight intercept block, so the attacks ledger can never disagree with the
+    damage ledger: a recorded hit always has a ``DamageEvent`` behind it (a
+    Guided-Strike rescue is a hit, a parried hit is a miss, a Protection re-roll can
+    un-crit). ``disadvantage`` is recorded but has no registered metric today — it
+    makes the stance a true three-way partition, which is a testable invariant, while
+    no shipped build imposes disadvantage on its own attacks.
   - **economy** — concentration checks forced / broken, reactions used, resources spent
     (folds the existing slot-audit / parry-budget / concentration-count monkeypatches).
     The resource ledger went LIVE in s44: the scheduler records at every
@@ -69,6 +84,19 @@ SAVE_CHANNELS = ("damage", "control")
 # Healing, Hit Dice at the short rest).  Kept as a key dimension rather than two
 # fields so the read-outs filter uniformly.
 HEAL_CONTEXTS = ("combat", "between")
+
+
+# The closed attack-roll PROPERTY vocabulary the metrics layer keys on
+# (evaluation_framework.md §8.1).  Deliberately a SUBSET of what ``AttackTally``
+# records: ``disadvantage`` is tallied but not registered, because no shipped build
+# imposes disadvantage on its own attacks.  These are attribute names on
+# ``AttackTally``, so a metric reads a cell with ``getattr`` — the same idiom
+# ``SaveTally`` already serves with ``outcome=``.
+#
+# NOTE these cells are NOT disjoint: a crit is also a hit, and advantage is a
+# condition of the roll rather than an outcome of it.  That is why the breakdown over
+# them declares ``sum_rule = cells_overlap_do_not_sum`` (§8.1).
+ATTACK_PROPERTIES = ("hit", "crit", "advantage")
 
 
 @dataclass
@@ -141,6 +169,51 @@ class HealingTally:
 
 
 @dataclass
+class AttackTally:
+    """One ACTOR's cell of the attacks channel (§8.1).
+
+    ``forced`` is attack rolls MADE (the denominator every rate here divides by);
+    the rest are counts of rolls carrying each property.  The field names are the
+    metrics layer's :data:`ATTACK_PROPERTIES` so a cell is read by ``getattr``.
+
+    Two things the field list encodes rather than comments:
+
+    * ``crit <= hit`` ALWAYS.  A crit that the defender's in-flight intercept flips
+      to a miss is neither, which is the whole reason the record happens at the end
+      of resolution rather than at the roll.
+    * ``advantage + disadvantage + flat == forced``, with ``flat`` implicit.  The
+      stance is the EFFECTIVE one after 2024 cancellation (``roll_d20``'s rule), so
+      a roll with sources on both sides is flat, not both.  This partition is a
+      self-consistency invariant a test asserts — it is how a miswired record call
+      gets caught.
+    """
+    forced: int = 0
+    hit: int = 0
+    crit: int = 0
+    advantage: int = 0
+    disadvantage: int = 0
+
+    def add(self, *, hit: bool, crit: bool,
+            advantage: bool = False, disadvantage: bool = False) -> None:
+        self.forced += 1
+        if hit:
+            self.hit += 1
+            if crit:
+                self.crit += 1
+        if advantage:
+            self.advantage += 1
+        if disadvantage:
+            self.disadvantage += 1
+
+    def merge(self, other: "AttackTally") -> None:
+        self.forced += other.forced
+        self.hit += other.hit
+        self.crit += other.crit
+        self.advantage += other.advantage
+        self.disadvantage += other.disadvantage
+
+
+@dataclass
 class CombatTelemetry:
     """The structured output accumulator for ONE combat (§13). Resolution records into
     it; ``DayResult`` sums combats via ``merge``. All channels default empty, so a
@@ -154,6 +227,8 @@ class CombatTelemetry:
     mitigation: dict[tuple[int, str], MitigationTally] = field(default_factory=dict)
     # healing: (source id, target id, context) -> HealingTally
     healing: dict[tuple[int, int, str], HealingTally] = field(default_factory=dict)
+    # attacks: actor id -> AttackTally
+    attacks: dict[int, AttackTally] = field(default_factory=dict)
     # economy
     concentration_checks: int = 0
     concentration_breaks: int = 0
@@ -210,6 +285,35 @@ class CombatTelemetry:
         cell.healed += amount
         cell.events += 1
 
+    def record_attack(self, actor_id: int, *, hit: bool, crit: bool,
+                      advantage: bool = False, disadvantage: bool = False) -> None:
+        """Record ONE resolved attack roll by *actor* and what became of it (§8.1).
+
+        Written by ``resolve_attack_roll`` only, at the END of resolution — every
+        value is already in a local variable there, so the call DRAWS NOTHING and
+        cannot move a baseline (the per-feature ritual's step 3; §12's parity proof
+        depends on it).
+
+        ``hit`` / ``crit`` are the FINAL outcome, not the raw to-hit comparison: a
+        Guided-Strike rescue arrives here as a hit, a parried hit as a miss.  That
+        choice is what makes this ledger incapable of disagreeing with the damage
+        ledger.  ``crit`` is ignored unless ``hit`` — a crit flipped to a miss is a
+        miss, and nothing else.
+
+        ``advantage`` / ``disadvantage`` are the EFFECTIVE stance after 2024
+        cancellation, so passing both is a caller error rather than a "both" cell;
+        it is rejected here rather than silently producing a tally whose stance
+        counts exceed its roll count.
+        """
+        if advantage and disadvantage:
+            raise ValueError(
+                "record_attack takes the EFFECTIVE stance: advantage and "
+                "disadvantage cancel under the 2024 rule (roll_d20), so a roll is "
+                "at advantage, at disadvantage or flat — never both."
+            )
+        self.attacks.setdefault(actor_id, AttackTally()).add(
+            hit=hit, crit=crit, advantage=advantage, disadvantage=disadvantage)
+
     def record_reaction(self) -> None:
         self.reactions_used += 1
 
@@ -228,6 +332,8 @@ class CombatTelemetry:
             self.mitigation.setdefault(key, MitigationTally()).merge(mt)
         for key, ht in other.healing.items():
             self.healing.setdefault(key, HealingTally()).merge(ht)
+        for actor_id, at in other.attacks.items():
+            self.attacks.setdefault(actor_id, AttackTally()).merge(at)
         self.concentration_checks += other.concentration_checks
         self.concentration_breaks += other.concentration_breaks
         self.reactions_used += other.reactions_used
@@ -293,6 +399,24 @@ class CombatTelemetry:
         out: dict[str, float] = {}
         for (_s, _t, ctx), cell in self._healing_cells(**kw):
             out[ctx] = out.get(ctx, 0.0) + cell.healed
+        return out
+
+    # -- attacks read-out (§8.1; the metrics layer reads this) ------------------
+
+    def attacks_for(self, actor_ids: "set[int] | None" = None) -> AttackTally:
+        """The attacks channel collapsed to ONE tally over the given actors.
+
+        ALWAYS pass a scope.  ``actor_ids=None`` pools every actor in the combat,
+        the enemy included, and a pooled RATE is not a rate of anything — which is
+        the whole reason this channel carries an actor dimension (§8.1).  The
+        default exists only so a caller asking for the combat-wide roll COUNT does
+        not have to assemble the id set.
+        """
+        out = AttackTally()
+        for actor_id, tally in self.attacks.items():
+            if actor_ids is not None and actor_id not in actor_ids:
+                continue
+            out.merge(tally)
         return out
 
     def saves_forced(self, channel: str | None = None) -> int:
