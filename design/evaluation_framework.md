@@ -489,6 +489,20 @@ Considered and not taken: `external_healing_required_per_day` (heavily tied at z
 most builds — honest but uninformative rows) and `party_dpr_opening_round` (party-scoped,
 so not comparable to the headline anyway). Both remain one declaration away.
 
+**A THIRD ground for declining one, found at s49: the scalar is near-deterministic.**
+`attacks_per_round` is structurally eligible — its denominator is fixed, which is the
+only gate `register_distribution` enforces — and it should still not have one. Its
+standard error is **exactly 0** on both builds measured at 2,000 days: the attack count
+per day is a constant, because the action economy is. A distribution over a constant is
+a point mass, and six quantiles of a point mass are six copies of the mean with
+zero-width intervals: an honest output that tells a reader nothing and costs a block in
+every report. So eligibility is structural but *worth* is not, and the three grounds for
+declining are now: **tied at zero** (most of the quantiles are 0), **wrong scope** (its
+spread is not comparable to the headline's), and **near-deterministic** (there is no
+spread to describe). The cheap check before declaring one: look at the scalar's stderr —
+if it is 0, or tiny relative to the quantity, the shape is already fully reported by the
+mean.
+
 **Paired comparison on a quantile: DEFERRED, with the construction named.** §6.1's
 machinery is built on per-day INFLUENCE VALUES, and a quantile has no influence-value
 representation, so `paired_delta` does not extend to it. The correct construction is a

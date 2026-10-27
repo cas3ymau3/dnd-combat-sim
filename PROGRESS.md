@@ -98,6 +98,21 @@ type, condition, resource, …):
    [[design-first-for-cross-cutting-primitives]]: that one is about surveying the corpus
    before building a broadly-reused primitive; this one is about fixing a contract
    before publishing against it.
+
+   **DECLARE IT, OR PROVE THE DERIVATION (added s49, same step because it is the same
+   design-time question).** When a field is DERIVED from another rather than declared,
+   ask whether the two facts can vary INDEPENDENTLY. If they can, declare it. The
+   evidence is two consecutive sessions each having to promote one:
+   `MetricDef.scale` (s48) and `BreakdownDef.sum_rule` (s49). **Both derivations held
+   across every instance that existed at the time**, which is exactly why neither was
+   questioned — `sum_rule` was `crossed ? partition : overlap`, true for all seven
+   shipped breakdowns, and wrong the moment a breakdown was crossed AND non-additive (a
+   crit is also a hit). The rule is NOT "never derive": s48 derived the interval method
+   FROM the statistic and was right to, because a quantile's interval genuinely IS a
+   property of the statistic — the two facts cannot come apart. The question is only
+   ever independence. **The cost of getting it wrong is paid a feature later, by
+   whoever adds the first instance that separates them**, and it arrives as a renderer
+   confidently printing a false statement (see step 6).
 5. **Test the BRANCH, not the convenient instance.** Added session 47, from the bug
    that session found. When a feature adds a DECLARATION with more than one value —
    `BreakdownDef.crossed` (crossed/uncrossed), `Denominator.fixed` (fixed/random),
@@ -127,6 +142,21 @@ type, condition, resource, …):
    they were visible only from an empty cell in a table. Keeping the table in the
    docstring also means the next session inherits the map instead of re-deriving it —
    see `tests/test_eval_distributions.py` for the shape.
+
+   **AND DO NOT LET THE TEST'S PROSE OVERCLAIM (added s49).** When a test's docstring
+   says the bug it guards would have been VISIBLE, or LARGE, or would have changed a
+   number anyone would notice — MEASURE that before writing it. s49's roster-scoping
+   test was about to assert "pooling the character and the summon moves the rate by
+   more than its standard error". That is FALSE on the only build with a summon:
+   Silvertail's companion hits within ~0.02 of its character at L10, so pooling shifts
+   the rate by 0.0071 against a stderr of 0.0284. The honest claim is that the scoping
+   is STRUCTURAL — nothing bounds the magnitude, which is a property of whichever
+   roster a build happens to field — and the unmissable case is the ENEMY, asserted
+   separately at >5σ. **A test whose prose overclaims is worse than a weaker test**,
+   because the next session inherits the false confidence and will not re-derive it;
+   and had it been written unmeasured it would have passed on some future build and
+   failed on this one for a reason nobody could reconstruct. Keep the measured numbers
+   in a comment next to the assertion that does hold.
 6. **Render ONE REAL OUTPUT by eye before calling it done.** Added session 48, from the
    bug that session found. Run the feature on a real run at a realistic size and LOOK at
    what it prints — not a fixture, not an assertion, the actual artifact a reader would
