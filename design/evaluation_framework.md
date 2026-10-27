@@ -1055,6 +1055,12 @@ onto the framework only once step 1 reproduces its numbers exactly.
   the bottleneck (§10).
 - **Interactive website** — the static artifact schema does not preclude it; no schema
   change required later (§9).
+- **An `attacks` metric for DISADVANTAGE** *(added s49)* — §8.1's channel records
+  `disadvantage`, so this is one `Dimension` key away. Not registered because no
+  shipped build imposes disadvantage on its OWN attacks, so the cells would be a
+  column of zeros. The partition invariant is already asserted, so the data is known
+  good before a reader arrives for it. Trigger: a build that can be attacked at
+  disadvantage, or a §13 step-5 enemy profile that imposes it.
 - **General status-uptime metric** — §8 asks for "share of turns under specified
   statuses" in general; only the control channel is covered today. Needs `StatusSet`
   sampling at turn boundaries.

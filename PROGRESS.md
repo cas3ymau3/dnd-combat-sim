@@ -12,16 +12,16 @@ At the start of every session, before diving into the work:
 
 1. **Review upcoming tasks.** Read the **NEXT STEP** below plus the phase plan, and
    form a view of what's likely in scope.
-2. **Recommend MCP toggles for agility, with how-to.** Identify which MCP connectors
-   are irrelevant to the likely tasks and recommend the user disable them for the
-   session. For this Python/CLI project that's typically all of: **computer-use,
-   Claude-in-Chrome, Claude_Preview, scheduled-tasks, mcp-registry, Google Drive.**
-   Tell the user *how*: these are **account/app-level connectors, NOT file-config** —
-   Claude CANNOT disable them by editing settings (verified: no `.mcp.json`, empty
-   `mcpServers`/`disabledMcpjsonServers`). The user flips them via `/mcp` in-session,
-   or the Claude app → Settings → Connectors. Claude proposes the list + steps; the
-   user toggles.
-   - **Confirmed working on this machine (2026-06-10):** `/mcp` did NOT expose a
+2. **MCP toggles — STANDING NOTE, do NOT print this every session (user, s49).**
+   All connectors stay off-recommended: **computer-use, Claude-in-Chrome,
+   Claude_Preview, scheduled-tasks, mcp-registry, Google Drive.** Everything since
+   s36 has been pure Python and the recommendation has been identical and routine
+   every session since, so reciting it was ceremony. **Raise it only if a session
+   actually needs a connector, or if the "Currently disabled" line below is
+   non-empty.** The mechanics, for when it does come up: these are account/app-level
+   connectors, NOT file-config — Claude CANNOT disable them by editing settings
+   (verified: no `.mcp.json`, empty `mcpServers`/`disabledMcpjsonServers`).
+   - **Confirmed on the local machine (2026-06-10):** `/mcp` did NOT expose a
      disable control — use the app. Path: **Claude app → Settings → Connectors**, and
      check the **Customize** tab (some connectors live there). Only **Google Drive**
      (action: *Disconnect*) and **Claude-in-Chrome** (action: *Disable*) appeared as
@@ -1403,6 +1403,121 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **EVALUATION FRAMEWORK STEP 4 — the `attacks` TELEMETRY CHANNEL (2026-10-27, session
+  49).** `evaluation_framework.md` §13 step 4. **LOCKED in §8.1 BEFORE the channel was
+  wired** (per-feature ritual step 4), and the shape was settled with the user first,
+  because the naive reading of §8 — "hit %, crit %, advantage %: three scalars" — is
+  wrong twice over. Built in `src/telemetry.py` + one call site in `src/verbs.py` + two
+  declarations in `src/evaluation/metrics.py`; 24 mechanism tests in
+  `tests/test_eval_attacks.py`. **859 tests green** (833 + 24 + 2 rewritten), full
+  suite in FOREGROUND, once ([[full-suite-foreground-only]]). `src/validation.py`
+  UNCHANGED, the §12 parity proof still bit-identical, and **no `SCHEMA_VERSION`
+  bump** — a new breakdown is additive at version 1.
+
+  **WHAT THE CHANNEL COST, because the number is the argument for the seam.** ONE
+  `record_attack` call in `resolve_attack_roll`, from values already sitting in local
+  variables. That is it. §8.1 had estimated "one record call at an existing decision
+  point" and that estimate held exactly.
+
+  **KEYED BY ACTOR — and the s44 argument is SHARPER here than it was for damage.** A
+  pooled AMOUNT is still a total; a pooled RATE is not a rate of anything. One ledger
+  holding the character's swings, a summon's and the ENEMY's gives a hit % that is a
+  roll-weighted average over three different to-hit profiles and describes none of
+  them. Worth keeping as the general form of the s44 lesson: **the aggregate-ledger
+  trap is worse for ratios than for sums**, because a sum at least answers a question
+  nobody asked, while a pooled ratio answers none.
+
+  **RECORDED AT THE FINAL OUTCOME (user's call), and the reason is a GUARANTEE rather
+  than a preference.** The record sits after the intercept block, so a Guided-Strike
+  rescue is a hit, a parried hit is a miss, and a Protection re-roll can un-crit. That
+  makes the attacks ledger **incapable of disagreeing with the damage ledger** — every
+  hit counted has a `DamageEvent` behind it. The alternative reading (the pure
+  `d20 + bonus vs AC` math) is a legitimate diagnostic and is explicitly NOT what this
+  measures: it would count hits that dealt no damage, and so could not explain DPR,
+  which is what §8 wants these numbers for. One approximation named in §8.1 rather than
+  left implicit: Protection imposes its disadvantage by rolling a second d20 *after* the
+  primary roll, so it is not counted in `disadvantage` — the stance recorded is the
+  stance the attacker's own roll was made at.
+
+  **THE SHAPE: a scalar and a breakdown, not three scalars.** `attacks_per_round` is
+  attribution-scoped and POOLS, which it is allowed to do *because it is a count* —
+  swings add where rates do not — and it is what makes a hit rate interpretable, since a
+  build can trade accuracy for volume. `attack_roll_rate` is keyed (role × property)
+  with a per-role random denominator and **no margins**: collapsing `role` pools the
+  to-hit profiles the key exists to separate, and collapsing `property` sums overlapping
+  cells. Both refusals are declared, which is the `healing_by_source` context refusal
+  applied twice — a comment can be ignored, a missing cell cannot. `disadvantage` is
+  recorded in the channel but not registered (user): it makes the stance a true
+  three-way partition (`advantage + disadvantage + flat == forced`), which is a testable
+  invariant and is how a miswired record call gets caught, while no shipped build
+  imposes disadvantage on its own attacks. Every cell is `scale = ratio` — **checked,
+  not defaulted**, as s48 asked; nothing here can go negative, so there was no
+  `interval` candidate to weigh.
+
+  **`BreakdownDef.sum_rule`: AN INFERENCE BECOMES A DECLARATION.** `artifact.sum_rule_of`
+  derived the rule as `crossed ? partition : overlap`. Every breakdown shipped before
+  this one happened to satisfy that, which is the only reason it survived six sessions —
+  and `attack_roll_rate` is the counter-example: **crossed**, because the cross is the
+  question ("how often does the SUMMON crit"), and **overlapping** all the same, because
+  a crit is a hit and advantage is a condition of the roll rather than an outcome of it.
+  Whether cells partition their total is a fact about WHAT THEY MEASURE, not about how
+  many dimensions they have. Same move s48 made with `MetricDef.scale`, for the same
+  reason. **No default** on the field: a wrong value here IS the double-count it exists
+  to prevent, and a default is how one ships unnoticed. The transferable point:
+  **a derivation that holds across every current instance is still a conflation if the
+  two facts are independent** — and the cost of finding out is one feature later.
+
+  **TWO DEFECTS FOUND BY READING ONE REAL REPORT (step 6), neither visible to any
+  test.** Step 6 earned its place for the third session running:
+  1. **The console printed a false statement.** It had its own hardcoded do-not-sum
+     line keyed on the inference that had just been removed, so it labelled
+     `attack_roll_rate` *"dimensions reported INDEPENDENTLY"* — which is exactly what a
+     crossed breakdown is not. Overlap has **two causes** and they are not the same
+     warning: an uncrossed breakdown has a declared margin to read instead, a crossed
+     non-disjoint one does not, so a single note would send half its readers to a cell
+     that was deliberately never materialized. Both now have their own wording in the
+     console AND in the artifact's `sum_rule_note`. The reason the tests missed it is
+     worth naming: **the new tests asserted the ARTIFACT's note, and the console's
+     string was nobody's subject** — this is the renderer whose own docstring claims the
+     three renderers cannot disagree.
+  2. **A 400-character margin note on one unwrapped console line.** A note a reader
+     scrolls past is not a note. The full argument stays in `definition`, which is read;
+     `margin_note`, which is printed, is now three lines.
+
+  **AND ONE CLAIM THE MEASUREMENT KILLED — the same pattern as s48's.** The obvious
+  assertion for the roster-scoping test is "pooling the character and the summon moves
+  the number by more than its standard error". It is **FALSE** on the only build with a
+  summon: Silvertail's companion hits within ~0.02 of its character at L10, so pooling
+  shifts the rate by **less than one stderr** at 30 days (0.0071 vs 0.0284). So the
+  scoping is a **STRUCTURAL** requirement — nothing bounds the magnitude, which is a
+  property of whichever roster a build happens to field — and the test now says that
+  instead of overclaiming, with the measured numbers in a comment so the next session
+  does not re-derive them. The case where the error IS unmissable is the **ENEMY**, whose
+  to-hit profile is nothing like the character's: asserted at >5σ in its own test. Had
+  the first assertion been written without running it, it would have passed on some
+  future build and failed on this one for a reason nobody would have reconstructed.
+
+  **Per-feature step 5 — THE ROLL CALL, and the gap it found before any code existed.**
+  The table is in the test module's docstring. It exposed that the **UNMEASURED path of
+  `attack_roll_rate` has no production fixture at all**: every shipped build at every
+  level makes character attack rolls, and every role PRESENT in a shipped roster also
+  swings, so "a role that exists but never attacked" is reachable in principle and
+  unreachable through `RunConfig`. It gets a built fixture rather than being left for a
+  later session to discover — the third time in three sessions the table has found a
+  value with no fixture, which is the case for keeping it a required artifact.
+
+  **Independent sanity check from the real render, worth recording:** at 2,000 days both
+  of Silvertail's crit cells read **0.0495** with an advantage rate of exactly 0, i.e.
+  1/20 to three digits, from two different actors; and War Angel's 0.0641 crit rate sits
+  where a 30.2% advantage rate predicts (`0.70·0.05 + 0.30·0.0975 ≈ 0.064`). Neither is
+  asserted as a test ([[validate-mechanism-not-build-value]]) — there is no external
+  standard here — but a crit rate that did NOT land near 1/20 without advantage would
+  have been a defect, and reading it was free.
+
+  **§8 coverage map:** the attack-roll row flips to available, leaving **control** and
+  **mitigation** as the two structurally-empty channels, both waiting on the step-5
+  enemy seam.
 
 - **CONVERGENCE CRITERIA CORRECTED + the two ritual promotions (2026-10-26, session 48,
   after the s48 reflection).** Three changes the reflection produced, all at the user's
@@ -4203,8 +4318,16 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      the runner and both estimators were untouched; THE STATISTIC SELECTS THE METHOD
      (quantile → exact binomial order statistics, IQR → percentile bootstrap). Two
      distributions ship. See the s48 Done entry.
-   - **NEXT — (4) the `attacks` telemetry channel
-     (§8.1);** **(5) the ENEMY-CONSTRUCTION SEAM (§3.4, added s43 — the old 5/6 shift to 6/7)** — `RunConfig.enemy` /
+   - ~~**(4) the `attacks` telemetry channel (§8.1)**~~ **DONE (s49)** —
+     `evaluation_framework.md` §8.1 LOCKS the shape (settled with the user before the
+     channel was wired, per the per-feature ritual's step 4); the sixth
+     `CombatTelemetry` channel, ACTOR-keyed, written by ONE call in
+     `resolve_attack_roll`, plus `attacks_per_round` (scalar) and the
+     `attack_roll_rate` breakdown (role × property), 24 tests in
+     `tests/test_eval_attacks.py`. Forced `BreakdownDef.sum_rule` from an INFERENCE
+     to a DECLARATION — the registry's first breakdown that is crossed AND
+     non-additive. **No `SCHEMA_VERSION` bump.** See the s49 Done entry.
+   - **NEXT — (5) the ENEMY-CONSTRUCTION SEAM (§3.4, added s43 — the old 5/6 shift to 6/7)** — `RunConfig.enemy` /
      `enemy_options` go live, the standardized enemy is built alongside the factories' baked-in
      one, then the enemy material is migrated OUT of the character `LEVELS` tables and the
      baked-in path deleted; carries the three §12 replacements for the retired guide targets.
@@ -4991,6 +5114,19 @@ combat policy through two lenses, and reformulate it as needed:
 ---
 
 ## Open threads / deferred decisions
+
+- **An `attacks` metric for DISADVANTAGE — one Dimension key away (2026-10-27, session
+  49).** The §13 attacks channel RECORDS `disadvantage`; the metrics layer does not
+  register it. Not an oversight: no shipped build imposes disadvantage on its OWN
+  attacks (sap targets the enemy, and enemies are not an attributable role), so the
+  three cells would be a column of zeros for every build in the corpus — and a closed
+  vocabulary's zero is supposed to be a measurement, not a shrug. Recorded anyway
+  because it makes the stance a true three-way partition
+  (`advantage + disadvantage + flat == forced`), which is the invariant that catches a
+  miswired record call, and because the data is then known-good before any reader turns
+  up for it. **Triggers:** the first build that can be attacked at disadvantage, or the
+  §13 step-5 standardized enemy if it brings a disadvantage-imposing profile. Also in
+  `evaluation_framework.md` §14.
 
 - **Scaling typology — RECORDED (2026-06-12, session 4); framework deliberately
   NOT generalized yet.** Discussed with the user after primitive #3: rather than
