@@ -489,6 +489,20 @@ Considered and not taken: `external_healing_required_per_day` (heavily tied at z
 most builds — honest but uninformative rows) and `party_dpr_opening_round` (party-scoped,
 so not comparable to the headline anyway). Both remain one declaration away.
 
+**A THIRD ground for declining one, found at s49: the scalar is near-deterministic.**
+`attacks_per_round` is structurally eligible — its denominator is fixed, which is the
+only gate `register_distribution` enforces — and it should still not have one. Its
+standard error is **exactly 0** on both builds measured at 2,000 days: the attack count
+per day is a constant, because the action economy is. A distribution over a constant is
+a point mass, and six quantiles of a point mass are six copies of the mean with
+zero-width intervals: an honest output that tells a reader nothing and costs a block in
+every report. So eligibility is structural but *worth* is not, and the three grounds for
+declining are now: **tied at zero** (most of the quantiles are 0), **wrong scope** (its
+spread is not comparable to the headline's), and **near-deterministic** (there is no
+spread to describe). The cheap check before declaring one: look at the scalar's stderr —
+if it is 0, or tiny relative to the quantity, the shape is already fully reported by the
+mean.
+
 **Paired comparison on a quantile: DEFERRED, with the construction named.** §6.1's
 machinery is built on per-day INFLUENCE VALUES, and a quantile has no influence-value
 representation, so `paired_delta` does not extend to it. The correct construction is a
@@ -675,21 +689,91 @@ as such rather than hidden.
 | limited resources per day / per combat | available — §13 economy channel |
 | concentration share and breaks | available — §13 economy channel |
 | party / summon / ally damage columns | available — `damage_by_source`, `party_total` |
-| **attack-roll counts: hits, crits, hit %, crit %, attacks at advantage and %** | **NOT available — needs a new channel (below)** |
+| attack-roll counts: hits, crits, hit %, crit %, attacks at advantage and % | available — §13 `attacks` channel (s49); `attacks_per_round` + `attack_roll_rate` (§8.1 below) |
 | **average damage per use / on-hit / on-crit of each ability** | **NOT available — deferred (below)** |
 | share of turns under specified statuses | partial — control covered; general status uptime needs `StatusSet` sampling |
 | HP recovered | partial — no dedicated channel today |
 
-### 8.1 New: an `attacks` telemetry channel (this arc)
+### 8.1 The `attacks` telemetry channel (LOCKED s49)
 
-Hits and crits are computed in `resolve_attack_roll` (`verbs.py:277`) and **discarded**.
-Adding a fifth §13 channel — `attacks: {actor → forced / hit / crit / at_advantage}` —
-is one record call at an existing decision point, and it unlocks hit %, crit %, and
-advantage %, which are core §8 outputs and among the most diagnostic numbers for
-understanding *why* a build's DPR is what it is.
+Hits and crits were computed in `resolve_attack_roll` (`verbs.py`) and **discarded**.
+The sixth §13 channel keeps them. Locked BEFORE the channel was wired, per the
+per-feature ritual's step 4 — and the shape was settled with the user first, because
+the naive reading of §8 ("hit %, crit %, advantage % — three numbers") is wrong twice
+over.
 
-Per §13's rule, this is a **deliberate** channel extension, documented like adding a
-verb — not an ad-hoc field.
+**The channel.** `attacks: {actor_id → AttackTally}`, where `AttackTally` carries
+`forced` (attack rolls made), `hit`, `crit`, `advantage` and `disadvantage`.
+
+- **Keyed by ACTOR, not aggregate.** The s44 lesson applies *harder* here than it did
+  to damage. A pooled amount still adds up; a pooled **rate** does not. One ledger
+  holding the character's swings, the summon's and the **enemy's** yields a hit % that
+  is a roll-weighted average over three different to-hit profiles and describes none of
+  them. The actor dimension is what the mitigation channel needed in s44 for the same
+  reason.
+- **`disadvantage` is recorded but not registered as a metric** (user, s49). It makes
+  the stance a genuine three-way partition — `advantage + disadvantage + flat ==
+  forced` is a self-consistency invariant a test can assert, which is how a miswired
+  record call gets caught — but no shipped build imposes disadvantage on its *own*
+  attacks (sap targets the enemy, and enemies are not an attributable role), so a
+  registered metric for it would be a column of zeros. One declaration away.
+
+**Recorded at the FINAL outcome** (user, s49), after the intercept block rather than at
+the raw to-hit comparison. A Guided-Strike rescue counts as a hit; a parried hit counts
+as a miss; a Protection re-roll can un-crit. The reason is a consistency guarantee: the
+attacks ledger can then **never disagree with the damage ledger**, because a recorded
+hit always has a `DamageEvent` behind it. The alternative reading — the pure
+`d20 + bonus vs AC` math, uncontaminated by policy and defender reactions — is a
+defensible diagnostic and is the thing this does NOT measure; it would report hits that
+dealt no damage, and so could not explain DPR, which is what §8 wants these numbers
+for. The one approximation worth naming: the Protection fighting style imposes its
+disadvantage by rolling a second d20 *after* the primary roll, so it is not counted in
+`disadvantage`; the stance recorded is the stance the attacker's own roll was made at.
+
+**Recording draws nothing** (per-feature step 3). Every value recorded is already
+sitting in a local variable; the parity proof of §12 is untouched. This is the property
+that makes a telemetry channel cheap, and it is checked rather than asserted.
+
+#### The metrics (§5.4 kinds 1 and 2)
+
+A scalar and a breakdown, not three scalars.
+
+| declaration | kind | key space | denominator |
+|---|---|---|---|
+| `attacks_per_round` | scalar | — | `rounds` (fixed) |
+| `attack_roll_rate` | breakdown | `role × property` | `attacks_made[role]` (random, key-templated) |
+
+- **`attacks_per_round` is attribution-scoped and pools legitimately**, because it is a
+  COUNT: swings add. "How many attack rolls does this build get per round" is the
+  action-economy figure (Extra Attack, bonus-action attacks, a summon's multiattack),
+  and it is the number that makes a hit rate interpretable — a build can trade rate for
+  volume.
+- **`attack_roll_rate` is keyed by ROLE** precisely because a rate cannot pool. Its
+  cells are "share of this role's attack rolls that were X". `property ∈ (hit, crit,
+  advantage)` is exactly §8's three percentages, each read off the role whose rolls they
+  describe. Per-cell availability is the existing role predicate, so War Angel reports
+  its `summons` cells as unavailable-with-a-reason while Silvertail measures them.
+- **CROSSED and OVERLAPPING — the pair of facts that forced a declaration.** The cross
+  is the question (how often does the SUMMON crit, as against the character), so the
+  grid earns its cells. But **a crit is a hit**: the cells along `property` are not
+  disjoint, and `advantage` is a condition of the roll rather than an outcome of it, so
+  it overlaps both. Summing them means nothing.
+
+  This is the registry's first breakdown that is crossed *and* non-additive, and it
+  exposed a conflation: `artifact.sum_rule_of` **derived** the rule as
+  `crossed ? partition : overlap`. Every shipped breakdown happened to make that true,
+  which is the only reason it survived. `BreakdownDef.sum_rule` is now a
+  **declaration** — the same move s48 made with `MetricDef.scale`, for the same reason:
+  whether cells partition their total is a fact about what they measure, not about how
+  many dimensions they have. Additive at `schema_version` 1; the artifact field already
+  existed and only its source changed.
+- **NO margins, and the refusal is declared.** Collapsing `role` pools the to-hit
+  profiles the key exists to keep apart. Collapsing `property` sums overlapping cells.
+  Both are the `healing_by_source` refusal of its `context` margin, twice: a comment can
+  be ignored, a missing cell cannot.
+- **Every cell is `scale = ratio`** (checked, not defaulted — s49). A rate in [0,1] and
+  a count per round both have a true zero, so §6.2's relative-precision criterion is the
+  right one. Nothing here can go negative, so there is no `interval` candidate.
 
 ### 8.2 Deferred: per-ability damage attribution
 
@@ -954,7 +1038,7 @@ check mechanisms, not the composite. Three things carry that load instead:
    damage-type composition; and per-combat / opening-round shape metrics landed off
    the existing ledger.
 3. ~~Serialization: JSON + tidy CSV + console renderer; `schema_version`.~~ **DONE (s47)** — `evaluation_framework.md` §9.1 locks the schema; `src/evaluation/{artifact,console}.py` + 44 tests.
-4. The `attacks` telemetry channel (§8.1).
+4. ~~The `attacks` telemetry channel (§8.1).~~ **DONE (s49)** — §8.1 locks the shape; the sixth `CombatTelemetry` channel (actor-keyed) plus `attacks_per_round` and the `attack_roll_rate` breakdown. Forced `BreakdownDef.sum_rule` from an inference to a declaration: this is the registry's first breakdown that is crossed AND non-additive (a crit is a hit).
 5. **The enemy-construction seam (§3.4)** *(inserted s43, between the original steps 4 and
    5)* — `RunConfig.enemy` / `enemy_options` become live; adapters are told which enemy to
    install; the standardized enemy is built alongside the factories' baked-in one, then the
@@ -985,6 +1069,12 @@ onto the framework only once step 1 reproduces its numbers exactly.
   the bottleneck (§10).
 - **Interactive website** — the static artifact schema does not preclude it; no schema
   change required later (§9).
+- **An `attacks` metric for DISADVANTAGE** *(added s49)* — §8.1's channel records
+  `disadvantage`, so this is one `Dimension` key away. Not registered because no
+  shipped build imposes disadvantage on its OWN attacks, so the cells would be a
+  column of zeros. The partition invariant is already asserted, so the data is known
+  good before a reader arrives for it. Trigger: a build that can be attacked at
+  disadvantage, or a §13 step-5 enemy profile that imposes it.
 - **General status-uptime metric** — §8 asks for "share of turns under specified
   statuses" in general; only the control channel is covered today. Needs `StatusSet`
   sampling at turn boundaries.

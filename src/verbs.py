@@ -162,6 +162,7 @@ def resolve_attack_roll(
     decider: "Callable[[int], int] | None" = None,
     hit_decider: "Callable[[bool], tuple[list[tuple[int, int]], list[str], list[object]]] | None" = None,
     intercept_decider: "Callable[[int], object | None] | None" = None,
+    telemetry: "object | None" = None,
 ) -> int:
     """Resolve one attack roll.  Returns the next available sequence number.
 
@@ -212,6 +213,11 @@ def resolve_attack_roll(
         still lands), and `redirect` (Warding Bond — threaded onto the DamageEvent,
         resolved at damage time).  The scheduler-side closure already
         validated/consumed the defender's resources.  None = no interceptor.
+    telemetry:
+        Optional §13 sink (``CombatTelemetry``).  The attacks channel (§8.1) is
+        recorded ONCE, at the end of resolution, from values already in hand — so
+        it draws no dice and a direct caller that passes nothing gets byte-identical
+        behavior, which is what keeps §12's parity proof intact.
     """
     actor = event.actor
     target = event.target
@@ -385,6 +391,29 @@ def resolve_attack_roll(
                 reactive_damage.damage_dice[0], reactive_damage.damage_dice[1],
                 reactive_damage.damage_type,
             )
+
+    # --- §13 attacks channel (§8.1) ------------------------------------------
+    # The LAST point at which `hit` and `is_crit` can still change is the intercept
+    # block above: a Guided-Strike rescue has already landed, a parry has already
+    # flipped the hit to a miss, and a Protection re-roll has already dropped the
+    # crit.  Recording here is therefore the one reading that cannot disagree with
+    # the damage ledger — every hit counted here has a DamageEvent behind it.
+    #
+    # Keyed by the ACTOR, without which the character's, a summon's and the enemy's
+    # rolls pool into one rate that describes none of them (§8.1).  The stance is
+    # the EFFECTIVE one after 2024 cancellation, matching roll_d20's own rule; the
+    # Protection style's second d20 is a defender mitigation applied after this
+    # roll, so it is deliberately not counted as disadvantage.
+    #
+    # Pure observation: every value is already a local, so nothing is drawn.
+    if telemetry is not None:
+        telemetry.record_attack(
+            actor.id,
+            hit=hit,
+            crit=is_crit,
+            advantage=(advantage and not disadvantage),
+            disadvantage=(disadvantage and not advantage),
+        )
 
     # On-hit decision point: fires BEFORE apply_masteries_on_hit so any extra
     # masteries returned by the policy (e.g. Brutality::bluff adding vex) are

@@ -52,7 +52,7 @@ from src.evaluation.artifact import (
     write_sweep_csv,
 )
 from src.evaluation.console import render
-from src.evaluation.metrics import ALL
+from src.evaluation.metrics import ALL, METRICS
 from src.evaluation.statistics import MetricValue
 
 logging.disable(logging.CRITICAL)
@@ -240,12 +240,38 @@ def test_cells_and_margins_are_never_in_the_same_container(record):
         assert cell_names.isdisjoint({r["metric"] for r in block["margins"]})
 
 
-def test_every_breakdown_declares_a_sum_rule_matching_its_crossing(record):
+def test_every_breakdown_serializes_its_DECLARED_sum_rule(record):
+    """A DECLARATION since s49, not an inference (§8.1).
+
+    This test previously asserted ``sum_rule == (partition if crossed else overlap)``.
+    That held for every breakdown shipped before s49 and was still wrong: the two are
+    independent facts, and ``attack_roll_rate`` is the counter-example — crossed,
+    because the cross is the question, and overlapping all the same, because a crit is
+    also a hit.  So what the artifact owes a consumer is that the serialized value is
+    the one the registry DECLARED, which is the only invariant that survives a
+    breakdown whose keys are not disjoint.
+    """
     assert record["results"]["breakdowns"]
     for block in record["results"]["breakdowns"]:
         assert block["sum_rule"] in SUM_RULES
-        expected = SUM_RULE_PARTITION if block["crossed"] else SUM_RULE_OVERLAP
-        assert block["sum_rule"] == expected, block["name"]
+        declared = METRICS.breakdown(block["name"]).sum_rule
+        assert block["sum_rule"] == declared, block["name"]
+        # And the data dictionary cannot disagree with the results about it.
+        entry = next(d for d in record["data_dictionary"]["breakdowns"]
+                     if d["name"] == block["name"])
+        assert entry["sum_rule"] == declared
+
+
+def test_the_old_crossed_inference_is_really_gone(record):
+    """The regression guard for the change itself.  If someone re-derives the rule
+    from ``crossed`` — the obvious-looking simplification, since six of the eight
+    breakdowns still satisfy it — this is the test that notices."""
+    inferred = {b["name"]: (SUM_RULE_PARTITION if b["crossed"] else SUM_RULE_OVERLAP)
+                for b in record["results"]["breakdowns"]}
+    declared = {b["name"]: b["sum_rule"] for b in record["results"]["breakdowns"]}
+    assert inferred != declared
+    disagree = {n for n in declared if declared[n] != inferred[n]}
+    assert disagree == {"attack_roll_rate"}
 
 
 def test_an_uncrossed_breakdown_is_flagged_do_not_sum_and_its_cells_really_overlap(record):
@@ -267,11 +293,31 @@ def test_an_uncrossed_breakdown_is_flagged_do_not_sum_and_its_cells_really_overl
     assert naive > total["value"] * 1.5
 
 
-def test_a_crossed_breakdown_carries_no_do_not_sum_note(record):
+def test_a_partitioning_breakdown_carries_no_do_not_sum_note(record):
     block = next(b for b in record["results"]["breakdowns"]
                  if b["name"] == "healing_by_source")
     assert block["crossed"] is True
+    assert block["sum_rule"] == SUM_RULE_PARTITION
     assert "sum_rule_note" not in block
+
+
+def test_a_crossed_but_overlapping_breakdown_gets_its_OWN_note(record):
+    """Overlap has two causes and the remedies differ, so one note cannot serve both.
+    An uncrossed breakdown is told to read its declared margin instead; a crossed
+    non-disjoint one has no margin to read — materializing one was refused — so a note
+    sending its reader to a margin would send them to a cell that does not exist."""
+    attacks = next(b for b in record["results"]["breakdowns"]
+                   if b["name"] == "attack_roll_rate")
+    saves = next(b for b in record["results"]["breakdowns"]
+                 if b["name"] == "saves_forced_per_round")
+    assert attacks["crossed"] is True
+    assert attacks["sum_rule"] == saves["sum_rule"] == SUM_RULE_OVERLAP
+    assert "double-counts" in attacks["sum_rule_note"]
+    assert attacks["sum_rule_note"] != saves["sum_rule_note"]
+    # The uncrossed one points at a margin; the crossed one must NOT, having none.
+    assert "margin" in saves["sum_rule_note"]
+    assert not attacks["margins"]
+    assert "no aggregate to read instead" in attacks["sum_rule_note"]
 
 
 def test_a_refused_margin_is_documented_rather_than_missing(record):
