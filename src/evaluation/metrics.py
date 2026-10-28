@@ -311,6 +311,28 @@ class RunContext:
     roster: "Roster"
     described: dict[str, Any]
 
+    @property
+    def enemy(self) -> dict[str, Any]:
+        """The §4 RESOLVED enemy block (``evaluation/enemy.resolve``).
+
+        DERIVED rather than declared, and that is defensible under the s49 rule
+        ("declare it, or prove the derivation") because the two facts cannot come
+        apart: ``resolve`` is a pure function of exactly ``(config, described)``,
+        both of which this context already holds, so there is no state in which a
+        context's enemy block could legitimately differ from the one computed here.
+        This is the s48 ``interval``-from-``statistic`` case, not the s49
+        ``sum_rule`` case — the test is independence, and here there is none.
+
+        Deriving it also means every existing ``RunContext`` construction — the
+        runner's and every fixture's — gets a correct enemy block for free, so an
+        availability predicate can read the enemy without the caller remembering to
+        supply it.  A predicate that had to be handed the block would silently see
+        ``{}`` wherever someone forgot.
+        """
+        from .enemy import resolve
+
+        return resolve(self.config, self.described)
+
 
 # ---------------------------------------------------------------------------
 # Denominators — a named, closed vocabulary (§5.2)
@@ -441,44 +463,93 @@ def _requires_role(role: str) -> Callable[[RunContext], "str | None"]:
     return check
 
 
-def _requires_control_channel(ctx: RunContext) -> "str | None":
-    """Control metrics are unavailable in EVERY run today (§3.4), for two different
-    reasons depending on which enemy model the build's factory picked.
+#: How a run turns the control channel on, quoted in every unavailability reason
+#: so the reader is never told only what is wrong.
+_CONTROL_FIX = (
+    "Configure enemy='baseline' with enemy_options={'control': True} (§3.4's "
+    "standardized enemy) to measure it."
+)
 
-    Naming the reason per build matters: "War Angel cannot be measured" and
-    "Silvertail's enemy has the channel but it is switched off" are different
-    problems with different fixes, and the report should not flatten them.
+
+def _requires_control_channel(ctx: RunContext) -> "str | None":
+    """Why this run cannot measure control — in FOUR distinguishable ways.
+
+    Before the step-5 seam this had two branches, because the only thing that could
+    vary was which enemy model a build's factory happened to pick.  The seam adds a
+    genuinely different situation — the standardized enemy IS installed and its
+    control channel is simply off — and collapsing that into "constructed with
+    control=False" would lose the distinction the per-METRIC ritual's availability
+    check exists to protect: these are different problems with different fixes, and
+    only one of them is now the caller's to fix in one keyword.
+
+    The ordering matters: the STANDARDIZED cases are tested first, because under a
+    standardized enemy the build's own ``described["enemy_policy"]`` describes the
+    path that was OVERWRITTEN and is no longer the run's enemy.
     """
+    block = ctx.enemy
+    if block["standardized"]:
+        kind = block["kind"]
+        if kind == "baseline":
+            if block["options"].get("control"):
+                return None                      # the channel is live
+            return (
+                "the standardized enemy is installed, but its §6 control channel is "
+                f"switched off (enemy_options['control'] is False). {_CONTROL_FIX}"
+            )
+        if kind == "scripted":
+            return (
+                "enemy='scripted' is the standardized enemy's ATTACK-ROLL half only "
+                "— it makes weapon attacks and forces no saves of any kind, which is "
+                f"what makes it the comparison arm for 'baseline'. {_CONTROL_FIX}"
+            )
+        return (
+            "enemy='none' is a passive target: it carries the table's stat block and "
+            f"never acts, so no control save is ever forced. {_CONTROL_FIX}"
+        )
+
+    # build_default — the enemy is still a property of the character build (§3.4).
     policy = ctx.described.get("enemy_policy")
     if policy == "scripted":
         return (
-            "the enemy is ScriptedEnemyPolicy, which has no control channel at all "
-            "(§3.4: the three builds do not currently face the same enemy model). "
-            "Measurable once the §13 step-5 enemy-construction seam installs the "
-            "standardized enemy for every build."
+            "this run uses enemy='build_default', and the build factory installed "
+            "ScriptedEnemyPolicy, which has no control channel at all (§3.4: the "
+            f"three builds do not face the same enemy model on this path). {_CONTROL_FIX}"
         )
     if policy == "baseline":
         return (
-            "the enemy is BaselineEnemyPolicy constructed with control=False, and "
-            "RunConfig.enemy_options is hard-rejected until the §3.4 enemy seam "
-            "(§13 step 5), so the control channel cannot be enabled from here."
+            "this run uses enemy='build_default', and the build factory constructed "
+            "BaselineEnemyPolicy with control=False without exposing the toggle, so "
+            f"the channel cannot be enabled through the factory. {_CONTROL_FIX}"
         )
     return (
-        "the enemy never acts at this level (the build's data row carries no "
-        "enemy_attack), so no control save is ever forced"
+        "this run uses enemy='build_default', and the enemy never acts at this level "
+        "(the build's data row carries no enemy_attack), so no control save is ever "
+        f"forced. {_CONTROL_FIX}"
     )
 
 
 def _requires_mitigation_profile(ctx: RunContext) -> "str | None":
     """Evidence-based: §5's ``mult(t)`` lives on ``Entity.damage_multiplier``, so we
-    can simply look at whether anyone in the roster carries a profile."""
+    look at whether anyone in the roster actually carries a profile.
+
+    Kept evidence-based rather than switched to reading
+    ``enemy_options['mitigation']`` when the seam landed, and the reason is the
+    point: ``damage_multiplier`` is an ENTITY attribute that a build factory may
+    install itself (Starfire's ``enemy_resist`` block does install a
+    ``damage_response``, and a future build could install a multiplier), so the
+    config flag is one cause of a profile existing and not the definition of it.
+    Reading the config here would report "unavailable" for a run whose roster
+    plainly carries one.
+    """
     if any(e.damage_multiplier for e in ctx.roster.entities()):
         return None
     return (
-        "no entity in this run carries a damage_multiplier profile — §5's mult(t) is "
-        "installed at Entity construction and no build factory installs one today, so "
-        "the mitigation channel records nothing. Goes live with the §13 step-5 enemy "
-        "seam (enemy_stats.band_damage_multipliers)."
+        "no entity in this run carries a damage_multiplier profile, so the §13 "
+        "mitigation channel records nothing. §5's mult(t) is installed on the Entity, "
+        "and no build factory installs one. Configure enemy='baseline' (or any "
+        "standardized kind, including 'none') with enemy_options={'mitigation': True} "
+        "to install the band's mean-field res/imm/vuln profile "
+        "(enemy_stats.band_damage_multipliers)."
     )
 
 
@@ -1567,9 +1638,33 @@ def _build_default_registry() -> MetricRegistry:
             "and also means the §5 resistance multiplier can never touch that "
             "build's output. The meaningful aggregate of the composition family: "
             "damage_share's own total is 1.0 by construction, which is why that "
-            "breakdown declares no margin."
+            "breakdown declares no margin. "
+            "Reads outgoing_AFTER, not outgoing_before, and the asymmetry with "
+            "damage_share (which reads before/before) is deliberate: this row's "
+            "DENOMINATOR is the damage ledger, which records what actually landed, "
+            "i.e. POST-mitigation. Mixing the two sides of mult(t) would make this "
+            "a before/after ratio rather than a share — see the s50 note below."
         ),
-        numerator=lambda s: s.mitigation("outgoing_before"),
+        # s50 BUGFIX, found by rendering one real output (per-feature ritual step 6).
+        # This numerator was `outgoing_before` for six sessions and was invisible for
+        # a precise reason: no entity carried a `damage_multiplier`, so
+        # `outgoing_before == outgoing_after` identically and the row was a correct
+        # share by accident. The §13 step-5 enemy seam installs the first real
+        # profile (enemy_options={'mitigation': True}), and the row immediately
+        # printed **1.1054** — a "fraction" above 1 — because the numerator was
+        # pre-mitigation typed damage over a post-mitigation denominator.
+        #
+        # The diagnosis is arithmetic rather than a reading of the code: on
+        # Silvertail L10, where every point of the master's damage is typed,
+        # `typed_damage_share == 1 / (1 - mitigation_fraction)` to the last bit
+        # (1.1053677932405566 both ways). That identity holds only for before/after.
+        #
+        # Note which rows were NOT wrong, because the distinction is the lesson:
+        # `damage_share` divides outgoing_before by outgoing_before summed over
+        # types, so its cells still partition to 1.0, and `mitigation_fraction` is
+        # (before - after)/before by definition. Only the row that crossed the
+        # mitigation channel WITH the damage ledger could mix the two sides.
+        numerator=lambda s: s.mitigation("outgoing_after"),
         events=lambda s: s.own_damage(),
         convergence=Convergence(rel_stderr=0.05, min_events=500.0),
     ))

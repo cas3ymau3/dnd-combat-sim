@@ -45,6 +45,7 @@ from .artifact import (
     report_to_dict,
     run_id,
 )
+from .enemy import ENEMY_OPTION_SCHEMA
 
 if TYPE_CHECKING:                                    # pragma: no cover
     from .report import EvalReport
@@ -102,6 +103,33 @@ def _dist_line(row: dict[str, Any]) -> str:
             f"{row['method']}{_flag(row)}")
 
 
+def _enemy_line(provenance: Any) -> str:
+    """The header's one-line summary of WHICH enemy this run faced (§3.4 / §4).
+
+    Added s50, and the gap it closes is the s49 defect pattern repeating: the enemy
+    block is the whole deliverable of the §13 step-5 seam, the JSON artifact carried
+    it from the first commit, and the console — one of the three renderers, and the
+    one a person actually reads — mentioned the enemy exactly ONCE, inside a
+    comparability warning paragraph.  §4 calls the provenance block "the source for
+    the model-description / baseline-assumptions page", which a reader cannot use if
+    the renderer drops it.
+
+    Non-default options only.  Printing all nine at their defaults would bury the
+    one or two that are in force, which is the 400-character margin-note mistake s49
+    fixed on the line below this one.
+    """
+    block = provenance.resolved.get("enemy") or {}
+    path = provenance.coverage.get("enemy_path", "unknown")
+    if not block.get("standardized"):
+        return f"{path}  (NOT RESOLVED: built by the build factory off the character's level row)"
+    defaults = {name: spec.default
+                for name, spec in ENEMY_OPTION_SCHEMA.items()}
+    active = [f"{name}={value!r}" for name, value in sorted(block["options"].items())
+              if value != defaults.get(name)]
+    suffix = f"  [{', '.join(active)}]" if active else "  [all options at default]"
+    return f"{path}  level {block['level']} band {block['band']}{suffix}"
+
+
 def render(report: "EvalReport") -> str:
     """The whole report as one text block."""
     record = report_to_dict(report, include_data_dictionary=False)
@@ -126,6 +154,7 @@ def render(report: "EvalReport") -> str:
                        for role, names in provenance.roster.items() if names)
     if roster:
         out.append(f"  roster  {roster}")
+    out.append(f"  enemy   {_enemy_line(provenance)}")
     out.append(_RULE)
 
     # -- headline (§5.3: exactly one, and it is a scalar) ----------------

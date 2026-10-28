@@ -219,16 +219,36 @@ def test_war_angel_has_no_scenario_axes():
 
 
 @pytest.mark.parametrize("kwargs,match", [
-    ({"enemy_options": {"control": True}}, "enemy_options"),
-    ({"enemy": "baseline"}, "enemy='baseline'"),
     ({"mode": "finite_hp"}, "finite_hp"),
 ])
 def test_designed_but_unwired_fields_raise_rather_than_being_ignored(kwargs, match):
-    """Step 1 cannot honour these (the factories own their enemy policy and combat
-    loop).  Silently ignoring them would make the §4 provenance block document
-    assumptions the run never applied — so they are hard errors, not warnings."""
+    """Silently ignoring a designed-but-unwired field would make the §4 provenance
+    block document assumptions the run never applied — so it is a hard error, not a
+    warning.
+
+    **This test lost two of its three cases in s50, deliberately.** ``enemy`` and
+    ``enemy_options`` were rejected here from step 1 until the §13 step-5
+    enemy-construction seam landed; they are now HONOURED, which is the whole point
+    of that step, and the behaviour they used to assert is covered from the other
+    side by ``test_the_enemy_fields_are_no_longer_rejected`` below and in full by
+    ``tests/test_eval_enemy_seam.py``.  ``mode="finite_hp"`` is the one case that
+    remains designed-but-unwired: it needs ``DayRunner(enemy_ids=…)``, which no
+    factory passes.
+    """
     with pytest.raises(NotImplementedError, match=match):
         RunConfig(build="war_angel", level=1, n_days=1, **kwargs)
+
+
+def test_the_enemy_fields_are_no_longer_rejected():
+    """The other side of the change above: the §3.4 seam honours both fields now.
+
+    The REFUSALS did not go away, they became per-option and moved into
+    ``evaluation/enemy.validate_options`` — an option the chosen enemy kind cannot
+    honour is still a hard error, for the identical §4 reason.  See
+    ``tests/test_eval_enemy_seam.py`` for that surface.
+    """
+    RunConfig(build="war_angel", level=1, n_days=1, enemy="baseline",
+              enemy_options={"control": True}).validate()
 
 
 @pytest.mark.parametrize("kwargs", [

@@ -139,7 +139,22 @@ distinct enemy concerns live inside the *character* build modules:
 
 1. **The enemy's stat block.** `war_angel.LEVELS[13]` carries `enemy_ac`, and
    `enemy_attack = {attack_bonus: 11, damage: 28, n_attacks: 3, char_target_prob: 0.40}`
-   — hardcoded in the character's own level table.
+   — hardcoded in the character's own level table. **Correction (s50): the AC half of
+   this example is wrong, and the correction matters.** Before the seam was built, every
+   baked-in `enemy_ac` was diffed against `enemy_stats.baseline_ac(level)`: they are
+   IDENTICAL at all 16 War Angel levels and all 8 Starfire levels, and Starfire's
+   `enemy_dex_save` matches the table too — they were copied out of the same CSV the
+   standardized enemy reads. What is genuinely coupled is the enemy's **offense** (War
+   Angel's flat 28 × 3 at +11; Starfire's `2d8+5` × 2 at +9, which its own comment calls
+   "ILLUSTRATIVE"; Silvertail alone on the table's dice) and the enemy's **six saves**, of
+   which War Angel's dummy carries none and Starfire's carries one.
+   *Why this is load-bearing rather than pedantic:* a character's hit rate is a function
+   of the enemy's AC, so the natural expectation is that standardizing the enemy moves the
+   §8.1 attacks channel directly. It does not do it that way. It moves it through the
+   **defender** side — on War Angel, incoming hits break concentration on Bless, which
+   removes +1d4 from its own attack rolls — and a session expecting the AC route will
+   mis-attribute what it sees. Both facts are pinned as tests in
+   `tests/test_eval_enemy_seam.py` rather than left as prose.
 2. **Which enemy model is used at all.** War Angel and Starfire Scion construct
    `ScriptedEnemyPolicy`; Silvertail constructs `BaselineEnemyPolicy` (the per-level table
    plus the census bands). **The three builds do not currently face the same enemy model.**
@@ -156,6 +171,28 @@ built *in parallel and deliberately redundantly* while the existing factories st
 for benchmarking. `RunConfig.enemy` / `enemy_options` become live; the adapter's `build()`
 is told which enemy to install. Once the standardized enemy is in place, the enemy
 material is **migrated out of the character factories and the baked-in path is deleted**.
+
+**BUILT (s50) — the parallel half.** `src/evaluation/enemy.py`. `RunConfig.enemy` /
+`enemy_options` are live against a closed, declared option schema; each adapter's
+`build()` ends in one unconditional `enemy.install(...)` that is a no-op under
+`enemy="build_default"`; `enemy.resolve()` supplies the §4 enemy block, and both policies
+grew the `describe_parameters()` §4 names. Four kinds: `build_default` (the factory's own
+— the transitional default), `baseline` (the standardized enemy), `scripted` (its
+attack-roll half only — a **comparison arm**, because `baseline` vs `scripted` isolates
+"the enemy forces saves" from "the enemy swings", which the baked-in paths could never
+express since they differed in both at once), and `none` (a passive target carrying the
+table's full stat block). Installation is an **overlay** rather than a factory argument:
+let the factory build its enemy, then replace the policy and complete the Entity's stat
+block. That is safe because no enemy policy draws a die in its constructor, and it avoids
+editing the three modules the §12 parity proof rests on while `build_default` must still
+reproduce `validation.py` bit-for-bit.
+
+**STILL OPEN — the deletion half**, scheduled as its own session with its own decision
+record (user, s50). Not deferred for tidiness: `make_training_dummy` reads
+`LEVELS[level]["enemy_ac"]`, `src/validation.py` reads both `make_day_runner` and
+`LEVELS[level]["target_dpr"]`, and 8 test modules touch the baked-in rows — so removing
+the enemy material breaks `validation.py` and the §12 bit-identical parity proof with it.
+That is a deliberate, documented change, not a side effect of wiring the seam.
 
 **This is transitional, not a permanent two-mode split.** An earlier draft of this section
 argued for keeping a "guide-replication" mode alongside the standardized one. That was
@@ -1002,12 +1039,28 @@ check mechanisms, not the composite. Three things carry that load instead:
    the ±10% band it replaces: it detects any drift, not just large drift. It asserts
    "nothing changed", never "this value is correct" — so it stays inside the
    `validate-mechanism-not-build-value` rule.
+   **BUILT (s50):** `GOLDEN_DPR` in `tests/test_eval_enemy_seam.py` — 9 points across all
+   three builds and all four enemy kinds at 400 days / seed 11. Regenerating them is a
+   deliberate act with a decision record, exactly as `src/validation.py`'s numbers were.
 2. **The L1–4 closed-form check, kept.** At those levels the enemy is passive and only its
    AC matters, so expected DPR is computable in closed form by hand. That check verifies
    the attack pipeline against arithmetic and is independent of who authored what — it just
    needs its expected values recomputed for the standardized enemy's AC.
+   **BUILT (s50), with two corrections to this paragraph.** *(a)* No recomputation was
+   needed: the AC is unchanged (§3.4 item 1). *(b)* The range is **L2–4, not L1–4**, and
+   the reason was measured rather than assumed. L1's rapier carries the *vex* mastery, so a
+   hit grants advantage on the next attack: expected DPR becomes a two-state Markov chain
+   whose transition structure depends on the engine's status-expiry model rather than on
+   arithmetic, which would make the "check" a test of one's model of the engine. The
+   no-feedback formula misses L1 by **156σ** and matches L2/L3/L4 at **1.18σ / 0.79σ /
+   1.83σ** (20,000 days). L2+ carry *sap*, which imposes disadvantage on the ENEMY and so
+   feeds back into nothing the character's own damage depends on. The closed form also
+   independently reproduces the retired guide targets to two decimals, which is a pleasant
+   confirmation and explicitly not the assertion.
 3. **The epistemic note, stated once in the outputs.** See §11: no external validation
    source remains, and the provenance block is where that is said rather than left implicit.
+   **DONE (s47/s48):** `report.EPISTEMIC_NOTE`, rendered in the console and serialized in
+   every artifact.
 
 ---
 
@@ -1040,14 +1093,23 @@ check mechanisms, not the composite. Three things carry that load instead:
 3. ~~Serialization: JSON + tidy CSV + console renderer; `schema_version`.~~ **DONE (s47)** — `evaluation_framework.md` §9.1 locks the schema; `src/evaluation/{artifact,console}.py` + 44 tests.
 4. ~~The `attacks` telemetry channel (§8.1).~~ **DONE (s49)** — §8.1 locks the shape; the sixth `CombatTelemetry` channel (actor-keyed) plus `attacks_per_round` and the `attack_roll_rate` breakdown. Forced `BreakdownDef.sum_rule` from an inference to a declaration: this is the registry's first breakdown that is crossed AND non-additive (a crit is a hit).
 5. **The enemy-construction seam (§3.4)** *(inserted s43, between the original steps 4 and
-   5)* — `RunConfig.enemy` / `enemy_options` become live; adapters are told which enemy to
-   install; the standardized enemy is built alongside the factories' baked-in one, then the
-   baked-in path is migrated out and deleted. Carries the three §12 replacements for the
-   retired guide targets. **Sequenced here because it is a hard prerequisite for step 6:**
+   5)* — **PARALLEL HALF DONE (s50); the DELETION half is its own session.**
+   `src/evaluation/enemy.py` + 122 mechanism tests in `tests/test_eval_enemy_seam.py`.
+   `RunConfig.enemy` / `enemy_options` are live against a closed declared schema, every
+   adapter installs the configured enemy, §4's enemy block is resolved, and **both
+   structurally-empty §8 channels — control and mitigation — went live**, which is what
+   step 6 was waiting for. The three §12 replacements landed (see §12). `SCHEMA_VERSION`
+   NOT bumped: the artifact gained content inside the existing `provenance.resolved`
+   shape, no new keys at the envelope level. Deliberate, documented changes to six
+   adjacent tests that asserted the step-1 deferrals — each carries its own note.
+   What is deferred, with its reason, is in §3.4: deleting the baked-in path breaks
+   `src/validation.py` and the §12 bit-identical parity proof, so it is a decision rather
+   than a cleanup. **Sequenced here because it is a hard prerequisite for step 6:**
    control lives on `BaselineEnemyPolicy(control=True)`, and War Angel uses
    `ScriptedEnemyPolicy`, which has no control channel at all — so War Angel's control
-   resilience, a core resilience-panel metric, is unmeasurable until this seam exists.
-   Placed after step 4 so the two enemy paths can be compared as artifacts, not by eye.
+   resilience, a core resilience-panel metric, was unmeasurable until this seam existed.
+   Placed after step 4 so the two enemy paths could be compared as artifacts, not by eye —
+   which is how the `typed_damage_share` defect below was found.
 6. Control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation.
 7. Sweep YAML + config-hash caching + baselines registry.
 8. **RNG substreams** *(added s44)* — per-entity / per-(entity, purpose) generators via
@@ -1075,6 +1137,13 @@ onto the framework only once step 1 reproduces its numbers exactly.
   column of zeros. The partition invariant is already asserted, so the data is known
   good before a reader arrives for it. Trigger: a build that can be attacked at
   disadvantage, or a §13 step-5 enemy profile that imposes it.
+  **STILL NOT TRIGGERED (s50), checked rather than assumed.** The standardized enemy
+  imposes no disadvantage on the character's own attacks, and the reason is structural
+  rather than incidental: §7's control is an **output factor** in v1, not a status
+  object — a controlled turn still acts, at reduced effect — so there is nothing in the
+  standardized enemy that can attach a `disadvantage` condition to a character's roll.
+  The real trigger is therefore **step 6's control-at-runtime**, which is where control
+  stops being a multiplier and starts being a state.
 - **General status-uptime metric** — §8 asks for "share of turns under specified
   statuses" in general; only the control channel is covered today. Needs `StatusSet`
   sampling at turn boundaries.
@@ -1137,6 +1206,34 @@ onto the framework only once step 1 reproduces its numbers exactly.
   is that these are DECLARED heuristics in the §6.2 sense — a stated convention, not a
   measured operating point — and the right fix when it matters is a sweep across builds
   and tiers, not a nudge to the constant.
+  **TRIGGER FIRED (s50), and the constants were deliberately NOT touched (user) — for a
+  better reason than caution.** What the standardized enemy moves is the LOCATION of the
+  defensive distribution, not its spread, and the threshold is translation-invariant by
+  construction (§6.2), so the trigger turns out to be benign for a principled reason
+  rather than by luck. Measured on War Angel L13, 2,000 days, seed 11,
+  `build_default` → `standardized`:
+
+  | distribution                     | p50             | IQR             |
+  |----------------------------------|-----------------|-----------------|
+  | `dpr`                            | 35.25 → 35.00   | 2.250 → 2.375   |
+  | `net_damage_taken_per_round`     | 11.78 → 21.66   | 7.000 → 6.266   |
+
+  The defensive median nearly DOUBLES — the seam bites hard on the defender side, as
+  §3.4 says — while its IQR slightly NARROWS, and the offensive distribution barely
+  moves at all. (The first draft of this paragraph asserted the defensive IQR "roughly
+  doubles"; it was measured and it was false. Keeping the correction visible because it
+  is the same lesson as the attacks-channel overclaim in the same session: a plausible
+  mechanical story about a spread is not a measurement of one.) Nothing newly fails its
+  convergence check for a shape reason either: the only `[unconverged]` rows at the quick
+  tier are the rare-save cells (`int_save`, `cha_save`), unconverged because they are
+  rare, exactly as designed.
+
+  So the trigger is recorded as fired, and the fix stays what it was — **a sweep across
+  builds and tiers, not a nudge to a constant** — because changing a threshold on the
+  evidence of one build at one tier would reproduce the original problem (four
+  near-normal points) with four different points. `resolution_sigmas = 3.0` and
+  `min_tail_observations = 50` remain uncalibrated against any data. The bimodal-build
+  trigger is untouched and is still the one that matters.
 - **Paired comparison ON A QUANTILE** *(added s48)* — §6.1's machinery runs on per-day
   influence values and a quantile has none, so `paired_delta` does not extend to it. The
   construction that WOULD work is named in §5.4 (a paired bootstrap over one shared
@@ -1167,3 +1264,21 @@ onto the framework only once step 1 reproduces its numbers exactly.
   the choice of enemy policy class still live in each build's `LEVELS` table (§3.4).
   Scheduled for removal at step 5, not open-ended: the redundancy is transitional, and
   the baked-in path is deleted once the standardized enemy is in place.
+  **STATUS (s50): the standardized enemy is in place; the deletion is now its own
+  scheduled session** (user), because it is the change that breaks `src/validation.py`
+  and the §12 bit-identical parity proof — 8 test modules touch the baked-in rows. The
+  redundancy is still transitional, and `enemy="build_default"` remains the default
+  precisely to hold the parity proof while it lasts. §3.4 carries the full reason.
+  *One piece of the migration is already cheaper than expected:* the AC needs no
+  migration at all, since every baked-in value already equals the table's (§3.4 item 1).
+
+- **The mitigation channel reads a build whose damage is UNTYPED as a true zero**
+  *(surfaced s50)* — War Angel's `typed_damage_share` is 0.0, so with a mitigation
+  profile installed `damage_mitigated_per_round` reads `0 ± 0` and `mitigation_fraction`
+  is UNMEASURED (its denominator is zero). Both are literally correct and neither is a
+  defect: `typed_damage_share`'s own definition exists to be read first for exactly this
+  reason, and it sits beside them in the panel. Recorded rather than fixed because the
+  alternative — declaring the mitigation rows unavailable for an untyped build — would
+  replace a true measurement with a reason, and "none of this build's damage is the kind
+  mitigation can touch" is a real finding about the build. Revisit only if a reader is
+  observed misreading the pair.

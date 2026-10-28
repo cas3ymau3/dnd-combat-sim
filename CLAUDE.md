@@ -111,10 +111,22 @@ These were reached deliberately; do not silently revisit them.
     save DC / per-swing & AoE dice, per character level), loaded by
     `src/builds/enemy_stats.py`; `BaselineEnemyPolicy` (`src/builds/enemy.py`)
     is its full consumer (per-level dice → enemy crits, attack-vs-save mix,
-    retargeting). The older `ScriptedEnemyPolicy` (targeting-only) and the
-    AC/saves-only `monster_ac_and_saves_by_level.csv` (now the generation
-    provenance) remain for the earlier builds. See PROGRESS.md for the full
-    enemy-policy decision record.
+    retargeting). The older `ScriptedEnemyPolicy` (targeting-only, same module —
+    there is no `scripted_enemy.py`) and the AC/saves-only
+    `monster_ac_and_saves_by_level.csv` (now the generation provenance) remain
+    for the earlier builds. See PROGRESS.md for the full enemy-policy decision
+    record.
+    - **THE ENEMY IS NOT A PROPERTY OF THE BUILD (s50).**
+      `src/evaluation/enemy.py` is the framework's enemy-construction seam
+      (`design/evaluation_framework.md` §3.4): `RunConfig.enemy` selects one of
+      four declared kinds (`build_default` / `baseline` / `scripted` / `none`),
+      `enemy_options` configures it against a closed schema, and §4 provenance
+      records every resolved value. Prefer `enemy="baseline"` for anything
+      cross-build — a run under `build_default` faces whatever its own `LEVELS`
+      table says, which is why those runs are not comparable to each other.
+      `build_default` is still the DEFAULT, deliberately: it is what holds
+      `src/validation.py` and the §12 parity proof until the baked-in path is
+      deleted (scheduled, with its own decision record).
 
 ---
 
