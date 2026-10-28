@@ -113,6 +113,31 @@ type, condition, resource, …):
    ever independence. **The cost of getting it wrong is paid a feature later, by
    whoever adds the first instance that separates them**, and it arrives as a renderer
    confidently printing a false statement (see step 6).
+
+   **SAME QUANTITY, SAME STAGE — the seam check (added s50, same step because it is the
+   same design-time question one layer down).** When a metric, function or assertion reads
+   from TWO subsystems, check that both sides are the same quantity at the same STAGE of
+   the pipeline, and then ask the dormancy question: **are the two sides currently
+   numerically identical for a reason that will stop holding?** If yes, the mismatch is
+   invisible today and will surface as a plausible number later.
+
+   The s50 trigger: `typed_damage_share` divided the §13 mitigation channel's
+   `outgoing_before` by the DAMAGE LEDGER, which records what actually landed — i.e.
+   post-mitigation. It was a before/after ratio masquerading as a share. It survived six
+   sessions because **no entity carried a `damage_multiplier`, so `before == after`
+   identically and the row was a correct share by accident**; the first real profile made
+   it print 1.1054. Note which rows were NOT wrong, because that is the diagnostic:
+   `damage_share` is before/before, so its cells still partition to 1.0, and
+   `mitigation_fraction` is `(before − after)/before` by definition. **Only the row that
+   crossed one subsystem WITH another could mix the two stages.** So the places to look
+   are exactly the ones where a numerator and a denominator come from different modules.
+
+   Two transferable habits. **An out-of-range value is the cheapest detector** — a
+   "fraction" above 1 is unmissable, so assert the range of anything declared a share or
+   a probability. And **diagnose by arithmetic where you can**: the proof here was not
+   reading code but noticing that `typed_damage_share == 1/(1 − mitigation_fraction)` to
+   the last bit on the one build whose damage is entirely typed, which identifies the
+   mismatch uniquely rather than suggesting it.
 5. **Test the BRANCH, not the convenient instance.** Added session 47, from the bug
    that session found. When a feature adds a DECLARATION with more than one value —
    `BreakdownDef.crossed` (crossed/uncrossed), `Denominator.fixed` (fixed/random),
@@ -157,6 +182,29 @@ type, condition, resource, …):
    and had it been written unmeasured it would have passed on some future build and
    failed on this one for a reason nobody could reconstruct. Keep the measured numbers
    in a comment next to the assertion that does hold.
+
+   **AND A MECHANICAL ARGUMENT IS NOT A MEASUREMENT (broadened s50, after the rule as
+   written failed to catch two overclaims in one session).** s49 wrote this rule for
+   claims of the shape "this bug would have been VISIBLE / LARGE". Neither s50 overclaim
+   had that shape, and both were wrong:
+   - *"A hit rate is a function of the enemy's AC; the AC does not change; therefore
+     `attack_roll_rate[characters|hit]` must not move."* Every clause true except the
+     first, which was INCOMPLETE — a hit rate also depends on the character's attack-roll
+     MODIFIER STACK, and War Angel concentrates on Bless (+1d4 to its own attacks). The
+     rate moves 15σ, through concentration breaks. Caught only because the claim had been
+     written as a test, which then failed at 7.7σ.
+   - *"The standardized enemy roughly doubles the defensive IQR."* It NARROWS it
+     (7.000 → 6.266); what doubles is the MEDIAN (11.78 → 21.66). Written into a design
+     note, caught only by going back to measure it.
+   So: **whenever you can name the inputs to a quantity and conclude it must or must not
+   move, that is exactly when to measure it.** The failure mode is not rhetorical
+   inflation — it is a correct-looking derivation with one term missing, which reads more
+   convincingly than an overclaim and is therefore more dangerous. Enumerate the inputs
+   against the CODE, not against memory, and then measure anyway: the measurement costs
+   seconds and the wrong version ships as confident prose the next session inherits.
+   (Both s50 cases also show the cure is cheap. The first was free, because the claim was
+   already a test.) **Prefer writing a quantitative claim as an assertion rather than as
+   prose** — prose cannot fail.
 6. **Render ONE REAL OUTPUT by eye before calling it done.** Added session 48, from the
    bug that session found. Run the feature on a real run at a realistic size and LOOK at
    what it prints — not a fixture, not an assertion, the actual artifact a reader would
