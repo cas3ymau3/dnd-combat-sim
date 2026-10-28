@@ -11,24 +11,26 @@ identically on both sides.
 provenance block's ``config`` half (§4).  It is frozen, canonically serializable,
 and hashable.
 
-STEP-1 SCOPE NOTE (named deferral, not silent)
+THE ENEMY FIELDS WENT LIVE IN s50 (§13 step 5)
 ----------------------------------------------
-Three fields are part of the LOCKED §3.1 shape but have nowhere to land yet,
-because all three existing build factories construct their enemy policy and their
-combat loop internally:
+``enemy`` and ``enemy_options`` were hard-rejected through steps 1-4, because all
+three build factories construct their enemy policy off the *character's* own level
+row and a config that CLAIMED an assumption the run did not apply would poison the
+provenance block (§4).  Step 5 built the framework's own enemy-construction seam
+(``evaluation/enemy.py``), so both fields are now honoured:
 
-* ``enemy`` — the factories pick the enemy policy themselves off the level's data
-  row (``ScriptedEnemyPolicy`` / ``BaselineEnemyPolicy`` / none).  Only
-  ``"build_default"`` is honourable today; ``"baseline"`` / ``"scripted"`` /
-  ``"none"`` are rejected with an explicit message rather than silently ignored.
-* ``enemy_options`` — the §7 toggles are ``BaselineEnemyPolicy`` constructor
-  kwargs the factories never expose.  Must be empty; a non-empty dict is an error.
-* ``mode="finite_hp"`` — needs ``DayRunner(enemy_ids=…)``, which no factory passes.
+* ``enemy`` — one of :data:`ENEMY_KINDS`.  ``"build_default"`` remains the DEFAULT
+  and leaves the factory's baked-in enemy untouched, which is what keeps
+  ``src/validation.py`` and the §12 bit-identical parity proof alive while both
+  paths exist (§3.4: the redundancy is transitional).  The other three are the
+  standardized enemy.
+* ``enemy_options`` — validated against ``enemy.ENEMY_OPTION_SCHEMA``, a closed
+  declared surface, in :meth:`RunConfig.validate`.  An option the chosen kind
+  cannot honour is REFUSED, not ignored — same argument as the old blanket
+  rejection, applied per option instead of to the whole field.
 
-Rejecting is deliberate: a config that *claims* an assumption the run did not
-apply would poison the provenance block, which is the whole point of §4.  These
-unlock when the framework grows its own enemy-construction seam (a later step),
-not by weakening the check here.
+``mode="finite_hp"`` is still rejected: it needs ``DayRunner(enemy_ids=…)``, which
+no factory passes, and it is not part of step 5.
 
 ``combats_per_day`` is likewise validated ``== 4``: ``DayRunner.run_day`` hardcodes
 ``for i in range(4)``.  The field stays because it is the DPR denominator and
@@ -54,10 +56,12 @@ DAY_TIERS: dict[str, int] = {
     "publication": 200_000,  # committed artifacts / site content
 }
 
-#: The enemy-selection vocabulary from §3.1.  Only the first is honourable in
-#: step 1 (see the module docstring).
+#: The enemy-selection vocabulary from §3.1 — all four live since s50.
+#: ``build_default`` is the factory's own baked-in enemy (transitional, §3.4); the
+#: other three are built by ``evaluation/enemy.py`` from the definitive per-level
+#: table.  See that module for what each one means and why ``scripted`` is a
+#: comparison arm rather than a legacy shim.
 ENEMY_KINDS = ("build_default", "baseline", "scripted", "none")
-_SUPPORTED_ENEMY_KINDS = ("build_default",)
 
 MODES = ("fixed_length", "finite_hp")
 _SUPPORTED_MODES = ("fixed_length",)
@@ -106,8 +110,11 @@ class RunConfig:
         The build's own scenario axes, validated against the adapter's
         ``option_schema()``.
     enemy / enemy_options:
-        See the module docstring — shape is locked, only ``"build_default"`` with
-        no options is honourable in step 1.
+        Which enemy the run faces, and how it is configured (§3.4).  All four
+        kinds are live since s50; ``"build_default"`` keeps the build factory's own
+        baked-in enemy and accepts no options.  Reports produced under different
+        ``enemy`` values must not be compared — the same §5.2 rule that governs
+        ``mode`` and ``attribution``.
     rounds_per_combat / combats_per_day:
         The DPR denominator (§5.2).  16 rounds/day is the standardized baseline.
     n_days:
@@ -167,19 +174,9 @@ class RunConfig:
             )
         if self.enemy not in ENEMY_KINDS:
             raise ValueError(f"enemy must be one of {ENEMY_KINDS}, got {self.enemy!r}.")
-        if self.enemy not in _SUPPORTED_ENEMY_KINDS:
-            raise NotImplementedError(
-                f"enemy={self.enemy!r} is designed (evaluation_framework.md §3.1) but not "
-                "wired in step 1: each build factory constructs its own enemy policy off "
-                f"the level's data row. Supported today: {_SUPPORTED_ENEMY_KINDS}."
-            )
-        if self.enemy_options:
-            raise NotImplementedError(
-                "enemy_options (the §7 sensitivity toggles) are BaselineEnemyPolicy "
-                "constructor kwargs that no build factory exposes, so step 1 cannot "
-                "honour them. Passing them silently would make the provenance block "
-                f"claim assumptions the run never applied. Got: {sorted(self.enemy_options)}."
-            )
+        # enemy_options are validated in validate(), not here: the schema lives in
+        # evaluation/enemy.py, which imports the build data, and __post_init__ stays
+        # importable without pulling that in (the same split the build options use).
 
     def validate(self) -> "BuildAdapter":
         """Registry-dependent checks; returns the resolved adapter.
@@ -207,6 +204,10 @@ class RunConfig:
             )
         for name, value in self.build_options.items():
             schema[name].check(self.build, value)
+
+        from .enemy import validate_options
+
+        validate_options(self.enemy, self.enemy_options)
 
         return adapter
 

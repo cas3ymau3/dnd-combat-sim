@@ -630,15 +630,30 @@ def test_provenance_resolves_the_build_side_to_the_value_actually_used():
 
 def test_provenance_says_plainly_that_the_enemy_side_is_not_resolved():
     """Shipping a plausible-looking but empty ``enemy`` block would imply the
-    assumptions were recorded when they were not."""
+    assumptions were recorded when they were not.
+
+    **Updated s50, deliberately.** The claim this test defends is unchanged and
+    still true on this path: at the default ``enemy="build_default"`` the enemy is
+    built by the character's own factory off its own level row, and provenance says
+    so instead of implying otherwise.  Two details moved with the §13 step-5 seam:
+    ``resolved["enemy"]`` is now an explicit ``resolved: False`` block rather than
+    ``None`` (``None`` could not distinguish "nothing resolved it" from "it resolved
+    to nothing"), and ``enemy_path`` now names the PATH as well as the model —
+    ``build_default:scripted`` — because "standardized baseline" and "the factory
+    happened to pick BaselineEnemyPolicy" are different runs that both used to
+    render as the bare word "baseline".
+
+    The resolved-enemy case is asserted in ``tests/test_eval_enemy_seam.py``.
+    """
     provenance = run(RunConfig(build="war_angel", level=13, n_days=2, seed=1)).provenance
 
-    assert provenance.resolved["enemy"] is None
+    assert provenance.resolved["enemy"]["resolved"] is False
+    assert "NOT RESOLVED" in provenance.resolved["enemy"]["note"]
     assert "NOT RESOLVED" in provenance.coverage["enemy_side"]
     assert "§3.4" in provenance.coverage["enemy_side"] or "step 5" in provenance.coverage["enemy_side"]
     # Which enemy path produced the run IS recorded, so §3.4's "never silently
     # compared" rule has something to check against.
-    assert provenance.coverage["enemy_path"] == "scripted"
+    assert provenance.coverage["enemy_path"] == "build_default:scripted"
 
 
 def test_provenance_records_the_config_the_engine_version_and_the_day_tier():
@@ -653,13 +668,21 @@ def test_provenance_records_the_config_the_engine_version_and_the_day_tier():
 
 
 def test_two_builds_record_different_enemy_paths_so_they_are_not_silently_compared():
-    """The §3.4 coupling made visible: War Angel and Silvertail face different enemy
-    MODELS, and the reports say so rather than presenting two comparable numbers."""
+    """The §3.4 coupling made visible: on the ``build_default`` path War Angel and
+    Silvertail face different enemy MODELS, and the reports say so rather than
+    presenting two comparable numbers.
+
+    **Updated s50:** the path strings gained their ``build_default:`` prefix.  That
+    is not cosmetic — ``standardized:baseline`` and ``build_default:baseline`` are
+    runs that must not be pooled, and both rendered as the bare word "baseline"
+    before the prefix existed, which is precisely the silent comparison this test is
+    named after.  Asserted directly in ``tests/test_eval_enemy_seam.py``.
+    """
     war_angel = run(RunConfig(build="war_angel", level=13, n_days=2, seed=1))
     silvertail = run(RunConfig(build="silvertail", level=10, n_days=2, seed=1))
 
-    assert war_angel.provenance.coverage["enemy_path"] == "scripted"
-    assert silvertail.provenance.coverage["enemy_path"] == "baseline"
+    assert war_angel.provenance.coverage["enemy_path"] == "build_default:scripted"
+    assert silvertail.provenance.coverage["enemy_path"] == "build_default:baseline"
     assert "must not be compared" in war_angel.provenance.coverage["comparability_warning"]
 
 

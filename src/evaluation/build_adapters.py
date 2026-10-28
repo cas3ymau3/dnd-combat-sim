@@ -11,6 +11,21 @@ adds the two things the evaluation layer needs and the factories do not provide:
 
 Registration happens at import time; ``adapters._ensure_builtin_adapters`` pulls
 this module in on the first registry lookup.
+
+THE ENEMY SEAM (s50, §3.4)
+--------------------------
+Each ``build()`` ends with one unconditional call to ``enemy.install``, which is a
+no-op under the default ``enemy="build_default"`` and otherwise replaces the
+factory's enemy with the standardized one.  The adapters are therefore "told which
+enemy to install" without any of the three factories being edited — which is the
+point while ``build_default`` still has to reproduce ``validation.py`` bit-for-bit.
+
+The adapters' ``describe()`` blocks keep reporting the enemy facts their FACTORY
+decided (``enemy_policy``, ``enemy_focus``, …).  That is deliberate and is not the
+§4 enemy block: under ``build_default`` those facts ARE the run's enemy, and under
+a standardized enemy they are the overwritten path, which a reader comparing the
+two wants to see.  The authoritative enemy block is ``enemy.resolve``, assembled
+independently of the build — because the enemy is not a property of the build.
 """
 
 from __future__ import annotations
@@ -18,6 +33,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from ..builds import silvertail, starfire_scion, war_angel
+from . import enemy as enemy_seam
 from .adapters import OptionSpec, register
 from .roster import Roster
 
@@ -76,7 +92,9 @@ class WarAngelAdapter:
         runner, char, dummy = war_angel.make_day_runner(
             config.level, rng, config.rounds_per_combat,
         )
-        return runner, Roster(characters=[char], enemies=[dummy])
+        roster = Roster(characters=[char], enemies=[dummy])
+        enemy_seam.install(runner, roster, config)
+        return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
         row = war_angel.LEVELS[config.level]
@@ -150,7 +168,9 @@ class StarfireScionAdapter:
         # The passive party member is appended to the runner's roster internally
         # and never returned — recover it by difference, not by position.
         allies = _extra_entities(runner, [char, dummy])
-        return runner, Roster(characters=[char], allies=allies, enemies=[dummy])
+        roster = Roster(characters=[char], allies=allies, enemies=[dummy])
+        enemy_seam.install(runner, roster, config)
+        return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
         opts = _resolved_options(self, config)
@@ -234,7 +254,9 @@ class SilvertailAdapter:
         runner, char, beast, dummy = silvertail.make_silvertail_runner(
             config.level, rng, config.rounds_per_combat, **opts,
         )
-        return runner, Roster(characters=[char], summons=[beast], enemies=[dummy])
+        roster = Roster(characters=[char], summons=[beast], enemies=[dummy])
+        enemy_seam.install(runner, roster, config)
+        return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
         opts = _resolved_options(self, config)

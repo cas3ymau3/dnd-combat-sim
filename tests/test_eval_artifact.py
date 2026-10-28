@@ -363,10 +363,26 @@ def test_the_provenance_block_serializes_whole(record):
 
 def test_coverage_keeps_its_explicit_not_resolved_statement(record):
     """A half-filled provenance block is worse than an honest gap: it implies the
-    assumptions were recorded when they were not."""
+    assumptions were recorded when they were not.
+
+    **Updated s50, deliberately.** The fixture runs at the default
+    ``enemy="build_default"``, where the enemy genuinely IS a property of the
+    character build, so the coverage statement still opens "NOT RESOLVED" — the
+    assertion that matters here is unchanged.  What changed is the SHAPE: before the
+    §13 step-5 seam, ``resolved["enemy"]`` was literally ``None``, because there was
+    no resolver to call.  Now there is one, and on this path it returns a block that
+    says ``resolved: False`` and names the build factory as the source.  That is
+    strictly more honest than ``None`` — ``None`` could not distinguish "nothing
+    resolved it" from "it resolved to nothing" — so the test asserts the block says
+    so rather than asserting the key is absent.
+    """
     coverage = record["provenance"]["coverage"]
     assert coverage["enemy_side"].startswith("NOT RESOLVED")
-    assert record["provenance"]["resolved"]["enemy"] is None
+    enemy = record["provenance"]["resolved"]["enemy"]
+    assert enemy["resolved"] is False
+    assert enemy["standardized"] is False
+    assert enemy["options"] == {}
+    assert "NOT RESOLVED" in enemy["note"]
 
 
 def test_comparability_is_warned_unconditionally_and_names_all_three_axes(record):
@@ -559,8 +575,11 @@ def test_the_console_separates_the_two_non_measured_states(report):
     text = render(report)
     assert "UNAVAILABLE" in text and "UNMEASURED" in text
     assert "NOT a measured zero" in text
-    # The reason travels with them.
-    assert "enemy seam" in text or "control channel cannot be enabled" in text
+    # The reason travels with them.  **Updated s50:** the reason text changed when
+    # the §13 step-5 seam made the control channel reachable — it used to end at
+    # "the control channel cannot be enabled from here", and now every reason names
+    # the config that WOULD measure it, because one keyword is the fix.
+    assert "Configure enemy='baseline'" in text
 
 
 def test_the_console_surfaces_the_warnings_and_the_epistemic_note(report):

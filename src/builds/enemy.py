@@ -54,6 +54,7 @@ from .enemy_stats import (
     band_control_save_prob,
     band_control_weights,
     band_damage_type_mix,
+    band_for_level,
     band_legendary_cadence,
     band_save_round_prob,
     band_save_weights,
@@ -164,6 +165,31 @@ class ScriptedEnemyPolicy:
                     damage_type=self._damage_type,
                 ))
         return choices
+
+    def describe_parameters(self) -> dict:
+        """Effective knobs, for the §4 provenance block (evaluation_framework.md §4).
+
+        A pure read — it cannot affect a die roll.  ``targeting`` names the mode
+        rather than leaving a reader to infer it from which of
+        ``char_target_prob`` / ``roster_weights`` is populated: the two modes are
+        different measurements (a weighted roster keeps attacks away from the
+        character's defender-side reactions), and a provenance block that makes the
+        reader deduce which one ran is not documenting the assumption.
+        """
+        return {
+            "policy": "scripted",
+            "n_attacks": self._n_attacks,
+            "rounds_per_combat": self._rounds,
+            "damage_type": self._damage_type,
+            "targeting": "weighted_roster" if self._roster is not None
+                         else "single_target",
+            "char_target_prob": (None if self._roster is not None
+                                 else self._p_pct / 100.0),
+            "roster_weights": (None if self._roster is None
+                               else {e.name: w for e, w in self._roster}),
+            "forces_saves": False,
+            "control_channel": False,
+        }
 
 
 class BaselineEnemyPolicy:
@@ -328,6 +354,11 @@ class BaselineEnemyPolicy:
             # output); resolution records only the AFFECTED turns, so it is not threaded
             # into the event.  Stored so tests / reporting can read it.
             self._soft_factor = soft_factor if soft_factor is not None else SOFT_FACTOR
+            # Recorded so describe_parameters() can name the SOURCE, not just the
+            # value: §4's load-bearing distinction is that a resolved `None` must be
+            # reported as "0.5, from enemy_stats.SOFT_FACTOR" rather than as "default",
+            # and that sentence is false if the caller passed 0.5 explicitly.
+            self._soft_factor_explicit = soft_factor is not None
             self._control_dur = control_duration_mix if control_duration_mix is not None \
                 else band_control_duration_mix(level, band=self._band)
             rider_frac, overflow = band_bundled_control_rider(level, band=self._band)
@@ -555,3 +586,56 @@ class BaselineEnemyPolicy:
                 damage_type=dmg_type,
             ))
         return choices
+
+    def describe_parameters(self) -> dict:
+        """Effective knobs, for the §4 provenance block (evaluation_framework.md §4).
+
+        The method §4 names explicitly — "a config of ``soft_factor=None`` must be
+        recorded as ``0.5, from enemy_stats.SOFT_FACTOR``; band save weights must be
+        recorded as the actual weights drawn from the frozen table, not as
+        'default'".  So every value below is the one the policy will ACTUALLY use,
+        read off the attributes it resolved in ``__init__``, with the band it read
+        them from named beside them.
+
+        A pure read — it cannot affect a die roll.  Control knobs are reported only
+        when the channel is ON: the policy does not resolve them otherwise, so
+        reporting a default would be reporting a value nothing will read.
+        """
+        band = self._band or band_for_level(self._level)
+        block: dict = {
+            "policy": "baseline",
+            "level": self._level,
+            "band": band,
+            "band_source": ("band_override" if self._band
+                            else f"enemy_stats.band_for_level({self._level})"),
+            "n_attacks": self._n_attacks,
+            "rounds_per_combat": self._rounds,
+            "attack_dice": (*self._attack_dice, self._attack_bonus),
+            "aoe_dice": (*self._aoe_dice, self._aoe_bonus),
+            "save_round_prob": self._save_round_pct / 100.0,
+            "save_weights": dict(self._save_weights),
+            "dc_stat": self._dc_stat,
+            "damage_type": self._damage_type,
+            "damage_type_mix": bool(self._type_weights),
+            "damage_type_weights": dict(self._type_weights),
+            "legendary_swings": self._legendary_swings,
+            "focus": self._primary.name,
+            "fallback": self._fallback.name if self._fallback is not None else None,
+            "forces_saves": True,
+            "control_channel": self._control,
+        }
+        if self._control:
+            block.update({
+                "control_save_prob": self._control_prob_pct / 100.0,
+                "control_weights": dict(self._control_weights),
+                "control_hard_frac": self._control_hard_frac,
+                "soft_factor": self._soft_factor,
+                "soft_factor_source": ("enemy_options['soft_factor']"
+                                       if self._soft_factor_explicit
+                                       else "enemy_stats.SOFT_FACTOR"),
+                "control_duration_mix": self._control_dur,
+                "control_displacement": self._control_displacement,
+                "bundled_rider_frac": self._rider_frac_pct / 100.0,
+                "bundled_overflow_per_attack": self._overflow_pct / 100.0,
+            })
+        return block

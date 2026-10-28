@@ -24,13 +24,22 @@ side of that works now — each adapter's ``describe()`` does real resolution (e
 Starfire's ``primal_strike_unarmed=None`` resolves to the level row's ``raw_unarmed``
 with the source path named).
 
-**The enemy side does not exist yet.**  Each build factory constructs its own enemy
-policy off its own level row, ``RunConfig.enemy_options`` is hard-rejected, and
-there is no ``BaselineEnemyPolicy.describe_parameters()`` to call.  Rather than ship
-a provenance block with a plausible-looking but empty ``enemy`` key, the block
-carries an explicit :attr:`Provenance.coverage` statement naming what is resolved
-and what is not.  A half-filled provenance block is worse than an honest gap: it
-implies the assumptions were recorded when they were not.
+**The enemy side landed in s50** (§13 step 5).  ``evaluation/enemy.resolve`` builds
+the ``enemy`` block from the config alone — not from the adapter, because the enemy
+is not a property of the build (§3.4) — and both enemy policies grew the
+``describe_parameters()`` the design names.  So a run under ``enemy="baseline"``
+records the band it read, the stat block it installed, and every §7 option at the
+value ACTUALLY used, ``soft_factor=None`` → ``0.5, from enemy_stats.SOFT_FACTOR``
+included.
+
+**One path is still honestly unresolved, and says so.**  Under the default
+``enemy="build_default"`` the enemy genuinely IS a property of the character build —
+that is the coupling §3.4 exists to remove — so its block carries
+``resolved: False`` and names the factory as the source.  A half-filled provenance
+block would be worse than an honest gap: it would imply the assumptions were
+recorded when they were not.  The transitional default stays because it is what
+keeps ``src/validation.py`` and the §12 bit-identical parity proof alive while both
+paths exist.
 """
 
 from __future__ import annotations
@@ -133,29 +142,45 @@ class Provenance:
     def build(cls, config: "RunConfig", described: dict[str, Any],
               roster_summary: dict[str, list[str]],
               pairing: "dict[str, Any] | None" = None) -> "Provenance":
+        from .enemy import resolve as resolve_enemy
+
         sha, dirty = engine_version()
+        enemy_block = resolve_enemy(config, described)
+        # The comparability key a reader (and §9's warning machinery) keys on.  It
+        # names the PATH, not just the model, because "standardized baseline" and
+        # "the factory happened to pick BaselineEnemyPolicy" are different runs that
+        # must not be pooled even when both say "baseline".
+        enemy_path = (
+            f"standardized:{enemy_block['kind']}" if enemy_block["standardized"]
+            else f"build_default:{enemy_block['policy']}"
+        )
         return cls(
             config=config.canonical(),
             resolved={
                 "build": described,
-                # Deliberately absent, not empty: see the module docstring.
-                "enemy": None,
+                "enemy": enemy_block,
             },
             coverage={
                 "build_side": "resolved — the adapter reports the values actually used",
                 "enemy_side": (
-                    "NOT RESOLVED. Each build factory constructs its own enemy policy "
-                    "off its own LEVELS row; RunConfig.enemy/enemy_options are "
-                    "hard-rejected, and BaselineEnemyPolicy has no "
-                    "describe_parameters() yet. Lands with the §3.4 enemy-construction "
-                    "seam (§13 step 5)."
+                    "resolved — evaluation/enemy.resolve reports the kind, the band, "
+                    "the installed stat block and every §7 option at the value "
+                    "actually used (§3.4's standardized enemy)"
+                    if enemy_block["resolved"] else
+                    "NOT RESOLVED. This run uses enemy='build_default', so the build "
+                    "factory constructs the enemy off the character's own LEVELS row "
+                    "— the §3.4 coupling, kept deliberately as the transitional path "
+                    "that holds src/validation.py and the §12 parity proof. Pass "
+                    "enemy='baseline' for a run whose enemy assumptions are declared."
                 ),
-                "enemy_path": described.get("enemy_policy"),
+                "enemy_path": enemy_path,
                 "attribution": config.attribution,
                 "attributed_roles": list(config.own_roles),
                 "comparability_warning": (
                     "Runs whose enemy_path differs faced DIFFERENT enemy models and "
-                    "must not be compared (§3.4). The same rule applies to "
+                    "must not be compared (§3.4) — which includes comparing a "
+                    "standardized enemy against a build_default one, the exact "
+                    "redundancy step 5 built. The same rule applies to "
                     "'attribution' and 'mode': all three change what the headline "
                     "number MEANS, not merely its value."
                 ),
