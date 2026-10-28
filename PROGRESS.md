@@ -4619,7 +4619,16 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      Fixed a six-session-old `typed_damage_share` bug in passing (before/after over a
      post-mitigation denominator — invisible until a `damage_multiplier` existed).
      See the s50 Done entry.
-   - **NEXT — (5b) DELETE THE BAKED-IN ENEMY PATH** (the deletion half of step 5, split
+   - **NEXT — SETTLE THE ORDER FIRST (open at the s50 close): (5b) or (6)?** Both are
+     ready and neither blocks the other. *Argument for (6) first (Claude's lean):* it is
+     the numbered roadmap step, s50 existed to unblock it, and it turns control from an
+     output factor into a STATE — which is the trigger for two §14 deferrals and would
+     re-open `attacks_per_round`'s distribution decision. Doing (6) first also means the
+     (5b) migration happens ONCE, against a framework that already uses
+     `enemy="baseline"` throughout. *Argument for (5b) first:* it removes the
+     transitional two-path redundancy while the s50 context is fresh, and every session
+     that passes through the seam meanwhile pays the cost of both paths existing.
+   - **(5b) DELETE THE BAKED-IN ENEMY PATH** (the deletion half of step 5, split
      off s50 at the user's direction). Migrate `enemy_ac` / `enemy_attack` out of all
      three `LEVELS` tables, drop the baked-in branch of each `make_training_dummy`, and
      retire `enemy="build_default"`. **This is a DECISION, not a cleanup:** it breaks
