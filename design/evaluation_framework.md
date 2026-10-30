@@ -682,17 +682,47 @@ not:
 
 ### 7.2 What is built — and what stays deferred
 
-`resolve_control_save` (`verbs.py:581`) already computes the closed-form expected
-affected turns and records them; it applies nothing. The change is to apply that same
-closed-form quantity, **not** to build the stateful engine:
+**BUILT (s51).** `resolve_control_save` (`verbs.py`) already computed the closed-form
+expected affected turns and recorded them; it applied nothing. It now also CREDITS a
+per-entity account, and the scheduler draws that account down. What changed is that the
+same closed-form quantity is applied — **not** that the stateful engine was built:
 
-- **Applied:** a per-entity *affected-turns account* drawn down deterministically.
-  Whole suppressed turns skip the character's turn entirely (so no resources are spent
-  — the point of 7.1.2); the fractional remainder scales that boundary turn's output.
-  `soft` turns scale output by `soft_factor` (default `0.5`, `enemy_stats.SOFT_FACTOR`).
-- **Still deferred to §10:** the full `StatusSet` save-ends re-roll engine with rolled,
-  variance-carrying durations. We keep the mean-field expected duration, so **no new
-  variance is introduced** — the model stays low-variance per §1 of the enemy model.
+- **Applied:** a per-entity *affected-turns account* (`src/control.py`'s
+  `ControlAccount`, on `Entity.control`), drawn down deterministically at
+  `Scheduler._handle_turn_start`. Whole suppressed turns skip the character's turn
+  entirely — no `decide()`, no action economy, no resources spent (the point of
+  7.1.2) — and the fractional remainder scales that boundary turn's output. `soft`
+  turns scale output by `soft_factor` (default `0.5`, `enemy_stats.SOFT_FACTOR`).
+- **What a suppressed turn does NOT skip.** Suppression removes the entity's
+  ACTIONS, not the world's effects on it: the tick-based status sweep still runs for
+  every entity, and any damaging zone the suppressed entity is standing in still
+  forces its save at that turn boundary. A stunned character in Spirit Guardians
+  still takes the damage; it simply does nothing back.
+- **How "output" is scaled:** one actor-side phase in `resolve_damage` (**phase
+  5b**), the mirror of the defender-side `mult(t)` at phase 7b, reading
+  `Entity.output_scale` and rounding to nearest for the same mean-field reason phase
+  7b rounds. Scoped to the controlled entity's OWN turn — `_handle_turn_start` sets
+  the acting entity's scale and resets every other entity's to 1.0 — so a controlled
+  character's *reaction* on another entity's turn lands at full output. The account
+  prices TURNS, so a turn is what it scales.
+- **Reset at the combat boundary**, in `day_runner._run_combat`'s existing per-entity
+  sweep beside `statuses.clear()`. A fresh `Scheduler` per combat restarts the round
+  counter, so a carried-over account would be drawn down against a combat that never
+  earned it — the same leak the status sweep is there to stop.
+- **Still deferred to §10:** the full `StatusSet` save-ends re-roll engine with
+  rolled, variance-carrying durations. We keep the mean-field expected duration, so
+  **no new variance is introduced** — the model stays low-variance per §1 of the enemy
+  model. **Nothing in this step rolls a die** (the per-feature ritual's step 3): the
+  account is a deterministic function of control saves that were already being rolled.
+- **NOT built, and it is the one the handoff expected: soft control is still an OUTPUT
+  FACTOR, not a condition (user, s51).** §6 names the in-play mechanism behind
+  `soft_factor` as "disadvantage on attacks, can't close, etc.", so the tempting v2 is
+  to attach a real `disadvantage` status for the soft-affected turns instead of scaling
+  damage. Declined deliberately: it rolls 2d20-take-lower, which is exactly the new
+  variance this section promises not to introduce, and it would replace `soft_factor`
+  rather than join it. §6's own closing note already defers the advantage/disadvantage
+  coupling to §9, and that is where it stays. **The consequence for §14 is recorded
+  there: deferral (f) does NOT fire at step 6 after all.**
 
 ### 7.3 The documented approximation
 
@@ -702,15 +732,127 @@ Only fully-suppressed turns preserve resources. This is a deliberate mean-field
 simplification of the same family as the closed-form duration itself, and is recorded
 as such rather than hidden.
 
+**A second one, inherited from the account being mean-field (s51): both branches of one
+failed save are credited at once.** `hard_frac` is the probability that the condition
+which landed is a hard one, so a single failure credits `hard_frac · E[turns]` as lost
+AND `(1 − hard_frac) · E[turns]` as reduced — the two branches of ONE effect, not two
+effects. Drawing both down is correct in expectation and describes a character that is
+simultaneously a little stunned and a little frightened. It is also what makes the
+draw-down ORDER in §7.5 a real decision rather than bookkeeping.
+
 ### 7.4 Consequences to reconcile
 
 - `enemy_model.md` §6 ("no status object; the reporting layer applies `soft_factor`")
   and §10's `soft_factor` deferral entry both need updating to point here.
+  **DONE (s51):** §6 step 5's superseded-block now reads BUILT rather than
+  "build pending", §6 step 4(ii) points here for the applied semantics, and both §10
+  `soft_factor` entries are closed — including the stale claim that the implementation
+  was framework step 5 (step 5 became the enemy seam; this is step 6).
 - `resolve_control_save`'s docstring states the reporting layer applies the factor;
-  that becomes only half true.
+  that becomes only half true. **DONE (s51)** — it now says what it credits and names
+  who draws it down.
 - **This moves DPR baselines whenever the control channel is ON.** It is default OFF,
   so no existing validated baseline shifts — but any run with `control=True` will now
   report lower DPR than the same run before this change, by design.
+
+### 7.5 The draw-down rule — hard first (LOCKED s51)
+
+Each turn has a capacity of one turn-unit. **Hard is drawn first, then soft, then
+whatever is left of the turn acts at full output:**
+
+```
+h = min(account.lost, 1.0)             # hard share of THIS turn
+r = min(account.reduced, 1.0 - h)      # soft share of what remains
+scale = 0*h + soft_factor*r + 1*(1 - h - r)
+      = 1 - h - r*(1 - soft_factor)
+suppressed = (h >= 1.0)                # only then are resources preserved
+```
+
+**Why hard-first rather than drawing the two accounts proportionally.** Both rules give
+the same expected output — `scale` is linear in the two shares, so drawing `(0.5, 0.5)`
+across two turns and drawing `(1.0, 0.0)` then `(0.0, 1.0)` integrate to the same total.
+They differ in exactly one place, and it is the place §7.1.2 exists for: only a turn
+whose hard share is the WHOLE turn can skip `decide()` and preserve its resources. A
+proportional draw never produces such a turn, so it would average the
+resource-preservation property away while reporting an identical DPR — reintroducing the
+post-hoc multiplier's defect *inside* the runtime path, where it would be invisible.
+Hard-first is the rule precisely BECAUSE the two readings are numerically
+indistinguishable and only one of them keeps the mechanism.
+
+**What the multiplicative reading would have got wrong, for the record.** Treating the
+two accounts as independent factors — `(1 − h) × (soft-scale)` — is the natural first
+draft and it is wrong, not merely different. With `h = r = 0.5` and `soft_factor = 0.5`
+it yields `0.5 × 0.75 = 0.375`; the correct mixture is `1 − 0.5 − 0.5·0.5 = 0.25`,
+which is also what the two branches give directly (`0.5 · 0 + 0.5 · 0.5`). The accounts
+are shares of one turn, so they MIX; they do not compose.
+
+### 7.6 Credited vs realized — ONE quantity, proved from both ends (revised s51)
+
+The §13 control channel records what `resolve_control_save` CREDITS. The account
+records what the scheduler actually DRAWS DOWN. Before control was applied those were
+the same number by default, because nothing drew anything down.
+
+**This section first said they were two quantities and recorded both.** That was the
+right reading of what the code then did and the wrong design, and the user's call to
+collapse them is what produced the better one. Two things were wrong with the credit,
+and neither was visible while nothing spent it:
+
+1. **The cap counted ROUNDS, not the target's TURNS.** It was the policy's
+   `rounds_remaining = _rounds − r + 1`, which includes the current round. The enemy
+   acts *after* the character, so a control landing in round `r` can only ever cost the
+   `_rounds − r` turns that FOLLOW. One turn generous, always.
+2. **Overlapping control was DOUBLE-COUNTED.** The cap was per-control, so two effects
+   that each last "the rest of the fight" were each credited the whole rest of the
+   fight. **You cannot lose the same turn twice.** This is a correctness defect in the
+   credited number, not a bookkeeping preference, and it was the larger of the two.
+
+**The fix, and where each piece lives.** The cap is now the target's own
+`Entity.control.turns_remaining`, maintained by the **scheduler** — the only thing that
+knows the turn order, which is why a policy-side round count was the wrong source in
+the first place (CLAUDE.md #7 keeps turn order out of a policy). And each credit
+saturates at `ControlAccount.room` = `turns_remaining − pending`, so the account can
+never owe more turns than the entity has left to lose.
+
+**The consequence: the credited and realized halves are equal.** Not ordered — equal.
+They are still written by different code at different moments (save time vs turn
+boundary), so asserting their agreement is a real check rather than a tautology, and
+that assertion is what the realized half of the channel now exists for. **It is exact
+in the arithmetic but not bit-identical in the sums**: the two halves accumulate the
+same turn-units in different orders (per failed save vs per turn), so 400 days of War
+Angel L13 gives `728.5374180000002` against `728.5374180000005`. Floating-point
+addition is not associative; the test asserts agreement to `rel=1e-12`, and anything
+looser would hide a real leak.
+
+**So only ONE pair of metrics is registered**, the credited pair, under its original
+names. The realized pair was registered and removed inside the same session: once the
+two are equal by construction, publishing both publishes one quantity twice, which is
+exactly the §5.4 survival rule's "derivable and nobody reads it" cut. The realized half
+stays in the §13 channel because it proves the equality and because it carries
+`suppressed_turns` — the count of WHOLE turns skipped, the only quantity here with the
+resource-preservation property (§7.1.2), which a turn-unit total cannot express.
+
+**Both channel halves are keyed by the CONTROLLED actor.** The credited half was keyed
+by save ability alone and summed over whoever failed, while the realized half was keyed
+by actor and scoped to the build — so on a summon-focused run they described different
+populations *while sitting adjacent in the panel*, inviting exactly the wrong
+comparison. `record_control` now takes the controlled entity's id. This is the same
+seam question as the stage mismatch above, asked of SCOPE instead of STAGE, and it was
+found by reflecting on the rendered panel rather than by reading code.
+
+**Where the equality degrades to an inequality**, named rather than assumed: a combat
+that ends EARLY (finite-HP mode, `rounds_elapsed < max_rounds`) and an entity that drops
+out of the turn order mid-combat both leave a balance that no turn arrives to spend.
+Neither occurs in the fixed-length basis that every evaluated run uses, and `finite_hp`
+is rejected by `RunConfig` today.
+
+**An entity that takes no turns is credited nothing, and that is the honest number.** A
+commanded summon acts on its controller's turn via `Choice.actor` (CLAUDE.md substrate
+#7/7a), so it has no `TurnStartEvent`, its budget is 0, and control against it costs 0.
+As first built this was a §14 deferral — the credited channel filled up (235.2
+turn-units over 200 days on Silvertail L10) while nothing was ever spent. The revision
+dissolves it: control that cannot cost a turn costs nothing. The PRESSURE is still fully
+visible in the saves channel (778 forced control saves in that run), so nothing is
+hidden — it is priced correctly.
 
 ---
 
@@ -722,7 +864,7 @@ as such rather than hidden.
 | damage taken; per-(source,target) columns | available — ledger |
 | damage reduced / typed mitigation | available — §13 mitigation channel (s39) |
 | saves forced by type; failures by type and % | available — §13 saves channel |
-| control turns lost / reduced | available — §13 control channel (s40) + §7 above |
+| control turns lost / reduced | available — §13 control channel (s40) + §7 above; APPLIED at runtime since s51, and the realized cost reported beside the credit (§7.6) |
 | limited resources per day / per combat | available — §13 economy channel |
 | concentration share and breaks | available — §13 economy channel |
 | party / summon / ally damage columns | available — `damage_by_source`, `party_total` |
@@ -1024,6 +1166,11 @@ Per `validate-mechanism-not-build-value` and `enemy_model.md` §11 — tests ass
   changes;
 - control-at-runtime: a fully suppressed turn deals zero damage **and spends no
   resources**; telemetry's lost/reduced counts still match the closed-form expectation;
+  **BUILT (s51)** — and the assertion is stronger than this line asked for: the credited
+  counts and the REALIZED draw-down are ONE quantity (§7.6), written by different code at
+  different moments, so what is asserted is that they AGREE (to `rel=1e-12`; the two sums
+  accumulate in different orders). An earlier cut of the same session asserted only an
+  inequality, which is what an inexact credit could support;
 - **enemy independence (§3.4):** two different builds at the same level, configured with
   the same `enemy` + `enemy_options`, face an enemy with identical resolved parameters;
   and a run records which enemy path produced it, so the two are never silently compared.
@@ -1110,7 +1257,20 @@ check mechanisms, not the composite. Three things carry that load instead:
    resilience, a core resilience-panel metric, was unmeasurable until this seam existed.
    Placed after step 4 so the two enemy paths could be compared as artifacts, not by eye —
    which is how the `typed_damage_share` defect below was found.
-6. Control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation.
+6. ~~Control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation.~~
+   **DONE (s51)** — §7.2/§7.5/§7.6 lock the applied design (settled with the user BEFORE
+   the wiring, per the per-feature ritual's step 4); `src/control.py`'s `ControlAccount`
+   + `Entity.control`/`Entity.output_scale` + `resolve_damage` phase 5b + the draw-down
+   at `Scheduler._handle_turn_start`; the §13 control channel gained an ACTOR-keyed
+   realized half and its credited half gained the same actor key, and the registry
+   gained `attacks_per_round`'s distribution (its §14 trigger fired — whole-turn
+   suppression is the first thing that makes the quantity vary). The realized pair was
+   registered as metrics and then removed in the same session, once §7.6's revision made
+   the credit exact: two rows for one quantity is the §5.4 survival rule's cut. The `enemy_model.md`
+   §6/§10 reconciliation landed with it, including a stale pointer that named framework
+   step 5 as the implementation. **No `SCHEMA_VERSION` bump**; §12 parity still
+   bit-identical; `control=False` stays the default, so nothing but a run that asks for
+   control moves. §14 deferral (f) was checked and did NOT fire — see §14.
 7. Sweep YAML + config-hash caching + baselines registry.
 8. **RNG substreams** *(added s44)* — per-entity / per-(entity, purpose) generators via
    `SeedSequence.spawn()`, the prerequisite for §6.1's paired seeding to actually buy
@@ -1144,6 +1304,20 @@ onto the framework only once step 1 reproduces its numbers exactly.
   standardized enemy that can attach a `disadvantage` condition to a character's roll.
   The real trigger is therefore **step 6's control-at-runtime**, which is where control
   stops being a multiplier and starts being a state.
+  **STEP 6 LANDED AND IT STILL DID NOT FIRE (s51) — and this is the third session running
+  that the check was worth making rather than assuming.** s50 predicted step 6 would be
+  the trigger. It is not, because step 6 does NOT turn control into a status object: §7.2
+  applies the same mean-field account as a suppressed turn or an output scale, and a
+  scaled turn attaches nothing to a d20. The design fork was raised explicitly and
+  declined (user, s51): attaching a real `disadvantage` condition for the soft-affected
+  turns would fire this deferral, but it rolls 2d20-take-lower, which is the new variance
+  §7.2 exists to avoid, and it would REPLACE `soft_factor` rather than join it. So the
+  trigger moves again, and this time to something structural rather than to the next
+  step: **the §10 stateful-control engine, or the §9 advantage/disadvantage coupling** —
+  whichever first makes a control condition a thing the engine attaches rather than a
+  share of a turn it accounts for. Recording the prediction that failed, because the
+  pattern is now visible: "the next step turns X into a state" is a claim about a design
+  that has not been written yet.
 - **General status-uptime metric** — §8 asks for "share of turns under specified
   statuses" in general; only the control channel is covered today. Needs `StatusSet`
   sampling at turn boundaries.
@@ -1228,6 +1402,20 @@ onto the framework only once step 1 reproduces its numbers exactly.
   tier are the rare-save cells (`int_save`, `cha_save`), unconverged because they are
   rare, exactly as designed.
 
+  **A SECOND, DIFFERENT CASE OBSERVED (s51), and it is not the bimodal one.**
+  `attacks_per_round_distribution` is the registry's first distribution over a LATTICE
+  quantity: attacks per round is a count over a fixed 16-round denominator, so it moves
+  in steps of 1/16, and its whole IQR is 0.1875 — three steps. An exact order-statistic
+  interval cannot be narrower than one step, so `ci_width_vs_spread` is pinned at ≈0.33
+  against a 0.10 threshold until the interval collapses to zero width entirely. At the
+  quick tier (2,000 days) `p10` therefore reports `[unconverged]` with 200 tail
+  observations; at 20,000 days the interval closes and it converges. **Nothing is wrong
+  and nothing was tuned:** the verdict "this is not resolved yet, use more days" is
+  correct, and the criterion reached it for a reason it was not designed around. It is
+  recorded because it is a distinct stressor from the skew/multi-modality one above —
+  discreteness, not shape — and because a reader seeing `[unconverged]` on a quick-tier
+  attacks quantile should know it is the lattice rather than a defect.
+
   So the trigger is recorded as fired, and the fix stays what it was — **a sweep across
   builds and tiers, not a nudge to a constant** — because changing a threshold on the
   evidence of one build at one tier would reproduce the original problem (four
@@ -1240,6 +1428,30 @@ onto the framework only once step 1 reproduces its numbers exactly.
   resampled index vector). Deferred because §6.1 measured pairing at ~1× in this engine
   until RNG substreams land (§13 step 8), and because the comparison artifact is its own
   deferred shape — building a paired quantile interval now would buy nothing measurable.
+- ~~**`attacks_per_round`'s distribution — declined s49 because its stderr was exactly
+  zero**~~ **REGISTERED (s51), trigger fired.** The s49/s50 decision stood on a measured
+  fact: every turn acted, the character's HP is a threshold balance, so attacks per round
+  was a CONSTANT (2.68750 ± 0.000000 on War Angel L13 under every enemy kind including
+  `control=True`). §7's whole-turn suppression is the first thing in the model that stops
+  a turn from happening, so the quantity varies for the first time and its SHAPE is the
+  resilience question control exists to price — "how often does this build lose a turn
+  entirely" is not answerable from a mean. Declared over the registered scalar, so the
+  runner and both estimators were untouched (§5.4's Kind 3 rule), and additive at
+  `schema_version` 1.
+- ~~**Control on a COMMANDED summon is credited but never realized** *(added s51)*~~
+  **CLOSED the same session.** A controlled ally is commanded on its controller's turn
+  via `Choice.actor`, so it has no turn boundary at which an affected-turns account
+  could be spent. Recorded as a deferral when the credit was inexact; dissolved by §7.6's
+  revision, which makes the cap the target's own remaining TURNS — an entity with none
+  is credited nothing, which is the honest number rather than a cost that could never be
+  paid. The pressure stays visible in the saves channel.
+- ~~**A turn-order-aware control cap** *(added s51)*~~ **DONE the same session (user).**
+  The credit now caps at the target's own remaining turns, net of what it already owes,
+  so the credited and realized halves are equal rather than merely ordered. The two
+  objections recorded when this was deferred both turned out to be answerable: the
+  credited numbers DID move, which was correct because they were double-counting
+  overlapping control, and the turn count lives on the SCHEDULER rather than in a policy,
+  so no policy learned the turn order. See §7.6.
 - **A KEYED distribution** *(added s48)* — v1 is 1-D: quantiles of `dpr`, not quantiles
   of `dpr_by_role[summons]`. The s46 "a grid must earn its cells" argument applies
   unchanged. Non-blocking by construction: the row already carries its statistic in the

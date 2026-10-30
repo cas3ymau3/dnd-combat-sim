@@ -112,6 +112,16 @@ class Scheduler:
         # < max_rounds when the enemy dropped early in finite-HP mode).  Set by run().
         self.rounds_elapsed: int = 0
 
+        # Control budgets (evaluation_framework.md §7.6): how many turns each entity
+        # will still take this combat, which is the ceiling on what control can cost
+        # it.  Seeded here so a control landing before the first turn boundary is
+        # capped correctly, then refreshed at every turn start.  Entities with no
+        # policy take no turns and so can lose none — which is exactly the right
+        # answer for a COMMANDED summon (it acts on its controller's turn).
+        for _idx, _entity in enumerate(self.entities):
+            _entity.control.turns_remaining = (
+                max_rounds if _entity.id in policies else 0)
+
         self.queue = EventQueue()
         self._registry: dict[str, list[Handler]] = {}
         # Current turn's action economy; (re)set at each TurnStartEvent.  Lives
@@ -652,10 +662,53 @@ class Scheduler:
         for ent in self.entities:
             ent.statuses.expire(round_, turn_idx)
 
+        # CONTROL APPLIED AT RUNTIME (evaluation_framework.md §7).  Draw one
+        # turn-unit out of this entity's affected-turns account, HARD FIRST (§7.5),
+        # and hang the resulting output factor on the acting entity for the duration
+        # of its turn.  Every other entity is reset to 1.0 here, which is what scopes
+        # the factor to a TURN: a controlled entity's reaction on somebody else's
+        # turn is at full output, because the account prices turns (§7.2).
+        #
+        # Nothing here rolls, and the account is empty on every entity unless the
+        # enemy's §6 control channel is on — so an uncontrolled run takes the
+        # UNAFFECTED fast path and is byte-identical to before this existed (§12's
+        # parity proof depends on exactly that).
+        control = actor.control.draw()
+        for ent in self.entities:
+            ent.output_scale = control.scale if ent.id == actor.id else 1.0
+        # AFTER the draw: the budget this turn was charged against included this turn.
+        self._refresh_turn_budgets(round_, turn_idx)
+        if control.affected:
+            self.telemetry.record_control_applied(
+                actor.id,
+                turns_lost=control.lost_applied,
+                turns_reduced=control.reduced_applied,
+                suppressed=control.suppressed,
+            )
+
         policy = self.policies.get(actor.id)
         if policy is None:
             log.debug("%s has no policy, skipping turn.", actor.name)
             return 0
+
+        if control.suppressed:
+            # A fully suppressed turn (§7.1.2): no decision point is opened, so no
+            # action economy and NO RESOURCES are spent — the whole reason control is
+            # applied at runtime instead of as a post-hoc multiplier, which would
+            # spend the slots of a turn that never happened.
+            #
+            # Suppression removes the entity's ACTIONS, not the world's effects on
+            # it: the status sweep above already ran for everyone, and the zone
+            # effects below still fire, so a stunned character standing in Spirit
+            # Guardians still takes the damage.  It simply does nothing back.
+            log.info("%s's turn is SUPPRESSED by control (§7) — no action, no "
+                     "resources spent", actor.name)
+            self._fire_zone_effects(actor, round_, turn_idx, start_seq=1)
+            return 0
+
+        if control.scale != 1.0:
+            log.info("%s acts at %.3f output under control (§7)",
+                     actor.name, control.scale)
 
         # Build read-only snapshot
         enemies = tuple(e for e in self.entities if e.id != actor.id)
@@ -799,7 +852,8 @@ class Scheduler:
                 # resolve_control_save records the save + (on a fail) the closed-form
                 # expected lost/reduced turns.  Deals no damage → pushes no follow-on
                 # event.  The ControlSpec payload carries the hard/soft split, duration
-                # mix, and rounds_remaining (all read from the band table by the policy).
+                # mix and soft_factor (all read from the band table by the policy);
+                # the duration CAP is the target's own remaining turns (§7.6).
                 spec = choice.control or ControlSpec()
                 ctrl_event = ControlSaveEvent(
                     tick=make_tick(round_, turn_idx, seq),
@@ -811,7 +865,7 @@ class Scheduler:
                     dur_short=spec.dur_short,
                     dur_save_ends=spec.dur_save_ends,
                     dur_fixed=spec.dur_fixed,
-                    rounds_remaining=spec.rounds_remaining,
+                    soft_factor=spec.soft_factor,
                     cost=cost,
                 )
                 self.queue.push(ctrl_event)
@@ -993,6 +1047,33 @@ class Scheduler:
     # ------------------------------------------------------------------
     # Round seeding
     # ------------------------------------------------------------------
+
+    def _refresh_turn_budgets(self, round_: int, turn_idx: int) -> None:
+        """Update every entity's remaining-TURN count (§7.6), called at each turn start
+        once the acting entity has drawn.
+
+        The scheduler is the only thing that knows the turn order, so this is where the
+        count lives — computing it in a policy would put scheduler knowledge inside one
+        (CLAUDE.md #7), which is why the credit's old cap used the policy's remaining
+        ROUNDS and was one turn generous.
+
+        An entity whose turn index is still ahead of the current one gets one more turn
+        this round; one that has already acted does not.  Entities with no policy, and
+        entities out of action, take no further turns.
+
+        **Where the resulting credited == realized equality degrades to an
+        inequality**, named rather than assumed: a combat that ends EARLY (finite-HP
+        mode, where ``rounds_elapsed < max_rounds``) and an entity that drops out of
+        the order mid-combat both leave a balance that no turn arrives to spend.
+        Neither occurs in the fixed-length basis every evaluated run uses.
+        """
+        rounds_after = self.max_rounds - round_
+        for idx, entity in enumerate(self.entities):
+            if entity.id not in self.policies or entity.is_out_of_action:
+                entity.control.turns_remaining = 0
+                continue
+            entity.control.turns_remaining = (
+                rounds_after + (1 if idx > turn_idx else 0))
 
     def _enqueue_round(self, round_: int) -> None:
         """Push TurnStartEvents for every entity that has a policy."""

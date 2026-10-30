@@ -451,6 +451,10 @@ damaging-save channel:
    - **(ii) SOFT control → output × `soft_factor`** (e.g. ~0.5–0.75): blinded /
      frightened / restrained / poisoned / prone — the character still acts but at
      reduced effect (disadvantage on attacks, can't close, etc.).
+     **APPLIED AT RUNTIME SINCE s51** — `evaluation_framework.md` §7.2 scales the
+     turn's damage by `soft_factor`; the parenthetical mechanism above stays a
+     mechanism and is deliberately NOT modelled as a real disadvantage condition (that
+     would add variance this channel is built to avoid — §7.2, and §9 below).
    - **Severity skews by save type** to make mental saves *feel* dangerous, as in
      play: mental control (WIS/CHA/INT — charm/fear/dominate/stun) leans toward
      the HARD branch; physical control (STR/DEX/CON — grapple/restrain/poison)
@@ -486,6 +490,23 @@ step), grounded by the *measured* `duration` tag on each control row:
    > **What did NOT change:** the duration stays the mean-field closed form, so no new
    > variance enters; the stateful save-ends re-roll engine is still the §10 deferral.
    > Default remains OFF, so no existing baseline moves.
+   >
+   > **BUILT (s51), framework step 6 — and the application is not quite a drop-in of the
+   > recorded number.** The account is drawn down HARD FIRST (§7.5): the two shares are
+   > shares of one turn, so they MIX rather than compose, and only a turn whose hard
+   > share is the whole turn can preserve its resources — which is the property runtime
+   > application exists to buy.
+   >
+   > **And the `rounds_remaining` cap written above was wrong twice, which only applying
+   > the cost could reveal (§7.6).** It counted the current round even though the enemy
+   > acts after the character, and being per-control it let two effects that each last
+   > "the rest of the fight" each claim the whole rest of the fight — **you cannot lose
+   > the same turn twice.** The cap is now the TARGET's own remaining TURNS, net of what
+   > it already owes, maintained by the scheduler (the only thing that knows the turn
+   > order). `rounds_remaining` is GONE from `ControlSpec` and `ControlSaveEvent`
+   > entirely, rather than left as a field nothing reads. **The credited numbers moved
+   > down as a result** — correctly, because they were over-reporting — and they now
+   > equal what the character actually loses.
 
 **How it prices investment.** Better mental-save bonuses → fewer control
 failures → fewer lost turns → higher *effective* DPR. A build that buys
@@ -513,7 +534,11 @@ type + condition + hard/soft), mirroring the damaging census.
 character easier to *hit* (attacks against it at advantage) — so the control
 channel feeds the to-hit side and connects to targeting/positioning (§9). v1 can
 model soft control purely as the output-factor; the advantage coupling is a §9
-refinement.
+refinement. **STILL TRUE AFTER s51, deliberately** — framework step 6 applies the
+output factor at runtime but attaches no condition, so neither the advantage-against
+coupling nor its mirror (the character's own attacks at disadvantage, which is
+`evaluation_framework.md` §14's deferral (f)) fires. Both wait on §9 or on the §10
+stateful engine below.
 
 ---
 
@@ -693,13 +718,21 @@ later arc.
   rounds force a save — almost all control), so saving-throw protection still prices into
   low-level builds via §6, not via the (near-zero) low-CR damaging-save rate.
 - ~~**`soft_factor` not yet in telemetry / applied to DPR**~~ **RESOLVED BY DESIGN (s42);
-  build pending.** `design/evaluation_framework.md` §7 settles it: the control cost is
+  BUILT (s51).** `design/evaluation_framework.md` §7 settles it: the control cost is
   APPLIED at runtime (affected-turns account → suppressed turns spend no resources) rather
   than converted post-hoc, and `soft_factor` is recorded in the report's `resolved`
-  provenance block. §13's "record the soft_factor applied" lands with it. Implementation is
-  step 5 of the framework build sequence (`evaluation_framework.md` §13). The original
-  entry is kept below for the reasoning it records.
-- **`soft_factor` not yet in telemetry / applied to DPR** (flagged s40) — step 5 records the
+  provenance block. §13's "record the soft_factor applied" landed with it. **One stale
+  pointer corrected in passing:** this entry named *step 5* of the framework build
+  sequence as the implementation. Step 5 became the enemy-construction seam (s50) and
+  control-at-runtime is **step 6** — which is also why it could not have been built
+  earlier than it was: control lives on `BaselineEnemyPolicy`, and until the seam existed
+  War Angel's factory installed a `ScriptedEnemyPolicy` with no control channel at all.
+  The original entry is kept below for the reasoning it records.
+- ~~**`soft_factor` not yet in telemetry / applied to DPR** (flagged s40)~~ **CLOSED (s51):
+  the conversion is no longer the reporting layer's job — it happens in the scheduler and
+  `resolve_damage`, and the control channel now records the realized draw-down beside the
+  credit (§7.6). The original text follows; its one surviving caveat is the last sentence,
+  which is still a live documented simplification.** — step 5 records the
   control channel as EXPECTED AFFECTED TURNS (`turns_lost` hard, `turns_reduced` soft); the
   `soft_factor` that converts reduced turns into a DPR delta is stored on the policy
   (`BaselineEnemyPolicy._soft_factor`, default 0.5) but NOT threaded into the telemetry or

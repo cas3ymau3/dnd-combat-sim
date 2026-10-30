@@ -488,11 +488,13 @@ class BaselineEnemyPolicy:
             return self._fallback
         return None
 
-    def _control_choice(self, target: "Entity", save_stat: str, cost: str,
-                        rounds_remaining: int) -> Choice:
+    def _control_choice(self, target: "Entity", save_stat: str,
+                        cost: str) -> Choice:
         """Build one control_save Choice (§6).  The ControlSpec carries the qualitative
-        shape (hard/soft split + duration mix + rounds_remaining) the policy read from
-        the band table; resolution rolls the save and prices the failed-save cost."""
+        shape (hard/soft split + duration mix + soft_factor) the policy read from the
+        band table; resolution rolls the save and prices the failed-save cost, capping
+        the duration at the TARGET's own remaining turns rather than at a round count
+        this policy would have to guess at (evaluation_framework.md §7.6)."""
         short, save_ends, fixed = self._control_dur
         return Choice(
             action_type="control_save",
@@ -503,7 +505,10 @@ class BaselineEnemyPolicy:
             control=ControlSpec(
                 hard_frac=self._control_hard_frac,
                 dur_short=short, dur_save_ends=save_ends, dur_fixed=fixed,
-                rounds_remaining=rounds_remaining,
+                # The RESOLVED knob (§4), not a fresh default: this policy is the
+                # single source of the factor, and §7.2 applies it at the character's
+                # turn boundary rather than looking it up there.
+                soft_factor=self._soft_factor,
             ),
         )
 
@@ -514,7 +519,6 @@ class BaselineEnemyPolicy:
         if target is None:
             return []
         r = snapshot.round_number
-        rounds_remaining = max(1, self._rounds - r + 1)
         choices: list[Choice] = []
         # §7 damage-type-mix toggle: the per-round empirical draw overrides the fixed
         # scalar when ON; OFF (no draw for this round) falls back to self._damage_type.
@@ -527,7 +531,7 @@ class BaselineEnemyPolicy:
 
         if displaced:
             choices.append(self._control_choice(
-                target, self._control_stat[r], "action", rounds_remaining))
+                target, self._control_stat[r], "action"))
         elif self._save_round.get(r, False):
             # Save-forcing round: one effect, the per-CR AoE dice, half on a save.
             choices.append(Choice(
@@ -545,7 +549,7 @@ class BaselineEnemyPolicy:
             # cost "none" so it rides rather than costing a fresh action.
             if self._control and self._bundled_fire.get(r, False):
                 choices.append(self._control_choice(
-                    target, self._bundled_stat[r], "none", rounds_remaining))
+                    target, self._bundled_stat[r], "none"))
         else:
             # Attack-roll round: n swings, each rolling the per-CR multiattack dice (so a
             # natural 20 doubles the dice — enemy crits).
@@ -565,10 +569,10 @@ class BaselineEnemyPolicy:
         if self._control:
             if self._control_displacement == "ride" and self._pure_control.get(r, False):
                 choices.append(self._control_choice(
-                    target, self._control_stat[r], "none", rounds_remaining))
+                    target, self._control_stat[r], "none"))
             if self._overflow_fire.get(r, False):
                 choices.append(self._control_choice(
-                    target, self._overflow_stat[r], "none", rounds_remaining))
+                    target, self._overflow_stat[r], "none"))
 
         # §7 legendary-cadence toggle: a fixed number of extra cost="none" swings, EVERY
         # round regardless of round type (legendary actions happen outside the enemy's

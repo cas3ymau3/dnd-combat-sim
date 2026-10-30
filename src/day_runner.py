@@ -553,6 +553,16 @@ class DayRunner:
             # (design/buff_primitive.md).  No-op for builds that manage their own
             # buff sync (e.g. War Angel's Bless via before_combat).
             entity.clear_combat_buffs()
+            # Control applied at runtime (evaluation_framework.md §7): drop any
+            # affected-turns balance the entity still owes.  Same reason as the
+            # status sweep above — each combat restarts the round counter, so a
+            # balance carried across the boundary would be spent against a combat
+            # that never earned it.  The discarded remainder is one of the two
+            # structural reasons the credited and realized control numbers differ
+            # (§7.6 cause 1), and it is why the realized half is reported rather
+            # than inferred from the credit.
+            entity.control.clear()
+            entity.output_scale = 1.0
             # Finite-HP mode: each combat faces a FRESH enemy, so restore the
             # opposition to full HP at the boundary (the character/party stay on the
             # threshold model — their HP carries over as before).  No-op when the mode

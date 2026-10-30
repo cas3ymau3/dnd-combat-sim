@@ -301,7 +301,11 @@ def test_the_distribution_seam_reserved_at_s46_is_now_filled():
     filled one without changing.
     """
     declared = METRICS.distributions()
+    # THIRD ENTRY ADDED s51: attacks_per_round_distribution, once framework step 6
+    # made that quantity vary (it was a constant with stderr exactly 0 before).  The
+    # ORDER is registration order, which is why it lands in the middle.
     assert [d.name for d in declared] == ["dpr_distribution",
+                                          "attacks_per_round_distribution",
                                           "net_damage_taken_distribution"]
     dictionary = METRICS.data_dictionary()["distributions"]
     assert [d["name"] for d in dictionary] == [d.name for d in declared]

@@ -307,7 +307,9 @@ class ControlSaveEvent(Event):
 
     v1 models the cost as an OUTPUT-FACTOR recorded through the §13 control-telemetry
     channel — NOT a stateful status object and NOT the character policy skipping its
-    action (that ongoing-save fidelity is the §10 deferral).  resolve_control_save rolls
+    action (that ongoing-save fidelity is the §10 deferral).  The DURATION CAP is not
+    carried on this event: it is the target's own ``control.turns_remaining``, read at
+    resolution (``evaluation_framework.md`` §7.6).  resolve_control_save rolls
     the save, records it (saves channel, "control"), and on a fail computes the
     closed-form expected affected turns and records turns_lost / turns_reduced.
 
@@ -325,10 +327,12 @@ class ControlSaveEvent(Event):
     dur_short / dur_save_ends / dur_fixed:
         The duration-bucket probabilities (sum ≈ 1) feeding the closed-form E[turns]
         (§6 step 5): SHORT→1 turn, SAVE_ENDS→1/s on the char's OWN save (double-prices
-        save investment), FIXED→capped at ``rounds_remaining``.
-    rounds_remaining:
-        Rounds left in the combat from the affected turn — the cap on FIXED / save-ends
-        durations (a `1 min` control at our ~4-round scale lasts the rest of the fight).
+        save investment), FIXED→capped at the target's remaining TURNS.
+    soft_factor:
+        The output fraction a SOFT-controlled turn retains, carried from the policy's
+        resolved knob so the applying code never declares its own copy
+        (``evaluation_framework.md`` §7.2).  ``None`` only on a direct construction that
+        credits no soft turns.
     """
     save_stat: str = "wis_save"
     dc_stat: str = "enemy_save_dc"
@@ -336,7 +340,7 @@ class ControlSaveEvent(Event):
     dur_short: float = 1.0
     dur_save_ends: float = 0.0
     dur_fixed: float = 0.0
-    rounds_remaining: int = 1
+    soft_factor: "float | None" = None
     cost: str = "action"
     kind: str = field(default="control_save", init=False)
 

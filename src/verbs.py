@@ -601,7 +601,7 @@ def save_success_prob(bonus: int, dc: int) -> float:
     ``E[turns] = 1/s`` (double-pricing save investment: a good save both fails less AND
     recovers faster).  A save meets the DC on ``d20 >= dc − bonus``, so ``21 − needed``
     of the 20 faces succeed.  Clamped to ``[0.05, 1.0]``: the 0.05 floor keeps ``1/s``
-    finite (it is capped by ``rounds_remaining`` anyway) and stands in for a fluke
+    finite (it is capped by the target's remaining TURNS anyway) and stands in for a fluke
     success; the 1.0 ceiling caps an easy save."""
     needed = dc - bonus
     s = (21 - needed) / 20.0
@@ -629,8 +629,26 @@ def resolve_control_save(
 
     where ``s`` is the character's closed-form save-success prob and ``cap`` is the
     rounds remaining in the combat.  Both costs are recorded as EXPECTED AFFECTED TURNS
-    through the §13 control channel; the reporting layer applies ``soft_factor`` to the
-    reduced turns.  The initial save is ALSO recorded in the saves channel under the
+    through the §13 control channel AND credited to the target's
+    :class:`~src.control.ControlAccount`, which the SCHEDULER draws down at that
+    entity's own turn boundary (``evaluation_framework.md`` §7.2) — a suppressed turn
+    produces no output and spends no resources, and a partial turn's damage is scaled
+    by ``resolve_damage`` phase 5b.  This function still applies nothing itself: it
+    prices the failure, it does not spend the turn.  (Before §7 landed, the sentence
+    here said the REPORTING layer applies ``soft_factor``.  That is now only half true
+    — the reporting layer reports it; the scheduler applies it.)
+
+    **The credit is EXACT (§7.6, revised s51 at the user's direction): it equals what
+    the account will actually spend, to the last bit.**  Two corrections got it there,
+    and neither was visible until the account was drawn down.  The cap is the target's
+    own remaining TURNS, not a round count — the enemy acts after the character, so a
+    control landing in round ``r`` can only cost the ``_rounds − r`` turns that FOLLOW.
+    And the credit saturates at what the target does not already owe, because two
+    effects that each last "the rest of the fight" cost it ONCE: you cannot lose the
+    same turn twice.  The realized half of the §13 channel is kept precisely so a test
+    can assert that equality from the other end.
+
+    The initial save is ALSO recorded in the saves channel under the
     "control" tag, so a bundled (also-damages) ability's TWO saves are visible in both
     channels (the §4b cross-axis double-save, not hidden)."""
     actor = event.actor
@@ -660,16 +678,44 @@ def resolve_control_save(
     # closed form — a documented mean-field simplification).
     bonus = int(target.stat(event.save_stat))
     s = save_success_prob(bonus, dc)
-    cap = max(1, event.rounds_remaining)
+    # The cap is the TARGET's own remaining TURNS, not the policy's remaining ROUNDS,
+    # and it is net of what the target already owes (evaluation_framework.md §7.6).
+    # Two corrections in one expression, both of which only became visible once the
+    # account was actually drawn down:
+    #   - turn order: the enemy acts AFTER the character, so a control landing in round
+    #     r can only ever cost the character the `_rounds − r` turns that FOLLOW; a cap
+    #     counting the current round was one turn generous.
+    #   - overlap: two effects that each last "the rest of the fight" cost it ONCE, not
+    #     twice.  Saturating at `room` is what makes "you cannot lose the same turn
+    #     twice" true of the credited number as well as of the account.
+    # Together they make the credited and realized halves EQUAL rather than merely
+    # ordered, which is the §7.6 assertion.
+    room = target.control.room
+    cap = max(1, target.control.turns_remaining)
     e_saveends = min(1.0 / s, cap)
     e_turns = (event.dur_short * 1.0
                + event.dur_save_ends * e_saveends
                + event.dur_fixed * cap)
+    e_turns = min(e_turns, room)
+    if e_turns <= 0.0:
+        # Nothing left to lose: the combat has no further turns for this entity, or it
+        # takes no turns at all (a commanded summon).  Recording a cost here would be
+        # recording one that could never be paid.
+        log.info("%s FAILS vs %s's control (%s DC %d) — no turns left to lose",
+                 target.name, actor.name, event.save_stat, dc)
+        return next_sequence
     turns_lost = event.hard_frac * e_turns
     turns_reduced = (1.0 - event.hard_frac) * e_turns
     if telemetry is not None:
-        telemetry.record_control(event.save_stat, turns_lost=turns_lost,
+        telemetry.record_control(target.id, event.save_stat,
+                                 turns_lost=turns_lost,
                                  turns_reduced=turns_reduced)
+    # Apply at RUNTIME (§7): credit the target's affected-turns account.  Pure
+    # bookkeeping on values already computed above — no die is drawn here (the
+    # per-feature ritual's step 3), so a run whose enemy forces no control save is
+    # byte-identical to before this line existed.
+    target.control.credit(lost=turns_lost, reduced=turns_reduced,
+                          soft_factor=event.soft_factor)
     log.info(
         "%s FAILS vs %s's control (%s DC %d) → E[turns]=%.2f (lost %.2f / reduced %.2f)",
         target.name, actor.name, event.save_stat, dc, e_turns, turns_lost, turns_reduced,
@@ -772,6 +818,20 @@ def resolve_damage(
             if n_rider >= 1:
                 rider_total += sum(rng.roll(n_rider, sides_rider))
     total += rider_total
+
+    # Phase 5b: ACTOR-side control output scale (evaluation_framework.md §7.2).
+    # The mirror of the defender-side `mult(t)` at phase 7b, one phase earlier
+    # because this is the attacker producing less rather than the defender absorbing
+    # more: the character swings at reduced effect, and whatever lands then meets the
+    # defender's response.  Set by the scheduler for the duration of the acting
+    # entity's own turn and reset to 1.0 on every other entity, so a controlled
+    # entity's REACTION on someone else's turn is at full output — the account prices
+    # TURNS (§7.2).  Rounded to nearest for the same reason phase 7b rounds: a
+    # mean-field factor that floored would systematically under-count.  1.0 (every
+    # entity on every turn, unless the enemy's §6 control channel is on) → skipped
+    # entirely, so this is byte-identical on every existing damage path.
+    if actor.output_scale != 1.0:
+        total = int(round(total * actor.output_scale))
 
     # Phase 6: save-for-half halving (2024 RAW — a successful save against a
     # half-on-save spell takes half the TOTAL damage, rounded down).  Set only

@@ -115,7 +115,29 @@ type, condition, resource, …):
    confidently printing a false statement (see step 6).
 
    **SAME QUANTITY, SAME STAGE — the seam check (added s50, same step because it is the
-   same design-time question one layer down).** When a metric, function or assertion reads
+   same design-time question one layer down).**
+
+   > **PROMOTED TO THE DESIGN STEP (user, s51).** Run this check — and the step-5 ROLL
+   > CALL below — while SETTLING the design with the user, not after the code exists.
+   > The step numbers stay as they are, because test docstrings cite them; what changed
+   > is WHEN they happen. The evidence is s51: both artifacts produced their finding
+   > before a line was written. The seam check found that the §13 credited control
+   > channel and the affected-turns account describe the same quantity at two pipeline
+   > stages and CANNOT agree, which became design sections §7.6 and a named deferral
+   > instead of a surprising number later. The roll call found that control on a
+   > COMMANDED summon is credited and never realized, which is a design fact about the
+   > substrate, not a missing test. Neither was reachable by reading code, and both
+   > would have been more expensive to act on once the implementation existed.
+   >
+   > The sharpest form of the dormancy question at design time: **two quantities the
+   > design treats as one.** s51's pair differed in STAGE (credited at save time vs
+   > drawn down at a turn boundary); its follow-on, found while reflecting, differed in
+   > SCOPE (the credited half keyed by save ability and summed over the roster, the
+   > realized half keyed by actor and scoped to the build) — and that one the panel
+   > then invites a reader to compare directly. So ask it of SCOPE and of STAGE, not
+   > just of units.
+
+   When a metric, function or assertion reads
    from TWO subsystems, check that both sides are the same quantity at the same STAGE of
    the pipeline, and then ask the dormancy question: **are the two sides currently
    numerically identical for a reason that will stop holding?** If yes, the mismatch is
@@ -155,7 +177,8 @@ type, condition, resource, …):
    declaration; this one generalizes it to any declaration, at any layer.
 
    **THE ROLL CALL IS A REQUIRED ARTIFACT, not a way of thinking (promoted s48 at the
-   user's request).** Write the table into the test module's docstring BEFORE the
+   user's request; moved into the DESIGN step at the user's request, s51 — see the note
+   under step 4).** Write the table into the test module's docstring BEFORE the
    tests — one row per declaration the change touches, one column naming the fixture
    that covers each VALUE. It is not documentation of work already done; it is the
    instrument that finds the gap, and it only works ahead of time. Evidence from the
@@ -314,6 +337,16 @@ not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell on
     that into the pre-existing "constructed with control=False" would lose exactly the
     distinction the per-METRIC ritual's availability check exists to protect.
   - **Prior full review: s46** (51 → 22 declarations). See the SURVIVAL RULE above.
+- **Registry touched since the s50 review: ONCE (s51, +1 declaration net → 27).**
+  Framework step 6 added `attacks_per_round_distribution` — §14's trigger fired, the
+  quantity having been an exact constant until whole-turn suppression existed. It also
+  added the two REALIZED control scalars and then **removed them in the same session**,
+  once §7.6's cap was made exact at the user's direction: with the credited and realized
+  halves equal by construction, two rows for one quantity is precisely the survival
+  rule's "derivable and nobody reads it" cut. Worth carrying into the next review as a
+  pattern rather than an anecdote: **two rows that exist because two subsystems disagree
+  are a reason to fix the disagreement, not to publish both.** **One more
+  registry-touching session and the full review is due.**
 
 > **Currently disabled (re-enable before exit):** none. **EMPIRICAL/CHROME ARC CLOSED (s36).**
 > Sessions 28-36 needed **Claude-in-Chrome** (MM scrape); s36 finished #2 (the last
@@ -1521,6 +1554,202 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **EVALUATION FRAMEWORK STEP 6 — CONTROL APPLIED AT RUNTIME (2026-10-30, session 51).**
+  `evaluation_framework.md` §7 / §13 step 6, plus the `enemy_model.md` §6/§10
+  reconciliation. **LOCKED IN §7.2/§7.5/§7.6 BEFORE the wiring** (per-feature ritual
+  step 4), and the two new sections exist because settling the design first turned up
+  two decisions the design did not have. `src/control.py` (`ControlAccount` +
+  `TurnControl`) + `Entity.control`/`Entity.output_scale` + `resolve_damage` phase 5b +
+  the draw-down in `Scheduler._handle_turn_start` + the combat-boundary clear; the §13
+  control channel grew an ACTOR-keyed REALIZED half and its credited half gained the same
+  actor key; the registry grew `attacks_per_round_distribution`. **1019 tests green**
+  (980 + 39 new in `tests/test_eval_control_runtime.py`), full suite in FOREGROUND, once
+  ([[full-suite-foreground-only]]). `src/validation.py` UNCHANGED, **the §12 parity proof
+  still bit-identical**, and **no `SCHEMA_VERSION` bump** — one distribution is additive
+  at version 1.
+
+  **THE ORDER WAS SETTLED FIRST (user): 6 before 5b.** The decisive argument was not
+  the one the handoff carried. Both sessions' leans agreed on 6, but the reason that
+  settled it is that **5b REMOVES the §12 bit-identical net, and 6 is a change that
+  MOVES DPR** — so doing 6 first makes the behaviour change under the net rather than
+  after it. 5b is unchanged and next.
+
+  **THE TWO SHARES MIX; THEY DO NOT COMPOSE (§7.5) — the arithmetic the first draft got
+  wrong.** `hard_frac` is the probability the condition that landed is hard, so ONE
+  failed save credits BOTH branches of ONE effect (`hard_frac·E[turns]` lost,
+  `(1−hard_frac)·E[turns]` reduced). They are therefore shares of one TURN:
+  `scale = 1 − h − r·(1 − soft_factor)`. The natural reading — two independent factors,
+  `(1−h) × soft` — gives 0.375 at `h = r = 0.5, sf = 0.5` where the branches give
+  `0.5·0 + 0.5·0.5 = 0.25` directly. 50% too generous, and nothing but writing the
+  mixture out would have caught it.
+
+  **HARD IS DRAWN FIRST, AND THAT IS A DECISION BECAUSE THE TWO ORDERS ARE
+  NUMERICALLY IDENTICAL.** Hard-to-exhaustion and proportional integrate to the same
+  expected output (`scale` is linear in the shares — asserted as a test). They differ
+  in exactly one place, and it is the place §7.1.2 exists for: only a turn whose hard
+  share is the WHOLE turn can skip `decide()` and preserve its resources. A
+  proportional draw never produces one, so it would average the resource-preservation
+  property away **while reporting the same DPR** — the post-hoc multiplier's own defect,
+  reintroduced inside the runtime path where nothing would see it. Worth generalizing:
+  when two rules give the same number, the choice between them is about which MECHANISM
+  survives, and that is exactly when it is easiest to pick by accident.
+
+  **CREDITED ≠ REALIZED, FOUND BY THE STEP-4 SEAM CHECK BEFORE ANY CODE WAS WRITTEN —
+  AND THEN COLLAPSED TO ONE QUANTITY AT THE USER'S DIRECTION (§7.6).** "Same quantity,
+  same stage" asked whether the §13 credited channel and the account describe the same
+  thing from two places. They did, and they could not agree. **The first cut recorded
+  both and documented the gap; the user asked for one number, and chasing that found the
+  credit was simply WRONG in two ways** — neither visible while nothing spent it:
+  - **The cap counted ROUNDS, not the target's TURNS.** `rounds_remaining = _rounds − r
+    + 1` includes the current round; the enemy acts AFTER the character, so a control
+    landing in round `r` can only cost the turns that FOLLOW. One turn generous, always.
+  - **Overlapping control was DOUBLE-COUNTED.** The cap was per-control, so two effects
+    that each last "the rest of the fight" were each credited the whole rest of the
+    fight. **You cannot lose the same turn twice.** A correctness defect in the credited
+    number, and the larger of the two.
+
+  Fixed by making the cap the target's own `Entity.control.turns_remaining` — maintained
+  by the SCHEDULER, the only thing that knows turn order, which is exactly why a
+  policy-side round count was the wrong source (CLAUDE.md #7) — and saturating each
+  credit at `room = turns_remaining − pending`. **`rounds_remaining` was then DELETED
+  from `ControlSpec` and `ControlSaveEvent`** rather than left as a field nothing reads:
+  this session's own lesson applied to itself, since a plausible-looking number with no
+  consumer is the trap that produced §7.6 in the first place.
+
+  **The halves now AGREE — exact in the arithmetic, not bit-identical in the sums.** The
+  first version of the test asserted `==` and FAILED: the two accumulate the same
+  turn-units in different ORDERS (per failed save vs per turn), giving
+  728.5374180000002 against 728.5374180000005 at 400 days. Asserted at `rel=1e-12`.
+  Writing "bit for bit" would have been the session's third overclaim; the test caught it
+  before the prose shipped.
+
+  **TWO ROWS, NOT FOUR — the realized pair was registered and removed in the same
+  session.** Once the halves are equal by construction, publishing both publishes one
+  quantity twice, which is the s46 survival rule's "derivable and nobody reads it" cut.
+  The realized half STAYS in the §13 channel: it proves the equality from the other end,
+  and it carries `suppressed_turns`, the count of WHOLE turns skipped — the only quantity
+  here with the resource-preservation property, which a turn-unit total cannot express.
+  Registry: 29 declarations briefly, then 27.
+
+  **AND A CORRECTION TO MY OWN FINDING, which is the sharper half of this.** With the
+  inexact credit I measured hard keeping 88% of its credit against soft keeping 46%, and
+  read that asymmetry as §7.5's draw order showing through. **It was a symptom, not a
+  mechanism:** credits that could never be spent expired at the combat boundary, and the
+  soft side lost more of them only because hard drains first. With the credit exact both
+  are 100%. The draw ORDER still matters — for resource preservation — and that is now
+  asserted on the account directly instead of inferred from a ratio. Same lesson as s50's
+  two overclaims through a third door: **a plausible mechanical story about a ratio is not
+  a measurement of the mechanism it names.**
+
+  **THE SCOPE HALF OF THE SAME SEAM, found by reflecting on the rendered panel.** The
+  credited half was keyed by save ability and summed over whoever failed; the realized
+  half was keyed by actor and scoped to the build. On a summon-focused run they described
+  different POPULATIONS while sitting adjacent in the panel, inviting exactly the wrong
+  comparison. `record_control` now takes the controlled entity's id. Worth generalizing:
+  **the dormancy question applies to SCOPE as well as to STAGE**, and this mismatch was
+  invisible until two rows were put next to each other.
+
+  **THE ONE GOLDEN THAT MOVED, deliberately and as §7.4 predicted — and it moved TWICE
+  inside the session.** `("war_angel", 13, "baseline", (control, mitigation))`:
+  **34.87 → 26.4784375 → 27.93671875**, finishing 19.9% below where it started. The
+  intermediate value carried runtime application WITHOUT the exact credit; the final one
+  has both. A naive reading of the account implies ~33% (`1 − 0.194 − 0.5·0.246`), and the
+  real drop is smaller for two compounding reasons: suppressed turns BANK their resources
+  for a later turn (§7.1.2, the whole argument for runtime application), and overlapping
+  controls no longer each claim the whole rest of the fight. **Every other row of
+  `GOLDEN_DPR` is untouched**, which is the assertion that the default moved nothing.
+
+  **§14 (f), THE `disadvantage` METRIC: STILL DID NOT FIRE — and s50's prediction about
+  it was wrong.** s50 recorded step 6 as its real trigger. Step 6 does **not** turn
+  control into a status object: §7.2 applies a suppressed turn or an output scale, and a
+  scaled turn attaches nothing to a d20. The fork was raised explicitly and declined
+  (user): making soft control a real `disadvantage` condition WOULD fire it (the engine
+  already reads disadvantage off statuses in `resolve_attack_roll`, so it is one status
+  and one read) but it rolls 2d20-take-lower, which is the new variance §7.2 exists to
+  avoid, and it would REPLACE `soft_factor` rather than join it. The trigger moves to
+  the §10 stateful engine or §9's advantage coupling. **The pattern is worth naming:
+  "the next step turns X into a state" is a claim about a design that has not been
+  written yet** — three sessions running this deferral has been re-checked and three
+  times the check was the thing that paid.
+
+  **§14's `attacks_per_round` DISTRIBUTION: FIRED, and registered.** The s49/s50
+  decision to decline it stood on a measured fact — every turn acted, so the quantity
+  was a CONSTANT (2.68750 ± 0.000000 under every enemy kind, control included).
+  Whole-turn suppression is the first thing in the model that stops a turn from
+  happening: 2.68750 ± 0.000000 → **2.547 ± 0.0032**, and the SHAPE is the resilience
+  question control exists to ask (p10 2.312 / p90 2.688 at 2,000 days — bad days lose
+  whole turns, which no mean can say). Zero spread remains the correct answer without
+  control, and that is asserted too.
+
+  **AND IT IS THE REGISTRY'S FIRST LATTICE DISTRIBUTION, which changes how its
+  convergence reads — noticed by eye on a rendered output, then measured.** Attacks per
+  round is a count over a fixed 16-round denominator, so it moves in steps of 1/16 and
+  its whole IQR is 0.1875 — three steps. An exact order-statistic interval cannot be
+  narrower than one step until it collapses to zero width, so `ci_width_vs_spread` is
+  pinned near 0.33 against its 0.10 threshold: `p10` reads `[unconverged]` at the quick
+  tier with 200 tail observations, and 20,000 days converges it. **Nothing was tuned** —
+  "not resolved yet, use more days" is the correct verdict, reached for a reason the
+  criterion was not designed around. Recorded in §14's threshold entry as a SECOND,
+  distinct stressor (discreteness, not shape) and in the metric's own published
+  definition, so a reader seeing that flag knows it is the lattice.
+
+  **A GAP THE ROLL CALL FOUND, measured rather than reasoned about: control on a
+  COMMANDED summon is credited and NEVER realized.** A controlled ally is commanded on
+  its controller's turn via `Choice.actor` (substrate #7/7a), so it has no
+  `TurnStartEvent` and its account has no boundary at which to be spent — Silvertail's
+  companion has no entry in `runner.policies` at all. With `focus='summon'`: **235.2
+  turn-units credited over 200 days, and the realized channel EMPTY — not small,
+  empty.** Recorded as a §14 deferral at first — then **DISSOLVED by the §7.6 revision**:
+  with the cap being the entity's own remaining turns, a commanded summon's budget is 0
+  and the honest credit is 0, because control that cannot cost a turn costs nothing. The
+  PRESSURE stays fully visible in the saves channel (778 forced control saves in that
+  run), so nothing is hidden — it is priced correctly. **Both §14 entries this session
+  opened — (i) the turn-order-aware cap and (j) this — were closed in it.** **It also caught an overclaim of my own in passing:** the roster-scoping
+  test was written to assert "the character loses no turns while the channel is
+  non-empty" on a summon-focused run. The channel is empty there, so the test would have
+  passed for a reason its own docstring got wrong — the s50 lesson, arriving through a
+  different door. Rewritten against a character-focused run where the channel is
+  genuinely populated.
+
+  **THE RENDERER LESSON, A THIRD TIME — and again it was the step's own deliverable.**
+  The panel's metric-name column was a hardcoded 34 characters;
+  `control_turns_reduced_applied_per_round` is 39. So the four control rows — the ones
+  meant to be read as credited-vs-realized PAIRS — were the only four in the panel whose
+  value columns did not line up. Found by rendering one real output by eye (ritual step
+  6, five sessions running). Fixed by DERIVING the width from the rows being rendered,
+  not by bumping the constant, so it cannot go stale the next time a longer name is
+  registered. Now tested — and the test deliberately OUTLIVED the rows that exposed the
+  bug, since the realized pair was then removed: the symptom went away and the defect
+  would not have.
+
+  **ONE SOURCE FOR `soft_factor`, which is the seam check applied to a constant.** The
+  factor is routed `ControlSpec.soft_factor → ControlSaveEvent → ControlAccount.credit`
+  from the policy's RESOLVED knob, and the applying code declares no default of its own
+  — a second copy next to the arithmetic would be the same quantity in two places,
+  identical today only because nobody has retuned `enemy_stats.SOFT_FACTOR`. `draw()`
+  REFUSES to price a soft turn with no factor rather than guessing. The refusal was
+  first written into `credit()`, where it broke six legitimate direct-construction tests
+  that record the enemy's pressure and never price it; moving it to the point of USE
+  fixed that, which is the general lesson (**validate where the value is consumed, not
+  where it arrives**).
+
+  **ADJACENT TESTS CHANGED DELIBERATELY, each with its own in-place note.** Three pinned
+  the shipped distribution set at two; one pinned the metric-set counts at s50's 26
+  declarations (now 27, renamed from `..._is_unchanged_by_this_step`, which was no longer
+  true prose); one is s50's own `test_attacks_per_round_is_exactly_the_action_economy`,
+  which predicted in its docstring that step 6 would overturn it and now asserts the
+  opposite for the control arm while keeping the exact 1.25 / exact 0.0 for the two
+  uncontrolled ones; and the §7.6 revision then rewrote seven of
+  `test_enemy_control_channel.py`'s tests, because the duration cap moved off the event
+  onto the target and the credited channel gained an actor key. **One of those exposed a
+  fixture claiming something false:** its character had no policy, so under the new
+  semantics it took no turns and could lose none — logically correct, and not what a test
+  called "failed control costs lost turns" means. It now carries a do-nothing policy that
+  draws no dice.
+
+  **RE-BASELINING: one golden, by design.** `control=False` remains the default, so
+  every other seeded number in the project is untouched.
 
 - **EVALUATION FRAMEWORK STEP 5 — the ENEMY-CONSTRUCTION SEAM (2026-10-28, session 50).**
   `evaluation_framework.md` §3.4 / §13 step 5. **The PARALLEL half; the DELETION half is
@@ -4619,15 +4848,14 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      Fixed a six-session-old `typed_damage_share` bug in passing (before/after over a
      post-mitigation denominator — invisible until a `damage_multiplier` existed).
      See the s50 Done entry.
-   - **NEXT — SETTLE THE ORDER FIRST (open at the s50 close): (5b) or (6)?** Both are
-     ready and neither blocks the other. *Argument for (6) first (Claude's lean):* it is
-     the numbered roadmap step, s50 existed to unblock it, and it turns control from an
-     output factor into a STATE — which is the trigger for two §14 deferrals and would
-     re-open `attacks_per_round`'s distribution decision. Doing (6) first also means the
-     (5b) migration happens ONCE, against a framework that already uses
-     `enemy="baseline"` throughout. *Argument for (5b) first:* it removes the
-     transitional two-path redundancy while the s50 context is fresh, and every session
-     that passes through the seam meanwhile pays the cost of both paths existing.
+   - ~~**SETTLE THE ORDER FIRST (open at the s50 close): (5b) or (6)?**~~ **SETTLED
+     (user, s51): (6) FIRST — DONE. (5b) is now the next step.** Both leans had said 6,
+     but the argument that settled it was a third one neither had stated: **(5b) removes
+     the §12 bit-identical net and (6) is a change that MOVES DPR**, so doing 6 first
+     makes the behaviour change under the net rather than after it. The predicted
+     side-benefits also held — one §14 deferral fired (`attacks_per_round`'s
+     distribution) and one did NOT (`disadvantage`, and s50's prediction that step 6
+     would trigger it was simply wrong; see the s51 Done entry).
    - **(5b) DELETE THE BAKED-IN ENEMY PATH** (the deletion half of step 5, split
      off s50 at the user's direction). Migrate `enemy_ac` / `enemy_attack` out of all
      three `LEVELS` tables, drop the baked-in branch of each `make_training_dummy`, and
@@ -4638,12 +4866,19 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      replaces the parity proof as the end-to-end signal — the s50 `GOLDEN_DPR` table is
      the candidate, and it exists for this purpose. One piece is already cheap: the AC
      needs no migration at all, since every baked-in value equals the table's.
-   - then (6) control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation —
-     **now unblocked**: control is reachable for every build via
-     `enemy_options={'control': True}`. It is also the real trigger for two §14
-     deferrals that s50 checked and found NOT fired: the `disadvantage` attacks metric
-     and `attacks_per_round`'s declined distribution both need control to become a STATE
-     rather than an output factor;
+   - ~~then (6) control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation~~
+     **DONE (s51)** — `src/control.py`'s `ControlAccount`, `resolve_damage` phase 5b,
+     the draw-down in `Scheduler._handle_turn_start`, the realized half of the §13
+     control channel (both halves actor-keyed) and `attacks_per_round_distribution`. §7.5
+     (the hard-first draw rule) and §7.6 are new design sections that settling the step
+     produced; §7.6 was then REVISED in-session at the user's direction from "two
+     quantities, both reported" to ONE quantity proved from both ends, which found that
+     the credit was double-counting overlapping control and one turn generous on its cap.
+     The two realized metrics were registered and removed in the same session as a
+     result, and both §14 entries the session opened were closed in it. Of the two §14 deferrals s50 named, the
+     distribution FIRED and `disadvantage` did NOT — step 6 does not make control a
+     status object, so nothing attaches a condition to a d20, and its trigger moves to
+     §10/§9. See the s51 Done entry;
      (7) sweep YAML + config-hash caching + the baselines registry; **(8) RNG SUBSTREAMS
      (added s44)** — per-entity/per-purpose generators via `SeedSequence.spawn()`, the
      prerequisite for §6.1's paired seeding to buy any precision at all (MEASURED: ~1×, not

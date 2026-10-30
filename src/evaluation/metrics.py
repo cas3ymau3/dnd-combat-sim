@@ -193,10 +193,38 @@ class DaySample:
             total += getattr(tally, outcome)
         return float(total)
 
-    def control(self, attr: str) -> float:
-        """A summed field of the §13 control channel (``failures`` /
-        ``turns_lost`` / ``turns_reduced``)."""
-        return float(sum(getattr(t, attr) for t in self.telemetry.control.values()))
+    def control(self, attr: str,
+                *, roles: "tuple[str, ...] | None" = None) -> float:
+        """A field of the CREDITED half of the §13 control channel (``failures`` /
+        ``turns_lost`` / ``turns_reduced``), scoped to roster ROLES.
+
+        Scoped since s51: the channel gained a controlled-ACTOR key so that this half
+        and the realized half beside it answer the same question about the same
+        entities (§7.6).  Before that it summed over whoever failed the save, which on
+        a summon-focused run meant the two halves described different populations while
+        sitting adjacent in the panel.
+        """
+        tally = self.telemetry.control_for(
+            set(self.roster.ids(*(roles if roles is not None else self.own_roles))))
+        return float(getattr(tally, attr))
+
+    def control_applied(self, attr: str,
+                        *, roles: "tuple[str, ...] | None" = None) -> float:
+        """A field of the REALIZED half of the §13 control channel, scoped to roster
+        ROLES (§7.6) — what control actually COST, as drawn out of the account.
+
+        No metric reads this today, deliberately: the credited rows are now equal to
+        it by construction, so publishing both would publish one quantity twice.  It
+        stays because it is what PROVES that equality — a test asserts the two halves
+        agree, which is a real check precisely because they are written at different
+        places (save time vs turn boundary) — and because it carries
+        ``suppressed_turns``, the count of WHOLE turns skipped, which the credited half
+        cannot express and which is the only quantity here with the
+        resource-preservation property (§7.1.2).
+        """
+        tally = self.telemetry.control_applied_for(
+            set(self.roster.ids(*(roles if roles is not None else self.own_roles))))
+        return float(getattr(tally, attr))
 
     def mitigation(self, attr: str, *, damage_type: "str | None" = None,
                    roles: "tuple[str, ...] | None" = None) -> float:
@@ -1545,6 +1573,15 @@ def _build_default_registry() -> MetricRegistry:
         availability=_requires_control_channel,
         convergence=RARE_EVENT_CONVERGENCE,
     ))
+    # The REALIZED pair was registered here in s51 and REMOVED in the same session
+    # (user), once the credit was made exact.  The rows existed because the credited
+    # and realized halves could not agree; §7.6's cap now counts the target's own
+    # remaining TURNS net of what it already owes, so they are EQUAL by construction
+    # and a second pair of rows would publish one quantity twice — which is the s46
+    # survival rule's "derivable and nobody reads it" cut.  The realized half stays in
+    # the §13 channel: it is what PROVES the equality (asserted in
+    # tests/test_eval_control_runtime.py), and it carries `suppressed_turns`, the count
+    # of whole turns skipped, which the credited half cannot express.
 
     # -- panel: typed mitigation — UNAVAILABLE without a mult(t) profile ---
     reg(MetricDef(
@@ -1983,6 +2020,29 @@ def _build_default_registry() -> MetricRegistry:
             "separates a swingy build from a steady one. Describes exactly the "
             "sample the dpr scalar averages, so its mean IS that scalar."
         ),
+    ))
+    distribution(DistributionDef(
+        name="attacks_per_round_distribution",
+        over="attacks_per_round",
+        definition=(
+            "The day-to-day SHAPE of the build's action economy. DECLINED in s49 and "
+            "again in s50 for a measured reason — every turn acted, so the quantity "
+            "was a CONSTANT (2.68750 with a standard error of exactly 0 on War Angel "
+            "L13 under every enemy kind, control included). §7's whole-turn "
+            "suppression is the first thing in the model that stops a turn from "
+            "happening, so it varies for the first time, and the shape is the "
+            "question control exists to ask: a mean of 2.4 attacks/round is a build "
+            "that attacks a little less every round OR one that is occasionally "
+            "stunned out of a turn entirely, and only p10 tells those apart. Zero "
+            "spread remains the correct answer for any run without control. NOTE for "
+            "the reader: this is a LATTICE quantity — a count over a fixed 16-round "
+            "denominator, so it moves in steps of 1/16 and its whole IQR is about "
+            "three steps. An exact interval cannot be narrower than one step, so the "
+            "quantiles read [unconverged] at the quick tier for a reason that is "
+            "discreteness rather than noise, and more days is the only thing that "
+            "resolves them (measured: 20,000 days converges p10)."
+        ),
+        group="panel",
     ))
     distribution(DistributionDef(
         name="net_damage_taken_distribution",

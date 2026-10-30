@@ -32,6 +32,14 @@ from src.verbs import resolve_control_save, save_success_prob
 
 logging.disable(logging.CRITICAL)
 
+class _Idle:
+    """A character policy that takes its turn and does nothing with it — enough to give
+    the entity turns the §7.6 control cap can be measured against."""
+
+    def decide(self, snapshot):
+        return []
+
+
 _ALL_SAVES = {k: 2 for k in
               ("str_save", "dex_save", "con_save", "int_save", "wis_save", "cha_save")}
 
@@ -46,7 +54,16 @@ def _run(level, seed=11, rounds=300, char_saves=None, **kw):
     pol = BaselineEnemyPolicy(level=level, primary=char, rounds_per_combat=rounds, **kw)
     pol.on_combat_start(0, SeededRNG(seed))
     sched = Scheduler(rng=SeededRNG(seed), entities=[char, enemy],
-                      policies={enemy.id: pol}, max_rounds=rounds)
+                      # The character needs a policy as of s51, even a do-nothing one:
+                      # the §7.6 cap is its remaining TURNS, and an entity with no
+                      # policy takes none, so control against it would correctly cost
+                      # zero. That is the right semantics (it is what makes a COMMANDED
+                      # summon's credit zero) and it made this fixture's claim false —
+                      # the fixture meant "a character being controlled", not "an
+                      # entity that never acts". The policy draws no dice, so the
+                      # enemy's stream is untouched.
+                      policies={enemy.id: pol, char.id: _Idle()},
+                      max_rounds=rounds)
     total = sum(sched.run())
     return total, sched.telemetry
 
@@ -76,57 +93,67 @@ def test_save_success_prob_monotonic_in_bonus():
 # resolve_control_save — the closed-form duration math (unit, deterministic)
 # ---------------------------------------------------------------------------
 
-def _forced_fail_control(save_bonus, dc, **event_kw):
+def _forced_fail_control(save_bonus, dc, turns_remaining=4, **event_kw):
     """Resolve one control save the target ALWAYS fails (bonus far below the DC → total
-    < DC on every d20 — RAW has no nat-20 auto-success on a save), returning the tally."""
+    < DC on every d20 — RAW has no nat-20 auto-success on a save), returning the tally.
+
+    UPDATED s51: the duration cap moved off the event and onto the TARGET
+    (``Entity.control.turns_remaining``), because the policy's remaining-ROUND count
+    was one turn generous and could not see what the target already owed
+    (evaluation_framework.md §7.6). So the cap is set here, on the entity, and these
+    tests now exercise the cap that is actually in force.
+    """
     target = Entity(name="t", hp=100, base_stats={"wis_save": save_bonus})
+    target.control.turns_remaining = turns_remaining
     actor = Entity(name="e", hp=100, base_stats={"enemy_save_dc": dc})
     ev = ControlSaveEvent(tick=(1, 0, 0), actor=actor, target=target,
                           save_stat="wis_save", dc_stat="enemy_save_dc", **event_kw)
     tel = CombatTelemetry()
     resolve_control_save(ev, SeededRNG(1), None, 0, telemetry=tel)
-    return tel
+    return tel, target
 
 
 def test_short_duration_costs_one_turn():
-    tel = _forced_fail_control(-50, 20, hard_frac=1.0,
-                               dur_short=1.0, dur_save_ends=0.0, dur_fixed=0.0,
-                               rounds_remaining=4)
-    ct = tel.control["wis_save"]
+    tel, target = _forced_fail_control(-50, 20, hard_frac=1.0,
+                                       dur_short=1.0, dur_save_ends=0.0,
+                                       dur_fixed=0.0, turns_remaining=4)
+    ct = tel.control[(target.id, "wis_save")]
     assert ct.failures == 1
     assert ct.turns_lost == pytest.approx(1.0)      # short → exactly one turn
     assert ct.turns_reduced == pytest.approx(0.0)
 
 
-def test_fixed_duration_capped_at_rounds_remaining():
-    tel = _forced_fail_control(-50, 20, hard_frac=1.0,
-                               dur_short=0.0, dur_save_ends=0.0, dur_fixed=1.0,
-                               rounds_remaining=3)
-    assert tel.control["wis_save"].turns_lost == pytest.approx(3.0)   # fixed → cap
+def test_fixed_duration_capped_at_the_targets_remaining_turns():
+    """RENAMED s51: the cap is the target's remaining TURNS, not the policy's remaining
+    rounds (§7.6)."""
+    tel, target = _forced_fail_control(-50, 20, hard_frac=1.0,
+                                       dur_short=0.0, dur_save_ends=0.0,
+                                       dur_fixed=1.0, turns_remaining=3)
+    assert tel.control[(target.id, "wis_save")].turns_lost == pytest.approx(3.0)
 
 
 def test_save_ends_duration_is_one_over_s_capped():
-    # bonus -50 vs DC 20 → s floored at 0.05 → 1/s = 20, capped to rounds_remaining=5.
-    tel = _forced_fail_control(-50, 20, hard_frac=1.0,
-                               dur_short=0.0, dur_save_ends=1.0, dur_fixed=0.0,
-                               rounds_remaining=5)
-    assert tel.control["wis_save"].turns_lost == pytest.approx(5.0)
+    # bonus -50 vs DC 20 → s floored at 0.05 → 1/s = 20, capped to turns_remaining=5.
+    tel, target = _forced_fail_control(-50, 20, hard_frac=1.0,
+                                       dur_short=0.0, dur_save_ends=1.0,
+                                       dur_fixed=0.0, turns_remaining=5)
+    assert tel.control[(target.id, "wis_save")].turns_lost == pytest.approx(5.0)
 
 
 def test_hard_soft_split_by_hard_frac():
-    tel = _forced_fail_control(-50, 20, hard_frac=0.25,
-                               dur_short=1.0, dur_save_ends=0.0, dur_fixed=0.0,
-                               rounds_remaining=4)
-    ct = tel.control["wis_save"]
+    tel, target = _forced_fail_control(-50, 20, hard_frac=0.25,
+                                       dur_short=1.0, dur_save_ends=0.0,
+                                       dur_fixed=0.0, turns_remaining=4)
+    ct = tel.control[(target.id, "wis_save")]
     assert ct.turns_lost == pytest.approx(0.25)     # hard share
     assert ct.turns_reduced == pytest.approx(0.75)  # soft share (both are affected turns)
 
 
 def test_passed_control_records_the_save_but_no_lost_turns():
-    tel = _forced_fail_control(100, 10, hard_frac=1.0,
-                               dur_short=1.0, dur_save_ends=0.0, dur_fixed=0.0)  # PASSES
+    tel, target = _forced_fail_control(100, 10, hard_frac=1.0, dur_short=1.0,
+                                       dur_save_ends=0.0, dur_fixed=0.0)  # PASSES
     assert tel.saves[("wis_save", "control")].passed == 1
-    assert "wis_save" not in tel.control            # a pass costs nothing
+    assert (target.id, "wis_save") not in tel.control   # a pass costs nothing
 
 
 # ---------------------------------------------------------------------------
@@ -151,7 +178,7 @@ def test_failed_control_costs_lost_turns():
     _dmg, tel = _run(8, control=True, control_save_prob=1.0, save_round_prob=0.0,
                      control_hard_frac=1.0, control_weights={"wis_save": 1},
                      char_saves={"wis_save": 0})
-    ct = tel.control["wis_save"]
+    ct = tel.control_for(ability="wis_save")
     assert ct.failures > 0
     assert ct.turns_lost > 0
     assert ct.turns_reduced == pytest.approx(0.0)   # hard_frac=1 → all lost, none reduced
@@ -161,7 +188,7 @@ def test_soft_control_reduces_rather_than_loses():
     _dmg, tel = _run(8, control=True, control_save_prob=1.0, save_round_prob=0.0,
                      control_hard_frac=0.0, control_weights={"wis_save": 1},
                      char_saves={"wis_save": 0})
-    ct = tel.control["wis_save"]
+    ct = tel.control_for(ability="wis_save")
     assert ct.turns_reduced > 0
     assert ct.turns_lost == pytest.approx(0.0)      # hard_frac=0 → all soft
 
@@ -175,7 +202,8 @@ def test_save_ends_lost_turns_scale_as_one_over_s_with_the_char_save():
                   control_duration_mix=(0.0, 1.0, 0.0), rounds=400)  # all save-ends
     _d1, hi = _run(8, char_saves={"wis_save": 10}, **common)
     _d2, lo = _run(8, char_saves={"wis_save": -2}, **common)
-    hi_ct, lo_ct = hi.control["wis_save"], lo.control["wis_save"]
+    hi_ct = hi.control_for(ability="wis_save")
+    lo_ct = lo.control_for(ability="wis_save")
     # low-save build fails more...
     assert lo.saves_failed("control") > hi.saves_failed("control")
     # ...and loses turns MORE than proportionally (fail more AND recover slower):
