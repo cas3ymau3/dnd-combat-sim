@@ -504,6 +504,10 @@ class BaselineEnemyPolicy:
                 hard_frac=self._control_hard_frac,
                 dur_short=short, dur_save_ends=save_ends, dur_fixed=fixed,
                 rounds_remaining=rounds_remaining,
+                # The RESOLVED knob (§4), not a fresh default: this policy is the
+                # single source of the factor, and §7.2 applies it at the character's
+                # turn boundary rather than looking it up there.
+                soft_factor=self._soft_factor,
             ),
         )
 

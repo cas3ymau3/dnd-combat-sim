@@ -74,8 +74,23 @@ def _flag(row: dict[str, Any]) -> str:
     return ""
 
 
-def _scalar_line(row: dict[str, Any], *, indent: str = "  ") -> str:
-    return (f"{indent}{row['metric']:<34}{_fmt_value(row)}"
+#: Floor for the metric-name column.  The width is DERIVED from the rows being
+#: rendered rather than fixed, because a fixed one goes stale silently: s51
+#: registered `control_turns_reduced_applied_per_round` (39 characters) against a
+#: hardcoded 34, and every row longer than the column pushed its own value column
+#: right — caught by the per-feature ritual's "render one real output by eye", which
+#: is the fifth session running it has found something.
+_NAME_FLOOR = 34
+
+
+def _name_width(rows: "list[dict[str, Any]]") -> int:
+    """The metric-name column width for one block of scalar rows."""
+    return max([_NAME_FLOOR] + [len(r["metric"]) + 2 for r in rows])
+
+
+def _scalar_line(row: dict[str, Any], *, indent: str = "  ",
+                 width: int = _NAME_FLOOR) -> str:
+    return (f"{indent}{row['metric']:<{width}}{_fmt_value(row)}"
             f"  per {row['denominator']}{_flag(row)}")
 
 
@@ -178,7 +193,8 @@ def render(report: "EvalReport") -> str:
         out.append("")
         out.append(title)
         out.append(_THIN)
-        out.extend(_scalar_line(r) for r in rows)
+        width = _name_width(rows)
+        out.extend(_scalar_line(r, width=width) for r in rows)
 
     # -- breakdowns (§5.4) ----------------------------------------------
     blocks = [b for b in results["breakdowns"]

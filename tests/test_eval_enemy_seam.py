@@ -707,25 +707,37 @@ def test_the_closed_form_is_only_valid_without_accuracy_feedback():
 
 
 def test_attacks_per_round_is_exactly_the_action_economy():
-    """The arithmetic half of the same check, and a re-read of the s49 decision to
-    decline a distribution for this row.
+    """The arithmetic half of the same check, and the s49 decision to decline a
+    distribution for this row — WHICH STEP 6 THEN OVERTURNED, exactly where this test
+    said it would.
 
-    §5.4's third ground for refusing a distribution is "near-deterministic", and the
-    handoff asked whether the standardized enemy breaks that: if the enemy starts
-    killing or controlling the character, the attack count stops being constant.
-    **It does not, for two reasons that are both worth recording.**  The character's
-    HP is a threshold balance, so incoming damage never costs it a turn; and §7's
-    control is an OUTPUT FACTOR in v1 rather than a status object, so a controlled
-    turn still acts.  So the stderr stays exactly 0 and the s49 decision stands —
-    its trigger is step 6's runtime control, not this step.
+    §5.4's third ground for refusing a distribution is "near-deterministic", and s50
+    asked whether the standardized enemy breaks that: if the enemy starts killing or
+    controlling the character, the attack count stops being constant.  It did not,
+    for two reasons, and one of them has since changed.  The character's HP is a
+    threshold balance, so incoming damage still never costs it a turn — that half
+    holds, and the two enemy kinds below are still exactly constant.  But §7's
+    control was an OUTPUT FACTOR, so a controlled turn still ACTED; framework step 6
+    (s51) makes a fully-suppressed turn skip the turn entirely, so under
+    ``control=True`` the count both FALLS and VARIES for the first time.
+
+    **UPDATED (s51), and the update is the point:** the two uncontrolled kinds keep
+    the exact 1.25 and the exact zero, and the control case asserts the opposite of
+    what it used to.  That the prediction in this docstring came true is why the
+    distribution is now registered (§14).
     """
-    for kind, options in [("none", {}), ("baseline", {}),
-                          ("baseline", {"control": True})]:
+    for kind, options in [("none", {}), ("baseline", {})]:
         value = run(RunConfig(build="war_angel", level=3, n_days=50, seed=3,
                               enemy=kind, enemy_options=options)
                     ).values["attacks_per_round"]
         assert value.value == pytest.approx(1.25)      # 16 rounds + 4 AoOs
         assert value.stderr == 0.0
+
+    controlled = run(RunConfig(build="war_angel", level=3, n_days=50, seed=3,
+                               enemy="baseline", enemy_options={"control": True})
+                     ).values["attacks_per_round"]
+    assert controlled.value < 1.25        # whole turns are now skipped, not scaled
+    assert controlled.stderr > 0.0        # ...and how many varies by day
 
 
 # ---------------------------------------------------------------------------
@@ -748,8 +760,18 @@ GOLDEN_DPR: dict[tuple, float] = {
     ("war_angel", 13, "baseline", ()): 34.76328125,
     ("war_angel", 13, "scripted", ()): 34.9409375,
     ("war_angel", 13, "none", ()): 35.4578125,
+    # RE-BASELINED (s51), deliberately and with a decision record: framework step 6
+    # applies the control cost at RUNTIME (evaluation_framework.md §7), so this is
+    # the one golden in the table that control was ever going to move — and §7.4
+    # said in advance that it would.  34.87 → 26.4784375, a 24.1% drop.  The
+    # first-order arithmetic on the CREDITED account predicted ~33%
+    # (1 − 0.194 − 0.5·0.246); the realized drop is smaller for the two reasons
+    # runtime application exists to capture: a suppressed turn banks its resources
+    # for later, and §7.6's credit/realized gap means not every credited turn-unit
+    # is ever spent.  Every other row in this table is UNCHANGED, which is the
+    # assertion that the default (control off) moved nothing.
     ("war_angel", 13, "baseline",
-     (("control", True), ("mitigation", True))): 34.87,
+     (("control", True), ("mitigation", True))): 26.4784375,
     ("war_angel", 13, "baseline", (("legendary_cadence", True),)): 34.4303125,
     ("silvertail", 10, "baseline", ()): 6.334375,
     ("silvertail", 10, "baseline", (("focus", "summon"),)): 6.31828125,
@@ -1055,10 +1077,23 @@ def test_every_enemy_option_is_documented():
         assert spec.name == name
 
 
-def test_the_metric_set_is_unchanged_by_this_step():
+def test_the_metric_set_grew_only_by_the_declared_rows():
     """The s50 metric-set review kept all 26 declarations (nothing failed the
-    survival rule), so this step must not have quietly added or dropped one."""
-    assert len(METRICS.scalars()) == 16
+    survival rule) and step 5 added none — this test asserted that.
+
+    **RENAMED AND UPDATED (s51):** step 6 added exactly THREE declarations, each
+    settled with the user before it was written, and the count is here so a fourth
+    cannot arrive silently:
+
+    * ``control_turns_lost_applied_per_round`` and
+      ``control_turns_reduced_applied_per_round`` — the REALIZED half of the control
+      channel (§7.6), beside the credited pair rather than replacing it;
+    * ``attacks_per_round_distribution`` — §14's trigger fired (see
+      ``test_attacks_per_round_is_exactly_the_action_economy``).
+
+    29 declarations: 18 scalars + 8 breakdowns + 3 distributions.
+    """
+    assert len(METRICS.scalars()) == 18
     assert len(METRICS.breakdowns) == 8
-    assert len(METRICS.distributions()) == 2
-    assert len(METRICS.names()) == 76
+    assert len(METRICS.distributions()) == 3
+    assert len(METRICS.names()) == 78

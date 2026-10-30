@@ -194,9 +194,29 @@ class DaySample:
         return float(total)
 
     def control(self, attr: str) -> float:
-        """A summed field of the §13 control channel (``failures`` /
-        ``turns_lost`` / ``turns_reduced``)."""
+        """A summed field of the CREDITED half of the §13 control channel
+        (``failures`` / ``turns_lost`` / ``turns_reduced``) — the ENEMY's pressure.
+
+        Unscoped by construction: the credited half is keyed by save ABILITY, so it
+        sums over whoever failed the save.  The realized half below is the one that
+        can answer "whose turns" (§7.6).
+        """
         return float(sum(getattr(t, attr) for t in self.telemetry.control.values()))
+
+    def control_applied(self, attr: str,
+                        *, roles: "tuple[str, ...] | None" = None) -> float:
+        """A field of the REALIZED half of the §13 control channel, scoped to roster
+        ROLES (§7.6) — what control actually COST, as drawn out of the account.
+
+        Scoped for the same reason the attacks channel is: the cells are keyed by
+        actor, and with the enemy focused on a summon
+        (``enemy_options={'focus': 'summon'}``) a pooled total describes neither
+        entity.  Defaults to the attributed roles, so the metric means "turns the
+        BUILD lost" under whichever attribution the run declared.
+        """
+        tally = self.telemetry.control_applied_for(
+            set(self.roster.ids(*(roles if roles is not None else self.own_roles))))
+        return float(getattr(tally, attr))
 
     def mitigation(self, attr: str, *, damage_type: "str | None" = None,
                    roles: "tuple[str, ...] | None" = None) -> float:
@@ -1545,6 +1565,50 @@ def _build_default_registry() -> MetricRegistry:
         availability=_requires_control_channel,
         convergence=RARE_EVENT_CONVERGENCE,
     ))
+    # The REALIZED pair (§7.6, s51).  The two rows above are what the enemy THREW;
+    # these two are what it actually COST, drawn out of the account at the
+    # character's own turn boundaries.  Registered rather than left to telemetry
+    # because this is the pair DPR reflects, and it is not derivable from the
+    # credited pair: the gap depends on WHEN in each combat control landed.
+    reg(MetricDef(
+        name="control_turns_lost_applied_per_round",
+        unit="turns/round",
+        denominator="rounds",
+        source="§13 control channel, REALIZED half — ControlAppliedTally.turns_lost",
+        definition=(
+            "Turns actually LOST to control per round — turn-units drawn out of the "
+            "build's affected-turns account (evaluation_framework.md §7.5), scoped "
+            "to the attributed roles. Lower than the credited row above for two "
+            "structural reasons (§7.6): control landing in the closing round of a "
+            "fixed-length combat is credited and never spent, and the credit's cap "
+            "counts the current round even though the enemy acts after the "
+            "character. This is the row the DPR reflects."
+        ),
+        numerator=lambda s: s.control_applied("turns_lost"),
+        events=lambda s: s.control_applied("affected_turns"),
+        availability=_requires_control_channel,
+        convergence=RARE_EVENT_CONVERGENCE,
+    ))
+    reg(MetricDef(
+        name="control_turns_reduced_applied_per_round",
+        unit="turns/round",
+        denominator="rounds",
+        source=(
+            "§13 control channel, REALIZED half — ControlAppliedTally.turns_reduced"
+        ),
+        definition=(
+            "Turns actually spent at REDUCED output per round, in turn-units, scoped "
+            "to the attributed roles. Each such unit cost the build "
+            "(1 − soft_factor) of a turn's damage, so this row and soft_factor "
+            "(recorded resolved in provenance) are what price the soft branch. Drawn "
+            "only after the hard share of a turn is exhausted (§7.5), which is why a "
+            "heavily hard-controlled run can credit soft turns it never spends."
+        ),
+        numerator=lambda s: s.control_applied("turns_reduced"),
+        events=lambda s: s.control_applied("affected_turns"),
+        availability=_requires_control_channel,
+        convergence=RARE_EVENT_CONVERGENCE,
+    ))
 
     # -- panel: typed mitigation — UNAVAILABLE without a mult(t) profile ---
     reg(MetricDef(
@@ -1983,6 +2047,23 @@ def _build_default_registry() -> MetricRegistry:
             "separates a swingy build from a steady one. Describes exactly the "
             "sample the dpr scalar averages, so its mean IS that scalar."
         ),
+    ))
+    distribution(DistributionDef(
+        name="attacks_per_round_distribution",
+        over="attacks_per_round",
+        definition=(
+            "The day-to-day SHAPE of the build's action economy. DECLINED in s49 and "
+            "again in s50 for a measured reason — every turn acted, so the quantity "
+            "was a CONSTANT (2.68750 with a standard error of exactly 0 on War Angel "
+            "L13 under every enemy kind, control included). §7's whole-turn "
+            "suppression is the first thing in the model that stops a turn from "
+            "happening, so it varies for the first time, and the shape is the "
+            "question control exists to ask: a mean of 2.4 attacks/round is a build "
+            "that attacks a little less every round OR one that is occasionally "
+            "stunned out of a turn entirely, and only p10 tells those apart. Zero "
+            "spread remains the correct answer for any run without control."
+        ),
+        group="panel",
     ))
     distribution(DistributionDef(
         name="net_damage_taken_distribution",

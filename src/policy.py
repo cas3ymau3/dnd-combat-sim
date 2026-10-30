@@ -104,12 +104,21 @@ class ControlSpec:
     ``hard_frac`` splits the failed-save cost into HARD (turn wasted) vs SOFT (output
     reduced).  ``dur_short`` / ``dur_save_ends`` / ``dur_fixed`` are the duration-bucket
     probabilities feeding ``E[turns]`` (§6 step 5).  ``rounds_remaining`` caps the FIXED
-    / save-ends durations at the rest of the combat."""
+    / save-ends durations at the rest of the combat.
+
+    ``soft_factor`` is the output fraction a SOFT-controlled turn retains, carried here
+    rather than looked up where it is applied (``evaluation_framework.md`` §7.2).  It
+    has exactly one source — the policy's own resolved knob, which is
+    ``enemy_stats.SOFT_FACTOR`` unless a config overrode it — and routing it through the
+    Choice keeps it that way.  Declaring a second default beside the applying code would
+    be the same quantity in two places, identical today for a reason (nobody has retuned
+    the constant) that would stop holding the moment somebody did."""
     hard_frac: float = 1.0
     dur_short: float = 1.0
     dur_save_ends: float = 0.0
     dur_fixed: float = 0.0
     rounds_remaining: int = 1
+    soft_factor: float | None = None
 
 
 # ---------------------------------------------------------------------------

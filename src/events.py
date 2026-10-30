@@ -329,6 +329,11 @@ class ControlSaveEvent(Event):
     rounds_remaining:
         Rounds left in the combat from the affected turn — the cap on FIXED / save-ends
         durations (a `1 min` control at our ~4-round scale lasts the rest of the fight).
+    soft_factor:
+        The output fraction a SOFT-controlled turn retains, carried from the policy's
+        resolved knob so the applying code never declares its own copy
+        (``evaluation_framework.md`` §7.2).  ``None`` only on a direct construction that
+        credits no soft turns.
     """
     save_stat: str = "wis_save"
     dc_stat: str = "enemy_save_dc"
@@ -337,6 +342,7 @@ class ControlSaveEvent(Event):
     dur_save_ends: float = 0.0
     dur_fixed: float = 0.0
     rounds_remaining: int = 1
+    soft_factor: "float | None" = None
     cost: str = "action"
     kind: str = field(default="control_save", init=False)
 

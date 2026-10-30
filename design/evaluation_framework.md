@@ -1386,6 +1386,18 @@ onto the framework only once step 1 reproduces its numbers exactly.
   entirely" is not answerable from a mean. Declared over the registered scalar, so the
   runner and both estimators were untouched (§5.4's Kind 3 rule), and additive at
   `schema_version` 1.
+- **Control on a COMMANDED summon is credited but never realized** *(added s51)* — a
+  controlled ally is commanded on its CONTROLLER's turn via `Choice.actor` (CLAUDE.md
+  substrate #7/7a), so it has no `TurnStartEvent` of its own and its affected-turns
+  account has no boundary at which to be spent. With `enemy_options={'focus':
+  'summon'}` the §13 credited channel therefore fills up while the realized channel
+  stays **empty — not small, empty** (measured: 235.2 turn-units credited over 200 days
+  on Silvertail L10, zero realized). Found by the step-5 roll call rather than reasoned
+  about, and recorded rather than fixed, because suppressing a commanded summon's turn
+  means suppressing its controller's command, which is a different mechanism with its
+  own semantics. Trigger: a summon that takes its OWN turn — a `create_entity`'d Actor
+  with a policy, which the design already allows. Until then, read the credited rows
+  for a summon-focused run and the realized rows for a character-focused one.
 - **A turn-order-aware control cap** *(added s51)* — the credit caps `E[turns]` at the
   policy's `rounds_remaining`, which counts the current round as available to the
   controlled entity even though the enemy acts after it (§7.6 cause 2). Making the cap

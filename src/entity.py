@@ -17,6 +17,7 @@ import itertools
 import logging
 from dataclasses import dataclass, field
 
+from .control import ControlAccount
 from .modifiers import Modifier, ModifierStack
 from .resources import ResourcePool
 from .statuses import StatusSet
@@ -119,6 +120,20 @@ class Entity:
         # response.  Empty (the default everywhere) → inert → no baseline drift:
         # installing it IS the §7 res/imm/vuln-check toggle turning ON.
         self.damage_multiplier: dict[str, float] = dict(damage_multiplier or {})
+        # Control applied at RUNTIME (evaluation_framework.md §7): a balance of
+        # EXPECTED affected turns, credited by resolve_control_save on each failed
+        # control save and drawn down by the scheduler at this entity's own turn
+        # boundary.  NOT a status — a status expires at a tick, this is spent — and
+        # not the §10 stateful condition engine.  Zero unless the enemy's §6 control
+        # channel is on, so inert on every pre-existing run.  Cleared at the combat
+        # boundary beside StatusSet.clear() (see ControlAccount's docstring).
+        self.control: ControlAccount = ControlAccount()
+        # This turn's control output factor (§7.2, resolve_damage phase 5b) — the
+        # ACTOR-side mirror of `damage_multiplier` above.  Set by the scheduler at
+        # each TurnStartEvent (and reset to 1.0 on every other entity, so a
+        # controlled entity's REACTION on someone else's turn is at full output: the
+        # account prices turns, so a turn is what it scales).  1.0 → inert.
+        self.output_scale: float = 1.0
         # Statuses installed by the cast_effect primitive (substrate #3), labelled
         # by effect_source: source → [status name, ...].  StatusSet is keyed by
         # status NAME (not source), so this index is what lets remove_effect drop a

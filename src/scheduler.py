@@ -652,10 +652,51 @@ class Scheduler:
         for ent in self.entities:
             ent.statuses.expire(round_, turn_idx)
 
+        # CONTROL APPLIED AT RUNTIME (evaluation_framework.md §7).  Draw one
+        # turn-unit out of this entity's affected-turns account, HARD FIRST (§7.5),
+        # and hang the resulting output factor on the acting entity for the duration
+        # of its turn.  Every other entity is reset to 1.0 here, which is what scopes
+        # the factor to a TURN: a controlled entity's reaction on somebody else's
+        # turn is at full output, because the account prices turns (§7.2).
+        #
+        # Nothing here rolls, and the account is empty on every entity unless the
+        # enemy's §6 control channel is on — so an uncontrolled run takes the
+        # UNAFFECTED fast path and is byte-identical to before this existed (§12's
+        # parity proof depends on exactly that).
+        control = actor.control.draw()
+        for ent in self.entities:
+            ent.output_scale = control.scale if ent.id == actor.id else 1.0
+        if control.affected:
+            self.telemetry.record_control_applied(
+                actor.id,
+                turns_lost=control.lost_applied,
+                turns_reduced=control.reduced_applied,
+                suppressed=control.suppressed,
+            )
+
         policy = self.policies.get(actor.id)
         if policy is None:
             log.debug("%s has no policy, skipping turn.", actor.name)
             return 0
+
+        if control.suppressed:
+            # A fully suppressed turn (§7.1.2): no decision point is opened, so no
+            # action economy and NO RESOURCES are spent — the whole reason control is
+            # applied at runtime instead of as a post-hoc multiplier, which would
+            # spend the slots of a turn that never happened.
+            #
+            # Suppression removes the entity's ACTIONS, not the world's effects on
+            # it: the status sweep above already ran for everyone, and the zone
+            # effects below still fire, so a stunned character standing in Spirit
+            # Guardians still takes the damage.  It simply does nothing back.
+            log.info("%s's turn is SUPPRESSED by control (§7) — no action, no "
+                     "resources spent", actor.name)
+            self._fire_zone_effects(actor, round_, turn_idx, start_seq=1)
+            return 0
+
+        if control.scale != 1.0:
+            log.info("%s acts at %.3f output under control (§7)",
+                     actor.name, control.scale)
 
         # Build read-only snapshot
         enemies = tuple(e for e in self.entities if e.id != actor.id)
@@ -812,6 +853,7 @@ class Scheduler:
                     dur_save_ends=spec.dur_save_ends,
                     dur_fixed=spec.dur_fixed,
                     rounds_remaining=spec.rounds_remaining,
+                    soft_factor=spec.soft_factor,
                     cost=cost,
                 )
                 self.queue.push(ctrl_event)
