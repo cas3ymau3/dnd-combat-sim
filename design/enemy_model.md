@@ -495,11 +495,18 @@ step), grounded by the *measured* `duration` tag on each control row:
    > recorded number.** The account is drawn down HARD FIRST (§7.5): the two shares are
    > shares of one turn, so they MIX rather than compose, and only a turn whose hard
    > share is the whole turn can preserve its resources — which is the property runtime
-   > application exists to buy. And the credited number above and the number actually
-   > drawn down are TWO QUANTITIES (§7.6): a control landing in the closing round of a
-   > fixed-length combat is credited and can never be spent, and the `rounds_remaining`
-   > cap counts the current round even though the enemy acts after the character. Both
-   > are now reported; neither credited value moved.
+   > application exists to buy.
+   >
+   > **And the `rounds_remaining` cap written above was wrong twice, which only applying
+   > the cost could reveal (§7.6).** It counted the current round even though the enemy
+   > acts after the character, and being per-control it let two effects that each last
+   > "the rest of the fight" each claim the whole rest of the fight — **you cannot lose
+   > the same turn twice.** The cap is now the TARGET's own remaining TURNS, net of what
+   > it already owes, maintained by the scheduler (the only thing that knows the turn
+   > order). `rounds_remaining` is GONE from `ControlSpec` and `ControlSaveEvent`
+   > entirely, rather than left as a field nothing reads. **The credited numbers moved
+   > down as a result** — correctly, because they were over-reporting — and they now
+   > equal what the character actually loses.
 
 **How it prices investment.** Better mental-save bonuses → fewer control
 failures → fewer lost turns → higher *effective* DPR. A build that buys

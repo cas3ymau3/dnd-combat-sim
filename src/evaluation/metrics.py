@@ -193,26 +193,34 @@ class DaySample:
             total += getattr(tally, outcome)
         return float(total)
 
-    def control(self, attr: str) -> float:
-        """A summed field of the CREDITED half of the §13 control channel
-        (``failures`` / ``turns_lost`` / ``turns_reduced``) — the ENEMY's pressure.
+    def control(self, attr: str,
+                *, roles: "tuple[str, ...] | None" = None) -> float:
+        """A field of the CREDITED half of the §13 control channel (``failures`` /
+        ``turns_lost`` / ``turns_reduced``), scoped to roster ROLES.
 
-        Unscoped by construction: the credited half is keyed by save ABILITY, so it
-        sums over whoever failed the save.  The realized half below is the one that
-        can answer "whose turns" (§7.6).
+        Scoped since s51: the channel gained a controlled-ACTOR key so that this half
+        and the realized half beside it answer the same question about the same
+        entities (§7.6).  Before that it summed over whoever failed the save, which on
+        a summon-focused run meant the two halves described different populations while
+        sitting adjacent in the panel.
         """
-        return float(sum(getattr(t, attr) for t in self.telemetry.control.values()))
+        tally = self.telemetry.control_for(
+            set(self.roster.ids(*(roles if roles is not None else self.own_roles))))
+        return float(getattr(tally, attr))
 
     def control_applied(self, attr: str,
                         *, roles: "tuple[str, ...] | None" = None) -> float:
         """A field of the REALIZED half of the §13 control channel, scoped to roster
         ROLES (§7.6) — what control actually COST, as drawn out of the account.
 
-        Scoped for the same reason the attacks channel is: the cells are keyed by
-        actor, and with the enemy focused on a summon
-        (``enemy_options={'focus': 'summon'}``) a pooled total describes neither
-        entity.  Defaults to the attributed roles, so the metric means "turns the
-        BUILD lost" under whichever attribution the run declared.
+        No metric reads this today, deliberately: the credited rows are now equal to
+        it by construction, so publishing both would publish one quantity twice.  It
+        stays because it is what PROVES that equality — a test asserts the two halves
+        agree, which is a real check precisely because they are written at different
+        places (save time vs turn boundary) — and because it carries
+        ``suppressed_turns``, the count of WHOLE turns skipped, which the credited half
+        cannot express and which is the only quantity here with the
+        resource-preservation property (§7.1.2).
         """
         tally = self.telemetry.control_applied_for(
             set(self.roster.ids(*(roles if roles is not None else self.own_roles))))
@@ -1565,50 +1573,15 @@ def _build_default_registry() -> MetricRegistry:
         availability=_requires_control_channel,
         convergence=RARE_EVENT_CONVERGENCE,
     ))
-    # The REALIZED pair (§7.6, s51).  The two rows above are what the enemy THREW;
-    # these two are what it actually COST, drawn out of the account at the
-    # character's own turn boundaries.  Registered rather than left to telemetry
-    # because this is the pair DPR reflects, and it is not derivable from the
-    # credited pair: the gap depends on WHEN in each combat control landed.
-    reg(MetricDef(
-        name="control_turns_lost_applied_per_round",
-        unit="turns/round",
-        denominator="rounds",
-        source="§13 control channel, REALIZED half — ControlAppliedTally.turns_lost",
-        definition=(
-            "Turns actually LOST to control per round — turn-units drawn out of the "
-            "build's affected-turns account (evaluation_framework.md §7.5), scoped "
-            "to the attributed roles. Lower than the credited row above for two "
-            "structural reasons (§7.6): control landing in the closing round of a "
-            "fixed-length combat is credited and never spent, and the credit's cap "
-            "counts the current round even though the enemy acts after the "
-            "character. This is the row the DPR reflects."
-        ),
-        numerator=lambda s: s.control_applied("turns_lost"),
-        events=lambda s: s.control_applied("affected_turns"),
-        availability=_requires_control_channel,
-        convergence=RARE_EVENT_CONVERGENCE,
-    ))
-    reg(MetricDef(
-        name="control_turns_reduced_applied_per_round",
-        unit="turns/round",
-        denominator="rounds",
-        source=(
-            "§13 control channel, REALIZED half — ControlAppliedTally.turns_reduced"
-        ),
-        definition=(
-            "Turns actually spent at REDUCED output per round, in turn-units, scoped "
-            "to the attributed roles. Each such unit cost the build "
-            "(1 − soft_factor) of a turn's damage, so this row and soft_factor "
-            "(recorded resolved in provenance) are what price the soft branch. Drawn "
-            "only after the hard share of a turn is exhausted (§7.5), which is why a "
-            "heavily hard-controlled run can credit soft turns it never spends."
-        ),
-        numerator=lambda s: s.control_applied("turns_reduced"),
-        events=lambda s: s.control_applied("affected_turns"),
-        availability=_requires_control_channel,
-        convergence=RARE_EVENT_CONVERGENCE,
-    ))
+    # The REALIZED pair was registered here in s51 and REMOVED in the same session
+    # (user), once the credit was made exact.  The rows existed because the credited
+    # and realized halves could not agree; §7.6's cap now counts the target's own
+    # remaining TURNS net of what it already owes, so they are EQUAL by construction
+    # and a second pair of rows would publish one quantity twice — which is the s46
+    # survival rule's "derivable and nobody reads it" cut.  The realized half stays in
+    # the §13 channel: it is what PROVES the equality (asserted in
+    # tests/test_eval_control_runtime.py), and it carries `suppressed_turns`, the count
+    # of whole turns skipped, which the credited half cannot express.
 
     # -- panel: typed mitigation — UNAVAILABLE without a mult(t) profile ---
     reg(MetricDef(
@@ -2061,7 +2034,13 @@ def _build_default_registry() -> MetricRegistry:
             "question control exists to ask: a mean of 2.4 attacks/round is a build "
             "that attacks a little less every round OR one that is occasionally "
             "stunned out of a turn entirely, and only p10 tells those apart. Zero "
-            "spread remains the correct answer for any run without control."
+            "spread remains the correct answer for any run without control. NOTE for "
+            "the reader: this is a LATTICE quantity — a count over a fixed 16-round "
+            "denominator, so it moves in steps of 1/16 and its whole IQR is about "
+            "three steps. An exact interval cannot be narrower than one step, so the "
+            "quantiles read [unconverged] at the quick tier for a reason that is "
+            "discreteness rather than noise, and more days is the only thing that "
+            "resolves them (measured: 20,000 days converges p10)."
         ),
         group="panel",
     ))

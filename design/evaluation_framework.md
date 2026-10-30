@@ -786,38 +786,73 @@ it yields `0.5 × 0.75 = 0.375`; the correct mixture is `1 − 0.5 − 0.5·0.5 
 which is also what the two branches give directly (`0.5 · 0 + 0.5 · 0.5`). The accounts
 are shares of one turn, so they MIX; they do not compose.
 
-### 7.6 Credited vs realized — two quantities, not one (s51)
+### 7.6 Credited vs realized — ONE quantity, proved from both ends (revised s51)
 
-The §13 control channel records what `resolve_control_save` CREDITS. The account records
-what the scheduler actually DRAWS DOWN. Before this step those were the same number by
-default, because nothing drew anything down; applying the cost makes them diverge, and
-the divergence is structural rather than a bug:
+The §13 control channel records what `resolve_control_save` CREDITS. The account
+records what the scheduler actually DRAWS DOWN. Before control was applied those were
+the same number by default, because nothing drew anything down.
 
-1. **Combat-end truncation.** A control that lands in the closing round of a
-   fixed-length combat has no turns left to cost. The credit is already made; the
-   account is cleared at the boundary.
-2. **A turn-order off-by-one in the cap.** The credit caps `E[turns]` at the policy's
-   `rounds_remaining = _rounds − r + 1`, which counts the CURRENT round as available.
-   The enemy acts after the character, so a control landing in round `r` can only ever
-   be drawn down over the `_rounds − r` turns that follow. The cap is therefore
-   systematically one turn generous relative to what any account can spend.
+**This section first said they were two quantities and recorded both.** That was the
+right reading of what the code then did and the wrong design, and the user's call to
+collapse them is what produced the better one. Two things were wrong with the credit,
+and neither was visible while nothing spent it:
 
-**Both are recorded rather than reconciled (user, s51).** The credited pair is the
-ENEMY's pressure — what was thrown at this build — and it does not move, so no
-existing control number changes. The realized pair is the CHARACTER's cost — what
-actually reached its DPR — and it is what the new metrics report. They are genuinely
-two quantities, and the alternative (making the cap turn-order aware so the two agree
-exactly) was declined because it would move the credited numbers and would require the
-enemy policy to learn the roster's turn order, which is scheduler knowledge leaking
-into a policy. **The gap is now measurable instead of invisible, which is the point.**
-A turn-order-aware cap is named as a §14 deferral with its trigger.
+1. **The cap counted ROUNDS, not the target's TURNS.** It was the policy's
+   `rounds_remaining = _rounds − r + 1`, which includes the current round. The enemy
+   acts *after* the character, so a control landing in round `r` can only ever cost the
+   `_rounds − r` turns that FOLLOW. One turn generous, always.
+2. **Overlapping control was DOUBLE-COUNTED.** The cap was per-control, so two effects
+   that each last "the rest of the fight" were each credited the whole rest of the
+   fight. **You cannot lose the same turn twice.** This is a correctness defect in the
+   credited number, not a bookkeeping preference, and it was the larger of the two.
 
-**The realized channel is keyed by ACTOR, the credited channel by save ABILITY.** Not
-an inconsistency: they answer different questions, and the realized side's question is
-"whose turns were lost", which is the per-METRIC ritual's roster-scoping check. A build
-whose SUMMON is the enemy's focus (`enemy_options={'focus': 'summon'}`) pools its
-summon's lost turns into the credited rows and separates them in the realized rows —
-so the realized side is the one that can answer the question at all.
+**The fix, and where each piece lives.** The cap is now the target's own
+`Entity.control.turns_remaining`, maintained by the **scheduler** — the only thing that
+knows the turn order, which is why a policy-side round count was the wrong source in
+the first place (CLAUDE.md #7 keeps turn order out of a policy). And each credit
+saturates at `ControlAccount.room` = `turns_remaining − pending`, so the account can
+never owe more turns than the entity has left to lose.
+
+**The consequence: the credited and realized halves are equal.** Not ordered — equal.
+They are still written by different code at different moments (save time vs turn
+boundary), so asserting their agreement is a real check rather than a tautology, and
+that assertion is what the realized half of the channel now exists for. **It is exact
+in the arithmetic but not bit-identical in the sums**: the two halves accumulate the
+same turn-units in different orders (per failed save vs per turn), so 400 days of War
+Angel L13 gives `728.5374180000002` against `728.5374180000005`. Floating-point
+addition is not associative; the test asserts agreement to `rel=1e-12`, and anything
+looser would hide a real leak.
+
+**So only ONE pair of metrics is registered**, the credited pair, under its original
+names. The realized pair was registered and removed inside the same session: once the
+two are equal by construction, publishing both publishes one quantity twice, which is
+exactly the §5.4 survival rule's "derivable and nobody reads it" cut. The realized half
+stays in the §13 channel because it proves the equality and because it carries
+`suppressed_turns` — the count of WHOLE turns skipped, the only quantity here with the
+resource-preservation property (§7.1.2), which a turn-unit total cannot express.
+
+**Both channel halves are keyed by the CONTROLLED actor.** The credited half was keyed
+by save ability alone and summed over whoever failed, while the realized half was keyed
+by actor and scoped to the build — so on a summon-focused run they described different
+populations *while sitting adjacent in the panel*, inviting exactly the wrong
+comparison. `record_control` now takes the controlled entity's id. This is the same
+seam question as the stage mismatch above, asked of SCOPE instead of STAGE, and it was
+found by reflecting on the rendered panel rather than by reading code.
+
+**Where the equality degrades to an inequality**, named rather than assumed: a combat
+that ends EARLY (finite-HP mode, `rounds_elapsed < max_rounds`) and an entity that drops
+out of the turn order mid-combat both leave a balance that no turn arrives to spend.
+Neither occurs in the fixed-length basis that every evaluated run uses, and `finite_hp`
+is rejected by `RunConfig` today.
+
+**An entity that takes no turns is credited nothing, and that is the honest number.** A
+commanded summon acts on its controller's turn via `Choice.actor` (CLAUDE.md substrate
+#7/7a), so it has no `TurnStartEvent`, its budget is 0, and control against it costs 0.
+As first built this was a §14 deferral — the credited channel filled up (235.2
+turn-units over 200 days on Silvertail L10) while nothing was ever spent. The revision
+dissolves it: control that cannot cost a turn costs nothing. The PRESSURE is still fully
+visible in the saves channel (778 forced control saves in that run), so nothing is
+hidden — it is priced correctly.
 
 ---
 
@@ -1131,10 +1166,11 @@ Per `validate-mechanism-not-build-value` and `enemy_model.md` §11 — tests ass
   changes;
 - control-at-runtime: a fully suppressed turn deals zero damage **and spends no
   resources**; telemetry's lost/reduced counts still match the closed-form expectation;
-  **BUILT (s51)** — and the assertion needed one term this line did not have: the
-  credited counts and the REALIZED draw-down are two quantities (§7.6), so what is
-  asserted is that the realized pair never exceeds the credited pair and that the
-  shortfall is accounted for by the two named causes, not that they are equal;
+  **BUILT (s51)** — and the assertion is stronger than this line asked for: the credited
+  counts and the REALIZED draw-down are ONE quantity (§7.6), written by different code at
+  different moments, so what is asserted is that they AGREE (to `rel=1e-12`; the two sums
+  accumulate in different orders). An earlier cut of the same session asserted only an
+  inequality, which is what an inexact credit could support;
 - **enemy independence (§3.4):** two different builds at the same level, configured with
   the same `enemy` + `enemy_options`, face an enemy with identical resolved parameters;
   and a run records which enemy path produced it, so the two are never silently compared.
@@ -1226,9 +1262,11 @@ check mechanisms, not the composite. Three things carry that load instead:
    the wiring, per the per-feature ritual's step 4); `src/control.py`'s `ControlAccount`
    + `Entity.control`/`Entity.output_scale` + `resolve_damage` phase 5b + the draw-down
    at `Scheduler._handle_turn_start`; the §13 control channel gained an ACTOR-keyed
-   realized half beside its credited one, and the registry gained the two realized
-   scalars plus `attacks_per_round`'s distribution (its §14 trigger fired — whole-turn
-   suppression is the first thing that makes the quantity vary). The `enemy_model.md`
+   realized half and its credited half gained the same actor key, and the registry
+   gained `attacks_per_round`'s distribution (its §14 trigger fired — whole-turn
+   suppression is the first thing that makes the quantity vary). The realized pair was
+   registered as metrics and then removed in the same session, once §7.6's revision made
+   the credit exact: two rows for one quantity is the §5.4 survival rule's cut. The `enemy_model.md`
    §6/§10 reconciliation landed with it, including a stale pointer that named framework
    step 5 as the implementation. **No `SCHEMA_VERSION` bump**; §12 parity still
    bit-identical; `control=False` stays the default, so nothing but a run that asks for
@@ -1364,6 +1402,20 @@ onto the framework only once step 1 reproduces its numbers exactly.
   tier are the rare-save cells (`int_save`, `cha_save`), unconverged because they are
   rare, exactly as designed.
 
+  **A SECOND, DIFFERENT CASE OBSERVED (s51), and it is not the bimodal one.**
+  `attacks_per_round_distribution` is the registry's first distribution over a LATTICE
+  quantity: attacks per round is a count over a fixed 16-round denominator, so it moves
+  in steps of 1/16, and its whole IQR is 0.1875 — three steps. An exact order-statistic
+  interval cannot be narrower than one step, so `ci_width_vs_spread` is pinned at ≈0.33
+  against a 0.10 threshold until the interval collapses to zero width entirely. At the
+  quick tier (2,000 days) `p10` therefore reports `[unconverged]` with 200 tail
+  observations; at 20,000 days the interval closes and it converges. **Nothing is wrong
+  and nothing was tuned:** the verdict "this is not resolved yet, use more days" is
+  correct, and the criterion reached it for a reason it was not designed around. It is
+  recorded because it is a distinct stressor from the skew/multi-modality one above —
+  discreteness, not shape — and because a reader seeing `[unconverged]` on a quick-tier
+  attacks quantile should know it is the lattice rather than a defect.
+
   So the trigger is recorded as fired, and the fix stays what it was — **a sweep across
   builds and tiers, not a nudge to a constant** — because changing a threshold on the
   evidence of one build at one tier would reproduce the original problem (four
@@ -1386,27 +1438,20 @@ onto the framework only once step 1 reproduces its numbers exactly.
   entirely" is not answerable from a mean. Declared over the registered scalar, so the
   runner and both estimators were untouched (§5.4's Kind 3 rule), and additive at
   `schema_version` 1.
-- **Control on a COMMANDED summon is credited but never realized** *(added s51)* — a
-  controlled ally is commanded on its CONTROLLER's turn via `Choice.actor` (CLAUDE.md
-  substrate #7/7a), so it has no `TurnStartEvent` of its own and its affected-turns
-  account has no boundary at which to be spent. With `enemy_options={'focus':
-  'summon'}` the §13 credited channel therefore fills up while the realized channel
-  stays **empty — not small, empty** (measured: 235.2 turn-units credited over 200 days
-  on Silvertail L10, zero realized). Found by the step-5 roll call rather than reasoned
-  about, and recorded rather than fixed, because suppressing a commanded summon's turn
-  means suppressing its controller's command, which is a different mechanism with its
-  own semantics. Trigger: a summon that takes its OWN turn — a `create_entity`'d Actor
-  with a policy, which the design already allows. Until then, read the credited rows
-  for a summon-focused run and the realized rows for a character-focused one.
-- **A turn-order-aware control cap** *(added s51)* — the credit caps `E[turns]` at the
-  policy's `rounds_remaining`, which counts the current round as available to the
-  controlled entity even though the enemy acts after it (§7.6 cause 2). Making the cap
-  count the TARGET's remaining turns would let the credited and realized pairs agree
-  exactly, and a test could then assert equality rather than the gap. Declined for now
-  (user, s51): it moves the credited control numbers, and it requires the enemy policy to
-  know the roster's turn order, which is scheduler knowledge inside a policy (CLAUDE.md
-  #7). Trigger: a reader who needs one control number rather than two, or any model where
-  the enemy does not act last.
+- ~~**Control on a COMMANDED summon is credited but never realized** *(added s51)*~~
+  **CLOSED the same session.** A controlled ally is commanded on its controller's turn
+  via `Choice.actor`, so it has no turn boundary at which an affected-turns account
+  could be spent. Recorded as a deferral when the credit was inexact; dissolved by §7.6's
+  revision, which makes the cap the target's own remaining TURNS — an entity with none
+  is credited nothing, which is the honest number rather than a cost that could never be
+  paid. The pressure stays visible in the saves channel.
+- ~~**A turn-order-aware control cap** *(added s51)*~~ **DONE the same session (user).**
+  The credit now caps at the target's own remaining turns, net of what it already owes,
+  so the credited and realized halves are equal rather than merely ordered. The two
+  objections recorded when this was deferred both turned out to be answerable: the
+  credited numbers DID move, which was correct because they were double-counting
+  overlapping control, and the turn count lives on the SCHEDULER rather than in a policy,
+  so no policy learned the turn order. See §7.6.
 - **A KEYED distribution** *(added s48)* — v1 is 1-D: quantiles of `dpr`, not quantiles
   of `dpr_by_role[summons]`. The s46 "a grid must earn its cells" argument applies
   unchanged. Non-blocking by construction: the row already carries its statistic in the

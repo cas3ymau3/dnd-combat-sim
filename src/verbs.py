@@ -601,7 +601,7 @@ def save_success_prob(bonus: int, dc: int) -> float:
     ``E[turns] = 1/s`` (double-pricing save investment: a good save both fails less AND
     recovers faster).  A save meets the DC on ``d20 >= dc − bonus``, so ``21 − needed``
     of the 20 faces succeed.  Clamped to ``[0.05, 1.0]``: the 0.05 floor keeps ``1/s``
-    finite (it is capped by ``rounds_remaining`` anyway) and stands in for a fluke
+    finite (it is capped by the target's remaining TURNS anyway) and stands in for a fluke
     success; the 1.0 ceiling caps an easy save."""
     needed = dc - bonus
     s = (21 - needed) / 20.0
@@ -638,11 +638,15 @@ def resolve_control_save(
     here said the REPORTING layer applies ``soft_factor``.  That is now only half true
     — the reporting layer reports it; the scheduler applies it.)
 
-    The credited numbers and what the account can actually spend are **two
-    quantities**, not one (§7.6): a control landing in the closing round of a
-    fixed-length combat is credited and never drawn down, and ``rounds_remaining``
-    counts the current round even though the enemy acts after the character.  Both are
-    reported; this credit is unchanged by §7, so no control number moved.
+    **The credit is EXACT (§7.6, revised s51 at the user's direction): it equals what
+    the account will actually spend, to the last bit.**  Two corrections got it there,
+    and neither was visible until the account was drawn down.  The cap is the target's
+    own remaining TURNS, not a round count — the enemy acts after the character, so a
+    control landing in round ``r`` can only cost the ``_rounds − r`` turns that FOLLOW.
+    And the credit saturates at what the target does not already owe, because two
+    effects that each last "the rest of the fight" cost it ONCE: you cannot lose the
+    same turn twice.  The realized half of the §13 channel is kept precisely so a test
+    can assert that equality from the other end.
 
     The initial save is ALSO recorded in the saves channel under the
     "control" tag, so a bundled (also-damages) ability's TWO saves are visible in both
@@ -674,15 +678,37 @@ def resolve_control_save(
     # closed form — a documented mean-field simplification).
     bonus = int(target.stat(event.save_stat))
     s = save_success_prob(bonus, dc)
-    cap = max(1, event.rounds_remaining)
+    # The cap is the TARGET's own remaining TURNS, not the policy's remaining ROUNDS,
+    # and it is net of what the target already owes (evaluation_framework.md §7.6).
+    # Two corrections in one expression, both of which only became visible once the
+    # account was actually drawn down:
+    #   - turn order: the enemy acts AFTER the character, so a control landing in round
+    #     r can only ever cost the character the `_rounds − r` turns that FOLLOW; a cap
+    #     counting the current round was one turn generous.
+    #   - overlap: two effects that each last "the rest of the fight" cost it ONCE, not
+    #     twice.  Saturating at `room` is what makes "you cannot lose the same turn
+    #     twice" true of the credited number as well as of the account.
+    # Together they make the credited and realized halves EQUAL rather than merely
+    # ordered, which is the §7.6 assertion.
+    room = target.control.room
+    cap = max(1, target.control.turns_remaining)
     e_saveends = min(1.0 / s, cap)
     e_turns = (event.dur_short * 1.0
                + event.dur_save_ends * e_saveends
                + event.dur_fixed * cap)
+    e_turns = min(e_turns, room)
+    if e_turns <= 0.0:
+        # Nothing left to lose: the combat has no further turns for this entity, or it
+        # takes no turns at all (a commanded summon).  Recording a cost here would be
+        # recording one that could never be paid.
+        log.info("%s FAILS vs %s's control (%s DC %d) — no turns left to lose",
+                 target.name, actor.name, event.save_stat, dc)
+        return next_sequence
     turns_lost = event.hard_frac * e_turns
     turns_reduced = (1.0 - event.hard_frac) * e_turns
     if telemetry is not None:
-        telemetry.record_control(event.save_stat, turns_lost=turns_lost,
+        telemetry.record_control(target.id, event.save_stat,
+                                 turns_lost=turns_lost,
                                  turns_reduced=turns_reduced)
     # Apply at RUNTIME (§7): credit the target's affected-turns account.  Pure
     # bookkeeping on values already computed above — no die is drawn here (the

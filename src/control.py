@@ -127,6 +127,15 @@ class ControlAccount:
     lost: float = 0.0
     #: Soft control owed: turns to be spent at :attr:`soft_factor` output.
     reduced: float = 0.0
+    #: How many FUTURE turns this entity will take in the current combat — the
+    #: ceiling on what any control can cost it.  Maintained by the scheduler, which is
+    #: the only thing that knows the turn order (CLAUDE.md #7 keeps that out of a
+    #: policy), and read by :meth:`room` at credit time.  Entities that take no turns
+    #: at all — a COMMANDED summon, which acts on its controller's turn via
+    #: ``Choice.actor`` and has no ``TurnStartEvent`` of its own — sit at 0 and are
+    #: therefore credited nothing, which is the honest number rather than a credit
+    #: that could never be spent.
+    turns_remaining: int = 0
     #: The output fraction a soft turn retains, ROUTED here from the policy that
     #: forced the save (``ControlSpec.soft_factor`` → ``ControlSaveEvent`` → here)
     #: rather than defaulted locally.  There is exactly one source for this number —
@@ -157,6 +166,19 @@ class ControlAccount:
             self.soft_factor = soft_factor
 
     @property
+    def room(self) -> float:
+        """Turn-units this entity could still lose — its remaining turns minus what it
+        already owes (``evaluation_framework.md`` §7.6).
+
+        **This is why overlapping control cannot be double-counted.**  Two effects that
+        each last "the rest of the fight" do not cost twice the rest of the fight; they
+        cost it once.  Before the cap read this, each was credited its own full
+        duration, so the credited channel over-reported whenever two controls
+        overlapped — a defect that was invisible while nothing drew the account down.
+        """
+        return max(0.0, self.turns_remaining - self.pending)
+
+    @property
     def pending(self) -> float:
         """Total turn-units owed — what a combat-end clear would discard (§7.6)."""
         return self.lost + self.reduced
@@ -166,6 +188,9 @@ class ControlAccount:
 
         ``soft_factor`` is deliberately NOT cleared: it is a property of the enemy
         that was configured, not of the combat, and re-crediting sets it anyway.
+        ``turns_remaining`` is not cleared either — the scheduler sets it for the new
+        combat, and zeroing it here would make a credit arriving before the first turn
+        boundary saturate to nothing.
         """
         self.lost = 0.0
         self.reduced = 0.0

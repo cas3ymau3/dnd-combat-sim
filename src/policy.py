@@ -103,8 +103,16 @@ class ControlSpec:
 
     ``hard_frac`` splits the failed-save cost into HARD (turn wasted) vs SOFT (output
     reduced).  ``dur_short`` / ``dur_save_ends`` / ``dur_fixed`` are the duration-bucket
-    probabilities feeding ``E[turns]`` (§6 step 5).  ``rounds_remaining`` caps the FIXED
-    / save-ends durations at the rest of the combat.
+    probabilities feeding ``E[turns]`` (§6 step 5).
+
+    **There is no ``rounds_remaining`` here any more (removed s51).** The cap on a FIXED
+    / save-ends duration is the TARGET's own remaining TURNS, which lives on
+    ``Entity.control.turns_remaining`` and is maintained by the scheduler — the only
+    thing that knows the turn order (CLAUDE.md #7).  A policy-side round count was one
+    turn generous (the enemy acts after the character) and could not see what the target
+    already owed, so two overlapping controls each claimed the whole rest of the fight.
+    Keeping the field after it stopped being the cap would have left a plausible-looking
+    number that nothing read — the same trap that produced §7.6.
 
     ``soft_factor`` is the output fraction a SOFT-controlled turn retains, carried here
     rather than looked up where it is applied (``evaluation_framework.md`` §7.2).  It
@@ -117,7 +125,6 @@ class ControlSpec:
     dur_short: float = 1.0
     dur_save_ends: float = 0.0
     dur_fixed: float = 0.0
-    rounds_remaining: int = 1
     soft_factor: float | None = None
 
 
@@ -216,7 +223,7 @@ class Choice:
     # action_type="control_save" makes the TARGET roll `save_stat` vs the actor's
     # `dc_stat`; on a fail the character loses expected turns of output (recorded via
     # the §13 control channel — no damage, no status object).  `control` carries the
-    # qualitative shape (hard/soft split + duration mix + rounds_remaining).
+    # qualitative shape (hard/soft split + duration mix + soft_factor).
     control: "ControlSpec | None" = None
     # Damage type, threaded to the spawned event → DamageEvent.  The caster-side
     # Fueled-Spellfire decision point gates on "spell radiant damage"

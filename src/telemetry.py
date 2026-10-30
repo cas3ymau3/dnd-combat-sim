@@ -22,7 +22,7 @@ s49 one):
   - **control** — TWO halves, because since control is applied at runtime they are two
     quantities rather than one (``evaluation_framework.md`` §7.6). The CREDITED half
     (``control``) is the enemy's pressure: expected turns lost (hard) and reduced
-    (soft) at the moment a save fails, by save ability (§6). The REALIZED half
+    (soft) at the moment a save fails, keyed ``(controlled actor id, save ability)``. The REALIZED half
     (``control_applied``) is the character's cost: turn-units actually drawn out of its
     ``ControlAccount`` at its own turn boundaries, by ACTOR — the key that answers
     "whose turns were lost".
@@ -277,8 +277,8 @@ class CombatTelemetry:
 
     # saves: (ability, channel) -> SaveTally
     saves: dict[tuple[str, str], SaveTally] = field(default_factory=dict)
-    # control, CREDITED half: save ability -> ControlTally
-    control: dict[str, ControlTally] = field(default_factory=dict)
+    # control, CREDITED half: (controlled actor id, save ability) -> ControlTally
+    control: dict[tuple[int, str], ControlTally] = field(default_factory=dict)
     # control, REALIZED half (§7.6): actor id -> ControlAppliedTally
     control_applied: dict[int, ControlAppliedTally] = field(default_factory=dict)
     # mitigation: (actor id, damage type) -> MitigationTally
@@ -307,10 +307,20 @@ class CombatTelemetry:
         if broke:
             self.concentration_breaks += 1
 
-    def record_control(self, ability: str, *, turns_lost: float = 0.0,
+    def record_control(self, actor_id: int, ability: str, *,
+                       turns_lost: float = 0.0,
                        turns_reduced: float = 0.0) -> None:
-        """Record one FAILED control save's cost (§6); for roadmap step 5."""
-        t = self.control.setdefault(ability, ControlTally())
+        """Record one FAILED control save's cost (§6), keyed by WHO failed it.
+
+        ``actor_id`` is the CONTROLLED entity — the one whose turns are at stake, not
+        the enemy that forced the save.  Added s51 (user) because without it this half
+        of the channel sums over whoever failed while the realized half beside it is
+        scoped to the build, and the panel puts the two adjacent: a reader comparing
+        them was comparing two different populations.  Both halves now answer "whose
+        turns", which is what makes the credited/realized equality (§7.6) a statement
+        about one entity rather than an aggregate coincidence.
+        """
+        t = self.control.setdefault((actor_id, ability), ControlTally())
         t.failures += 1
         t.turns_lost += turns_lost
         t.turns_reduced += turns_reduced
@@ -490,6 +500,23 @@ class CombatTelemetry:
         out = AttackTally()
         for actor_id, tally in self.attacks.items():
             if actor_ids is not None and actor_id not in actor_ids:
+                continue
+            out.merge(tally)
+        return out
+
+    def control_for(self, actor_ids: "set[int] | None" = None,
+                    ability: "str | None" = None) -> ControlTally:
+        """The CREDITED control channel collapsed over the given actors.
+
+        Scoped like every other actor-keyed channel: ``None`` pools the roster, which
+        for this channel means pooling a controlled summon's turns with the
+        character's.  ``ability`` narrows to one save type.
+        """
+        out = ControlTally()
+        for (actor_id, save), tally in self.control.items():
+            if actor_ids is not None and actor_id not in actor_ids:
+                continue
+            if ability is not None and save != ability:
                 continue
             out.merge(tally)
         return out

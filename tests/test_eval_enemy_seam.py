@@ -761,17 +761,19 @@ GOLDEN_DPR: dict[tuple, float] = {
     ("war_angel", 13, "scripted", ()): 34.9409375,
     ("war_angel", 13, "none", ()): 35.4578125,
     # RE-BASELINED (s51), deliberately and with a decision record: framework step 6
-    # applies the control cost at RUNTIME (evaluation_framework.md §7), so this is
-    # the one golden in the table that control was ever going to move — and §7.4
-    # said in advance that it would.  34.87 → 26.4784375, a 24.1% drop.  The
-    # first-order arithmetic on the CREDITED account predicted ~33%
-    # (1 − 0.194 − 0.5·0.246); the realized drop is smaller for the two reasons
-    # runtime application exists to capture: a suppressed turn banks its resources
-    # for later, and §7.6's credit/realized gap means not every credited turn-unit
-    # is ever spent.  Every other row in this table is UNCHANGED, which is the
-    # assertion that the default (control off) moved nothing.
+    # applies the control cost at RUNTIME (evaluation_framework.md §7), so this is the
+    # one golden in the table that control was ever going to move — and §7.4 said in
+    # advance that it would.  34.87 → 27.93671875, a 19.9% drop where a naive reading
+    # of the account implies ~33% (1 − 0.194 − 0.5·0.246).  Two reasons it is smaller,
+    # and they compound: a suppressed turn BANKS its resources for a later turn (§7.1.2,
+    # the whole argument for applying control at runtime rather than as a multiplier),
+    # and overlapping controls no longer each claim the whole rest of the fight (§7.6 —
+    # you cannot lose the same turn twice).  It moved TWICE within s51: 26.4784375 was
+    # committed first, with the first of those two effects but not the second, before
+    # the credit was made exact at the user's direction.  Every other row in this table
+    # is UNCHANGED, which is the assertion that the default (control off) moved nothing.
     ("war_angel", 13, "baseline",
-     (("control", True), ("mitigation", True))): 26.4784375,
+     (("control", True), ("mitigation", True))): 27.93671875,
     ("war_angel", 13, "baseline", (("legendary_cadence", True),)): 34.4303125,
     ("silvertail", 10, "baseline", ()): 6.334375,
     ("silvertail", 10, "baseline", (("focus", "summon"),)): 6.31828125,
@@ -1081,19 +1083,23 @@ def test_the_metric_set_grew_only_by_the_declared_rows():
     """The s50 metric-set review kept all 26 declarations (nothing failed the
     survival rule) and step 5 added none — this test asserted that.
 
-    **RENAMED AND UPDATED (s51):** step 6 added exactly THREE declarations, each
-    settled with the user before it was written, and the count is here so a fourth
-    cannot arrive silently:
+    **RENAMED AND UPDATED (s51):** step 6 added exactly ONE declaration, and the
+    count is here so a second cannot arrive silently.
 
-    * ``control_turns_lost_applied_per_round`` and
-      ``control_turns_reduced_applied_per_round`` — the REALIZED half of the control
-      channel (§7.6), beside the credited pair rather than replacing it;
     * ``attacks_per_round_distribution`` — §14's trigger fired (see
       ``test_attacks_per_round_is_exactly_the_action_economy``).
 
-    29 declarations: 18 scalars + 8 breakdowns + 3 distributions.
+    It briefly added three. The REALIZED control pair
+    (``control_turns_lost_applied_per_round`` and its soft twin) was registered and
+    then REMOVED in the same session, once §7.6's cap was made exact at the user's
+    direction: the realized numbers are now equal to the credited ones by
+    construction, so a second pair of rows would publish one quantity twice — the s46
+    survival rule's "derivable and nobody reads it" cut. The realized half remains in
+    the §13 channel, where it PROVES the equality.
+
+    27 declarations: 16 scalars + 8 breakdowns + 3 distributions.
     """
-    assert len(METRICS.scalars()) == 18
+    assert len(METRICS.scalars()) == 16
     assert len(METRICS.breakdowns) == 8
     assert len(METRICS.distributions()) == 3
-    assert len(METRICS.names()) == 78
+    assert len(METRICS.names()) == 76

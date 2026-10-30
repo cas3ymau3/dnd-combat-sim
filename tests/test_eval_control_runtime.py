@@ -23,6 +23,7 @@ prose and nothing could otherwise reach.
 | `ControlAccount.credit`            | lost only                  | unit: credit(lost=…)                          |
 |                                    | reduced + soft_factor      | unit: credit(reduced=…, soft_factor=…)        |
 |                                    | reduced, factor omitted    | unit: deferred to draw() — asserted there     |
+|                                    | saturated at `room`        | unit: room with turns_remaining 2 vs 5        |
 |                                    | two credits accumulate     | unit: credit twice                            |
 | `ControlAccount.draw`              | empty account              | unit: UNAFFECTED identity                     |
 |                                    | hard >= 1                  | unit: suppressed, scale 0                     |
@@ -40,6 +41,10 @@ prose and nothing could otherwise reach.
 |                                    | soft_factor == 1           | unit: a soft turn costs nothing               |
 | `ControlAccount.clear`             | balance dropped            | unit + day boundary                           |
 |                                    | soft_factor KEPT           | unit: clear() then credit-free draw           |
+| `ControlAccount.turns_remaining`   | > pending (room left)      | unit: room == turns_remaining − pending       |
+|   (the §7.6 cap, added in-session) | <= pending (no room)       | unit: room == 0                               |
+|                                    | 0 (entity takes no turns)  | unit: credited nothing; silvertail focus=summon|
+|                                    | set per entity by order    | scheduler: refresh after each draw            |
 | `TurnControl.affected`             | True / False               | unit, both                                    |
 | `Entity.output_scale`              | 1.0 default                | fresh Entity                                  |
 |                                    | set on the actor           | scheduler: controlled turn                    |
@@ -51,6 +56,8 @@ prose and nothing could otherwise reach.
 | `resolve_control_save` credit      | credits the TARGET         | unit: char's account, not the enemy's         |
 |                                    | soft_factor routed         | unit: event factor reaches the account        |
 |                                    | save PASSED → no credit    | unit: high-save char                          |
+|                                    | no turns left → no credit  | unit: turns_remaining=0                       |
+|                                    | keyed by CONTROLLED actor  | unit: telemetry.control[(char.id, ability)]   |
 | `ControlSpec.soft_factor`          | routed from the policy     | BaselineEnemyPolicy control choice            |
 |                                    | None (direct construction) | tests/test_enemy_control_channel.py (kept     |
 |                                    |                            | working deliberately — see draw()'s docstring)|
@@ -65,13 +72,15 @@ prose and nothing could otherwise reach.
 |                                    | resources ARE spent        | scheduler: §7.3's documented wrinkle          |
 | `record_control_applied`           | written on an affected turn| scheduler                                     |
 |                                    | NOT written otherwise      | control off: channel empty, not zeroed        |
-| `control_applied_for` scoping      | character                  | war_angel L13 baseline+control                |
-|                                    | summon                     | silvertail L10 focus=summon+control           |
-|                                    | None (pooled)              | unit: the documented roster-wide total        |
-| `DaySample.control_applied`        | attributed roles           | war_angel: character-scoped                   |
-| the two realized metrics           | measured                   | war_angel L13 baseline+control                |
+| `control_applied_for` scoping      | character                  | silvertail L10 baseline+control (default focus)|
+|                                    | summon                     | silvertail L10 focus=summon → costs nothing   |
+|                                    | None (pooled)              | **BUILT** — no shipped roster populates a      |
+|                                    |                            | second cell, so pooling is unreachable         |
+| `control_for` scoping (credited)   | character                  | the equality test                             |
+|                                    | by ability                 | tests/test_enemy_control_channel.py            |
+| the CREDITED pair (the only pair)  | measured                   | war_angel L13 baseline+control                |
 |                                    | unavailable                | war_angel L13 baseline (control off)          |
-|                                    | realized <= credited       | war_angel L13 — §7.6, both causes             |
+|                                    | == realized, rel 1e-12     | war_angel L13 — §7.6 as revised               |
 | `attacks_per_round_distribution`   | spread > 0                 | war_angel L13 baseline+control                |
 |                                    | spread == 0                | war_angel L13 baseline (and that is correct)  |
 |                                    | unavailability inherited   | over= an always-available scalar → n/a        |
@@ -82,21 +91,23 @@ DO NOT LET THE PROSE OVERCLAIM (s49, broadened s50)
 Every magnitude below was MEASURED before it was written.  Two are worth keeping
 next to their assertions because they are not what a reader would guess:
 
-* **The realized SOFT cost is less than half its credit, while the realized HARD
-  cost is within 13% of its.**  War Angel L13, 400 days, seed 11, `control=True`
-  + `mitigation=True`: hard 0.19402 credited → 0.17032 realized; soft 0.24594
-  credited → 0.11416 realized.  The asymmetry is not truncation — it is §7.5's
-  draw order.  Hard is drawn first, so on a turn with both owed the soft share only
-  gets what the hard share leaves, and soft credits queue up behind hard ones that
-  keep arriving.  A session expecting the two gaps to look alike would read this as
-  a bug.
-* **DPR falls 24.1%, not the 33% the credited account implies.**  34.87 →
-  26.4784375 on that same configuration.  The first-order arithmetic
-  `1 − 0.194 − 0.5·0.246 ≈ 0.67` is the CREDITED projection; the realized drop is
-  smaller for exactly the two reasons runtime application exists (§7.1): suppressed
-  turns bank their resources for a later turn, and not every credited turn-unit is
-  ever spent.  The gap between those two numbers is the whole argument of §7.1,
-  which is why it is recorded rather than smoothed over.
+* **The credited and realized halves now AGREE, and an earlier finding of mine in
+  this same module was a symptom rather than a mechanism.**  The first version of
+  §7.6 left the credit inexact and measured hard keeping 88% of it against soft
+  keeping 46% — which I read as §7.5's draw order showing through.  It was not: it
+  was credits that could never be spent expiring at the combat boundary, and the soft
+  side lost more of them only because hard drains first.  With the cap exact both are
+  100%.  The draw ORDER still matters, for resource preservation, and that is now
+  asserted on the account directly instead of inferred from a ratio.  Recorded because
+  it is the same lesson as s50's twice over: **a plausible mechanical story about a
+  ratio is not a measurement of the mechanism it names.**
+* **DPR falls 19.9%, not the 33% a naive reading of the account implies.**  34.87 →
+  27.93671875 on War Angel L13, 400 days, seed 11, `control=True` + `mitigation=True`.
+  Two separate reasons it is smaller, and they compound: suppressed turns bank their
+  resources for a later turn (§7.1.2 — the whole argument for runtime application),
+  and overlapping controls no longer each claim the whole rest of the fight.  The
+  intermediate value committed earlier in this session, 26.4784375, was the first
+  of those without the second.
 """
 
 from __future__ import annotations
@@ -351,9 +362,14 @@ def test_phase_5b_rounds_rather_than_floors():
 # resolve_control_save — the credit (§7.2)
 # ---------------------------------------------------------------------------
 
-def _control(char_save=2, hard_frac=1.0, soft_factor=0.5, seed=4, **kw):
+def _control(char_save=2, hard_frac=1.0, soft_factor=0.5, seed=4,
+             turns_remaining=4, **kw):
     char = Entity(name="char", hp=10**6,
                   base_stats={"ac": 18, **{**_ALL_SAVES, "wis_save": char_save}})
+    # The §7.6 cap is the target's remaining TURNS, so a direct-call fixture has to say
+    # how many it has — an entity with none can lose none, which is the semantics that
+    # makes a commanded summon's credit zero.
+    char.control.turns_remaining = turns_remaining
     enemy = Entity(name="enemy", hp=10**6, base_stats={"enemy_save_dc": 30})
     event = ControlSaveEvent(tick=make_tick(1, 1, 1), actor=enemy, target=char,
                              hard_frac=hard_frac, soft_factor=soft_factor, **kw)
@@ -369,8 +385,11 @@ def test_a_failed_control_save_credits_the_TARGETs_account():
     char, enemy, telemetry = _control()
     assert char.control.lost > 0.0
     assert enemy.control.pending == 0.0
-    # ...and the credited channel still records the same failure (both readings).
-    assert sum(t.turns_lost for t in telemetry.control.values()) == pytest.approx(
+    # ...and the credited channel records it against the CONTROLLED entity (s51), not
+    # against the enemy that forced the save, so both halves of the channel answer the
+    # same "whose turns" question (§7.6).
+    assert set(telemetry.control) == {(char.id, "wis_save")}
+    assert telemetry.control[(char.id, "wis_save")].turns_lost == pytest.approx(
         char.control.lost)
 
 
@@ -389,6 +408,17 @@ def test_a_PASSED_control_save_credits_nothing():
     char, _enemy, telemetry = _control(char_save=40)
     assert char.control.pending == 0.0
     assert telemetry.control == {}           # no failure, so no credited cell
+
+
+def test_an_entity_with_no_remaining_turns_is_credited_nothing():
+    """§7.6's cap at its boundary, and the semantics that dissolved the
+    commanded-summon deferral: a control that cannot cost a turn is worth nothing, so
+    recording a cost would be recording one that could never be paid."""
+    char, _enemy, telemetry = _control(turns_remaining=0)
+    assert char.control.pending == 0.0
+    assert telemetry.control == {}
+    # The SAVE is still recorded — the pressure happened, it just had nothing to cost.
+    assert telemetry.saves[("wis_save", "control")].failed == 1
 
 
 # ---------------------------------------------------------------------------
@@ -580,38 +610,66 @@ def _report(level=13, build="war_angel", **options):
                          enemy="baseline", enemy_options=options))
 
 
-def test_the_realized_cost_never_exceeds_the_credit_and_the_gap_has_two_causes():
-    """§7.6, which is what the step-4 seam check found BEFORE any code was written:
-    the credited channel and the account describe the same quantity at two different
-    pipeline stages, and they cannot agree.
+def test_the_credit_EQUALS_what_the_account_actually_spends():
+    """§7.6 as revised (user, s51): one quantity, proved from both ends.
 
-    Measured (400 days, seed 11, control + mitigation on War Angel L13):
-    hard 0.19402 → 0.17032, soft 0.24594 → 0.11416.  The assertion is the INEQUALITY
-    and its direction, not the values — the values live in the module docstring with
-    the reason the two gaps are so different in size.
+    The credited half is written by ``resolve_control_save`` at save time; the realized
+    half is written by the scheduler at a turn boundary. They are computed by different
+    code at different moments, which is what makes an equality assertion a real check
+    rather than a tautology.
+
+    **The equality is exact in the arithmetic but NOT bit-identical in the sums**, and
+    the distinction is worth stating because the first version of this test asserted
+    `==` and failed on it: the two halves accumulate the same turn-units in different
+    ORDERS (per failed save vs per turn), so 400 days of War Angel L13 gives
+    728.5374180000002 against 728.5374180000005 — a relative difference of 4e-16. Every
+    credited unit is drawn down and no unit is drawn twice; floating-point addition is
+    simply not associative. So this asserts agreement to a tight relative tolerance, and
+    anything looser than that would hide a real leak.
+
+    Two corrections got it there, neither visible until the account was drawn down: the
+    cap is the target's own remaining TURNS (the enemy acts after the character, so a
+    control landing in round r can only cost the turns that FOLLOW), and the credit
+    saturates at what the target does not already owe (two effects that each last "the
+    rest of the fight" cost it once).
+
+    **The s51 interim finding this replaces, recorded because it was mine and it was a
+    symptom rather than a mechanism:** with the inexact credit, the realized hard cost
+    kept 88% of its credit and the realized soft cost only 46%, and I read that
+    asymmetry as §7.5's draw order showing through. It was not — it was credits that
+    could never be spent expiring at the combat boundary, and the soft side lost more of
+    them only because hard drains first. With the credit exact, both are 100%. The draw
+    ORDER still matters, for resource preservation, and that is asserted on the account
+    directly rather than inferred from a ratio.
     """
-    report = _report(control=True, mitigation=True)
-    credited_lost = report["control_turns_lost_per_round"].value
-    realized_lost = report["control_turns_lost_applied_per_round"].value
-    credited_reduced = report["control_turns_reduced_per_round"].value
-    realized_reduced = report["control_turns_reduced_applied_per_round"].value
+    output = simulate(RunConfig(build="war_angel", level=13, n_days=DAYS, seed=SEED,
+                                enemy="baseline",
+                                enemy_options={"control": True, "mitigation": True}))
+    ids = set(output.roster.ids("characters"))
+    credited = output.telemetry.control_for(ids)
+    realized = output.telemetry.control_applied_for(ids)
 
-    assert 0.0 < realized_lost < credited_lost
-    assert 0.0 < realized_reduced < credited_reduced
+    assert credited.turns_lost > 0.0 and credited.turns_reduced > 0.0
+    assert realized.turns_lost == pytest.approx(credited.turns_lost, rel=1e-12)
+    assert realized.turns_reduced == pytest.approx(credited.turns_reduced, rel=1e-12)
 
 
-def test_the_soft_gap_is_wider_than_the_hard_gap_because_hard_draws_first():
-    """The measured asymmetry, asserted as a MECHANISM: §7.5's draw order means soft
-    credits queue behind hard ones, so the soft channel loses proportionally more of
-    its credit than the hard channel does.  A reader who expected truncation alone
-    would expect the two ratios to match."""
-    report = _report(control=True, mitigation=True)
-    hard_kept = (report["control_turns_lost_applied_per_round"].value
-                 / report["control_turns_lost_per_round"].value)
-    soft_kept = (report["control_turns_reduced_applied_per_round"].value
-                 / report["control_turns_reduced_per_round"].value)
-    assert soft_kept < hard_kept
-    assert hard_kept > 0.8 and soft_kept < 0.6
+def test_the_credit_cannot_charge_the_same_turn_twice():
+    """The overlap correction, asserted as an invariant rather than as a value: the
+    account never owes more turn-units than the entity has turns left to lose.
+
+    Before the credit saturated at :attr:`ControlAccount.room`, two overlapping
+    "rest of the fight" controls were each credited the whole rest of the fight, so the
+    credited channel over-reported. The invariant below is what rules that out, and it
+    is checked on every turn of a real run rather than on a constructed case.
+    """
+    char, enemy = _combatants()
+    char.control.credit(lost=3.0)
+    char.control.turns_remaining = 2
+    assert char.control.room == 0.0           # nothing further can be charged
+
+    char.control.turns_remaining = 5
+    assert char.control.room == pytest.approx(2.0)
 
 
 def test_runtime_control_lowers_dpr_and_the_default_leaves_it_untouched():
@@ -622,16 +680,22 @@ def test_runtime_control_lowers_dpr_and_the_default_leaves_it_untouched():
     assert controlled < uncontrolled
 
 
-def test_the_realized_metrics_are_unavailable_rather_than_zero_without_control():
-    """§3.4's three states, inherited from the credited pair's own predicate: a run
-    with no control channel declares the rows UNMEASURED, never 0 — which would read
-    as "this build resists control perfectly"."""
+def test_the_control_metrics_are_unavailable_rather_than_zero_without_control():
+    """§3.4's three states: a run with no control channel declares the rows UNMEASURED,
+    never 0 — which would read as "this build resists control perfectly".
+
+    Only ONE pair of rows is registered (user, s51). The realized half stays in the §13
+    channel as the proof of the equality above, but publishing it as metrics too would
+    publish one quantity twice — the s46 survival rule's "derivable and nobody reads
+    it" cut.
+    """
     report = _report()
-    for name in ("control_turns_lost_applied_per_round",
-                 "control_turns_reduced_applied_per_round"):
+    for name in ("control_turns_lost_per_round",
+                 "control_turns_reduced_per_round"):
         value = report[name]
         assert not value.measured and not value.available
         assert "control" in value.note
+    assert "control_turns_lost_applied_per_round" not in METRICS.names()
 
 
 def test_the_realized_channel_is_scoped_to_the_build_not_the_roster():
@@ -658,31 +722,29 @@ def test_the_realized_channel_is_scoped_to_the_build_not_the_roster():
     assert set(output.telemetry.control_applied) == {output.roster.character.id}
 
 
-def test_control_on_a_COMMANDED_summon_is_credited_but_never_realized():
-    """A gap the roll call found, measured rather than reasoned about, and recorded as
-    a deferral rather than fixed (evaluation_framework.md §14).
+def test_control_on_a_COMMANDED_summon_costs_nothing_and_SAYS_so():
+    """A gap the roll call found, which the §7.6 revision then DISSOLVED rather than
+    deferred — worth keeping as a test because the resolution is a semantic claim.
 
-    With ``enemy_options={'focus': 'summon'}`` the enemy forces its control saves
-    against the companion, and the companion duly fails them — the CREDITED channel
-    fills up.  Nothing is ever drawn down, and the reason is structural: a controlled
-    ally is commanded on its CONTROLLER's turn via ``Choice.actor`` (CLAUDE.md
-    substrate #7/7a), so it has no ``TurnStartEvent`` of its own and the account has
-    no boundary at which to spend.  Silvertail's companion has no entry in
-    ``runner.policies`` at all.
+    A controlled ally is commanded on its CONTROLLER's turn via ``Choice.actor``
+    (CLAUDE.md substrate #7/7a), so it has no ``TurnStartEvent`` of its own and no turn
+    boundary at which an affected-turns account could be spent. Silvertail's companion
+    has no entry in ``runner.policies`` at all.
 
-    Measured (200 days, seed 11, Silvertail L10, focus='summon'): 235.2 turn-units
-    credited, and the realized channel is EMPTY — not small, empty.  Suppressing a
-    commanded summon's turn would mean suppressing its controller's command, which is
-    a different mechanism, so the honest move is to name it.  Trigger: a summon that
-    takes its own turn (a ``create_entity``'d Actor WITH a policy, which the design
-    allows).
+    As first built, that made the credited channel fill up (235.2 turn-units over 200
+    days) while the realized channel stayed empty — a deferral, and a pair of panel rows
+    a reader could compare and misread. Once the cap became the target's own remaining
+    TURNS, the entity's budget is 0 and the honest credit is 0: control that cannot cost
+    a turn costs nothing. **The pressure is still visible** — the saves channel records
+    every forced save — so nothing is hidden, it is just priced correctly. Measured: 778
+    control saves forced, both control channels empty.
     """
     output = simulate(RunConfig(build="silvertail", level=10, n_days=200, seed=SEED,
                                 enemy="baseline",
                                 enemy_options={"control": True,
                                                "focus": "summon"}))
-    credited = sum(t.turns_lost for t in output.telemetry.control.values())
-    assert credited > 0.0
+    assert output.telemetry.saves_forced("control") > 0      # the pressure happened
+    assert output.telemetry.control == {}                    # ...and cost nothing
     assert output.telemetry.control_applied == {}
 
 
@@ -731,24 +793,24 @@ def test_the_pooled_control_total_sums_every_actor():
 # The renderer (the s49/s50 lesson, which repeated twice before this)
 # ---------------------------------------------------------------------------
 
-def test_the_console_shows_the_realized_rows_aligned_with_the_credited_ones():
+def test_the_console_panel_stays_aligned_whatever_the_longest_name_is():
     """Found by rendering ONE REAL OUTPUT by eye (per-feature ritual step 6, now five
     sessions running), and it is the same class of defect as s49's and s50's: the
     step's own deliverable rendered badly.
 
-    The panel's metric-name column was a hardcoded 34 characters.
-    ``control_turns_reduced_applied_per_round`` is 39, so both new rows overflowed it
-    and pushed their OWN value columns right — the four control rows, which are
-    meant to be read as credited-vs-realized pairs, were the only four in the panel
-    that did not line up. The width is now derived from the rows being rendered, so
-    it cannot go stale the next time a longer name is registered.
+    The panel's metric-name column was a hardcoded 34 characters, and s51 briefly
+    registered a 39-character name — so those rows overflowed the column and pushed
+    their OWN value columns right. The rows in question have since been removed (the
+    credited/realized pair collapsed to one), which means the *symptom* is gone while
+    the *defect* was not: the next long name would have reproduced it. The width is now
+    derived from the rows being rendered, and this test is what keeps that true after
+    the rows that exposed it went away.
     """
     from src.evaluation import console
 
     text = console.render(_report(control=True))
     panel = text.split("PANEL")[1].split("COLUMNS")[0].splitlines()
-    control_rows = [line for line in panel if "control_turns" in line]
-    assert len(control_rows) == 4                    # credited pair + realized pair
+    assert len([line for line in panel if "control_turns" in line]) == 2
 
     # Every panel row puts "+/-" at the same column, which is what alignment MEANS.
     offsets = {line.index("+/-") for line in panel if "+/-" in line}
@@ -771,6 +833,29 @@ def test_the_attacks_distribution_has_spread_only_once_turns_can_be_skipped():
     uncontrolled = _report().distribution("attacks_per_round_distribution")
     assert uncontrolled["iqr"].value == 0.0
     assert uncontrolled["p10"].value == uncontrolled["p90"].value
+
+
+def test_the_attacks_distribution_is_a_LATTICE_and_its_intervals_say_so():
+    """Noticed by eye on a rendered output, then measured: this is the registry's first
+    distribution over a DISCRETE quantity, and that changes how its convergence reads.
+
+    Attacks per round is a count over a fixed 16-round denominator, so every value and
+    every interval endpoint is a multiple of 1/16, and the whole IQR is 0.1875 — three
+    steps. An exact order-statistic interval therefore cannot be narrower than one step
+    until it collapses to zero width, which pins `ci_width_vs_spread` at about 0.33
+    against its 0.10 threshold: `p10` reports [unconverged] at the quick tier with 200
+    tail observations, and 20,000 days converges it. Nothing was tuned (§14's threshold
+    entry records this as a second, distinct stressor — discreteness, not shape); what
+    is asserted here is the lattice itself, which is the part that cannot change.
+    """
+    shape = _report(control=True).distribution("attacks_per_round_distribution")
+    step = 1 / 16
+    for label in ("p10", "p25", "p50", "p75", "p90"):
+        point = shape[label]
+        assert point.value % step == pytest.approx(0.0, abs=1e-9)
+        low, high = point.ci95
+        width = high - low
+        assert width == pytest.approx(round(width / step) * step, abs=1e-9)
 
 
 def test_the_distribution_cannot_disagree_with_the_scalar_it_describes():
