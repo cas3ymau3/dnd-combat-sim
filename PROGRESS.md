@@ -115,7 +115,29 @@ type, condition, resource, …):
    confidently printing a false statement (see step 6).
 
    **SAME QUANTITY, SAME STAGE — the seam check (added s50, same step because it is the
-   same design-time question one layer down).** When a metric, function or assertion reads
+   same design-time question one layer down).**
+
+   > **PROMOTED TO THE DESIGN STEP (user, s51).** Run this check — and the step-5 ROLL
+   > CALL below — while SETTLING the design with the user, not after the code exists.
+   > The step numbers stay as they are, because test docstrings cite them; what changed
+   > is WHEN they happen. The evidence is s51: both artifacts produced their finding
+   > before a line was written. The seam check found that the §13 credited control
+   > channel and the affected-turns account describe the same quantity at two pipeline
+   > stages and CANNOT agree, which became design sections §7.6 and a named deferral
+   > instead of a surprising number later. The roll call found that control on a
+   > COMMANDED summon is credited and never realized, which is a design fact about the
+   > substrate, not a missing test. Neither was reachable by reading code, and both
+   > would have been more expensive to act on once the implementation existed.
+   >
+   > The sharpest form of the dormancy question at design time: **two quantities the
+   > design treats as one.** s51's pair differed in STAGE (credited at save time vs
+   > drawn down at a turn boundary); its follow-on, found while reflecting, differed in
+   > SCOPE (the credited half keyed by save ability and summed over the roster, the
+   > realized half keyed by actor and scoped to the build) — and that one the panel
+   > then invites a reader to compare directly. So ask it of SCOPE and of STAGE, not
+   > just of units.
+
+   When a metric, function or assertion reads
    from TWO subsystems, check that both sides are the same quantity at the same STAGE of
    the pipeline, and then ask the dormancy question: **are the two sides currently
    numerically identical for a reason that will stop holding?** If yes, the mismatch is
@@ -155,7 +177,8 @@ type, condition, resource, …):
    declaration; this one generalizes it to any declaration, at any layer.
 
    **THE ROLL CALL IS A REQUIRED ARTIFACT, not a way of thinking (promoted s48 at the
-   user's request).** Write the table into the test module's docstring BEFORE the
+   user's request; moved into the DESIGN step at the user's request, s51 — see the note
+   under step 4).** Write the table into the test module's docstring BEFORE the
    tests — one row per declaration the change touches, one column naming the fixture
    that covers each VALUE. It is not documentation of work already done; it is the
    instrument that finds the gap, and it only works ahead of time. Evidence from the
