@@ -1553,6 +1553,10 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   share of a turn it accounts for. Recording the prediction that failed, because the
   pattern is now visible: "the next step turns X into a state" is a claim about a design
   that has not been written yet.
+  **STEP 5b DID NOT FIRE IT EITHER (s52), fourth session running.** One line because the
+  check is cheap and the answer is structural: 5b changes *which* enemy a run faces, not
+  *what an enemy does*, so no standardized kind gained the ability to impose
+  disadvantage. The trigger stands where s51 left it.
 - **General status-uptime metric** — §8 asks for "share of turns under specified
   statuses" in general; only the control channel is covered today. Needs `StatusSet`
   sampling at turn boundaries.
@@ -1663,6 +1667,14 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   resampled index vector). Deferred because §6.1 measured pairing at ~1× in this engine
   until RNG substreams land (§13 step 8), and because the comparison artifact is its own
   deferred shape — building a paired quantile interval now would buy nothing measurable.
+  **STRENGTHENED, not merely still-blocked (s52).** §6.1's corrected measurement makes
+  the block quantitative rather than cautionary: with one RNG tape the paired covariance
+  is **−0.12 … +0.06** once two configs diverge — indistinguishable from zero, and
+  negative about as often as positive. A paired quantile interval rests entirely on that
+  covariance being positive and large, so before substreams it would not merely be
+  imprecise: it would report a paired interval **wider than the independent one in
+  roughly half of cases**, which is worse than not shipping it. This is now the deferral
+  with the sharpest numeric justification.
 - ~~**`attacks_per_round`'s distribution — declined s49 because its stderr was exactly
   zero**~~ **REGISTERED (s51), trigger fired.** The s49/s50 decision stood on a measured
   fact: every turn acted, the character's HP is a threshold balance, so attacks per round
@@ -1728,6 +1740,37 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   precisely to hold the parity proof while it lasts. §3.4 carries the full reason.
   *One piece of the migration is already cheaper than expected:* the AC needs no
   migration at all, since every baked-in value already equals the table's (§3.4 item 1).
+
+- **Starfire L15's loadout axes were tuned against an enemy that no longer exists**
+  *(surfaced s52)* — a BUILD-data question, not an engine one, which is why it is recorded
+  rather than fixed. Three of that level's scenario axes were calibrated when its own
+  `LEVELS` row carried a hand-written enemy swinging `2d8+5` at `+9` (mean 14). Against
+  the definitive table's L15 enemy (`8d6+5` at `+12`, mean 33) the calibration does not
+  survive:
+  - **Fount of Moonlight's concentration ends on 1.000 of days** (was 0.05), because the
+    build has ONE 4th-level slot and no short-rest recovery. The rider is a net DPR loss
+    of ~1.4 where it was a gain.
+  - **The Starry-Form Dragon save-floor is inert**, exactly rather than approximately:
+    `DC = max(10, damage // 2)` and a floored d20 contributes `10 + con_save 2 = 12`, so
+    the floor can rescue a save only while the hit dealt **≤ 25 damage**. The retired
+    enemy's mean of 14 pinned the DC at its own minimum of 10, where a floored 12 cleared
+    it every time.
+  - **The FoM-vs-Fire-Shield "near-tie" was a property of that enemy**: +0.49 then,
+    **+3.22** now.
+
+  What is deferred is whether the build's *scenario axes* should be re-specified — a
+  different slot budget, a non-concentration 4th-level option, or a scenario where the
+  character is not the enemy's sole target. Not decided here because 5b's job was to
+  delete the coupling, and choosing a build's loadout is the opposite of build-agnostic.
+  **Trigger: §13's first full build evaluation**, which is where a build's own choices
+  are meant to be examined. The mechanism tests were rewritten to assert mechanisms and
+  **no ranking at all**, so nothing in the suite depends on the answer.
+
+  *The transferable half:* a build whose data row carried its own enemy was implicitly
+  tuned against it, and standardizing the enemy un-tunes every such choice at once. War
+  Angel and Silvertail were unaffected — WA because its loadout does not hinge on a single
+  concentration slot, SV because its baked-in enemy already WAS the standardized one — so
+  Starfire is the only build this reaches, and that is measured rather than assumed.
 
 - **The mitigation channel reads a build whose damage is UNTYPED as a true zero**
   *(surfaced s50)* — War Angel's `typed_damage_share` is 0.0, so with a mitigation

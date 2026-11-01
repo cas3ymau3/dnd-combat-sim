@@ -5955,6 +5955,30 @@ combat policy through two lenses, and reformulate it as needed:
 
 ## Open threads / deferred decisions
 
+> **§14 DEFERRALS AS OF s52 (the authoritative list is `evaluation_framework.md` §14).**
+> Checked rather than assumed, per the s50 habit:
+> - **(a) convergence THRESHOLDS — still live, constants still untouched.** s52 added no
+>   stressor; s51's LATTICE one stands. The fix remains a SWEEP across builds and tiers,
+>   not a nudge to a constant.
+> - **(c) a PAIRED quantile delta — STRENGTHENED by s52.** §6.1's correction makes the
+>   block quantitative: the paired covariance is −0.12 … +0.06 once two configs diverge,
+>   so a paired quantile interval would be WIDER than the independent one in about half
+>   of cases. Still blocked on RNG substreams (step 8).
+> - **(f) an `attacks` metric for DISADVANTAGE — did NOT fire, fourth session running.**
+>   5b changes which enemy a run faces, not what an enemy does.
+> - **(h) the mitigation channel reads an UNTYPED build as a true zero** — still true,
+>   and s52 OBSERVED it in a rendered output (War Angel L13 with mitigation on prints
+>   `damage_mitigated_per_round 0 ± 0`). It did not mislead: the adjacent
+>   `typed_damage_share 0` explains it on the same screen, which is a data point FOR
+>   leaving it as §14 decided.
+> - **(b), (d), (e), (g)** — untouched.
+> - **NEW (s52): Starfire L15's loadout axes were tuned against an enemy that no longer
+>   exists.** FoM's concentration now ends every day, the dragon save-floor is inert
+>   above 25 damage per hit, and the FoM-vs-Fire-Shield near-tie was a property of the
+>   retired enemy (+0.49 → +3.22). A BUILD-data question, deferred to the first full
+>   build evaluation; no test now depends on the answer.
+
+
 - **An `attacks` metric for DISADVANTAGE — one Dimension key away (2026-10-27, session
   49).** The §13 attacks channel RECORDS `disadvantage`; the metrics layer does not
   register it. Not an oversight: no shipped build imposes disadvantage on its OWN
