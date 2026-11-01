@@ -81,10 +81,13 @@ def _extra_entities(runner: "DayRunner", known: "list[Entity]") -> list["Entity"
 # ---------------------------------------------------------------------------
 
 class WarAngelAdapter:
-    """Paladin/Fighter/Bard "War Angel" — the build ``src/validation.py`` measures.
+    """Paladin/Fighter/Bard "War Angel" — the build ``src/validation.py`` measured.
 
-    Reproducing that harness's numbers exactly through this adapter is the
-    correctness proof for the whole evaluation layer (§12).
+    Reproducing that harness's numbers exactly through this adapter WAS the correctness
+    proof for the whole evaluation layer, from s43 to s51.  s52 deleted the harness, and
+    §12 records why the swap is asymmetric: the goldens that replace it are a stronger
+    PHYSICS signal and a weaker LAYER one, the layer half surviving in
+    ``test_headline_column_is_the_characters_own_output``.
     """
 
     name = "war_angel"

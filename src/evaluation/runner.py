@@ -31,8 +31,9 @@ at all, and its absence is recorded as a REASON rather than as a column of zeros
 Why the RNG order matters
 -------------------------
 ``simulate`` constructs ``SeededRNG(config.seed)``, then calls the adapter, then
-loops ``run_day()`` — the exact order ``src/validation.py`` uses.  Any other
-order would shift the dice stream and break the exact-reproduction proof (§12).
+loops ``run_day()``.  That order was chosen to match ``src/validation.py``, which s52
+deleted; it is now pinned by ``GOLDEN_DPR``, since every one of its exact values was
+produced under it.  Any other order shifts the dice stream and breaks all 13.
 """
 
 from __future__ import annotations
