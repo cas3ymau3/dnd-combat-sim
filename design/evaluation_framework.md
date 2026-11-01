@@ -133,6 +133,11 @@ when a build gains a summon.
 
 ### 3.4 Enemy independence — the enemy is not a property of the build
 
+> **STATUS: CLOSED (s52).** Both halves are built — the parallel seam (s50) and the
+> deletion (s52). Items 1-3 below are the HISTORICAL diagnosis and are kept because the
+> corrections attached to them are the reason the fix took the shape it did; none of the
+> three couplings still exists in the code. Read the s52 block for what the enemy is now.
+
 **Decision (user, s43). Character-build assumptions and enemy assumptions must be fully
 independent.** Today they are not, and the coupling is data-level, not cosmetic. Three
 distinct enemy concerns live inside the *character* build modules:
@@ -187,20 +192,129 @@ block. That is safe because no enemy policy draws a die in its constructor, and 
 editing the three modules the §12 parity proof rests on while `build_default` must still
 reproduce `validation.py` bit-for-bit.
 
-**STILL OPEN — the deletion half**, scheduled as its own session with its own decision
-record (user, s50). Not deferred for tidiness: `make_training_dummy` reads
-`LEVELS[level]["enemy_ac"]`, `src/validation.py` reads both `make_day_runner` and
-`LEVELS[level]["target_dpr"]`, and 8 test modules touch the baked-in rows — so removing
-the enemy material breaks `validation.py` and the §12 bit-identical parity proof with it.
-That is a deliberate, documented change, not a side effect of wiring the seam.
+**DONE (s52) — the deletion half.** `enemy="build_default"` is **retired**; the enemy
+material is gone from all three `LEVELS` tables; `make_training_dummy` in each build
+delegates to one shared constructor over the definitive table; the factories always
+return a **passive** enemy and the seam installs every policy; and `src/validation.py`
+is **deleted** (§12 carries that decision record). Four decisions, each with its
+argument below, because this is the change §3.4 has been pointing at since s43.
+
+**`RunConfig.enemy` has NO DEFAULT — it is a required field (user, s52).** Retiring
+`build_default` retires the four-kind schema's transitional default, and the replacement
+is not another default. The reason is this section's own sentence taken one step
+further: if the enemy is not a property of the build, it is not a property of a *run*
+that forgot to mention it either, and a default is exactly an implicit enemy. §4 already
+refuses a config that claims an assumption the run did not apply; a silent default is
+the same failure with the claim left blank. Measured cost of making it explicit: 114 call
+sites gained a declaration and **29 of them moved a number** — the rest were already
+facing, bit-identically, the kind they now name.
+
+**THE SEAM CHECK, run while settling this (s51's promotion) — and the baked-in rows are
+not ONE pair with the table but THREE, with three different verdicts.** This is the
+finding that makes the deletion an argument rather than a tidy-up.
+
+1. **The AC — dormant, and the dormancy is a property of the code.** Identical at all 16
+   War Angel levels (s50 pinned it). What s52 adds is *why that will stop holding*:
+   `enemy_stats.regenerate(write=False)` reproduces the current table's AC at **every**
+   level, so **the table has a GENERATOR and the baked-in rows are a frozen copy of its
+   output.** Retune the CR-scaling constants and one side moves. By STAGE the duplication
+   was already dead code — the factory wrote the baked-in AC into `base_stats` and
+   `_complete_stat_block` then overwrote it from the table, so under every standardized
+   kind the first write was discarded. By SCOPE the baked-in quantity is keyed by
+   **(build, level)** and the table's by **level** alone: it carries one extra key, and
+   that key is precisely the dimension whose existence invalidates cross-build
+   comparison. So the two sides were never the same *kind* of quantity — one is a
+   per-build assumption, the other a standard.
+2. **The saves — NOT dormant. Already wrong, merely unreachable.** War Angel's dummy
+   carried `{ac, attack_bonus, damage_dice, damage_bonus}` and **no saves at all**;
+   Starfire's carried one (`dex_save`); the table carries six plus `enemy_save_dc`. And
+   `Entity.stat()` **returns 0 for a missing key by design**. These sides were not
+   identical-today-for-a-reason; they silently *differed*, hidden only because no War
+   Angel ability forces a save on its target. The first one that does would resolve
+   against +0 and print a plausible number. Worth generalizing: the dormancy question has
+   a third answer besides "equal now, divergent later" — **"already unequal, and the
+   inequality is unreachable"**, which is strictly worse, because there is no equality
+   holding it stable and nothing will fail when it is first reached.
+3. **The offense — not a seam mismatch at all, an open disagreement, and the only one
+   the deletion actually moves.** This is what §3.4 item 1 named, now measured:
+
+   | | baked-in | definitive table |
+   |---|---|---|
+   | WA L13 | 3 swings, **flat 28**, +11 | 2 × 5d8+5 (mean 27.5), +11 |
+   | WA L16 | 3 swings, flat 32, +12 | 2 × 9d6+5 (mean 36.5), +12 |
+   | SS L15 | 2 × 2d8+5 (mean 14.0), **+9** | 2 × 8d6+5 (mean 33.0), **+12** |
+
+   Starfire's hand-written enemy is **2.4× weaker and 3 points less accurate** than the
+   standard; its own comment called it "ILLUSTRATIVE". War Angel's is *flat*, i.e. it
+   carried zero variance into a resilience measurement.
+
+**SILVERTAIL WAS ALREADY STANDARDIZED, BIT-IDENTICALLY, AND NOBODY KNEW.** Its
+`make_training_dummy` already read `enemy_base_stats`, and its `BaselineEnemyPolicy`
+already took the table's dice. Measured at 400 days / seed 11: its `build_default`
+headline equals `enemy="baseline", enemy_options={'focus': 'summon'}` **exactly** —
+`6.31828125` at L10 and `5.889375` at L8. (`GOLDEN_DPR` has been carrying that first
+number as a *standardized* row since s50 without anyone noticing it was also the
+baked-in one.) So "the three builds do not face the same enemy model" was true, and the
+build that differed was not the one the section's examples single out: Silvertail was
+already there, and the deletion costs it nothing.
+
+**WHAT RE-BASELINED, AND WHAT PROVABLY DID NOT** (400 days / seed 11, headline DPR):
+
+```
+build            lvl   build_default    baseline    scripted        none
+war_angel          1        8.292344    8.279687    8.314844    8.292344  ← none == bd
+war_angel          5       16.452813   16.401250   16.414062   16.452813  ← none == bd
+war_angel         13       35.200313   34.763281   34.940937   35.457813
+war_angel         16       41.247656   41.166875   42.597813   36.792812
+starfire_scion     5       12.664531   12.696719   12.798906   12.664531  ← none == bd
+starfire_scion    15       29.875469   27.427344   26.845156   29.915781
+silvertail         4        2.653750    2.700781    2.645313    2.653750  ← none == bd
+silvertail         8        5.889375    5.915312    5.882656    5.831406
+silvertail        10        6.318281    6.334375    6.283281    6.278750
+```
+
+**`none` is bit-identical to `build_default` at every passive level** — which is the
+AC-equality finding confirmed end to end rather than inferred from the stat blocks. So
+the re-baseline is confined to **War Angel L13–16 and Starfire L15**: exactly the two
+builds whose enemy *offense* was hand-written. The deletion moved the numbers it had an
+argument for moving, and moved nothing else.
+
+**THE FACTORIES ALWAYS RETURN A PASSIVE ENEMY (user, s52).** `make_day_runner` /
+`make_silvertail_runner` no longer construct an enemy policy at all, so "whether the
+enemy acts" is a declared fact for every build at every level rather than a property of
+the character's data row (item 3, closed). The alternative considered and rejected was an
+optional `enemy=` kwarg on the factories for the benefit of the direct-construction
+tests: it would have re-created this section's coupling under a new name, with the enemy
+still constructible from inside a build module. Those tests instead either move onto
+`RunConfig(enemy=...)` where they exercise the loop end-to-end, or construct the policy
+inline where they exercise one mechanic.
+
+**ONE SOURCE FOR THE ENEMY ENTITY, two writers, and the second write is PROVED
+redundant.** `enemy_stats.make_baseline_enemy(level)` is now the only place an enemy
+`Entity` is constructed; all three `make_training_dummy` functions delegate to it, and
+`enemy.install`'s `_complete_stat_block` still writes the block over it. That is two
+writes of ONE source, which is not what the seam check forbids (it forbids two
+*sources*) — but "identical today" is exactly the phrase this section exists to distrust,
+so the redundancy is an **assertion** rather than a comment: a test takes the
+factory-built entity and the overlay's result and requires them equal. `_complete_stat_block`
+keeps the write because it must still apply the option-dependent parts (`mitigation`'s
+`damage_multiplier`, `band_override`).
+
+**What this section no longer needs.** The "requirement while both paths exist" below is
+spent: there is one path. `provenance.enemy` still records the resolved enemy — now
+always `resolved: True`, since there is no longer a kind whose assumptions live
+somewhere the framework cannot read.
 
 **This is transitional, not a permanent two-mode split.** An earlier draft of this section
 argued for keeping a "guide-replication" mode alongside the standardized one. That was
 wrong on both halves — see §11.
 
-**Requirement while both paths exist:** provenance must record *which* enemy the run used,
-and reports from the two paths must not be silently compared. This is the same rule §5.2
-already applies to `fixed_length` vs `finite_hp` — an existing pattern, not a new one.
+**Requirement, now that there is one path (s52):** provenance records the resolved enemy
+on every run, always with `resolved: True`. The rule this replaces — "reports from the
+two paths must not be silently compared" — was enforced by the `standardized:` /
+`build_default:` prefix on `enemy_path`; with one path that prefix is a constant, and the
+comparability rule it carried is now structural rather than reported, because there is no
+second path to compare against. §5.2's `fixed_length` vs `finite_hp` rule is unaffected.
 
 ---
 
@@ -1156,8 +1270,10 @@ Per `validate-mechanism-not-build-value` and `enemy_model.md` §11 — tests ass
 
 - an adapter's roster tags the right entities by role; a build with a summon reports
   distinct character / summon columns and never merges them into the headline;
-- the framework **reproduces `validation.py`'s numbers exactly** for War Angel at equal
-  seed and day count (this is the correctness proof for the whole layer);
+- ~~the framework **reproduces `validation.py`'s numbers exactly** for War Angel at equal
+  seed and day count (this is the correctness proof for the whole layer);~~
+  **RETIRED (s52) — `src/validation.py` is deleted. See "What retired the parity proof"
+  below**, which is this retirement's own decision record, as §3.4 required;
 - paired seeding produces byte-identical dice streams for two configs that differ only
   in an inert toggle;
 - provenance `resolved` reports the actual value where the config passed `None`;
@@ -1176,6 +1292,52 @@ Per `validate-mechanism-not-build-value` and `enemy_model.md` §11 — tests ass
   and a run records which enemy path produced it, so the two are never silently compared.
 
 We do NOT assert that any build's evaluated DPR is "correct".
+
+**WHAT RETIRED THE PARITY PROOF (s52), and the honest shape of what replaces it.**
+Framework step 5b deletes the enemy material from the build tables, which deletes
+`make_training_dummy`'s baked-in source and `make_day_runner`'s enemy wiring — the two
+things `src/validation.py` was built on — and `target_dpr`, which it scored against. The
+module is therefore **deleted**, with the user's explicit sign-off, rather than carried as
+a harness measuring something it no longer claims. Its own docstring had already named
+this moment: it "stays the regression check until the evaluation framework's enemy seam
+lands (§13 step 5)". Deleted with it: `war_angel.LEVELS[*]["target_dpr"]`,
+`EXACT_MATCH_MAX_LEVEL`, and the 7 live guide-target tests in `test_war_angel.py`
+(`test_dpr_matches_build_guide_target` at L1-4, `test_dpr_soft_match` at L5-7) — the last
+guide-replication assertions still running, three sessions after §11 retired the practice.
+
+**The thing to be precise about: the parity proof was never an end-to-end PHYSICS
+signal.** It is natural to read "the correctness proof for the whole layer" as the
+project's guard against an engine change moving the numbers. It was not. `validation.py`
+and `src/evaluation` were two readers of the **same** engine, driving the same scheduler
+through the same `SeededRNG`; bit-identity proved that the framework had not corrupted the
+reading, and would have been equally satisfied by an engine that was wrong. So the
+retirement is **asymmetric**, and claiming `GOLDEN_DPR` simply replaces parity would be
+wrong in both directions:
+
+* `GOLDEN_DPR` is a strictly **stronger physics signal** — exact equality on 9+ points
+  across three builds and three enemy kinds, versus the ±10% band and the
+  "did-two-readers-agree" check it replaces.
+* It is a strictly **weaker layer signal** — nothing independently re-derives the DPR
+  definition any more, so a change that redefined the headline consistently everywhere
+  would move the goldens and be indistinguishable from a physics change.
+
+**The layer signal survives, and it was already there.**
+`test_headline_column_is_the_characters_own_output` asserts the framework's headline
+(`damage_by_source(character)`, source-attributed) equals the independent ledger
+(`damage_taken[dummy]`, target-keyed) on the same run. Two readings, two subsystems, one
+number — which is precisely the property parity was protecting, obtained without a second
+harness. It survives the deletion untouched and is now the layer check by name rather than
+by accident.
+
+**`GOLDEN_DPR` is extended to carry the parity proof's COVERAGE, not just its role.** The
+retired test parametrized War Angel at L1 / 4 / 5 / 12 / 13 / 16 for stated structural
+reasons (plain attacks; the exact-match edge; where the daily-plan hooks appear; the last
+inert-enemy level; where the enemy strikes back; the top of the range). Those levels are
+pinned as goldens so the coverage is not quietly lost with the harness. L1 / L5 / L12 are
+pinned under `enemy="none"`, which is **bit-identical to what `validation.py` printed at
+those levels** (§3.4's measurement) — so for the three levels where it is possible, the
+replacement goldens literally *are* the retired harness's numbers, carried forward as
+exact constants rather than re-derived.
 
 **What replaces the retired guide targets (§11).** Dropping guide-replication removes the
 project's only end-to-end "did an engine change move the physics?" signal — the unit tests
@@ -1239,8 +1401,17 @@ check mechanisms, not the composite. Three things carry that load instead:
    the existing ledger.
 3. ~~Serialization: JSON + tidy CSV + console renderer; `schema_version`.~~ **DONE (s47)** — `evaluation_framework.md` §9.1 locks the schema; `src/evaluation/{artifact,console}.py` + 44 tests.
 4. ~~The `attacks` telemetry channel (§8.1).~~ **DONE (s49)** — §8.1 locks the shape; the sixth `CombatTelemetry` channel (actor-keyed) plus `attacks_per_round` and the `attack_roll_rate` breakdown. Forced `BreakdownDef.sum_rule` from an inference to a declaration: this is the registry's first breakdown that is crossed AND non-additive (a crit is a hit).
-5. **The enemy-construction seam (§3.4)** *(inserted s43, between the original steps 4 and
-   5)* — **PARALLEL HALF DONE (s50); the DELETION half is its own session.**
+5. ~~**The enemy-construction seam (§3.4)**~~ *(inserted s43, between the original steps 4
+   and 5)* — **DONE: parallel half s50 (5a), deletion half s52 (5b).**
+   **5b (s52):** `enemy="build_default"` retired, `RunConfig.enemy` made a REQUIRED field
+   with no default, the enemy material deleted from all three `LEVELS` tables, the
+   factories made unconditionally passive, `enemy_stats.make_baseline_enemy` made the one
+   enemy-`Entity` constructor, and `src/validation.py` DELETED — the §12 parity proof
+   retired with its own decision record (§12). The re-baseline was confined to War Angel
+   L13-16 and Starfire L15, the two builds whose enemy offense was hand-written; `none`
+   proved bit-identical to `build_default` at every passive level, and Silvertail's
+   baked-in enemy proved bit-identical to the standardized one. §3.4 carries the seam
+   check's three-verdict finding. 5a, for the record:
    `src/evaluation/enemy.py` + 122 mechanism tests in `tests/test_eval_enemy_seam.py`.
    `RunConfig.enemy` / `enemy_options` are live against a closed declared schema, every
    adapter installs the configured enemy, §4's enemy block is resolved, and **both
@@ -1279,8 +1450,13 @@ check mechanisms, not the composite. Three things carry that load instead:
    Sequenced last because nothing else depends on it and the intervals reported before
    it are honest, just wider than they could be.
 
-`src/validation.py` **stays as-is** throughout as the regression check, and is migrated
-onto the framework only once step 1 reproduces its numbers exactly.
+~~`src/validation.py` **stays as-is** throughout as the regression check, and is migrated
+onto the framework only once step 1 reproduces its numbers exactly.~~ **DONE and then
+retired (s52).** It stayed as-is from step 1 (s43) through step 6 (s51), the parity proof
+holding bit-identical the whole way; step 5b deleted the baked-in path it reads, so the
+module is deleted rather than migrated. It was never migrated onto the framework because
+there was nothing left to migrate: everything it computed, the framework computes, and
+everything it scored against (`target_dpr`) §11 retired. See §12.
 
 ---
 
@@ -1472,7 +1648,17 @@ onto the framework only once step 1 reproduces its numbers exactly.
 - **Multi-character party** — `Roster.characters` is plural in anticipation, but no
   build produces more than one character yet; unblocks §7's AoE-share and kiting
   toggles when it lands (§3.3).
-- **Enemy material inside the character factories** — `enemy_ac` / `enemy_attack` rows and
+- ~~**Enemy material inside the character factories**~~ — **CLOSED (s52).** The
+  `enemy_ac` / `enemy_dex_save` / `enemy_attack` rows are deleted from all three `LEVELS`
+  tables, `enemy_stats.make_baseline_enemy` is the one enemy-`Entity` constructor, and the
+  factories install no enemy policy, so the choice of policy class is a declared
+  `RunConfig.enemy` and nothing else. The deferral ran s43 → s52 and closed as scheduled,
+  at the step it was scheduled for. §3.4 carries the record; the two findings worth
+  carrying forward are that **the saves half was not dormant but already wrong and merely
+  unreachable** (a third answer to the dormancy question), and that **Silvertail was
+  already standardized bit-identically** and nobody knew. Historical text follows.
+
+  `enemy_ac` / `enemy_attack` rows and
   the choice of enemy policy class still live in each build's `LEVELS` table (§3.4).
   Scheduled for removal at step 5, not open-ended: the redundancy is transitional, and
   the baked-in path is deleted once the standardized enemy is in place.
