@@ -12,20 +12,23 @@ adds the two things the evaluation layer needs and the factories do not provide:
 Registration happens at import time; ``adapters._ensure_builtin_adapters`` pulls
 this module in on the first registry lookup.
 
-THE ENEMY SEAM (s50, §3.4)
---------------------------
-Each ``build()`` ends with one unconditional call to ``enemy.install``, which is a
-no-op under the default ``enemy="build_default"`` and otherwise replaces the
-factory's enemy with the standardized one.  The adapters are therefore "told which
-enemy to install" without any of the three factories being edited — which is the
-point while ``build_default`` still has to reproduce ``validation.py`` bit-for-bit.
+THE ENEMY SEAM (s50, §3.4; completed s52)
+-----------------------------------------
+Each ``build()`` ends with one unconditional call to ``enemy.install``, which installs
+the declared enemy over the roster the factory returned.  In s50 that call was a no-op
+under the then-default ``enemy="build_default"``; s52 deleted the baked-in path, so it
+always installs and the factories return a PASSIVE enemy for it to install onto.
 
-The adapters' ``describe()`` blocks keep reporting the enemy facts their FACTORY
-decided (``enemy_policy``, ``enemy_focus``, …).  That is deliberate and is not the
-§4 enemy block: under ``build_default`` those facts ARE the run's enemy, and under
-a standardized enemy they are the overwritten path, which a reader comparing the
-two wants to see.  The authoritative enemy block is ``enemy.resolve``, assembled
-independently of the build — because the enemy is not a property of the build.
+**``describe()`` no longer reports any enemy fact, and that deletion is the point.**
+Through s50-s51 each block carried the facts its FACTORY decided (``enemy_policy``,
+``enemy_n_attacks``, ``enemy_focus``, ``enemy_damage_type``, …), which was right while
+those facts WERE the run's enemy under ``build_default`` and were the overwritten path
+otherwise.  With the baked-in path gone, nothing read them: ``enemy.resolve``'s only
+consumer of ``described`` was its ``build_default`` branch.  Keeping them would have
+left plausible-looking enemy numbers in provenance with no consumer and no claim to
+truth — the trap §7.6 was written about — so they are gone.  The authoritative enemy
+block is ``enemy.resolve``, assembled from the config alone, because the enemy is not a
+property of the build.
 """
 
 from __future__ import annotations
@@ -97,18 +100,10 @@ class WarAngelAdapter:
         return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
-        row = war_angel.LEVELS[config.level]
-        enemy_attack = row.get("enemy_attack")
         return {
             "build": self.name,
             "level": config.level,
             "options": {},
-            # Structural facts the factory decides off the level's data row.
-            "enemy_policy": "scripted" if enemy_attack else None,
-            "enemy_n_attacks": enemy_attack["n_attacks"] if enemy_attack else 0,
-            "enemy_char_target_prob": (
-                enemy_attack["char_target_prob"] if enemy_attack else 0.0
-            ),
             "daily_plan": config.level >= 5,     # Magic Weapon / Prayer of Healing hooks
         }
 
@@ -175,7 +170,6 @@ class StarfireScionAdapter:
     def describe(self, config: "RunConfig") -> dict[str, Any]:
         opts = _resolved_options(self, config)
         row = starfire_scion.LEVELS[config.level]
-        enemy_attack = row.get("enemy_attack")
 
         # Genuine §4 resolution: primal_strike_unarmed=None is not "default", it is
         # whatever the level row's raw_unarmed flag says (and is meaningless at a
@@ -197,11 +191,6 @@ class StarfireScionAdapter:
             "options": opts,
             "primal_strike_unarmed_effective": resolved_ps,
             "primal_strike_unarmed_source": ps_source,
-            "enemy_policy": "scripted" if enemy_attack else None,
-            "enemy_targeting": (
-                "weighted_roster" if (enemy_attack and opts["with_party"])
-                else "single_target" if enemy_attack else None
-            ),
         }
 
 
@@ -260,22 +249,10 @@ class SilvertailAdapter:
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
         opts = _resolved_options(self, config)
-        row = silvertail.LEVELS[config.level]
-        enemy_attack = row.get("enemy_attack")
         return {
             "build": self.name,
             "level": config.level,
             "options": opts,
-            "enemy_policy": "baseline" if enemy_attack else None,
-            # The factory picks the focus target off zone_effect: with a zone the
-            # enemy tanks the master (so its hits can break concentration),
-            # otherwise it focus-fires the beast.
-            "enemy_focus": (
-                None if not enemy_attack
-                else "character" if opts["zone_effect"] is not None
-                else "summon"
-            ),
-            "enemy_damage_type": enemy_attack.get("damage_type") if enemy_attack else None,
         }
 
 

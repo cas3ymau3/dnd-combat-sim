@@ -32,14 +32,14 @@ records the band it read, the stat block it installed, and every §7 option at t
 value ACTUALLY used, ``soft_factor=None`` → ``0.5, from enemy_stats.SOFT_FACTOR``
 included.
 
-**One path is still honestly unresolved, and says so.**  Under the default
-``enemy="build_default"`` the enemy genuinely IS a property of the character build —
-that is the coupling §3.4 exists to remove — so its block carries
-``resolved: False`` and names the factory as the source.  A half-filled provenance
-block would be worse than an honest gap: it would imply the assumptions were
-recorded when they were not.  The transitional default stays because it is what
-keeps ``src/validation.py`` and the §12 bit-identical parity proof alive while both
-paths exist.
+**EVERY path resolves since s52.**  Through s50-s51 one did not: under the then-default
+``enemy="build_default"`` the enemy genuinely WAS a property of the character build —
+the coupling §3.4 exists to remove — so its block carried ``resolved: False`` and named
+the factory as the source, on the principle that a half-filled provenance block is worse
+than an honest gap because it implies the assumptions were recorded when they were not.
+Step 5b deleted that path, so ``resolved`` is unconditionally True and the gap is closed
+rather than reported.  ``RunConfig.enemy`` is now REQUIRED, which is the same principle
+one level up: a run cannot decline to say what it faced.
 """
 
 from __future__ import annotations
@@ -145,15 +145,17 @@ class Provenance:
         from .enemy import resolve as resolve_enemy
 
         sha, dirty = engine_version()
-        enemy_block = resolve_enemy(config, described)
-        # The comparability key a reader (and §9's warning machinery) keys on.  It
-        # names the PATH, not just the model, because "standardized baseline" and
-        # "the factory happened to pick BaselineEnemyPolicy" are different runs that
-        # must not be pooled even when both say "baseline".
-        enemy_path = (
-            f"standardized:{enemy_block['kind']}" if enemy_block["standardized"]
-            else f"build_default:{enemy_block['policy']}"
-        )
+        enemy_block = resolve_enemy(config)
+        # The comparability key a reader (and §9's warning machinery) keys on.  It names
+        # the PATH, not just the model, because s50 shipped two sources for an enemy and
+        # "standardized baseline" vs "the factory happened to pick BaselineEnemyPolicy"
+        # were different runs that must not be pooled even though both said "baseline".
+        # Since s52 there is ONE source, so the prefix is a constant — kept rather than
+        # dropped for two reasons: it is what distinguishes a post-5b artifact from the
+        # pre-s50 ones that rendered the bare word (schema_version does not cover
+        # provenance string shapes), and the field is already the right shape for the
+        # next genuinely-different source, which §10's multi-enemy model will be.
+        enemy_path = f"standardized:{enemy_block['kind']}"
         return cls(
             config=config.canonical(),
             resolved={
@@ -162,27 +164,25 @@ class Provenance:
             },
             coverage={
                 "build_side": "resolved — the adapter reports the values actually used",
+                # Unconditional since s52: with the baked-in path deleted there is no
+                # run whose enemy assumptions live somewhere the framework cannot read,
+                # so the "NOT RESOLVED" branch this used to carry has no reachable case.
                 "enemy_side": (
                     "resolved — evaluation/enemy.resolve reports the kind, the band, "
                     "the installed stat block and every §7 option at the value "
                     "actually used (§3.4's standardized enemy)"
-                    if enemy_block["resolved"] else
-                    "NOT RESOLVED. This run uses enemy='build_default', so the build "
-                    "factory constructs the enemy off the character's own LEVELS row "
-                    "— the §3.4 coupling, kept deliberately as the transitional path "
-                    "that holds src/validation.py and the §12 parity proof. Pass "
-                    "enemy='baseline' for a run whose enemy assumptions are declared."
                 ),
                 "enemy_path": enemy_path,
                 "attribution": config.attribution,
                 "attributed_roles": list(config.own_roles),
                 "comparability_warning": (
                     "Runs whose enemy_path differs faced DIFFERENT enemy models and "
-                    "must not be compared (§3.4) — which includes comparing a "
-                    "standardized enemy against a build_default one, the exact "
-                    "redundancy step 5 built. The same rule applies to "
-                    "'attribution' and 'mode': all three change what the headline "
-                    "number MEANS, not merely its value."
+                    "must not be compared (§3.4). Since s52 every run's enemy is "
+                    "standardized and declared, so this reduces to the three kinds: "
+                    "'baseline' forces saves AND swings, 'scripted' only swings, and "
+                    "'none' does neither. The same rule applies to 'attribution' and "
+                    "'mode': all three change what the headline number MEANS, not "
+                    "merely its value."
                 ),
             },
             roster=roster_summary,

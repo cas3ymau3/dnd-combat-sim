@@ -90,8 +90,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..builds.enemy import BaselineEnemyPolicy
-from ..builds.enemy_stats import enemy_base_stats
+from ..builds import enemy_stats     # THE enemy-Entity constructor (§3.4)
 from ..day_runner import BetweenCombatsContext, DayRunner
 from ..entity import Entity
 from ..healing import HitDiceSpec, attach_hit_dice
@@ -128,10 +127,9 @@ def _char_pb(level: int) -> int:
 #     with wind" makes it WIS-based): a WIS spell attack, 1d8 lightning, no ability
 #     modifier to damage (cantrips add none until Blessed Strikes at char L15).
 #     Char L4 → 1d8 (cantrip scaling is char L5+).
-#   The enemy's full profile (AC / saves / attack bonus / save DC / per-level DICE) is
-#     drawn from the definitive table (enemy_stats; monster_stats_by_level.csv), so the
-#     rows carry no enemy numbers — only an ``enemy_attack`` marker (+ damage type) on
-#     levels where the enemy strikes the beast.
+#   The enemy is NOT in these rows at all (§3.4, step 5b).  Its full profile comes from
+#     the definitive table (enemy_stats.make_baseline_enemy; monster_stats_by_level.csv)
+#     and whether/whom it attacks is a declared `RunConfig.enemy` + `enemy_options`.
 # Beast (primal companion, Beast of the Land) — see make_primal_companion.
 LEVELS: dict[int, dict] = {
     4: {
@@ -156,9 +154,9 @@ LEVELS: dict[int, dict] = {
             "strike_type": "bludgeoning",  # chosen on summon
             # saves: the full 2024 statblock (BEAST_BASE_SAVES + char PB) in the factory.
         },
-        # No enemy_attack at L4: the dummy is a passive target (the 7a summon scenario).
-        # Its AC / saves still come from the table (make_training_dummy) so the master's
-        # shocking grasp resolves against a real AC.
+        # The dummy is a passive target here unless a run declares otherwise (the 7a
+        # summon scenario).  Its AC / saves come from the table (make_training_dummy) so
+        # the master's shocking grasp resolves against a real AC.
         # Loose all-hit upper bound (NOT a target): beast strike 1d8+1d6+5 ≈ 13 +
         # shocking grasp 1d8 ≈ 4.5 → ~18.  24 cushion.
         "ceiling_dpr": 24.0,
@@ -208,12 +206,12 @@ LEVELS: dict[int, dict] = {
             "strike_type": "bludgeoning",
             # saves: the full 2024 statblock (BEAST_BASE_SAVES + char PB) in the factory.
         },
-        # Enemy strikes the BEAST (TYPED slashing) so the 7c-on-summon DEFENDER effects
-        # (warding bond resistance+redirect, protection disadvantage) do real work.  A
-        # MARKER only — the actual numbers (to-hit / save DC / per-level DICE) come from
-        # the definitive table via BaselineEnemyPolicy; ``damage_type`` lets warding
-        # bond's resistance bite before the redirect.
-        "enemy_attack": {"damage_type": "slashing"},
+        # The 7c-on-summon DEFENDER effects (warding bond resistance+redirect,
+        # protection disadvantage) need the enemy to strike the BEAST with TYPED damage.
+        # That is now DECLARED, not baked in (§3.4, step 5b): a run asks for
+        # enemy="baseline" with enemy_options={'focus': 'summon', 'damage_type':
+        # 'slashing'} — `focus` sends the swings at the beast and `damage_type` lets
+        # warding bond's resistance bite before the redirect.
         # Loose all-hit upper bound (NOT a target): beast 1d8+1d6+6 ≈ 14 + shocking
         # grasp 2d8 ≈ 9 → ~23, + Bless accuracy.  40 cushion.
         "ceiling_dpr": 40.0,
@@ -262,10 +260,10 @@ LEVELS: dict[int, dict] = {
             "charge_dice": (1, 6),
             "strike_type": "bludgeoning",
         },
-        # Enemy strikes the master (the emanation tank) — a MARKER; the numbers come
-        # from the definitive table via BaselineEnemyPolicy.  Its hits force the
-        # master's concentration saves (a failed one ends Spirit Guardians).
-        "enemy_attack": {"damage_type": "slashing"},
+        # The 7b zone scenario wants the enemy on the MASTER (the emanation tank), so
+        # its hits force the master's concentration saves and a failed one ends Spirit
+        # Guardians.  DECLARED, not baked in (§3.4, step 5b): enemy="baseline" with
+        # enemy_options={'focus': 'character'} — which is the default focus.
         # Spirit Guardians spec (the 7b emanation): WIS save vs our DC, 3d8 radiant,
         # half on a save, anchored to the caster, concentration.
         "spirit_guardians": {
@@ -399,21 +397,21 @@ def make_primal_companion(level: int, mortal: bool = False) -> Entity:
 
 
 def make_training_dummy(level: int) -> Entity:
-    """The target: an effectively infinite-HP dummy carrying the enemy's full profile —
-    AC + the six saves + attack bonus + save DC — drawn from the definitive per-level
-    table (``enemy_stats.enemy_base_stats``; ``reference/data/monster_stats_by_level.csv``).
+    """The target for *level*: the definitive table's full enemy stat block.
 
-    Through the L4 summon row it has no policy and never acts (a passive target).  On a
-    row that carries an ``enemy_attack`` marker (L8 — the 7c-on-summon slice) a
-    ``BaselineEnemyPolicy`` drives it to strike the BEAST with the table's per-level
-    DICE — the enemy-strikes-back loop that makes the beast's defender-side effects
-    (warding bond / protection) do real work."""
-    stats = enemy_base_stats(level)
-    return Entity(
-        name=f"Dummy-AC{stats['ac']}",
-        hp=10**9,
-        base_stats=stats,
-    )
+    Delegates to ``enemy_stats.make_baseline_enemy`` — THE one enemy-``Entity``
+    constructor (evaluation_framework.md §3.4, step 5b).  Silvertail is the build that
+    needed the least migration, and that is a finding worth keeping: it ALREADY read
+    ``enemy_base_stats`` here and already drove the enemy off the table's dice, so its
+    baked-in enemy was bit-identical to the standardized one
+    (``enemy="baseline", enemy_options={'focus': 'summon'}`` — 6.31828125 at L10,
+    5.889375 at L8, 400 days / seed 11).  §3.4's examples single out the other two
+    builds; nobody had noticed this one was already there.
+
+    It never acts.  Whether the enemy acts is a declared ``RunConfig.enemy`` and the
+    framework's seam installs the policy; no build factory constructs one.
+    """
+    return enemy_stats.make_baseline_enemy(level)
 
 
 # ---------------------------------------------------------------------------
@@ -722,11 +720,13 @@ def make_silvertail_runner(
     mortal_beast:
         If True the companion WINKS OUT at 0 HP (summon survival, session 22), so it
         can die mid-combat and stop contributing.  Default False = the threshold-
-        immortal beast the session-21 mechanism tests isolate effects against.  When the
-        row has an ``enemy_attack`` marker the enemy is driven by ``BaselineEnemyPolicy``
-        off the definitive per-level table (``enemy_stats``): per-level attack bonus /
-        save DC / DICE, mixing attack rolls and save-forcing across the target's saves,
-        and RETARGETING onto the master when the beast dies.
+        immortal beast the session-21 mechanism tests isolate effects against.  For the
+        beast to die at all something must attack it, and that is now declared rather
+        than baked in (§3.4, step 5b): `enemy="baseline"` with
+        `enemy_options={'focus': 'summon'}` installs ``BaselineEnemyPolicy`` off the
+        definitive per-level table (``enemy_stats``) — per-level attack bonus / save DC /
+        DICE, mixing attack rolls and save-forcing across the target's saves, and
+        RETARGETING onto the master when the beast dies.
     recast:
         If True, register the between-combats RECAST policy (``make_recast_hook``) so
         a dead beast is revived (spending a spare slot) before the next combat.
@@ -778,31 +778,18 @@ def make_silvertail_runner(
         bep.install()
         policies[beast.id] = bep
 
-    # Enemy strikes back (L8): the dummy attacks the BEAST so the beast's defender
-    # effects modulate real incoming damage.  The enemy is driven entirely by the
-    # definitive per-level table (decision #12's realised half; enemy_stats.py): the
-    # dummy Entity already carries the table's AC / saves / attack bonus / save DC
-    # (make_training_dummy), and BaselineEnemyPolicy supplies the per-level attack /
-    # AoE DICE + the attack-vs-save mix.  It focus-fires the beast, shifting to the
-    # master when the beast winks out.
-    ea = LEVELS[level].get("enemy_attack")
-    if ea:
-        # In the 7b zone scenario the enemy focus-fires the MASTER (the emanation
-        # tank) so its hits force the master's concentration saves (a failed one ends
-        # Spirit Guardians); otherwise it focus-fires the beast (the 7c-on-summon
-        # defender scenario).  Either way it takes the zone's per-turn save while
-        # inside (the zone fires on it regardless of whom it targets).
-        if zone_effect is not None:
-            primary, fallback = char, beast
-        else:
-            primary, fallback = beast, char
-        policies[dummy.id] = BaselineEnemyPolicy(
-            level=level,
-            primary=primary,
-            fallback=fallback,
-            rounds_per_combat=rounds_per_combat,
-            damage_type=ea.get("damage_type"),
-        )
+    # THE ENEMY NEVER ACTS HERE (evaluation_framework.md §3.4, step 5b).  Until s52 this
+    # factory built a BaselineEnemyPolicy off the row's `enemy_attack` marker and picked
+    # its focus target off `zone_effect`.  Both are now declared:
+    # `RunConfig.enemy="baseline"` installs the model and
+    # `enemy_options['focus']` picks character-vs-summon.  Worth recording, because it is
+    # the finding that made this build cheap to migrate: the policy built here was
+    # ALREADY the standardized one, drawn from the same table, so
+    # `enemy="baseline", enemy_options={'focus': 'summon'}` reproduces this factory's old
+    # numbers BIT-IDENTICALLY (6.31828125 at L10, 5.889375 at L8, 400 days / seed 11).
+    # The one thing that was genuinely baked in was the focus derivation — with a zone
+    # the enemy tanked the master, otherwise it focus-fired the beast — which is exactly
+    # the "who does it attack" half of §3.4 and is now the caller's to declare.
 
     runner = DayRunner(
         rng=rng,
