@@ -727,8 +727,47 @@ tweak**: it changes the dice every existing run consumes, so every seeded baseli
 moves and the §12 bit-identical parity proof against `validation.py` breaks. It gets
 its own roadmap step and its own decision record (§13 step 8).
 
-Pairing stays the DEFAULT meanwhile. It is never worse than independent seeding, it
-costs nothing, and it becomes valuable the moment substreams land.
+**CORRECTION (s52, MEASURED): "never worse than independent seeding" was FALSE, and the
+data falsifying it was already in the table above.** The sentence this replaces read
+"Pairing stays the DEFAULT meanwhile. It is never worse than independent seeding, it
+costs nothing, and it becomes valuable the moment substreams land." Rows 3 and 5 of s44's
+own table are **0.95× and 0.97×** — paired standard errors *wider* than independent — so
+the claim contradicted its own section's measurements three lines up, and had done since
+s44. It is the s50 lesson arriving through a fourth door: a mechanical argument ("shared
+noise cancels in the difference") stated as a guarantee, with one term missing. The
+algebra is `Var(A − B) = Var(A) + Var(B) − 2·Cov(A, B)`, so pairing is narrower **only
+when `Cov > 0`**. Nothing makes it positive.
+
+It also had a TEST — `test_a_paired_delta_is_never_wider_than_the_independent_one` —
+which passed from s44 to s51 by luck of which side of zero one seed's covariance landed
+on, and failed the moment step 5b changed which enemy that config faced. Caught the way
+s50's first overclaim was: because the claim had been written as an assertion.
+
+**What is true, measured over 5 comparisons × 3 enemy kinds at 300 days.** There are
+exactly two regimes and nothing in between:
+
+| regime | correlation | paired / independent |
+|---|---|---|
+| the toggle is INERT (streams never diverge) | exactly **1.0** | **0.000** — the delta is `0 ± 0` |
+| the toggle diverges the stream | **−0.12 … +0.06** | **0.967 … 1.059** |
+
+So in the diverging regime the correlation is *indistinguishable from zero* and the
+paired standard error scatters a few percent either side of the independent one — wider
+in 4 of the 9 diverging cells. Pairing is not a small win in this engine; it is
+**statistically inert**, exactly as the s44 "worthless after the first divergence"
+mechanism predicts, and the inert-toggle row is what shows the machinery is right.
+
+**Why it stays the DEFAULT regardless**, which needs none of the retracted claim: it is
+*exact* for an inert toggle (the case where a reader is most at risk of over-reading a
+tiny delta), it costs nothing, it is what provenance already records, and it becomes
+valuable the moment substreams land. What it must not do is let a report *claim* a
+precision it does not have — and it does not, because the interval reported is the
+measured paired one, whichever side of the independent figure it falls.
+
+The replacement test asserts the two-regime fact instead of the false guarantee, and is
+written to **FAIL when §13 step 8 lands**. That is deliberate: a tripwire is the right
+shape for "this is inert today and must stop being inert", and it puts step 8's decision
+record where it belongs.
 
 ### 6.2 Every scalar metric carries uncertainty
 
@@ -1174,10 +1213,30 @@ provenance block to find out that two artifacts are incomparable will not. The
 | code | raised when |
 |---|---|
 | `comparability` | always — names this run's resolved `mode` / `attribution` / `enemy_path`, the three that change what the headline MEANS |
-| `coverage_gap` | any `coverage` entry is not resolved (today: the enemy side, until §13 step 5) |
+| `coverage_gap` | any `coverage` entry is not resolved. **No run can emit this since s52** (step 5b deleted the one unresolved path); the detector is kept because it is generic over any `*_side` key and `WARNING_CODES` is a published vocabulary, and it is unit-tested against a synthetic gap so the retained branch is not an untested value |
 | `engine_dirty` | the working tree had uncommitted changes: the artifact is not reproducible from its `engine_commit` |
 | `precision` | `day_tier == "quick"` — an iteration run, not a publishable one |
-| `unconverged` | ≥1 measured metric fails its own declared heuristic |
+| `unconverged` | ≥1 measured estimate fails its own declared heuristic — **scalars, breakdown cells AND distribution points** (corrected s52; see below) |
+
+**THE `unconverged` WARNING COUNTED HALF THE ESTIMATES FOR FOUR SESSIONS (fixed s52).**
+It read `EvalReport.unconverged()`, which iterates `values` and therefore sees scalars
+and breakdown cells only. On a War Angel L13 quick-tier run it announced *"3 measured
+metric(s)"* while the artifact flagged **6** — the other three being
+`attacks_per_round_distribution`'s `p10`, `p25` and `iqr`. The whole reason convergence
+is promoted to a top-level warning is that a reader should not have to open every row's
+`converged` flag; a warning that undercounts by half is **worse than none**, because it
+reads as a complete answer.
+
+Found by rendering one real output by eye (per-feature ritual step 6, the sixth session
+running and the sixth defect it has found). Why it stayed invisible is the dormancy
+question one layer out from §3.4's: the warning predates distributions (s47 vs s48), and
+the two originally shipped distributions converged at every tier, **so the two sides
+agreed by accident**. s51's `attacks_per_round_distribution` is the registry's first
+LATTICE distribution and the first legitimately unconverged at the quick tier, which made
+the gap reachable; one rendered output made it visible. `EvalReport.unconverged_names()`
+is now the single thing any count must read, and the fixture that guards it deliberately
+has BOTH kinds non-empty — "some of each" is the branch, and neither kind alone
+exercises it.
 
 **The summing trap is a FIELD, not a comment.** An uncrossed breakdown's cells do not
 partition its total — each dimension covers the whole quantity, so adding every cell

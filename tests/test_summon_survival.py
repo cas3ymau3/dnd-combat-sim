@@ -228,12 +228,29 @@ def test_baseline_enemy_retargets_to_fallback_when_primary_winks_out():
 # modeled; none of those are in scope here).
 # ===========================================================================
 
+def _install_l8_enemy(runner, char, beast, dummy):
+    """Point the standardized L8 enemy at the beast — what the factory used to do.
+
+    s52 (§3.4 step 5b) deleted the enemy material from the build data, so
+    ``make_silvertail_runner`` returns a PASSIVE target and "whether the enemy acts" is
+    the caller's to declare.  Every test in this module needs it to act, since the whole
+    slice is about a summon dying under fire.  The construction here is exactly what the
+    factory derived (``focus`` on the summon, falling back to the master, off the
+    definitive per-level table), so the numbers are unchanged — which is the finding
+    that made this build cheap to migrate.
+    """
+    runner.policies[dummy.id] = BaselineEnemyPolicy(
+        level=8, primary=beast, fallback=char)
+    return runner
+
+
 def _beast_lifetime(effect, seed, *, mortal=True, recast=False, days=150):
     """Sum the beast's commanded Beast's-Strike output over `days`, under the
     realistic per-level enemy (a proxy for rounds-alive: a dead beast stops striking)."""
-    runner, _char, beast, _dummy = sv.make_silvertail_runner(
+    runner, char, beast, dummy = sv.make_silvertail_runner(
         8, SeededRNG(seed), beast_effect=effect, mortal_beast=mortal,
         recast=recast)
+    _install_l8_enemy(runner, char, beast, dummy)
     return sum(runner.run_day().damage_by_source(beast.id) for _ in range(days))
 
 
@@ -332,8 +349,9 @@ def test_enemy_retargets_to_master_after_the_beast_dies():
     # mortal beast means the master starts eating hits — while an immortal beast tanks
     # everything and spares the master entirely.
     def master_taken(mortal, seed, days=100):
-        runner, char, _beast, dummy = sv.make_silvertail_runner(
+        runner, char, beast, dummy = sv.make_silvertail_runner(
             8, SeededRNG(seed), mortal_beast=mortal)
+        _install_l8_enemy(runner, char, beast, dummy)
         return sum(runner.run_day().damage_source_to(dummy.id, char.id) for _ in range(days))
 
     assert master_taken(False, 11) == 0     # immortal beast tanks → master untouched
@@ -343,8 +361,9 @@ def test_enemy_retargets_to_master_after_the_beast_dies():
 def test_recast_consumes_the_finite_slot_budget():
     # The recast policy spends a spare slot per revive — a finite per-day budget (the
     # "recast or not" decision has a real cost), not a free respawn.
-    runner, char, beast, _dummy = sv.make_silvertail_runner(
+    runner, char, beast, dummy = sv.make_silvertail_runner(
         8, SeededRNG(11), mortal_beast=True, recast=True)
+    _install_l8_enemy(runner, char, beast, dummy)
     before = char.resources.available("spell_slot")
     assert before == 3
     runner.run_day()
@@ -354,7 +373,8 @@ def test_recast_consumes_the_finite_slot_budget():
     # fire), but never below 0.
     assert 0 <= after <= before
     # A no-recast runner never touches the pool.
-    runner2, char2, _b2, _d2 = sv.make_silvertail_runner(
+    runner2, char2, b2, d2 = sv.make_silvertail_runner(
         8, SeededRNG(11), mortal_beast=True, recast=False)
+    _install_l8_enemy(runner2, char2, b2, d2)
     runner2.run_day()
     assert char2.resources.available("spell_slot") == 3

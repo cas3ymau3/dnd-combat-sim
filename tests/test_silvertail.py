@@ -14,6 +14,7 @@ ledger, NOT number-matching.
 import logging
 
 from src.builds import silvertail as sv
+from src.builds.enemy import BaselineEnemyPolicy
 from src.entity import Entity
 from src.policy import Choice
 from src.rng import SeededRNG
@@ -412,9 +413,24 @@ def test_beast_with_an_effect_policy_is_still_commanded_not_self_acting():
 # -- integration (make_silvertail_runner at L8) — directional, per-(source,target) --
 
 def _l8_incoming(effect, seed, days=100):
-    """Sum, over `days`, the enemy's damage to the beast and to the master."""
+    """Sum, over `days`, the enemy's damage to the beast and to the master.
+
+    THE ENEMY IS INSTALLED HERE, not by the factory (s52, §3.4 step 5b).  Until then
+    ``make_silvertail_runner`` built a ``BaselineEnemyPolicy`` off the L8 row's
+    ``enemy_attack`` marker and pointed it at the beast because the row said to; with
+    the enemy material deleted the factory returns a PASSIVE target, so a test that
+    needs the enemy to swing has to say so.
+
+    What it says reproduces the old behaviour exactly rather than approximately:
+    ``focus='summon'`` and ``damage_type='slashing'`` are what the factory derived, and
+    the resulting numbers are BIT-IDENTICAL to the pre-5b ones — which is the
+    measurement that made Silvertail the cheap build to migrate (its factory was
+    already reading the definitive table).
+    """
     runner, char, beast, dummy = sv.make_silvertail_runner(8, SeededRNG(seed),
                                                            beast_effect=effect)
+    runner.policies[dummy.id] = BaselineEnemyPolicy(
+        level=8, primary=beast, fallback=char, damage_type="slashing")
     to_beast = to_master = 0
     for _ in range(days):
         r = runner.run_day()

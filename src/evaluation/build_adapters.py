@@ -14,10 +14,14 @@ this module in on the first registry lookup.
 
 THE ENEMY SEAM (s50, §3.4; completed s52)
 -----------------------------------------
-Each ``build()`` ends with one unconditional call to ``enemy.install``, which installs
-the declared enemy over the roster the factory returned.  In s50 that call was a no-op
-under the then-default ``enemy="build_default"``; s52 deleted the baked-in path, so it
-always installs and the factories return a PASSIVE enemy for it to install onto.
+``build()`` returns ``(runner, roster)`` and does NOT install the enemy.  In s50 each of
+the three adapters ended with its own unconditional ``enemy.install`` call, which was
+safe while the default was ``build_default``; s52 moved the call into ``runner.simulate``,
+because with ``enemy`` required an adapter that FORGOT it would face its factory's enemy
+while provenance claimed the declared kind.  A call that must always happen belongs in
+the one function every run goes through, not in three that each have to remember it —
+which also means a new adapter cannot get this wrong.  The factories return a PASSIVE
+enemy for the seam to install onto.
 
 **``describe()`` no longer reports any enemy fact, and that deletion is the point.**
 Through s50-s51 each block carried the facts its FACTORY decided (``enemy_policy``,
@@ -96,7 +100,6 @@ class WarAngelAdapter:
             config.level, rng, config.rounds_per_combat,
         )
         roster = Roster(characters=[char], enemies=[dummy])
-        enemy_seam.install(runner, roster, config)
         return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
@@ -164,7 +167,6 @@ class StarfireScionAdapter:
         # and never returned — recover it by difference, not by position.
         allies = _extra_entities(runner, [char, dummy])
         roster = Roster(characters=[char], allies=allies, enemies=[dummy])
-        enemy_seam.install(runner, roster, config)
         return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
@@ -244,7 +246,6 @@ class SilvertailAdapter:
             config.level, rng, config.rounds_per_combat, **opts,
         )
         roster = Roster(characters=[char], summons=[beast], enemies=[dummy])
-        enemy_seam.install(runner, roster, config)
         return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:

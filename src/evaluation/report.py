@@ -494,8 +494,50 @@ class EvalReport:
         return [v for v in self.values.values() if v.available and not v.measured]
 
     def unconverged(self) -> list[MetricValue]:
-        """Measured metrics whose own declared heuristic says do not read them yet."""
+        """Measured metrics whose own declared heuristic says do not read them yet.
+
+        SCALARS AND BREAKDOWN CELLS ONLY.  Distribution points carry their own
+        ``converged`` flag and are reported by :meth:`unconverged_points`; they are kept
+        separate because a :class:`DistributionPoint` is not a
+        :class:`MetricValue` (it has an asymmetric ``ci95`` and no ``stderr``), so
+        returning them from one list would mean a caller could not use either type's
+        fields. Anything that reports a COUNT to a reader must read both — see
+        :meth:`unconverged_names`.
+        """
         return [v for v in self.values.values() if v.measured and not v.converged]
+
+    def unconverged_points(self) -> "list[tuple[str, DistributionPoint]]":
+        """``(distribution name, point)`` for every distribution statistic that fails
+        its own :class:`DistributionConvergence` heuristic."""
+        return [(dist.name, point)
+                for dist in self.distributions.values()
+                for point in dist.points.values()
+                if not point.converged]
+
+    def unconverged_names(self) -> list[str]:
+        """EVERY estimate in this report a reader should not read yet, named.
+
+        **This exists because a warning that counted only half of them shipped for four
+        sessions** (fixed s52, found by rendering one real output — per-feature ritual
+        step 6, the sixth session running it has found a defect).  The top-level
+        ``unconverged`` warning read :meth:`unconverged` alone, so on a War Angel L13
+        quick-tier run it announced "3 measured metric(s)" while the artifact flagged
+        **6** — the other three being ``attacks_per_round_distribution``'s p10, p25 and
+        iqr.  The whole point of promoting convergence to a top-level warning (§9.1) is
+        that a reader should not have to dig for it; a warning that undercounts by half
+        is worse than none, because it reads as a complete answer.
+
+        Why it stayed invisible for four sessions is the dormancy question one layer
+        out: the warning predates distributions (s47 vs s48), and the two originally
+        shipped distributions converged at every tier, so the two sides agreed by
+        accident. s51's ``attacks_per_round_distribution`` is the registry's first
+        LATTICE distribution and the first that is legitimately unconverged at the
+        quick tier — which made the gap reachable, and one rendered output made it
+        visible.
+        """
+        return ([v.metric for v in self.unconverged()]
+                + [f"{name}:{point.statistic}"
+                   for name, point in self.unconverged_points()])
 
 
 def build_report(output: "RunOutput", *,

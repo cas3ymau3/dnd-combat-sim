@@ -29,7 +29,9 @@ ledger (the Scion + synthetic-ally integration), NOT number-matching.
 
 import logging
 
+from src.builds import enemy_stats
 from src.builds import starfire_scion as ss
+from src.builds.enemy import ScriptedEnemyPolicy
 from src.entity import Entity
 from src.events import AttackRollEvent, DamageEvent, EventQueue, make_tick
 from src.modifiers import Modifier
@@ -241,17 +243,33 @@ def test_sanctuary_lets_the_attack_through_when_the_attacker_saves():
 # Integration — Scion + synthetic ally via make_ally_effects_runner
 # ===========================================================================
 
+def _ally_effects_runner(effect, seed):
+    """``make_ally_effects_runner`` with the enemy pointed at the ALLY.
+
+    s52 (§3.4 step 5b) deleted the ``enemy_attack`` row this factory read, so it now
+    returns a passive target and the caller declares the enemy.  Every test in this
+    block needs it to swing AT THE ALLY — that is the whole point of an ally-effect
+    slice — and "who does the enemy attack" is exactly the half of §3.4 that used to
+    live in the character's data.  The profile is the definitive table's L15 enemy.
+    """
+    runner, char, ally, dummy = ss.make_ally_effects_runner(15, SeededRNG(seed), effect)
+    runner.policies[dummy.id] = ScriptedEnemyPolicy(
+        target=ally, n_attacks=enemy_stats.baseline_n_attacks(15),
+        char_target_prob=1.0)
+    return runner, char, ally, dummy
+
+
 def _ally_damage_total(effect, n_days=40, seed=0):
     """Sum of enemy→ally damage over many days — a robust directional metric
     (protection/sanctuary perturb the RNG stream, so a single day is not a clean
     controlled comparison; the sum over a long run is)."""
-    runner, _char, ally, dummy = ss.make_ally_effects_runner(15, SeededRNG(seed), effect)
+    runner, _char, ally, dummy = _ally_effects_runner(effect, seed)
     return sum(runner.run_day().damage_source_to(dummy.id, ally.id)
                for _ in range(n_days))
 
 
 def test_warding_bond_integration_redirects_the_full_share_to_the_caster():
-    runner, char, ally, dummy = ss.make_ally_effects_runner(15, SeededRNG(0), "warding_bond")
+    runner, char, ally, dummy = _ally_effects_runner("warding_bond", 0)
     result = runner.run_day()
     to_ally = result.damage_source_to(dummy.id, ally.id)
     to_caster = result.damage_source_to(dummy.id, char.id)
@@ -272,7 +290,7 @@ def test_sanctuary_integration_reduces_incoming_damage_to_the_ally():
 def test_no_effect_baseline_takes_full_damage_and_does_not_redirect():
     # The effect=None baseline: the ally has no rider, so attacks land in full and
     # nothing is redirected to the caster (the control for the two tests above).
-    runner, char, ally, dummy = ss.make_ally_effects_runner(15, SeededRNG(0), None)
+    runner, char, ally, dummy = _ally_effects_runner(None, 0)
     result = runner.run_day()
     assert result.damage_source_to(dummy.id, ally.id) > 0
     assert result.damage_source_to(dummy.id, char.id) == 0

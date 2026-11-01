@@ -22,6 +22,7 @@ directional off the per-(source, target) ledger over many days, NOT number-match
 import logging
 
 from src.builds import silvertail as sv
+from src.builds.enemy import BaselineEnemyPolicy
 from src.entity import Entity
 from src.rng import SeededRNG
 from src.scheduler import Scheduler
@@ -198,8 +199,22 @@ def test_owner_inside_its_own_emanation_is_unaffected():
 # ===========================================================================
 
 def _run_l10(zone, seed, days=40):
-    runner, char, _beast, dummy = sv.make_silvertail_runner(
+    """One L10 run, with the enemy DECLARED and — importantly — declared the SAME WAY
+    in both arms of the comparison.
+
+    s52 (§3.4 step 5b) deleted the enemy material from the build data, so the factory
+    returns a passive target and the caller says what it faces.  That turns out to FIX
+    this comparison rather than merely preserve it.  The old factory picked the enemy's
+    focus off ``zone_effect`` itself — with a zone it tanked the master, without one it
+    focus-fired the beast — so "zone vs no zone" also changed WHO the enemy attacked,
+    and the test's two arms differed in two things at once.  Holding ``focus`` fixed at
+    the character isolates the zone, which is the comparison the docstring below claims
+    to be making.
+    """
+    runner, char, beast, dummy = sv.make_silvertail_runner(
         10, SeededRNG(seed), zone_effect=zone)
+    runner.policies[dummy.id] = BaselineEnemyPolicy(
+        level=10, primary=char, fallback=beast)
     char_to_dummy = 0
     for _ in range(days):
         res = runner.run_day()

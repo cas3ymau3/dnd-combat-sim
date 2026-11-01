@@ -66,7 +66,7 @@ ZONE = {"zone_effect": "spirit_guardians"}
 def report():
     """One small run, reused: assembling a report is pure post-processing (no dice),
     so every test here can share it without ordering coupling."""
-    return run(RunConfig(build="silvertail", level=10, n_days=30, seed=3,
+    return run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=30, seed=3,
                          build_options=ZONE))
 
 
@@ -89,7 +89,7 @@ def test_run_id_is_legible_and_hashes_the_config(report, record):
     collide.  The hash must be the SAME number §10's cache key uses, or a cached
     artifact and its config would disagree about their own identity."""
     assert record["run_id"] == "silvertail@L10-" + record["config_hash"]
-    assert record["config_hash"] == RunConfig(
+    assert record["config_hash"] == RunConfig(enemy="baseline", 
         build="silvertail", level=10, n_days=30, seed=3, build_options=ZONE,
     ).config_hash()
 
@@ -361,28 +361,27 @@ def test_the_provenance_block_serializes_whole(record):
     assert prov["resolved"]["build"]
 
 
-def test_coverage_keeps_its_explicit_not_resolved_statement(record):
-    """A half-filled provenance block is worse than an honest gap: it implies the
-    assumptions were recorded when they were not.
+def test_coverage_now_states_that_BOTH_sides_are_resolved(record):
+    """s52 INVERTS this test.  It was ``test_coverage_keeps_its_explicit_not_resolved_
+    statement``, and it is kept under a new name because the sentence it guarded is one
+    the project spent nine sessions being able to say.
 
-    **Updated s50, deliberately.** The fixture runs at the default
-    ``enemy="build_default"``, where the enemy genuinely IS a property of the
-    character build, so the coverage statement still opens "NOT RESOLVED" — the
-    assertion that matters here is unchanged.  What changed is the SHAPE: before the
-    §13 step-5 seam, ``resolved["enemy"]`` was literally ``None``, because there was
-    no resolver to call.  Now there is one, and on this path it returns a block that
-    says ``resolved: False`` and names the build factory as the source.  That is
-    strictly more honest than ``None`` — ``None`` could not distinguish "nothing
-    resolved it" from "it resolved to nothing" — so the test asserts the block says
-    so rather than asserting the key is absent.
+    The history, because the SHAPE moved twice.  Before the §13 step-5 seam
+    ``resolved["enemy"]`` was literally ``None`` — there was no resolver to call.  s50
+    gave it a block saying ``resolved: False`` that named the build factory as the
+    source, which is strictly more honest than ``None`` (``None`` could not distinguish
+    "nothing resolved it" from "it resolved to nothing").  s52 deleted the path that
+    could be unresolved, so the only remaining state is resolved, and the assertion
+    flips.
     """
     coverage = record["provenance"]["coverage"]
-    assert coverage["enemy_side"].startswith("NOT RESOLVED")
+    assert coverage["enemy_side"].startswith("resolved")
+    assert coverage["build_side"].startswith("resolved")
+    assert "NOT RESOLVED" not in coverage["enemy_side"]
     enemy = record["provenance"]["resolved"]["enemy"]
-    assert enemy["resolved"] is False
-    assert enemy["standardized"] is False
-    assert enemy["options"] == {}
-    assert "NOT RESOLVED" in enemy["note"]
+    assert enemy["resolved"] is True
+    assert enemy["standardized"] is True
+    assert "note" not in enemy
 
 
 def test_comparability_is_warned_unconditionally_and_names_all_three_axes(record):
@@ -391,16 +390,45 @@ def test_comparability_is_warned_unconditionally_and_names_all_three_axes(record
         assert axis in warning["message"]
 
 
-def test_the_unresolved_coverage_gap_is_promoted_to_a_top_level_warning(record):
-    """Not buried: a reader who must open provenance to learn two artifacts are
-    incomparable will not open it."""
+def test_no_run_can_emit_a_coverage_gap_warning_any_more(record):
+    """The warning this used to assert the PRESENCE of.  Its one producer was the
+    ``build_default`` path (§4's honest gap), which s52 deleted — so what is asserted
+    is that no run emits it, and that every code emitted is still in the vocabulary."""
     codes = [w["code"] for w in record["warnings"]]
-    assert "coverage_gap" in codes
+    assert "coverage_gap" not in codes
     assert set(codes) <= set(WARNING_CODES)
 
 
+def test_the_coverage_gap_detector_still_works_on_a_synthetic_gap(report):
+    """``coverage_gap`` is KEPT in the vocabulary with no production producer, and this
+    is what keeps that from being an untested branch.
+
+    The reasoning is in ``artifact.warnings_for``: the detector is generic over any
+    ``*_side`` key, it emits nothing when there is nothing to emit, and
+    ``WARNING_CODES`` is a published vocabulary a downstream renderer styles on — so a
+    third provenance section that forgets to resolve itself should surface
+    automatically rather than silently.  That is a different case from s51's "delete
+    the branch nothing reaches", which is about a plausible NUMBER or a stated REASON
+    that misleads whoever sees it; an empty detector misleads nobody.
+
+    The synthetic gap is injected rather than configured, because by construction no
+    config can produce one.
+    """
+    report.provenance.coverage["future_side"] = (
+        "NOT RESOLVED. A synthetic third provenance section, to prove the detector "
+        "fires on something other than the enemy."
+    )
+    try:
+        emitted = [w for w in warnings_for(report) if w["code"] == "coverage_gap"]
+    finally:
+        del report.provenance.coverage["future_side"]
+
+    assert len(emitted) == 1
+    assert emitted[0]["message"].startswith("future_side: NOT RESOLVED")
+
+
 def test_a_quick_tier_run_is_warned_as_imprecise(report):
-    quick = run(RunConfig(build="war_angel", level=5, n_days=2000, seed=1))
+    quick = run(RunConfig(enemy="none", build="war_angel", level=5, n_days=2000, seed=1))
     assert quick.provenance.day_tier == "quick"
     assert any(w["code"] == "precision" for w in warnings_for(quick))
     # ... and a non-tiered run is not.
@@ -412,6 +440,49 @@ def test_an_unconverged_run_says_so_at_the_top_level(report):
     the panel at face value without opening every row's ``converged`` flag."""
     assert report.unconverged()
     assert any(w["code"] == "unconverged" for w in warnings_for(report))
+
+
+def test_the_unconverged_warning_counts_DISTRIBUTION_points_too():
+    """THE s52 BUG, found by rendering one real output (per-feature ritual step 6 —
+    sixth session running, and the sixth defect).
+
+    The warning read ``EvalReport.unconverged()``, which iterates ``values`` only, so a
+    War Angel L13 quick-tier run announced "3 measured metric(s)" while the artifact
+    flagged **6**: the other three were ``attacks_per_round_distribution``'s p10, p25
+    and iqr.  The whole point of promoting convergence to a TOP-LEVEL warning (§9.1) is
+    that a reader should not have to dig; one that undercounts by half is worse than
+    none, because it reads as a complete answer.
+
+    Why it stayed invisible for four sessions is the dormancy question one layer out:
+    the warning predates distributions (s47 vs s48), and the two originally shipped
+    distributions converged at every tier, so the two sides agreed BY ACCIDENT.  s51's
+    ``attacks_per_round_distribution`` is the first LATTICE distribution and the first
+    that is legitimately unconverged at the quick tier (``ci_width_vs_spread`` pinned
+    near 0.33 because its whole IQR is three 1/16 steps), which made the gap reachable.
+
+    The fixture is a quick-tier War Angel L13 run with control on, because that is the
+    configuration where BOTH kinds are non-empty — the branch that matters is "some of
+    each", which neither kind alone exercises.
+    """
+    report = run(RunConfig(build="war_angel", level=13, n_days=2000, seed=11,
+                           enemy="baseline", enemy_options={"control": True}))
+
+    scalars = [v.metric for v in report.unconverged()]
+    points = [f"{name}:{point.statistic}"
+              for name, point in report.unconverged_points()]
+    assert scalars, "fixture must have unconverged scalars/cells"
+    assert points, "fixture must have unconverged DISTRIBUTION points"
+
+    names = report.unconverged_names()
+    assert set(names) == set(scalars) | set(points)
+    assert len(names) == len(scalars) + len(points)
+
+    warning = next(w for w in warnings_for(report) if w["code"] == "unconverged")
+    assert warning["message"].startswith(f"{len(names)} measured estimate")
+    # ...and the distribution points are NAMED, not merely counted: a reader has to be
+    # able to tell which rows the count refers to.
+    for point in points:
+        assert point in warning["message"]
 
 
 # ---------------------------------------------------------------------------
@@ -504,7 +575,14 @@ def test_the_csv_carries_the_sum_rule_onto_every_breakdown_row(report, tmp_path)
 
 
 def test_a_sweep_csv_concatenates_under_one_header(tmp_path):
-    reports = [run(RunConfig(build="war_angel", level=level, n_days=4, seed=1))
+    # enemy='baseline' at BOTH levels, which is the point a sweep makes: the two rows
+    # are comparable because they declare the same enemy.  Before s52 this swept L5
+    # (whose row carried no enemy_attack, so nothing acted) against L13 (where the
+    # factory installed a ScriptedEnemyPolicy) and concatenated them under one header
+    # regardless — exactly the silent comparison §3.4 forbids, in the artifact whose
+    # job is to make runs comparable.
+    reports = [run(RunConfig(build="war_angel", level=level, n_days=4, seed=1,
+                             enemy="baseline"))
                for level in (5, 13)]
     path = write_sweep_csv(reports, tmp_path / "sweep.csv")
     with path.open(encoding="utf-8", newline="") as handle:

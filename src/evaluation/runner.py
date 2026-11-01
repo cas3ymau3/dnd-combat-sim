@@ -42,6 +42,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 from ..rng import SeededRNG
 from ..telemetry import CombatTelemetry
+from .enemy import install as install_enemy
 from .metrics import METRICS, DaySample, MetricRegistry, RunContext
 from .statistics import MetricSamples
 
@@ -125,6 +126,17 @@ def simulate(config: "RunConfig", *, registry: MetricRegistry = METRICS,
     if rng is None:
         rng = SeededRNG(config.seed)
     runner, roster = adapter.build(config, rng)
+    # THE ENEMY IS INSTALLED HERE, not in the adapter (moved s52, step 5b).  Through
+    # s50-s51 each of the three adapters ended its own `build()` with an unconditional
+    # `enemy.install(...)`, which was safe while the DEFAULT was `build_default`: an
+    # adapter that forgot the call simply got the factory's own enemy, consistently with
+    # the provenance block its config produced.  With `enemy` required and every kind
+    # standardized, a forgetful adapter would instead face whatever its factory built
+    # while provenance claimed the declared kind — a §4 lie, and silent.  There is
+    # exactly one correct place for a call that must always happen: the one function
+    # every run goes through.  (`install` draws no dice, so moving it past
+    # `adapter.build` shifts no stream — asserted in test_eval_enemy_seam.)
+    install_enemy(runner, roster, config)
     described = adapter.describe(config)
 
     # Availability is decided ONCE, from the run's own context, before any day is
