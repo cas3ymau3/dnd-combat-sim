@@ -555,7 +555,9 @@ def build_report(output: "RunOutput", *,
     statistic), NEVER from the run's ``SeededRNG``.  That distinction is the whole
     of per-feature ritual step 3: every die in a run comes off one tape, so a
     single extra draw from it outside combat would shift every subsequent roll and
-    break §12's bit-identical parity proof.  Determinism is preserved on both
+    break every one of GOLDEN_DPR's exact points (it was §12's bit-identical parity
+    proof until s52 retired that — same constraint, sharper name).  Determinism is
+    preserved on both
     counts — the combat stream is untouched, and the resampler's own stream is a
     pure function of the run's seed.
     """

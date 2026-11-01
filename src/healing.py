@@ -18,17 +18,18 @@ Three things live here:
      DELIBERATELY DIFFERENT because they measure different things — see
      :func:`spend_hit_dice_at_short_rest` and :func:`spend_summon_hit_dice`.
 
-  3. The ROLLED-vs-MEAN-FIELD line, which is the one rule that keeps the §12
-     parity proof alive:
+  3. The ROLLED-vs-MEAN-FIELD line, which is the one rule that keeps every seeded
+     baseline in the project still:
 
        **Healing resolved INSIDE combat rolls its dice.  Healing applied OUTSIDE
        combat is MEAN-FIELD and draws nothing.**
 
      Between-combat healing is a day-clock quantity, and rolling it would pull
      from the shared RNG stream at a point every existing build passes through —
-     shifting every subsequent die and breaking the bit-identical parity proof
-     against ``validation.run_level``, the project's only end-to-end regression
-     signal.  Mean-field draws nothing, preserves the proof, and matches the
+     shifting every subsequent die and breaking every one of ``GOLDEN_DPR``'s exact
+     points — the project's end-to-end regression signal since s52 retired the
+     bit-identical parity proof against ``validation.run_level`` along with that
+     module.  Mean-field draws nothing, preserves them, and matches the
      model's stated low-variance convention.  It also costs little: §11.1 found
      the corpus does the bulk of its healing out of combat by preference, so this
      is where the quantity is largest and its VARIANCE matters least.  A build
@@ -142,7 +143,7 @@ def resolve_healing(
 
     # H1/H2 — the pool.  mean_field takes the die's expectation instead of rolling,
     # so out-of-combat healing draws NOTHING from the shared stream (see module
-    # docstring: this is what keeps the §12 parity proof alive).
+    # docstring: this is what keeps every GOLDEN_DPR point still).
     if spec.dice is None:
         rolls: list[float] = []
     else:
@@ -247,7 +248,7 @@ class HitDiceSpec:
 
         Mean-field, never rolled (§7a): rolling would draw from the shared RNG
         stream at the short rest, shifting every subsequent die for EVERY build
-        and breaking the §12 parity proof.  Per die: ``max(0, avg + con_mod)``.
+        and breaking every GOLDEN_DPR point.  Per die: ``max(0, avg + con_mod)``.
         """
         sizes = self.die_sizes()[spent_already:spent_already + max(0, n_dice)]
         return sum(max(0.0, (s + 1) / 2.0 + self.con_mod) for s in sizes)

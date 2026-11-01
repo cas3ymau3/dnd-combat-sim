@@ -118,8 +118,9 @@ def simulate(config: "RunConfig", *, registry: MetricRegistry = METRICS,
     ``rng`` exists so a caller can supply an instrumented generator (a recording
     wrapper, for the §12 proof that two paired configs draw byte-identical dice).
     Passing one is equivalent to the default as long as it is freshly seeded with
-    ``config.seed`` — the construction ORDER relative to the adapter is what the
-    parity proof depends on, and that order is fixed here either way.
+    ``config.seed`` — the construction ORDER relative to the adapter is what every
+    seeded baseline depends on (it was the §12 parity proof until s52), and that order
+    is fixed here either way.
     """
     adapter = config.validate()
 

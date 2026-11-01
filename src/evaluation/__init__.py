@@ -1,19 +1,25 @@
 """
 evaluation — the build-agnostic evaluation framework (design/evaluation_framework.md).
 
-Steps 1–3 of §13's build sequence: ``RunConfig`` + ``BuildAdapter`` + ``Roster`` +
-the build registry (step 1), and the metric registry + ``EvalReport`` + the
-statistics layer with paired seeding (step 2).
+§13's build sequence through step 6: ``RunConfig`` + ``BuildAdapter`` + ``Roster`` +
+the build registry (1), the metric registry + ``EvalReport`` + the statistics layer
+with paired seeding (2), serialization (3), the ``attacks`` channel (4), the
+enemy-construction seam and the deletion of the baked-in path (5a/5b), and
+control-at-runtime (6).
 
-The layer's reason for existing (§1): ``src/validation.py`` is hardcoded to the
-War Angel and reads entities by tuple position, so it cannot be generalized in
-place.  Everything here is built so that adding a build means writing an adapter,
-never editing evaluation code — the same rule that keeps the engine free of
-D&D-specific knowledge.
+The layer's reason for existing (§1): ``src/validation.py`` was hardcoded to the War
+Angel and read entities by tuple position, so it could not be generalized in place.
+Everything here is built so that adding a build means writing an adapter, never
+editing evaluation code — the same rule that keeps the engine free of D&D-specific
+knowledge.
 
-``src/validation.py`` stays untouched as the regression check until the framework
-reproduces its numbers exactly (§13); ``tests/test_eval_framework.py`` is that
-proof.
+**``src/validation.py`` IS NOW DELETED (s52, framework step 5b).**  It stayed
+untouched as the regression check from step 1 to step 6, the §12 bit-identical parity
+proof holding the whole way; step 5b deleted the baked-in enemy path it read, and §12
+records why the goldens that replace it are a stronger PHYSICS signal and a weaker
+LAYER one.  The layer signal that survives is
+``test_headline_column_is_the_characters_own_output``: the source-attributed headline
+against the independent target-keyed ledger, two subsystems and one number.
 """
 
 from .adapters import BuildAdapter, OptionSpec, available_builds, get_adapter, register

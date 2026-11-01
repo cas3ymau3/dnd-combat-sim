@@ -373,8 +373,8 @@ class CombatTelemetry:
 
         Written by ``resolve_attack_roll`` only, at the END of resolution — every
         value is already in a local variable there, so the call DRAWS NOTHING and
-        cannot move a baseline (the per-feature ritual's step 3; §12's parity proof
-        depends on it).
+        cannot move a baseline (the per-feature ritual's step 3; every GOLDEN_DPR
+        point depends on it).
 
         ``hit`` / ``crit`` are the FINAL outcome, not the raw to-hit comparison: a
         Guided-Strike rescue arrives here as a hit, a parried hit as a miss.  That

@@ -61,7 +61,10 @@ THE THREE KINDS (four until s52 — see the end of this docstring)
 
 WHY INSTALLATION IS AN OVERLAY RATHER THAN A FACTORY ARGUMENT
 -------------------------------------------------------------
-§3.4 asks for the standardized enemy to be built "in parallel and deliberately
+*(The next two paragraphs are the s50 rationale, kept because it is why the shape is
+what it is.  Read the s52 block after them for what the overlay does now.)*
+
+§3.4 asked for the standardized enemy to be built "in parallel and deliberately
 redundantly while the existing factories stay intact for benchmarking".  Taken
 literally that is an overlay: let the factory build its enemy, then replace the
 policy and complete the Entity's stat block.  The alternative — an ``enemy=`` kwarg

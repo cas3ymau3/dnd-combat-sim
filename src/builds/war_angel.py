@@ -1249,7 +1249,7 @@ class WarAngelDailyPlan:
         #
         #  (i) the 2d8 + WIS heal.  MEAN-FIELD (12.0), not rolled — an out-of-combat
         #      heal that drew from the shared RNG stream would shift every
-        #      subsequent die and break the §12 parity proof (healing.py's module
+        #      subsequent die and break every GOLDEN_DPR point (healing.py's module
         #      docstring).  Only the CHARACTER is healed: the roster is character +
         #      enemy, and enemies are never healed (§5).  A real party roster would
         #      extend the target list to five allies, which is why HealSpec takes a
