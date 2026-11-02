@@ -722,7 +722,7 @@ def compare(configs: "Iterable[RunConfig]", *, seed: "int | None" = None,
                  "independent seeding in 3 of them. Read "
                  "PairedDelta.variance_reduction for what it bought on YOUR "
                  "comparison. The fix is RNG substreams (evaluation_framework.md "
-                 "§13 step 8), after which pairing becomes a real precision gain."),
+                 "§13 step 9), after which pairing becomes a real precision gain."),
     }
 
     reports = []

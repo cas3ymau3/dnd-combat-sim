@@ -84,7 +84,7 @@ type, condition, resource, …):
    bit-identical proof against `validation.run_level` dies. The standing rule, now
    in CLAUDE.md and `src/healing.py`: **resolution inside combat rolls; anything
    applied outside combat is MEAN-FIELD and draws nothing.** This is the problem
-   RNG substreams (`evaluation_framework.md` §13 step 8) exist to solve; until they
+   RNG substreams (`evaluation_framework.md` §13 step 9) exist to solve; until they
    land, mean-field is the answer, not "roll it and re-baseline".
 4. **Settle an output SHAPE before anything serializes it.** Added session 46,
    generalizing that session's trigger. The metric registry modelled one output kind, so
@@ -1715,8 +1715,8 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   one gives corr **−0.12 … +0.06** and a **variance reduction of 0.892 … 1.069**, below
   1.0 — pairing WORSE than independent seeding — in **3 of the 9** cells. Pairing is not
   a small win here, it is **statistically inert**. The replacement test is a deliberate
-  **TRIPWIRE written to fail when §13 step 8 lands** — a tripwire is the right shape for
-  "inert today and must stop being inert", and it puts step 8's decision record where it
+  **TRIPWIRE written to fail when §13 step 9 lands** — a tripwire is the right shape for
+  "inert today and must stop being inert", and it puts step 9's decision record where it
   belongs.
   **TWO CORRECTIONS TO MY OWN FIRST CUT, both made in s53 and both the same defect class
   this finding is about.** (1) It reported `paired / independent` STANDARD ERRORS where
@@ -2577,7 +2577,7 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 
   **Deferred deliberately:** a COMPARISON artifact (base + per-label `PairedDelta`). It is
   its own shape and deserves its own settle-the-shape-first pass rather than riding along.
-  No CLI yet — step 7's sweep YAML is what would actually drive one, and its arg surface
+  No CLI yet — step 8's sweep YAML is what would actually drive one, and its arg surface
   would be rewritten now.
 
 - **OUTPUT-KINDS DESIGN + METRIC PRUNE + healing's metrics (2026-08-20, session 46).**
@@ -2853,7 +2853,7 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   10–100×** — measured across five comparisons (table now in §6.1). One sequential RNG tape
   desynchronizes the moment two runs draw a different NUMBER of dice, after which they are
   effectively independent; the inert-toggle case still pairs exactly (`0 ± 0`), so the
-  machinery is right and the engine cannot feed it. **RNG substreams added as roadmap step 8**
+  machinery is right and the engine cannot feed it. **RNG substreams added as roadmap step 9**
   with its own decision record required (it moves every seeded baseline and breaks the §12
   bit-identical parity proof). Pairing stays the default — never worse, and valuable the moment
   substreams land.
@@ -5153,7 +5153,7 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      now has to re-baseline is `GOLDEN_DPR`, and it should also break
      `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s52 wrote as a
      deliberate TRIPWIRE for exactly this step. Do not widen that test's bound to keep it
-     green; updating it IS part of step 8's decision record.)
+     green; updating it IS part of step 9's decision record.)
 6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
    (closest-to-complete), offense + profile-driven defense + control resilience, vs
    the 4×4 baseline. **Comparison idea (s37):** also reproduce **Treantmonk's tier

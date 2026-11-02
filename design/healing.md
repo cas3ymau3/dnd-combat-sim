@@ -184,7 +184,7 @@ breaks is **every one of `GOLDEN_DPR`'s 13 exact points**, which is the same con
 with a different name and, if anything, a sharper one: a golden is an exact equality, so
 the breakage is unmissable rather than something to be argued about. Mean-field draws
 nothing, preserves them, and matches the model's stated low-variance convention. This is
-the same problem RNG substreams (`evaluation_framework.md` §13 step 8) exist to solve,
+the same problem RNG substreams (`evaluation_framework.md` §13 step 9) exist to solve,
 and it is evidence that *any* new dice source will hit it.
 
 **(b) One short rest is the ENGINE baseline; a second is something a build BUYS.**
