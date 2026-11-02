@@ -14,20 +14,18 @@ and hashable.
 THE ENEMY FIELDS WENT LIVE IN s50 (§13 step 5)
 ----------------------------------------------
 ``enemy`` and ``enemy_options`` were hard-rejected through steps 1-4, because all
-three build factories construct their enemy policy off the *character's* own level
-row and a config that CLAIMED an assumption the run did not apply would poison the
-provenance block (§4).  Step 5 built the framework's own enemy-construction seam
-(``evaluation/enemy.py``), so both fields are now honoured:
+three build factories constructed their enemy policy off the *character's* own level
+row, so a config claiming to configure the enemy would have claimed an assumption the
+run never applied — the §4 failure the rejection protected against.  Step 5a (s50)
+built the framework's own enemy-construction seam (``evaluation/enemy.py``) alongside
+the baked-in path; step 5b (s52) DELETED the baked-in path.  So:
 
-* ``enemy`` — one of :data:`ENEMY_KINDS`.  ``"build_default"`` remains the DEFAULT
-  and leaves the factory's baked-in enemy untouched, which is what keeps
-  ``src/validation.py`` and the §12 bit-identical parity proof alive while both
-  paths exist (§3.4: the redundancy is transitional).  The other three are the
-  standardized enemy.
+* ``enemy`` — one of :data:`ENEMY_KINDS`, and **REQUIRED**.  There is no default,
+  because a default is an implicit enemy and §3.4's whole point is that an implicit
+  enemy is not comparable.  :data:`RETIRED_ENEMY_KINDS` makes the old default's name
+  fail with an explanation rather than as an unknown value.
 * ``enemy_options`` — validated against ``enemy.ENEMY_OPTION_SCHEMA``, a closed
-  declared surface, in :meth:`RunConfig.validate`.  An option the chosen kind
-  cannot honour is REFUSED, not ignored — same argument as the old blanket
-  rejection, applied per option instead of to the whole field.
+  schema; an option that cannot APPLY to the chosen kind is refused, not ignored.
 
 ``mode="finite_hp"`` is still rejected: it needs ``DayRunner(enemy_ids=…)``, which
 no factory passes, and it is not part of step 5.
@@ -56,12 +54,27 @@ DAY_TIERS: dict[str, int] = {
     "publication": 200_000,  # committed artifacts / site content
 }
 
-#: The enemy-selection vocabulary from §3.1 — all four live since s50.
-#: ``build_default`` is the factory's own baked-in enemy (transitional, §3.4); the
-#: other three are built by ``evaluation/enemy.py`` from the definitive per-level
-#: table.  See that module for what each one means and why ``scripted`` is a
-#: comparison arm rather than a legacy shim.
-ENEMY_KINDS = ("build_default", "baseline", "scripted", "none")
+#: The enemy-selection vocabulary from §3.1.  THREE kinds since s52: the
+#: transitional ``build_default`` is retired along with the baked-in path it named
+#: (§3.4, step 5b), so every kind is built by ``evaluation/enemy.py`` from the
+#: definitive per-level table and every run's enemy assumptions are recorded.
+ENEMY_KINDS = ("baseline", "scripted", "none")
+
+#: Retired kinds, kept only so the refusal can say what happened.  A config asking
+#: for one gets an error naming its replacement rather than ``not one of (...)``:
+#: the name was the DEFAULT for two sessions, so it will appear in old scripts and
+#: in anyone's muscle memory, and "unknown value" would send them looking for a typo.
+RETIRED_ENEMY_KINDS = {
+    "build_default": (
+        "retired in s52 (evaluation_framework.md §3.4, step 5b) along with the "
+        "baked-in enemy path it named: the enemy material is gone from every build's "
+        "LEVELS table and no factory constructs an enemy policy. Pass "
+        "enemy='baseline' for the standardized enemy (what any cross-build comparison "
+        "wants), 'scripted' for its attack-roll half, or 'none' for a passive target "
+        "— which is what build_default resolved to at every level below the build's "
+        "old enemy_attack row, bit-identically."
+    ),
+}
 
 MODES = ("fixed_length", "finite_hp")
 _SUPPORTED_MODES = ("fixed_length",)
@@ -110,11 +123,15 @@ class RunConfig:
         The build's own scenario axes, validated against the adapter's
         ``option_schema()``.
     enemy / enemy_options:
-        Which enemy the run faces, and how it is configured (§3.4).  All four
-        kinds are live since s50; ``"build_default"`` keeps the build factory's own
-        baked-in enemy and accepts no options.  Reports produced under different
-        ``enemy`` values must not be compared — the same §5.2 rule that governs
-        ``mode`` and ``attribution``.
+        Which enemy the run faces, and how it is configured (§3.4).  **``enemy`` is
+        REQUIRED and has no default** (s52).  Retiring ``"build_default"`` retired
+        the four-kind schema's transitional default, and the replacement is not
+        another default: if the enemy is not a property of the build, it is not a
+        property of a run that forgot to mention it either, and a default is exactly
+        an implicit enemy.  §4 already refuses a config that claims an assumption the
+        run did not apply; a silent default is the same failure with the claim left
+        blank.  Reports produced under different ``enemy`` values must not be
+        compared — the same §5.2 rule that governs ``mode`` and ``attribution``.
     rounds_per_combat / combats_per_day:
         The DPR denominator (§5.2).  16 rounds/day is the standardized baseline.
     n_days:
@@ -135,8 +152,12 @@ class RunConfig:
 
     build: str
     level: int
+    #: REQUIRED — no default (§3.4, step 5b).  Positioned here, ahead of every
+    #: defaulted field, because a dataclass cannot put a required field after an
+    #: optional one; that it reads as (build, level, enemy) is apt rather than
+    #: incidental, since those three are what a measurement is OF.
+    enemy: str
     build_options: dict[str, Any] = field(default_factory=dict)
-    enemy: str = "build_default"
     enemy_options: dict[str, Any] = field(default_factory=dict)
     rounds_per_combat: int = 4
     combats_per_day: int = COMBATS_PER_DAY
@@ -171,6 +192,10 @@ class RunConfig:
         if self.attribution not in ATTRIBUTIONS:
             raise ValueError(
                 f"attribution must be one of {ATTRIBUTIONS}, got {self.attribution!r}."
+            )
+        if self.enemy in RETIRED_ENEMY_KINDS:
+            raise ValueError(
+                f"enemy={self.enemy!r} is {RETIRED_ENEMY_KINDS[self.enemy]}"
             )
         if self.enemy not in ENEMY_KINDS:
             raise ValueError(f"enemy must be one of {ENEMY_KINDS}, got {self.enemy!r}.")

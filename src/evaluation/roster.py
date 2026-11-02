@@ -1,8 +1,9 @@
 """
 roster.py — role-tagged entity roster (evaluation_framework.md §3.3).
 
-The single coupling that makes ``src/validation.py`` un-generalizable is that it
-reads entities by TUPLE POSITION: ``runner, char, dummy = make_day_runner(...)``
+The single coupling that made ``src/validation.py`` un-generalizable (deleted s52 —
+see ``evaluation/__init__``) was that it read entities by TUPLE POSITION:
+``runner, char, dummy = make_day_runner(...)``
 works for the War Angel and breaks the moment a build returns a summon
 (``silvertail.make_silvertail_runner`` returns four things, with the beast in the
 middle).  A ``Roster`` replaces position with an explicit ROLE tag, so every

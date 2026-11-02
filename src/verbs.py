@@ -217,7 +217,8 @@ def resolve_attack_roll(
         Optional §13 sink (``CombatTelemetry``).  The attacks channel (§8.1) is
         recorded ONCE, at the end of resolution, from values already in hand — so
         it draws no dice and a direct caller that passes nothing gets byte-identical
-        behavior, which is what keeps §12's parity proof intact.
+        behavior — which is what kept §12's parity proof intact when it was added,
+        and what keeps every GOLDEN_DPR point still now (s52).
     """
     actor = event.actor
     target = event.target
@@ -959,7 +960,7 @@ def resolve_heal_event(
     handler exists so the heal is a scheduled EVENT with its own sequence number
     rather than a mutation smuggled in from the choice loop.  In-combat healing ROLLS
     its dice — only out-of-combat healing is mean-field (see healing.py's module
-    docstring on why that line is where the §12 parity proof lives).
+    docstring on why that line is where every seeded baseline's stability lives).
 
     Spawns no follow-on events, so ``next_sequence`` is returned unchanged.
     """

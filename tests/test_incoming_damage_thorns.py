@@ -27,6 +27,7 @@ number-matching.  Specifically:
 import logging
 
 from src.builds import starfire_scion as ss
+from src.builds.enemy import ScriptedEnemyPolicy
 from src.content import interpret_save_spell
 from src.entity import Entity
 from src.events import AttackRollEvent, DamageEvent, EventQueue, SaveDamageEvent, make_tick
@@ -392,7 +393,7 @@ def test_thorns_counts_as_the_bearers_dpr_when_the_enemy_strikes():
 def test_scripted_enemy_policy_emits_action_then_free_swings():
     enemy = Entity(name="enemy", hp=10, base_stats={"attack_bonus": 5})
     char = Entity(name="char", hp=50, base_stats={"ac": 15})
-    pol = ss.ScriptedEnemyPolicy(target=char, n_attacks=2, char_target_prob=1.0,
+    pol = ScriptedEnemyPolicy(target=char, n_attacks=2, char_target_prob=1.0,
                                  rounds_per_combat=4)
     pol.on_combat_start(0, SeededRNG(0))
     snap = GameState(actor=enemy, enemies=(char,), allies=(), round_number=1,
@@ -408,7 +409,7 @@ def test_scripted_enemy_policy_skips_party_aimed_attacks():
     enemy = Entity(name="enemy", hp=10, base_stats={"attack_bonus": 5})
     char = Entity(name="char", hp=50, base_stats={"ac": 15})
     # char_target_prob 0 → every pre-rolled slot is party-aimed (unmodeled) → no swings.
-    pol = ss.ScriptedEnemyPolicy(target=char, n_attacks=3, char_target_prob=0.0,
+    pol = ScriptedEnemyPolicy(target=char, n_attacks=3, char_target_prob=0.0,
                                  rounds_per_combat=4)
     pol.on_combat_start(0, SeededRNG(0))
     snap = GameState(actor=enemy, enemies=(char,), allies=(), round_number=1,
@@ -416,18 +417,30 @@ def test_scripted_enemy_policy_skips_party_aimed_attacks():
     assert pol.decide(snap) == []
 
 
-def test_make_day_runner_wires_the_enemy_loop(monkeypatch):
-    # Inject an always-hitting enemy_attack onto an existing level row; the enemy
-    # then strikes the character across the day (damage in the CHARACTER's column),
-    # while DPR (the dummy's column) stays the Scion's own output.
-    lvl = dict(ss.LEVELS[10])
-    lvl["enemy_attack"] = {
-        "n_attacks": 1, "char_target_prob": 1.0,
-        "attack_bonus": 50, "damage_dice": (1, 4), "damage_bonus": 0,
-    }
-    monkeypatch.setitem(ss.LEVELS, 10, lvl)
+def test_the_enemy_loop_is_wired_by_the_CALLER_not_by_the_level_row():
+    """s52 (§3.4 step 5b): there is no ``enemy_attack`` row to inject any more.
+
+    The old version of this test monkeypatched an always-hitting ``enemy_attack`` block
+    onto ``LEVELS[10]`` and checked that ``make_day_runner`` picked it up — which is a
+    fair test of the factory as it was, and a precise statement of the coupling: the
+    way to make the enemy act was to EDIT THE CHARACTER'S DATA.  Now the caller installs
+    a policy, so the test installs one with the same always-hitting profile (+50 to hit,
+    1d4) and checks the same two things about the day's columns.
+
+    What it still guards is the property the loop exists for and that DPR depends on:
+    the enemy's damage lands in the CHARACTER's received column and never in the
+    dummy's, so it can never pollute the Scion's own DPR.
+    """
     runner, char, dummy = ss.make_day_runner(10, SeededRNG(1))
-    assert dummy.stat("attack_bonus") == 50          # dummy got an attack profile
+    dummy.base_stats.update({"attack_bonus": 50, "damage_dice": (1, 4),
+                             "damage_bonus": 0})
+    runner.policies[dummy.id] = ScriptedEnemyPolicy(
+        target=char, n_attacks=1, char_target_prob=1.0)
+
+    assert dummy.stat("attack_bonus") == 50          # the profile is on the Entity
     result = runner.run_day()
     assert result.damage_received_by(char.id) > 0    # the enemy struck the character
     assert result.damage_received_by(dummy.id) > 0   # ...and the Scion still dealt DPR
+    # The separation DPR rests on, asserted rather than assumed: none of the enemy's
+    # own damage is in the dummy's column.
+    assert result.damage_source_to(dummy.id, dummy.id) == 0

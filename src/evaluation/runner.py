@@ -31,8 +31,9 @@ at all, and its absence is recorded as a REASON rather than as a column of zeros
 Why the RNG order matters
 -------------------------
 ``simulate`` constructs ``SeededRNG(config.seed)``, then calls the adapter, then
-loops ``run_day()`` — the exact order ``src/validation.py`` uses.  Any other
-order would shift the dice stream and break the exact-reproduction proof (§12).
+loops ``run_day()``.  That order was chosen to match ``src/validation.py``, which s52
+deleted; it is now pinned by ``GOLDEN_DPR``, since every one of its exact values was
+produced under it.  Any other order shifts the dice stream and breaks all 13.
 """
 
 from __future__ import annotations
@@ -42,6 +43,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 from ..rng import SeededRNG
 from ..telemetry import CombatTelemetry
+from .enemy import install as install_enemy
 from .metrics import METRICS, DaySample, MetricRegistry, RunContext
 from .statistics import MetricSamples
 
@@ -117,14 +119,26 @@ def simulate(config: "RunConfig", *, registry: MetricRegistry = METRICS,
     ``rng`` exists so a caller can supply an instrumented generator (a recording
     wrapper, for the §12 proof that two paired configs draw byte-identical dice).
     Passing one is equivalent to the default as long as it is freshly seeded with
-    ``config.seed`` — the construction ORDER relative to the adapter is what the
-    parity proof depends on, and that order is fixed here either way.
+    ``config.seed`` — the construction ORDER relative to the adapter is what every
+    seeded baseline depends on (it was the §12 parity proof until s52), and that order
+    is fixed here either way.
     """
     adapter = config.validate()
 
     if rng is None:
         rng = SeededRNG(config.seed)
     runner, roster = adapter.build(config, rng)
+    # THE ENEMY IS INSTALLED HERE, not in the adapter (moved s52, step 5b).  Through
+    # s50-s51 each of the three adapters ended its own `build()` with an unconditional
+    # `enemy.install(...)`, which was safe while the DEFAULT was `build_default`: an
+    # adapter that forgot the call simply got the factory's own enemy, consistently with
+    # the provenance block its config produced.  With `enemy` required and every kind
+    # standardized, a forgetful adapter would instead face whatever its factory built
+    # while provenance claimed the declared kind — a §4 lie, and silent.  There is
+    # exactly one correct place for a call that must always happen: the one function
+    # every run goes through.  (`install` draws no dice, so moving it past
+    # `adapter.build` shifts no stream — asserted in test_eval_enemy_seam.)
+    install_enemy(runner, roster, config)
     described = adapter.describe(config)
 
     # Availability is decided ONCE, from the run's own context, before any day is

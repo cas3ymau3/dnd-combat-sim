@@ -1,6 +1,6 @@
 """
 Mechanism tests for the ENEMY-CONSTRUCTION SEAM — evaluation_framework.md §3.4,
-§13 step 5 (session 50).
+§13 step 5: the parallel half (5a, session 50) and the DELETION half (5b, session 52).
 
 Per [[validate-mechanism-not-build-value]] nothing here asserts that a DPR value is
 "correct".  The one place exact values appear is :func:`test_golden_dpr_under_the_
@@ -15,13 +15,43 @@ covers each VALUE.  An empty cell is an untested value no matter how many tests
 exist.  Writing it first found three values with no production fixture at all (the
 fourth session running that it has) — all three are flagged BUILT below.
 
+THE s52 (5b) ROLL CALL — the DELETION's declarations
+---------------------------------------------------
+Written before the deletion, and it found a gap: **the six saves the dummy GAINS have
+no fixture anywhere in the corpus.**  Nothing forces a save on the enemy except
+Starfire's dex path, so "the dummy now carries the table's saves" would have shipped as
+an untested claim about a stat block — while what matters is whether a SAVE RESOLVES
+against it.  Hence `test_a_save_forced_on_the_dummy_now_resolves_against_the_tables_
+bonus`, which drives a real `resolve_saving_throw` and asserts the counterfactual too.
+
 | declaration                        | value                   | fixture                                      |
 |------------------------------------|-------------------------|----------------------------------------------|
-| `RunConfig.enemy`                  | build_default           | war_angel L13 (parity suite + here)          |
-|                                    | baseline                | all three builds, L10/L13/L15                |
+| `RunConfig.enemy` required         | omitted                 | `..._is_required_and_has_no_default` (TypeError) |
+|                                    | retired name            | `..._fails_with_an_explanation_not_as_an_unknown_value` |
+|                                    | unknown name            | `test_unknown_enemy_kind_still_rejected`     |
+| `enemy.resolve()["resolved"]`      | True (only value now)   | all three kinds, `..._reports_a_RESOLVED_enemy` |
+| overlay stat-block write           | provably redundant      | full build × level cross-product             |
+| dummy's six saves                  | present on every build  | `..._carries_all_six_saves`, all three       |
+|                                    | RESOLVES a save         | **THE GAP** — war_angel L13 + counterfactual |
+| factory enemy policy               | none, on every build    | `..._installs_an_enemy_policy_any_more`, ×3  |
+| `_ally_roster`                     | allies present          | starfire L15 with_party, ctp=0.4 → 40/60     |
+|                                    | allies, ctp=1.0         | same, weights 100/0 (focus-fire unaffected)  |
+|                                    | no allies               | war_angel L13 → None (single-target path)    |
+| `_requires_control_channel`        | 3 answers (was 7)       | `..._three_control_unavailability_reasons_...`|
+| console "NOT RESOLVED"             | unreachable             | all three kinds assert its ABSENCE           |
+| `enemy_path` prefix                | constant, kept          | `test_enemy_path_still_distinguishes_...`    |
+
+THE s50 (5a) ROLL CALL, kept for the record.  Three rows are struck through below:
+their VALUES were `build_default`, which no longer exists, and the s52 rows above are
+what replaced each one.
+
+| declaration                        | value                   | fixture                                      |
+|------------------------------------|-------------------------|----------------------------------------------|
+| ~~`RunConfig.enemy`~~              | ~~build_default~~       | ~~war_angel L13~~ — RETIRED s52              |
+| `RunConfig.enemy`                  | baseline                | all three builds, L10/L13/L15                |
 |                                    | scripted                | war_angel L13                                |
 |                                    | none                    | war_angel L13                                |
-| `enemy.resolve()["resolved"]`      | False                   | enemy="build_default"                        |
+| ~~`enemy.resolve()["resolved"]`~~  | ~~False~~               | ~~enemy="build_default"~~ — UNREACHABLE s52  |
 |                                    | True                    | enemy="baseline"                             |
 | `enemy.resolve()["acts"]`          | True                    | baseline, scripted                           |
 |                                    | False                   | none                                         |
@@ -44,9 +74,9 @@ fourth session running that it has) — all three are flagged BUILT below.
 |                                    | option does NOT apply   | control on scripted → ValueError             |
 | `_CONTROL_DEPENDENT` refusal       | control on              | soft_factor + control=True accepted          |
 |                                    | control off             | soft_factor alone → ValueError               |
-| `validate_options` build_default   | empty                   | enemy="build_default"                        |
-|                                    | non-empty               | build_default + any option → ValueError      |
-| `install()` branch                 | no-op                   | enemy="build_default" (policy IDENTITY)      |
+| ~~`validate_options` build_default~~| ~~empty / non-empty~~  | ~~enemy="build_default"~~ — the whole branch |
+|                                    |                         | is DELETED s52                               |
+| ~~`install()` no-op branch~~       | ~~no-op~~               | ~~build_default~~ — install is unconditional |
 |                                    | overlay                 | enemy="baseline"/"scripted"                  |
 |                                    | policy removed          | enemy="none"                                 |
 |                                    | no enemies in roster    | **BUILT** — no shipped build fields zero     |
@@ -66,11 +96,10 @@ fourth session running that it has) — all three are flagged BUILT below.
 |   (SEVEN distinguishable answers)  | std baseline, off       | war_angel L13 baseline                       |
 |                                    | std scripted            | war_angel L13 scripted                       |
 |                                    | std none                | war_angel L13 none                           |
-|                                    | bd + scripted           | war_angel L13 build_default                  |
-|                                    | bd + baseline           | silvertail L10 build_default                 |
-|                                    | bd + passive            | war_angel L3 build_default                   |
+|  ~~(three bd branches)~~          | ~~bd + scripted /~~     | ~~build_default~~ — DELETED s52; the three   |
+|                                    | ~~baseline / passive~~  | surviving answers are in the s52 table above |
 | `_requires_mitigation_profile`     | available               | any kind + mitigation=True                   |
-|                                    | unavailable             | enemy="build_default"                        |
+|                                    | unavailable             | any kind WITHOUT mitigation=True (s52)       |
 | `typed_damage_share` numerator     | no profile installed    | silvertail L10, no mitigation                 |
 |   (the s50 BUGFIX)                 | profile installed       | silvertail L10 + mitigation (was 1.1054)     |
 
@@ -117,6 +146,7 @@ from src.evaluation.config import RunConfig
 from src.evaluation.metrics import METRICS, RunContext
 from src.evaluation.roster import Roster
 from src.evaluation.runner import run, simulate
+from src.verbs import resolve_saving_throw
 from src.rng import SeededRNG
 
 
@@ -134,30 +164,39 @@ def _control_reason(config: RunConfig) -> str:
     return value.note or ""
 
 
-# ---------------------------------------------------------------------------
-# The s50 migration finding — pinned as a test, not left as a comment
-# ---------------------------------------------------------------------------
+def built(config: RunConfig):
+    """``(runner, roster)`` with the declared enemy installed — what a real run has.
 
-@pytest.mark.parametrize("level", sorted(war_angel.LEVELS))
-def test_baked_in_war_angel_enemy_ac_already_matches_the_definitive_table(level):
-    """§3.4 item 1 cites ``war_angel.LEVELS[13]["enemy_ac"]`` as the coupling to
-    remove.  The AC itself is NOT the coupling: it was copied out of the same CSV
-    the standardized enemy reads, so it already agrees at every level.
-
-    This is the fact that falsifies the "the hit rate will move a lot" expectation,
-    and it is a test rather than a comment because the next session would otherwise
-    re-derive it — or, worse, trust the expectation.
+    s52 moved ``enemy.install`` out of each adapter's ``build()`` and into
+    ``runner.simulate``, so that a new adapter cannot forget it (see
+    ``build_adapters``' module docstring).  ``adapter.build(config, rng)`` therefore
+    returns the factory's PASSIVE enemy, and a test that wants to inspect the
+    installed policy has to do what ``simulate`` does.  This helper is that, in one
+    place, so the install step cannot silently go missing from a test the way it could
+    have gone missing from an adapter.
     """
-    assert war_angel.LEVELS[level]["enemy_ac"] == enemy_stats.baseline_ac(level)
+    adapter = config.validate()
+    runner, roster = adapter.build(config, SeededRNG(0))
+    enemy_seam.install(runner, roster, config)
+    return runner, roster
 
 
-@pytest.mark.parametrize("level", sorted(starfire_scion.LEVELS))
-def test_baked_in_starfire_enemy_defense_already_matches_the_definitive_table(level):
-    """Same for the Starfire Scion, which carries one save as well as the AC."""
-    row = starfire_scion.LEVELS[level]
-    assert row["enemy_ac"] == enemy_stats.baseline_ac(level)
-    assert row["enemy_dex_save"] == enemy_stats.baseline_save(level, "dex_save")
-
+# ---------------------------------------------------------------------------
+# The s50 migration finding, carried into s52 as its CONSEQUENCE
+# ---------------------------------------------------------------------------
+#
+# s50 pinned `war_angel.LEVELS[level]["enemy_ac"] == enemy_stats.baseline_ac(level)` at
+# all 16 levels, and the Starfire equivalent, because that equality is what falsified
+# the "standardizing the enemy will move the hit rate a lot" expectation.  Step 5b
+# DELETED the left-hand side of both: there is no baked-in `enemy_ac` to compare.
+#
+# Those tests are not simply gone, though, because the equality they proved is exactly
+# what made 5b safe — and §3.4 warns against trusting an equality that holds "for a
+# reason that will stop holding".  So they are replaced by the assertion the deletion
+# actually needs: that the factory's dummy ALREADY equals what the overlay would write.
+# One source (`enemy_stats`), two writers (`make_baseline_enemy` and
+# `_complete_stat_block`), and the second write proved redundant rather than assumed —
+# which is the §3.4 s52 block's own promise, discharged here.
 
 _ALL_BUILD_LEVELS = (
     [("war_angel", lvl) for lvl in sorted(war_angel.LEVELS)]
@@ -167,45 +206,107 @@ _ALL_BUILD_LEVELS = (
 
 
 @pytest.mark.parametrize("build,level", _ALL_BUILD_LEVELS)
-def test_standardized_overlay_never_changes_the_enemy_ac(build, level):
-    """The overlay writes the table's whole stat block over the factory's dummy —
-    and the AC it writes is the AC that was already there, for every build at every
-    level.  So no character's own hit rate can move SYSTEMATICALLY under the seam.
+def test_the_overlays_stat_block_write_is_provably_redundant(build, level):
+    """The factory's enemy already carries every stat the overlay writes, at the same
+    value, for every build at every level.
 
-    Asserted across the full cross-product rather than at a sample, because this is
-    the premise the two attack-rate tests below rest on.
+    This is the s52 replacement for s50's AC pin, and it is the stronger statement:
+    s50 could only compare ONE key (the AC) because the baked-in rows carried only
+    that one, and it compared two hand-copied constants.  Here both sides are reads of
+    `enemy_stats`, so what is asserted is that the two WRITERS agree — which is what
+    makes `_complete_stat_block` a no-op on the stat block and keeps the AC-stability
+    premise the two attack-rate tests below rest on.
+
+    Asserted across the full cross-product rather than at a sample, for the same reason
+    s50 did: this is a premise, and a premise sampled is a premise assumed.
     """
     config = RunConfig(build=build, level=level, n_days=1, enemy="baseline")
     adapter = config.validate()
-    _, roster = adapter.build(config.replace(enemy="build_default"), SeededRNG(0))
-    before = roster.enemies[0].base_stats.get("ac")
 
-    _, roster_after = adapter.build(config, SeededRNG(0))
-    assert roster_after.enemies[0].base_stats["ac"] == before
+    # The factory's roster, with nothing installed: `build()` no longer overlays (s52
+    # moved the install into `runner.simulate`), so this is the un-overlaid enemy.
+    _, roster = adapter.build(config, SeededRNG(0))
+    before = dict(roster.enemies[0].base_stats)
+
+    # Now apply the overlay by hand and require it to change nothing.
+    runner_after, roster_after = adapter.build(config, SeededRNG(0))
+    enemy_seam.install(runner_after, roster_after, config)
+    after = roster_after.enemies[0].base_stats
+
+    assert after == before
+    assert before["ac"] == enemy_stats.baseline_ac(level)
 
 
-def test_overlay_adds_the_six_saves_war_angels_dummy_never_carried():
-    """War Angel's ``make_training_dummy`` sets ``ac`` and nothing else, so a save
-    forced on its enemy read ``Entity.stat``'s 0 default.  The overlay completes the
-    block — this is §3.4 item 1's REAL content, as opposed to the AC."""
-    config = RunConfig(build="war_angel", level=13, n_days=1)
-    adapter = config.validate()
+@pytest.mark.parametrize("build", ["war_angel", "starfire_scion", "silvertail"])
+def test_every_builds_dummy_now_carries_all_six_saves(build):
+    """§3.4 item 1's REAL content, as opposed to the AC — and the one place where the
+    two sides of the seam were not merely "equal for now" but silently UNEQUAL.
 
-    _, before = adapter.build(config, SeededRNG(0))
-    assert "dex_save" not in before.enemies[0].base_stats
-
-    _, after = adapter.build(config.replace(enemy="baseline"), SeededRNG(0))
-    stats = after.enemies[0].base_stats
+    Before s52 War Angel's dummy carried `{ac, attack_bonus, damage_dice,
+    damage_bonus}` and NO saves; Starfire's carried one (`dex_save`); Silvertail's
+    carried all six.  `Entity.stat()` returns 0 for a missing key by design, so a save
+    forced on the first two resolved against a +0 modifier.  Nothing surfaced it
+    because no War Angel ability forces a save on its target — the inequality was
+    unreachable, not absent, which is strictly worse than a dormant equality because
+    no equality was holding it stable and nothing would have failed when it was first
+    reached.  Now every build's dummy is the same complete stat block.
+    """
+    level = max(getattr(__import__("src.builds." + build, fromlist=["LEVELS"]), "LEVELS"))
+    config = RunConfig(build=build, level=level, n_days=1, enemy="baseline")
+    _, roster = config.validate().build(config, SeededRNG(0))
+    stats = roster.enemies[0].base_stats
     for save in ("str_save", "dex_save", "con_save", "int_save", "wis_save", "cha_save"):
-        assert stats[save] == enemy_stats.baseline_save(13, save)
-    assert stats["enemy_save_dc"] == enemy_stats.baseline_save_dc(13)
-    assert stats["attack_bonus"] == enemy_stats.baseline_attack_bonus(13)
+        assert stats[save] == enemy_stats.baseline_save(level, save)
+    assert stats["enemy_save_dc"] == enemy_stats.baseline_save_dc(level)
+
+
+def test_a_save_forced_on_the_dummy_now_resolves_against_the_tables_bonus():
+    """THE ROLL-CALL GAP, found at design time and measured rather than argued.
+
+    The six saves the dummy gains are a DECLARATION value with no fixture anywhere in
+    the corpus: nothing forces a save on the enemy except Starfire's dex path, so
+    "the dummy now carries the table's saves" would have shipped as an untested claim
+    about a stat block, while the thing that matters is whether a SAVE RESOLVES against
+    it.  This drives a real `resolve_saving_throw` against War Angel's L13 dummy — the
+    build whose dummy carried no saves at all — and asserts the outcome flips exactly
+    where the table's +7 CON bonus says it should.
+
+    Measured, not reasoned: at DC 15 against con_save +7, a d20 of 7 clears it (7+7=14
+    fails, so the boundary is 8: 8+7=15 >= 15 succeeds).  Under the OLD +0 default the
+    same roll of 8 gave 8, a clear failure.  So the identical die flips the verdict,
+    which is the smallest demonstration that the +0 default was a wrong answer and not
+    a missing one.
+    """
+    config = RunConfig(build="war_angel", level=13, n_days=1, enemy="baseline")
+    _, roster = config.validate().build(config, SeededRNG(0))
+    dummy = roster.enemies[0]
+    assert dummy.stat("con_save") == enemy_stats.baseline_save(13, "con_save") == 7
+
+    class _FixedDie:
+        """A d20 that always shows 8 — the boundary the docstring names."""
+        def __init__(self): self.rolls = []
+        def roll_one(self, sides):
+            self.rolls.append(sides)
+            return 8
+        def roll(self, n, sides):
+            return [self.roll_one(sides) for _ in range(n)]
+
+    rng = _FixedDie()
+    assert resolve_saving_throw(dummy, "con_save", dc=15, rng=rng) is True, \
+        "d20 8 + the table's +7 = 15, which meets DC 15"
+    assert rng.rolls == [20], "one d20 and nothing else — no dice-modifiers on the dummy"
+
+    # The counterfactual, asserted rather than described: strip the save the way the
+    # pre-5b dummy had it and the SAME die fails.
+    del dummy.base_stats["con_save"]
+    assert dummy.stat("con_save") == 0
+    assert resolve_saving_throw(dummy, "con_save", dc=15, rng=_FixedDie()) is False
 
 
 def test_overlay_leaves_an_already_complete_stat_block_alone():
     """Silvertail's dummy is already built from ``enemy_base_stats``, so the overlay
     is a no-op on it.  The uncovered VALUE of the saves-already-present branch."""
-    config = RunConfig(build="silvertail", level=10, n_days=1)
+    config = RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=1)
     adapter = config.validate()
     _, before = adapter.build(config, SeededRNG(0))
     baseline_block = dict(before.enemies[0].base_stats)
@@ -219,10 +320,39 @@ def test_overlay_leaves_an_already_complete_stat_block_alone():
 # RunConfig: the fields went live (§3.1)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("kind", ["build_default", "baseline", "scripted", "none"])
+@pytest.mark.parametrize("kind", ["baseline", "scripted", "none"])
 def test_every_enemy_kind_is_now_accepted(kind):
-    """Steps 1-4 raised ``NotImplementedError`` for three of these four."""
+    """Steps 1-4 raised ``NotImplementedError`` for all three; step 5a accepted them
+    alongside a fourth, ``build_default``, which step 5b retired (see below)."""
     RunConfig(build="war_angel", level=13, n_days=1, enemy=kind).validate()
+
+
+def test_enemy_is_required_and_has_no_default():
+    """§3.4's principle one level up: a run cannot decline to say what it faced.
+
+    Retiring ``build_default`` retired the schema's transitional default, and s52's
+    decision was NOT to choose another one — a default is an implicit enemy, and an
+    implicit enemy is exactly what makes two reports incomparable.  Asserted at the
+    dataclass level rather than as a validation rule, which is what makes it
+    unforgettable: a caller cannot construct the config at all.
+    """
+    with pytest.raises(TypeError, match="enemy"):
+        RunConfig(build="war_angel", level=13, n_days=1)      # type: ignore[call-arg]
+
+
+def test_the_retired_kind_fails_with_an_explanation_not_as_an_unknown_value():
+    """``build_default`` was the DEFAULT for two sessions, so it will appear in old
+    scripts and in anyone's muscle memory.  "not one of (...)" would send a reader
+    looking for a typo; the refusal names what happened and what to pass instead,
+    including the one substitution that is bit-identical rather than merely close.
+    """
+    with pytest.raises(ValueError) as excinfo:
+        RunConfig(build="war_angel", level=13, n_days=1, enemy="build_default")
+    message = str(excinfo.value)
+    assert "retired in s52" in message
+    assert "enemy='baseline'" in message
+    assert "'none' for a passive target" in message
+    assert "bit-identically" in message
 
 
 def test_unknown_enemy_kind_still_rejected():
@@ -259,14 +389,6 @@ def test_control_dependent_option_is_accepted_with_control_on():
               enemy_options={"control": True, "soft_factor": 0.25}).validate()
 
 
-def test_build_default_accepts_no_enemy_options():
-    """It cannot honour one: the factory builds the enemy off the character's row."""
-    config = RunConfig(build="war_angel", level=13, n_days=1,
-                       enemy_options={"control": True})
-    with pytest.raises(ValueError, match="can honour no enemy option"):
-        config.validate()
-
-
 @pytest.mark.parametrize("options", [
     {"char_target_prob": 1.5},
     {"char_target_prob": -0.1},
@@ -280,10 +402,18 @@ def test_char_target_prob_must_be_a_probability(options):
 
 def test_enemy_is_part_of_the_config_identity():
     """The enemy is a comparability axis (§5.2), so it must change the cache key —
-    otherwise two runs against different enemies would collide in the §10 cache."""
-    base = RunConfig(build="war_angel", level=13, n_days=1)
-    assert base.config_hash() != base.replace(enemy="baseline").config_hash()
-    assert (base.replace(enemy="baseline").config_hash()
+    otherwise two runs against different enemies would collide in the §10 cache.
+
+    All three surviving kinds are compared pairwise rather than against the retired
+    default, which is the stronger version of the same check: it is the kinds that
+    must not collide with each other, and before s52 one leg of this test leaned on
+    ``build_default`` being distinct from everything.
+    """
+    base = RunConfig(enemy="baseline", build="war_angel", level=13, n_days=1)
+    hashes = {kind: base.replace(enemy=kind).config_hash()
+              for kind in ("baseline", "scripted", "none")}
+    assert len(set(hashes.values())) == 3, hashes
+    assert (hashes["baseline"]
             != base.replace(enemy="baseline",
                             enemy_options={"control": True}).config_hash())
 
@@ -292,17 +422,24 @@ def test_enemy_is_part_of_the_config_identity():
 # enemy.resolve() — the §4 provenance block
 # ---------------------------------------------------------------------------
 
-def test_build_default_reports_itself_as_not_resolved():
-    """The honest gap.  A half-filled block would imply the assumptions were
-    recorded when they were not."""
-    report = run(RunConfig(build="war_angel", level=13, n_days=2))
+@pytest.mark.parametrize("kind", ["baseline", "scripted", "none"])
+def test_every_run_now_reports_a_RESOLVED_enemy(kind):
+    """The honest-gap branch is gone, because the gap is gone (s52).
+
+    Through s50-s51 one path reported ``resolved: False`` and a "NOT RESOLVED" note,
+    on the principle that a half-filled provenance block is worse than an honest gap
+    because it implies the assumptions were recorded when they were not.  That path
+    was ``build_default``, and it is deleted — so what replaces the test is the
+    assertion that NO run can produce the honest gap any more.  Checked across all
+    three kinds, because "unconditionally true" is the claim.
+    """
+    report = run(RunConfig(build="war_angel", level=13, n_days=2, enemy=kind))
     block = report.provenance.resolved["enemy"]
-    assert block["standardized"] is False
-    assert block["resolved"] is False
-    assert block["policy"] == "scripted"
-    assert "NOT RESOLVED" in block["note"]
-    assert report.provenance.coverage["enemy_path"] == "build_default:scripted"
-    assert report.provenance.coverage["enemy_side"].startswith("NOT RESOLVED")
+    assert block["standardized"] is True
+    assert block["resolved"] is True
+    assert "note" not in block
+    assert report.provenance.coverage["enemy_path"] == f"standardized:{kind}"
+    assert report.provenance.coverage["enemy_side"].startswith("resolved")
 
 
 def test_standardized_enemy_reports_the_stat_block_it_installed():
@@ -320,7 +457,7 @@ def test_standardized_enemy_reports_the_stat_block_it_installed():
 def test_band_override_is_reported_with_its_source():
     block = enemy_seam.resolve(
         RunConfig(build="war_angel", level=13, n_days=1, enemy="baseline",
-                  enemy_options={"band_override": "17+"}), {})
+                  enemy_options={"band_override": "17+"}))
     assert block["band"] == "17+"
     assert block["band_source"] == "enemy_options['band_override']"
     # The MAGNITUDE axis still follows the level (§8's two-axis join).
@@ -335,7 +472,7 @@ def test_whether_the_enemy_acts_is_now_a_declared_fact(kind, acts):
     property (the ``LEVELS[level].get("enemy_attack")`` switch).  Under the seam it
     is declared by the config and recorded in provenance."""
     block = enemy_seam.resolve(
-        RunConfig(build="war_angel", level=13, n_days=1, enemy=kind), {})
+        RunConfig(build="war_angel", level=13, n_days=1, enemy=kind))
     assert block["acts"] is acts
 
 
@@ -377,7 +514,7 @@ def test_options_that_do_not_apply_are_omitted_rather_than_reported_at_default()
 def test_mitigation_option_reports_the_installed_multiplier_profile():
     block = enemy_seam.resolve(
         RunConfig(build="silvertail", level=10, n_days=1, enemy="baseline",
-                  enemy_options={"mitigation": True}), {})
+                  enemy_options={"mitigation": True}))
     assert block["damage_multiplier"] == enemy_stats.band_damage_multipliers(
         10, band=enemy_stats.band_for_level(10))
 
@@ -386,22 +523,29 @@ def test_mitigation_option_reports_the_installed_multiplier_profile():
 # enemy.install() — the policy is actually replaced
 # ---------------------------------------------------------------------------
 
-def test_build_default_leaves_the_factory_policy_untouched():
-    """Not merely "an equivalent policy": the SAME OBJECT.  Any replacement at all
-    on this path would put the §12 bit-identical parity proof at risk."""
-    config = RunConfig(build="war_angel", level=13, n_days=1)
-    adapter = config.validate()
-    runner, roster = adapter.build(config, SeededRNG(0))
-    installed = runner.policies[roster.enemies[0].id]
-    assert isinstance(installed, ScriptedEnemyPolicy)
-    assert enemy_seam.install(runner, roster, config)["resolved"] is False
-    assert runner.policies[roster.enemies[0].id] is installed
+@pytest.mark.parametrize("build,level", [("war_angel", 13), ("starfire_scion", 15),
+                                         ("silvertail", 10)])
+def test_no_factory_installs_an_enemy_policy_any_more(build, level):
+    """§3.4 item 3 closed, asserted from the factory side.
+
+    This is the s52 inverse of s50's ``test_build_default_leaves_the_factory_policy_
+    untouched``, which checked that the no-op path left the factory's policy as the
+    SAME OBJECT.  There is no factory policy to leave: all three builds returned one at
+    these levels (War Angel and Starfire a ``ScriptedEnemyPolicy``, Silvertail a
+    ``BaselineEnemyPolicy``), and now none does.  Checked at the three levels where
+    each build's old ``enemy_attack`` row made its enemy act, which is exactly where a
+    leftover would hide.
+    """
+    config = RunConfig(build=build, level=level, n_days=1, enemy="baseline")
+    runner, roster = config.validate().build(config, SeededRNG(0))
+    assert roster.enemies[0].id not in runner.policies
+    assert not any(isinstance(pol, (ScriptedEnemyPolicy, BaselineEnemyPolicy))
+                   for pol in runner.policies.values())
 
 
 def test_baseline_kind_installs_the_table_driven_policy():
     config = RunConfig(build="war_angel", level=13, n_days=1, enemy="baseline")
-    adapter = config.validate()
-    runner, roster = adapter.build(config, SeededRNG(0))
+    runner, roster = built(config)
     policy = runner.policies[roster.enemies[0].id]
     assert isinstance(policy, BaselineEnemyPolicy)
     params = policy.describe_parameters()
@@ -415,8 +559,7 @@ def test_scripted_kind_is_the_attack_roll_half_only():
     the comparison the baked-in paths could never express, because they differed in
     the model AND the numbers at once."""
     config = RunConfig(build="war_angel", level=13, n_days=1, enemy="scripted")
-    adapter = config.validate()
-    runner, roster = adapter.build(config, SeededRNG(0))
+    runner, roster = built(config)
     policy = runner.policies[roster.enemies[0].id]
     assert isinstance(policy, ScriptedEnemyPolicy)
     params = policy.describe_parameters()
@@ -433,8 +576,7 @@ def test_scripted_kind_is_the_attack_roll_half_only():
 
 def test_none_kind_removes_the_policy_entirely():
     config = RunConfig(build="war_angel", level=13, n_days=1, enemy="none")
-    adapter = config.validate()
-    runner, roster = adapter.build(config, SeededRNG(0))
+    runner, roster = built(config)
     assert roster.enemies[0].id not in runner.policies
     # ...but it is still a complete stat block, not a bare AC.
     assert roster.enemies[0].base_stats["enemy_save_dc"] == \
@@ -446,14 +588,12 @@ def test_focus_declares_which_entity_the_enemy_fights():
     facts vary independently: Silvertail's own factory switches master-vs-beast off
     its ``zone_effect`` axis, so no derivation from the build could be right."""
     config = RunConfig(build="silvertail", level=10, n_days=1, enemy="baseline")
-    adapter = config.validate()
 
-    runner, roster = adapter.build(config, SeededRNG(0))
+    runner, roster = built(config)
     assert (runner.policies[roster.enemies[0].id].describe_parameters()["focus"]
             == roster.character.name)
 
-    runner, roster = adapter.build(
-        config.replace(enemy_options={"focus": "summon"}), SeededRNG(0))
+    runner, roster = built(config.replace(enemy_options={"focus": "summon"}))
     params = runner.policies[roster.enemies[0].id].describe_parameters()
     assert params["focus"] == roster.summons[0].name
     assert params["fallback"] == roster.character.name
@@ -471,8 +611,7 @@ def test_focus_summon_on_a_build_with_no_summon_is_an_error():
 def test_install_refuses_a_roster_with_no_enemy():
     """BUILT fixture — no shipped build fields zero enemies."""
     config = RunConfig(build="war_angel", level=13, n_days=1, enemy="baseline")
-    runner, roster = config.validate().build(config.replace(enemy="build_default"),
-                                             SeededRNG(0))
+    runner, roster = config.validate().build(config, SeededRNG(0))
     with pytest.raises(ValueError, match="no enemies"):
         enemy_seam.install(runner, Roster(characters=[roster.character]), config)
 
@@ -481,8 +620,7 @@ def test_install_refuses_a_roster_with_two_enemies():
     """BUILT fixture — no shipped build fields two enemies.  The refusal names the
     multi-enemy / spatial deferral rather than silently standardizing one of them."""
     config = RunConfig(build="war_angel", level=13, n_days=1, enemy="baseline")
-    runner, roster = config.validate().build(config.replace(enemy="build_default"),
-                                             SeededRNG(0))
+    runner, roster = config.validate().build(config, SeededRNG(0))
     two = Roster(characters=[roster.character],
                  enemies=[roster.enemies[0], Entity(name="second", hp=10 ** 9)])
     with pytest.raises(NotImplementedError, match="installs ONE standardized enemy"):
@@ -490,18 +628,74 @@ def test_install_refuses_a_roster_with_two_enemies():
 
 
 def test_scripted_policy_reports_weighted_roster_targeting():
-    """BUILT fixture, and the roll call says why: this VALUE is unreachable through
-    ``RunConfig`` today.  The standardized ``scripted`` kind never passes a roster,
-    and ``build_default`` never calls ``describe_parameters()`` at all — so the
-    branch would ship untested.  Trigger for a production fixture: a standardized
-    multi-entity kind, blocked on §3.3's multi-character party.
+    """NO LONGER A BUILT FIXTURE — s52 made this value REACHABLE, and the roll-call
+    entry that recorded why it was not is the reason it got fixed rather than deleted.
+
+    s50 wrote: "unreachable through ``RunConfig`` today — the standardized ``scripted``
+    kind never passes a roster, and ``build_default`` never calls
+    ``describe_parameters()`` at all".  Deleting the baked-in path would have made it
+    unreachable full stop, i.e. dead code — which is the trap §7.6 was written about.
+    So 5b gave ``char_target_prob`` teeth instead: the off-target share lands on the
+    build's ALLIES when it fields any.  Starfire's ``with_party`` axis is now the
+    production fixture, exercised in ``test_the_off_target_share_lands_on_a_real_ally``
+    below.  This direct-construction case stays as the unit-level check.
     """
     char, ally = Entity(name="char", hp=40), Entity(name="ally", hp=40)
     params = ScriptedEnemyPolicy(target=char, n_attacks=2,
                                  roster=[(char, 2), (ally, 1)]).describe_parameters()
     assert params["targeting"] == "weighted_roster"
-    assert params["char_target_prob"] is None
-    assert params["roster_weights"] == {"char": 2, "ally": 1}
+
+
+def test_the_off_target_share_lands_on_a_real_ally():
+    """The PRODUCTION fixture for the branch above, and the one capability 5b had to
+    rescue rather than delete.
+
+    Starfire's ``with_party`` axis puts a real party member in the roster, so
+    ``char_target_prob < 1.0`` now splits the enemy's swings across it instead of
+    sending the off-target share to an unmodelled friendly, i.e. nowhere.
+    """
+    config = RunConfig(build="starfire_scion", level=15, n_days=1, enemy="scripted",
+                       build_options={"with_party": True},
+                       enemy_options={"char_target_prob": 0.4})
+    runner, roster = built(config)
+    policy = runner.policies[roster.enemies[0].id]
+    assert policy.describe_parameters()["targeting"] == "weighted_roster"
+    assert len(roster.allies) == 1
+
+    # The weights are the integers the dice-stream argument rests on (see
+    # enemy._ally_roster): they sum to exactly 100, so the multi-entity pre-roll is
+    # the same roll_one(100) the single-target path makes.
+    weights = dict(policy._roster)                      # noqa: SLF001 — the point
+    assert weights[roster.character] == 40
+    assert weights[roster.allies[0]] == 60
+    assert sum(weights.values()) == 100
+
+
+def test_focus_fire_is_unaffected_by_an_ally_being_present():
+    """The DEFAULT value of the same declaration, which is the half that must not
+    move: at ``char_target_prob=1.0`` the allies take weight 0 and can never be
+    picked, so a standardized focus-fire run on a build that fields a party measures
+    exactly what it measures on one that does not.  Asserted as the weight rather than
+    as a DPR, because a weight cannot be right by luck of the seed.
+    """
+    config = RunConfig(build="starfire_scion", level=15, n_days=1, enemy="scripted",
+                       build_options={"with_party": True})
+    runner, roster = built(config)
+    weights = dict(runner.policies[roster.enemies[0].id]._roster)   # noqa: SLF001
+    assert weights[roster.character] == 100
+    assert weights[roster.allies[0]] == 0
+
+
+def test_a_build_with_no_allies_keeps_the_single_target_path():
+    """``_ally_roster`` returns None when there is nothing to absorb the off-target
+    share, which is what keeps War Angel's ``char_target_prob`` meaning what it
+    always meant: the share goes to an unmodelled party member, i.e. nowhere."""
+    config = RunConfig(build="war_angel", level=13, n_days=1, enemy="scripted",
+                       enemy_options={"char_target_prob": 0.4})
+    runner, roster = built(config)
+    policy = runner.policies[roster.enemies[0].id]
+    assert policy.describe_parameters()["targeting"] == "single_target"
+    assert policy._roster is None                        # noqa: SLF001
 
 
 def test_legendary_cadence_is_inert_in_the_low_bands():
@@ -509,13 +703,13 @@ def test_legendary_cadence_is_inert_in_the_low_bands():
     mean-field count rounds to 0 below band 11-16, so ``True`` at L4 is a no-op."""
     low = enemy_seam.resolve(RunConfig(build="war_angel", level=4, n_days=1,
                                        enemy="baseline",
-                                       enemy_options={"legendary_cadence": True}), {})
+                                       enemy_options={"legendary_cadence": True}))
     assert enemy_stats.band_legendary_cadence(4) == 0
     assert low["options"]["legendary_cadence"] is True       # declared...
 
     config = RunConfig(build="war_angel", level=13, n_days=1, enemy="baseline",
                        enemy_options={"legendary_cadence": True})
-    runner, roster = config.validate().build(config, SeededRNG(0))
+    runner, roster = built(config)
     params = runner.policies[roster.enemies[0].id].describe_parameters()
     assert params["legendary_swings"] == enemy_stats.band_legendary_cadence(13) > 0
 
@@ -545,10 +739,10 @@ def test_resolve_and_install_draw_no_dice():
                        enemy_options={"control": True, "mitigation": True})
     adapter = config.validate()
     rng = _CountingRNG(0)
-    runner, roster = adapter.build(config.replace(enemy="build_default"), rng)
+    runner, roster = adapter.build(config, rng)
     after_factory = rng.calls
 
-    enemy_seam.resolve(config, adapter.describe(config))
+    enemy_seam.resolve(config)
     enemy_seam.install(runner, roster, config)
     assert rng.calls == after_factory
 
@@ -577,9 +771,8 @@ def test_different_builds_at_one_level_face_an_identical_resolved_enemy():
     for build in SHARED_LEVEL_BUILDS:
         config = RunConfig(build=build, level=SHARED_LEVEL, n_days=1,
                            enemy="baseline", enemy_options={"control": True})
-        adapter = config.validate()
-        runner, roster = adapter.build(config, SeededRNG(0))
-        blocks.append(enemy_seam.resolve(config, adapter.describe(config)))
+        runner, roster = built(config)
+        blocks.append(enemy_seam.resolve(config))
         params = runner.policies[roster.enemies[0].id].describe_parameters()
         # 'focus'/'fallback' name the ROSTER, which differs by construction — the
         # enemy's own parameters are what must agree.
@@ -599,24 +792,35 @@ def test_every_build_at_one_level_faces_the_same_stat_block(build):
     """The defensive half of the same requirement, read off the Entity rather than
     the policy — so a future policy change cannot make the test vacuous."""
     config = RunConfig(build=build, level=SHARED_LEVEL, n_days=1, enemy="baseline")
-    _, roster = config.validate().build(config, SeededRNG(0))
+    _, roster = built(config)
     stats = roster.enemies[0].base_stats
     for key, value in enemy_stats.enemy_base_stats(SHARED_LEVEL).items():
         assert stats[key] == value
 
 
-def test_the_two_enemy_paths_are_never_silently_comparable():
-    """§3.4's standing requirement while both paths exist.  ``enemy_path``
-    distinguishes "standardized baseline" from "the factory happened to pick
-    BaselineEnemyPolicy" — both would say "baseline" if the path named only the
-    model, and pooling them is exactly what must not happen."""
-    config = RunConfig(build="silvertail", level=10, n_days=2)
-    default_path = run(config).provenance.coverage["enemy_path"]
-    standardized = run(config.replace(enemy="baseline")).provenance.coverage[
-        "enemy_path"]
-    assert default_path == "build_default:baseline"
-    assert standardized == "standardized:baseline"
-    assert default_path != standardized
+def test_enemy_path_still_distinguishes_every_run_that_must_not_be_pooled():
+    """§3.4's comparability requirement, after the two paths became one (s52).
+
+    s50 wrote this against the pair it had: ``build_default:baseline`` vs
+    ``standardized:baseline``, which both said merely "baseline" before the prefix
+    existed.  With the baked-in path deleted the prefix is a constant, so the
+    requirement reduces to the surviving axis — the KIND — and that is what is
+    asserted: three kinds, three paths, no two alike.
+
+    The prefix is kept rather than dropped (see ``report.Provenance.build``) and that
+    is asserted here too, because it is what distinguishes a post-5b artifact from the
+    pre-s50 ones that rendered the bare word, and ``schema_version`` does not cover
+    provenance string shapes.
+    """
+    config = RunConfig(build="silvertail", level=10, n_days=2, enemy="baseline",
+                       enemy_options={"focus": "summon"})
+    paths = {kind: run(config.replace(enemy=kind, enemy_options={})
+                       ).provenance.coverage["enemy_path"]
+             for kind in ("baseline", "scripted", "none")}
+    assert paths == {"baseline": "standardized:baseline",
+                     "scripted": "standardized:scripted",
+                     "none": "standardized:none"}
+    assert len(set(paths.values())) == 3
 
 
 # ---------------------------------------------------------------------------
@@ -756,6 +960,31 @@ GOLDEN_DAYS, GOLDEN_SEED = 400, 11
 #: numbers in ``src/validation.py`` were.  An engine change that moves them has
 #: moved the physics, and the commit that does it should say which physics.
 GOLDEN_DPR: dict[tuple, float] = {
+    # ------------------------------------------------------------------
+    # THE RETIRED PARITY PROOF'S COVERAGE, carried forward (s52).
+    #
+    # `test_framework_reproduces_validation_exactly` parametrized War Angel at
+    # L1 / 4 / 5 / 12 / 13 / 16 for stated STRUCTURAL reasons — plain attacks, the
+    # exact-match band's edge, where the daily-plan hooks appear, the last level with
+    # an inert enemy, where the enemy strikes back, and the top of the validated
+    # range.  §12 retires that test with `src/validation.py`; those six levels are
+    # pinned here so its COVERAGE is not lost along with its role.
+    #
+    # L1 / L5 / L12 are pinned under `none`, and that is not an arbitrary choice:
+    # `none` is BIT-IDENTICAL to what the retired harness printed at those levels
+    # (§3.4's measurement — the baked-in enemy was passive there and its AC already
+    # equalled the table's).  So for the three levels where it is possible, these
+    # goldens literally ARE validation.py's numbers, carried forward as exact
+    # constants rather than re-derived.
+    ("war_angel", 1, "none", ()): 8.29234375,
+    ("war_angel", 5, "none", ()): 16.4528125,
+    ("war_angel", 12, "none", ()): 37.91640625,
+    # L16 under `baseline` — the top of the range, with the enemy acting.  NOT
+    # bit-identical to the retired harness (41.247656 there), because L16 is one of
+    # the four War Angel levels whose baked-in enemy swung for a hand-written flat 32
+    # instead of the table's 9d6+5.  That is the re-baseline 5b was for.
+    ("war_angel", 16, "baseline", ()): 41.166875,
+    # ------------------------------------------------------------------
     ("war_angel", 4, "baseline", ()): 6.99390625,
     ("war_angel", 13, "baseline", ()): 34.76328125,
     ("war_angel", 13, "scripted", ()): 34.9409375,
@@ -924,12 +1153,22 @@ def test_control_channel_is_live_under_the_standardized_enemy():
         assert value.value is not None and value.value > 0
 
 
-def test_the_four_control_unavailability_reasons_stay_distinguishable():
-    """The per-METRIC ritual's availability check: two builds blocked for different
-    reasons get different reasons.  The seam ADDS a reason — "the standardized enemy
-    is installed and its channel is off" — and folding that into the pre-existing
-    "constructed with control=False" would lose the distinction, because only one of
-    the two is the caller's to fix in one keyword.
+def test_the_three_control_unavailability_reasons_stay_distinguishable():
+    """The per-METRIC ritual's availability check: two runs blocked for different
+    reasons get different reasons.
+
+    THE COUNT HAS MOVED TWICE, for opposite reasons, and both moves are the check
+    working rather than the check being retuned.  s50 took it from two to SEVEN,
+    because the seam added a genuinely new situation — "the standardized enemy is
+    installed and its channel is simply off" — and folding that into the pre-existing
+    "constructed with control=False" would have lost the distinction, since only one
+    of the two is the caller's to fix in one keyword.  s52 takes it to THREE: the four
+    it loses are the baked-in path's ways of being unmeasurable, and no run can reach
+    them, so each stated a reason nobody can be in.  That is worse than no branch —
+    a reader who somehow saw one would go looking for a cause that does not exist.
+
+    What survives is the property the check is for: the reasons are DISTINCT, and each
+    one says how to fix it rather than only what is wrong.
     """
     reasons = {
         "std_baseline_off": _control_reason(
@@ -938,23 +1177,19 @@ def test_the_four_control_unavailability_reasons_stay_distinguishable():
             RunConfig(build="war_angel", level=13, n_days=2, enemy="scripted")),
         "std_none": _control_reason(
             RunConfig(build="war_angel", level=13, n_days=2, enemy="none")),
-        "bd_scripted": _control_reason(
-            RunConfig(build="war_angel", level=13, n_days=2)),
-        "bd_baseline": _control_reason(
-            RunConfig(build="silvertail", level=10, n_days=2)),
-        "bd_passive": _control_reason(
-            RunConfig(build="war_angel", level=3, n_days=2)),
     }
     assert len(set(reasons.values())) == len(reasons)
-    # Every reason tells the reader how to fix it, not only what is wrong.
     for reason in reasons.values():
         assert "enemy='baseline'" in reason
     assert "switched off" in reasons["std_baseline_off"]
     assert "ATTACK-ROLL half" in reasons["std_scripted"]
     assert "passive target" in reasons["std_none"]
-    assert "build factory installed ScriptedEnemyPolicy" in reasons["bd_scripted"]
-    assert "without exposing the toggle" in reasons["bd_baseline"]
-    assert "never acts at this level" in reasons["bd_passive"]
+
+    # And the reasons that are GONE are gone: a run cannot be told the build factory
+    # chose its enemy model, because no build factory chooses one any more.
+    for reason in reasons.values():
+        assert "build factory" not in reason
+        assert "build_default" not in reason
 
 
 def test_mitigation_channel_is_live_under_the_standardized_enemy():
@@ -969,7 +1204,7 @@ def test_mitigation_channel_is_live_under_the_standardized_enemy():
         assert value.available
         assert value.value is not None and value.value > 0
 
-    unavailable = run(RunConfig(build="silvertail", level=10, n_days=2)
+    unavailable = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=2)
                       ).values["damage_mitigated_per_round"]
     assert not unavailable.available
     assert "enemy_options={'mitigation': True}" in (unavailable.note or "")
@@ -1061,10 +1296,15 @@ def test_console_header_shows_only_the_options_in_force():
     assert "band 17+" in line                     # the override reached the band
 
 
-def test_console_header_says_so_when_the_enemy_is_not_resolved():
-    line = _enemy_header(RunConfig(build="war_angel", level=13, n_days=3))
-    assert "build_default:scripted" in line
-    assert "NOT RESOLVED" in line
+@pytest.mark.parametrize("kind", ["baseline", "scripted", "none"])
+def test_the_console_never_says_NOT_RESOLVED_any_more(kind):
+    """s50 shipped a console branch that told a reader the enemy assumptions were not
+    recorded, because on the ``build_default`` path they genuinely were not.  s52
+    deleted the path, so the branch has no reachable case — asserted across all three
+    kinds, because "no run can produce it" is the claim."""
+    line = _enemy_header(RunConfig(build="war_angel", level=13, n_days=3, enemy=kind))
+    assert f"standardized:{kind}" in line
+    assert "NOT RESOLVED" not in line
 
 
 # ---------------------------------------------------------------------------

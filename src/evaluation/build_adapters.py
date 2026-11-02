@@ -12,20 +12,27 @@ adds the two things the evaluation layer needs and the factories do not provide:
 Registration happens at import time; ``adapters._ensure_builtin_adapters`` pulls
 this module in on the first registry lookup.
 
-THE ENEMY SEAM (s50, §3.4)
---------------------------
-Each ``build()`` ends with one unconditional call to ``enemy.install``, which is a
-no-op under the default ``enemy="build_default"`` and otherwise replaces the
-factory's enemy with the standardized one.  The adapters are therefore "told which
-enemy to install" without any of the three factories being edited — which is the
-point while ``build_default`` still has to reproduce ``validation.py`` bit-for-bit.
+THE ENEMY SEAM (s50, §3.4; completed s52)
+-----------------------------------------
+``build()`` returns ``(runner, roster)`` and does NOT install the enemy.  In s50 each of
+the three adapters ended with its own unconditional ``enemy.install`` call, which was
+safe while the default was ``build_default``; s52 moved the call into ``runner.simulate``,
+because with ``enemy`` required an adapter that FORGOT it would face its factory's enemy
+while provenance claimed the declared kind.  A call that must always happen belongs in
+the one function every run goes through, not in three that each have to remember it —
+which also means a new adapter cannot get this wrong.  The factories return a PASSIVE
+enemy for the seam to install onto.
 
-The adapters' ``describe()`` blocks keep reporting the enemy facts their FACTORY
-decided (``enemy_policy``, ``enemy_focus``, …).  That is deliberate and is not the
-§4 enemy block: under ``build_default`` those facts ARE the run's enemy, and under
-a standardized enemy they are the overwritten path, which a reader comparing the
-two wants to see.  The authoritative enemy block is ``enemy.resolve``, assembled
-independently of the build — because the enemy is not a property of the build.
+**``describe()`` no longer reports any enemy fact, and that deletion is the point.**
+Through s50-s51 each block carried the facts its FACTORY decided (``enemy_policy``,
+``enemy_n_attacks``, ``enemy_focus``, ``enemy_damage_type``, …), which was right while
+those facts WERE the run's enemy under ``build_default`` and were the overwritten path
+otherwise.  With the baked-in path gone, nothing read them: ``enemy.resolve``'s only
+consumer of ``described`` was its ``build_default`` branch.  Keeping them would have
+left plausible-looking enemy numbers in provenance with no consumer and no claim to
+truth — the trap §7.6 was written about — so they are gone.  The authoritative enemy
+block is ``enemy.resolve``, assembled from the config alone, because the enemy is not a
+property of the build.
 """
 
 from __future__ import annotations
@@ -74,10 +81,13 @@ def _extra_entities(runner: "DayRunner", known: "list[Entity]") -> list["Entity"
 # ---------------------------------------------------------------------------
 
 class WarAngelAdapter:
-    """Paladin/Fighter/Bard "War Angel" — the build ``src/validation.py`` measures.
+    """Paladin/Fighter/Bard "War Angel" — the build ``src/validation.py`` measured.
 
-    Reproducing that harness's numbers exactly through this adapter is the
-    correctness proof for the whole evaluation layer (§12).
+    Reproducing that harness's numbers exactly through this adapter WAS the correctness
+    proof for the whole evaluation layer, from s43 to s51.  s52 deleted the harness, and
+    §12 records why the swap is asymmetric: the goldens that replace it are a stronger
+    PHYSICS signal and a weaker LAYER one, the layer half surviving in
+    ``test_headline_column_is_the_characters_own_output``.
     """
 
     name = "war_angel"
@@ -93,22 +103,13 @@ class WarAngelAdapter:
             config.level, rng, config.rounds_per_combat,
         )
         roster = Roster(characters=[char], enemies=[dummy])
-        enemy_seam.install(runner, roster, config)
         return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
-        row = war_angel.LEVELS[config.level]
-        enemy_attack = row.get("enemy_attack")
         return {
             "build": self.name,
             "level": config.level,
             "options": {},
-            # Structural facts the factory decides off the level's data row.
-            "enemy_policy": "scripted" if enemy_attack else None,
-            "enemy_n_attacks": enemy_attack["n_attacks"] if enemy_attack else 0,
-            "enemy_char_target_prob": (
-                enemy_attack["char_target_prob"] if enemy_attack else 0.0
-            ),
             "daily_plan": config.level >= 5,     # Magic Weapon / Prayer of Healing hooks
         }
 
@@ -169,13 +170,11 @@ class StarfireScionAdapter:
         # and never returned — recover it by difference, not by position.
         allies = _extra_entities(runner, [char, dummy])
         roster = Roster(characters=[char], allies=allies, enemies=[dummy])
-        enemy_seam.install(runner, roster, config)
         return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
         opts = _resolved_options(self, config)
         row = starfire_scion.LEVELS[config.level]
-        enemy_attack = row.get("enemy_attack")
 
         # Genuine §4 resolution: primal_strike_unarmed=None is not "default", it is
         # whatever the level row's raw_unarmed flag says (and is meaningless at a
@@ -197,11 +196,6 @@ class StarfireScionAdapter:
             "options": opts,
             "primal_strike_unarmed_effective": resolved_ps,
             "primal_strike_unarmed_source": ps_source,
-            "enemy_policy": "scripted" if enemy_attack else None,
-            "enemy_targeting": (
-                "weighted_roster" if (enemy_attack and opts["with_party"])
-                else "single_target" if enemy_attack else None
-            ),
         }
 
 
@@ -255,27 +249,14 @@ class SilvertailAdapter:
             config.level, rng, config.rounds_per_combat, **opts,
         )
         roster = Roster(characters=[char], summons=[beast], enemies=[dummy])
-        enemy_seam.install(runner, roster, config)
         return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
         opts = _resolved_options(self, config)
-        row = silvertail.LEVELS[config.level]
-        enemy_attack = row.get("enemy_attack")
         return {
             "build": self.name,
             "level": config.level,
             "options": opts,
-            "enemy_policy": "baseline" if enemy_attack else None,
-            # The factory picks the focus target off zone_effect: with a zone the
-            # enemy tanks the master (so its hits can break concentration),
-            # otherwise it focus-fires the beast.
-            "enemy_focus": (
-                None if not enemy_attack
-                else "character" if opts["zone_effect"] is not None
-                else "summon"
-            ),
-            "enemy_damage_type": enemy_attack.get("damage_type") if enemy_attack else None,
         }
 
 

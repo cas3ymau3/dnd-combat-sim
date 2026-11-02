@@ -156,7 +156,7 @@ from ..policy import (
 from ..resources import ResourceEntry, ResourcePool
 from ..statuses import StatusSpec
 from ..taxonomy import is_attack_action
-from .enemy import ScriptedEnemyPolicy  # shared enemy loop (re-exported here)
+from . import enemy_stats          # THE enemy-Entity constructor (evaluation_framework.md §3.4)
 
 if TYPE_CHECKING:
     from ..rng import SeededRNG
@@ -268,8 +268,6 @@ LEVELS: dict[int, dict] = {
         "resources": {
             "spellfire_spark": (2, 0),     # Sacred Flame as a BA, x PB / LR (LR-only)
         },
-        "enemy_ac": 13,
-        "enemy_dex_save": 1,               # csv level 1
         "ceiling_dpr": 14.0,               # loose: quarterstaff 7.5 + unarmed 6.5
     },
     4: {
@@ -301,8 +299,6 @@ LEVELS: dict[int, dict] = {
             "guiding_bolt_free": (3, 0),   # Star Map: free Guiding Bolt x WIS / LR
             "wild_shape": (2, 1),          # 2 / LR, +1 on SR → Starry Form ~3 of 4 combats
         },
-        "enemy_ac": 15,
-        "enemy_dex_save": 2,               # csv level 4
         "ceiling_dpr": 21.5,               # loose: Guiding Bolt 14 + Archer 7.5
     },
     5: {
@@ -334,8 +330,6 @@ LEVELS: dict[int, dict] = {
             # what turns Fueled Spellfire on in the policy (data-driven gate).
             "hit_dice": (5, 0),
         },
-        "enemy_ac": 15,
-        "enemy_dex_save": 2,               # csv level 5
         "ceiling_dpr": 23.0,               # loose: Guiding Bolt 14 + Sacred Flame 2d8 9
     },
     9: {
@@ -383,8 +377,6 @@ LEVELS: dict[int, dict] = {
             # hit dice").  Its presence is the data-driven on/off gate in the policy.
             "hit_dice": (9, 0),
         },
-        "enemy_ac": 16,
-        "enemy_dex_save": 2,               # csv level 9
         # Loose all-hit/all-fail upper bound: GB turn 14 + fuel 2d8 9 = 23; attack
         # turns 2x(1d10+WIS) 19 + Sacred Flame 2d8 9 = 28.  ~30 max → 32 cushion.
         "ceiling_dpr": 32.0,
@@ -441,8 +433,6 @@ LEVELS: dict[int, dict] = {
             # on_combat_start; LR at day start also refills (sr_restore=0).
             "focus_points": (6, 0),
         },
-        "enemy_ac": 16,
-        "enemy_dex_save": 3,               # csv level 10
         # Loose all-hit/all-fail upper bound (now with Extra Attack + Shillelagh):
         # turn-1 Guiding Bolt 14 + fuel 2d8 9 = 23; attack turns 2x(1d10+WIS) 19 +
         # Searing Arc full 4d6 14 = 33.  ~33 max → 36 cushion.
@@ -484,8 +474,6 @@ LEVELS: dict[int, dict] = {
             "hit_dice": (11, 0),           # Fueled Spellfire: char-level d8 (11 at L11)
             "focus_points": (7, 0),        # monk-7 = 7 FP
         },
-        "enemy_ac": 17,
-        "enemy_dex_save": 3,               # csv level 11
         # Loose upper bound (Shillelagh now 1d12): GB turn 14 + fuel 9 = 23; attack
         # turns 2x(1d12+4) 21 + Searing Arc full 4d6 14 = 35.  ~35 max → 38 cushion.
         "ceiling_dpr": 38.0,
@@ -525,8 +513,6 @@ LEVELS: dict[int, dict] = {
             "hit_dice": (12, 0),           # Fueled Spellfire: char-level d8 (12 at L12)
             "focus_points": (8, 0),        # monk-8 = 8 FP
         },
-        "enemy_ac": 17,
-        "enemy_dex_save": 3,               # csv level 12
         # Loose upper bound (WIS +5, Shillelagh 1d12+5, Searing Arc 5d6): GB turn 14
         # + fuel 9 = 23; attack turns 2x(1d12+5) 23 + Searing Arc full 5d6 17.5 = 40.5.
         # ~41 max → 44 cushion.
@@ -601,19 +587,6 @@ LEVELS: dict[int, dict] = {
         # attack_bonus / damage are ILLUSTRATIVE (the monster CSV carries only AC +
         # saves; per-CR attack/damage is the unrealised half of decision #12 —
         # see builds/enemy.py).  +9 vs char AC 18 → ~60% hit, exercising the thorns.
-        "enemy_attack": {"n_attacks": 2, "char_target_prob": 1.0,
-                          "attack_bonus": 9, "damage_dice": (2, 8), "damage_bonus": 5,
-                          # Multi-entity targeting weights (substrate #7 / 7c slice;
-                          # design.md §3.5).  Used ONLY when make_day_runner is called
-                          # with_party=True: the enemy splits its swings across
-                          # {character, party} by these integer weights.  The melee
-                          # Scion is weighted higher than a passive party member (the
-                          # §3.5 "melee tag raises targeting probability"): 2:1 → the
-                          # character draws 2/3 of the attacks, the party 1/3.  So
-                          # Fire-Shield thorns fire on a FRACTION of incoming hits (no
-                          # longer every one, as against the lone dummy) — dissolving
-                          # the single-dummy thorns over-count (PROGRESS session 16).
-                          "char_weight": 2, "party_weight": 1},
         "resources": {
             "spellfire_spark":  (5, 0),    # Sacred Flame as a BA, x PB / LR (PB 5)
             "guiding_bolt_free": (5, 0),   # Star Map: free Guiding Bolt x WIS mod / LR (WIS 20 → 5)
@@ -629,8 +602,6 @@ LEVELS: dict[int, dict] = {
             # guide 41:1069): spent to assume Starry-Form Dragon in the FoM combat.
             "wild_shape": (2, 1),
         },
-        "enemy_ac": 18,
-        "enemy_dex_save": 4,               # csv level 15
         # Loose upper bound for what we MODEL now (elemental weapon still deferred):
         # attack turns 2x(1d12+5) 23 + Primal Strike 1d8 4.5 + Searing Arc 5d6 17.5
         # = ~45; in the FoM combat add +2d6/swing (radiant, fueled) ~ +14.  The
@@ -710,34 +681,36 @@ def make_starfire_scion(level: int) -> Entity:
 
 
 def make_training_dummy(level: int) -> Entity:
-    """Build the target for the given level.
+    """The target for *level*: the definitive table's full enemy stat block.
 
-    HP is effectively infinite (threshold model).  The dummy carries the enemy AC
-    (for attack rolls) and the DEX save bonus (for Sacred Flame's save) — both
-    live from monster_ac_and_saves_by_level.csv.  Through L12 it has no policy and
-    never acts; if the level carries an ``enemy_attack`` profile it also gets an
-    ``attack_bonus`` + a flat melee damage profile so a ScriptedEnemyPolicy can
-    strike the character (the enemy-strikes-back loop — needed once defender-side
-    effects like Fire Shield's thorns come online; see make_day_runner).  An
-    ``enemy_resist`` block installs an INTRINSIC damage-type response (e.g. a
-    fire-resistant enemy that halves Searing Arc — substrate #4).
+    Delegates to ``enemy_stats.make_baseline_enemy`` — THE one enemy-``Entity``
+    constructor (evaluation_framework.md §3.4, step 5b).  Before s52 this function
+    built the dummy out of this build's OWN ``LEVELS`` row, which is the coupling §3.4
+    exists to remove: the enemy's stat block, which enemy model drove it, and whether it
+    acted at all were character-build properties.
+
+    Two consequences of the delegation, both deliberate:
+
+    * The AC is UNCHANGED at every level — the baked-in values already equalled the
+      table's, because both were copied out of the same CSV (pinned in
+      ``tests/test_eval_enemy_seam.py``).
+    * The dummy now carries the table's SIX SAVES and ``enemy_save_dc``, which the old
+      one did not. Starfire's carried one (``dex_save``).  ``Entity.stat()`` returns 0 for a missing key *by design*, so
+      a save forced on the old dummy resolved against +0 and printed a plausible number.
+
+    It never acts.  Whether the enemy acts is a declared ``RunConfig.enemy`` and the
+    framework's seam installs the policy; no build factory constructs one.
     """
-    data = LEVELS[level]
-    base_stats: dict = {
-        "ac": data["enemy_ac"],
-        "dex_save": data["enemy_dex_save"],
-    }
-    ea = data.get("enemy_attack")
-    if ea:
-        base_stats["attack_bonus"] = ea["attack_bonus"]
-        base_stats["damage_dice"] = ea.get("damage_dice", (1, 8))
-        base_stats["damage_bonus"] = ea.get("damage_bonus", 0)
-    return Entity(
-        name=f"Dummy-AC{data['enemy_ac']}",
-        hp=10**9,
-        base_stats=base_stats,
-        damage_response=data.get("enemy_resist"),
-    )
+    dummy = enemy_stats.make_baseline_enemy(level)
+    # ``enemy_resist`` STAYS a build-level row: it is an INTRINSIC damage-type response
+    # (a fire-resistant enemy that halves Searing Arc — substrate #4), i.e. a declared
+    # SCENARIO for this build's typed damage, not the enemy's stat block.  The §5
+    # mean-field mult(t) profile is the enemy-side knob and lives on
+    # ``enemy_options['mitigation']``; the two are independent and both can apply.
+    # dict(... or {}) mirrors Entity.__init__: damage_response is read with .get(),
+    # so a bare None from a level row with no enemy_resist would crash resolve_damage.
+    dummy.damage_response = dict(LEVELS[level].get("enemy_resist") or {})
+    return dummy
 
 
 def make_party_member(level: int) -> Entity:
@@ -1633,8 +1606,8 @@ class StarfireScionPolicy:
 
 
 # ---------------------------------------------------------------------------
-# Enemy-strikes-back loop: the shared ScriptedEnemyPolicy (src/builds/enemy.py),
-# imported and re-exported above so ``ss.ScriptedEnemyPolicy`` still resolves.
+# Enemy-strikes-back loop: NOT HERE (§3.4, step 5b).  This module constructs no enemy
+# policy; `RunConfig.enemy` declares the model and `evaluation/enemy.py` installs it.
 # ---------------------------------------------------------------------------
 
 
@@ -1670,18 +1643,20 @@ def make_day_runner(
     precast_prob (rolled once per combat through the seeded channel), None = each
     effect's legacy default (Fire Shield pre-cast, FoM in-combat; draws no dice).
 
-    Through L12 the enemy carries no attack profile, so it gets no policy and
-    never acts; DPR = damage dealt to the dummy = the character's whole output.
-    From the level where the row carries an ``enemy_attack`` profile, the enemy
-    also gets a ScriptedEnemyPolicy so it strikes the character — the
-    enemy-strikes-back loop that makes Fire Shield thorns (#5) and incoming-damage
-    resistance (#4) do real work.  DPR still reads the dummy's column, so the
-    enemy's own damage to the character never pollutes it.
+    The enemy NEVER acts here (§3.4, step 5b): it is a passive target carrying the
+    definitive table's full stat block, so a bare factory run gives DPR = damage dealt
+    to the dummy = the character's whole output at every level.  The enemy-strikes-back
+    loop that makes Fire Shield thorns (#5) and incoming-damage resistance (#4) do real
+    work is a declared `RunConfig.enemy` ('scripted' or 'baseline'), installed over this
+    roster by the framework's seam.  DPR still reads the dummy's column either way, so
+    the enemy's own damage to the character never pollutes it.
 
-    `with_party` (L15+, substrate #7 / 7c foundation-min) registers a passive PARTY
-    MEMBER (``make_party_member`` — one extra friendly HP pool, design.md §3.6) and
-    switches the enemy to MULTI-ENTITY targeting: it splits its swings across
-    {character, party} by the row's ``char_weight``/``party_weight`` (design.md
+    `with_party` (substrate #7 / 7c foundation-min) registers a passive PARTY
+    MEMBER (``make_party_member`` — one extra friendly HP pool, design.md §3.6) in the
+    friendly roster.  Who attacks it is the ENEMY's business and therefore declared:
+    `enemy_options['char_target_prob'] < 1.0` makes the standardized enemy split its
+    swings across {character, party}.  Before s52 the split lived here, off the row's
+    ``char_weight``/``party_weight`` (design.md
     §3.5).  So the character is attacked on only a fraction of swings and its
     Fire-Shield thorns fire less — dissolving the single-dummy thorns over-count
     (PROGRESS session 16).  DEFAULT False keeps the legacy 1-vs-1 scenario
@@ -1702,27 +1677,21 @@ def make_day_runner(
     policies: dict[int, object] = {char.id: policy}
     entities: list[Entity] = [char, dummy]
 
-    ea = LEVELS[level].get("enemy_attack")
-    if ea:
-        if with_party:
-            # Multi-entity (7c): a passive party member soaks a share of attacks;
-            # the enemy splits its swings across the weighted friendly roster.
-            party = make_party_member(level)
-            entities.append(party)
-            policies[dummy.id] = ScriptedEnemyPolicy(
-                target=char,
-                n_attacks=ea.get("n_attacks", 2),
-                rounds_per_combat=rounds_per_combat,
-                roster=[(char, ea.get("char_weight", 2)),
-                        (party, ea.get("party_weight", 1))],
-            )
-        else:
-            policies[dummy.id] = ScriptedEnemyPolicy(
-                target=char,
-                n_attacks=ea.get("n_attacks", 2),
-                char_target_prob=ea.get("char_target_prob", 1.0),
-                rounds_per_combat=rounds_per_combat,
-            )
+    if with_party:
+        # Multi-entity (7c): a passive party member joins the friendly roster as a real
+        # HP pool.  It is appended at EVERY level the option is legal, not only where a
+        # row used to carry `enemy_attack` — the party's existence is a build scenario
+        # and no longer gated on the enemy.
+        entities.append(make_party_member(level))
+
+    # THE ENEMY NEVER ACTS HERE (evaluation_framework.md §3.4, step 5b).  Until s52 the
+    # factory installed a ScriptedEnemyPolicy off this build's own data row — including
+    # the WEIGHTED-ROSTER split across `with_party`'s party member.  Both are now the
+    # framework's: `RunConfig.enemy` declares the model and
+    # `enemy_options['char_target_prob']` declares the share of swings the party soaks,
+    # with the seam reading the allies off the roster.  `with_party` stays a BUILD axis
+    # because the party member is a friendly HP pool this build fields; who attacks it
+    # is not a character-build property.
 
     runner = DayRunner(
         rng=rng,
@@ -1769,18 +1738,14 @@ def make_ally_effects_runner(
         ally_policy.install()                       # pre-cast the persistent payload
         policies[ally.id] = ally_policy
 
-    ea = LEVELS[level].get("enemy_attack")
-    if ea:
-        # The enemy attacks the ALLY on every swing (legacy single-target mode with
-        # char_target_prob=1.0 — the friendly here is the ally), so the ally-effect
-        # is the only thing modulating its incoming damage.  (A single-entity roster
-        # would degenerate to a weight-1 d1 pick; single-target mode is the clean fit.)
-        policies[dummy.id] = ScriptedEnemyPolicy(
-            target=ally,
-            n_attacks=ea.get("n_attacks", 2),
-            char_target_prob=1.0,
-            rounds_per_combat=rounds_per_combat,
-        )
+    # THE ENEMY NEVER ACTS HERE (evaluation_framework.md §3.4, step 5b).  Until s52 the
+    # factory installed a ScriptedEnemyPolicy off this build's own data row — including
+    # the WEIGHTED-ROSTER split across `with_party`'s party member.  Both are now the
+    # framework's: `RunConfig.enemy` declares the model and
+    # `enemy_options['char_target_prob']` declares the share of swings the party soaks,
+    # with the seam reading the allies off the roster.  `with_party` stays a BUILD axis
+    # because the party member is a friendly HP pool this build fields; who attacks it
+    # is not a character-build property.
 
     runner = DayRunner(
         rng=rng,

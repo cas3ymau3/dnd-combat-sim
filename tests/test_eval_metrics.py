@@ -398,7 +398,7 @@ def test_a_margin_is_computed_here_because_its_stderr_cannot_be_rebuilt_downstre
     """§5.4's survival rule, made concrete. The [*|*] margin's VALUE is recoverable
     from one dimension's cells, but its standard error is not any function of
     theirs — that needs their covariance, which only this layer sees."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=11,
+    report = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=40, seed=11,
                            build_options=ZONE))
     forced = report.breakdown("saves_forced_per_round")
 
@@ -416,7 +416,7 @@ def test_an_uncrossed_breakdowns_cells_do_not_partition_the_total():
     INDEPENDENTLY, each dimension's profile covers the whole quantity on its own.
     Adding every cell up double-counts — which is why the total is a declared
     margin rather than something a renderer computes."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=11,
+    report = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=40, seed=11,
                            build_options=ZONE))
     forced = report.breakdown("saves_forced_per_round")
 
@@ -457,7 +457,7 @@ def test_the_dpr_denominator_is_the_configured_rounds_per_day():
     """Not a hardcoded 16: change the day's shape and the denominator follows it,
     which is the whole reason it is a named entry rather than a literal."""
     for rounds_per_combat in (2, 4):
-        config = RunConfig(build="war_angel", level=5, n_days=4, seed=1,
+        config = RunConfig(enemy="none", build="war_angel", level=5, n_days=4, seed=1,
                            rounds_per_combat=rounds_per_combat)
         output = simulate(config)
         column = output.samples["dpr"].denominator
@@ -468,7 +468,7 @@ def test_the_dpr_denominator_is_the_configured_rounds_per_day():
 def test_dpr_equals_its_own_declared_definition():
     """The registry's ``dpr`` really is characters' damage over rounds_per_day —
     recomputed here straight from the raw per-day column."""
-    config = RunConfig(build="war_angel", level=13, n_days=20, seed=4)
+    config = RunConfig(enemy="baseline", build="war_angel", level=13, n_days=20, seed=4)
     output = simulate(config)
     report = build_report(output)
 
@@ -477,7 +477,7 @@ def test_dpr_equals_its_own_declared_definition():
 
 
 def test_a_ratio_metrics_denominator_is_the_random_per_day_count():
-    output = simulate(RunConfig(build="silvertail", level=10, n_days=20, seed=3,
+    output = simulate(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=20, seed=3,
                                 build_options=ZONE))
     checks = output.samples["concentration_break_rate"].denominator
     # Random, not constant — that is precisely why it needs the ratio estimator.
@@ -488,7 +488,7 @@ def test_a_ratio_metrics_denominator_is_the_random_per_day_count():
 def test_under_the_default_attribution_the_headline_excludes_summon_damage():
     """The historical basis (``attribution="character"``) — see the attribution tests
     below for the mode where a summon DOES count as the build's output."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=30, seed=3))
+    report = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=30, seed=3))
     headline = report.headline.value
     summon = report["dpr_by_role[summons]"].value
     party = report["dpr_by_role[*]"].value
@@ -504,7 +504,7 @@ def test_under_the_default_attribution_the_headline_excludes_summon_damage():
 
 def test_every_metric_in_a_report_carries_value_n_stderr_and_converged():
     """Not just DPR — §6.2's requirement is that the whole panel does."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=3,
+    report = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=40, seed=3,
                            build_options=ZONE))
     assert set(report.values) == set(METRICS.names())
     for value in report.values.values():
@@ -524,7 +524,7 @@ def test_a_rare_event_metric_is_unconverged_where_dpr_is_converged():
     """The point of §6.2: metrics converge at wildly different rates, so one global
     day count cannot certify them all.  A report that showed the rare number without
     its verdict would invite over-reading it."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=DAYS, seed=3,
+    report = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=DAYS, seed=3,
                            build_options=ZONE))
     dpr = report.headline
     rare = report["save_fail_rate[int_save|*]"]
@@ -541,17 +541,27 @@ def test_a_rare_event_metric_is_unconverged_where_dpr_is_converged():
 # Unavailable vs. measured-zero (§3.4) — the honesty requirement
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("build,level,options", [
-    ("war_angel", 13, {}),
-    ("starfire_scion", 15, {}),
-    ("silvertail", 10, ZONE),
+@pytest.mark.parametrize("build,level,options,enemy", [
+    ("war_angel", 13, {}, "baseline"),          # standardized, control switched off
+    ("starfire_scion", 15, {}, "scripted"),     # the attack-roll half: forces no saves
+    ("silvertail", 10, ZONE, "none"),           # a passive target: never acts
 ])
-def test_control_resilience_is_declared_unavailable_never_a_silent_zero(build, level, options):
-    """§3.4 is not yet built, so NO build can measure control resilience today.  A
-    zero here would read as "this build resists control perfectly" — the opposite of
-    what is known."""
+def test_control_resilience_is_declared_unavailable_never_a_silent_zero(
+        build, level, options, enemy):
+    """A zero here would read as "this build resists control perfectly" — the opposite
+    of what is known.
+
+    REPOINTED TWICE, and the second time is the interesting one.  Written when §3.4 did
+    not exist, so NO build could measure control and the parametrize varied the BUILD.
+    Step 5a made control configurable and step 5b deleted the baked-in path, which
+    leaves the build irrelevant to this assertion: what decides availability is the
+    declared ENEMY.  So the axis is now the enemy kind, and the three cases are the
+    three surviving reasons ``_requires_control_channel`` can give — which is the
+    per-feature ritual's step-5 roll call applied to a predicate whose branch count
+    this step cut from seven to three.  The builds are kept as carriers so the three
+    cases still span the corpus rather than testing one build three times."""
     report = run(RunConfig(build=build, level=level, n_days=10, seed=1,
-                           build_options=options))
+                           enemy=enemy, build_options=options))
     for name in ("control_turns_lost_per_round", "control_turns_reduced_per_round",
                  "save_fail_rate[*|control]"):
         value = report[name]
@@ -561,17 +571,25 @@ def test_control_resilience_is_declared_unavailable_never_a_silent_zero(build, l
         assert value.note
 
 
-def test_the_unavailability_reason_names_which_enemy_model_blocked_it():
-    """"War Angel's enemy has no control channel at all" and "Silvertail's enemy has
-    one but it is switched off" are different problems with different fixes; the
-    report must not flatten them into one message."""
-    war_angel = run(RunConfig(build="war_angel", level=13, n_days=4, seed=1))
-    silvertail = run(RunConfig(build="silvertail", level=10, n_days=4, seed=1))
+def test_the_unavailability_reason_names_what_actually_blocked_it():
+    """"The enemy has no control channel at all" and "it has one but it is switched
+    off" are different problems with different fixes; the report must not flatten
+    them into one message.
 
-    scripted = war_angel["save_fail_rate[*|control]"].note
-    baseline = silvertail["save_fail_rate[*|control]"].note
-    assert "ScriptedEnemyPolicy" in scripted
-    assert "BaselineEnemyPolicy" in baseline and "control=False" in baseline
+    REPOINTED (s52).  The two cases used to be two BUILDS — War Angel's factory
+    installed a ``ScriptedEnemyPolicy``, Silvertail's a ``BaselineEnemyPolicy`` with
+    control hardwired off — which is exactly the §3.4 coupling, and the fact that this
+    test needed two different builds to find two different reasons is the clearest
+    statement of why it had to go.  The same two problems now exist on ONE build, as
+    two declared kinds, which is what makes the distinction useful rather than a
+    symptom.
+    """
+    scripted = run(RunConfig(build="war_angel", level=13, n_days=4, seed=1,
+                             enemy="scripted"))["save_fail_rate[*|control]"].note
+    baseline = run(RunConfig(build="war_angel", level=13, n_days=4, seed=1,
+                             enemy="baseline"))["save_fail_rate[*|control]"].note
+    assert "ATTACK-ROLL half" in scripted
+    assert "switched off" in baseline
     assert scripted != baseline
 
 
@@ -582,20 +600,20 @@ def test_the_mitigation_channel_declares_itself_too():
     (The resource ledger was the third such case until s44 wired
     ``record_resource`` at the scheduler's consume sites; it is now measured, and
     its test lives with the other s44 additions below.)"""
-    report = run(RunConfig(build="war_angel", level=13, n_days=4, seed=1))
+    report = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=4, seed=1))
     assert report["damage_mitigated_per_round"].available is False
     assert "damage_multiplier" in report["damage_mitigated_per_round"].note
 
 
 def test_an_unavailable_metric_costs_no_collection():
-    output = simulate(RunConfig(build="war_angel", level=13, n_days=4, seed=1))
+    output = simulate(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=4, seed=1))
     assert "save_fail_rate[*|control]" in output.unavailable
     assert "save_fail_rate[*|control]" not in output.samples
 
 
 def test_a_missing_role_column_is_unavailable_not_zero():
     """War Angel has no summon, so "summon DPR = 0" would be a category error."""
-    report = run(RunConfig(build="war_angel", level=5, n_days=4, seed=1))
+    report = run(RunConfig(enemy="none", build="war_angel", level=5, n_days=4, seed=1))
     assert report["dpr_by_role[summons]"].available is False
     assert "summons" in report["dpr_by_role[summons]"].note
 
@@ -604,7 +622,7 @@ def test_unmeasured_is_a_distinct_state_from_unavailable():
     """A charisma-save fail rate on a run that forced no charisma save is a
     denominator of zero, not a broken channel.  Both refuse to report a zero; only
     one of them is a gap in the model."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=30, seed=3,
+    report = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=30, seed=3,
                            build_options=ZONE))
     unmeasured = {v.metric for v in report.unmeasured()}
     unavailable = {v.metric for v in report.unavailable()}
@@ -624,7 +642,7 @@ def test_unmeasured_is_a_distinct_state_from_unavailable():
 def test_provenance_resolves_the_build_side_to_the_value_actually_used():
     """§4's load-bearing distinction, at the report level: an option left as ``None``
     is recorded as what the run USED, with the source path named."""
-    report = run(RunConfig(build="starfire_scion", level=15, n_days=2, seed=1))
+    report = run(RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=2, seed=1))
     resolved = report.provenance.resolved["build"]
 
     assert resolved["options"]["primal_strike_unarmed"] is None      # as requested
@@ -632,36 +650,39 @@ def test_provenance_resolves_the_build_side_to_the_value_actually_used():
     assert "LEVELS[15]" in resolved["primal_strike_unarmed_source"]
 
 
-def test_provenance_says_plainly_that_the_enemy_side_is_not_resolved():
+def test_provenance_says_plainly_that_BOTH_sides_are_now_resolved():
     """Shipping a plausible-looking but empty ``enemy`` block would imply the
     assumptions were recorded when they were not.
 
     **Updated s50, deliberately.** The claim this test defends is unchanged and
-    still true on this path: at the default ``enemy="build_default"`` the enemy is
-    built by the character's own factory off its own level row, and provenance says
-    so instead of implying otherwise.  Two details moved with the §13 step-5 seam:
-    ``resolved["enemy"]`` is now an explicit ``resolved: False`` block rather than
-    ``None`` (``None`` could not distinguish "nothing resolved it" from "it resolved
-    to nothing"), and ``enemy_path`` now names the PATH as well as the model —
-    ``build_default:scripted`` — because "standardized baseline" and "the factory
-    happened to pick BaselineEnemyPolicy" are different runs that both used to
-    render as the bare word "baseline".
+    NO LONGER TRUE ON ANY PATH (s52) — and the inversion is what this test now
+    guards.  It was written in s44, when the enemy side was never resolved, and
+    narrowed in s50 to the one path that still was not: at the then-default
+    ``enemy="build_default"`` the enemy was built by the character's own factory off
+    its own level row, and provenance said so rather than implying otherwise, on the
+    principle that a half-filled block is worse than an honest gap.  Step 5b deleted
+    that path, so the honest gap has no reachable case and the assertion flips: the
+    build side and the enemy side are BOTH resolved, on every run.
 
-    The resolved-enemy case is asserted in ``tests/test_eval_enemy_seam.py``.
+    Kept rather than deleted, under its original name, because "the enemy side is not
+    resolved" is a sentence the project spent nine sessions being able to say, and the
+    test that said it is the right place to record that it can no longer be said.
     """
-    provenance = run(RunConfig(build="war_angel", level=13, n_days=2, seed=1)).provenance
+    provenance = run(RunConfig(build="war_angel", level=13, n_days=2, seed=1,
+                               enemy="baseline")).provenance
 
-    assert provenance.resolved["enemy"]["resolved"] is False
-    assert "NOT RESOLVED" in provenance.resolved["enemy"]["note"]
-    assert "NOT RESOLVED" in provenance.coverage["enemy_side"]
-    assert "§3.4" in provenance.coverage["enemy_side"] or "step 5" in provenance.coverage["enemy_side"]
-    # Which enemy path produced the run IS recorded, so §3.4's "never silently
+    assert provenance.resolved["enemy"]["resolved"] is True
+    assert "note" not in provenance.resolved["enemy"]
+    assert provenance.coverage["enemy_side"].startswith("resolved")
+    assert "NOT RESOLVED" not in provenance.coverage["enemy_side"]
+    assert provenance.coverage["build_side"].startswith("resolved")
+    # Which enemy path produced the run IS still recorded, so §3.4's "never silently
     # compared" rule has something to check against.
-    assert provenance.coverage["enemy_path"] == "build_default:scripted"
+    assert provenance.coverage["enemy_path"] == "standardized:baseline"
 
 
 def test_provenance_records_the_config_the_engine_version_and_the_day_tier():
-    config = RunConfig(build="war_angel", level=5, n_days=2, seed=17)
+    config = RunConfig(enemy="none", build="war_angel", level=5, n_days=2, seed=17)
     provenance = run(config).provenance
 
     assert provenance.config == config.canonical()
@@ -671,22 +692,28 @@ def test_provenance_records_the_config_the_engine_version_and_the_day_tier():
     assert "No external validation source" in provenance.epistemic_note
 
 
-def test_two_builds_record_different_enemy_paths_so_they_are_not_silently_compared():
-    """The §3.4 coupling made visible: on the ``build_default`` path War Angel and
-    Silvertail face different enemy MODELS, and the reports say so rather than
-    presenting two comparable numbers.
+def test_two_builds_now_record_the_SAME_enemy_path_so_they_ARE_comparable():
+    """The §3.4 coupling REMOVED, asserted as the inverse of what this test used to
+    say — which is the single clearest statement of what step 5b bought.
 
-    **Updated s50:** the path strings gained their ``build_default:`` prefix.  That
-    is not cosmetic — ``standardized:baseline`` and ``build_default:baseline`` are
-    runs that must not be pooled, and both rendered as the bare word "baseline"
-    before the prefix existed, which is precisely the silent comparison this test is
-    named after.  Asserted directly in ``tests/test_eval_enemy_seam.py``.
+    s44 wrote it to show the coupling made visible: on the baked-in path War Angel
+    faced a ``ScriptedEnemyPolicy`` and Silvertail a ``BaselineEnemyPolicy``, so the
+    two paths differed (``build_default:scripted`` vs ``build_default:baseline``) and
+    the reports said so rather than presenting two comparable numbers.  That was the
+    best the framework could do while the enemy was a property of the build.
+
+    Configure the same ``enemy`` and the two paths are now IDENTICAL, which is what
+    makes the cross-build comparison §1 exists for valid.  The comparability warning
+    stays on both reports: it is unconditional by design, because a reader must still
+    check the axis rather than trust that someone did.
     """
-    war_angel = run(RunConfig(build="war_angel", level=13, n_days=2, seed=1))
-    silvertail = run(RunConfig(build="silvertail", level=10, n_days=2, seed=1))
+    war_angel = run(RunConfig(build="war_angel", level=13, n_days=2, seed=1,
+                              enemy="baseline"))
+    silvertail = run(RunConfig(build="silvertail", level=10, n_days=2, seed=1,
+                               enemy="baseline"))
 
-    assert war_angel.provenance.coverage["enemy_path"] == "build_default:scripted"
-    assert silvertail.provenance.coverage["enemy_path"] == "build_default:baseline"
+    assert (war_angel.provenance.coverage["enemy_path"]
+            == silvertail.provenance.coverage["enemy_path"] == "standardized:baseline")
     assert "must not be compared" in war_angel.provenance.coverage["comparability_warning"]
 
 
@@ -717,7 +744,7 @@ def _dice_stream(config: RunConfig) -> list:
 def test_an_inert_toggle_produces_a_byte_identical_dice_stream():
     """§12's paired-seeding proof.  ``primal_strike_unarmed`` gates a rider that does
     not exist below L15, so at L5 it cannot touch a die."""
-    base = RunConfig(build="starfire_scion", level=5, n_days=8, seed=99)
+    base = RunConfig(enemy="none", build="starfire_scion", level=5, n_days=8, seed=99)
     inert = base.replace(build_options={"primal_strike_unarmed": True})
 
     stream = _dice_stream(base)
@@ -727,14 +754,14 @@ def test_an_inert_toggle_produces_a_byte_identical_dice_stream():
 
 def test_a_live_toggle_does_move_the_dice_stream():
     """The negative control that keeps the test above from passing vacuously."""
-    base = RunConfig(build="starfire_scion", level=15, n_days=6, seed=99)
+    base = RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=6, seed=99)
     live = base.replace(build_options={"fourth_level_spell": "fire_shield"})
 
     assert _dice_stream(live) != _dice_stream(base)
 
 
 def test_compare_reseeds_every_config_to_one_shared_base_seed():
-    base = RunConfig(build="starfire_scion", level=5, n_days=10, seed=7)
+    base = RunConfig(enemy="none", build="starfire_scion", level=5, n_days=10, seed=7)
     other = base.replace(seed=999, build_options={"primal_strike_unarmed": True})
 
     comparison = compare([base, other], labels=["a", "b"])
@@ -749,7 +776,7 @@ def test_compare_reseeds_every_config_to_one_shared_base_seed():
 def test_a_paired_delta_on_an_inert_toggle_is_exactly_zero():
     """Common random numbers at their limit: identical streams, so the difference
     carries no noise at all."""
-    base = RunConfig(build="starfire_scion", level=5, n_days=40, seed=42)
+    base = RunConfig(enemy="none", build="starfire_scion", level=5, n_days=40, seed=42)
     inert = base.replace(build_options={"primal_strike_unarmed": True})
 
     delta = compare([base, inert], labels=["raw", "inert"]).delta("inert", "dpr")
@@ -759,11 +786,32 @@ def test_a_paired_delta_on_an_inert_toggle_is_exactly_zero():
     assert delta.stderr == 0.0
 
 
-def test_a_paired_delta_is_never_wider_than_the_independent_one():
-    """The reason §6.1 makes pairing the default: the shared noise cancels in the
-    DIFFERENCE.  How much it cancels depends on how fast the two runs diverge, so
-    the assertion is the guaranteed direction, not a promised factor."""
-    base = RunConfig(build="starfire_scion", level=15, n_days=DAYS, seed=42)
+def test_pairing_is_statistically_INERT_once_the_streams_diverge():
+    """s52 REPLACES ``test_a_paired_delta_is_never_wider_than_the_independent_one``,
+    whose claim was FALSE — and which passed from s44 to s51 by luck of which side of
+    zero one seed's covariance landed on.
+
+    The old docstring said "the assertion is the guaranteed direction, not a promised
+    factor".  There is no guaranteed direction:
+    ``Var(A − B) = Var(A) + Var(B) − 2·Cov(A, B)``, so pairing is narrower only when
+    ``Cov > 0``, and nothing in a single-tape RNG makes it positive.  §6.1 had already
+    MEASURED two comparisons at 0.95x and 0.97x — paired wider than independent — in
+    the table three lines above the sentence claiming it never happens.
+
+    What s52 measured, over 5 comparisons x 3 enemy kinds at 300 days: two regimes and
+    nothing between them.  An INERT toggle pairs perfectly (correlation exactly 1.0,
+    delta ``0 +/- 0`` — asserted in the test above).  A toggle that diverges the stream
+    gives a correlation of **-0.12 to +0.06** and a ratio of **0.967 to 1.059**, wider
+    in 4 of the 9 diverging cells.  So pairing is not a small win here; it is inert.
+
+    **THIS TEST IS A TRIPWIRE AND IS MEANT TO FAIL.**  §13 step 8 (RNG substreams)
+    exists precisely to make pairing buy real precision; when it lands, the ratio
+    should drop well below the lower bound here and this assertion should break.  That
+    is the intended signal, not a regression — update it in step 8's decision record,
+    and do not widen the bound to keep it green.
+    """
+    base = RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=DAYS,
+                     seed=42)
     alt = base.replace(build_options={"fourth_level_spell": "fire_shield"})
 
     delta = compare([base, alt], labels=["fount", "fire_shield"]).delta("fire_shield", "dpr")
@@ -771,11 +819,24 @@ def test_a_paired_delta_is_never_wider_than_the_independent_one():
 
     assert delta.paired is True
     assert delta.delta == pytest.approx(delta.a.value - delta.b.value)
-    assert delta.stderr <= independent
+
+    # Inert to within a few percent, in EITHER direction.  Bounds sit just outside the
+    # measured 0.967-1.059 envelope; the point is the magnitude, not the sign.
+    ratio = delta.stderr / independent
+    assert 0.90 <= ratio <= 1.10, (
+        f"paired/independent = {ratio:.4f}. Below 0.90 means pairing started WORKING "
+        "— see §13 step 8 and this test's docstring before touching the bound."
+    )
+
+    # And the covariance it rests on is indistinguishable from zero, which is the
+    # MECHANISM rather than the symptom (§6.1: one tape, read at a shifted offset).
+    va, vb, vd = delta.a.stderr ** 2, delta.b.stderr ** 2, delta.stderr ** 2
+    correlation = ((va + vb - vd) / 2) / math.sqrt(va * vb)
+    assert abs(correlation) < 0.2, correlation
 
 
 def test_a_delta_against_an_unavailable_metric_reports_no_delta():
-    base = RunConfig(build="war_angel", level=13, n_days=6, seed=1)
+    base = RunConfig(enemy="baseline", build="war_angel", level=13, n_days=6, seed=1)
     alt = base.replace(level=12)
 
     delta = compare([base, alt], labels=["l13", "l12"]).delta("l12", "save_fail_rate[*|control]")
@@ -800,7 +861,7 @@ def test_an_unpairable_comparison_falls_back_and_says_so():
 
 def test_a_comparison_needs_something_to_compare():
     with pytest.raises(ValueError, match="at least two configs"):
-        compare([RunConfig(build="war_angel", level=1, n_days=2, seed=0)])
+        compare([RunConfig(enemy="none", build="war_angel", level=1, n_days=2, seed=0)])
 
 
 # ---------------------------------------------------------------------------
@@ -817,7 +878,7 @@ def test_the_resource_ledger_is_live_and_excludes_turn_level_action_economy():
     That the recording moved no die is proved by the §12 parity test in
     ``test_eval_framework.py``: ``validation.run_level`` drives this same scheduler,
     so a consumed or reordered roll would break its bit-identical comparison."""
-    output = simulate(RunConfig(build="war_angel", level=13, n_days=20, seed=11))
+    output = simulate(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=20, seed=11))
     spent = output.telemetry.resources_spent
 
     assert spent, "the ledger recorded nothing at all"
@@ -828,7 +889,7 @@ def test_the_resource_ledger_is_live_and_excludes_turn_level_action_economy():
 def test_spell_slot_metric_counts_the_pact_chassis_too():
     """The War Angel spends ``pact_magic_slot``; keying on the ``spell_slot_``
     prefix alone would report a warlock chassis as casting nothing."""
-    report = run(RunConfig(build="war_angel", level=13, n_days=40, seed=11))
+    report = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=40, seed=11))
     assert report["spell_slots_per_day"].value > 0
 
 
@@ -836,7 +897,7 @@ def test_damage_type_composition_is_scoped_to_the_characters_own_output():
     """The §13 mitigation channel is keyed ``(actor_id, damage_type)`` precisely so
     a summon's typed damage and a typed-damage enemy's swings cannot pool into the
     build's composition."""
-    output = simulate(RunConfig(build="silvertail", level=10, n_days=30, seed=3))
+    output = simulate(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=30, seed=3))
     report = build_report(output)
 
     character_ids = set(output.roster.ids("characters"))
@@ -853,7 +914,7 @@ def test_damage_type_composition_is_scoped_to_the_characters_own_output():
 def test_typed_damage_share_reports_a_fully_untyped_build_as_zero():
     """A real measurement with a real consequence: the War Angel's output carries no
     damage type in the model, so §5's mult(t) can never price it."""
-    report = run(RunConfig(build="war_angel", level=13, n_days=20, seed=11))
+    report = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=20, seed=11))
     assert report["typed_damage_share"].value == 0.0
     # Every cell of the composition breakdown is unmeasured rather than zero: with
     # no typed output at all the shares' denominator is zero, and "0% radiant" would
@@ -869,7 +930,7 @@ def test_per_combat_dpr_partitions_the_headline_exactly():
     """The four per-combat figures are the headline decomposed, not a different
     quantity: equal round counts, so their mean IS the day's DPR.  This is what
     catches a per-combat metric that quietly reads an all-sources log."""
-    report = run(RunConfig(build="war_angel", level=13, n_days=60, seed=11))
+    report = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=60, seed=11))
     per_combat = [report[f"dpr_by_combat[{i}]"].value for i in (1, 2, 3, 4)]
 
     assert sum(per_combat) / 4 == pytest.approx(report.headline.value)
@@ -879,7 +940,7 @@ def test_per_combat_dpr_exposes_a_depletion_curve_the_daily_mean_hides():
     """Mechanism, not value: the four numbers are allowed to differ from each other
     and from the day mean.  A build that spends its day early is invisible at the
     day level, which is the reason these are registered."""
-    report = run(RunConfig(build="war_angel", level=13, n_days=60, seed=11))
+    report = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=60, seed=11))
     per_combat = [report[f"dpr_by_combat[{i}]"].value for i in (1, 2, 3, 4)]
 
     assert len(set(per_combat)) > 1
@@ -901,13 +962,13 @@ def test_the_opening_round_metric_is_labelled_party_scoped():
 
 def test_the_default_attribution_is_the_historical_character_only_basis():
     """No existing baseline moves: the toggle is opt-in."""
-    assert RunConfig(build="silvertail", level=10).attribution == "character"
+    assert RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10).attribution == "character"
 
 
 def test_attributing_summons_moves_the_headline_and_nothing_else():
     """The toggle changes WHICH number is the headline, never which numbers exist:
     the summon and party columns are registered and identical under both modes."""
-    base = RunConfig(build="silvertail", level=10, n_days=40, seed=3)
+    base = RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=40, seed=3)
     character = run(base)
     with_summons = run(base.replace(attribution="character_and_summons"))
 
@@ -921,7 +982,7 @@ def test_the_per_combat_decomposition_follows_the_attribution():
     """One definition of "the build's output", read by every metric that means it —
     so the headline and its decomposition cannot disagree about whose damage they
     describe."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=3,
+    report = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=40, seed=3,
                            attribution="character_and_summons"))
     per_combat = [report[f"dpr_by_combat[{i}]"].value for i in (1, 2, 3, 4)]
 
@@ -932,7 +993,7 @@ def test_allies_are_excluded_under_both_attributions():
     """An ally is a party member the build does not COMMAND, so its damage was never
     the build's to claim — unlike a summon, which is what the build's action economy
     bought."""
-    base = RunConfig(build="starfire_scion", level=15, n_days=20, seed=1,
+    base = RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=20, seed=1,
                      build_options={"with_party": True})
     for attribution in ("character", "character_and_summons"):
         report = run(base.replace(attribution=attribution))
@@ -943,19 +1004,19 @@ def test_allies_are_excluded_under_both_attributions():
 
 
 def test_a_build_without_summons_is_unaffected_by_the_attribution():
-    base = RunConfig(build="war_angel", level=13, n_days=20, seed=11)
+    base = RunConfig(enemy="baseline", build="war_angel", level=13, n_days=20, seed=11)
     assert run(base).headline.value ==         run(base.replace(attribution="character_and_summons")).headline.value
 
 
 def test_an_unknown_attribution_is_rejected():
     with pytest.raises(ValueError, match="attribution must be one of"):
-        RunConfig(build="silvertail", level=10, attribution="everything_nearby")
+        RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, attribution="everything_nearby")
 
 
 def test_the_attribution_is_recorded_in_provenance_and_in_the_config_hash():
     """§5.2's rule: it changes what the headline MEANS, so two modes must never be
     compared silently, and they must not collide as cache keys."""
-    base = RunConfig(build="silvertail", level=10, n_days=4, seed=3)
+    base = RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=4, seed=3)
     other = base.replace(attribution="character_and_summons")
 
     provenance = run(other).provenance
@@ -977,7 +1038,7 @@ def test_a_breakdown_cell_can_be_unavailable_while_its_siblings_report():
     §5.4 the reason rides on the CELL, so one breakdown holds a measurable damage
     channel and an unmeasurable control channel at the same time.
     """
-    report = run(RunConfig(build="silvertail", level=10, n_days=40, seed=11,
+    report = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=40, seed=11,
                            build_options=ZONE))
     rates = report.breakdown("save_fail_rate")
 
@@ -993,7 +1054,7 @@ def test_a_breakdown_cell_can_be_unavailable_while_its_siblings_report():
 def test_the_key_travels_as_data_so_nothing_downstream_parses_a_metric_name():
     """§5.4's decisive argument. ``damage_share_acid`` forced every consumer to
     parse the key back out of the name; the tidy rows carry it as a column."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    report = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=20, seed=11))
     rows = report.breakdown("healing_by_source").rows()
 
     assert rows, "a breakdown with a closed key space always has rows"
@@ -1009,7 +1070,7 @@ def test_the_key_travels_as_data_so_nothing_downstream_parses_a_metric_name():
 def test_a_breakdowns_margins_are_kept_apart_from_its_cells():
     """A consumer must never sum cells and margins together: the margins ARE the
     sums.  Keeping them in separate maps makes the mistake unavailable."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    report = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=20, seed=11))
     dpr_by_role = report.breakdown("dpr_by_role")
 
     assert set(dpr_by_role.cells) == {("characters",), ("summons",), ("allies",)}
@@ -1032,7 +1093,7 @@ def test_is_margin_is_where_the_estimate_LIVES_not_whether_its_key_holds_a_star(
     ``TRUE`` returned cells and the total mixed together — which is precisely the
     double-count the flag exists to prevent.
     """
-    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11,
+    report = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=20, seed=11,
                            build_options=ZONE))
     saves = report.breakdown("saves_forced_per_round")
     assert saves.definition.crossed is False
@@ -1056,7 +1117,7 @@ def test_healing_by_source_separates_the_summons_healing_from_the_characters():
     healing must land in the ``summons`` cell and nowhere else — a metric built on
     an aggregate ledger would pool it with the character's.
     """
-    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    report = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=20, seed=11))
     healing = report.breakdown("healing_by_source")
 
     assert healing[("characters", "between")].value > 0
@@ -1072,7 +1133,7 @@ def test_healing_by_source_separates_the_summons_healing_from_the_characters():
 def test_a_build_with_no_summon_reports_the_summon_cell_as_unavailable():
     """The other half of the same check: a build the summon column does not exist
     for says so, rather than reporting a zero that reads as 'heals nothing'."""
-    report = run(RunConfig(build="war_angel", level=13, n_days=10, seed=11))
+    report = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=10, seed=11))
     cell = report.breakdown("healing_by_source")[("summons", "between")]
     assert cell.available is False
     assert "summons" in cell.note
@@ -1093,7 +1154,7 @@ def test_healing_by_source_refuses_to_pool_the_two_contexts():
     # …and the fully-collapsed total, which would pool the contexts, is refused.
     assert (ALL, ALL) not in healing.margin_keys()
     assert "context" in healing.margin_note
-    report = run(RunConfig(build="silvertail", level=10, n_days=10, seed=11))
+    report = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=10, seed=11))
     assert report.breakdown("healing_by_source").total() is None
 
 
@@ -1102,7 +1163,7 @@ def test_net_damage_taken_may_go_negative_and_says_so():
     capacity — the quantity §2 exists to measure.  Silvertail's default policy is
     the live case: the beast draws the enemy, so the character takes nothing and
     still heals its Hit Dice."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    report = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=20, seed=11))
     net = report["net_damage_taken_per_round"]
 
     assert net.value < 0
@@ -1114,10 +1175,10 @@ def test_net_damage_taken_is_character_scoped_and_ignores_the_summons_healing():
     """The roster-scoping check applied to a SCALAR, which is where s44 found the
     bug three times.  The beast's self-healing appears in its own breakdown cell and
     must not discount the character's cost."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    report = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=20, seed=11))
     healing = report.breakdown("healing_by_source")
     taken = report.breakdown("damage_taken_per_round_by_role")
-    rounds = RunConfig(build="silvertail", level=10).rounds_per_day
+    rounds = RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10).rounds_per_day
 
     character_only = (taken["characters"].value
                       - healing[("characters", "between")].value / rounds)
@@ -1133,16 +1194,16 @@ def test_external_healing_required_is_clamped_and_never_negative():
     not the clamp of the mean.  Silvertail is the case that shows the clamp firing:
     the character heals more than it takes, and the answer is 0 rather than the
     negative surplus that net_damage_taken_per_round reports."""
-    report = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11))
+    report = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=20, seed=11))
     assert report["net_damage_taken_per_round"].value < 0        # surplus…
     assert report["external_healing_required_per_day"].value == 0.0  # …clamped
 
     # And where damage genuinely exceeds self-healing, it is the shortfall.
-    under_fire = run(RunConfig(build="silvertail", level=10, n_days=20, seed=11,
+    under_fire = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=20, seed=11,
                                build_options=ZONE))
     taken = under_fire.breakdown("damage_taken_per_round_by_role")["characters"].value
     healed = under_fire.breakdown("healing_by_source")[("characters", "between")].value
-    rounds = RunConfig(build="silvertail", level=10).rounds_per_day
+    rounds = RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10).rounds_per_day
     assert under_fire["external_healing_required_per_day"].value == pytest.approx(
         taken * rounds - healed)
 
@@ -1151,8 +1212,8 @@ def test_a_build_that_reserves_its_hit_dice_needs_its_full_damage_healed():
     """The metric doing healing.md §2's job. The Starfire Scion spends its Hit Dice
     on Fueled Spellfire (``available_for_healing=False``), so it heals NOTHING and a
     party healer must cover every point it takes."""
-    report = run(RunConfig(build="starfire_scion", level=15, n_days=20, seed=11))
-    rounds = RunConfig(build="starfire_scion", level=15).rounds_per_day
+    report = run(RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=20, seed=11))
+    rounds = RunConfig(enemy="baseline", build="starfire_scion", level=15).rounds_per_day
     taken = report.breakdown("damage_taken_per_round_by_role")["characters"].value
 
     assert report.breakdown("healing_by_source").measured() != {}   # channel works…
@@ -1168,14 +1229,14 @@ def test_healing_provided_to_others_is_unavailable_where_there_is_no_other():
     of Healing heals five creatures RAW and heals one in this model only because the
     roster HAS one — so the availability predicate keeps the modelling limit visible
     instead of scoring the build as selfish."""
-    alone = run(RunConfig(build="war_angel", level=13, n_days=10, seed=11))
+    alone = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=10, seed=11))
     provided = alone["healing_provided_to_others_per_day"]
     assert provided.available is False
     assert "roster" in provided.note.lower()
 
     # Silvertail HAS another entity, so the same zero is a real measurement: the
     # character could heal the beast and does not.
-    with_summon = run(RunConfig(build="silvertail", level=10, n_days=10, seed=11))
+    with_summon = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=10, seed=11))
     measured = with_summon["healing_provided_to_others_per_day"]
     assert measured.available is True
     assert measured.value == 0.0
@@ -1185,8 +1246,8 @@ def test_healing_provided_follows_the_attribution_axis():
     """§14 point 3: a summon's healing counts as the build's under
     'character_and_summons' — and at the same moment the summon stops being
     "others", so there is nobody left to provide to."""
-    character = RunConfig(build="silvertail", level=10, n_days=10, seed=11)
-    with_summons = RunConfig(build="silvertail", level=10, n_days=10, seed=11,
+    character = RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=10, seed=11)
+    with_summons = RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=10, seed=11,
                              attribution="character_and_summons")
 
     assert run(character)["healing_provided_to_others_per_day"].available is True

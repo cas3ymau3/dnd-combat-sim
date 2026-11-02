@@ -195,6 +195,23 @@ def warnings_for(report: "EvalReport") -> list[dict[str, str]]:
         ),
     }]
 
+    # NO RUN CAN PRODUCE A GAP SINCE s52, and the mechanism is kept anyway — a
+    # deliberate decision, not an oversight.  Until step 5b there was one unresolved
+    # path (``enemy="build_default"``, whose enemy was built by the character's own
+    # factory), and this loop promoted it to a top-level warning so a reader did not
+    # have to open provenance to learn two artifacts were incomparable.  With that path
+    # deleted, ``build_side`` and ``enemy_side`` both always say "resolved".
+    #
+    # Why this is NOT the s51 "delete the branch nothing reaches" cut: that cut applies
+    # to a plausible-looking NUMBER with no consumer, and to a stated REASON nobody can
+    # be in — both of which mislead a reader who sees them.  This is a generic detector
+    # over any ``*_side`` key, it emits nothing when there is nothing to emit, and
+    # ``WARNING_CODES`` is a published vocabulary a downstream renderer styles on.
+    # Keeping it means a third provenance section that forgets to resolve itself
+    # surfaces automatically instead of silently; removing it would break the
+    # vocabulary to delete four lines.  It is unit-tested directly
+    # (``test_the_coverage_gap_detector_still_works_on_a_synthetic_gap``) so the
+    # retained branch is not an untested value.
     gaps = [k for k, v in coverage.items()
             if k.endswith("_side") and isinstance(v, str)
             and v.strip().upper().startswith("NOT RESOLVED")]
@@ -221,12 +238,15 @@ def warnings_for(report: "EvalReport") -> list[dict[str, str]]:
             ),
         })
 
-    unconverged = [v.metric for v in report.unconverged()]
+    # BOTH kinds (fixed s52): scalars/cells AND distribution points.  Reading
+    # `report.unconverged()` here counted only the first, so this warning announced
+    # half the total — see EvalReport.unconverged_names for the full account.
+    unconverged = report.unconverged_names()
     if unconverged:
         out.append({
             "code": "unconverged",
             "message": (
-                f"{len(unconverged)} measured metric(s) fail their own declared "
+                f"{len(unconverged)} measured estimate(s) fail their own declared "
                 f"convergence heuristic (§6.2) and should not be read yet: "
                 + ", ".join(sorted(unconverged)[:12])
                 + (", ..." if len(unconverged) > 12 else "")

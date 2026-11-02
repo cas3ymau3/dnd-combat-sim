@@ -116,17 +116,29 @@ These were reached deliberately; do not silently revisit them.
     `monster_ac_and_saves_by_level.csv` (now the generation provenance) remain
     for the earlier builds. See PROGRESS.md for the full enemy-policy decision
     record.
-    - **THE ENEMY IS NOT A PROPERTY OF THE BUILD (s50).**
+    - **THE ENEMY IS NOT A PROPERTY OF THE BUILD (s50; the baked-in path DELETED s52).**
       `src/evaluation/enemy.py` is the framework's enemy-construction seam
       (`design/evaluation_framework.md` §3.4): `RunConfig.enemy` selects one of
-      four declared kinds (`build_default` / `baseline` / `scripted` / `none`),
-      `enemy_options` configures it against a closed schema, and §4 provenance
-      records every resolved value. Prefer `enemy="baseline"` for anything
-      cross-build — a run under `build_default` faces whatever its own `LEVELS`
-      table says, which is why those runs are not comparable to each other.
-      `build_default` is still the DEFAULT, deliberately: it is what holds
-      `src/validation.py` and the §12 parity proof until the baked-in path is
-      deleted (scheduled, with its own decision record).
+      **three** declared kinds (`baseline` / `scripted` / `none`), `enemy_options`
+      configures it against a closed schema, and §4 provenance records every
+      resolved value. **`enemy` is a REQUIRED field with no default** — a default
+      is an implicit enemy, and an implicit enemy is what makes two reports
+      incomparable. Prefer `enemy="baseline"` for anything cross-build; `none` is
+      a passive target carrying the table's full stat block, and `scripted` is a
+      comparison arm (it swings but forces no saves).
+      - **No build factory constructs an enemy policy, and no `LEVELS` row carries
+        enemy data.** `make_training_dummy` in all three builds delegates to
+        `enemy_stats.make_baseline_enemy`, the one enemy-`Entity` constructor; a
+        factory run on its own faces a PASSIVE target. A test that needs the enemy
+        to act installs a policy itself (see `tests/test_summon_survival.py`'s
+        `_install_l8_enemy` for the pattern), and `enemy.install` is called once, in
+        `runner.simulate`, so no adapter can forget it.
+      - **`src/validation.py` IS GONE (s52)**, and with it the §12 bit-identical
+        parity proof and the last guide-target tests. The end-to-end signal is now
+        `GOLDEN_DPR` in `tests/test_eval_enemy_seam.py` (13 exact points) plus the
+        L2-4 closed-form check; `evaluation_framework.md` §12 records why that swap
+        is asymmetric. Regenerating a golden is a DELIBERATE act with a decision
+        record.
 
 ---
 
@@ -145,7 +157,8 @@ engine primitives. Module map (`src/`):
   (phase order H1-H8, the healing counterpart of #8 — no crit doubling), `HitDiceSpec` and
   the TWO Hit Dice rules. **The rule to remember: healing resolved INSIDE combat rolls;
   healing applied OUTSIDE combat is MEAN-FIELD and draws nothing** — any out-of-combat
-  dice source would shift the shared stream for every build and break the parity proof.
+  dice source would shift the shared stream for every build and break every one of
+  `GOLDEN_DPR`'s exact points (it was the §12 parity proof until s52 retired that).
 - `entity.py` — Entity (threshold HP + base stats + modifier stack + pools); `stat()` folds the stack.
 - `events.py` — Tick, event dataclasses, EventQueue (heapq, insertion tiebreak). `AttackRollEvent`/`DamageEvent` carry `extra_flat_damage` (bleed); `AttackRollEvent.policy_riders` gates the actor's post-roll deciders.
 - `policy.py` — Policy protocol, GameState, Choice; post-roll Miss/Hit decision contexts (HitResponse carries `extra_damage_dice` AND `rider_damage` — substrate #6 outgoing riders, RiderDamageSpec); HitContext carries `origin`/`range_` (modality taxonomy) for rider gating; the DEFENDER-side intercept point (`on_incoming_hit` + IncomingAttackContext / InterceptResponse / CounterSpec); the failed-save reroll point (`on_failed_save` + FailedSaveContext / SaveRerollResponse — Indomitable); the caster post-damage rider (`on_deal_damage` — Fueled Spellfire); sample policies.
@@ -158,6 +171,13 @@ engine primitives. Module map (`src/`):
 - `summons.py` — substrate #7 / 7a: `SummonSpec` + `create_entity`/`destroy_entity` (verb 12) on an `(entities, policies)` roster (day-start or mid-combat); a controlled ally is a `create_entity`'d Actor, COMMANDED on its controller's turn via `Choice.actor` (the cost is the controller's, the event's actor is the commanded entity → its own per-summon DPR column). Teardown keyed to `effect_source` via `Entity.remove_effect` (a `destroyed` flag).
 - `day_runner.py` — one adventuring day (LR → 4 combats); samples combat times + SR placement; before/between-combat hooks.
 - `builds/war_angel.py` — first concrete build (per-level data + policy).
+- `builds/enemy_stats.py` — the definitive per-level enemy table, AND
+  `make_baseline_enemy(level)`: **the one enemy-`Entity` constructor** (s52). No build
+  module builds an enemy of its own any more.
+- `evaluation/` — the build-agnostic evaluation framework (`design/evaluation_framework.md`
+  §13, steps 1-6 done). `enemy.py` is the enemy-construction seam; `runner.simulate` is
+  the single place `enemy.install` is called. **There is no `src/validation.py`** — step 5b
+  deleted it; the end-to-end signal is `GOLDEN_DPR` in `tests/test_eval_enemy_seam.py`.
 
 Key invariants to preserve when extending:
 - All dice through `SeededRNG.roll()` — never call random directly.

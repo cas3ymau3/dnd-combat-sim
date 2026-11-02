@@ -143,6 +143,30 @@ type, condition, resource, …):
    numerically identical for a reason that will stop holding?** If yes, the mismatch is
    invisible today and will surface as a plausible number later.
 
+   **THE DORMANCY QUESTION HAS A THIRD ANSWER, AND IT IS THE WORST ONE (added s52).**
+   The question as written has two outcomes: equal-and-will-stay-equal, or
+   equal-for-a-reason-that-will-stop. s52's seam check turned up a third:
+   **already unequal, and the inequality is UNREACHABLE.** War Angel's dummy carried no
+   saving throws at all where the standardized table carries six, and `Entity.stat()`
+   returns 0 for a missing key *by design* — so a save forced on it resolved against +0
+   and would have printed a plausible number. Nothing surfaced it because no War Angel
+   ability forces a save on its target. This is strictly worse than a dormant equality:
+   **no equality is holding it stable, and nothing fails when it is first reached.** So
+   ask both questions — "are these equal for a reason that will stop holding" AND "are
+   these already unequal somewhere nobody looks" — and prefer a fixture that EXERCISES
+   the quantity over one that inspects it (s52's gap was closed by resolving a real save
+   against the dummy, not by asserting its stat block).
+
+   **AND THE SAME CHECK APPLIES TO A DESIGN DOCUMENT'S OWN PROSE (added s52).** §6.1
+   closed with "pairing is never worse than independent seeding" while rows 3 and 5 of
+   its OWN measured table, three lines above, read 0.95x and 0.97x. The claim and its
+   refutation sat in the same section for eight sessions. A row-level review would never
+   have caught it, because the data was right and only the sentence was wrong. The cure
+   is the one already written below under step 5: **prefer writing a quantitative claim
+   as an ASSERTION, because prose cannot fail** — and that is exactly how this one was
+   caught, since the sentence also had a test, which passed by luck of one seed's
+   covariance sign until an unrelated change moved it.
+
    The s50 trigger: `typed_damage_share` divided the §13 mitigation channel's
    `outgoing_before` by the DAMAGE LEDGER, which records what actually landed — i.e.
    post-mitigation. It was a before/after ratio masquerading as a share. It survived six
@@ -248,6 +272,18 @@ type, condition, resource, …):
    - Pair it with step 5 rather than treating them as alternatives: step 5 is "did I
      cover every branch", this is "does the thing a reader sees look right". Neither
      subsumes the other, and in s48 only this one found the bug.
+   - **SIX SESSIONS, SIX DEFECTS, and the class is now identifiable (s52).** s48 a
+     boundary flip, s49 a 400-character margin note, s50 the console dropping the step's
+     whole deliverable, s51 a misaligned column AND the lattice convergence reading, s52
+     a top-level warning that **counted half the unconverged estimates** — it announced
+     "3" where the artifact flagged 6, because it read the scalar list and distributions
+     had been added a session later. Four of the six are the RENDERER or the summary
+     layer, not the computation: the numbers were right and the thing presenting them was
+     wrong. **So look first at whatever claims to summarize or count the rest of the
+     output** — a count is the easiest thing to get wrong and the hardest to doubt,
+     because it reads as a complete answer. s52's also shows the dormancy question
+     applies here: the warning and the per-row flags agreed for four sessions only
+     because no distribution had ever been unconverged.
 7. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
@@ -337,6 +373,19 @@ not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell on
     that into the pre-existing "constructed with control=False" would lose exactly the
     distinction the per-METRIC ritual's availability check exists to protect.
   - **Prior full review: s46** (51 → 22 declarations). See the SURVIVAL RULE above.
+- **Registry DECLARATION SET untouched by s52 — the full review is NOT yet due.** 5b added and
+  removed no declaration (still **27**). It did rewrite one availability predicate
+  (`_requires_control_channel`, **7 answers → 3**: the four deleted are the baked-in path's ways of
+  being unmeasurable, which no run can reach) and it changed what several rows MEAN, since every run's
+  enemy is now declared rather than per-build. Raised with the user explicitly and judged NOT a
+  registry-touching session by the review's own "count DECLARATIONS, not rows" rule. **So the count
+  still stands at ONE since s50 (s51), and one more declaration-touching session makes the full review
+  due.** Carry into it: s52's `coverage_gap` decision is a useful BOUNDARY for the survival rule — a
+  generic detector with no current producer is NOT the same cut as a plausible number with no consumer,
+  because an empty detector misleads nobody. And s52 is the second session running in which the real
+  find was **prose that contradicted a measurement in its own section** (§6.1's "never worse than
+  independent seeding", against its own table), which no row-level review would catch; the reviewable
+  unit there is the assertion, not the registry.
 - **Registry touched since the s50 review: ONCE (s51, +1 declaration net → 27).**
   Framework step 6 added `attacks_per_round_distribution` — §14's trigger fired, the
   quantity having been an exact constant until whole-turn suppression existed. It also
@@ -363,7 +412,13 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 50 (2026-10-28) — nothing to reset (confirmed with user).** The
+- **Last reviewed for reset: session 52 (2026-11-01) — nothing to reset (confirmed with user).** The
+  s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s51 and s52
+  were both pure Python, so nothing accumulated; marker bumped per the ≥2-session rule. The container's
+  missing `pytest` recurred for the third session running and was again installed with
+  `pip install pytest` — a property of the cloud container, not a tweak to revert. **Connectors were
+  NOT raised** (the standing note's condition: "Currently disabled" is empty and this session needed none).
+- **Prior — session 50 (2026-10-28) — nothing to reset (confirmed with user).** The
   s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s49 and s50
   were both pure Python, so nothing accumulated; marker bumped per the ≥2-session rule. The container's
   missing `pytest` (see the s48 entry) recurred and was again installed with `pip install pytest` — a
@@ -1554,6 +1609,197 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **EVALUATION FRAMEWORK STEP 5b — THE BAKED-IN ENEMY PATH IS DELETED (2026-11-01,
+  session 52).** `evaluation_framework.md` §3.4 (closed) / §12 (the parity proof's
+  retirement record) / §13 step 5 (both halves done) / §14 (the deferral closed, s43 →
+  s52, at the step it was scheduled for). **LOCKED IN §3.4/§12 BEFORE ANY CODE** (ritual
+  step 4), with the step-4 seam check and the step-5 roll call both run at design time per
+  s51's promotion — and both paid. **998 tests green** (997 + the 1 environmental skip on
+  a clean tree), full suite in FOREGROUND, once ([[full-suite-foreground-only]]). Three
+  commits: the design lock, the `src/` deletion, the test surface.
+
+  **FOUR DECISIONS, all signed off by the user up front.** (1) `RunConfig.enemy` becomes
+  a **REQUIRED field with no default** — retiring `build_default` retired the
+  transitional default and the replacement is not another default, because a default *is*
+  an implicit enemy and an implicit enemy is what makes two reports incomparable. §4
+  already refuses a config claiming an assumption the run did not apply; a silent default
+  is the same failure with the claim left blank. (2) **`src/validation.py` is deleted.**
+  (3) The factories always return a **passive** enemy; the seam installs every policy.
+  (4) `enemy_stats.make_baseline_enemy` is **the one** enemy-`Entity` constructor.
+
+  **THE SEAM CHECK FOUND THREE PAIRS WHERE EVERYONE HAD BEEN DISCUSSING ONE, with three
+  different verdicts — the finding that turned 5b from a cleanup into an argument.**
+  - **The AC is dormant, and now there is a reason rather than a worry.**
+    `enemy_stats.regenerate(write=False)` reproduces the current table's AC at *every*
+    level, so **the table has a GENERATOR and the baked-in rows were a frozen copy of its
+    output.** By STAGE the duplication was already dead code (the factory wrote the AC,
+    `_complete_stat_block` overwrote it). By SCOPE the baked-in quantity was keyed by
+    **(build, level)** and the table's by **level** — one extra key, and that key is
+    exactly the dimension that invalidates cross-build comparison.
+  - **The saves were NOT dormant. Already wrong, merely unreachable.** War Angel's dummy
+    carried no saves at all, Starfire's one, the table six; `Entity.stat()` returns 0 for
+    a missing key *by design*. So a save forced on either resolved against +0. **This is
+    a third answer to the dormancy question and the worst of the three**, because no
+    equality was holding it stable and nothing would have failed when it was first
+    reached. Worth carrying: ask not only "are these equal for a reason that will stop
+    holding" but "are these already unequal somewhere nobody looks".
+  - **The offense openly disagreed, and is the only part the deletion moved.** WA L13:
+    3 swings of **flat 28** vs 2 × 5d8+5; SS L15: 2 × 2d8+5 at **+9** vs 2 × 8d6+5 at
+    **+12** — its own comment called it "ILLUSTRATIVE". So Starfire's hand-written enemy
+    was **2.4× too weak and 3 to-hit too inaccurate**, and War Angel's carried **zero
+    variance** into a resilience measurement.
+
+  **SILVERTAIL WAS ALREADY STANDARDIZED, BIT-IDENTICALLY, AND NOBODY KNEW.** Its
+  `make_training_dummy` already read `enemy_base_stats` and its policy already took the
+  table's dice, so its `build_default` headline equals `enemy="baseline",
+  enemy_options={'focus':'summon'}` **exactly** — `6.31828125` at L10, `5.889375` at L8.
+  `GOLDEN_DPR` had been carrying that first number as a *standardized* row since s50
+  without anyone noticing it was also the baked-in one. §3.4's examples single out the
+  other two builds; the build its text never accuses was the one already there.
+
+  **THE DELETION MOVED NO PHYSICS — 15 of 15 bit-identical.** War Angel L1/4/5/12/16
+  under both `none` and `baseline`, Starfire L5 `none` + L15 `baseline`, Silvertail L4
+  `none` + L8/L10 `baseline`+focus=summon, all at 400 days / seed 11. So what 5b removed
+  was the *option to face an undeclared enemy*, not a number. `none` is bit-identical to
+  the old default at every passive level, which is the AC-equality finding confirmed end
+  to end rather than inferred from stat blocks.
+
+  **WHAT RETIRED THE PARITY PROOF, and the thing to be precise about.** It is natural to
+  read "the correctness proof for the whole layer" as the project's guard against an
+  engine change moving the numbers. **It was not.** `validation.py` and `src/evaluation`
+  were two readers of the *same* engine on the same tape; bit-identity proved the
+  framework had not corrupted the reading and would have been equally satisfied by an
+  engine that was wrong. So the swap is **asymmetric**: `GOLDEN_DPR` is a strictly
+  stronger PHYSICS signal (exact, 13 points, three builds, three kinds) and a strictly
+  weaker LAYER signal, since nothing independently re-derives the DPR definition any
+  more. The layer half survives and was already there —
+  `test_headline_column_is_the_characters_own_output` compares the source-attributed
+  headline against the target-keyed ledger on one run, two subsystems and one number,
+  which is precisely what parity was protecting. `GOLDEN_DPR` grew 9 → 13 to carry the
+  retired test's LEVEL coverage, and L1/L5/L12 are pinned under `none` **because that is
+  bit-identical to what validation.py printed** — for those three the replacement goldens
+  literally *are* the retired harness's numbers.
+
+  **ONE CAPABILITY WOULD HAVE BEEN STRANDED, so it was made reachable instead.**
+  `ScriptedEnemyPolicy`'s weighted multi-friendly split had exactly one caller: Starfire's
+  factory, reading `char_weight`/`party_weight` off its own `LEVELS` row. s50 had recorded
+  the branch as unreachable through `RunConfig`; deleting the row would have made it dead
+  code — the §7.6 trap. Rather than invent a second option, the existing
+  `char_target_prob` **gained teeth**: the off-target share lands on the build's ALLIES
+  when it fields any. **The dice stream is unchanged by construction, not by hope** — the
+  weights are integers summing to exactly 100, so the multi-entity pre-roll is the same
+  `roll_one(100)` in the same order as the single-target path, and only the DESTINATION of
+  an off-target swing changes. At the default `char_target_prob=1.0` the allies take
+  weight 0 and can never be picked, so a focus-fire run on a party build is unaffected —
+  asserted as a WEIGHT rather than as a DPR, because a weight cannot be right by luck.
+
+  **THE ROLL CALL FOUND A GAP BEFORE ANY CODE EXISTED (fifth session running):** the six
+  saves the dummy GAINS had no fixture anywhere in the corpus. Nothing forces a save on
+  the enemy except Starfire's dex path, so "the dummy now carries the table's saves" would
+  have shipped as an untested claim about a *stat block* — while the thing that matters is
+  whether a SAVE RESOLVES against it. The test drives a real `resolve_saving_throw` on War
+  Angel's L13 dummy at the exact boundary (d20 8 + the table's +7 = 15 meets DC 15) and
+  asserts the **counterfactual** too: strip the save the way the pre-5b dummy had it and
+  the same die fails. A measured flip, not a described one.
+
+  **§6.1 CLAIMED SOMETHING ITS OWN TABLE FALSIFIED — the s50 lesson through a fourth
+  door.** The section closed with "pairing **is never worse** than independent seeding"
+  while rows 3 and 5 of its own measured table, three lines above, read **0.95× and
+  0.97×**. The algebra is `Var(A−B) = Va + Vb − 2·Cov`, so pairing is narrower only when
+  `Cov > 0` and nothing provides it. **It also had a test**, which passed from s44 to s51
+  by luck of which side of zero one seed's covariance landed on, and failed the moment 5b
+  changed which enemy that config faced — caught because the claim had been written as an
+  assertion. Measured over 5 comparisons × 3 enemy kinds at 300 days there are exactly two
+  regimes: an **inert** toggle pairs perfectly (corr 1.0, delta `0 ± 0`); a **diverging**
+  one gives corr **−0.12 … +0.06** and a ratio of **0.967 … 1.059**, wider in 4 of 9
+  cells. Pairing is not a small win here, it is **statistically inert**. The replacement
+  test is a deliberate **TRIPWIRE written to fail when §13 step 8 lands** — a tripwire is
+  the right shape for "inert today and must stop being inert", and it puts step 8's
+  decision record where it belongs. Generalizable: **prose in a design doc can contradict
+  a measurement in the same section and survive for sessions; an assertion cannot.**
+
+  **RITUAL STEP 6 FOUND ITS SIXTH DEFECT, and this one was a renderer undercounting by
+  half.** The top-level `unconverged` warning read `EvalReport.unconverged()`, which
+  iterates `values` — scalars and breakdown cells only. On a WA L13 quick-tier run it
+  announced **"3 measured metric(s)"** where the artifact flagged **6**, the others being
+  `attacks_per_round_distribution`'s p10, p25 and iqr. The entire reason convergence is
+  promoted to a top-level warning (§9.1) is that a reader should not have to open every
+  row's flag; **a warning that undercounts by half is worse than none, because it reads as
+  a complete answer.** Invisible for four sessions for the same reason as everything else
+  this session: the warning predates distributions (s47 vs s48) and the two originally
+  shipped distributions converged at every tier, **so the two sides agreed by accident**
+  until s51's first LATTICE distribution made the gap reachable. Fixed with
+  `unconverged_names()` as the single thing any count may read, and the guarding fixture
+  deliberately has BOTH kinds non-empty — "some of each" is the branch and neither kind
+  alone exercises it.
+
+  **THE ONE RE-BASELINE WORTH READING, on Starfire L15: three tests inverted for ONE
+  measured cause, and the obvious explanation was wrong.** The retired enemy's mean swing
+  of 14 puts the concentration DC at the rule's own minimum of 10
+  (`DC = max(10, damage // 2)`); the table's L15 enemy swings for a mean of 33, giving DC
+  16. The build has **one** 4th-level slot and no short-rest recovery, so:
+  - **Fount of Moonlight's concentration now ends on 1.000 of days** (was 0.05 — 20/400),
+    at 100, 200 and 400 days alike, making the rider a net DPR **loss** of ~1.4 where it
+    used to be a gain;
+  - **the Starry-Form Dragon save-floor is INERT, exactly rather than approximately.** A
+    floored d20 contributes `10 + con_save 2 = 12`, so the floor can rescue a save only
+    while `DC ≤ 12`, i.e. while the hit dealt **≤ 25 damage**. 200 breaks with the floor,
+    200 without. It was never "working well"; it worked *only* in the regime where an
+    enemy that barely hit pinned the DC at its floor;
+  - **the FoM-vs-Fire-Shield "near-tie reversal" was an artifact of that enemy**: the solo
+    gap is **+3.22** where it was **+0.49**, and a 1.6-point party effect cannot bridge it.
+  **AND THE GAP WIDENED FOR THE OPPOSITE REASON TO THE OBVIOUS ONE.** "Thorns reflect
+  incoming damage, the standardized enemy hits 2.37× harder (27.6 → 65.4 taken per round),
+  so Fire Shield gains" predicts the FS column moving. It moved **+0.38**. What moved is
+  **FoM, down 2.35**, through concentration — Fire Shield is not a concentration spell and
+  takes **0** breaks under either enemy. Same causal channel s50 found on War Angel
+  (incoming hits → concentration checks → the concentration-dependent thing stops), now on
+  a second build. The rewritten tests assert the MECHANISM (the party split moves the
+  thorn loadout and leaves the rider loadout flat, bounded in BOTH directions) and
+  deliberately assert **no ranking at all** — asserting one is what made the test depend
+  on an enemy nobody had declared.
+
+  **FOUR TESTS NOW ASSERT THE OPPOSITE OF WHAT THEY USED TO, each kept under a name that
+  says so.** "The enemy side is not resolved", "the console says NOT RESOLVED", "two
+  builds record DIFFERENT enemy paths", "describe reports the structural choices the
+  factory makes". Those are sentences the project spent nine sessions being able to say,
+  and the tests that said them are the right place to record that it no longer can. Two
+  more were repointed rather than inverted: `_requires_control_channel`'s seven answers
+  became **three** (the four deleted are the baked-in path's ways of being unmeasurable,
+  and a stated reason nobody can be in is worse than no branch), and
+  `test_the_unavailability_reason_names_which_enemy_model_blocked_it` needed **two
+  different builds** to find two different reasons — which is the clearest single
+  statement of why the coupling had to go. It now finds both on one build, as two kinds.
+
+  **`coverage_gap` was KEPT with no producer, deliberately, and the distinction is worth
+  recording.** s51's cut is about a plausible-looking NUMBER with no consumer and a stated
+  REASON nobody can be in — both mislead whoever sees them. `coverage_gap` is a generic
+  detector over any `*_side` key that emits nothing when there is nothing to emit, and
+  `WARNING_CODES` is a published vocabulary a renderer styles on. An empty detector
+  misleads nobody, and keeping it means a future provenance section that forgets to
+  resolve itself surfaces automatically. It is unit-tested against a *synthetic* gap so
+  the retained branch is not an untested value.
+
+  **`describe()` NO LONGER REPORTS ANY ENEMY FACT**, and that deletion is the point: once
+  `resolve()`'s `build_default` branch went, nothing read `enemy_policy` / `enemy_focus` /
+  `enemy_n_attacks` / `enemy_damage_type`, and leaving them would have left plausible
+  enemy numbers in provenance with no consumer and no claim to truth. `resolve()` now
+  takes the config alone — one fewer input, so the s50 derivation of `RunContext.enemy`
+  got strictly safer rather than needing re-justification.
+
+  **`enemy.install` MOVED from the three adapters into `runner.simulate`**, found by the
+  test surface rather than by design: with `enemy` required, an adapter that *forgot* the
+  call would face its factory's enemy while provenance claimed the declared kind — a §4
+  lie, and silent. A call that must always happen belongs in the one function every run
+  goes through, not in three that each have to remember it.
+
+  **NO `SCHEMA_VERSION` BUMP.** The artifact's shapes are unchanged; what changed is which
+  values can appear in them (`resolved` is now always `True`, `enemy_path` always carries
+  the `standardized:` prefix). The prefix is kept rather than dropped although it is now a
+  constant: it is what distinguishes a post-5b artifact from the pre-s50 ones that
+  rendered the bare word, and §10's multi-enemy model will be the next genuinely different
+  source.
 
 - **EVALUATION FRAMEWORK STEP 6 — CONTROL APPLIED AT RUNTIME (2026-10-30, session 51).**
   `evaluation_framework.md` §7 / §13 step 6, plus the `enemy_model.md` §6/§10
@@ -4856,16 +5102,22 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      side-benefits also held — one §14 deferral fired (`attacks_per_round`'s
      distribution) and one did NOT (`disadvantage`, and s50's prediction that step 6
      would trigger it was simply wrong; see the s51 Done entry).
-   - **(5b) DELETE THE BAKED-IN ENEMY PATH** (the deletion half of step 5, split
-     off s50 at the user's direction). Migrate `enemy_ac` / `enemy_attack` out of all
-     three `LEVELS` tables, drop the baked-in branch of each `make_training_dummy`, and
-     retire `enemy="build_default"`. **This is a DECISION, not a cleanup:** it breaks
-     `src/validation.py` (which reads `make_day_runner` AND
-     `LEVELS[level]["target_dpr"]`) and the §12 bit-identical parity proof with it, and
-     8 test modules touch the baked-in rows. Needs its own decision record saying what
-     replaces the parity proof as the end-to-end signal — the s50 `GOLDEN_DPR` table is
-     the candidate, and it exists for this purpose. One piece is already cheap: the AC
-     needs no migration at all, since every baked-in value equals the table's.
+   - ~~**(5b) DELETE THE BAKED-IN ENEMY PATH**~~ **DONE (s52)** — the deletion half of
+     step 5, split off s50 at the user's direction, with its own decision record in
+     §3.4 and §12. `enemy_ac` / `enemy_dex_save` / `enemy_attack` / `target_dpr` are gone
+     from all three `LEVELS` tables; `enemy_stats.make_baseline_enemy` is THE one
+     enemy-`Entity` constructor and all three `make_training_dummy` functions delegate to
+     it; no factory constructs an enemy policy; `enemy="build_default"` is retired and
+     **`RunConfig.enemy` is now a REQUIRED field with no default** (user: a default is an
+     implicit enemy, and an implicit enemy is what makes two reports incomparable);
+     `enemy.install` moved from the three adapters into `runner.simulate`, so a new
+     adapter cannot forget it. **`src/validation.py` is DELETED** with the user's explicit
+     sign-off, and the §12 parity proof with it — §12 records that the swap is asymmetric
+     (parity was never a PHYSICS signal, so `GOLDEN_DPR` is stronger there and weaker as a
+     LAYER signal, which `test_headline_column_is_the_characters_own_output` carries
+     instead). `GOLDEN_DPR` grew 9 → 13 to keep the retired parity proof's level coverage.
+     **998 tests green** (was 1019: 5b deletes the last 11 guide-replication assertions
+     and the 24 AC-pin cases rather than repointing them). See the s52 Done entry.
    - ~~then (6) control-at-runtime (§7) + the `enemy_model.md` §6/§10 reconciliation~~
      **DONE (s51)** — `src/control.py`'s `ControlAccount`, `resolve_damage` phase 5b,
      the draw-down in `Scheduler._handle_turn_start`, the realized half of the §13
@@ -4883,7 +5135,11 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      (added s44)** — per-entity/per-purpose generators via `SeedSequence.spawn()`, the
      prerequisite for §6.1's paired seeding to buy any precision at all (MEASURED: ~1×, not
      the 10–100× the design assumed). Needs its own decision record: it moves every seeded
-     baseline and breaks the §12 bit-identical parity proof.
+     baseline. (It no longer breaks the §12 parity proof — s52 retired that; what it
+     now has to re-baseline is `GOLDEN_DPR`, and it should also break
+     `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s52 wrote as a
+     deliberate TRIPWIRE for exactly this step. Do not widen that test's bound to keep it
+     green; updating it IS part of step 8's decision record.)
 6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
    (closest-to-complete), offense + profile-driven defense + control resilience, vs
    the 4×4 baseline. **Comparison idea (s37):** also reproduce **Treantmonk's tier
@@ -5658,9 +5914,10 @@ combat policy through two lenses, and reformulate it as needed:
 
 5. **The enemy is no longer a property of the build (s50).** `src/evaluation/enemy.py`
    is the framework's own enemy-construction seam (`evaluation_framework.md` §3.4). Four
-   declared kinds — `build_default` / `baseline` / `scripted` / `none` — selected by
-   `RunConfig.enemy`, configured by a closed `ENEMY_OPTION_SCHEMA`, and recorded in §4
-   provenance by `enemy.resolve()` plus `describe_parameters()` on both policies.
+   declared kinds, cut to THREE in s52 — ~~`build_default`~~ / `baseline` / `scripted` /
+   `none` — selected by `RunConfig.enemy`, configured by a closed `ENEMY_OPTION_SCHEMA`,
+   and recorded in §4 provenance by `enemy.resolve()` plus `describe_parameters()` on both
+   policies.
    - **`scripted` is a COMPARISON ARM, not a legacy shim.** `baseline` vs `scripted`
      isolates "the enemy forces saves" from "the enemy swings" — a comparison the
      baked-in paths could not express, because they differed in both at once.
@@ -5671,12 +5928,56 @@ combat policy through two lenses, and reformulate it as needed:
    - **The AC was never the coupling.** Every baked-in `enemy_ac` already equalled
      `enemy_stats.baseline_ac(level)`. The coupling is offense + model + whether-it-acts
      + the six saves. §3.4 item 1 is corrected in place.
-   - **`build_default` stays the DEFAULT** until the deletion half lands: it is what
-     holds `src/validation.py` and the §12 bit-identical parity proof.
+   - ~~**`build_default` stays the DEFAULT** until the deletion half lands~~ **RETIRED
+     (s52), and `RunConfig.enemy` now has NO DEFAULT AT ALL.** It is a required field: a
+     default is an implicit enemy, and an implicit enemy is what makes two reports
+     incomparable, so the fix for the transitional default was not another default.
+     `RETIRED_ENEMY_KINDS` makes the old name fail with an explanation naming its
+     replacement rather than as an unknown value — including the one substitution that is
+     bit-identical (`none`, at every level where the factory's enemy was passive).
+   - **No factory constructs an enemy policy (s52).** "Whether the enemy acts" and "whom
+     it attacks" are declared (`enemy`, `enemy_options['focus']`) for every build at every
+     level; `enemy_stats.make_baseline_enemy` is the one enemy-`Entity` constructor; and
+     `enemy.install` lives in `runner.simulate` rather than in each adapter, so a new
+     adapter cannot forget it and claim a kind it never installed.
+   - **Silvertail was already standardized, bit-identically, and nobody knew (s52).** Its
+     dummy already read `enemy_base_stats` and its policy already took the table's dice:
+     `build_default` == `baseline` + `focus='summon'` to the last bit (6.31828125 at L10).
+     §3.4's examples accuse the other two builds; the one its text never mentions was the
+     one already there.
+   - **The installation OVERLAY is now provably redundant on the stat block (s52).** With
+     the factories building their enemy from the same `enemy_stats` functions
+     `_complete_stat_block` writes, one source has two writers and the second changes
+     nothing — asserted over the full build x level cross-product rather than assumed,
+     because "identical today" is the phrase §3.4 exists to distrust.
 
 ---
 
 ## Open threads / deferred decisions
+
+> **§14 DEFERRALS AS OF s52 (the authoritative list is `evaluation_framework.md` §14).**
+> Checked rather than assumed, per the s50 habit:
+> - **(a) convergence THRESHOLDS — still live, constants still untouched.** s52 added no
+>   stressor; s51's LATTICE one stands. The fix remains a SWEEP across builds and tiers,
+>   not a nudge to a constant.
+> - **(c) a PAIRED quantile delta — STRENGTHENED by s52.** §6.1's correction makes the
+>   block quantitative: the paired covariance is −0.12 … +0.06 once two configs diverge,
+>   so a paired quantile interval would be WIDER than the independent one in about half
+>   of cases. Still blocked on RNG substreams (step 8).
+> - **(f) an `attacks` metric for DISADVANTAGE — did NOT fire, fourth session running.**
+>   5b changes which enemy a run faces, not what an enemy does.
+> - **(h) the mitigation channel reads an UNTYPED build as a true zero** — still true,
+>   and s52 OBSERVED it in a rendered output (War Angel L13 with mitigation on prints
+>   `damage_mitigated_per_round 0 ± 0`). It did not mislead: the adjacent
+>   `typed_damage_share 0` explains it on the same screen, which is a data point FOR
+>   leaving it as §14 decided.
+> - **(b), (d), (e), (g)** — untouched.
+> - **NEW (s52): Starfire L15's loadout axes were tuned against an enemy that no longer
+>   exists.** FoM's concentration now ends every day, the dragon save-floor is inert
+>   above 25 damage per hit, and the FoM-vs-Fire-Shield near-tie was a property of the
+>   retired enemy (+0.49 → +3.22). A BUILD-data question, deferred to the first full
+>   build evaluation; no test now depends on the answer.
+
 
 - **An `attacks` metric for DISADVANTAGE — one Dimension key away (2026-10-27, session
   49).** The §13 attacks channel RECORDS `disadvantage`; the metrics layer does not

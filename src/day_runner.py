@@ -247,7 +247,8 @@ class BetweenCombatsContext:
         The shared RNG — but note that OUT-OF-COMBAT healing is MEAN-FIELD and must
         NOT roll (design/healing.md §7a and healing.py's module docstring): drawing
         from the shared stream here would shift every subsequent die for every build
-        and break the §12 bit-identical parity proof.  Pass ``mean_field=True`` to
+        and break every ``GOLDEN_DPR`` point (§12's parity proof until s52 retired
+        it).  Pass ``mean_field=True`` to
         ``resolve_healing``.  The RNG stays available for a hook that legitimately
         needs a randomized CHOICE (which combat to pre-cast in, etc.).
     telemetry:

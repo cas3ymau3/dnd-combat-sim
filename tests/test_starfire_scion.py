@@ -20,7 +20,9 @@ from pathlib import Path
 
 import pytest
 
+from src.builds import enemy_stats
 from src.builds import starfire_scion as ss
+from src.builds.enemy import ScriptedEnemyPolicy
 from src.content import interpret_save_spell, load_abilities
 from src.day_runner import DayRunner
 from src.entity import Entity
@@ -158,12 +160,20 @@ def test_unimplemented_level_raises():
 
 
 def test_enemy_stats_are_live_from_the_monster_csv():
-    """enemy_ac / enemy_dex_save are the csv's ac + dex.save.mod at cr == level."""
+    """The DUMMY's AC and DEX save are the csv's ``ac`` + ``dex.save.mod`` at
+    cr == level — read off the Entity now, not off this build's ``LEVELS`` row.
+
+    s52 (§3.4 step 5b) deleted ``enemy_ac`` / ``enemy_dex_save`` from the rows, so the
+    left-hand side of this test is gone.  The RIGHT-hand side is unchanged, and that is
+    the point: these values were always this csv's, hand-copied into the build data, and
+    the test that proved the copy faithful is now the test that the copy is no longer
+    needed.  Every value is identical to the one it replaced, at all eight levels.
+    """
     rows = {int(r["level"]): r for r in csv.DictReader(_CSV.open())}
     for level in (1, 4, 5, 9, 10, 11, 12, 15):
-        data = ss.LEVELS[level]
-        assert data["enemy_ac"] == int(rows[level]["ac"])
-        assert data["enemy_dex_save"] == int(rows[level]["dex.save.mod"])
+        dummy = ss.make_training_dummy(level)
+        assert dummy.stat("ac") == int(rows[level]["ac"])
+        assert dummy.stat("dex_save") == int(rows[level]["dex.save.mod"])
 
 
 # ---------------------------------------------------------------------------
@@ -582,8 +592,12 @@ def test_l5_outdamages_l4_against_the_same_enemy():
     the same monster (AC 15 / DEX +2), so L5's gains (PB +1, WIS +1, Sacred Flame
     1d8→2d8) must lift DPR.  (Raw cross-level DPR is NOT expected monotonic — the
     enemy hardens with level, exactly as War Angel's targets do.)"""
-    assert ss.LEVELS[4]["enemy_ac"] == ss.LEVELS[5]["enemy_ac"] == 15
-    assert ss.LEVELS[4]["enemy_dex_save"] == ss.LEVELS[5]["enemy_dex_save"] == 2
+    # The enemy held fixed is now a property of the TABLE, not of these two rows, so
+    # the premise is read off the dummy the factory builds (s52, §3.4 step 5b).
+    assert (ss.make_training_dummy(4).stat("ac")
+            == ss.make_training_dummy(5).stat("ac") == 15)
+    assert (ss.make_training_dummy(4).stat("dex_save")
+            == ss.make_training_dummy(5).stat("dex_save") == 2)
     assert _mean_dpr(5, n_days=600) > _mean_dpr(4, n_days=600)
 
 
@@ -680,8 +694,10 @@ def test_l12_outdamages_l11_against_the_same_enemy():
     are the SAME monster (AC 17 / DEX +3), so L12's gains (WIS 19 -> 20: +1 spell
     to-hit / DC / damage, and Searing Arc 4d6 -> 5d6) must lift DPR over L11.  The
     Shillelagh die is 1d12 at both, so this isolates the WIS-20 + upcast scaling."""
-    assert ss.LEVELS[11]["enemy_ac"] == ss.LEVELS[12]["enemy_ac"] == 17
-    assert ss.LEVELS[11]["enemy_dex_save"] == ss.LEVELS[12]["enemy_dex_save"] == 3
+    assert (ss.make_training_dummy(11).stat("ac")
+            == ss.make_training_dummy(12).stat("ac") == 17)
+    assert (ss.make_training_dummy(11).stat("dex_save")
+            == ss.make_training_dummy(12).stat("dex_save") == 3)
     assert _mean_dpr(12, n_days=600) > _mean_dpr(11, n_days=600)
 
 
@@ -766,6 +782,54 @@ def test_l15_fom_and_fire_shield_share_the_single_4th_level_slot():
     assert not fs_policy._has_fount_of_moonlight
 
 
+# ---------------------------------------------------------------------------
+# The enemy, DECLARED (s52 — evaluation_framework.md §3.4 step 5b)
+# ---------------------------------------------------------------------------
+#
+# Until s52 this build's L15 row carried an `enemy_attack` block and the factory
+# installed a ScriptedEnemyPolicy from it.  Both are deleted: the enemy is not a
+# property of the build, so a test that needs one says what it needs.  The numbers now
+# come from the definitive per-level table, which is also the correction §3.4 names —
+# the deleted row's own comment called its 2d8+5 at +9 "ILLUSTRATIVE", and the table's
+# L15 enemy is 8d6+5 at +12, i.e. the hand-written one was 2.4x too weak and 3 points
+# too inaccurate.  So these tests face a harder enemy than they used to; every one of
+# them is DIRECTIONAL (ablation A vs ablation B at a FIXED enemy), which is why that is
+# a re-baseline of the inputs and not a change in what they assert.
+
+
+#: The share of swings the standardized enemy aims at the CHARACTER when a party
+#: member is in the roster.  2/3 reproduces the 2:1 char_weight/party_weight the
+#: deleted L15 row carried, so the party tests below keep measuring the split they were
+#: written for — now as a declared enemy option rather than as build data.
+PARTY_SPLIT = 2 / 3
+
+
+def _l15_enemy(target, rounds_per_combat=4, *, allies=(), char_target_prob=1.0):
+    """The standardized L15 scripted enemy, optionally splitting across `allies`.
+
+    The weighted roster is built by ``evaluation.enemy._ally_roster`` rather than
+    re-derived here, deliberately: the integer weights are what the dice-stream
+    argument rests on (they sum to exactly 100, so the multi-entity pre-roll is the same
+    ``roll_one(100)`` the single-target path makes), and a second copy of that
+    arithmetic beside the first is precisely the "same quantity in two places" that
+    §3.4 is about.
+    """
+    from src.evaluation.enemy import _ally_roster
+
+    class _AlliesOnly:
+        """The one attribute ``_ally_roster`` reads — a Roster is overkill here."""
+        def __init__(self, allies):
+            self.allies = list(allies)
+
+    return ScriptedEnemyPolicy(
+        target=target,
+        n_attacks=enemy_stats.baseline_n_attacks(15),
+        char_target_prob=char_target_prob,
+        rounds_per_combat=rounds_per_combat,
+        roster=_ally_roster(_AlliesOnly(allies), target, char_target_prob),
+    )
+
+
 def _mean_dpr_l15(fire_shield: bool, n_days: int, seed: int = 0,
                   rounds_per_combat: int = 4) -> float:
     """L15 DPR with Fire Shield enabled or ABLATED.  The enemy strikes back either
@@ -781,10 +845,10 @@ def _mean_dpr_l15(fire_shield: bool, n_days: int, seed: int = 0,
                                     fourth_level_spell="fire_shield")
     if not fire_shield:
         policy._has_fire_shield = False             # ablate the cast (no resist, no thorns)
-    ea = ss.LEVELS[15]["enemy_attack"]
-    enemy_policy = ss.ScriptedEnemyPolicy(
-        target=char, n_attacks=ea["n_attacks"],
-        char_target_prob=ea["char_target_prob"], rounds_per_combat=rounds_per_combat)
+    # The enemy is DECLARED here, not read off a LEVELS row (s52, §3.4 step 5b).
+    # These are the standardized L15 numbers; the deleted row carried an
+    # "ILLUSTRATIVE" 2d8+5 at +9, which the table replaces with 8d6+5 at +12.
+    enemy_policy = _l15_enemy(char, rounds_per_combat)
     runner = DayRunner(
         rng=rng, entities=[char, dummy],
         policies={char.id: policy, dummy.id: enemy_policy},
@@ -1006,10 +1070,10 @@ def _mean_dpr_l15_rider(disable, n_days, seed=0, rounds_per_combat=4):
         policy._has_fount_of_moonlight = False
     elif disable == "primal":
         policy._has_primal_strike = False
-    ea = ss.LEVELS[15]["enemy_attack"]
-    enemy_policy = ss.ScriptedEnemyPolicy(
-        target=char, n_attacks=ea["n_attacks"],
-        char_target_prob=ea["char_target_prob"], rounds_per_combat=rounds_per_combat)
+    # The enemy is DECLARED here, not read off a LEVELS row (s52, §3.4 step 5b).
+    # These are the standardized L15 numbers; the deleted row carried an
+    # "ILLUSTRATIVE" 2d8+5 at +9, which the table replaces with 8d6+5 at +12.
+    enemy_policy = _l15_enemy(char, rounds_per_combat)
     runner = DayRunner(
         rng=rng, entities=[char, dummy],
         policies={char.id: policy, dummy.id: enemy_policy},
@@ -1019,10 +1083,32 @@ def _mean_dpr_l15_rider(disable, n_days, seed=0, rounds_per_combat=4):
     return total / (n_days * rounds_per_day)
 
 
-def test_fount_of_moonlight_lifts_l15_dpr_at_a_fixed_enemy():
+def test_fount_of_moonlight_now_COSTS_dpr_against_the_standardized_enemy():
+    """s52 INVERTS this test, and the inversion is a real finding about the build
+    rather than a re-tuned threshold.
+
+    It asserted ``on > off``: enabling Fount of Moonlight lifted L15 DPR, which it did
+    against the hand-written enemy the deleted L15 row carried (2d8+5 at +9).  Against
+    the definitive table's L15 enemy (8d6+5 at +12) it is a NET LOSS of about 1.4 DPR
+    — measured 27.17 with the rider on against 28.58 with it ablated, 400 days / seed 0.
+
+    The cause is measured in
+    ``test_the_standardized_enemy_ends_fount_of_moonlights_concentration_every_day``:
+    this build has ONE 4th-level slot and no short-rest recovery, and the standardized
+    enemy ends that concentration on 1.000 of days.  So the loadout pays a turn and a
+    slot for a rider that does not survive, while the ablated build spends the same turn
+    hitting things.
+
+    **This is a build-value finding, and it is deliberately NOT asserted as one**
+    ([[validate-mechanism-not-build-value]]) — "FoM is a bad pick at L15" would be a
+    claim about the build.  What is asserted is the MECHANISM: the rider's contribution
+    is bounded by whether its concentration survives, so with concentration lost every
+    day the ablation cannot be behind.  Direction only, with a margin well inside the
+    measured 1.4 so it is not a disguised threshold.
+    """
     on = _mean_dpr_l15_rider(disable=None, n_days=400)
     off = _mean_dpr_l15_rider(disable="fom", n_days=400)
-    assert on > off, f"FoM on {on:.2f} !> off {off:.2f}"
+    assert off > on, f"FoM on {on:.2f} should now trail ablated {off:.2f}"
 
 
 def test_primal_strike_lifts_l15_dpr_at_a_fixed_enemy():
@@ -1053,12 +1139,44 @@ def test_l15_fom_loadout_nets_positive_over_an_unused_4th_level_slot():
     assert fom < ss.LEVELS[15]["ceiling_dpr"], f"L15 FoM DPR {fom:.2f} >= ceiling"
 
 
-def test_l15_dragon_form_floor_protects_fom_concentration():
-    """Starry-Form Dragon's save-floor (treat ≤9 as 10) sharply reduces FoM
-    concentration breaks: with the floor active the Scion almost never loses FoM to
-    the enemy's hits, but ablating the Dragon activation lets breaks happen — a clean
-    isolation of the substrate-#3 save-floor doing real work on the concentration path.
+def test_the_dragon_form_floor_is_INERT_against_the_standardized_enemy():
+    """s52 INVERTS this test too, and the arithmetic behind it is exact rather than
+    statistical — which makes it the sharpest single consequence of the deletion.
+
+    It asserted that Starry-Form Dragon's save-floor (treat a d20 of 9 or lower as 10)
+    sharply reduced FoM concentration breaks.  Measured now: **200 breaks with the floor
+    and 200 without**, over 200 days.  Not "reduced less" — identical.
+
+    THE REASON IS A THRESHOLD, not noise, and it falls out of two numbers:
+
+    * ``verbs.resolve_concentration_check``: ``DC = max(10, damage // 2)``.
+    * this character's ``con_save`` is **+2** (asserted below).
+
+    So a floored roll contributes exactly ``10 + 2 = 12``, and the floor can rescue a
+    save only while ``DC <= 12``, i.e. while the hit that caused it dealt **25 damage or
+    less**.  The retired hand-written enemy swung for a mean of **14**, which puts the DC
+    at the rule's own minimum of 10 — where a floored 12 clears it by 2, every time.
+    The standardized L15 enemy swings for a mean of **33**, giving a mean DC of 16, which
+    a floored 12 cannot reach.
+
+    So the floor was not "working well"; it was working *only* in the regime where the
+    DC was pinned at its floor by an enemy that barely hit.  Exactly the kind of
+    conclusion §3.4 exists to stop a build module from quietly deciding for itself.
+    The substrate-#3 save-floor mechanism is unaffected and still unit-tested directly
+    (``test_l15_dragon_form_grants_the_concentration_save_floor``); what this test now
+    records is that it has a damage threshold, and where it is.
     """
+    char_for_bonus = ss.make_starfire_scion(15)
+    assert char_for_bonus.stat("con_save") == 2
+    floored_total = 10 + char_for_bonus.stat("con_save")
+    assert floored_total == 12
+    # The threshold, from the DC rule itself rather than from a comment.
+    n, sides, bonus = enemy_stats.baseline_attack_dice(15)
+    mean_swing = n * (sides + 1) / 2 + bonus
+    assert max(10, int(mean_swing) // 2) > floored_total, (
+        f"mean swing {mean_swing} -> DC {max(10, int(mean_swing) // 2)}, "
+        f"floored save total {floored_total}")
+
     def breaks(dragon: bool) -> int:
         rng = SeededRNG(1)
         char = ss.make_starfire_scion(15)
@@ -1066,9 +1184,7 @@ def test_l15_dragon_form_floor_protects_fom_concentration():
         policy = ss.StarfireScionPolicy(15, char, dummy)
         if not dragon:
             policy._has_dragon_form = False          # cast FoM but DON'T guard it
-        ea = ss.LEVELS[15]["enemy_attack"]
-        enemy = ss.ScriptedEnemyPolicy(
-            target=char, n_attacks=ea["n_attacks"], char_target_prob=ea["char_target_prob"])
+        enemy = _l15_enemy(char)
         runner = DayRunner(rng=rng, entities=[char, dummy],
                            policies={char.id: policy, dummy.id: enemy})
         for _ in range(200):
@@ -1076,8 +1192,8 @@ def test_l15_dragon_form_floor_protects_fom_concentration():
         return char.concentration_breaks
     with_floor = breaks(dragon=True)
     without_floor = breaks(dragon=False)
-    assert without_floor > with_floor, (
-        f"dragon floor breaks {with_floor} should be < no-floor {without_floor}")
+    assert without_floor == with_floor, (
+        f"the floor is inert at this DC: {with_floor} vs {without_floor}")
 
 
 # ---------------------------------------------------------------------------
@@ -1212,10 +1328,13 @@ def _mean_dpr_l15_precast(precast_mode, n_days, precast_prob=0.5, seed=0,
     make_day_runner, which wires the enemy-strikes-back loop).  DPR reads the dummy's
     column = the Scion's outgoing output."""
     rng = SeededRNG(seed)
-    runner, _, dummy = ss.make_day_runner(
+    runner, char, dummy = ss.make_day_runner(
         15, rng, rounds_per_combat=rounds_per_combat,
         fourth_level_spell=fourth_level_spell,
         precast_mode=precast_mode, precast_prob=precast_prob)
+    # The enemy is DECLARED here (s52): the factory returns a passive target, and this
+    # helper's whole premise is that the enemy strikes back.
+    runner.policies[dummy.id] = _l15_enemy(char, rounds_per_combat)
     rounds_per_day = 4 * rounds_per_combat
     total = sum(runner.run_day().damage_received_by(dummy.id) for _ in range(n_days))
     return total / (n_days * rounds_per_day)
@@ -1251,13 +1370,20 @@ def test_precasting_fom_narrows_the_gap_to_the_fire_shield_loadout():
     fom_in_combat = _mean_dpr_l15_precast("never", n_days=400)
     fom_precast = _mean_dpr_l15_precast("always", n_days=400)
     fire_shield = _mean_dpr_l15_precast(None, n_days=400, fourth_level_spell="fire_shield")
-    gap_in_combat = fire_shield - fom_in_combat       # ~3.0 — FoM clearly behind
-    gap_precast = fire_shield - fom_precast           # ~0.5 — nearly tied
+    gap_in_combat = fire_shield - fom_in_combat
+    gap_precast = fire_shield - fom_precast
     assert gap_in_combat > 0, f"FoM in-combat {fom_in_combat:.2f} not behind FS {fire_shield:.2f}"
     assert gap_precast < gap_in_combat, "pre-casting should narrow the FoM↔FS gap"
-    # Pre-cast closes the bulk of the shortfall (residual is the thorns over-count).
-    assert gap_precast < 0.5 * gap_in_combat, (
-        f"pre-cast gap {gap_precast:.2f} should be < half the in-combat gap {gap_in_combat:.2f}")
+    # RE-BASELINED (s52): the "< half" constant was calibrated against the enemy the
+    # deleted L15 row carried, where pre-casting erased ~85% of the shortfall.  Against
+    # the standardized enemy it erases 44% (5.76 -> 3.22, 400 days / seed 0), because
+    # the residual is no longer only Fire Shield's thorn over-proc — it is also FoM's
+    # concentration, which this enemy ends every day (see the test named for it), and
+    # pre-casting buys a free opening turn without buying survival.  The direction is
+    # the mechanism and is asserted above; this bound is loose on purpose, so it records
+    # "a substantial fraction" without becoming a tuned constant again.
+    assert gap_precast < 0.8 * gap_in_combat, (
+        f"pre-cast gap {gap_precast:.2f} vs in-combat {gap_in_combat:.2f}")
 
 
 # ---------------------------------------------------------------------------
@@ -1293,8 +1419,8 @@ def test_scripted_enemy_roster_splits_attacks_by_weight():
     multiattack swings."""
     a = Entity(name="char", hp=10, base_stats={"attack_bonus": 5})
     b = Entity(name="party", hp=10, base_stats={"ac": 15})
-    pol = ss.ScriptedEnemyPolicy(target=a, n_attacks=2, rounds_per_combat=1,
-                                 roster=[(a, 2), (b, 1)])
+    pol = ScriptedEnemyPolicy(target=a, n_attacks=2, rounds_per_combat=1,
+                              roster=[(a, 2), (b, 1)])
     # Total weight 3 → roll over a d3 per slot: 1,2 → a (cum 2); 3 → b (cum 3).
     rng = FakeRNG([1, 3])
     pol.on_combat_start(0, rng)
@@ -1310,11 +1436,16 @@ def test_l15_party_member_soaks_a_share_of_enemy_attacks():
     fight — the foundation that makes Fire-Shield thorns fire on only a fraction of
     incoming hits."""
     n = 60
-    # With party: enemy damage splits between character and party.
+    # With party: enemy damage splits between character and party.  The SPLIT is now
+    # declared (s52): `char_target_prob=PARTY_SPLIT` reproduces the 2:1
+    # char_weight/party_weight the deleted LEVELS row carried, and the seam's
+    # `_ally_roster` turns it into integer weights over the real roster.
     rng = SeededRNG(0)
     runner, char, dummy = ss.make_day_runner(
         15, rng, fourth_level_spell="fire_shield", with_party=True)
     party = next(e for e in runner.entities if e is not char and e is not dummy)
+    runner.policies[dummy.id] = _l15_enemy(char, allies=[party],
+                                           char_target_prob=PARTY_SPLIT)
     to_char_party = to_party = 0
     for _ in range(n):
         r = runner.run_day()
@@ -1324,6 +1455,7 @@ def test_l15_party_member_soaks_a_share_of_enemy_attacks():
     rng = SeededRNG(0)
     runner2, char2, dummy2 = ss.make_day_runner(
         15, rng, fourth_level_spell="fire_shield", with_party=False)
+    runner2.policies[dummy2.id] = _l15_enemy(char2)
     to_char_solo = sum(
         runner2.run_day().damage_source_to(dummy2.id, char2.id) for _ in range(n))
     assert to_party > 0, "party member should soak some of the enemy's attacks"
@@ -1337,11 +1469,15 @@ def _mean_dpr_l15_party(fourth_level_spell, precast_mode, with_party, n_days,
     """L15 mean BUILD-COLUMN DPR (damage_by_source(char) — the substrate-#7 headline
     metric) for a 4th-level loadout, with or without the passive party member."""
     rng = SeededRNG(seed)
-    runner, char, _dummy = ss.make_day_runner(
+    runner, char, dummy = ss.make_day_runner(
         15, rng, rounds_per_combat=rounds_per_combat,
         fourth_level_spell=fourth_level_spell,
         precast_mode=precast_mode, precast_prob=precast_prob,
         with_party=with_party)
+    allies = [e for e in runner.entities if e is not char and e is not dummy]
+    runner.policies[dummy.id] = _l15_enemy(
+        char, rounds_per_combat, allies=allies,
+        char_target_prob=PARTY_SPLIT if allies else 1.0)
     rounds_per_day = 4 * rounds_per_combat
     total = sum(runner.run_day().damage_by_source(char.id) for _ in range(n_days))
     return total / (n_days * rounds_per_day)
@@ -1357,21 +1493,91 @@ def test_l15_party_split_cuts_fire_shield_thorns_dpr():
     assert party < solo, f"fire shield DPR should drop with a party: solo {solo:.2f}, party {party:.2f}"
 
 
-def test_l15_party_split_reverses_the_fom_vs_fire_shield_near_tie():
-    """THE HEADLINE (substrate #7, 7c slice).  In the single-dummy model the
-    pre-cast FoM loadout sits just BEHIND the Fire-Shield loadout (the session-16
-    ~0.5 near-tie, residual = thorns over-count).  Register a passive party member
-    and the enemy splits its attacks → Fire Shield's thorns fire on a fraction of
-    hits while FoM's OWN-hit riders are untouched → the pre-cast FoM loadout
-    OVERTAKES Fire Shield.  The near-tie reverses — closing BOTH the substrate-#7 gap
-    and the session-16 modeling artifact."""
-    # Solo (single dummy): Fire Shield ahead of pre-cast FoM (the near-tie).
+def test_the_party_split_moves_fire_shield_and_leaves_fount_of_moonlight_flat():
+    """s52 REPLACES ``test_l15_party_split_reverses_the_fom_vs_fire_shield_near_tie``.
+
+    THE MECHANISM IS INTACT; THE HEADLINE WAS AN ARTIFACT OF THE RETIRED ENEMY.  The
+    old test asserted an ORDER REVERSAL: solo, Fire Shield led pre-cast FoM by the
+    "session-16 ~0.5 near-tie"; with a party the split made FS's thorns fire on a
+    fraction of incoming hits while FoM's own-hit riders stayed untouched, so FoM
+    overtook.  The reversal needed the gap to be ~0.5, and under the standardized enemy
+    (§3.4 step 5b) it is **+3.22** — a 1.6-point party effect cannot bridge it.
+
+    Measured, 400 days / seed 0, solo, pre-cast FoM:
+
+        | enemy                            | Fire Shield | pre-cast FoM |  gap  |
+        |----------------------------------|-------------|--------------|-------|
+        | RETIRED hand-written 2d8+5 @ +9  |      32.548 |       32.056 | +0.49 |
+        | standardized table   8d6+5 @ +12 |      32.929 |       29.705 | +3.22 |
+
+    **AND THE GAP WIDENED FOR THE OPPOSITE REASON TO THE OBVIOUS ONE** — worth writing
+    down, because the plausible story is wrong.  "Thorns reflect incoming damage, the
+    standardized enemy hits 2.37x harder (27.6 -> 65.4 taken per round), so Fire Shield
+    gains" predicts the FS column moving.  It barely does: **+0.38**.  What moved is
+    **FoM, down 2.35**, and the cause is concentration, measured at 400 days:
+
+        | loadout       | conc. breaks, retired | standardized |
+        |---------------|-----------------------|--------------|
+        | Fire Shield   |                     0 |            0 |
+        | pre-cast FoM  |                    20 |          400 |
+
+    Fire Shield is not a concentration spell, so it takes zero breaks under either
+    enemy.  FoM is, and this build has **one** 4th-level slot
+    (``LEVELS[15]["resources"]["slot_4th"] == (1, 0)``, no short-rest recovery), so it
+    gets one cast per day — which the retired enemy ended on 5% of days and the
+    standardized enemy ends on **1.000 per day, at 100, 200 and 400 days alike**.  It is
+    the same causal channel s50 found on War Angel (incoming hits -> concentration
+    checks -> the concentration-dependent thing stops), now on a second build.
+
+    So what is asserted here is the part that is a MECHANISM rather than a ranking: the
+    party split moves the thorn loadout DOWN and leaves the rider loadout FLAT.  The
+    ranking is deliberately NOT asserted — it is a build-value question
+    ([[validate-mechanism-not-build-value]]), and asserting it was what made this test
+    depend on an enemy nobody had declared.
+    """
     fs_solo = _mean_dpr_l15_party("fire_shield", None, with_party=False, n_days=400)
-    fom_solo = _mean_dpr_l15_party("fount_of_moonlight", "always", with_party=False, n_days=400)
-    assert fs_solo > fom_solo, (
-        f"solo: Fire Shield {fs_solo:.2f} should lead pre-cast FoM {fom_solo:.2f} (the near-tie)")
-    # With party: the order reverses — pre-cast FoM overtakes Fire Shield.
     fs_party = _mean_dpr_l15_party("fire_shield", None, with_party=True, n_days=400)
-    fom_party = _mean_dpr_l15_party("fount_of_moonlight", "always", with_party=True, n_days=400)
-    assert fom_party > fs_party, (
-        f"with party: pre-cast FoM {fom_party:.2f} should OVERTAKE Fire Shield {fs_party:.2f}")
+    fom_solo = _mean_dpr_l15_party("fount_of_moonlight", "always",
+                                   with_party=False, n_days=400)
+    fom_party = _mean_dpr_l15_party("fount_of_moonlight", "always",
+                                    with_party=True, n_days=400)
+
+    # Fire Shield LOSES to the split: a reflected hit needs an incoming hit.
+    assert fs_party < fs_solo - 1.0, (fs_solo, fs_party)
+    # FoM does not care who the enemy swings at: its riders fire on the CHARACTER's own
+    # hits.  Bounded tightly in BOTH directions — "flat" is the claim, and a one-sided
+    # assertion would pass on a loadout that gained.
+    assert abs(fom_party - fom_solo) < 0.5, (fom_solo, fom_party)
+    # ...so the split strictly narrows the gap, which is the whole mechanism, without
+    # any claim about which loadout ends up ahead.
+    assert (fs_party - fom_party) < (fs_solo - fom_solo)
+
+
+def test_the_standardized_enemy_ends_fount_of_moonlights_concentration_every_day():
+    """The measured cause of the row above, asserted rather than left in prose — and
+    the largest single consequence of step 5b on this build.
+
+    This build has ONE 4th-level slot per long rest and no short-rest recovery, so
+    pre-cast FoM is one cast per day.  Against the retired hand-written enemy that cast
+    survived the day 95% of the time; against the standardized enemy it never does.
+    Asserted as a RATE with no tolerance on the upper side, because 1.000 per day at
+    every day count is the finding: it is not "more often", it is every time.
+    """
+    from src.builds.enemy import ScriptedEnemyPolicy as _Scripted
+
+    char = ss.make_starfire_scion(15)
+    dummy = ss.make_training_dummy(15)
+    policy = ss.StarfireScionPolicy(15, char, dummy, 4,
+                                    fourth_level_spell="fount_of_moonlight",
+                                    precast_mode="always")
+    runner = DayRunner(
+        rng=SeededRNG(0), entities=[char, dummy],
+        policies={char.id: policy, dummy.id: _l15_enemy(char)},
+        rounds_per_combat=4)
+    days = 100
+    for _ in range(days):
+        runner.run_day()
+
+    assert ss.LEVELS[15]["resources"]["slot_4th"] == (1, 0)   # one cast per day
+    assert char.concentration_breaks == days                  # ...ended every day
+    assert _Scripted is ScriptedEnemyPolicy                   # the policy, not a stub

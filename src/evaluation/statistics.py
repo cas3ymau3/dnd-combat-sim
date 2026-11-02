@@ -33,9 +33,16 @@ the fixed case is a special case of the random one, not a rival to it.
 
 Why two code paths then?  **Floating-point exactness only.**  ``sd(y)/D/sqrt(N)``
 and ``sd(y/D)/sqrt(N)`` are algebraically identical but take different rounding
-paths, and §12's parity proof asserts BIT-IDENTICAL floats against
-``validation.run_level``.  :func:`fixed_estimate` therefore mirrors that function's
-exact operation order (``sum(v)/n``; ``sum((v-mean)**2)/(n-1)``; ``sqrt(var/n)``).
+paths, and the operation order is pinned to the last ULP.  :func:`fixed_estimate`
+uses ``sum(v)/n``; ``sum((v-mean)**2)/(n-1)``; ``sqrt(var/n)``.
+
+**What pins it has CHANGED, and the constraint got stronger (s52).**  That order was
+chosen to mirror ``validation.run_level`` exactly, because §12's parity proof asserted
+bit-identical floats against it.  Framework step 5b deleted that function and retired
+the proof — but the order is now pinned by ``GOLDEN_DPR``'s 13 EXACT values, every one
+of which this estimator produced.  An algebraically-equivalent rearrangement that
+differs in the last ULP breaks them, and a golden is an exact equality, so the breakage
+is unmissable rather than arguable.
 Declaring which kind a metric uses is also information the reader wants: "per 16
 rounds, always" is a different claim from "per save actually forced".
 
@@ -254,10 +261,11 @@ def fixed_estimate(numerators: Iterable[float],
 
     Returns ``(value, stderr, influence_values)``.
 
-    The operation order here is load-bearing and must not be "simplified": it
-    mirrors ``validation.run_level`` exactly (``sum(v)/n``; ``sum((v-mean)**2)/(n-1)``;
-    ``sqrt(var/n)``) so the §12 parity proof compares bit-identical floats.  Any
-    algebraically-equivalent rearrangement can differ in the last ULP.
+    The operation order here is load-bearing and must not be "simplified"
+    (``sum(v)/n``; ``sum((v-mean)**2)/(n-1)``; ``sqrt(var/n)``).  It was chosen to
+    mirror ``validation.run_level``, which s52 deleted; what pins it now is that every
+    ``GOLDEN_DPR`` value was produced by it.  Any algebraically-equivalent
+    rearrangement can differ in the last ULP, and a golden is an exact equality.
     """
     values = [y / x for y, x in zip(numerators, denominator_per_day)]
     n = len(values)
@@ -619,8 +627,9 @@ def bootstrap_interval(values: "Iterable[float]",
 
     **This function draws, and it draws from its OWN generator.**  Per-feature ritual
     step 3: every die in a run comes off one ``SeededRNG`` tape, so a single extra
-    draw from it outside combat shifts every subsequent roll and kills §12's
-    bit-identical parity proof against ``validation.run_level``.  A
+    draw from it outside combat shifts every subsequent roll and breaks every
+    ``GOLDEN_DPR`` point (§12's bit-identical parity proof, until s52 retired it —
+    the same constraint under a sharper name).  A
     ``numpy.random.default_rng`` seeded from a stable hash of the caller's label is
     reproducible, independent, and structurally incapable of touching that tape.
     """

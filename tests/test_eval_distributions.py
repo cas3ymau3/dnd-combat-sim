@@ -108,7 +108,7 @@ def report():
     """One real run.  Silvertail because the per-METRIC ritual's roster-scoping
     fixture is the one with a summon, and a distribution inherits its scope from
     the metric it describes."""
-    return run(RunConfig(build="silvertail", level=10, n_days=DAYS, seed=7))
+    return run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=DAYS, seed=7))
 
 
 def _normal_sample(n=400, seed=0):
@@ -361,7 +361,7 @@ def test_the_yardstick_is_shared_by_every_point_of_one_distribution():
     Uses ``simulate`` rather than the module fixture because the check needs the
     per-day samples, which an ``EvalReport`` deliberately does not carry.
     """
-    output = simulate(RunConfig(build="war_angel", level=13, n_days=DAYS, seed=7))
+    output = simulate(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=DAYS, seed=7))
     shape = build_report(output).distribution("dpr_distribution")
     sample = sorted(output.samples["dpr"].per_day_values())
     spread = quantile(sample, 0.90) - quantile(sample, 0.10)
@@ -492,7 +492,7 @@ def test_per_day_values_is_the_vector_the_scalar_averages(report):
     """The payoff of declaring a distribution OVER a metric rather than beside it:
     the median and the mean describe the SAME sample, bit for bit, so the two
     sections of the artifact can never be talking about different runs."""
-    output = simulate(RunConfig(build="war_angel", level=5, n_days=40, seed=2))
+    output = simulate(RunConfig(enemy="none", build="war_angel", level=5, n_days=40, seed=2))
     values = output.samples["dpr"].per_day_values()
     assert len(values) == 40
     assert sum(values) / len(values) == build_report(output)["dpr"].value
@@ -586,7 +586,7 @@ def _unavailable_registry():
 def test_an_unavailable_metric_makes_its_distribution_unavailable_with_the_same_reason():
     """Not a different kind of gap — the SAME gap, so §3.4 needs no new vocabulary
     and a reader is not told two stories about one missing channel."""
-    output = simulate(RunConfig(build="war_angel", level=1, n_days=6, seed=1),
+    output = simulate(RunConfig(enemy="none", build="war_angel", level=1, n_days=6, seed=1),
                       registry=_unavailable_registry())
     shape = build_report(output).distribution("unwired_distribution")
     assert all(not point.available for point in shape.points.values())
@@ -719,7 +719,7 @@ def test_building_the_report_draws_nothing_from_the_combat_stream():
     tape did not move while two full reports — bootstrap included — were built.
     """
     rng = _CountingRNG(4)
-    output = simulate(RunConfig(build="war_angel", level=5, n_days=30, seed=4),
+    output = simulate(RunConfig(enemy="none", build="war_angel", level=5, n_days=30, seed=4),
                       rng=rng)
     after_run = rng.draws
     assert after_run > 0

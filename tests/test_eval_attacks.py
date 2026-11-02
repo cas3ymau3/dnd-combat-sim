@@ -392,13 +392,13 @@ def test_the_property_vocabulary_is_closed_and_not_a_partition():
 def silvertail():
     """The only build with a summon, so the only one that exercises the role
     dimension's measured/measured case rather than measured/unavailable."""
-    return run(RunConfig(build="silvertail", level=10, n_days=30, seed=3,
+    return run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=30, seed=3,
                          build_options=ZONE))
 
 
 @pytest.fixture(scope="module")
 def war_angel():
-    return run(RunConfig(build="war_angel", level=13, n_days=30, seed=3))
+    return run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=30, seed=3))
 
 
 def test_the_character_cell_is_not_moved_by_the_summons_rolls(silvertail):
@@ -445,7 +445,7 @@ def test_the_enemys_swings_are_in_the_channel_and_outside_every_cell():
     So this asserts both halves on one run: that the channel holds an actor OUTSIDE
     the attributable roles, and that the character's cell counts none of them.
     """
-    config = RunConfig(build="war_angel", level=13, n_days=20, seed=3)
+    config = RunConfig(enemy="baseline", build="war_angel", level=13, n_days=20, seed=3)
     days: list = []
     output = simulate(config, on_day=lambda i, day: days.append(day.telemetry))
     roster = output.roster
@@ -511,7 +511,7 @@ def test_a_role_that_never_swings_is_unmeasured_not_zero():
     assert denominator.fixed is False
     entity = Entity(name="Pacifist", hp=10, base_stats={})
     sample = DaySample(
-        config=RunConfig(build="war_angel", level=1, n_days=1, seed=0),
+        config=RunConfig(enemy="none", build="war_angel", level=1, n_days=1, seed=0),
         roster=Roster(characters=[entity]),
         result=None,
         damage_dealt={}, damage_taken={},
@@ -532,7 +532,7 @@ def test_attacks_per_round_follows_attribution(silvertail):
     to because it is a COUNT: swings add, where rates do not.  What it pools is the
     declared attribution, so it cannot disagree with the headline about whose column
     it describes."""
-    both = run(RunConfig(build="silvertail", level=10, n_days=30, seed=3,
+    both = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=30, seed=3,
                          build_options=ZONE, attribution="character_and_summons"))
     character_only = silvertail.values["attacks_per_round"].value
     with_summon = both.values["attacks_per_round"].value

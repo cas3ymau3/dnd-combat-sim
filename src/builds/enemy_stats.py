@@ -38,6 +38,10 @@ from __future__ import annotations
 import csv
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:                                    # pragma: no cover
+    from ..entity import Entity
 
 # ---------------------------------------------------------------------------
 # Runtime: load the definitive table
@@ -158,6 +162,48 @@ def enemy_base_stats(level: int) -> dict[str, int | tuple]:
     stats["attack_bonus"] = row["to_hit"]
     stats["enemy_save_dc"] = row["save_dc"]
     return stats
+
+
+#: An enemy dummy's HP.  Effectively infinite: in the threshold model the enemy never
+#: gates turns, so DPR is measured over a fixed number of rounds rather than to a kill
+#: (memory ``standardized-dpr-baseline-not-realism``).
+DUMMY_HP = 10 ** 9
+
+
+def make_baseline_enemy(level: int, name: "str | None" = None) -> "Entity":
+    """THE enemy-``Entity`` constructor (evaluation_framework.md §3.4, s52).
+
+    One source for the enemy's stat block.  Before step 5b each build module built its
+    own dummy out of its own ``LEVELS`` row, which is the coupling §3.4 exists to
+    remove; all three ``make_training_dummy`` functions now delegate here, and the
+    framework's seam (``evaluation/enemy.py``) writes the same block over whatever it
+    is handed.
+
+    Why that second write is not the duplication the seam check forbids: it forbids two
+    *sources*, and there is one — this function and ``_complete_stat_block`` both read
+    ``enemy_base_stats``/``baseline_attack_dice``.  "Identical today" is nevertheless the
+    phrase §3.4 exists to distrust, so the redundancy is pinned as an ASSERTION
+    (``test_eval_enemy_seam``) rather than left as this comment.
+
+    The block is deliberately COMPLETE rather than minimal — AC + the six saves +
+    ``attack_bonus`` + ``enemy_save_dc`` + the per-swing dice — for the reason the
+    deletion exists.  War Angel's old dummy carried no saves at all and
+    ``Entity.stat()`` returns 0 for a missing key *by design*, so a save forced on it
+    resolved against +0 and printed a plausible number.  An enemy is now a whole,
+    inspectable stat block whose contents do not depend on which policy happens to be
+    attached, or on which character is pointed at it.
+    """
+    from ..entity import Entity              # local: keeps this module import-light
+
+    stats = enemy_base_stats(level)
+    n, sides, bonus = baseline_attack_dice(level)
+    stats["damage_dice"] = (n, sides)
+    stats["damage_bonus"] = bonus
+    return Entity(
+        name=name or f"Dummy-AC{stats['ac']}",
+        hp=DUMMY_HP,
+        base_stats=stats,
+    )
 
 
 def level_table() -> dict[int, dict]:

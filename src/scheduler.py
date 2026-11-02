@@ -671,8 +671,9 @@ class Scheduler:
         #
         # Nothing here rolls, and the account is empty on every entity unless the
         # enemy's §6 control channel is on — so an uncontrolled run takes the
-        # UNAFFECTED fast path and is byte-identical to before this existed (§12's
-        # parity proof depends on exactly that).
+        # UNAFFECTED fast path and is byte-identical to before this existed — which is
+        # what kept the §12 parity proof intact in s51 and what keeps every GOLDEN_DPR
+        # point but the one control row still now (s52).
         control = actor.control.draw()
         for ent in self.entities:
             ent.output_scale = control.scale if ent.id == actor.id else 1.0

@@ -135,8 +135,9 @@ def _enemy_line(provenance: Any) -> str:
     """
     block = provenance.resolved.get("enemy") or {}
     path = provenance.coverage.get("enemy_path", "unknown")
-    if not block.get("standardized"):
-        return f"{path}  (NOT RESOLVED: built by the build factory off the character's level row)"
+    # The "NOT RESOLVED" branch this carried through s50-s51 is gone with the baked-in
+    # path (s52): every run's enemy is built by the seam, so there is no longer a case
+    # where the console has to tell a reader the assumptions were not recorded.
     defaults = {name: spec.default
                 for name, spec in ENEMY_OPTION_SCHEMA.items()}
     active = [f"{name}={value!r}" for name, value in sorted(block["options"].items())

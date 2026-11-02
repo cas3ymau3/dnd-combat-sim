@@ -7,19 +7,36 @@ Covers:
     per combat, on the round pre-rolled by on_combat_start
   - on_combat_start draws the AoO round from the seeded RNG (reproducible)
   - statuses are cleared at combat boundaries (no vex leak across combats)
-  - Monte Carlo DPR matches the build-guide targets for levels 1–4
+
+THE GUIDE-TARGET TESTS ARE GONE (s52), THREE SESSIONS AFTER THE PRACTICE WAS RETIRED
+------------------------------------------------------------------------------------
+``test_dpr_matches_build_guide_target`` (L1-4, exact) and ``test_dpr_soft_match``
+(L5-7, ±10%) lived here and were the LAST guide-replication assertions still running
+— §11 retired the practice in s43, on the ground that the user wrote both the build
+guides and the R prototype, so every ``target_dpr`` traced to the user's own hand
+calculation and there was no external source.  They ran on regardless because
+``src/validation.py`` held them; step 5b deletes that module and ``target_dpr`` with
+it (§3.4, §12).
+
+What they actually DID — catch a gross regression in the attack math — is now done
+better, by something that was built for it: §12 replacement 2, the L2-4 CLOSED-FORM
+check in ``test_eval_enemy_seam.py``.  It tests expected DPR against ARITHMETIC
+rather than against a hand calculation, so it is independent of who authored what,
+and it is tighter (1.18σ / 0.79σ / 1.83σ at 20,000 days) than a 0.25-wide band.  It
+also reproduces the retired targets to two decimals, which s50 was careful to record
+as a pleasant confirmation and explicitly not as the assertion.
 """
 
 import logging
 
 import pytest
 
-from src.builds import war_angel
+from src.builds import enemy_stats, war_angel
+from src.builds.enemy import ScriptedEnemyPolicy
 from src.entity import Entity
 from src.events import AttackRollEvent, DamageEvent, EventQueue
 from src.policy import GameState, MissContext, MissResponse
 from src.rng import SeededRNG
-from src.validation import run_level
 from src.verbs import resolve_attack_roll, resolve_damage
 
 
@@ -126,29 +143,6 @@ def test_statuses_cleared_between_combats():
     char.statuses.apply("vex_advantage", dummy.id, expiry=(99, 0))
     char.statuses.clear()
     assert not char.statuses.has("vex_advantage")
-
-
-# ---------------------------------------------------------------------------
-# Monte Carlo DPR — the headline validation (exact match, levels 1–4)
-# ---------------------------------------------------------------------------
-
-@pytest.mark.parametrize("level", [1, 2, 3, 4])
-def test_dpr_matches_build_guide_target(level):
-    logging.disable(logging.CRITICAL)
-    # 3000 days → CI half-width ~0.05; a 0.25 band is a wide safety net that
-    # still catches any gross attack-math regression while keeping the suite
-    # fast.  The headline high-precision numbers come from `python -m
-    # src.validation` (50k days), not from this guard-rail test.
-    result = run_level(level, n_days=3000, seed=level)
-    assert abs(result.delta) < 0.25, result.summary()
-
-
-@pytest.mark.parametrize("level", [5, 6, 7])
-def test_dpr_soft_match(level):
-    """Levels 5–7 are soft-validated (±10%); guard a wider band than 1–4."""
-    logging.disable(logging.CRITICAL)
-    result = run_level(level, n_days=3000, seed=level)
-    assert abs(result.pct_error) < 10.0, result.summary()
 
 
 # ---------------------------------------------------------------------------
@@ -441,14 +435,6 @@ def test_bluff_integrates_with_scheduler_applies_vex():
     assert spent >= 1
 
 
-def test_l8_dpr_soft_match():
-    """L8 DPR should land within ±10% of target 23.36."""
-    import logging
-    logging.disable(logging.CRITICAL)
-    result = run_level(8, n_days=3000, seed=8)
-    assert abs(result.pct_error) < 10.0, result.summary()
-
-
 # ---------------------------------------------------------------------------
 # Phase C: level 9 — CHA 20 ASI, brutality gate widened to include TS hits
 # ---------------------------------------------------------------------------
@@ -512,14 +498,6 @@ def test_l9_setup_still_bluffs_on_round_4():
     resp = policy.on_hit(_hit_ctx_l9(cost="bonus_action", round_number=4))
     assert resp is not None
     assert "vex" in resp.extra_masteries
-
-
-def test_l9_dpr_soft_match():
-    """L9 DPR should land within ±10% of target 27.59."""
-    import logging
-    logging.disable(logging.CRITICAL)
-    result = run_level(9, n_days=3000, seed=9)
-    assert abs(result.pct_error) < 10.0, result.summary()
 
 
 # ---------------------------------------------------------------------------
@@ -601,14 +579,6 @@ def test_l10_no_true_strike_rider():
     assert action_choice.extra_damage_dice == []
 
 
-def test_l10_dpr_soft_match():
-    """L10 DPR should land within ±10% of target 35.32."""
-    import logging
-    logging.disable(logging.CRITICAL)
-    result = run_level(10, n_days=3000, seed=10)
-    assert abs(result.pct_error) < 10.0, result.summary()
-
-
 # ---------------------------------------------------------------------------
 # Phase D — level 13 (Bless, Shield of Faith, enemy, concentration)
 # ---------------------------------------------------------------------------
@@ -627,13 +597,26 @@ def _l13_snapshot(round_number: int, **resource_overrides):
 
 
 def test_l13_factory_char_and_enemy_stats():
+    """The CHARACTER half is unchanged.  The ENEMY half moved to the definitive table
+    in s52 (§3.4 step 5b), and the numbers it replaces are the clearest single example
+    of why: the hardcoded enemy swung for a FLAT 28, carrying zero variance into a
+    resilience measurement, where the table's L13 enemy rolls 5d8+5 (mean 27.5) — the
+    same expected damage, with dice, so enemy CRITS exist and concentration pressure
+    has a real tail.  The to-hit happens to agree at +11; the damage never did.
+    """
     char = war_angel.make_war_angel(13)
     assert char.stat("attack_bonus") == 10        # PB 5 + CHA 5
     assert char.stat("ac") == 18                  # before Shield of Faith
     assert char.stat("con_save") == 4
+
     dummy = war_angel.make_training_dummy(13)
-    assert dummy.stat("attack_bonus") == 11
-    assert dummy.stat("damage_bonus") == 28
+    assert dummy.stat("attack_bonus") == enemy_stats.baseline_attack_bonus(13) == 11
+    n, sides, bonus = enemy_stats.baseline_attack_dice(13)
+    assert dummy.stat("damage_dice") == (n, sides) == (5, 8)
+    assert dummy.stat("damage_bonus") == bonus == 5
+    # The old dummy had NO saves at all; stat() returns 0 for a missing key, so a save
+    # forced on it resolved against +0.  (Asserted in full in test_eval_enemy_seam.)
+    assert dummy.stat("con_save") == enemy_stats.baseline_save(13, "con_save")
 
 
 def test_l13_round1_suppresses_action_and_war_priest_keeps_surge():
@@ -690,26 +673,22 @@ def test_l13_bluff_suppressed_on_round1_smite():
 
 
 def test_l13_enemy_policy_targeting_extremes():
+    """The enemy policy is imported from ``builds.enemy`` directly now (s52): this
+    module no longer re-exports it, because War Angel no longer constructs one — the
+    framework's seam does.  The policy's own behaviour is unchanged and still worth
+    pinning here, since L13 is where it first mattered."""
     char = war_angel.make_war_angel(13)
     # Always target the character → 3 attacks, first costs the action.
-    always = war_angel.ScriptedEnemyPolicy(target=char, n_attacks=3, char_target_prob=1.0)
+    always = ScriptedEnemyPolicy(target=char, n_attacks=3, char_target_prob=1.0)
     always.on_combat_start(0, SeededRNG(0))
     choices = always.decide(_l13_snapshot(1))
     assert len(choices) == 3
     assert choices[0].cost == "action"
     assert all(c.cost == "none" for c in choices[1:])
     # Never target the character → no attacks.
-    never = war_angel.ScriptedEnemyPolicy(target=char, n_attacks=3, char_target_prob=0.0)
+    never = ScriptedEnemyPolicy(target=char, n_attacks=3, char_target_prob=0.0)
     never.on_combat_start(0, SeededRNG(0))
     assert never.decide(_l13_snapshot(1)) == []
-
-
-def test_l13_dpr_soft_match():
-    """L13 DPR within ±10% of 34.68 (the +1.3% bias is the 40% targeting + R1 surge)."""
-    import logging
-    logging.disable(logging.CRITICAL)
-    result = run_level(13, n_days=2000, seed=13)
-    assert abs(result.pct_error) < 10.0, result.summary()
 
 
 # ---------------------------------------------------------------------------
@@ -820,9 +799,23 @@ def test_save_reroll_decider_flips_failed_save_in_verb():
 
 
 def test_l16_dpr_exceeds_l15():
-    """Consistency check (no guide target): vex-on-every-attack lifts L16 above L15."""
+    """Consistency check (never a guide target): vex-on-every-attack lifts L16 above
+    L15.  Repointed off the deleted ``src.validation`` onto the framework (s52), which
+    is what it should have read all along — this is a mechanism assertion about the
+    build, and the framework is where a build's DPR is measured.
+
+    ``enemy="baseline"`` so the two levels face the SAME declared enemy, which is what
+    makes the comparison valid; under the baked-in path L15 and L16 faced different
+    hand-written attack profiles (32 flat at +12 three times, both levels — equal by
+    luck of the data rather than by construction).
+    """
     import logging
     logging.disable(logging.CRITICAL)
-    l15 = run_level(15, n_days=2000, seed=16)
-    l16 = run_level(16, n_days=2000, seed=16)
-    assert l16.mean_dpr > l15.mean_dpr, (l15.summary(), l16.summary())
+    from src.evaluation import RunConfig, run as eval_run
+
+    def dpr(level):
+        return eval_run(RunConfig(build="war_angel", level=level, n_days=2000,
+                                  seed=16, enemy="baseline")).headline.value
+
+    l15, l16 = dpr(15), dpr(16)
+    assert l16 > l15, (l15, l16)

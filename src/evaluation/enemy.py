@@ -40,12 +40,8 @@ standard error or two.  A large move would be a DEFECT, not a demonstration.  Wh
 the seam genuinely changes is the DEFENDER side (incoming damage, concentration
 checks, the control and mitigation channels) and the enemy's own swings.
 
-THE FOUR KINDS
---------------
-``build_default``
-    The factory's own baked-in enemy, untouched.  Transitional (§3.4): it is what
-    keeps ``src/validation.py`` and the §12 bit-identical parity proof alive while
-    both paths exist.  Nothing in this module runs for it.
+THE THREE KINDS (four until s52 — see the end of this docstring)
+----------------------------------------------------------------
 ``baseline``
     The standardized enemy: :class:`BaselineEnemyPolicy` at the character's level —
     per-level to-hit / save DC / per-swing and AoE DICE, an attack-vs-save round
@@ -58,14 +54,17 @@ THE FOUR KINDS
     "the enemy forces saves" from "the enemy swings", which is the one comparison
     the baked-in paths could never express because they differed in both at once.
 ``none``
-    A passive target carrying the table's full stat block and no policy.  This is
-    what the character faces below each build's ``enemy_attack`` level today — with
-    the difference that here it is DECLARED rather than being a property of the
-    character's level row.
+    A passive target carrying the table's full stat block and no policy.  Measured
+    (s52): this is **bit-identical** to what ``build_default`` produced at every level
+    below a build's old ``enemy_attack`` row, which is the end-to-end confirmation of
+    the AC-equality finding above.
 
 WHY INSTALLATION IS AN OVERLAY RATHER THAN A FACTORY ARGUMENT
 -------------------------------------------------------------
-§3.4 asks for the standardized enemy to be built "in parallel and deliberately
+*(The next two paragraphs are the s50 rationale, kept because it is why the shape is
+what it is.  Read the s52 block after them for what the overlay does now.)*
+
+§3.4 asked for the standardized enemy to be built "in parallel and deliberately
 redundantly while the existing factories stay intact for benchmarking".  Taken
 literally that is an overlay: let the factory build its enemy, then replace the
 policy and complete the Entity's stat block.  The alternative — an ``enemy=`` kwarg
@@ -79,17 +78,25 @@ policy costs nothing and shifts no stream.  (``test_eval_enemy_seam`` asserts th
 replacement happened, which is what makes "shifts no stream" checkable rather than
 asserted.)
 
-When the baked-in path is deleted — its own session, because that is what breaks
-``validation.py`` and the §12 proof — the overlay becomes the only path and moves
-into the factories' place rather than on top of them.
+**AFTER THE DELETION (s52) there is no policy to discard** — the factories install
+none — so the overlay installs rather than replaces.  What it still overlays is the
+``Entity``, and that write is now redundant *by construction*: the factories build
+their enemy with ``enemy_stats.make_baseline_enemy``, which reads the same
+``enemy_base_stats`` / ``baseline_attack_dice`` that ``_complete_stat_block`` writes.
+One source, two writers.  "Identical today" is the phrase §3.4 exists to distrust, so
+the redundancy is pinned as an assertion rather than left as this paragraph.
 
 NO NEW DICE, AND A DELIBERATE RE-BASELINE
 -----------------------------------------
 Nothing here rolls (per-feature ritual step 3): ``resolve`` is a pure read and
 ``install`` writes data.  But installing a different enemy changes what is drawn
-*inside* combat, which is legitimate and does move every seeded number under a
-non-default ``enemy``.  That is why ``build_default`` remains the default: no
-existing baseline moves unless a config asks for a different enemy.
+*inside* combat, and s52 removed the ``build_default`` escape hatch that had kept
+every existing baseline still.  The re-baseline it cost was MEASURED and confined:
+``none`` is bit-identical to the old default at every passive level, Silvertail's
+baked-in enemy was already the standardized one bit-identically, and what actually
+moved was War Angel L13-16 and Starfire L15 — the two builds whose enemy OFFENSE was
+hand-written (§3.4's table).  There is no longer a default to shield a baseline:
+``RunConfig.enemy`` is a required field.
 """
 
 from __future__ import annotations
@@ -113,12 +120,11 @@ if TYPE_CHECKING:                                    # pragma: no cover
     from .roster import Roster
 
 
-#: The kind that leaves the build factory's own enemy in place.
-BUILD_DEFAULT = "build_default"
-
-#: Kinds this module constructs.  ``ENEMY_KINDS`` in ``config`` is this plus
-#: :data:`BUILD_DEFAULT`; keeping the two lists separate is what lets a predicate
-#: ask "is this enemy standardized?" without enumerating names.
+#: Kinds this module constructs.  Since s52 that is EVERY kind — ``config.ENEMY_KINDS``
+#: and this tuple are now the same set, and the predicate "is this enemy standardized?"
+#: is a constant True.  Both names are kept because they answer different questions
+#: (what may a config ask for / what does this module build), and collapsing them would
+#: make a future non-standardized kind a two-file change instead of a one-line one.
 STANDARDIZED_KINDS = ("baseline", "scripted", "none")
 
 #: Which kinds install a policy at all.  ``none`` is a target, not an actor.
@@ -174,12 +180,17 @@ ENEMY_OPTION_SCHEMA: dict[str, OptionSpec] = {
     "char_target_prob": OptionSpec(
         "char_target_prob", default=1.0, values=None,
         description=(
-            "scripted only: probability each swing lands on the focus target rather "
-            "than an unmodelled party member. Default 1.0 (focus-fire) because the "
-            "standardized basis is comparable rather than realistic (memory "
-            "standardized-dpr-baseline-not-realism); War Angel's baked-in 0.40 is a "
-            "PARTY-SIZE assumption, and party size is an enemy-side scenario axis, "
-            "not a character-build property."
+            "scripted only: probability each swing lands on the focus target. Default "
+            "1.0 (focus-fire) because the standardized basis is comparable rather than "
+            "realistic (memory standardized-dpr-baseline-not-realism); War Angel's "
+            "baked-in 0.40 was a PARTY-SIZE assumption, and party size is an "
+            "enemy-side scenario axis, not a character-build property. WHERE THE "
+            "OFF-TARGET SHARE LANDS is derived from the roster, not declared: on the "
+            "build's ALLIES if it fields any (a real HP pool — Starfire's with_party "
+            "member), otherwise on an unmodelled party member, i.e. nowhere. Derived "
+            "because the two facts cannot come apart — 'which entities can absorb a "
+            "swing' IS the roster — so this is the s48 interval-from-statistic case, "
+            "not the s49 sum_rule case."
         ),
     ),
     "band_override": OptionSpec(
@@ -265,13 +276,6 @@ def validate_options(kind: str, options: dict[str, Any]) -> None:
             f"Unknown enemy option(s) {unknown}. Known: "
             f"{sorted(ENEMY_OPTION_SCHEMA)}."
         )
-    if kind == BUILD_DEFAULT and options:
-        raise ValueError(
-            f"enemy={BUILD_DEFAULT!r} uses the build factory's OWN enemy, built off "
-            f"the character's LEVELS row, so it can honour no enemy option; got "
-            f"{sorted(options)}. Pass enemy='baseline' to configure the enemy "
-            "(evaluation_framework.md §3.4)."
-        )
     for name, value in options.items():
         ENEMY_OPTION_SCHEMA[name].check(f"enemy:{kind}", value)
         applies = _OPTION_KINDS.get(name)
@@ -321,41 +325,22 @@ def resolved_options(config: "RunConfig") -> dict[str, Any]:
 # Resolution for provenance (§4) — a pure read
 # ---------------------------------------------------------------------------
 
-def resolve(config: "RunConfig", described: dict[str, Any]) -> dict[str, Any]:
+def resolve(config: "RunConfig") -> dict[str, Any]:
     """The RESOLVED enemy block for §4 provenance.
 
     Pure: it rolls nothing and mutates nothing, so it is safe to call before the
     run and again when the report is assembled.
 
-    ``described`` is the build adapter's own block, and it is read for ONE purpose:
-    under ``build_default`` the enemy genuinely IS a property of the build, so the
-    only place its model can be named is the adapter.  That asymmetry is the
-    coupling §3.4 exists to remove, and reporting it as ``resolved: False`` is how
-    the provenance block says so instead of implying the assumptions were recorded.
+    It takes the CONFIG and nothing else since s52, and that signature change is the
+    deletion in miniature.  Through s50-s51 it also took the build adapter's
+    ``described`` block, for one purpose: under ``build_default`` the enemy genuinely
+    WAS a property of the build, so the only place its model could be named was the
+    adapter, and the block said ``resolved: False`` to avoid implying otherwise.  With
+    the baked-in path gone there is no such asymmetry left to report — every run's
+    enemy is built here, from the declared kind and the definitive table, so
+    ``resolved`` is unconditionally True and the adapter has nothing to contribute.
     """
     kind = config.enemy
-    if kind == BUILD_DEFAULT:
-        return {
-            "kind": kind,
-            "standardized": False,
-            "resolved": False,
-            "policy": described.get("enemy_policy"),
-            "acts": described.get("enemy_policy") is not None,
-            "options": {},
-            "source": (
-                "the build factory, off the character's own LEVELS row "
-                "(evaluation_framework.md §3.4 items 1-3: the enemy's stat block, "
-                "which enemy model is used, and whether it acts are all character-"
-                "build properties on this path)"
-            ),
-            "note": (
-                "NOT RESOLVED. This is the transitional path: it is what keeps "
-                "src/validation.py and the §12 bit-identical parity proof alive while "
-                "both enemy paths exist. Pass enemy='baseline' for a run whose enemy "
-                "assumptions are declared and recorded."
-            ),
-        }
-
     options = resolved_options(config)
     band = options.get("band_override") or band_for_level(config.level)
     block: dict[str, Any] = {
@@ -395,16 +380,16 @@ def resolve(config: "RunConfig", described: dict[str, Any]) -> dict[str, Any]:
 def install(runner: "DayRunner", roster: "Roster", config: "RunConfig") -> dict[str, Any]:
     """Replace the factory's enemy with the standardized one; return the resolved block.
 
-    A no-op returning the ``build_default`` block when the config asks for the
-    factory's own enemy, so every caller can call this unconditionally.
+    Unconditional since s52: there is no longer a kind that leaves the factory's own
+    enemy in place, because the factories no longer build one that acts.  What they do
+    build is an ``Entity`` from ``enemy_stats.make_baseline_enemy`` — the same source
+    ``_complete_stat_block`` writes from — so the overlay's stat-block write is now
+    provably a no-op and the only thing it adds is the option-dependent part.
 
     Order matters and is deliberate: the Entity's stat block is completed FIRST, so
     a policy constructed against it reads final numbers; then the policy is
     installed.  Neither step draws a die.
     """
-    if config.enemy == BUILD_DEFAULT:
-        return resolve(config, {})
-
     if not roster.enemies:
         raise ValueError(
             f"Build {config.build!r} returned a roster with no enemies, so there is "
@@ -427,7 +412,7 @@ def install(runner: "DayRunner", roster: "Roster", config: "RunConfig") -> dict[
         runner.policies.pop(enemy.id, None)
     else:
         runner.policies[enemy.id] = policy
-    return resolve(config, {})
+    return resolve(config)
 
 
 def _complete_stat_block(enemy: "Entity", level: int, options: dict[str, Any],
@@ -475,6 +460,41 @@ def _focus_pair(roster: "Roster", focus: str) -> "tuple[Entity, Entity | None]":
     return character, summons[0] if summons else None
 
 
+def _ally_roster(roster: "Roster", primary: "Entity",
+                 char_target_prob: float) -> "list[tuple[Entity, int]] | None":
+    """The weighted friendly roster for a ``scripted`` enemy, or ``None`` for the
+    single-target path.
+
+    This is what step 5b does with the one capability the deletion would otherwise have
+    stranded.  ``ScriptedEnemyPolicy`` has always supported a weighted split across
+    several friendlies, and until s52 the ONLY caller was Starfire's factory, reading
+    ``char_weight``/``party_weight`` off its own ``LEVELS`` row — baked-in enemy
+    behaviour of exactly the kind §3.4 removes.  s50 noted the branch was already
+    unreachable through ``RunConfig``; deleting the row would have made it unreachable
+    full stop, i.e. dead code, which is the trap §7.6 was written about.  So rather
+    than invent a second option for it, the EXISTING ``char_target_prob`` gains teeth:
+    the off-target share lands on the build's allies when it fields any.
+
+    **The dice stream is unchanged, and that is a property rather than a hope.**  The
+    weights are integers summing to exactly 100, so the policy's multi-entity pre-roll
+    is ``roll_one(100)`` per attack slot — the same die, in the same order, as the
+    single-target path's ``roll_one(100) <= p_pct``, and the same primary/not-primary
+    verdict.  Only the DESTINATION of an off-target swing changes: a real ally's HP
+    pool instead of nowhere.  With the default ``char_target_prob=1.0`` the allies get
+    weight 0 and can never be picked, so a standardized focus-fire run is unaffected
+    even on a build that fields a party.
+    """
+    allies = roster.allies
+    if not allies:
+        return None                       # nothing to absorb it — legacy path
+    primary_weight = int(round(char_target_prob * 100))
+    share, extra = divmod(100 - primary_weight, len(allies))
+    weights = [(primary, primary_weight)]
+    for i, ally in enumerate(allies):
+        weights.append((ally, share + (extra if i == 0 else 0)))
+    return weights
+
+
 def _make_policy(roster: "Roster", config: "RunConfig", options: dict[str, Any]):
     """Construct the standardized policy, or ``None`` for a passive target."""
     kind = config.enemy
@@ -490,6 +510,7 @@ def _make_policy(roster: "Roster", config: "RunConfig", options: dict[str, Any])
             char_target_prob=options["char_target_prob"],
             rounds_per_combat=config.rounds_per_combat,
             damage_type=options["damage_type"],
+            roster=_ally_roster(roster, primary, options["char_target_prob"]),
         )
 
     return BaselineEnemyPolicy(

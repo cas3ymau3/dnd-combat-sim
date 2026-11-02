@@ -175,10 +175,15 @@ how many HD are available for healing.
 **Four notes the build must carry:**
 
 **(a) Mean-field, not rolled.** Use `N × (avg die + CON modifier)`. Rolling would draw
-dice and shift the RNG stream for every existing build, breaking the `§12`
-bit-identical parity proof against `validation.py` — the project's only end-to-end
-regression signal after guide-replication was retired. Mean-field draws nothing,
-preserves the proof, and matches the model's stated low-variance convention. This is
+dice and shift the RNG stream for every existing build. **The rule stands; its stated
+reason has been updated (s52).** It was written as "breaking the §12 bit-identical parity
+proof against `validation.py` — the project's only end-to-end regression signal after
+guide-replication was retired", and framework step 5b deleted `validation.py` along with
+that proof (`evaluation_framework.md` §3.4, §12). What a stray die outside combat now
+breaks is **every one of `GOLDEN_DPR`'s 13 exact points**, which is the same constraint
+with a different name and, if anything, a sharper one: a golden is an exact equality, so
+the breakage is unmissable rather than something to be argued about. Mean-field draws
+nothing, preserves them, and matches the model's stated low-variance convention. This is
 the same problem RNG substreams (`evaluation_framework.md` §13 step 8) exist to solve,
 and it is evidence that *any* new dice source will hit it.
 

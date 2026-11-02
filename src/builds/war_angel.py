@@ -72,7 +72,7 @@ from ..policy import (
     SaveRerollResponse,
 )
 from ..resources import ResourceEntry, ResourcePool
-from .enemy import ScriptedEnemyPolicy  # shared enemy loop (re-exported here)
+from . import enemy_stats          # THE enemy-Entity constructor (evaluation_framework.md §3.4)
 
 if TYPE_CHECKING:
     from ..rng import SeededRNG
@@ -128,9 +128,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 4,
         "weapon_mastery": "vex",
-        "enemy_ac": 13,
         "char_hp": 12,
-        "target_dpr": 8.32,
     },
     2: {
         "weapon": "longsword",
@@ -138,9 +136,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 5,
         "weapon_mastery": "sap",
-        "enemy_ac": 14,
         "char_hp": 18,   # guide lists 18.5 (avg); HP is DPR-irrelevant here
-        "target_dpr": 7.39,
     },
     3: {
         "weapon": "longsword",
@@ -148,9 +144,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 5,
         "weapon_mastery": "sap",
-        "enemy_ac": 14,
         "char_hp": 25,
-        "target_dpr": 7.39,
     },
     4: {
         "weapon": "longsword",
@@ -158,9 +152,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 5,
         "weapon_mastery": "sap",
-        "enemy_ac": 15,
         "char_hp": 31,
-        "target_dpr": 6.81,
     },
     5: {
         "weapon": "longsword",
@@ -168,9 +160,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 5,          # CHA 3 + dueling 2
         "weapon_mastery": "sap",
-        "enemy_ac": 15,
         "char_hp": 38,
-        "target_dpr": 16.73,
         # True Strike now carries a +1d6 radiant rider on hit (cantrip scaling).
         "true_strike_dice": [(1, 6)],
         # Resource pools that come online at level 5.
@@ -188,9 +178,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 6,          # CHA 4 + dueling 2
         "weapon_mastery": "sap",
-        "enemy_ac": 15,
         "char_hp": 44,
-        "target_dpr": 21.03,
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),          # 9 / LR with PoH + SR
@@ -208,9 +196,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 6,
         "weapon_mastery": "sap",
-        "enemy_ac": 16,             # ↑ from 15 — most of why DPR barely moves
         "char_hp": 52,
-        "target_dpr": 21.26,
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),
@@ -229,9 +215,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 6,
         "weapon_mastery": "sap",
-        "enemy_ac": 16,
         "char_hp": 59,              # build guide: 59.5
-        "target_dpr": 23.36,
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),
@@ -251,9 +235,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 7,          # CHA 5 + dueling 2
         "weapon_mastery": "sap",
-        "enemy_ac": 16,
         "char_hp": 67,
-        "target_dpr": 27.59,
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),
@@ -273,9 +255,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 7,
         "weapon_mastery": "sap",
-        "enemy_ac": 16,
         "char_hp": 74,              # build guide: 74.5
-        "target_dpr": 35.32,
         # No true_strike_dice: True Strike is dropped; action = 2 plain weapon attacks
         "resources": {
             "war_priest": (3, "full"),
@@ -302,9 +282,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 7,          # CHA 5 + dueling 2 (unchanged)
         "weapon_mastery": "sap",
-        "enemy_ac": 17,             # ↑ from 16
         "char_hp": 82,
-        "target_dpr": 33.70,
         "resources": {
             "war_priest": (3, "full"),
             "channel_divinity": (2, 1),
@@ -331,9 +309,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 7,          # CHA 5 + dueling 2
         "weapon_mastery": "sap",
-        "enemy_ac": 17,
         "char_hp": 88,              # build guide: 88.5
-        "target_dpr": 38.11,
         "resources": {
             "war_priest": (3, "full"),
             "channel_divinity": (2, 1),
@@ -373,9 +349,7 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 7,          # CHA 5 + dueling 2
         "weapon_mastery": "sap",
-        "enemy_ac": 17,             # unchanged (→18 at L15)
         "char_hp": 95,              # build guide: 95 (Aid +5 is HP-only)
-        "target_dpr": 34.68,
         "extra_base_stats": {
             "con_save": 4,          # PB 5 + CON −1 (proficient via Fighter-01)
             "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF buff)
@@ -384,12 +358,6 @@ LEVELS: dict[int, dict] = {
         # attacker so concentration on Bless can break.  Per the build guide:
         # +11 to hit, 3 attacks, 28 damage on hit, 40% chance to target us per
         # attack (party of 4 — guide uses 50%, we use a more conservative 40%).
-        "enemy_attack": {
-            "attack_bonus": 11,
-            "damage": 28,
-            "n_attacks": 3,
-            "char_target_prob": 0.40,
-        },
         "resources": {
             "war_priest": (3, "full"),
             "channel_divinity": (3, 1),         # 3 base, +1 SR → 5/LR with PoH
@@ -442,20 +410,12 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 7,          # CHA 5 + dueling 2 (unchanged)
         "weapon_mastery": "sap",
-        "enemy_ac": 17,             # unchanged (→18 at L15)
         "char_hp": 102,             # build guide: 102.5 (Aid +5 is HP-only)
-        "target_dpr": 37.96,
         "cha_mod": 5,               # Flourish Parry AC bonus & bleed flat damage
         "flourish_parry": True,
         "extra_base_stats": {
             "con_save": 4,          # PB 5 + CON −1
             "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF)
-        },
-        "enemy_attack": {
-            "attack_bonus": 11,
-            "damage": 28,
-            "n_attacks": 3,
-            "char_target_prob": 0.40,
         },
         "resources": {
             "war_priest": (3, "full"),
@@ -503,21 +463,13 @@ LEVELS: dict[int, dict] = {
         "damage_dice": (1, 8),
         "damage_bonus": 7,          # CHA 5 + dueling 2 (unchanged)
         "weapon_mastery": "sap",
-        "enemy_ac": 18,             # ↑ from 17 — the main DPR mover
         "char_hp": 102,             # unchanged (Resilient adds no HP)
-        "target_dpr": 36.59,
         "cha_mod": 5,               # Flourish Parry AC bonus & bleed flat damage
         "flourish_parry": True,
         "extra_base_stats": {
             "con_save": 4,          # PB 5 + CON −1
             "dex_save": 8,          # PB 5 + DEX 3 (Resilient) — cosmetic, DPR-irrelevant
             "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF)
-        },
-        "enemy_attack": {
-            "attack_bonus": 12,     # ↑ from 11
-            "damage": 32,           # ↑ from 28 → DC-16 concentration checks
-            "n_attacks": 3,
-            "char_target_prob": 0.40,
         },
         "resources": {
             "war_priest": (3, "full"),
@@ -569,9 +521,7 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 7,          # CHA 5 + dueling 2 (unchanged)
         "weapon_mastery": "vex",    # ← rapier (was sap); vex on every attack
         "tactical_master": True,    # 1 attack/turn overridden vex → sap
-        "enemy_ac": 18,             # unchanged from L15 (L17 guide confirms AC 18)
         "char_hp": 102,
-        "target_dpr": None,         # no guide target — consistency-only validation
         "cha_mod": 5,               # Flourish Parry AC bonus & bleed flat damage
         "flourish_parry": True,
         "indomitable_bonus": INDOMITABLE_BONUS,  # +9 reroll (fighter level)
@@ -579,12 +529,6 @@ LEVELS: dict[int, dict] = {
             "con_save": 4,          # PB 5 + CON −1
             "dex_save": 8,          # PB 5 + DEX 3 (Resilient) — cosmetic
             "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF)
-        },
-        "enemy_attack": {
-            "attack_bonus": 12,     # unchanged from L15
-            "damage": 32,           # unchanged from L15 → DC-16 concentration
-            "n_attacks": 3,
-            "char_target_prob": 0.40,
         },
         "resources": {
             "war_priest": (3, "full"),
@@ -605,11 +549,6 @@ LEVELS: dict[int, dict] = {
         "shield_of_faith": True,
     },
 }
-
-# Phase A is exact-match; later phases are soft (±10%).  Recorded here so the
-# validation harness can pick the right tolerance per level.
-EXACT_MATCH_MAX_LEVEL = 4
-
 
 # ---------------------------------------------------------------------------
 # Entity factories
@@ -687,26 +626,27 @@ def make_war_angel(level: int) -> Entity:
 
 
 def make_training_dummy(level: int) -> Entity:
-    """Build the target for the given level.
+    """The target for *level*: the definitive table's full enemy stat block.
 
-    HP is effectively infinite: in the threshold model the dummy never gates
-    turns.  Through L12 it has no policy and never acts — we only read its AC.
-    From L13 it also carries an attack profile (see the level's "enemy_attack")
-    so it can strike the character and force concentration checks; the attack is
-    flat damage (damage_dice (0, …) → no roll, just the flat bonus).
+    Delegates to ``enemy_stats.make_baseline_enemy`` — THE one enemy-``Entity``
+    constructor (evaluation_framework.md §3.4, step 5b).  Before s52 this function
+    built the dummy out of this build's OWN ``LEVELS`` row, which is the coupling §3.4
+    exists to remove: the enemy's stat block, which enemy model drove it, and whether it
+    acted at all were character-build properties.
+
+    Two consequences of the delegation, both deliberate:
+
+    * The AC is UNCHANGED at every level — the baked-in values already equalled the
+      table's, because both were copied out of the same CSV (pinned in
+      ``tests/test_eval_enemy_seam.py``).
+    * The dummy now carries the table's SIX SAVES and ``enemy_save_dc``, which the old
+      one did not. War Angel's carried NONE.  ``Entity.stat()`` returns 0 for a missing key *by design*, so
+      a save forced on the old dummy resolved against +0 and printed a plausible number.
+
+    It never acts.  Whether the enemy acts is a declared ``RunConfig.enemy`` and the
+    framework's seam installs the policy; no build factory constructs one.
     """
-    data = LEVELS[level]
-    base_stats: dict = {"ac": data["enemy_ac"]}
-    ea = data.get("enemy_attack")
-    if ea:
-        base_stats["attack_bonus"] = ea["attack_bonus"]
-        base_stats["damage_dice"] = (0, 6)      # flat-only (no dice rolled)
-        base_stats["damage_bonus"] = ea["damage"]
-    return Entity(
-        name=f"Dummy-AC{data['enemy_ac']}",
-        hp=10**9,
-        base_stats=base_stats,
-    )
+    return enemy_stats.make_baseline_enemy(level)
 
 
 # ---------------------------------------------------------------------------
@@ -1309,7 +1249,7 @@ class WarAngelDailyPlan:
         #
         #  (i) the 2d8 + WIS heal.  MEAN-FIELD (12.0), not rolled — an out-of-combat
         #      heal that drew from the shared RNG stream would shift every
-        #      subsequent die and break the §12 parity proof (healing.py's module
+        #      subsequent die and break every GOLDEN_DPR point (healing.py's module
         #      docstring).  Only the CHARACTER is healed: the roster is character +
         #      enemy, and enemies are never healed (§5).  A real party roster would
         #      extend the target list to five allies, which is why HealSpec takes a
@@ -1330,11 +1270,12 @@ class WarAngelDailyPlan:
 
 
 # ---------------------------------------------------------------------------
-# Enemy policy: the shared ScriptedEnemyPolicy (src/builds/enemy.py), imported
-# and re-exported above so it strikes the War Angel to force concentration
-# checks on Bless (L13+).  Sap disadvantage on the enemy's first attack each
-# turn is applied by the character's longsword via the existing `sapped` status,
-# read in resolve_attack_roll — nothing the enemy policy needs to do.
+# Enemy policy: NONE.  This module constructs no enemy policy (§3.4, step 5b) —
+# `RunConfig.enemy` declares the model and `evaluation/enemy.py` installs it, so the
+# enemy that forces concentration checks on Bless is the framework's, not this build's.
+# Sap disadvantage on the enemy's first attack each turn is applied by the character's
+# longsword via the existing `sapped` status, read in resolve_attack_roll — nothing any
+# enemy policy needs to do.
 # ---------------------------------------------------------------------------
 
 
@@ -1346,9 +1287,9 @@ def make_day_runner(level: int, rng: "SeededRNG", rounds_per_combat: int = 4):
     """Assemble (DayRunner, character, dummy) for the given level.
 
     Wires the character policy plus, for level 5+, the daily-plan hooks (Magic
-    Weapon / Prayer of Healing).  From the level where the enemy carries an
-    attack profile (L13), it also gets a policy so it strikes the character and
-    forces concentration checks.  Keeps the validation harness build-agnostic.
+    Weapon / Prayer of Healing).  The enemy is a PASSIVE target at every level
+    (§3.4, step 5b): it carries the definitive table's full stat block and no
+    policy, and the framework's seam installs whatever enemy a run declares.
     """
     char = make_war_angel(level)
     dummy = make_training_dummy(level)
@@ -1356,15 +1297,11 @@ def make_day_runner(level: int, rng: "SeededRNG", rounds_per_combat: int = 4):
                             rounds_per_combat=rounds_per_combat)
     policies: dict[int, object] = {char.id: policy}
 
-    # Enemy strikes back once it has an attack profile (L13+).
-    ea = LEVELS[level].get("enemy_attack")
-    if ea:
-        policies[dummy.id] = ScriptedEnemyPolicy(
-            target=char,
-            n_attacks=ea["n_attacks"],
-            char_target_prob=ea["char_target_prob"],
-            rounds_per_combat=rounds_per_combat,
-        )
+    # THE ENEMY NEVER ACTS HERE (evaluation_framework.md §3.4, step 5b).  Until s52 the
+    # factory installed an enemy policy off this build's own data row, so "whether the
+    # enemy acts" was a character-build property.  It is now a declared RunConfig.enemy
+    # and evaluation/enemy.py installs the policy over this roster; a factory run on its
+    # own faces a passive target carrying the definitive table's full stat block.
 
     before_combat = None
     between_combats = None
