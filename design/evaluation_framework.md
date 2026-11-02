@@ -377,9 +377,58 @@ stable.
 | **core** | a save-forcing spell | the saves channel keyed by ability, from the character's side |
 | **core** | healing, in-combat and between | `healing_by_source` needs both contexts |
 | **core** | a spell-slot budget | the resource ledger |
+| **core** | an opportunity attack | the REACTION slot — a third of the action economy, and a channel nothing currently writes or reads (below) |
 | axis | a summon | the per-summon column and the roster-scoping checks |
 | axis | an ally-targeted buff | the `allies` role as a buff TARGET rather than a damage sink |
-| axis | self-mitigation | the character side of `mult(t)` |
+| axis | a reaction-based mitigation | the character side of `mult(t)`, and the defender-side `on_incoming_hit` seam |
+
+**THE REACTION ECONOMY IS CORE, AND ASKING FOR IT FOUND A DEAD CHANNEL (user, s53).**
+The baseline character spends a reaction every combat on an **opportunity attack**. It is
+core rather than an axis because the reaction is one of the three action-economy slots
+(CLAUDE.md #11), and a subject that never takes one leaves a third of the economy
+unexercised by the thing the framework measures itself against.
+
+*There is no spatial model, so "when the enemy moves out of reach" is a FREQUENCY, not an
+event.* That is the approximation, stated rather than implied. The established convention
+is War Angel's — one AoO per combat on a round **pre-rolled at `on_combat_start`** through
+the seeded channel, which its own guide reached by collapsing five AoO timing slots into
+one — and the baseline adopts it with the count as a DECLARED parameter so §4 provenance
+records the assumption instead of burying it. A reaction-based *mitigation* (a
+`shield`-like intercept) is the declared axis on the other side, which also exercises the
+defender-side `on_incoming_hit` seam.
+
+**What this request uncovered, measured.** The reaction economy is currently invisible to
+the framework in **both** directions:
+
+| | state |
+|---|---|
+| `CombatTelemetry.reactions_used` | exists, with a `record_reaction()` method and a merge rule |
+| callers of `record_reaction()` | **exactly one, and it is a unit test.** No production code calls it |
+| metrics reading `reactions_used` | **none** |
+| §8's coverage map | **does not list the reaction economy at all** — not available, not partial, not deferred |
+
+And the capability is genuinely being used while none of that records it: War Angel L13
+spends its AoO every combat (the pre-roll fires on the expected round, and `Scheduler`
+already branches on `event.cost == "reaction"` to flag it), yet `reactions_used` reads
+**0 over 800 rounds**.
+
+So step 7 carries both halves, or the capability would be added to a subject the framework
+structurally cannot observe:
+
+- **the WRITE half** — `record_reaction()` called at the scheduler's single
+  economy-debit site (`self._turn_economy[ac] -= 1`), gated on `ac == "reaction"`. The
+  same shape as `record_resource` at the pool's consume sites.
+- **the READ half** — a registered reaction metric plus the §8 coverage row, so the
+  channel has a consumer before anything populates it.
+
+> **A TELEMETRY CHANNEL CAN BE DEAD AT BOTH ENDS AND LOOK ALIVE FROM EITHER ONE.**
+> `reactions_used` has a field, a recorder, a merge rule and a test — everything except a
+> caller and a reader. s51's cut (a *field* nothing reads) and this (a *recorder* nothing
+> calls) are the same defect from opposite sides, and neither is visible unless "who
+> writes this?" and "who reads this?" are asked as two SEPARATE questions. Worth adding
+> to the per-feature seam check: for each telemetry channel a change touches, name the
+> production writer and the production reader. An empty answer on either side is the
+> finding.
 
 #### 3.5.2 The baseline party, and why the standard has one
 
@@ -1208,6 +1257,7 @@ hidden — it is priced correctly.
 | saves forced by type; failures by type and % | available — §13 saves channel |
 | control turns lost / reduced | available — §13 control channel (s40) + §7 above; APPLIED at runtime since s51, and the realized cost reported beside the credit (§7.6) |
 | limited resources per day / per combat | available — §13 economy channel |
+| **reaction economy: reactions taken per round / per combat** | **NOT available — the channel is DEAD AT BOTH ENDS (found s53).** `CombatTelemetry.reactions_used` exists with a `record_reaction()` method, but its only caller is a unit test and no metric reads it, so War Angel's once-per-combat AoO records 0 over 800 rounds. §3.5.1 carries the finding; step 7 wires the writer and registers the reader |
 | concentration share and breaks | available — §13 economy channel |
 | party / summon / ally damage columns | available — `damage_by_source`, `party_total` |
 | attack-roll counts: hits, crits, hit %, crit %, attacks at advantage and % | available — §13 `attacks` channel (s49); `attacks_per_round` + `attack_roll_rate` (§8.1 below) |
@@ -1708,6 +1758,11 @@ check mechanisms, not the composite. Three things carry that load instead:
    weighted split `ScriptedEnemyPolicy` already has (§3.5.3 — a prerequisite, because
    without it §3.4's `baseline`-vs-`scripted` comparison arm stops isolating one thing).
    Threat class supplies the weights later (§3.5.4) into a seam that already exists.
+   **Also carries the REACTION economy, which asking for the capability found dead at both
+   ends (§3.5.1):** `record_reaction()`'s only caller is a unit test and no metric reads
+   `reactions_used`, so the baseline's opportunity attack needs the writer wired at the
+   scheduler's economy-debit site AND a registered metric, or the capability is added to a
+   subject the framework cannot observe.
    **Sequenced here because it is what the remaining steps need:** step 8's sweeps and
    step 9's substreams both want a subject whose numbers mean something, and §13's build
    evaluation wants a framework that has been tested against something complete.

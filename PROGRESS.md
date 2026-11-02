@@ -143,6 +143,20 @@ type, condition, resource, …):
    numerically identical for a reason that will stop holding?** If yes, the mismatch is
    invisible today and will surface as a plausible number later.
 
+   **NAME THE PRODUCTION WRITER AND THE PRODUCTION READER OF EVERY TELEMETRY CHANNEL A
+   CHANGE TOUCHES (added s53).** A channel can be dead at BOTH ends and look alive from
+   either one. `CombatTelemetry.reactions_used` has a field, a `record_reaction()`
+   method, a merge rule across combats and a unit test — everything except a caller and
+   a reader. Its only caller IS that test, and no metric reads it, so War Angel's
+   once-per-combat opportunity attack records **0 over 800 rounds** while the AoO fires
+   correctly every time and the scheduler even branches on `event.cost == "reaction"` to
+   flag it. s51's cut (a *field* nothing reads) and this (a *recorder* nothing calls) are
+   the same defect from opposite sides, and neither is visible unless the two questions
+   are asked SEPARATELY. An empty answer on either side is the finding. It surfaced
+   because the user asked for a capability — "make sure the baseline character has a
+   reaction" — which is worth noting on its own: **asking what a subject should be able
+   to DO is a cheap way to find what the framework cannot SEE.**
+
    **THE DORMANCY QUESTION HAS A THIRD ANSWER, AND IT IS THE WORST ONE (added s52).**
    The question as written has two outcomes: equal-and-will-stay-equal, or
    equal-for-a-reason-that-will-stop. s52's seam check turned up a third:
