@@ -1689,7 +1689,13 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   decisions: a per-level PROGRESSION rather than hand-authored levels (regenerable and
   comparable by construction, mirroring `enemy_stats`); a CORE always-on capability set
   plus declared default-off axes, so every registry channel gets a fixture that genuinely
-  populates it; and a declared PARTY of four whose members are passive HP pools. The
+  populates it; and a declared PARTY of four whose members are passive HP pools,
+  **with `RunConfig.party_size` defaulting to 4 and the re-baseline accepted now
+  (user)** — a default of 1 would have left every defensive number still measured under
+  focus-fire, which is the defect the party exists to remove. Bounded and measured: a
+  passive entity nothing targets is bit-identical, so only the acting-enemy rows move (9
+  of GOLDEN_DPR's 13; the 4 `enemy="none"` rows are provably untouched), and it retires
+  Starfire's `with_party` option as a second source for one quantity. The
   three builds keep a few golden rows as end-to-end content coverage and stop being
   load-bearing for framework correctness. **The progression table is in §3.5.1, reviewed
   and approved** — with the three properties a future retune must preserve (the 60-70%
@@ -6142,8 +6148,15 @@ combat policy through two lenses, and reformulate it as needed:
 >   (i) `make_baseline_character(level)` over §3.5.1's approved progression;
 >   (ii) the `BaselineCharacterPolicy`, core capabilities + default-off axes, **including
 >   the opportunity attack**; (iii) `BaselineEnemyPolicy` gains the weighted roster split
->   — a PREREQUISITE for the party, not polish; (iv) `RunConfig.party_size`, defaulting
->   to 1 so nothing existing re-baselines, with the baseline scenario declaring 4;
+>   — a PREREQUISITE for the party, not polish; (iv) `RunConfig.party_size` **DEFAULTING TO 4**
+>   (the whole party including the character, so three passive members are added) — the
+>   user overruled the draft's default of 1 and accepted the re-baseline now, because a
+>   default of 1 would leave every defensive number still measured under focus-fire. The
+>   re-baseline is BOUNDED and measured: a passive entity nothing targets is
+>   bit-identical, so `enemy="none"` rows are provably unchanged and only the acting-enemy
+>   rows move — **9 of GOLDEN_DPR's 13, with 4 untouched**. This also RETIRES Starfire's
+>   `with_party` build option (two sources for one quantity) and the 25 test sites that
+>   pass it;
 >   (v) `char_target_prob` refused when the roster has allies; (vi) BOTH halves of the
 >   reaction channel — `record_reaction()` at the scheduler's economy-debit site and a
 >   registered metric + the §8 coverage row; (vii) rewrite

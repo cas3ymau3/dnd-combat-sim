@@ -494,8 +494,42 @@ uptime — is taken in a scenario no character is ever in. 5b had already built
 at 1.0, so it had nothing to split onto.
 
 A DECLARED party size is comparable *and* realistic: two runs with the same party size
-are comparable, and the number is in §4 provenance. The standard is a party of four (the
-character plus three).
+are comparable, and the number is in §4 provenance. The standard is a party of four — and
+`party_size` counts the WHOLE party including the character, so four means three passive
+members are added.
+
+**`RunConfig.party_size` DEFAULTS TO 4, and the re-baseline is accepted now (user,
+s53).** The first draft of this section proposed defaulting it to 1 so that nothing
+existing would move, with the baseline scenario declaring 4 — "the default is minimal, the
+standard is four". The user overruled it, and the argument is the one that matters: **if
+most runs use the default, then defaulting to 1 means every defensive number in the
+project is still measured under focus-fire**, which is the exact defect §3.5.2 exists to
+remove. A default that nobody uses is not a default; it is a trap that costs more to
+unwind once artifacts exist than it does to pay for now.
+
+**The re-baseline is BOUNDED, and the bound is measured rather than argued.** A passive
+entity that nothing targets is **bit-identical**: Starfire L15 at 400 days / seed 11
+returns `29.91578125` under `enemy="none"` and `27.42734375` under `enemy="baseline"`,
+with and without a passive party member, to the last bit. Adding friendlies costs nothing
+until something aims at them. So:
+
+| | effect of `party_size=4` |
+|---|---|
+| runs under `enemy="none"` | **unchanged, provably** — nothing attacks, so nothing splits |
+| runs under `enemy="baseline"` / `"scripted"` | **move** — the enemy spreads its swings across four friendlies instead of one |
+
+Of `GOLDEN_DPR`'s 13 rows, **9 move and 4 are untouched** (the four `enemy="none"` rows).
+Incoming damage to the character falls by roughly three quarters, so concentration
+survives far longer and a concentration-dependent build's own DPR goes *up* — the
+defensive channels are where this change is meant to show, and the offensive channels move
+only because they were coupled to them.
+
+**`with_party` IS RETIRED BY THIS (the seam check, again).** Starfire's build option
+appends exactly one passive party member. With `party_size` live, a run would get three
+from the framework *and* one more from the build option — **two sources for one quantity**,
+and inconsistent by construction rather than merely at risk of it. `party_size` becomes
+the only place the party is declared, and `with_party` goes, along with the 25 test sites
+that pass it.
 
 **Party members are PASSIVE HP pools (user, s53)** — they absorb their share of incoming
 attacks and do nothing else, which is what `make_party_member` already is. This keeps the
@@ -563,7 +597,9 @@ structural change is required when it arrives — only a source for the numbers,
   trigger.**
 - **Every seeded number under an acting enemy moves**, because the enemy's attacks are
   split differently and a split changes how many dice are drawn. That is a deliberate
-  re-baseline with its own record, the same shape as 5b's.
+  re-baseline with its own record, the same shape as 5b's — and it is BOUNDED: `enemy="none"`
+  runs are provably unchanged, because a passive entity nothing targets is bit-identical
+  (measured, §3.5.2). 9 of `GOLDEN_DPR`'s 13 rows move; 4 do not.
 - **It does NOT make the project a build-evaluation exercise.** The baseline character
   exists so the framework can be tested; whether any real build's choices are good is
   §13's first full build evaluation and is explicitly not in scope here
