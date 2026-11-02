@@ -421,6 +421,61 @@ class PairedDelta:
     b: MetricValue
     note: str = ""
 
+    # -- what the pairing actually bought (added s52) ----------------------
+    #
+    # DERIVED, not declared, and the derivation is provable: both are pure functions
+    # of ``(a.stderr, b.stderr, stderr)``, every one of which this object already
+    # holds, so there is no state in which they could legitimately disagree with it.
+    # That is the s48 ``interval``-from-``statistic`` case, not the s49 ``sum_rule``
+    # case — the test is independence, and here there is none.
+    #
+    # They add no FIELD and change no artifact: ``PairedDelta`` is an in-memory
+    # answer that nothing serializes today (§14's comparison-artifact shape is still
+    # open), so this is a convenience over data already present rather than a new
+    # published quantity.
+
+    @property
+    def independent_stderr(self) -> "float | None":
+        """``sqrt(seA² + seB²)`` — the interval this delta would have had on
+        independent seeds, which is the thing pairing is supposed to beat."""
+        if self.a.stderr is None or self.b.stderr is None:
+            return None
+        return math.sqrt(self.a.stderr ** 2 + self.b.stderr ** 2)
+
+    @property
+    def variance_reduction(self) -> "float | None":
+        """What the pairing bought, as a VARIANCE ratio:
+        ``(independent_stderr / stderr)²``.
+
+        **The convention is not a free choice** — it matches the column §6.1's own
+        table has published since s44, and the first cut of s52's correction to that
+        section reported the INVERSE, un-squared, directly beneath it. Two units for
+        one quantity in one document is the §3.4 seam check one layer up, and it is
+        invisible to any check that only asks whether each number is right. So:
+
+        * ``1.0`` — pairing bought exactly nothing.
+        * ``> 1.0`` — pairing helped; ``1.17`` is the best in 20 measured comparisons.
+        * ``< 1.0`` — pairing was WORSE than independent seeding. This is a real
+          outcome, not a bug: ``Var(A−B) = Va + Vb − 2·Cov``, so a negative covariance
+          widens the paired interval, and with one RNG tape the covariance is
+          indistinguishable from zero once two configs diverge (§6.1: measured
+          ``−0.12 … +0.06``, below 1.0 in 3 of 9 diverging cells).
+        * ``math.inf`` — the paired variance is exactly zero, which happens when the
+          toggle is INERT and the two runs never diverge. The delta is then `0 ± 0`
+          and the reduction genuinely is unbounded. Returned rather than clamped
+          because it is the cheapest possible detector for "this comparison is exact";
+          §14 records that whoever settles the comparison-artifact shape has to decide
+          how to serialize it, since ``inf`` is not valid JSON.
+
+        ``None`` when there is no delta to describe at all.
+        """
+        independent = self.independent_stderr
+        if independent is None or self.stderr is None:
+            return None
+        if self.stderr == 0:
+            return math.inf
+        return (independent / self.stderr) ** 2
+
 
 def paired_delta(metric: str, a: MetricValue, influence_a: list[float],
                  b: MetricValue, influence_b: list[float]) -> PairedDelta:

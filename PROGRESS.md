@@ -1712,11 +1712,25 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   changed which enemy that config faced — caught because the claim had been written as an
   assertion. Measured over 5 comparisons × 3 enemy kinds at 300 days there are exactly two
   regimes: an **inert** toggle pairs perfectly (corr 1.0, delta `0 ± 0`); a **diverging**
-  one gives corr **−0.12 … +0.06** and a ratio of **0.967 … 1.059**, wider in 4 of 9
-  cells. Pairing is not a small win here, it is **statistically inert**. The replacement
-  test is a deliberate **TRIPWIRE written to fail when §13 step 8 lands** — a tripwire is
-  the right shape for "inert today and must stop being inert", and it puts step 8's
-  decision record where it belongs. Generalizable: **prose in a design doc can contradict
+  one gives corr **−0.12 … +0.06** and a **variance reduction of 0.892 … 1.069**, below
+  1.0 — pairing WORSE than independent seeding — in **3 of the 9** cells. Pairing is not
+  a small win here, it is **statistically inert**. The replacement test is a deliberate
+  **TRIPWIRE written to fail when §13 step 8 lands** — a tripwire is the right shape for
+  "inert today and must stop being inert", and it puts step 8's decision record where it
+  belongs.
+  **TWO CORRECTIONS TO MY OWN FIRST CUT, both made in s53 and both the same defect class
+  this finding is about.** (1) It reported `paired / independent` STANDARD ERRORS where
+  §6.1's table, three lines above, publishes `(independent / paired)²` VARIANCES — two
+  units for one quantity in one section, each correctly labelled, and invisible to any
+  check that only asks whether each number is right. **When a section already publishes a
+  quantity, a new measurement of the same thing uses the SAME quantity or states the
+  conversion on the spot.** (2) The count was **3 of 9, not 4**; a hand-tallied count in
+  prose is exactly what "prefer an ASSERTION" exists for, and that one had no assertion
+  behind it. `PairedDelta.variance_reduction` now owns the definition, so the UNIT comes
+  off one source. The COUNT does not, and claiming it did would have been the same
+  overclaim a third time: "3 of 9" is still prose, because deriving it means re-running
+  nine cells x 300 days inside the suite to pin a documentation number. Recorded as a
+  knowing exception rather than papered over. Generalizable: **prose in a design doc can contradict
   a measurement in the same section and survive for sessions; an assertion cannot.**
 
   **RITUAL STEP 6 FOUND ITS SIXTH DEFECT, and this one was a renderer undercounting by

@@ -800,32 +800,56 @@ def test_pairing_is_statistically_INERT_once_the_streams_diverge():
 
     What s52 measured, over 5 comparisons x 3 enemy kinds at 300 days: two regimes and
     nothing between them.  An INERT toggle pairs perfectly (correlation exactly 1.0,
-    delta ``0 +/- 0`` — asserted in the test above).  A toggle that diverges the stream
-    gives a correlation of **-0.12 to +0.06** and a ratio of **0.967 to 1.059**, wider
-    in 4 of the 9 diverging cells.  So pairing is not a small win here; it is inert.
+    delta ``0 +/- 0`` — asserted in the test above, and
+    ``variance_reduction`` is ``inf`` there).  A toggle that diverges the stream gives a
+    correlation of **-0.12 to +0.06** and a variance reduction of **0.892 to 1.069**,
+    below 1.0 — i.e. pairing WORSE than independent seeding — in **3 of the 9**
+    diverging cells.  So pairing is not a small win here; it is inert.
+
+    **The quantity is `variance_reduction`, and reading it off the property rather than
+    recomputing it here is deliberate (s52).**  The first cut of this test computed
+    ``paired / independent`` standard errors inline, which is the INVERSE of, and
+    un-squared relative to, the column §6.1's table has published since s44.  Two units
+    for one quantity is the §3.4 seam check one layer up, and it is invisible to any
+    check that only asks whether each number is right.  ``PairedDelta`` now owns the
+    definition and this test consumes it, so there is ONE source for the QUANTITY.
+
+    The same first cut also mis-counted the cells as 4 of 9.  **That half is NOT fixed by
+    a single source, and saying it was would be the overclaim this file keeps warning
+    about:** "3 of 9" is still a hand measurement living in prose, here and in §6.1.
+    Deriving it would mean re-running all nine cells (9 x 2 runs x 300 days) inside the
+    suite — minutes of simulation to pin a documentation number, which is not worth it.
+    So the count stays prose, knowingly, and what guards the next one is the habit rather
+    than a test: a tallied count in prose has nothing behind it.
 
     **THIS TEST IS A TRIPWIRE AND IS MEANT TO FAIL.**  §13 step 8 (RNG substreams)
-    exists precisely to make pairing buy real precision; when it lands, the ratio
-    should drop well below the lower bound here and this assertion should break.  That
-    is the intended signal, not a regression — update it in step 8's decision record,
-    and do not widen the bound to keep it green.
+    exists precisely to make pairing buy real precision; when it lands, the variance
+    reduction should rise well above the upper bound here and this assertion should
+    break.  That is the intended signal, not a regression — update it in step 8's
+    decision record, and do not widen the bound to keep it green.
     """
     base = RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=DAYS,
                      seed=42)
     alt = base.replace(build_options={"fourth_level_spell": "fire_shield"})
 
     delta = compare([base, alt], labels=["fount", "fire_shield"]).delta("fire_shield", "dpr")
-    independent = math.sqrt(delta.a.stderr ** 2 + delta.b.stderr ** 2)
 
     assert delta.paired is True
     assert delta.delta == pytest.approx(delta.a.value - delta.b.value)
 
+    # The property's own definition, pinned here so the convention cannot drift from
+    # §6.1's table: a VARIANCE ratio, independent over paired.
+    assert delta.independent_stderr == pytest.approx(
+        math.sqrt(delta.a.stderr ** 2 + delta.b.stderr ** 2))
+    assert delta.variance_reduction == pytest.approx(
+        (delta.independent_stderr / delta.stderr) ** 2)
+
     # Inert to within a few percent, in EITHER direction.  Bounds sit just outside the
-    # measured 0.967-1.059 envelope; the point is the magnitude, not the sign.
-    ratio = delta.stderr / independent
-    assert 0.90 <= ratio <= 1.10, (
-        f"paired/independent = {ratio:.4f}. Below 0.90 means pairing started WORKING "
-        "— see §13 step 8 and this test's docstring before touching the bound."
+    # measured 0.892-1.069 envelope; the point is the magnitude, not the sign.
+    assert 0.85 <= delta.variance_reduction <= 1.15, (
+        f"variance_reduction = {delta.variance_reduction:.4f}. Above 1.15 means pairing "
+        "started WORKING — see §13 step 8 and this test's docstring before touching "
+        "the bound."
     )
 
     # And the covariance it rests on is indistinguishable from zero, which is the
@@ -833,6 +857,42 @@ def test_pairing_is_statistically_INERT_once_the_streams_diverge():
     va, vb, vd = delta.a.stderr ** 2, delta.b.stderr ** 2, delta.stderr ** 2
     correlation = ((va + vb - vd) / 2) / math.sqrt(va * vb)
     assert abs(correlation) < 0.2, correlation
+
+
+def test_an_inert_toggle_reports_an_UNBOUNDED_variance_reduction():
+    """The other regime, and the branch of ``variance_reduction`` that a diverging
+    comparison never reaches (per-feature ritual step 5: test the BRANCH).
+
+    When two configs never diverge the paired variance is exactly zero, so the
+    reduction is genuinely unbounded.  ``math.inf`` is returned rather than clamped
+    because it is the cheapest possible detector for "this comparison is exact" — and
+    it is the value §14 records as the open question for whoever settles the
+    comparison-artifact shape, since ``inf`` is not valid JSON.
+    """
+    base = RunConfig(build="starfire_scion", level=15, n_days=60, seed=42,
+                     enemy="baseline")
+    inert = base.replace(build_options={"with_party": True})
+
+    delta = compare([base, inert], labels=["solo", "party"]).delta("party", "dpr")
+    assert delta.delta == 0.0
+    assert delta.stderr == 0.0
+    assert delta.independent_stderr > 0        # ...which is the whole point
+    assert delta.variance_reduction == math.inf
+
+
+def test_variance_reduction_is_None_when_there_is_no_delta_to_describe():
+    """The third branch: a metric one side could not measure.  ``None``, never a
+    number — the same rule the registry applies to an unavailable row."""
+    base = RunConfig(enemy="baseline", build="war_angel", level=13, n_days=6, seed=1)
+    delta = compare([base, base.replace(enemy="none")],
+                    labels=["baseline", "none"]).delta("none", "dpr")
+    # Both measured dpr, so pick a metric the 'none' arm cannot produce.
+    control = compare([base, base.replace(enemy="none")],
+                      labels=["baseline", "none"]
+                      ).delta("none", "control_turns_lost_per_round")
+    assert control.delta is None
+    assert control.variance_reduction is None
+    assert delta.variance_reduction is not None   # the control for the above
 
 
 def test_a_delta_against_an_unavailable_metric_reports_no_delta():

@@ -690,12 +690,39 @@ def compare(configs: "Iterable[RunConfig]", *, seed: "int | None" = None,
     if len(names) != len(group):
         raise ValueError(f"Got {len(names)} labels for {len(group)} configs.")
 
+    # THE NOTE SAYS WHAT PAIRING BOUGHT, NOT JUST THAT IT HAPPENED (s52, user).
+    #
+    # It used to read "every config in this group ran from the same base seed, so
+    # reported deltas are PAIRED" — literally true, and read by anyone who knows what
+    # common random numbers are as a claim about PRECISION.  It is not one in this
+    # engine: §6.1's corrected measurement puts the paired covariance at −0.12 … +0.06
+    # once two configs diverge, so the paired interval is a few percent either side of
+    # the independent one and WORSE about a third of the time.  Recording a bare
+    # `paired: true` beside a number is the §4 failure in miniature — an assumption
+    # stated without what it was worth.
+    #
+    # Per-delta the answer is exact and free: `PairedDelta.variance_reduction`, which
+    # every caller can read.  What belongs HERE is the standing caveat, because
+    # provenance is per-RUN and the ratio is per-(comparison, metric) — so no numeric
+    # field is added to this block.  A first draft carried a
+    # `variance_reduction_hint` string pointing at that attribute, which is prose in a
+    # data slot with no consumer: s51's own cut, applied to this session's own work.
     pairing_common = {
         "paired": True,
         "seed": base_seed,
         "members": [c.config_hash() for c in group],
         "note": ("common random numbers (§6.1): every config in this group ran from "
-                 "the same base seed, so reported deltas are PAIRED"),
+                 "the same base seed, so reported deltas are PAIRED. This is NOT a "
+                 "claim that the paired interval is narrower. All dice come off one "
+                 "SeededRNG tape, so pairing is EXACT while two configs draw the same "
+                 "number of dice (an inert toggle gives a delta of 0 +/- 0) and "
+                 "statistically INERT after they diverge, which normally happens in "
+                 "round 1 of combat 1 of day 1: measured variance reduction "
+                 "0.892-1.069 across 9 diverging comparisons, i.e. worse than "
+                 "independent seeding in 3 of them. Read "
+                 "PairedDelta.variance_reduction for what it bought on YOUR "
+                 "comparison. The fix is RNG substreams (evaluation_framework.md "
+                 "§13 step 8), after which pairing becomes a real precision gain."),
     }
 
     reports = []

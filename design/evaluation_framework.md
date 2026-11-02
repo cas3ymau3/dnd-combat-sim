@@ -744,18 +744,56 @@ on, and failed the moment step 5b changed which enemy that config faced. Caught 
 s50's first overclaim was: because the claim had been written as an assertion.
 
 **What is true, measured over 5 comparisons × 3 enemy kinds at 300 days.** There are
-exactly two regimes and nothing in between:
+exactly two regimes and nothing in between. Reported in the **same quantity as the s44
+table above** — `variance reduction = (independent_se / paired_se)²`, where `1.0` means
+pairing bought nothing and below `1.0` means it was worse:
 
-| regime | correlation | paired / independent |
+| regime | correlation | variance reduction |
 |---|---|---|
-| the toggle is INERT (streams never diverge) | exactly **1.0** | **0.000** — the delta is `0 ± 0` |
-| the toggle diverges the stream | **−0.12 … +0.06** | **0.967 … 1.059** |
+| the toggle is INERT (streams never diverge) | exactly **1.0** | **∞** — the paired variance is exactly 0, and the delta is `0 ± 0` |
+| the toggle diverges the stream | **−0.12 … +0.06** | **0.892 … 1.069**, below 1.0 in **3 of 9** cells |
 
 So in the diverging regime the correlation is *indistinguishable from zero* and the
-paired standard error scatters a few percent either side of the independent one — wider
-in 4 of the 9 diverging cells. Pairing is not a small win in this engine; it is
-**statistically inert**, exactly as the s44 "worthless after the first divergence"
-mechanism predicts, and the inert-toggle row is what shows the machinery is right.
+paired variance scatters a few percent either side of the independent one, worse about a
+third of the time. Pairing is not a small win in this engine; it is **statistically
+inert**, exactly as the s44 "worthless after the first divergence" mechanism predicts,
+and the inert-toggle row is what shows the machinery is right.
+
+Across both sessions that is **20 measured comparisons** (s44's five under the retired
+`build_default`, s52's fifteen under the three standardized kinds) spanning roughly
+`0.89 … 1.17`, scattered either side of `1.0` with no systematic gain. The two sets are
+not pooled, because they faced different enemies.
+
+> **TWO CORRECTIONS TO THE FIRST CUT OF THIS BLOCK (s52, same session).** Both are the
+> defect class this very section is about, which is why they are recorded rather than
+> quietly fixed.
+>
+> **(1) It reported a different QUANTITY from the table three lines above it.** The first
+> cut gave `paired / independent` *standard errors* (`0.967 … 1.059`) directly beneath a
+> table whose column is `(independent / paired)²` *variances*. Both were correctly
+> labelled in their own rows, and a reader comparing `0.967` against `1.17` would still
+> have been comparing an SE ratio against a variance ratio, inverted. **Two units in one
+> section is the same failure as two sources for one quantity (§3.4's seam check), one
+> layer up** — and it is invisible to a check that only asks whether each number is
+> right, because each number was. The rule: when a section already publishes a quantity,
+> a new measurement of the same thing is expressed in the SAME quantity, or the
+> conversion is stated on the spot.
+>
+> **(2) The count was wrong: 3 of 9, not 4.** The first cut said "wider in 4 of the 9
+> diverging cells" and it shipped into this section, a test docstring, a commit message
+> and a PR body before being re-counted. A hand-tallied count in prose is exactly what
+> step 5's "prefer an ASSERTION, because prose cannot fail" exists for, and this one had
+> no assertion behind it.
+>
+> **And this half is NOT solved by the new property, which is worth stating plainly
+> rather than implying otherwise.** `PairedDelta.variance_reduction` fixes correction (1)
+> — there is now one definition of the quantity, so the units cannot drift again. The
+> COUNT is still a hand measurement in prose, right here. Deriving it would mean
+> re-running all nine cells (9 × 2 runs × 300 days) inside the test suite to pin a
+> documentation number, which is minutes of simulation for no assertion anyone acts on.
+> So it stays prose as a knowing exception. The transferable part is the smell, not a
+> mechanism: **a tallied count in prose has nothing behind it, and this section now
+> contains two examples of that in its own history.**
 
 **Why it stays the DEFAULT regardless**, which needs none of the retracted claim: it is
 *exact* for an inert toggle (the case where a reader is most at risk of over-reading a
@@ -1263,7 +1301,16 @@ as text and as zero.
 
 **What is NOT serialized:** `EvalReport.influence` — a per-day vector per metric, which
 at 200k days would be the bulk of the artifact for a quantity only a paired comparison
-consumes (§6.1). A comparison artifact is its own shape and its own decision, deferred.
+consumes (§6.1). Nor is `PairedDelta`: a comparison artifact is its own shape and its own
+decision, deferred.
+
+> **ONE THING THAT DECISION HAS TO SETTLE (added s52).** `PairedDelta.variance_reduction`
+> returns `math.inf` for an INERT toggle, because the paired variance is then exactly
+> zero and the reduction genuinely is unbounded. That is the right in-memory answer — it
+> is the cheapest possible detector for "this comparison is exact" — but **`inf` is not
+> valid JSON**, so whoever serializes a comparison must choose: a `null` with a note, a
+> sentinel string, or a separate boolean `exact` field. Named here rather than left to be
+> discovered by the first consumer whose parser rejects the file.
 
 The **data dictionary is embedded by default**, so a single artifact is self-describing:
 a site or an R script renders units, definitions and refused-margin notes without
