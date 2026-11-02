@@ -365,6 +365,59 @@ Declared per level: proficiency bonus, a primary-ability track (16 → 18 → 20
 levels), AC, the six saving throws with two proficient, weapon dice and attacks per
 action, spell save DC, HP, and a spell-slot budget.
 
+**THE PROGRESSION, REVIEWED AND APPROVED (user, s53).** The left eight columns are what
+is DECLARED; the right six are DERIVED against the standardized enemy and are not inputs
+— they are shown because they are the sanity check, and they are what the user reviewed.
+
+Rules behind the declared columns: PB by level; primary ability 16 → 18 at the level-4
+ASI → 20 at the level-8 ASI; AC on a 16/17/18/19 track; CON 14 with save proficiency
+(so `CON save = PB + 2`); Extra Attack at 5; a d8 versatile weapon; HP on a d8 with
+CON +2.
+
+| lvl | PB | primary | AC | attack | spell DC | CON save | attacks | HP | enemy AC | we hit | enemy to-hit | they hit | conc DC | conc pass |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | +2 | +3 | 16 | +5 | 13 | +4 | 1 | 10 | 13 | 65% | +5 | 50% | 10 | 75% |
+| 2 | +2 | +3 | 16 | +5 | 13 | +4 | 1 | 16 | 14 | 60% | +5 | 50% | 10 | 75% |
+| 3 | +2 | +3 | 16 | +5 | 13 | +4 | 1 | 23 | 14 | 60% | +6 | 55% | 10 | 75% |
+| 4 | +2 | +4 | 16 | +6 | 14 | +4 | 1 | 30 | 15 | 60% | +6 | 55% | 10 | 75% |
+| 5 | +3 | +4 | 17 | +7 | 15 | +5 | 2 | 36 | 15 | 65% | +7 | 55% | 10 | 80% |
+| 6 | +3 | +4 | 17 | +7 | 15 | +5 | 2 | 42 | 15 | 65% | +7 | 55% | 10 | 80% |
+| 7 | +3 | +4 | 17 | +7 | 15 | +5 | 2 | 49 | 16 | 60% | +8 | 60% | 10 | 80% |
+| 8 | +3 | +5 | 17 | +8 | 16 | +5 | 2 | 56 | 16 | 65% | +8 | 60% | 10 | 80% |
+| 9 | +4 | +5 | 17 | +9 | 17 | +6 | 2 | 62 | 16 | 70% | +9 | 65% | 10 | 85% |
+| 10 | +4 | +5 | 17 | +9 | 17 | +6 | 2 | 68 | 16 | 70% | +9 | 65% | 10 | 85% |
+| 11 | +4 | +5 | 18 | +9 | 17 | +6 | 2 | 75 | 17 | 65% | +10 | 65% | 11 | 80% |
+| 12 | +4 | +5 | 18 | +9 | 17 | +6 | 2 | 82 | 17 | 65% | +10 | 65% | 13 | 70% |
+| 13 | +5 | +5 | 18 | +10 | 18 | +7 | 2 | 88 | 17 | 70% | +11 | 70% | 13 | 75% |
+| 14 | +5 | +5 | 18 | +10 | 18 | +7 | 2 | 94 | 17 | 70% | +11 | 70% | 15 | 65% |
+| 15 | +5 | +5 | 18 | +10 | 18 | +7 | 2 | 101 | 18 | 65% | +12 | 75% | 16 | 60% |
+| 16 | +5 | +5 | 18 | +10 | 18 | +7 | 2 | 108 | 18 | 65% | +12 | 75% | 18 | 50% |
+| 17 | +6 | +5 | 19 | +11 | 19 | +8 | 2 | 114 | 18 | 70% | +13 | 75% | 18 | 55% |
+| 18 | +6 | +5 | 19 | +11 | 19 | +8 | 2 | 120 | 19 | 65% | +13 | 75% | 18 | 55% |
+| 19 | +6 | +5 | 19 | +11 | 19 | +8 | 2 | 127 | 19 | 65% | +14 | 80% | 20 | 45% |
+| 20 | +6 | +5 | 19 | +11 | 19 | +8 | 2 | 134 | 19 | 65% | +14 | 80% | 22 | 35% |
+
+**Three properties of this table are the reason it is the right shape**, and a future
+retune should preserve them rather than the individual numbers:
+
+1. **Hit rates stay inside a 60-70% band in BOTH directions across all 20 levels.** That
+   is the signal that the character track and `enemy_stats` are scaled against each other
+   rather than drifting apart. If a retune breaks that band, the AC or attack track is
+   wrong — it is the cheapest available check on the whole progression.
+2. **`conc pass` falls 75% → 35%** as enemy damage grows, so concentration becomes a
+   genuine cost at high level instead of a formality. That is a deliberate modelling
+   choice, not an artifact.
+3. **`CON save` reaches +7 at L13, better than either real build** (War Angel +4,
+   Starfire +2). Deliberate — a baseline should be representative rather than weak — but
+   it means baseline concentration figures will look markedly healthier than the ones
+   measured on the existing builds, and a reader comparing the two is comparing a
+   representative character against two sparse ones.
+
+*The most arguable single number is AC 16 at L1*: chain mail plus a shield is 18 from
+level 1 with no DEX investment, so a heavier track would drop the `they hit` column by
+about ten points everywhere. The mid-range track was chosen and recorded here so the
+alternative is a decision rather than a rediscovery.
+
 **What it exercises (user, s53): a CORE that is always on, and the rest as declared
 axes** — the same shape as `enemy_options`, so every registry channel has a fixture that
 genuinely populates it while the off-by-default axes keep the baseline's own numbers

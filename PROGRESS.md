@@ -387,6 +387,13 @@ not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell on
     that into the pre-existing "constructed with control=False" would lose exactly the
     distinction the per-METRIC ritual's availability check exists to protect.
   - **Prior full review: s46** (51 → 22 declarations). See the SURVIVAL RULE above.
+- **Registry DECLARATION SET untouched by s53 (design only) — still ONE touch since the
+  s50 review (s51), so the full review is NOT yet due.** But **step 7 will touch it on
+  both counts and should therefore trigger the review**: it adds a reaction metric (the
+  channel §8's coverage map does not currently list at all), and it flips SEVEN
+  `allies`-keyed cells out of UNAVAILABLE — with passive party members
+  `dpr_by_role[allies]` becomes a TRUE ZERO and `attack_roll_rate[allies|hit]` becomes
+  UNMEASURED. So s54 is a registry-touching session and the full review falls due in it.
 - **Registry DECLARATION SET untouched by s52 — the full review is NOT yet due.** 5b added and
   removed no declaration (still **27**). It did rewrite one availability predicate
   (`_requires_control_channel`, **7 answers → 3**: the four deleted are the baked-in path's ways of
@@ -1623,6 +1630,121 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **FRAMEWORK STEP 7 DESIGN — THE BASELINE CHARACTER (2026-11-02, session 53). DESIGN
+  ONLY; implementation is s54.** `evaluation_framework.md` §3.5 (new, 255 lines), §8's
+  coverage map, §13 step 7 (inserted — the old 7/8 shift to 8/9), §14 (two new entries,
+  one reframed). Plus two merges that closed s52's loose ends: **PR #35** (step 5b) and
+  **PR #36** (§6.1's pairing provenance). **1000 tests green.**
+
+  **THE SESSION TURNED ON A USER CHALLENGE, and the challenge was right.** Asked why
+  concentration broke "every single day", the honest answer is that any ONE save is
+  winnable — DC 16 against +2 is 35%, and the measured per-check failure rate over 308
+  real checks is 0.649 — but the spell must win EVERY save for the day and only needs to
+  lose one. Expected checks before a break is `1/0.649 ≈ 1.54`; measured checks per day
+  is 1.49-1.54, and **that match is the mechanism** rather than a number consistent with
+  it. Surviving a day means winning ~22 consecutive 35% saves.
+
+  **CHASING IT FOUND A REAL DEFECT, AND THEN A BIGGER PATTERN BEHIND IT.**
+  `make_starfire_scion` never sets `ac`, so the Scion fights at **AC 0** — its data
+  declares `char_ac` (16-18) and its OWN `make_ally` / `make_party_member` both read that
+  field; the character the build is about is the one entity that does not get it. Worth
+  ~23% of its incoming damage (65.2 → 52.9 per round). Same shape as s52's enemy-saves
+  finding: a missing `base_stats` key reading as a silent 0, second instance in two
+  sessions, opposite side of the table.
+  - **The pattern is larger and is the real finding.** `ac` is absent in **20 of 27**
+    (build, level) pairs, and its presence correlates EXACTLY with whether that level's
+    own data row made the enemy attack — War Angel has it at precisely L13-16, the four
+    levels that carried `enemy_attack`. **That is §3.4's coupling on the PLAYER side:**
+    defensive provisioning conditioned on the build's own enemy assumption. Harmless
+    until 5b made every level runnable against a declared enemy. Starfire L15 is the lone
+    cell where the old rule should have provisioned an AC and did not.
+  - **It survived because every Starfire test is a directional ablation** (loadout A vs
+    loadout B at a fixed enemy), so AC 0 affects both arms equally and every test passed.
+    Nothing pinned incoming damage. Generalizable: **an ablation test is blind to
+    anything that moves both arms**, which is most of the defender side.
+
+  **THREE USER CORRECTIONS THAT RESET THE SESSION'S DIRECTION, all of them right.**
+  1. **The enemy should not be attacking the character every turn.** 5b set
+     `char_target_prob` to 1.0 arguing the standardized basis should be comparable rather
+     than realistic. The comparability argument was right and focus-fire was the wrong way
+     to get it: with no party in the roster the character absorbs EVERY attack, so every
+     defensive measurement is taken in a scenario no character is in. 5b had already built
+     `_ally_roster` so off-target swings could land on real allies, and then left the
+     default with nothing to split onto.
+  2. **We are not doing build optimization.** Most of my concentration answer established
+     that Fount of Moonlight is a net DPR loss — a build-VALUE claim that
+     [[validate-mechanism-not-build-value]] exists to keep out, inflated into advice about
+     a spell. §14's entry is rewritten to keep only what is a statement about the ENGINE.
+     **A test from s52 has the same category error and is listed for s54:**
+     `test_fount_of_moonlight_now_COSTS_dpr_...` asserts a build-value direction, and so
+     did the test it replaced — I inverted a category error instead of fixing it.
+  3. **We are standing up the framework, not evaluating builds.** The three builds were
+     scaffolding for engine development; their back ends are sparse exactly where the
+     framework needs them complete. **Every problem in this session was a content gap, not
+     a framework defect** — and the two are indistinguishable while the only subjects are
+     partial builds.
+
+  **THE RESOLUTION (user): a BASELINE CHARACTER, the player-side mirror of §3.4.** Three
+  decisions: a per-level PROGRESSION rather than hand-authored levels (regenerable and
+  comparable by construction, mirroring `enemy_stats`); a CORE always-on capability set
+  plus declared default-off axes, so every registry channel gets a fixture that genuinely
+  populates it; and a declared PARTY of four whose members are passive HP pools. The
+  three builds keep a few golden rows as end-to-end content coverage and stop being
+  load-bearing for framework correctness. **The progression table is in §3.5.1, reviewed
+  and approved** — with the three properties a future retune must preserve (the 60-70%
+  two-way hit band being the cheapest check on the whole thing).
+
+  **THE SEAM CHECK FOUND A PREREQUISITE, before any code existed.** The two enemy policies
+  answer "which friendly does it attack" differently — `ScriptedEnemyPolicy` takes a
+  weighted roster, `BaselineEnemyPolicy` takes `primary`/`fallback` and focus-fires.
+  Measured on Starfire L15 with a party over 120 days: `scripted` default puts 126,661 on
+  the character and **0** on the party; `baseline` 105,484 and **0**; `scripted` at
+  `char_target_prob=0.4` splits 49,919/60,451. So they agree today ONLY because the
+  standardized default is focus-fire with an empty ally roster. **Add a party and §3.4's
+  claim that `baseline`-vs-`scripted` isolates "forces saves" from "swings" becomes
+  FALSE** — the arms would differ in targeting MODEL too — unless `BaselineEnemyPolicy`
+  gains the same split. A prerequisite, not polish, and invisible from reading the code.
+
+  **AND THE USER'S REACTION REQUEST FOUND A CHANNEL DEAD AT BOTH ENDS.** Asked to give the
+  baseline an opportunity attack "so that we aren't forgetting about that", the reaction
+  economy turned out to be comprehensively forgotten: `CombatTelemetry.reactions_used`
+  exists with a `record_reaction()` method and a merge rule, **its only caller in the
+  codebase is a unit test**, **no metric reads it**, and **§8's coverage map does not list
+  the reaction economy at all** — not available, not partial, not deferred. Absent. Yet it
+  is genuinely in use: War Angel L13 spends its AoO every combat (the pre-roll fires on
+  the expected round and `Scheduler` branches on `event.cost == "reaction"` to flag it)
+  and `reactions_used` reads **0 over 800 rounds**. Step 7 carries both halves.
+  - **Generalized into the ritual's seam check: name the production WRITER and the
+    production READER of every telemetry channel a change touches.** A channel can be
+    dead at both ends and look alive from either one — `reactions_used` has a field, a
+    recorder, a merge rule and a test, everything except a caller and a reader. s51's cut
+    (a FIELD nothing reads) and this (a RECORDER nothing calls) are the same defect from
+    opposite sides, and neither is visible unless the two questions are asked separately.
+  - **And the cheaper lesson: asking what a subject should be able to DO is a cheap way
+    to find what the framework cannot SEE.** Not a check I would have run unprompted.
+
+  **THREAT CLASS, the user's own design, recorded as a deferral with its shape fixed.** A
+  categorical per-build class (melee fighter draws more attacks than a ranged attacker,
+  caster or summoner behind it) combined with party size to weight targeting. Cheap
+  because the seam exists: both policies take per-entity integer weights once §3.5.3
+  lands, and **uniform is the special case where every class is equal** — so it needs a
+  vocabulary, a per-adapter `threat_class` and a weighting rule, but no structural change.
+
+  **TWO CORRECTIONS TO MY OWN s52 WORK, both the defect class they were about (PR #36).**
+  §6.1's correction reported `paired / independent` STANDARD ERRORS three lines below a
+  table whose column is `(independent / paired)²` VARIANCES — every number right, both
+  tables labelled, and **two units for one quantity in one section**, which is the §3.4
+  seam check one layer up and invisible to any check that asks only whether each number
+  is right. And the count was **3 of 9, not 4**, after shipping into four places.
+  `PairedDelta.variance_reduction` now owns the definition so the unit cannot drift; the
+  COUNT is still prose and is labelled a knowing exception, because deriving it means
+  re-running nine cells × 300 days to pin a documentation number. **A tallied count in
+  prose has nothing behind it** — §6.1 now carries two examples from its own history.
+
+  **Roadmap renumbered: 7 = baseline character, 8 = sweeps, 9 = substreams.** All 18
+  references updated across 6 files — including two the renumbering script rewrote inside
+  the paragraph announcing the renumber, which is the risk that convention carries.
 
 - **EVALUATION FRAMEWORK STEP 5b — THE BAKED-IN ENEMY PATH IS DELETED (2026-11-01,
   session 52).** `evaluation_framework.md` §3.4 (closed) / §12 (the parity proof's
@@ -5159,7 +5281,22 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      distribution FIRED and `disadvantage` did NOT — step 6 does not make control a
      status object, so nothing attaches a condition to a d20, and its trigger moves to
      §10/§9. See the s51 Done entry;
-     (7) sweep YAML + config-hash caching + the baselines registry; **(8) RNG SUBSTREAMS
+     **(7) the BASELINE CHARACTER + BASELINE PARTY (§3.5) — DESIGN LOCKED (s53),
+     IMPLEMENTATION IS THE NEXT TASK.** The player-side mirror of step 5: the framework
+     gets its own declared SUBJECT so a framework defect and a content gap stop being
+     indistinguishable. Why it was needed, measured: `ac` is absent from the character in
+     20 of 27 (build, level) pairs, and its presence correlates exactly with whether that
+     level's own row made the enemy attack — §3.4's coupling on the PLAYER side.
+     `make_baseline_character(level)` over the per-level progression in §3.5.1 (reviewed
+     and approved, user); a party of four whose members are passive HP pools; targeting
+     DERIVED from the friendly roster, which REQUIRES giving `BaselineEnemyPolicy` the
+     weighted split `ScriptedEnemyPolicy` already has (a prerequisite — without it
+     §3.4's baseline-vs-scripted arm stops isolating one thing); an opportunity attack as
+     a CORE capability, which needs BOTH halves of the reaction channel wired because
+     `record_reaction()`'s only caller is a unit test and no metric reads
+     `reactions_used`. Threat class (§3.5.4, the user's design) supplies the weights
+     later into a seam that already exists;
+     (8) sweep YAML + config-hash caching + the baselines registry; **(9) RNG SUBSTREAMS
      (added s44)** — per-entity/per-purpose generators via `SeedSequence.spawn()`, the
      prerequisite for §6.1's paired seeding to buy any precision at all (MEASURED: ~1×, not
      the 10–100× the design assumed). Needs its own decision record: it moves every seeded
@@ -6000,6 +6137,21 @@ combat policy through two lenses, and reformulate it as needed:
 >   `typed_damage_share 0` explains it on the same screen, which is a data point FOR
 >   leaving it as §14 decided.
 > - **(b), (d), (e), (g)** — untouched.
+> - **NEW (s53), carried into s54 as step 7's own worklist** — these are not open
+>   questions, they are the agreed contents of the next task:
+>   (i) `make_baseline_character(level)` over §3.5.1's approved progression;
+>   (ii) the `BaselineCharacterPolicy`, core capabilities + default-off axes, **including
+>   the opportunity attack**; (iii) `BaselineEnemyPolicy` gains the weighted roster split
+>   — a PREREQUISITE for the party, not polish; (iv) `RunConfig.party_size`, defaulting
+>   to 1 so nothing existing re-baselines, with the baseline scenario declaring 4;
+>   (v) `char_target_prob` refused when the roster has allies; (vi) BOTH halves of the
+>   reaction channel — `record_reaction()` at the scheduler's economy-debit site and a
+>   registered metric + the §8 coverage row; (vii) rewrite
+>   `test_fount_of_moonlight_now_COSTS_dpr_...`, which asserts a build-VALUE direction
+>   (as did the test it replaced — s52 inverted a category error rather than fixing it);
+>   (viii) the Starfire `ac` one-liner, which re-baselines
+>   `GOLDEN_DPR[("starfire_scion", 15, "baseline", ())]` 27.42734375 → 27.228750 and
+>   moves L1/L5/L10 as well.
 > - **NEW (s52): Starfire L15's loadout axes were tuned against an enemy that no longer
 >   exists.** FoM's concentration now ends every day, the dragon save-floor is inert
 >   above 25 damage per hit, and the FoM-vs-Fire-Shield near-tie was a property of the
