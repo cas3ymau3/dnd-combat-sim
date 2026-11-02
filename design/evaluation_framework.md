@@ -316,6 +316,259 @@ two paths must not be silently compared" — was enforced by the `standardized:`
 comparability rule it carried is now structural rather than reported, because there is no
 second path to compare against. §5.2's `fixed_length` vs `finite_hp` rule is unaffected.
 
+### 3.5 Character independence — the baseline character and the baseline party
+
+**Decision (user, s53).** The framework grows its own declared SUBJECT, the way §3.4 gave
+it a declared opponent. `make_baseline_character(level)` is the player-side mirror of
+`make_baseline_enemy(level)`, and the standardized scenario fields a PARTY around it.
+
+**THE PROBLEM, MEASURED.** The framework has been validated against three builds that
+were written as scaffolding for engine development rather than as complete characters,
+and their data is sparse exactly where the framework needs it to be complete:
+
+| build | levels | `ac` on the character |
+|---|---|---|
+| War Angel | L1-L12 | **absent** — not declared anywhere in the data |
+| War Angel | L13-L16 | present (18) |
+| Starfire Scion | all 8 | **absent** — though the row declares `char_ac` 16-18 |
+| Silvertail | all 3 | present |
+
+`ac` is missing in **20 of 27** (build, level) pairs, and `Entity.stat()` returns 0 for a
+missing key *by design*, so those characters fight at **AC 0**.
+
+**The pattern is a perfect correlation with one exception, and that is the finding.** A
+character was given an AC only at the levels where *its own data row made the enemy
+attack* — War Angel's `ac` appears at exactly L13-16, the four levels that carried
+`enemy_attack`. **That is §3.4's coupling on the PLAYER side**: the character's defensive
+provisioning was conditioned on the build's own enemy assumption. It was harmless while
+those were the only levels anything attacked at, and step 5b made it wrong at 19 of 27
+pairs by making every level runnable against a declared enemy. The one exception —
+Starfire L15, which faced an acting enemy and still has no AC — is a plain defect, worth
+~23% of its incoming damage (65.2 → 52.9 per round).
+
+**Why this needs a framework answer rather than a content fix.** Authoring twelve missing
+War Angel ACs would fix the symptom and leave the real problem: **a framework defect and
+a content gap are indistinguishable** when the only subjects are partial builds. Every
+session since s50 has spent effort on content gaps while trying to test framework
+behaviour. §3.4 solved the identical problem on the enemy side by declaring the enemy;
+this declares the subject.
+
+#### 3.5.1 What the baseline character is
+
+A per-level PROGRESSION, not a hand-authored stat block per level — mirroring
+`enemy_stats` and for the same reason: it is regenerable, comparable across levels by
+construction, and no session has to invent numbers. (`reference/data/ability_mods_DCs.csv`
+and `resources.csv` are prior art for the SHAPE but not usable as a baseline: both are a
+specific multiclass character's arrays, with `cha -1`.)
+
+Declared per level: proficiency bonus, a primary-ability track (16 → 18 → 20 at the ASI
+levels), AC, the six saving throws with two proficient, weapon dice and attacks per
+action, spell save DC, HP, and a spell-slot budget.
+
+**THE PROGRESSION, REVIEWED AND APPROVED (user, s53).** The left eight columns are what
+is DECLARED; the right six are DERIVED against the standardized enemy and are not inputs
+— they are shown because they are the sanity check, and they are what the user reviewed.
+
+Rules behind the declared columns: PB by level; primary ability 16 → 18 at the level-4
+ASI → 20 at the level-8 ASI; AC on a 16/17/18/19 track; CON 14 with save proficiency
+(so `CON save = PB + 2`); Extra Attack at 5; a d8 versatile weapon; HP on a d8 with
+CON +2.
+
+| lvl | PB | primary | AC | attack | spell DC | CON save | attacks | HP | enemy AC | we hit | enemy to-hit | they hit | conc DC | conc pass |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | +2 | +3 | 16 | +5 | 13 | +4 | 1 | 10 | 13 | 65% | +5 | 50% | 10 | 75% |
+| 2 | +2 | +3 | 16 | +5 | 13 | +4 | 1 | 16 | 14 | 60% | +5 | 50% | 10 | 75% |
+| 3 | +2 | +3 | 16 | +5 | 13 | +4 | 1 | 23 | 14 | 60% | +6 | 55% | 10 | 75% |
+| 4 | +2 | +4 | 16 | +6 | 14 | +4 | 1 | 30 | 15 | 60% | +6 | 55% | 10 | 75% |
+| 5 | +3 | +4 | 17 | +7 | 15 | +5 | 2 | 36 | 15 | 65% | +7 | 55% | 10 | 80% |
+| 6 | +3 | +4 | 17 | +7 | 15 | +5 | 2 | 42 | 15 | 65% | +7 | 55% | 10 | 80% |
+| 7 | +3 | +4 | 17 | +7 | 15 | +5 | 2 | 49 | 16 | 60% | +8 | 60% | 10 | 80% |
+| 8 | +3 | +5 | 17 | +8 | 16 | +5 | 2 | 56 | 16 | 65% | +8 | 60% | 10 | 80% |
+| 9 | +4 | +5 | 17 | +9 | 17 | +6 | 2 | 62 | 16 | 70% | +9 | 65% | 10 | 85% |
+| 10 | +4 | +5 | 17 | +9 | 17 | +6 | 2 | 68 | 16 | 70% | +9 | 65% | 10 | 85% |
+| 11 | +4 | +5 | 18 | +9 | 17 | +6 | 2 | 75 | 17 | 65% | +10 | 65% | 11 | 80% |
+| 12 | +4 | +5 | 18 | +9 | 17 | +6 | 2 | 82 | 17 | 65% | +10 | 65% | 13 | 70% |
+| 13 | +5 | +5 | 18 | +10 | 18 | +7 | 2 | 88 | 17 | 70% | +11 | 70% | 13 | 75% |
+| 14 | +5 | +5 | 18 | +10 | 18 | +7 | 2 | 94 | 17 | 70% | +11 | 70% | 15 | 65% |
+| 15 | +5 | +5 | 18 | +10 | 18 | +7 | 2 | 101 | 18 | 65% | +12 | 75% | 16 | 60% |
+| 16 | +5 | +5 | 18 | +10 | 18 | +7 | 2 | 108 | 18 | 65% | +12 | 75% | 18 | 50% |
+| 17 | +6 | +5 | 19 | +11 | 19 | +8 | 2 | 114 | 18 | 70% | +13 | 75% | 18 | 55% |
+| 18 | +6 | +5 | 19 | +11 | 19 | +8 | 2 | 120 | 19 | 65% | +13 | 75% | 18 | 55% |
+| 19 | +6 | +5 | 19 | +11 | 19 | +8 | 2 | 127 | 19 | 65% | +14 | 80% | 20 | 45% |
+| 20 | +6 | +5 | 19 | +11 | 19 | +8 | 2 | 134 | 19 | 65% | +14 | 80% | 22 | 35% |
+
+**Three properties of this table are the reason it is the right shape**, and a future
+retune should preserve them rather than the individual numbers:
+
+1. **Hit rates stay inside a 60-70% band in BOTH directions across all 20 levels.** That
+   is the signal that the character track and `enemy_stats` are scaled against each other
+   rather than drifting apart. If a retune breaks that band, the AC or attack track is
+   wrong — it is the cheapest available check on the whole progression.
+2. **`conc pass` falls 75% → 35%** as enemy damage grows, so concentration becomes a
+   genuine cost at high level instead of a formality. That is a deliberate modelling
+   choice, not an artifact.
+3. **`CON save` reaches +7 at L13, better than either real build** (War Angel +4,
+   Starfire +2). Deliberate — a baseline should be representative rather than weak — but
+   it means baseline concentration figures will look markedly healthier than the ones
+   measured on the existing builds, and a reader comparing the two is comparing a
+   representative character against two sparse ones.
+
+*The most arguable single number is AC 16 at L1*: chain mail plus a shield is 18 from
+level 1 with no DEX investment, so a heavier track would drop the `they hit` column by
+about ten points everywhere. The mid-range track was chosen and recorded here so the
+alternative is a decision rather than a rediscovery.
+
+**What it exercises (user, s53): a CORE that is always on, and the rest as declared
+axes** — the same shape as `enemy_options`, so every registry channel has a fixture that
+genuinely populates it while the off-by-default axes keep the baseline's own numbers
+stable.
+
+| | capability | why it is in this tier |
+|---|---|---|
+| **core** | weapon attacks | the §8.1 attacks channel (hit / crit / advantage) |
+| **core** | a concentration spell | concentration checks + breaks, and the only thing control pressure can take away |
+| **core** | a save-forcing spell | the saves channel keyed by ability, from the character's side |
+| **core** | healing, in-combat and between | `healing_by_source` needs both contexts |
+| **core** | a spell-slot budget | the resource ledger |
+| **core** | an opportunity attack | the REACTION slot — a third of the action economy, and a channel nothing currently writes or reads (below) |
+| axis | a summon | the per-summon column and the roster-scoping checks |
+| axis | an ally-targeted buff | the `allies` role as a buff TARGET rather than a damage sink |
+| axis | a reaction-based mitigation | the character side of `mult(t)`, and the defender-side `on_incoming_hit` seam |
+
+**THE REACTION ECONOMY IS CORE, AND ASKING FOR IT FOUND A DEAD CHANNEL (user, s53).**
+The baseline character spends a reaction every combat on an **opportunity attack**. It is
+core rather than an axis because the reaction is one of the three action-economy slots
+(CLAUDE.md #11), and a subject that never takes one leaves a third of the economy
+unexercised by the thing the framework measures itself against.
+
+*There is no spatial model, so "when the enemy moves out of reach" is a FREQUENCY, not an
+event.* That is the approximation, stated rather than implied. The established convention
+is War Angel's — one AoO per combat on a round **pre-rolled at `on_combat_start`** through
+the seeded channel, which its own guide reached by collapsing five AoO timing slots into
+one — and the baseline adopts it with the count as a DECLARED parameter so §4 provenance
+records the assumption instead of burying it. A reaction-based *mitigation* (a
+`shield`-like intercept) is the declared axis on the other side, which also exercises the
+defender-side `on_incoming_hit` seam.
+
+**What this request uncovered, measured.** The reaction economy is currently invisible to
+the framework in **both** directions:
+
+| | state |
+|---|---|
+| `CombatTelemetry.reactions_used` | exists, with a `record_reaction()` method and a merge rule |
+| callers of `record_reaction()` | **exactly one, and it is a unit test.** No production code calls it |
+| metrics reading `reactions_used` | **none** |
+| §8's coverage map | **does not list the reaction economy at all** — not available, not partial, not deferred |
+
+And the capability is genuinely being used while none of that records it: War Angel L13
+spends its AoO every combat (the pre-roll fires on the expected round, and `Scheduler`
+already branches on `event.cost == "reaction"` to flag it), yet `reactions_used` reads
+**0 over 800 rounds**.
+
+So step 7 carries both halves, or the capability would be added to a subject the framework
+structurally cannot observe:
+
+- **the WRITE half** — `record_reaction()` called at the scheduler's single
+  economy-debit site (`self._turn_economy[ac] -= 1`), gated on `ac == "reaction"`. The
+  same shape as `record_resource` at the pool's consume sites.
+- **the READ half** — a registered reaction metric plus the §8 coverage row, so the
+  channel has a consumer before anything populates it.
+
+> **A TELEMETRY CHANNEL CAN BE DEAD AT BOTH ENDS AND LOOK ALIVE FROM EITHER ONE.**
+> `reactions_used` has a field, a recorder, a merge rule and a test — everything except a
+> caller and a reader. s51's cut (a *field* nothing reads) and this (a *recorder* nothing
+> calls) are the same defect from opposite sides, and neither is visible unless "who
+> writes this?" and "who reads this?" are asked as two SEPARATE questions. Worth adding
+> to the per-feature seam check: for each telemetry channel a change touches, name the
+> production writer and the production reader. An empty answer on either side is the
+> finding.
+
+#### 3.5.2 The baseline party, and why the standard has one
+
+**Step 5b set `char_target_prob` to 1.0 and argued the standardized basis should be
+comparable rather than realistic. The comparability argument was right; focus-fire was
+the wrong way to get it.** With no party in the roster the character absorbs EVERY
+incoming attack, so every defensive measurement — damage taken, concentration, control
+uptime — is taken in a scenario no character is ever in. 5b had already built
+`_ally_roster` so off-target swings could land on real allies, and then left the default
+at 1.0, so it had nothing to split onto.
+
+A DECLARED party size is comparable *and* realistic: two runs with the same party size
+are comparable, and the number is in §4 provenance. The standard is a party of four (the
+character plus three).
+
+**Party members are PASSIVE HP pools (user, s53)** — they absorb their share of incoming
+attacks and do nothing else, which is what `make_party_member` already is. This keeps the
+baseline character's own output the measured quantity rather than a party total, and
+keeps §3.3's multi-character party deferred. The cost is stated rather than hidden:
+`dpr_by_role[allies]` reads a TRUE ZERO, so provenance must say the party members are
+non-combatant stand-ins.
+
+#### 3.5.3 Targeting is DERIVED from the roster, and that forces an engine change
+
+Party size and "how often is the character attacked" are **one quantity in two places**.
+A config that declares a party of four *and* `char_target_prob = 1.0` claims a party the
+enemy ignores, which is exactly the §4 failure the enemy option schema already refuses
+elsewhere. So targeting is derived: the enemy splits its attacks across whoever is in the
+friendly roster, and `char_target_prob` is refused when the roster has allies — the same
+refusal pattern as `focus='summon'` on a summonless roster.
+
+**THE SEAM CHECK FOUND THAT THIS IS NOT A CONFIG CHANGE (s53, before any code).** The two
+enemy policies answer "which friendly does it attack" in two different ways:
+`ScriptedEnemyPolicy` takes a weighted roster `[(entity, weight), ...]`;
+`BaselineEnemyPolicy` takes `primary`/`fallback` and focus-fires. **Measured** on Starfire
+L15 with a party, 120 days:
+
+| enemy kind | damage to character | damage to party |
+|---|---|---|
+| `scripted`, default | 126,661 | **0** |
+| `baseline` | 105,484 | **0** |
+| `scripted`, `char_target_prob=0.4` | 49,919 | 60,451 |
+
+So they agree today *only because* the standardized default is focus-fire with an empty
+ally roster. §3.4 claims `baseline` vs `scripted` "isolates the enemy forces saves from
+the enemy swings". **The moment a party exists, that claim becomes false** — the two arms
+would differ in targeting MODEL as well as in save-forcing — unless `BaselineEnemyPolicy`
+gains the same weighted split. It is therefore a prerequisite, not polish: it is what
+keeps §3.4's comparison arm a comparison of one thing.
+
+#### 3.5.4 Threat class — the weights, deferred into an existing seam
+
+**Open, with its shape already fixed (user, s53).** Uniform weights are a placeholder: a
+melee fighter is attacked more often than a ranged attacker, a spellcaster or a summoner
+standing behind it. The intended model is a **categorical threat classification**,
+assigned per build by hand, combined with party size to derive each friendly's share of
+incoming attacks.
+
+What makes it a cheap deferral rather than a design debt: the mechanism already takes
+per-entity integer weights (`ScriptedEnemyPolicy`'s roster, and
+`BaselineEnemyPolicy`'s once §3.5.3 lands), so the classifier supplies weights into a
+seam that exists. **Uniform is the special case where every class is equal.** No
+structural change is required when it arrives — only a source for the numbers, and a
+`threat_class` declared on the adapter alongside `available_levels()`.
+
+#### 3.5.5 Consequences to reconcile
+
+- **The three builds stop being load-bearing for framework correctness (user, s53).**
+  Framework mechanism tests and most `GOLDEN_DPR` rows move onto the baseline character,
+  so they assert framework behaviour; the builds keep a small set of golden rows as
+  "real content still runs end to end" coverage. Their data gaps become CONTENT work,
+  recorded in §14 rather than blocking the framework.
+- **Seven `allies`-keyed registry cells change state.** They are currently UNAVAILABLE
+  ("this build's roster has no allies"); with a baseline party they become measurable,
+  and for passive members `dpr_by_role[allies]` is a true zero while
+  `attack_roll_rate[allies|hit]` is UNMEASURED (no attacks, so no denominator). More
+  honest than "unavailable" — the allies do exist, they just do not attack — and the
+  three-state machinery already distinguishes them. **This is a metric-set review
+  trigger.**
+- **Every seeded number under an acting enemy moves**, because the enemy's attacks are
+  split differently and a split changes how many dice are drawn. That is a deliberate
+  re-baseline with its own record, the same shape as 5b's.
+- **It does NOT make the project a build-evaluation exercise.** The baseline character
+  exists so the framework can be tested; whether any real build's choices are good is
+  §13's first full build evaluation and is explicitly not in scope here
+  (memory `validate-mechanism-not-build-value`).
+
 ---
 
 ## 4. Provenance — parameters *and* code
@@ -661,7 +914,7 @@ PAIRED BOOTSTRAP: resample day indices ONCE, apply the same index vector to both
 per-day vectors, recompute the difference of quantiles, and take percentiles of the
 resampled differences — the pairing is preserved exactly because both runs are indexed
 identically. It is not built because §6.1 MEASURED that pairing is worth ~1× in this
-engine until RNG substreams land (§13 step 8), and because the comparison artifact is
+engine until RNG substreams land (§13 step 9), and because the comparison artifact is
 its own deferred shape. Naming the construction makes this a known path rather than an
 open question.
 
@@ -725,7 +978,7 @@ the same value in both runs no matter what changed about the character's spell, 
 the enemy's entire contribution to the variance cancels exactly. **This is not a
 tweak**: it changes the dice every existing run consumes, so every seeded baseline
 moves and the §12 bit-identical parity proof against `validation.py` breaks. It gets
-its own roadmap step and its own decision record (§13 step 8).
+its own roadmap step and its own decision record (§13 step 9).
 
 **CORRECTION (s52, MEASURED): "never worse than independent seeding" was FALSE, and the
 data falsifying it was already in the table above.** The sentence this replaces read
@@ -803,8 +1056,8 @@ precision it does not have — and it does not, because the interval reported is
 measured paired one, whichever side of the independent figure it falls.
 
 The replacement test asserts the two-regime fact instead of the false guarantee, and is
-written to **FAIL when §13 step 8 lands**. That is deliberate: a tripwire is the right
-shape for "this is inert today and must stop being inert", and it puts step 8's decision
+written to **FAIL when §13 step 9 lands**. That is deliberate: a tripwire is the right
+shape for "this is inert today and must stop being inert", and it puts step 9's decision
 record where it belongs.
 
 ### 6.2 Every scalar metric carries uncertainty
@@ -1057,6 +1310,7 @@ hidden — it is priced correctly.
 | saves forced by type; failures by type and % | available — §13 saves channel |
 | control turns lost / reduced | available — §13 control channel (s40) + §7 above; APPLIED at runtime since s51, and the realized cost reported beside the credit (§7.6) |
 | limited resources per day / per combat | available — §13 economy channel |
+| **reaction economy: reactions taken per round / per combat** | **NOT available — the channel is DEAD AT BOTH ENDS (found s53).** `CombatTelemetry.reactions_used` exists with a `record_reaction()` method, but its only caller is a unit test and no metric reads it, so War Angel's once-per-combat AoO records 0 over 800 rounds. §3.5.1 carries the finding; step 7 wires the writer and registers the reader |
 | concentration share and breaks | available — §13 economy channel |
 | party / summon / ally damage columns | available — `damage_by_source`, `party_total` |
 | attack-roll counts: hits, crits, hit %, crit %, attacks at advantage and % | available — §13 `attacks` channel (s49); `attacks_per_round` + `attack_roll_rate` (§8.1 below) |
@@ -1181,7 +1435,7 @@ This is the same separation as the engine knowing nothing about specific spells.
 
 Locked BEFORE the writer was built, per the per-feature ritual's step 4 — the rule s46
 added for exactly this session. The unit is one run record; a sweep is a directory of
-them plus a manifest (step 7).
+them plus a manifest (step 8).
 
 ```json
 {
@@ -1548,11 +1802,33 @@ check mechanisms, not the composite. Three things carry that load instead:
    step 5 as the implementation. **No `SCHEMA_VERSION` bump**; §12 parity still
    bit-identical; `control=False` stays the default, so nothing but a run that asks for
    control moves. §14 deferral (f) was checked and did NOT fire — see §14.
-7. Sweep YAML + config-hash caching + baselines registry.
-8. **RNG substreams** *(added s44)* — per-entity / per-(entity, purpose) generators via
+7. **The BASELINE CHARACTER + BASELINE PARTY (§3.5)** *(inserted s53, at the user's
+   direction — the old 7/8 shift to 8/9)*. The player-side mirror of step 5: the
+   framework gets its own declared SUBJECT so that a framework defect and a content gap
+   stop being indistinguishable. `make_baseline_character(level)` over a declared
+   per-level progression; a party of four whose members are passive HP pools; targeting
+   DERIVED from the friendly roster, which requires giving `BaselineEnemyPolicy` the
+   weighted split `ScriptedEnemyPolicy` already has (§3.5.3 — a prerequisite, because
+   without it §3.4's `baseline`-vs-`scripted` comparison arm stops isolating one thing).
+   Threat class supplies the weights later (§3.5.4) into a seam that already exists.
+   **Also carries the REACTION economy, which asking for the capability found dead at both
+   ends (§3.5.1):** `record_reaction()`'s only caller is a unit test and no metric reads
+   `reactions_used`, so the baseline's opportunity attack needs the writer wired at the
+   scheduler's economy-debit site AND a registered metric, or the capability is added to a
+   subject the framework cannot observe.
+   **Sequenced here because it is what the remaining steps need:** step 8's sweeps and
+   step 9's substreams both want a subject whose numbers mean something, and §13's build
+   evaluation wants a framework that has been tested against something complete.
+   Re-baselines every seeded number under an acting enemy, with its own record.
+8. Sweep YAML + config-hash caching + baselines registry.
+9. **RNG substreams** *(added s44)* — per-entity / per-(entity, purpose) generators via
    `SeedSequence.spawn()`, the prerequisite for §6.1's paired seeding to actually buy
-   precision. Needs its own decision record: it moves every seeded baseline and breaks
-   the §12 bit-identical parity proof, so it must be a deliberate, versioned change.
+   precision (MEASURED inert today — §6.1). Needs its own decision record: it moves every
+   seeded baseline, so it must be a deliberate, versioned change. It no longer breaks the
+   §12 parity proof — s52 retired that — so what it re-baselines is `GOLDEN_DPR`, and it
+   should also trip
+   `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s53 wrote as a
+   deliberate tripwire for exactly this step.
    Sequenced last because nothing else depends on it and the intervals reported before
    it are honest, just wider than they could be.
 
@@ -1712,7 +1988,7 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   influence values and a quantile has none, so `paired_delta` does not extend to it. The
   construction that WOULD work is named in §5.4 (a paired bootstrap over one shared
   resampled index vector). Deferred because §6.1 measured pairing at ~1× in this engine
-  until RNG substreams land (§13 step 8), and because the comparison artifact is its own
+  until RNG substreams land (§13 step 9), and because the comparison artifact is its own
   deferred shape — building a paired quantile interval now would buy nothing measurable.
   **STRENGTHENED, not merely still-blocked (s52).** §6.1's corrected measurement makes
   the block quantitative rather than cautionary: with one RNG tape the paired covariance
@@ -1788,36 +2064,73 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   *One piece of the migration is already cheaper than expected:* the AC needs no
   migration at all, since every baked-in value already equals the table's (§3.4 item 1).
 
-- **Starfire L15's loadout axes were tuned against an enemy that no longer exists**
-  *(surfaced s52)* — a BUILD-data question, not an engine one, which is why it is recorded
-  rather than fixed. Three of that level's scenario axes were calibrated when its own
-  `LEVELS` row carried a hand-written enemy swinging `2d8+5` at `+9` (mean 14). Against
-  the definitive table's L15 enemy (`8d6+5` at `+12`, mean 33) the calibration does not
-  survive:
-  - **Fount of Moonlight's concentration ends on 1.000 of days** (was 0.05), because the
-    build has ONE 4th-level slot and no short-rest recovery. The rider is a net DPR loss
-    of ~1.4 where it was a gain.
-  - **The Starry-Form Dragon save-floor is inert**, exactly rather than approximately:
-    `DC = max(10, damage // 2)` and a floored d20 contributes `10 + con_save 2 = 12`, so
-    the floor can rescue a save only while the hit dealt **≤ 25 damage**. The retired
-    enemy's mean of 14 pinned the DC at its own minimum of 10, where a floored 12 cleared
-    it every time.
-  - **The FoM-vs-Fire-Shield "near-tie" was a property of that enemy**: +0.49 then,
-    **+3.22** now.
+- **THREAT CLASS — the per-build weights that decide who the enemy attacks**
+  *(opened s53, user)*. §3.5.4 has the design; this is the register entry. Uniform
+  weights across the friendly roster are a placeholder: a melee fighter draws more
+  attacks than a ranged attacker, a spellcaster or a summoner behind it. The intended
+  model is a categorical class assigned per build by hand, combined with party size to
+  derive each friendly's share.
+  **Cheap because the seam exists.** Both enemy policies take per-entity integer weights
+  once §3.5.3 lands, and uniform is the special case where every class is equal — so the
+  classifier needs a vocabulary, a per-adapter `threat_class`, and a weighting rule, but
+  no structural change. Trigger: whenever the realism of the defensive channels starts
+  mattering more than their comparability, or the first build whose survivability is the
+  question being asked.
 
-  What is deferred is whether the build's *scenario axes* should be re-specified — a
-  different slot budget, a non-concentration 4th-level option, or a scenario where the
-  character is not the enemy's sole target. Not decided here because 5b's job was to
-  delete the coupling, and choosing a build's loadout is the opposite of build-agnostic.
-  **Trigger: §13's first full build evaluation**, which is where a build's own choices
-  are meant to be examined. The mechanism tests were rewritten to assert mechanisms and
-  **no ranking at all**, so nothing in the suite depends on the answer.
+- **The three existing builds' data is sparse where the framework needs it**
+  *(surfaced s52, scoped s53)* — recorded as CONTENT work, explicitly not blocking the
+  framework, which is what §3.5's baseline character exists to decouple. Measured:
+  `ac` is absent from the character in 20 of 27 (build, level) pairs, and its presence
+  correlates exactly with whether that level's row made the enemy attack — §3.4's
+  coupling on the player side. Two distinguishable cases:
+  - **Starfire Scion: a plain defect.** `char_ac` is declared at every level (16-18) and
+    read by its own `make_ally` / `make_party_member`, but never by
+    `make_starfire_scion`. The character fights at AC 0, worth ~23% of its incoming
+    damage (65.2 → 52.9 per round). A one-line fix that re-baselines
+    `GOLDEN_DPR[("starfire_scion", 15, "baseline", ())]` (27.42734375 → 27.228750) and
+    moves L1/L5/L10 too, since 5b made every level runnable against an acting enemy.
+  - **War Angel L1-L12: missing DATA, not missing code.** No AC is declared anywhere for
+    those levels, so fixing it means AUTHORING twelve values, which is the user's to do.
+    Until then a run at those levels against an acting enemy fights at AC 0. §3.5's
+    baseline character is the reason this does not have to be fixed first.
 
-  *The transferable half:* a build whose data row carried its own enemy was implicitly
-  tuned against it, and standardizing the enemy un-tunes every such choice at once. War
-  Angel and Silvertail were unaffected — WA because its loadout does not hinge on a single
-  concentration slot, SV because its baked-in enemy already WAS the standardized one — so
-  Starfire is the only build this reaches, and that is measured rather than assumed.
+- **A build's data row carried its own enemy, so its choices were implicitly tuned
+  against it** *(surfaced s52, REFRAMED s53)* — a property of the CONTENT, recorded here
+  so the next session does not mistake it for an engine finding.
+
+  **This entry was first written as build analysis, and that was out of scope (user,
+  s53).** It argued that Starfire L15's Fount of Moonlight is "a net DPR loss" and that
+  its loadout should be re-specified. Whether a spell is a good pick is a
+  build-VALUE question, which `validate-mechanism-not-build-value` keeps out of this
+  layer, and the project is not doing build evaluation yet — it is standing up the
+  framework. The honest finding is narrower and is only about the framework:
+
+  > Standardizing the enemy changes the conditions a build's data was written under, so
+  > any build choice that depended on the retired enemy now behaves differently. The
+  > framework's job is to MEASURE that, not to judge it.
+
+  The mechanism, kept because it is a real statement about the engine rather than about a
+  spell: the retired hand-written L15 enemy swung for a mean of 14, which puts a
+  concentration DC at the rule's own minimum (`DC = max(10, damage // 2)`); the
+  standardized L15 enemy swings for a mean of 33, giving a mean DC of 16. Two
+  consequences are *arithmetic* and worth keeping for anyone reading a concentration
+  number:
+  - **A concentration-dependent effect is lost to the FIRST or second hit, not to a
+    single hard save.** Measured: per-check failure 0.649, so expected checks before a
+    break is `1/0.649 ≈ 1.54`, and measured checks per day is 1.49-1.54 — the match is
+    the mechanism. Any individual save is winnable (35%); surviving a day means winning
+    every one of ~22.
+  - **A d20 FLOOR on a save has a damage threshold, exactly.** A floored roll contributes
+    `10 + the save bonus`, so a floor rescues a save only while the DC is at or below
+    that — for a `+2` save, only while the hit dealt ≤ 25 damage. Below that threshold
+    the floor works every time; above it, never.
+
+  Both numbers above were measured with the character at **AC 0** (see the build-data
+  entry above), and with the enemy focus-firing it because §3.5's party did not exist
+  yet, so they are upper bounds on the pressure rather than the figures a finished
+  scenario would report. Re-measure before quoting them. **Nothing in the test suite
+  depends on any of it:** the affected tests were rewritten to assert mechanisms and no
+  ranking at all.
 
 - **The mitigation channel reads a build whose damage is UNTYPED as a true zero**
   *(surfaced s50)* — War Angel's `typed_damage_share` is 0.0, so with a mitigation

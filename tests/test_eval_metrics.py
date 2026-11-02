@@ -822,10 +822,10 @@ def test_pairing_is_statistically_INERT_once_the_streams_diverge():
     So the count stays prose, knowingly, and what guards the next one is the habit rather
     than a test: a tallied count in prose has nothing behind it.
 
-    **THIS TEST IS A TRIPWIRE AND IS MEANT TO FAIL.**  §13 step 8 (RNG substreams)
+    **THIS TEST IS A TRIPWIRE AND IS MEANT TO FAIL.**  §13 step 9 (RNG substreams)
     exists precisely to make pairing buy real precision; when it lands, the variance
     reduction should rise well above the upper bound here and this assertion should
-    break.  That is the intended signal, not a regression — update it in step 8's
+    break.  That is the intended signal, not a regression — update it in step 9's
     decision record, and do not widen the bound to keep it green.
     """
     base = RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=DAYS,
@@ -848,7 +848,7 @@ def test_pairing_is_statistically_INERT_once_the_streams_diverge():
     # measured 0.892-1.069 envelope; the point is the magnitude, not the sign.
     assert 0.85 <= delta.variance_reduction <= 1.15, (
         f"variance_reduction = {delta.variance_reduction:.4f}. Above 1.15 means pairing "
-        "started WORKING — see §13 step 8 and this test's docstring before touching "
+        "started WORKING — see §13 step 9 and this test's docstring before touching "
         "the bound."
     )
 
