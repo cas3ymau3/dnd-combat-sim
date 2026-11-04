@@ -5294,7 +5294,13 @@ Engine prerequisites, in the order we built them:
 - ~~Advantage/disadvantage + statuses + weapon mastery (sap/vex)~~ ✓  — `StatusSet`,
   `roll_d20`, sap/vex applied on hit and consumed on the holder's next roll.
 
-### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24)
+### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24; RESEQUENCED s54)
+
+> **NEXT TASK = item 4b below: the PRELIMINARY BUILD EVALUATION (#6a).** Reordered by
+> the user at the s54 stock-take to run AHEAD of framework steps 8 and 9. **It is NOT
+> DATA and NOT A VALIDATION** — it exercises the machinery to expose issues and refine
+> focus, and item 5c re-runs the same build on the finished framework afterwards. Read
+> 4b's guardrails before starting: the build is not the subject, the machinery is.
 
 The project has two tracks. **Track 1 (current focus): "make the model produce
 honest, complete build evaluations"** — the enemy-profile arc through to a real
@@ -5577,6 +5583,77 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s52 wrote as a
      deliberate TRIPWIRE for exactly this step. Do not widen that test's bound to keep it
      green; updating it IS part of step 9's decision record.)
+4b. **#6a — PRELIMINARY BUILD EVALUATION. *** NEXT TASK *** (reordered by the user,
+   s54, ahead of framework steps 8 and 9.)**
+
+   > **THIS IS NOT DATA. IT IS NOT A VALIDATION. (user, s54 — read this before writing
+   > a single number anywhere.)** The purpose is to **exercise the machinery we have
+   > built, expose issues, and refine focus** before the evaluation framework is
+   > finished. Nothing it produces may be cited as a result, a baseline, a target, or
+   > evidence about the build. Every artifact it generates is labelled accordingly, and
+   > **#6b below re-runs the SAME build on the finished framework** — that run is the
+   > one whose numbers mean anything.
+   >
+   > This sits alongside [[validate-mechanism-not-build-value]] and
+   > [[standardized-dpr-baseline-not-realism]] and is strictly stronger than either:
+   > those two forbid reading build VALUE out of a mechanism test. This forbids reading
+   > anything out of this evaluation at all, because two framework steps are missing
+   > underneath it — §14(a)'s convergence thresholds are untuned with three recorded
+   > stressors, and §6.1's paired seeding is measured INERT until step 9's substreams.
+   > So intervals are wider than they will be and some "unconverged" flags are
+   > spurious.
+
+   **WHY IT MOVED AHEAD OF STEPS 8 AND 9 (the s54 stock-take).** Neither remaining
+   framework step is needed to produce an evaluation: step 9 is a precision
+   optimisation that is MEASURED inert today and whose own §13 note says nothing
+   depends on it, and step 8's sweeps make MANY runs cheap where a first evaluation is
+   one run per level. Against that, running one now (a) tests the framework against
+   REAL CONTENT rather than against the synthetic subject step 7 built to satisfy it,
+   (b) answers *which remaining machinery is actually needed* by USE rather than by
+   inspection, and (c) gives the project its first output a reader can look at, after
+   54 sessions with none.
+
+   **ANTI-MYOPIA GUARDRAILS (user, s54). These are the constraint, not advice.**
+   - **Do NOT optimise, tune, or second-guess the build.** The subject is the
+     machinery. A finding is in scope when it is about the framework, the engine or
+     the content PLUMBING; it is out of scope the moment it becomes a claim about
+     whether a spell, feat or level choice is good.
+   - **Do NOT polish the evaluation.** The first legible end-to-end output is the
+     deliverable. Resist widening the metric set, adding panels, or chasing a nicer
+     artifact — step 8 is where output machinery belongs.
+   - **Keep it SHORT.** Estimated 2-4 sessions. If it reaches a fourth session without
+     a rendered end-to-end output, that is a signal to stop, write down what blocked
+     it, and go to step 8 — not a signal to keep going.
+   - **The exit condition is explicit:** one rendered evaluation of one build across
+     its levels, a written list of issues the exercise exposed, and a note on which
+     deferred framework items it showed to matter. Then back to step 8.
+
+   **THE BUILD, AND THE BLOCKER TO SETTLE IN THE FIRST TEN MINUTES.** The candidate is
+   the **War Angel** (closest to complete, 16 levels, the build the engine was grown
+   against). **But `ac` is ABSENT from `war_angel.LEVELS` at L1-L12 — twelve of its
+   sixteen levels fight at AC 0**, because `Entity.stat()` returns 0 for a missing key
+   by design (§3.5's finding; §14(j) records it as CONTENT work and as the user's to
+   do). So every defensive number below L13 would be garbage.
+
+   **Good news, checked in s54: the values are RECOVERABLE FROM THE GUIDE, not
+   inventions.** `design/build-guides/38_the_war_angel.txt` states AC explicitly at
+   L1-2 (`13 + 2 DEX + 2 shield = 17`, chain shirt), at L5 (`14 + 2 + 2 = 18`,
+   breastplate) and at L16 (`= 20` with Shield of Faith). One equipment change, at L5.
+   So the twelve missing rows read **17 at L1-4 and 18 at L5-12**, which is also
+   consistent with the 18 already declared at L13-16. **Confirm that reading with the
+   user, then write it off the guide** — per-feature ritual rule 1, verify the text,
+   do not model from memory. Options if the user prefers otherwise: evaluate L13-16
+   only (where AC already exists), or run the low levels under `enemy="none"` and say
+   plainly that they carry no defensive measurement.
+
+4c. **Framework steps 8 and 9 — AFTER #6a.** `evaluation_framework.md` §13 steps 8
+   and 9, unchanged in content; only their position moved. Step 8 (sweep manifests,
+   config-hash caching, baselines registry, a CLI) is also the first cheap opportunity
+   to fix §14(a)'s convergence thresholds. Step 9 (RNG substreams) re-baselines
+   `GOLDEN_DPR` and should trip
+   `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s53 wrote as a
+   deliberate tripwire for exactly that step.
+
 5b. **HOUSEKEEPING PR — scheduled, not optional (user, s54).** Run this **once the
    evaluation framework is finished (after step 9) and BEFORE the first full build
    evaluation below**, which is the boundary the user named: the framework stops
@@ -5595,7 +5672,22 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      along with the wrappers.
    - *(Add further items here as they are found.)*
 
-6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
+5c. **#6b — DEFINITIVE RE-EVALUATION OF THE SAME BUILD (user, s54). Scheduled, not
+   optional.** Once framework steps 8 and 9 are done and the housekeeping PR has
+   landed, re-run **the same build #6a evaluated**, on the finished framework. **This
+   is the run whose numbers count**; #6a's do not and must not be carried forward,
+   cited, or diffed against as though they were a baseline. Expect the numbers to move:
+   step 9 re-baselines every seeded figure by construction, and step 8's threshold work
+   changes which estimates are reported as converged.
+
+   Deliberately the SAME build rather than a different one, so the two runs isolate
+   **what finishing the framework changed about the measurement** — which is the only
+   comparison that can tell us whether steps 8 and 9 were worth doing. Record it as a
+   before/after with its own decision entry, the same shape as the re-baseline records
+   in `tests/test_eval_enemy_seam.py`.
+
+6. **Pause/design → #6 — first full build evaluation (the ORIGINAL entry; #6a/#6b above
+   split it in two at the user's direction, s54).** War Angel L1–13/14
    (closest-to-complete), offense + profile-driven defense + control resilience, vs
    the 4×4 baseline. **Comparison idea (s37):** also reproduce **Treantmonk's tier
    baselines** in the model — `design/build-guides/36_the_reanimating_bloodshot.txt`
