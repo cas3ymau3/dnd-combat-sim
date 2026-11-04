@@ -1989,6 +1989,19 @@ check mechanisms, not the composite. Three things carry that load instead:
    evaluation wants a framework that has been tested against something complete.
    Re-baselines every seeded number under an acting enemy, with its own record.
 8. Sweep YAML + config-hash caching + baselines registry.
+   **RESEQUENCED (user, s54): a PRELIMINARY build evaluation runs BEFORE this step and
+   before step 9.** Neither step is needed to produce one — step 9 is measured inert
+   today and nothing depends on it; step 8's sweeps make MANY runs cheap where a first
+   evaluation is one run per level. Running one first tests the framework against real
+   content rather than against the subject §3.5 built to satisfy it, and answers which
+   of the remaining machinery is needed by USE rather than by inspection. **That
+   evaluation is explicitly NOT DATA and NOT A VALIDATION** — §14(a)'s thresholds are
+   untuned and §6.1's pairing is inert until step 9, so its intervals are wider than
+   they will be and some convergence flags are spurious. The SAME build is re-evaluated
+   on the finished framework afterwards, and that run is the one whose numbers mean
+   anything. See PROGRESS items 4b / 4c / 5c.
+   Step 8 is also the first cheap opportunity to settle §14(a)'s convergence thresholds,
+   which need a sweep across builds and tiers rather than a nudge to a constant.
 9. **RNG substreams** *(added s44)* — per-entity / per-(entity, purpose) generators via
    `SeedSequence.spawn()`, the prerequisite for §6.1's paired seeding to actually buy
    precision (MEASURED inert today — §6.1). Needs its own decision record: it moves every
