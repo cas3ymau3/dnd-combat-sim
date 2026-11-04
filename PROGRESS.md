@@ -5577,6 +5577,24 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s52 wrote as a
      deliberate TRIPWIRE for exactly this step. Do not widen that test's bound to keep it
      green; updating it IS part of step 9's decision record.)
+5b. **HOUSEKEEPING PR — scheduled, not optional (user, s54).** Run this **once the
+   evaluation framework is finished (after step 9) and BEFORE the first full build
+   evaluation below**, which is the boundary the user named: the framework stops
+   changing, and the build-evaluation work wants the build modules legible. It exists so
+   accumulated clutter does not fall through the cracks as a perpetually-open thread.
+   Contents as of s54 — add to this list rather than opening new open-threads entries:
+   - **Delete the three identical `make_training_dummy` wrappers** (`war_angel`,
+     `starfire_scion`, `silvertail`). Since s52 each is a one-line delegation to
+     `enemy_stats.make_baseline_enemy`, so they are three names for one thing — the
+     shape the seam check exists to remove, at a readability cost rather than a
+     correctness one. ~60 test sites call them, which is why this is a scheduled
+     mechanical PR and not a side errand: it is a large diff with no behaviour change,
+     and it should not share a session with anything that moves a number. **Preserve the
+     docstrings' CONTENT** (why the delegation exists, and that the old dummies carried
+     no saves) by moving it to `make_baseline_enemy`, rather than deleting the record
+     along with the wrappers.
+   - *(Add further items here as they are found.)*
+
 6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
    (closest-to-complete), offense + profile-driven defense + control resilience, vs
    the 4×4 baseline. **Comparison idea (s37):** also reproduce **Treantmonk's tier
@@ -6438,8 +6456,14 @@ combat policy through two lenses, and reformulate it as needed:
 >   did NOT fire for the fifth session running: the baseline subject imposes none on its
 >   own attacks either.
 > - **CLOSED by s54: the Starfire `ac` defect (viii) and `with_party` as a second source
->   for the party.** Also closed: the three identical `make_training_dummy` wrappers
->   question is still OPEN (see below) — s54 did not touch it.
+>   for the party.**
+> - **MOVED OUT OF "OPEN" AND SCHEDULED (user, s54): the three identical
+>   `make_training_dummy` wrappers.** s54 did not touch them, and the user's direction is
+>   that this kind of clutter must not sit as a perpetually-open thread. It is now
+>   **roadmap step 5b, a HOUSEKEEPING PR to run after framework step 9 and BEFORE the
+>   first full build evaluation** — the boundary the user named, where the framework stops
+>   changing and the build modules want to be legible. **Add further clutter to that step's
+>   list rather than opening new entries here.**
 >
 > - **NEW (s53), carried into s54 as step 7's own worklist — ALL EIGHT ITEMS DONE** —
 >   these are not open questions, they were the agreed contents of s54:
