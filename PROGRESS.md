@@ -114,6 +114,25 @@ type, condition, resource, …):
    whoever adds the first instance that separates them**, and it arrives as a renderer
    confidently printing a false statement (see step 6).
 
+   **AND A DECLARED PARAMETER MUST DELIVER ITS DECLARED VALUE, OR REFUSE (added s54).**
+   The declare-it rule says to declare a fact rather than derive it. Its other half is
+   that a declaration has to be *honoured*: `aoo_per_combat=2` drew two opportunity-attack
+   rounds independently, so both could land on the same round, where there is one
+   reaction — the scheduler dropped the second and the subject took fewer than two,
+   silently. **A declared parameter that quietly means "at most this many" is not a
+   declaration**; it is a wish with a number on it, and §4 provenance then records a
+   value the run did not apply, which is the exact failure the enemy option schema
+   refuses elsewhere.
+   - Two acceptable answers, and "cap it silently" is neither: make it exact (the rounds
+     are now drawn DISTINCT, which is also the honest model — two reactions in one round
+     is RAW-impossible), or REFUSE the value (more opportunity attacks than rounds is now
+     an error, because there is no way to deliver it).
+   - How it surfaced is the reusable part: the parameter's exactness gave the channel an
+     exact expected value — `aoo_per_combat=1` over four combats and sixteen rounds is
+     0.25 per round and nothing else. A test asserting "greater than zero" would have
+     passed on 0.1875 and on 0.44. **Declaring a parameter is also what makes its channel
+     assertable**, which is a reason to declare beyond provenance.
+
    **SAME QUANTITY, SAME STAGE — the seam check (added s50, same step because it is the
    same design-time question one layer down).**
 
@@ -142,6 +161,25 @@ type, condition, resource, …):
    the pipeline, and then ask the dormancy question: **are the two sides currently
    numerically identical for a reason that will stop holding?** If yes, the mismatch is
    invisible today and will surface as a plausible number later.
+
+   **A DUPLICATED *SEQUENCE* IS AS MUCH A SECOND SOURCE AS A DUPLICATED NUMBER, AND
+   TEST HELPERS ARE NOT EXEMPT (added s54).** The seam check has always been about two
+   places holding one quantity. s54's instance held one ORDER:
+   `tests/test_eval_enemy_seam.built()` hand-mirrored `runner.simulate`'s body —
+   `adapter.build` then `enemy.install` — and its docstring said, in as many words, that
+   it existed *"so the install step cannot silently go missing from a test the way it
+   could have gone missing from an adapter"*. Step 7 added `party.install` to `simulate`;
+   the mirror kept producing PARTYLESS rosters, and **three tests asserted the pre-party
+   behaviour while passing**. It went missing in precisely the way it was written to
+   prevent, and nothing failed — the tests were green and wrong. The fix was to extract
+   `runner.assemble` so both callers share the order.
+   - The generalization: when a call sequence must always happen in a particular order,
+     ask who else performs that sequence, including fixtures and helpers. A helper that
+     reproduces production's steps is production code with no tests of its own.
+   - The tell is a docstring that explains why the duplication is safe. s52's overlay
+     and this helper both had one; both were right when written and stale within two
+     sessions. **"Identical today" in a comment is the phrase §3.4 exists to distrust,
+     and it reads exactly the same whether it is still true or not.**
 
    **NAME THE PRODUCTION WRITER AND THE PRODUCTION READER OF EVERY TELEMETRY CHANNEL A
    CHANGE TOUCHES (added s53).** A channel can be dead at BOTH ends and look alive from
@@ -244,6 +282,23 @@ type, condition, resource, …):
    failed on this one for a reason nobody could reconstruct. Keep the measured numbers
    in a comment next to the assertion that does hold.
 
+   **AN EXACT EQUALITY IS ONLY AS STRONG AS THE THING IT IS EXACT ABOUT (added s54).**
+   The strongest-looking assertion in `test_starfire_scion.py` was
+   `char.concentration_breaks == days` — a bare equality, with a docstring calling that
+   exactness the finding: *"asserted as a RATE with no tolerance on the upper side,
+   because 1.000 per day at every day count is the finding: it is not 'more often', it is
+   every time."* It was exact **only because the Scion fought at AC 0**, its own data
+   having declared `char_ac` 16-18 all along. With the AC installed the rate is 0.99. So
+   the exactness that made the claim read as a discovery was bought by a defect, and the
+   assertion told nobody that one of its inputs was zero.
+   - The habit: when an assertion is exact, name what makes it exact. "Every time"
+     usually means a term is saturated or absent, and a saturated term is worth a
+     sentence — if it is absent by defect, that sentence is where it gets caught.
+   - Note how it hid: the test PASSED for two sessions and its prose was the most
+     confident in the file. This is the complement of the overclaim rule below — there
+     the prose was too strong for the measurement, here the measurement was too clean
+     for the model, and both are read as evidence of care.
+
    **AND A MECHANICAL ARGUMENT IS NOT A MEASUREMENT (broadened s50, after the rule as
    written failed to catch two overclaims in one session).** s49 wrote this rule for
    claims of the shape "this bug would have been VISIBLE / LARGE". Neither s50 overclaim
@@ -337,6 +392,27 @@ does anyone read this, is it derivable from another row, and is it a genuine sca
 or one cell of a breakdown that belongs in a single vector output? **Prune
 deliberately** — an unused metric is a maintenance and interpretation cost, and the
 registry is also the published data dictionary.
+
+**ENUMERATE WHAT A CHANGE MOVES BY *TWO* LISTS, NOT ONE (added s54).** When a change
+will flip registry cells out of one state, the natural enumeration is "which cells are
+KEYED by the dimension that changed" — and that list is easy to write and easy to verify.
+§3.5.5 wrote it in advance for the baseline party: seven `allies`-keyed cells, and all
+seven changed exactly as described. **An eighth changed too, and it was not on any list
+it could have been on.** `healing_provided_to_others_per_day` is a plain SCALAR; its
+availability PREDICATE asks "is there anyone outside the attributed roles?", which a
+declared party answers yes. So:
+
+> **"Cells keyed by the dimension" and "cells whose AVAILABILITY PREDICATE reads the
+> dimension" are two different lists, and only the first is easy to enumerate.** Ask for
+> both. The second is found by grepping the predicates, not the keys.
+
+Why it mattered rather than merely being missed: letting the eighth go available would
+have published a **true zero that still reports ROSTER POVERTY as a build property** —
+the precise failure its predicate was written to prevent, since no shipped build's daily
+plan heals a passive stand-in while War Angel's Prayer of Healing heals five creatures
+RAW. The fix was a third distinguishable answer, which needed a DECLARATION
+(`Roster.party_stand_ins`) because `len(allies)` against `party_size` conflates a build's
+own ally with a framework stand-in the moment both exist.
 
 **THE SURVIVAL RULE — apply this, not "derivable ⇒ cut" (added s46).** The naive rule
 is wrong and the s46 review found the counter-example immediately:
@@ -5501,6 +5577,24 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s52 wrote as a
      deliberate TRIPWIRE for exactly this step. Do not widen that test's bound to keep it
      green; updating it IS part of step 9's decision record.)
+5b. **HOUSEKEEPING PR — scheduled, not optional (user, s54).** Run this **once the
+   evaluation framework is finished (after step 9) and BEFORE the first full build
+   evaluation below**, which is the boundary the user named: the framework stops
+   changing, and the build-evaluation work wants the build modules legible. It exists so
+   accumulated clutter does not fall through the cracks as a perpetually-open thread.
+   Contents as of s54 — add to this list rather than opening new open-threads entries:
+   - **Delete the three identical `make_training_dummy` wrappers** (`war_angel`,
+     `starfire_scion`, `silvertail`). Since s52 each is a one-line delegation to
+     `enemy_stats.make_baseline_enemy`, so they are three names for one thing — the
+     shape the seam check exists to remove, at a readability cost rather than a
+     correctness one. ~60 test sites call them, which is why this is a scheduled
+     mechanical PR and not a side errand: it is a large diff with no behaviour change,
+     and it should not share a session with anything that moves a number. **Preserve the
+     docstrings' CONTENT** (why the delegation exists, and that the old dummies carried
+     no saves) by moving it to `make_baseline_enemy`, rather than deleting the record
+     along with the wrappers.
+   - *(Add further items here as they are found.)*
+
 6. **Pause/design → #6 — first full build evaluation.** War Angel L1–13/14
    (closest-to-complete), offense + profile-driven defense + control resilience, vs
    the 4×4 baseline. **Comparison idea (s37):** also reproduce **Treantmonk's tier
@@ -6362,8 +6456,14 @@ combat policy through two lenses, and reformulate it as needed:
 >   did NOT fire for the fifth session running: the baseline subject imposes none on its
 >   own attacks either.
 > - **CLOSED by s54: the Starfire `ac` defect (viii) and `with_party` as a second source
->   for the party.** Also closed: the three identical `make_training_dummy` wrappers
->   question is still OPEN (see below) — s54 did not touch it.
+>   for the party.**
+> - **MOVED OUT OF "OPEN" AND SCHEDULED (user, s54): the three identical
+>   `make_training_dummy` wrappers.** s54 did not touch them, and the user's direction is
+>   that this kind of clutter must not sit as a perpetually-open thread. It is now
+>   **roadmap step 5b, a HOUSEKEEPING PR to run after framework step 9 and BEFORE the
+>   first full build evaluation** — the boundary the user named, where the framework stops
+>   changing and the build modules want to be legible. **Add further clutter to that step's
+>   list rather than opening new entries here.**
 >
 > - **NEW (s53), carried into s54 as step 7's own worklist — ALL EIGHT ITEMS DONE** —
 >   these are not open questions, they were the agreed contents of s54:
