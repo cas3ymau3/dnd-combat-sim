@@ -1026,6 +1026,12 @@ class WarAngelPolicy:
 
         return InterceptResponse(
             ac_bonus=ac_bonus,
+            # The parry IS a reaction (the guide: "can use rxn to add CHA(5) to AC"),
+            # and the Counter rides the SAME one ("as part of rxn"), so one record
+            # covers both. No economy debit — the guide prices the parry and the
+            # opportunity attack as both happening, knowing they compete in RAW; this
+            # records what is taken so that double-booking shows up in the output.
+            reaction_by=ctx.defender.id,
             resource_cost=resource_cost,
             counter=counter,
         )

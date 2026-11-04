@@ -300,6 +300,18 @@ class DaySample:
             set(self.roster.ids(*(roles if roles is not None else self.own_roles))))
         return float(getattr(tally, attr))
 
+    def reactions(self, *, roles: "tuple[str, ...] | None" = None) -> float:
+        """Reactions TAKEN by the given roster roles (§3.5.1's reaction economy).
+
+        Scoped by role for the same reason ``attacks`` is: the channel is keyed by
+        actor and holds the character's opportunity attack, a commanded summon's
+        reactions and the enemy's, and a pooled count describes none of them.  A
+        COUNT pools legitimately across the attributed roles — a parry and a
+        commanded summon's reaction are both reactions the build spent.
+        """
+        return float(self.telemetry.reactions_for(
+            set(self.roster.ids(*(roles if roles is not None else self.own_roles)))))
+
     def other_roles(self) -> "tuple[str, ...]":
         """The healable roles this run does NOT attribute to the build.
 
@@ -1648,6 +1660,33 @@ def _build_default_registry() -> MetricRegistry:
             "metric and high on saves_forced_per_round."
         ),
         numerator=lambda s: s.attacks("forced"),
+    ))
+
+    # -- panel: the REACTION economy (§3.5.1; §8's coverage row) ----------
+    reg(MetricDef(
+        name="reactions_per_round",
+        unit="reactions/round",
+        denominator="rounds",
+        source="§13 reactions channel — telemetry.reactions, the attributed roles",
+        definition=(
+            "Reactions TAKEN per round by what this run attributes to the build — "
+            "the third action-economy slot (CLAUDE.md #11), and until s54 the one "
+            "the framework could not see at all: the recorder existed and nothing "
+            "called it, so War Angel's once-per-combat opportunity attack read 0 "
+            "over 800 rounds. PER ROUND rather than per combat, which §8's coverage "
+            "row names as an alternative: every other count in this registry is per "
+            "round or per day, and one quantity gets one unit — multiply by "
+            "rounds_per_combat for the per-combat figure. "
+            "IT CAN LEGITIMATELY EXCEED 1.0, which is a documented approximation "
+            "rather than a defect: two of the three places a reaction is spent debit "
+            "the turn economy, while the defender-side intercept (Flourish Parry, "
+            "Protection) does not, because the War Angel guide prices the parry and "
+            "the opportunity attack as both happening — 'even though they both "
+            "consume our reaction'. This row is where that assumption becomes "
+            "visible. Thorns, Warding Bond's redirect and Sanctuary are automatic in "
+            "the 2024 rules and are NOT counted (InterceptResponse.reaction_by)."
+        ),
+        numerator=lambda s: s.reactions(),
     ))
 
     # -- panel: how much of the build's output is even TYPED --------------

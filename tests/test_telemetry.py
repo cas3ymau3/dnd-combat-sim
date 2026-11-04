@@ -53,10 +53,15 @@ def test_concentration_and_economy_records():
     t = CombatTelemetry()
     t.record_concentration(broke=True)
     t.record_concentration(broke=False)
-    t.record_reaction()
+    t.record_reaction(actor_id=7)
     t.record_resource("spell_slot_1", 2)
     assert (t.concentration_checks, t.concentration_breaks) == (2, 1)
-    assert t.reactions_used == 1
+    # ACTOR-KEYED since s54 (§3.5.1): a bare counter pools the character's reaction,
+    # a commanded summon's and the enemy's, and the metric that now reads this channel
+    # has to scope it by roster role.
+    assert t.reactions == {7: 1}
+    assert t.reactions_for({7}) == 1
+    assert t.reactions_for({99}) == 0
     assert t.resources_spent["spell_slot_1"] == 2
 
 
@@ -74,6 +79,11 @@ def test_merge_sums_all_channels():
     # tests/test_eval_attacks.py).
     a.record_attack(4, hit=True, crit=False, advantage=True)
     b.record_attack(4, hit=False, crit=False)
+    # ... and so is the s54 reactions channel: a KEYED merge, so two combats in which
+    # different entities reacted do not collapse onto one actor.
+    a.record_reaction(4)
+    b.record_reaction(4)
+    b.record_reaction(9)
     a.merge(b)
     assert a.saves[("con_save", "damage")].forced == 2
     assert a.saves[("con_save", "damage")].passed == 1
@@ -81,6 +91,7 @@ def test_merge_sums_all_channels():
     assert a.concentration_breaks == 1
     assert a.resources_spent["war_priest"] == 3
     assert (a.attacks[4].forced, a.attacks[4].hit, a.attacks[4].advantage) == (2, 1, 1)
+    assert a.reactions == {4: 2, 9: 1}
 
 
 # ---------------------------------------------------------------------------

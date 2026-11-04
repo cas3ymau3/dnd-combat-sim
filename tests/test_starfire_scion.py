@@ -1058,10 +1058,16 @@ def test_l15_fom_combat_turn1_casts_fom_and_activates_dragon_for_zero_damage():
     assert dragon.statuses[0].value == 10
 
 
-def _mean_dpr_l15_rider(disable, n_days, seed=0, rounds_per_combat=4):
-    """L15 DPR with one #6 rider ABLATED (FoM or Primal Strike switched off) — the
-    enemy strikes back either way (same loop), so the difference isolates that
-    rider's contribution to the Scion's outgoing DPR."""
+def _mean_dpr_l15_rider(disable, n_days, seed=0, rounds_per_combat=4,
+                        enemy_acts=True):
+    """L15 DPR with one #6 rider ABLATED (FoM or Primal Strike switched off), with
+    the enemy either striking back or passive.
+
+    Returns ``(dpr, concentration_breaks_per_day)``.  The second value is what makes
+    the ``enemy_acts`` arm a MEASUREMENT of the concentration gate rather than an
+    assumption about it — see ``test_fount_of_moonlights_contribution_is_gated_on_its
+    _concentration_surviving``.
+    """
     rng = SeededRNG(seed)
     char = ss.make_starfire_scion(15)
     dummy = ss.make_training_dummy(15)
@@ -1070,50 +1076,88 @@ def _mean_dpr_l15_rider(disable, n_days, seed=0, rounds_per_combat=4):
         policy._has_fount_of_moonlight = False
     elif disable == "primal":
         policy._has_primal_strike = False
-    # The enemy is DECLARED here, not read off a LEVELS row (s52, §3.4 step 5b).
-    # These are the standardized L15 numbers; the deleted row carried an
-    # "ILLUSTRATIVE" 2d8+5 at +9, which the table replaces with 8d6+5 at +12.
-    enemy_policy = _l15_enemy(char, rounds_per_combat)
+    policies = {char.id: policy}
+    if enemy_acts:
+        # The enemy is DECLARED here, not read off a LEVELS row (s52, §3.4 step 5b).
+        # These are the standardized L15 numbers; the deleted row carried an
+        # "ILLUSTRATIVE" 2d8+5 at +9, which the table replaces with 8d6+5 at +12.
+        policies[dummy.id] = _l15_enemy(char, rounds_per_combat)
     runner = DayRunner(
-        rng=rng, entities=[char, dummy],
-        policies={char.id: policy, dummy.id: enemy_policy},
+        rng=rng, entities=[char, dummy], policies=policies,
         rounds_per_combat=rounds_per_combat)
     rounds_per_day = 4 * rounds_per_combat
-    total = sum(runner.run_day().damage_received_by(dummy.id) for _ in range(n_days))
-    return total / (n_days * rounds_per_day)
+    total = breaks = 0
+    for _ in range(n_days):
+        result = runner.run_day()
+        total += result.damage_received_by(dummy.id)
+        breaks += result.telemetry.concentration_breaks
+    return total / (n_days * rounds_per_day), breaks / n_days
 
 
-def test_fount_of_moonlight_now_COSTS_dpr_against_the_standardized_enemy():
-    """s52 INVERTS this test, and the inversion is a real finding about the build
-    rather than a re-tuned threshold.
+def test_fount_of_moonlights_contribution_is_gated_on_its_concentration_surviving():
+    """The MECHANISM: a concentration-gated rider contributes only while its
+    concentration holds, so its measured contribution moves with the gate.
 
-    It asserted ``on > off``: enabling Fount of Moonlight lifted L15 DPR, which it did
-    against the hand-written enemy the deleted L15 row carried (2d8+5 at +9).  Against
-    the definitive table's L15 enemy (8d6+5 at +12) it is a NET LOSS of about 1.4 DPR
-    — measured 27.17 with the rider on against 28.58 with it ablated, 400 days / seed 0.
+    **REWRITTEN (s54), and the rewrite is the point.** This test and the one it
+    replaced BOTH asserted a build-VALUE direction — ``on > off`` before s52,
+    ``off > on`` after it. s52 inverted a category error instead of fixing it: "FoM
+    lifts L15 DPR" and "FoM costs L15 DPR" are the same kind of claim, and
+    [[validate-mechanism-not-build-value]] excludes both. Whether the Scion's
+    4th-level slot is well spent is §13's first full build evaluation.
 
-    The cause is measured in
-    ``test_the_standardized_enemy_ends_fount_of_moonlights_concentration_every_day``:
-    this build has ONE 4th-level slot and no short-rest recovery, and the standardized
-    enemy ends that concentration on 1.000 of days.  So the loadout pays a turn and a
-    slot for a rider that does not survive, while the ablated build spends the same turn
-    hitting things.
+    What is asserted instead is a statement about the ENGINE, and it is the one the
+    s52 investigation actually established: the rider rides on concentration, so
+    ABLATING it costs more where the concentration survives than where it does not.
+    Measured at 400 days / seed 0, four runs:
 
-    **This is a build-value finding, and it is deliberately NOT asserted as one**
-    ([[validate-mechanism-not-build-value]]) — "FoM is a bad pick at L15" would be a
-    claim about the build.  What is asserted is the MECHANISM: the rider's contribution
-    is bounded by whether its concentration survives, so with concentration lost every
-    day the ablation cannot be behind.  Direction only, with a margin well inside the
-    measured 1.4 so it is not a disguised threshold.
+      ==================  =========  ============  ==============  ============
+      enemy               breaks/day  rider ON      rider ABLATED   contribution
+      ==================  =========  ============  ==============  ============
+      passive (`none`)        0.000      29.6295         28.3900        +1.2395
+      acting (`scripted`)     1.000      27.1698         28.5800        -1.4102
+      ==================  =========  ============  ==============  ============
+
+    The gate is binary enough at L15 that the contribution changes SIGN — this build
+    has one 4th-level slot and no short-rest recovery, so a single break ends the
+    rider for the day — but the assertion is on the ORDERING, not on the sign, because
+    the sign is a property of this particular loadout and the ordering is a property
+    of how riders work.
+
+    The two arms differ ONLY in whether the enemy acts, which is what makes this an
+    ablation of the gate rather than of the build. And it is not blind the way s53
+    warned ablations are: the gate itself is measured in both arms (the breaks/day
+    column), so a change that moved BOTH arms together would still have to explain a
+    gate that stopped moving.
     """
-    on = _mean_dpr_l15_rider(disable=None, n_days=400)
-    off = _mean_dpr_l15_rider(disable="fom", n_days=400)
-    assert off > on, f"FoM on {on:.2f} should now trail ablated {off:.2f}"
+    held_on, held_breaks = _mean_dpr_l15_rider(disable=None, n_days=400,
+                                               enemy_acts=False)
+    held_off, _ = _mean_dpr_l15_rider(disable="fom", n_days=400, enemy_acts=False)
+    lost_on, lost_breaks = _mean_dpr_l15_rider(disable=None, n_days=400,
+                                               enemy_acts=True)
+    lost_off, _ = _mean_dpr_l15_rider(disable="fom", n_days=400, enemy_acts=True)
+
+    # The GATE is a measurement in each arm, not an assumption about the arms.
+    assert held_breaks == 0.0, "a passive enemy forces no concentration checks"
+    assert lost_breaks == 1.0, "the standardized enemy ends it on every day"
+
+    held_contribution = held_on - held_off
+    lost_contribution = lost_on - lost_off
+    assert held_contribution > lost_contribution, (
+        f"the rider should contribute more where its concentration survives: "
+        f"{held_contribution:+.4f} (0 breaks/day) vs "
+        f"{lost_contribution:+.4f} ({lost_breaks:.3f} breaks/day)"
+    )
+    # A margin far inside the measured 2.65 gap, so this is a direction and not a
+    # disguised threshold.
+    assert held_contribution - lost_contribution > 1.0
 
 
 def test_primal_strike_lifts_l15_dpr_at_a_fixed_enemy():
-    on = _mean_dpr_l15_rider(disable=None, n_days=400)
-    off = _mean_dpr_l15_rider(disable="primal", n_days=400)
+    """An UNGATED rider (substrate #6, no concentration) adds damage at a fixed enemy
+    — the control case for the gated one above: its contribution does not depend on
+    anything the enemy can take away."""
+    on, _ = _mean_dpr_l15_rider(disable=None, n_days=400)
+    off, _ = _mean_dpr_l15_rider(disable="primal", n_days=400)
     assert on > off, f"primal strike on {on:.2f} !> off {off:.2f}"
 
 

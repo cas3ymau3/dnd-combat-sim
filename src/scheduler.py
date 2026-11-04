@@ -470,6 +470,13 @@ class Scheduler:
             # Consume action economy (if any), then persistent resources.
             if ac is not None and ac in self._turn_economy:
                 self._turn_economy[ac] -= 1
+                # §3.5.1 reaction economy, WRITER 2 of 3. No shipped build reaches
+                # this with ac == "reaction" (War Angel's smite spends the bonus
+                # action), so it is wired for completeness and covered by a synthetic
+                # fixture: the alternative is an unrecorded path that would read as a
+                # measurement the day a build uses it.
+                if ac == "reaction":
+                    self.telemetry.record_reaction(actor.id)
             for n, a in response.resource_cost.items():
                 actor.resources.consume(n, a)
                 self.telemetry.record_resource(n, a)
@@ -539,6 +546,15 @@ class Scheduler:
             for n, a in response.resource_cost.items():
                 target.resources.consume(n, a)
                 self.telemetry.record_resource(n, a)
+            # §3.5.1 reaction economy, WRITER 3 of 3 — and the only one that is not
+            # an economy debit, deliberately: the intercept reaction is the policy's
+            # own once-per-round gate (see InterceptResponse), so there is no
+            # `_turn_economy` write here to hang the record on. The spender is
+            # DECLARED by the response rather than assumed to be `target`, because
+            # Protection is the PROTECTOR's reaction while this closure was built
+            # around the defender.
+            if response.reaction_by is not None:
+                self.telemetry.record_reaction(response.reaction_by)
             return response
 
         return intercept_decider
@@ -775,6 +791,13 @@ class Scheduler:
             # --- Consume action economy ---
             if cost in econ:
                 econ[cost] -= 1
+                # §3.5.1 reaction economy, WRITER 1 of 3 and the one that matters
+                # today: this is the opportunity attack. Keyed to the DECIDING actor,
+                # not `choice.actor`, because the reaction spent is the decider's even
+                # when the event's actor is a commanded summon (substrate #7 / 7a) —
+                # the same split the resource_cost drain above already makes.
+                if cost == "reaction":
+                    self.telemetry.record_reaction(actor.id)
 
             # --- Consume persistent resources ---
             if choice.resource_cost:

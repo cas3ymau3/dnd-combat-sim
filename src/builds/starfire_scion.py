@@ -818,7 +818,11 @@ class AllyEffectPolicy:
             return InterceptResponse(
                 redirect=RedirectSpec(target=self._caster, fraction=1.0))
         if self._effect == "protection":
-            return InterceptResponse(impose_disadvantage=True)
+            # The PROTECTOR's reaction, not the warded ally's: 2024's Protection
+            # fighting style is "you can use your Reaction to impose Disadvantage",
+            # and this policy answers the defender's intercept on the caster's behalf.
+            return InterceptResponse(impose_disadvantage=True,
+                                     reaction_by=self._caster.id)
         if self._effect == "sanctuary":
             dc = int(self._caster.stat("spell_save_dc"))
             return InterceptResponse(

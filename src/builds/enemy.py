@@ -298,10 +298,17 @@ class BaselineEnemyPolicy:
         band_override: "str | None" = None,
         damage_type_mix: bool = False,
         legendary_cadence: bool = False,
+        roster: "list[tuple[Entity, int]] | None" = None,
     ) -> None:
         self._level = level
         self._primary = primary
         self._fallback = fallback
+        # MULTI-ENTITY targeting (evaluation_framework.md §3.5.3, s54): the weighted
+        # friendly roster `ScriptedEnemyPolicy` has always had.  None → the
+        # primary/fallback focus-fire below, drawing NOTHING for targeting, which is
+        # what keeps every pre-party baseline bit-identical.  A roster is the general
+        # case and focus-fire is its degenerate one ("weight everything else zero").
+        self._roster = roster
         self._n_attacks = max(1, n_attacks if n_attacks is not None
                               else baseline_n_attacks(level))
         self._rounds = rounds_per_combat
@@ -384,8 +391,11 @@ class BaselineEnemyPolicy:
         self._bundled_stat: dict[int, str] = {}
         self._overflow_fire: dict[int, bool] = {}
         self._overflow_stat: dict[int, str] = {}
+        # Pre-rolled target per (round, attack slot) when a roster is given.
+        self._picks: dict[int, list["Entity"]] = {}
 
     def on_combat_start(self, combat_index: int, rng: "SeededRNG") -> None:
+        self._picks = {}
         self._save_round = {}
         self._save_stat = {}
         self._pure_control = {}
@@ -396,6 +406,25 @@ class BaselineEnemyPolicy:
         self._overflow_stat = {}
         self._round_damage_type = {}
         for r in range(1, self._rounds + 1):
+            # MULTI-ENTITY targeting (§3.5.3): pre-roll WHICH friendly each attack slot
+            # lands on, through the seeded channel, so decide() stays dice-free.
+            #
+            # PER SLOT and not per round, matching `ScriptedEnemyPolicy` exactly — which
+            # is the whole point of the change.  §3.4 claims `baseline` vs `scripted`
+            # isolates "the enemy forces saves" from "the enemy swings"; if the two
+            # policies split their attacks by different RULES, that arm compares two
+            # things at once (§3.5.3, measured).
+            #
+            # `n_attacks` picks are drawn EVERY round regardless of round type, and a
+            # save / control round uses picks[0] for its single target.  Drawing
+            # unconditionally keeps the stream shape independent of the round type that
+            # is pre-rolled below — otherwise the targeting draws and the round-type
+            # draws would be coupled, and a change to either would move the other.
+            # (A save-for-damage AoE still resolves against ONE target: §7's AoE-share
+            # is a separate deferral, not something this change quietly settles.)
+            if self._roster is not None:
+                self._picks[r] = [self._weighted_pick(rng)
+                                  for _ in range(self._n_attacks)]
             # §7 damage-type-mix toggle: independent of save/control/attack round type —
             # a per-round weighted draw from the band-empirical incoming damage-type mix.
             # OFF (empty self._type_weights, the default) → no-op, decide() falls back to
@@ -455,6 +484,23 @@ class BaselineEnemyPolicy:
                 self._overflow_fire[r] = True
                 self._overflow_stat[r] = self._weighted_control(rng)
 
+    def _weighted_pick(self, rng: "SeededRNG") -> "Entity":
+        """Pick a roster entity with probability proportional to its weight.
+
+        Byte-for-byte the same procedure as ``ScriptedEnemyPolicy._weighted_pick``:
+        one ``roll_one(total)`` over the summed weights, then walk the cumulative
+        buckets.  Identical ON PURPOSE rather than shared, for now — see the note in
+        ``describe_parameters`` about what would have to be true to hoist it.
+        """
+        total = sum(w for _, w in self._roster)
+        roll = rng.roll_one(total)              # 1..total
+        cum = 0
+        for ent, w in self._roster:
+            cum += w
+            if roll <= cum:
+                return ent
+        return self._roster[-1][0]              # numerical safety (unreachable)
+
     def _weighted_save(self, rng: "SeededRNG") -> str:
         """Pick a save type with probability proportional to its weight, through the
         single seeded channel (generalises ScriptedEnemyPolicy._weighted_pick)."""
@@ -488,6 +534,27 @@ class BaselineEnemyPolicy:
             return self._fallback
         return None
 
+    def _slot_targets(self, round_: int) -> "list[Entity]":
+        """The target of each attack slot this round — the pre-rolled picks under a
+        roster, or ``n_attacks`` copies of the focus target without one.
+
+        The summon-survival fallback (substrate #7 / 7a) survives the roster path: a
+        pick that has winked out hands its slot to ``_current_target()``, so keeping a
+        beast alive still tanks for its master and a slain beast's share of the
+        incoming damage is not wasted on a corpse.  Returns ``[]`` when there is
+        nothing left to hit at all.
+        """
+        focus = self._current_target()
+        if self._roster is None:
+            return [] if focus is None else [focus] * self._n_attacks
+        out: list["Entity"] = []
+        for ent in self._picks.get(round_, []):
+            if not ent.is_out_of_action:
+                out.append(ent)
+            elif focus is not None:
+                out.append(focus)
+        return out
+
     def _control_choice(self, target: "Entity", save_stat: str,
                         cost: str) -> Choice:
         """Build one control_save Choice (§6).  The ControlSpec carries the qualitative
@@ -515,10 +582,16 @@ class BaselineEnemyPolicy:
     def decide(self, snapshot: GameState) -> list[Choice]:
         if snapshot.resources.get("action", 0) < 1:
             return []
-        target = self._current_target()
-        if target is None:
-            return []
         r = snapshot.round_number
+        slot_targets = self._slot_targets(r)
+        if not slot_targets:
+            return []
+        # The SINGLE-target actions (a save-for-damage AoE, a control effect, and the
+        # legendary swings) all land on the first slot's target.  Without a roster that
+        # is the focus target, exactly as before; with one it is the first pre-rolled
+        # pick, so a round aimed at a party member is aimed at it consistently rather
+        # than having its control land on the character.
+        target = slot_targets[0]
         choices: list[Choice] = []
         # §7 damage-type-mix toggle: the per-round empirical draw overrides the fixed
         # scalar when ON; OFF (no draw for this round) falls back to self._damage_type.
@@ -552,12 +625,13 @@ class BaselineEnemyPolicy:
                     target, self._bundled_stat[r], "none"))
         else:
             # Attack-roll round: n swings, each rolling the per-CR multiattack dice (so a
-            # natural 20 doubles the dice — enemy crits).
-            for i in range(self._n_attacks):
+            # natural 20 doubles the dice — enemy crits).  One swing per slot target, so
+            # a weighted roster spreads the round across several friendlies.
+            for i, slot_target in enumerate(slot_targets):
                 choices.append(Choice(
                     action_type="attack",
                     cost="action" if i == 0 else "none",
-                    target=target,
+                    target=slot_target,
                     weapon_stat="attack_bonus",
                     damage_dice=self._attack_dice,
                     damage_bonus=self._attack_bonus,
@@ -625,6 +699,18 @@ class BaselineEnemyPolicy:
             "legendary_swings": self._legendary_swings,
             "focus": self._primary.name,
             "fallback": self._fallback.name if self._fallback is not None else None,
+            # NAMES the mode rather than leaving a reader to infer it from whether
+            # roster_weights is populated — the same §4 argument ScriptedEnemyPolicy's
+            # block makes, and now the same vocabulary, which is what makes the two
+            # policies' provenance blocks comparable at all.  (The two _weighted_pick
+            # implementations are deliberately duplicated rather than hoisted: a shared
+            # helper would have to live in a module both import, and the thing worth
+            # sharing is the CONTRACT — identical draw per slot, integer weights — which
+            # is pinned as an equality test instead.)
+            "targeting": ("weighted_roster" if self._roster is not None
+                          else "single_target"),
+            "roster_weights": (None if self._roster is None
+                               else {e.name: w for e, w in self._roster}),
             "forces_saves": True,
             "control_channel": self._control,
         }

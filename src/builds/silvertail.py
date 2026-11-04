@@ -656,7 +656,10 @@ class BeastEffectPolicy:
             return InterceptResponse(
                 redirect=RedirectSpec(target=self._master, fraction=1.0))
         if self._effect == "protection":
-            return InterceptResponse(impose_disadvantage=True)
+            # The MASTER's reaction (2024 Protection fighting style), not the
+            # companion's — see starfire_scion's twin and InterceptResponse.
+            return InterceptResponse(impose_disadvantage=True,
+                                     reaction_by=self._master.id)
         return None                              # bless / aid carry no intercept rider
 
     def decide(self, snapshot) -> list[Choice]:
