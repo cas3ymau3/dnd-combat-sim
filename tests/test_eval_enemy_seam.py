@@ -1337,9 +1337,23 @@ def test_the_metric_set_grew_only_by_the_declared_rows():
     survival rule's "derivable and nobody reads it" cut. The realized half remains in
     the §13 channel, where it PROVES the equality.
 
-    27 declarations: 16 scalars + 8 breakdowns + 3 distributions.
+    **UPDATED (s54):** step 7 added exactly ONE declaration, and it is the READ half
+    of the reaction channel §3.5.1 found dead at both ends:
+
+    * ``reactions_per_round`` — the §8 coverage map did not list the reaction economy
+      at all, in either direction. ``record_reaction()``'s only caller was a unit test
+      and no metric read ``reactions_used``, so War Angel's once-per-combat
+      opportunity attack recorded 0 over 800 rounds.
+
+    The same session ACTOR-KEYED the channel (``reactions_used: int`` →
+    ``reactions: dict[int, int]``), which is a telemetry change rather than a
+    declaration: a bare counter has no answer to the per-METRIC ritual's first
+    question, since one combat holds the character's reaction, a commanded summon's
+    and the enemy's.
+
+    28 declarations: 17 scalars + 8 breakdowns + 3 distributions.
     """
-    assert len(METRICS.scalars()) == 16
+    assert len(METRICS.scalars()) == 17
     assert len(METRICS.breakdowns) == 8
     assert len(METRICS.distributions()) == 3
-    assert len(METRICS.names()) == 76
+    assert len(METRICS.names()) == 77

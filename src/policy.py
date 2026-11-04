@@ -699,11 +699,40 @@ class InterceptResponse:
       - `redirect` — a share of the bearer's TAKEN damage is also dealt to a third
         party (Warding Bond, 7c); captured here and resolved at damage time.
 
-    The reaction itself is NOT modeled as an engine resource: the policy self-gates
-    it (once per round for a parry; thorns/redirect are automatic and ungated),
-    decoupled from the opportunity-attack reaction per the build guide's assumption.
+    THE REACTION: declared by `reaction_by`, not derived from which rider is set.
+    ------------------------------------------------------------------------------
+    The reaction is NOT modeled as an engine resource — the policy self-gates it (once
+    per round for a parry) and the opportunity attack is priced as happening ANYWAY,
+    which is the War Angel guide's own stated assumption, in as many words: "even
+    though they both consume our reaction, this assumption feels right since we don't
+    have any other demands on our reaction". That approximation stays; what `reaction_by`
+    adds is that the reaction is now RECORDED (§3.5.1's reaction economy), so a run
+    reporting more than one reaction per round makes the double-booking visible instead
+    of leaving it in this docstring.
+
+    `reaction_by` is the id of the entity whose reaction this intercept spends, or None
+    for an automatic one. DECLARED rather than inferred, because two plausible
+    derivations are both wrong:
+
+      - *"which rider is set tells you"* — `ac_bonus`/`impose_disadvantage` are
+        reactions in the 2024 rules while `reactive_damage`/`redirect`/`negate_save`
+        are automatic, and that mapping holds for all five intercepts shipped today.
+        Holding across every instance that exists is exactly why a derivation goes
+        unquestioned until the first instance separates the facts (the s49
+        `BreakdownDef.sum_rule` lesson).
+      - *"it belongs to whoever's policy answered"* — ALREADY FALSE. The scheduler
+        consults the DEFENDER's policy, but the Protection fighting style is the
+        PROTECTOR's reaction ("you can use your Reaction to impose Disadvantage"), and
+        both shipped Protection implementations are an ally/companion policy acting for
+        its caster. Nothing surfaced it because nothing read the channel.
+
+    Flourish Parry (and its Counter, "as part of the same rxn", so one reaction for
+    both) sets the defender; Protection sets the protector; Fire Shield's thorns,
+    Warding Bond's redirect and Sanctuary's save leave it None.
     """
     ac_bonus: int = 0
+    #: Entity id whose REACTION this intercept spends; None = automatic (no reaction).
+    reaction_by: "int | None" = None
     resource_cost: dict[str, int] = field(default_factory=dict)
     counter: "CounterSpec | None" = None
     reactive_damage: "ReactiveDamageSpec | None" = None

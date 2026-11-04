@@ -56,7 +56,8 @@ s49 one):
     un-crit). ``disadvantage`` is recorded but has no registered metric today — it
     makes the stance a true three-way partition, which is a testable invariant, while
     no shipped build imposes disadvantage on its own attacks.
-  - **economy** — concentration checks forced / broken, reactions used, resources spent
+  - **economy** — concentration checks forced / broken, resources spent
+  - **reactions** — reactions TAKEN, keyed by actor (§3.5.1)
     (folds the existing slot-audit / parry-budget / concentration-count monkeypatches).
     The resource ledger went LIVE in s44: the scheduler records at every
     ``resources.consume`` site (the six decider closures plus the main choice loop), so
@@ -287,10 +288,11 @@ class CombatTelemetry:
     healing: dict[tuple[int, int, str], HealingTally] = field(default_factory=dict)
     # attacks: actor id -> AttackTally
     attacks: dict[int, AttackTally] = field(default_factory=dict)
+    # reactions: actor id -> reactions TAKEN by that actor
+    reactions: dict[int, int] = field(default_factory=dict)
     # economy
     concentration_checks: int = 0
     concentration_breaks: int = 0
-    reactions_used: int = 0
     resources_spent: dict[str, int] = field(default_factory=dict)
 
     # -- record methods (the only way resolution writes; closed vocabulary) -------
@@ -396,8 +398,28 @@ class CombatTelemetry:
         self.attacks.setdefault(actor_id, AttackTally()).add(
             hit=hit, crit=crit, advantage=advantage, disadvantage=disadvantage)
 
-    def record_reaction(self) -> None:
-        self.reactions_used += 1
+    def record_reaction(self, actor_id: int) -> None:
+        """Record one reaction TAKEN by *actor_id* (§3.5.1's reaction economy).
+
+        ACTOR-KEYED, like ``attacks`` and unlike the bare counter this replaced.
+        The per-METRIC ritual's first question — "whose quantity is this?" — had no
+        answer while this was a scalar: one combat holds the character's opportunity
+        attack, a commanded summon's reactions and the enemy's, and a pooled count
+        describes none of them.  That is the aggregate-ledger trap the ritual was
+        written for, and it was reachable here rather than merely dormant.
+
+        TAKEN, not "economy slots spent", and the distinction is load-bearing.  Two
+        of the three places a reaction is spent debit ``Scheduler._turn_economy``;
+        the DEFENDER-side intercept seam deliberately does not (``InterceptResponse``
+        — the reaction is the policy's own once-per-round gate), because the War
+        Angel guide prices Flourish Parry and the opportunity attack as BOTH
+        happening, in as many words: "even though they both consume our reaction,
+        this assumption feels right since we don't have any other demands on our
+        reaction".  So this counter can legitimately exceed one per round, and that
+        is the approximation becoming VISIBLE in the output instead of living in two
+        docstrings.
+        """
+        self.reactions[actor_id] = self.reactions.get(actor_id, 0) + 1
 
     def record_resource(self, name: str, amount: int = 1) -> None:
         self.resources_spent[name] = self.resources_spent.get(name, 0) + amount
@@ -419,9 +441,10 @@ class CombatTelemetry:
             self.healing.setdefault(key, HealingTally()).merge(ht)
         for actor_id, at in other.attacks.items():
             self.attacks.setdefault(actor_id, AttackTally()).merge(at)
+        for actor_id, count in other.reactions.items():
+            self.reactions[actor_id] = self.reactions.get(actor_id, 0) + count
         self.concentration_checks += other.concentration_checks
         self.concentration_breaks += other.concentration_breaks
-        self.reactions_used += other.reactions_used
         for name, amount in other.resources_spent.items():
             self.resources_spent[name] = self.resources_spent.get(name, 0) + amount
 
@@ -503,6 +526,20 @@ class CombatTelemetry:
                 continue
             out.merge(tally)
         return out
+
+    def reactions_for(self, actor_ids: "set[int] | None" = None) -> int:
+        """Reactions taken, summed over the given actors (§3.5.1).
+
+        The READER half of the reaction channel.  ALWAYS pass a scope for the same
+        reason ``attacks_for`` says to: ``None`` pools every actor including the
+        enemy.  A COUNT pools legitimately across a build's own roles — the
+        character's parry and a commanded summon's reaction are both reactions the
+        build spent — which is why this returns an int rather than a per-actor map.
+        """
+        return sum(
+            count for actor_id, count in self.reactions.items()
+            if actor_ids is None or actor_id in actor_ids
+        )
 
     def control_for(self, actor_ids: "set[int] | None" = None,
                     ability: "str | None" = None) -> ControlTally:

@@ -1346,7 +1346,7 @@ hidden — it is priced correctly.
 | saves forced by type; failures by type and % | available — §13 saves channel |
 | control turns lost / reduced | available — §13 control channel (s40) + §7 above; APPLIED at runtime since s51, and the realized cost reported beside the credit (§7.6) |
 | limited resources per day / per combat | available — §13 economy channel |
-| **reaction economy: reactions taken per round / per combat** | **NOT available — the channel is DEAD AT BOTH ENDS (found s53).** `CombatTelemetry.reactions_used` exists with a `record_reaction()` method, but its only caller is a unit test and no metric reads it, so War Angel's once-per-combat AoO records 0 over 800 rounds. §3.5.1 carries the finding; step 7 wires the writer and registers the reader |
+| reaction economy: reactions taken per round | available — §13 reactions channel (s54), `reactions_per_round`. Was DEAD AT BOTH ENDS when s53 found it: `CombatTelemetry.reactions_used` had a recorder whose only caller was a unit test and no metric read it, so War Angel's once-per-combat AoO recorded 0 over 800 rounds. Step 7 wired both halves and ACTOR-KEYED the channel on the way (a bare counter pools the character's reaction, a commanded summon's and the enemy's — the per-METRIC ritual's first question had no answer). **Reported per ROUND only**, not per combat: one quantity, one unit (×`rounds_per_combat` for the other). Three writers, and only two are economy debits — see §8.2a |
 | concentration share and breaks | available — §13 economy channel |
 | party / summon / ally damage columns | available — `damage_by_source`, `party_total` |
 | attack-roll counts: hits, crits, hit %, crit %, attacks at advantage and % | available — §13 `attacks` channel (s49); `attacks_per_round` + `attack_roll_rate` (§8.1 below) |
@@ -1434,6 +1434,38 @@ A scalar and a breakdown, not three scalars.
 - **Every cell is `scale = ratio`** (checked, not defaulted — s49). A rate in [0,1] and
   a count per round both have a true zero, so §6.2's relative-precision criterion is the
   right one. Nothing here can go negative, so there is no `interval` candidate.
+
+### 8.2a The reaction channel's three writers, and why the count can exceed 1.0 (s54)
+
+A reaction is spent in three places, and **only two of them debit the turn economy**:
+
+| site | debits `_turn_economy`? | what reaches it today |
+|---|---|---|
+| `Scheduler`'s choice loop (`econ[cost] -= 1`) | yes | the **opportunity attack** — War Angel's, and the baseline character's (§3.5.1) |
+| the on-hit decider (`self._turn_economy[ac] -= 1`) | yes | **nothing shipped** — War Angel's smite spends the bonus action. Wired anyway, because an unrecorded path reads as a measurement the day a build uses it; covered by a synthetic fixture |
+| the defender-side `intercept_decider` | **no, deliberately** | **Flourish Parry** (+ its Counter, on the same reaction) and the **Protection** fighting style |
+
+The third has no economy write to hang a record on, because `InterceptResponse` models
+the reaction as the policy's own once-per-round gate rather than as an engine resource.
+That is not an oversight: the War Angel guide prices the parry and the opportunity attack
+as **both** happening, in as many words — *"even though they both consume our reaction,
+this assumption feels right since we don't have any other demands on our reaction and the
+situations where we're using flourish parry versus making attacks of opportunity are
+different."* Making the intercept cost a real slot would override the guide's own stated
+assumption and move War Angel's validated numbers, so the approximation stays and the
+metric is what makes it visible: `reactions_per_round` above 1.0 is RAW-impossible and is
+the cheapest available detector, per step 4's out-of-range habit.
+
+**Which intercepts count is DECLARED (`InterceptResponse.reaction_by`), not derived**, and
+the roll call found two plausible derivations that are both wrong. *"Which rider is set
+tells you"* holds for all five shipped intercepts — `ac_bonus`/`impose_disadvantage` are
+reactions in the 2024 rules, `reactive_damage`/`redirect`/`negate_save` are automatic —
+which is exactly the s49 `sum_rule` shape: a derivation true of every instance that exists
+is the one nobody questions. And *"it belongs to whoever's policy answered"* is **already
+false**: the scheduler consults the DEFENDER's policy, but Protection is the PROTECTOR's
+reaction, and both shipped implementations are an ally/companion policy acting for its
+caster. The dormancy question's third answer again — already unequal, nowhere anyone
+looked, and nothing would have failed when it was first reached.
 
 ### 8.2 Deferred: per-ability damage attribution
 
