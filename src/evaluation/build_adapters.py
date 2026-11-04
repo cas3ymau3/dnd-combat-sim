@@ -39,7 +39,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ..builds import silvertail, starfire_scion, war_angel
+from ..builds import baseline_character, silvertail, starfire_scion, war_angel
 from . import enemy as enemy_seam
 from .adapters import OptionSpec, register
 from .roster import Roster
@@ -260,6 +260,140 @@ class SilvertailAdapter:
         }
 
 
+# ---------------------------------------------------------------------------
+# The BASELINE CHARACTER — the framework's own declared subject (§3.5)
+# ---------------------------------------------------------------------------
+
+class BaselineCharacterAdapter:
+    """The framework's declared SUBJECT (evaluation_framework.md §3.5), adapted.
+
+    **Not a build**, and that is the point.  The other three adapters wrap character
+    builds whose data is sparse exactly where the framework needs it complete, which
+    is what makes a framework defect and a content gap indistinguishable.  This one
+    wraps a subject that is complete at every level by construction, so a mechanism
+    test can assert framework behaviour and mean it.
+
+    All 20 levels, so it is also the only adapter whose ``available_levels`` is a
+    full range rather than a sparse set — §3.2's note that level sets are sparse is
+    about BUILDS, and this is the reason the framework never assumed otherwise.
+
+    It is the one adapter that needs the roster AFTER the party is installed: the
+    ``ally_buff`` axis has to land on a real ally, and the only honest source for one
+    is ``RunConfig.party_size`` (§3.5.2).  ``runner.assemble`` therefore calls
+    :meth:`bind_roster` between the party and the enemy, which is a seam the other
+    three do not use and which is declared rather than inferred from whether an
+    adapter happens to define the method.
+    """
+
+    name = "baseline"
+    #: §3.5.2's seam: this adapter reads the installed party.  Declared as a
+    #: capability rather than detected by ``hasattr``, so an adapter that forgets to
+    #: implement ``bind_roster`` while setting this fails loudly.
+    needs_roster = True
+
+    def available_levels(self) -> list[int]:
+        return list(baseline_character.cs.LEVELS)
+
+    def option_schema(self) -> dict[str, OptionSpec]:
+        return {
+            "aoo_per_combat": OptionSpec(
+                "aoo_per_combat", default=1, values=None,
+                description=(
+                    "Opportunity attacks the subject takes per combat, on rounds "
+                    "pre-rolled at on_combat_start. DECLARED rather than constant "
+                    "because THERE IS NO SPATIAL MODEL: 'the enemy moves out of "
+                    "reach' is a FREQUENCY, not an event, and §4 records the "
+                    "assumption instead of burying it (§3.5.1). Default 1, War "
+                    "Angel's convention — its guide reached it by collapsing five "
+                    "AoO timing slots into one. 0 draws no dice at all, so it is a "
+                    "different stream and not merely a different count."
+                ),
+            ),
+            "summon": OptionSpec(
+                "summon", default=False, values=(True, False),
+                description=(
+                    "§3.5.1 axis: command a summon, so the per-summon damage column "
+                    "and the roster-scoping checks have a producer. Deliberately a "
+                    "WEAK attacker, so 'did this metric pool the character and the "
+                    "summon?' stays detectable."
+                ),
+            ),
+            "ally_buff": OptionSpec(
+                "ally_buff", default=False, values=(True, False),
+                description=(
+                    "§3.5.1 axis: install a buff ON an ally, exercising the 'allies' "
+                    "role as a buff TARGET rather than only as a damage sink. Needs "
+                    "party_size > 1 — with no allies in the roster the axis does not "
+                    "fire, because a policy inventing its own ally would be a second "
+                    "source for the party (§3.5.2)."
+                ),
+            ),
+            "reaction_mitigation": OptionSpec(
+                "reaction_mitigation", default=False, values=(True, False),
+                description=(
+                    "§3.5.1 axis: a Shield-like reaction that raises AC against one "
+                    "incoming hit, exercising the DEFENDER-side on_incoming_hit seam "
+                    "and the character side of §5's mult(t). With the opportunity "
+                    "attack also on, the subject double-books its reaction exactly "
+                    "as War Angel L14+ does, and reactions_per_round is where that "
+                    "shows (§8.2a) — reproduced rather than quietly fixed."
+                ),
+            ),
+        }
+
+    def build(self, config: "RunConfig", rng: "SeededRNG"):
+        opts = _resolved_options(self, config)
+        runner, char, dummy, beast = baseline_character.make_day_runner(
+            config.level, rng, config.rounds_per_combat, **opts,
+        )
+        # The summon is tagged `summons`, so §3.3's rule applies to it unchanged: it
+        # lands in `party_source_ids` and NEVER in `headline_source_ids`, and the
+        # per-summon damage column falls out of the per-(source, target) ledger.
+        roster = Roster(characters=[char],
+                        summons=[beast] if beast is not None else [],
+                        enemies=[dummy])
+        return runner, roster
+
+    def bind_roster(self, runner: "DayRunner", roster: "Roster",
+                    config: "RunConfig") -> None:
+        """Hand the policy the installed roster's allies (§3.5.2).
+
+        Called by ``runner.assemble`` AFTER ``party.install`` and BEFORE
+        ``enemy.install``.  It mutates no entity and draws no dice — it tells the
+        policy which friendlies exist so the ``ally_buff`` axis can target one that
+        the FRAMEWORK declared, instead of one the policy invented.
+        """
+        policy = runner.policies.get(roster.character.id)
+        if policy is not None:
+            policy._allies = list(roster.allies)         # noqa: SLF001 — the seam
+
+    def describe(self, config: "RunConfig") -> dict[str, Any]:
+        opts = _resolved_options(self, config)
+        row = baseline_character.cs.level_table()[config.level]
+        return {
+            "build": self.name,
+            "level": config.level,
+            "options": opts,
+            "subject": "the framework's declared baseline character (§3.5.1)",
+            # The resolved STAT BLOCK, named from the progression rather than from a
+            # hand-authored row — the whole reason this subject exists.
+            "progression": {
+                "pb": row["pb"], "primary": row["primary"], "ac": row["ac"],
+                "attack_bonus": row["attack_bonus"],
+                "spell_save_dc": row["spell_save_dc"],
+                "attacks": row["attacks"], "hp": row["hp"],
+                "saves": dict(row["saves"]),
+                "spell_slots": list(row["spell_slots"]),
+            },
+            "progression_source": (
+                f"builds/character_stats — the §3.5.1 progression at level "
+                f"{config.level}, derived from declared rules rather than authored "
+                "per level"
+            ),
+        }
+
+
 WAR_ANGEL = register(WarAngelAdapter())
 STARFIRE_SCION = register(StarfireScionAdapter())
 SILVERTAIL = register(SilvertailAdapter())
+BASELINE = register(BaselineCharacterAdapter())

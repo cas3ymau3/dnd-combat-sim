@@ -1134,6 +1134,33 @@ GOLDEN_DPR: dict[tuple, float] = {
     ("silvertail", 10, "baseline", ()): 6.29640625,
     ("silvertail", 10, "baseline", (("focus", "summon"),)): 6.3871875,
     ("starfire_scion", 15, "baseline", ()): 28.82609375,
+    # ------------------------------------------------------------------
+    # THE BASELINE CHARACTER (s54, step 7c — §3.5.1), the framework's own declared
+    # SUBJECT.  Six rows, chosen for STRUCTURAL reasons the way the War Angel six
+    # were, and they are the end-to-end signal that matters most going forward:
+    # §3.5.5 moves framework correctness onto this subject and leaves the three real
+    # builds a small set of rows as "real content still runs end to end" coverage.
+    #
+    #   L1 / L5 under `none` — the passive basis at the two levels either side of
+    #     Extra Attack, so the action-economy step is pinned without the enemy in it.
+    #   L1 / L10 / L20 under `baseline` — the acting enemy at the bottom, middle and
+    #     top of a range NO build covers (the three builds between them field 27
+    #     (build, level) pairs and not one is above L16).
+    #   L13 with control — the channel §3.5.1 makes core-adjacent, on a subject whose
+    #     concentration is a declared quantity rather than an accident of its data.
+    #
+    # DPR is roughly FLAT from L8 up (11.2-11.8), and that is faithful rather than
+    # wrong: §3.5.1 declares a d8 weapon, two attacks from L5 and a primary capped at
+    # +5 by L8, so nothing in the approved progression scales damage past L8. The
+    # subject is a FIXTURE for exercising channels, not a reference DPR curve — see
+    # §14, where that limitation is recorded rather than quietly fixed by inventing
+    # scaling the approved table does not declare.
+    ("baseline", 1, "none", ()): 5.71234375,
+    ("baseline", 5, "none", ()): 9.57546875,
+    ("baseline", 1, "baseline", ()): 5.6384375,
+    ("baseline", 10, "baseline", ()): 11.73140625,
+    ("baseline", 20, "baseline", ()): 11.22421875,
+    ("baseline", 13, "baseline", (("control", True),)): 11.0784375,
 }
 
 
