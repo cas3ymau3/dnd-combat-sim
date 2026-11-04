@@ -141,6 +141,14 @@ def assemble(config: "RunConfig", rng: "SeededRNG", *,
         adapter = get_adapter(config.build)
     runner, roster = adapter.build(config, rng)
     roster = install_party(runner, roster, config)
+    # An adapter may DECLARE that it needs the installed roster — the baseline
+    # subject's `ally_buff` axis has to target an ally the FRAMEWORK built, and
+    # §3.5.2 makes `party_size` the only place the party is declared, so a factory
+    # parameter for it would be a second source. Declared via `needs_roster` rather
+    # than detected with hasattr: an adapter that sets the flag and forgets the
+    # method fails loudly instead of silently skipping the bind.
+    if getattr(adapter, "needs_roster", False):
+        adapter.bind_roster(runner, roster, config)
     install_enemy(runner, roster, config)
     return runner, roster
 

@@ -387,6 +387,44 @@ not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell on
     that into the pre-existing "constructed with control=False" would lose exactly the
     distinction the per-METRIC ritual's availability check exists to protect.
   - **Prior full review: s46** (51 → 22 declarations). See the SURVIVAL RULE above.
+- **Session 54 (2026-11-04) — FULL REVIEW RUN, 27 declarations walked, ALL 27 KEPT, and
+  ONE ADDED (user).** 28 now: 17 scalars + 8 breakdowns + 3 distributions. Scheduled in
+  advance (see the s53 entry below) because step 7 touches the registry on both counts,
+  and it did: a reaction metric, and seven `allies`-keyed cells leaving UNAVAILABLE.
+  Nothing failed the survival rule.
+  - **`reactions_per_round` added** — the READ half of a channel §8's coverage map did
+    not list at all, in either direction. It survives the rule trivially (nothing else
+    publishes it and nothing can derive it), and the session also ACTOR-KEYED the
+    channel, which is a telemetry change rather than a declaration: a bare counter has
+    no answer to the per-METRIC ritual's first question.
+  - **The two rows s50 raised and kept are raised again and kept again.**
+    `party_dpr_opening_round` still has no nameable reader and still survives by label
+    (party-scoped only because the per-(round, source) ledger deferral forces it);
+    `spell_slots_per_day` vs `limited_resources_per_day` still look like two cells of
+    one breakdown over resource kind at n=2. Recorded a third time so the next review
+    starts from the argument. **Worth deciding at step 8**, which is the first session
+    where a sweep makes "does anyone read this?" answerable by looking. **And s54 made
+    the second pair's case concrete rather than theoretical:** on the baseline subject
+    `limited_resources_per_day` and `spell_slots_per_day` print the IDENTICAL value
+    (7.837 at L13), because the subject's only limited resource IS spell slots. Two
+    rows, one number, on the fixture the framework is now tested against — equal for a
+    reason that will stop holding the moment a subject carries ki or channel divinity,
+    which is the dormancy question's second answer sitting in the panel.
+  - **SEVEN cells changed state as §3.5.5 predicted, and an EIGHTH did not fit the
+    prediction.** The seven `allies`-keyed cells split 4 measured / 3 unmeasured
+    exactly as described. `healing_provided_to_others_per_day` is a plain SCALAR that
+    also changed state, because its availability predicate asks about the roster rather
+    than about a key; its predicate gained a third distinguishable answer rather than
+    being allowed to publish a true zero that still reports roster poverty as a build
+    property. **Carry forward: when enumerating what a change moves, "cells keyed by
+    the dimension" and "cells whose PREDICATE reads the dimension" are two different
+    lists, and only the first is easy to enumerate.**
+  - **One availability predicate rewritten rather than retuned, for the second review
+    running.** `_requires_a_healable_other` went from 2 answers to 3, the same call s50
+    praised for `_requires_control_channel` (2 → 7) and s52 recorded narrowing (7 → 3).
+    The pattern is now three-for-three: **a seam that adds a genuinely new situation
+    adds an ANSWER, not a branch inside an old one.**
+  - **Prior full review: s46** (51 → 22 declarations) and **s50** (26 kept).
 - **Registry DECLARATION SET untouched by s53 (design only) — still ONE touch since the
   s50 review (s51), so the full review is NOT yet due.** But **step 7 will touch it on
   both counts and should therefore trigger the review**: it adds a reaction metric (the
@@ -433,7 +471,15 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 52 (2026-11-01) — nothing to reset (confirmed with user).** The
+- **Last reviewed for reset: session 54 (2026-11-04) — nothing to reset (raised with the
+  user at startup; marker bumped per the >=2-session rule).** The s36 tear-down still
+  stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s53 and s54 were
+  both pure Python, so nothing accumulated. The container's missing `pytest` recurred for
+  the FOURTH session running and was again installed with `pip install pytest` — a
+  property of the cloud container, not a tweak to revert. **Connectors were NOT raised**
+  (the standing note's condition: "Currently disabled" is empty and this session needed
+  none).
+- **Prior — session 52 (2026-11-01) — nothing to reset (confirmed with user).** The
   s36 tear-down still stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s51 and s52
   were both pure Python, so nothing accumulated; marker bumped per the ≥2-session rule. The container's
   missing `pytest` recurred for the third session running and was again installed with
@@ -1630,6 +1676,143 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **EVALUATION FRAMEWORK STEP 7 — THE BASELINE CHARACTER AND PARTY, IMPLEMENTED
+  (2026-11-04, session 54).** `evaluation_framework.md` §3.5.1 (properties 1 and 2
+  corrected + the concentration measurement), §3.5.5 (the eighth cell), §8's coverage
+  row + new §8.2a, §13 step 7 (done), §14 (two entries, one upgraded).
+  **THREE PRs with the re-baseline isolated in the middle: #39, #40, #41. 1162 tests
+  green** (1000 at handoff, +162).
+
+  **PR #39 — the subject's data and two prerequisites, moving NOTHING.**
+  `builds/character_stats.py` holds §3.5.1's approved progression DERIVED from
+  closed-form rules rather than transcribed, so the rules are the provenance. Every
+  declared column AND all six derived check columns reproduce the approved table
+  exactly at all 20 levels — including `conc DC` and `conc pass`, which is what
+  confirmed the rules I had to author (the save array, the DC rule) are the ones that
+  produced the approved numbers. Two columns §3.5.1 declares but its table did not
+  print had to be authored and carry their reasons: the six-save array (primary + CON
+  proficient, the fighter's own pair) and the half-caster slot budget, with L1
+  borrowing the L2 row so the core capability set is on at every level.
+
+  **THE REACTION CHANNEL, and the three findings from wiring it.** s53 found it dead at
+  both ends. (i) `record_reaction` is now ACTOR-KEYED — the per-METRIC ritual's first
+  question had no answer for a bare counter, which pools the character's reaction, a
+  commanded summon's and the enemy's. (ii) There are THREE writer sites and only two
+  debit the turn economy; the defender-side intercept deliberately does not, because
+  the War Angel guide prices the parry and the AoO as BOTH happening, in as many words
+  ("even though they both consume our reaction"). So `reactions_per_round` can exceed
+  1.0, and that is the approximation becoming VISIBLE instead of living in two
+  docstrings. (iii) Which intercepts count is DECLARED (`InterceptResponse.reaction_by`),
+  because two derivations are both wrong: "which rider is set tells you" holds for all
+  five shipped intercepts (the s49 `sum_rule` shape), and "it belongs to whoever's
+  policy answered" is ALREADY FALSE — Protection is the PROTECTOR's reaction and both
+  implementations are an ally policy acting for its caster. **The user's challenge is
+  what found (ii) and (iii):** asked whether Shield and Flourish Parry should cost a
+  reaction, the answer turned out to be yes for those two and no for thorns/redirect/
+  sanctuary, which is a taxonomy no derivation gets right.
+
+  **PR #40 — the party, and ONE combined re-baseline. The bound held exactly.**
+  §3.5.2 predicted 9 of 13 rows moving with the 4 `enemy="none"` rows untouched because
+  a passive entity nothing targets is bit-identical. Measured: exactly that, to the last
+  bit, now asserted directly. The Starfire row decomposes exactly too — at
+  `party_size=1` it reads 27.22875000, the value the `ac` fix alone was predicted to
+  give, so AC contributes −0.1986 and the party +1.5973.
+  - **War Angel L13 rises +1.60%** (concentration checks 11.41 → 3.79/day), as §3.5.2
+    said a concentration-dependent build would.
+  - **The control row rises MOST, +20.0%**, because uniform weights aim CONTROL at
+    passive stand-ins too, where a lost turn costs nothing: turns lost fall
+    0.1138 → 0.0303/round. A measured argument for §3.5.4's threat class, which was
+    qualitative until now, and it cuts the UNCONSERVATIVE way.
+  - **War Angel L16 FALLS −7.61%, which nothing predicted**, and the reaction channel
+    from #39 is what diagnosed it in one run. L14+ converts an incoming hit into an
+    outgoing attack through Flourish Parry's Counter, so a build whose damage partly
+    depends on BEING ATTACKED loses output when a party absorbs the attacks. The parry
+    component of `reactions_per_round` drops 71.2%, matching the drop in incoming
+    swings; L13 has no parry, which is exactly why L13 rises and L16 falls. **A channel
+    dead at both ends one PR earlier explained the step's own largest surprise** — the
+    cheapest possible vindication of asking what a subject should be able to DO.
+
+  **FOUR FINDINGS FROM #40's FAILING TESTS, none a fixture repair.**
+  - **`test_eval_enemy_seam.built()` hand-mirrored `simulate`'s body**, with a docstring
+    saying it existed "so the install step cannot silently go missing from a test the
+    way it could have gone missing from an adapter". Adding `party.install` to
+    `simulate` left it producing PARTYLESS rosters and three tests asserted pre-party
+    behaviour while passing. **It went missing in precisely the way it was written to
+    prevent.** Both now call a new `runner.assemble`. Generalize: **a duplicated
+    SEQUENCE is as much a second source as a duplicated number**, and the seam check
+    applies to test helpers.
+  - **`external_healing_required_per_day == taken×rounds − healed` held only while the
+    per-day clamp never fired** — three lines below a docstring explaining that the
+    clamp is per-day for exactly that reason. The dormancy question's second answer,
+    in a test whose own first half is about the clamp firing.
+  - **An EIGHTH registry cell changed state, and it is not `allies`-keyed.** §3.5.5
+    enumerated seven. `healing_provided_to_others_per_day` is a scalar whose predicate
+    asks "is anyone outside the attributed roles present?", and a party makes that yes;
+    letting it go available would publish a true zero that still reports ROSTER POVERTY
+    as a build property. It gained a third distinguishable answer, needing a
+    DECLARATION (`Roster.party_stand_ins`) because `len(allies)` against `party_size`
+    conflates a build's own ally with a stand-in. **A cell changing state is not the
+    same question as a cell being keyed by the dimension that changed**, and only the
+    keyed ones were enumerated in advance.
+  - **§3.5.1's property 1 was false against its own table** — it claimed the 60-70% hit
+    band holds "in BOTH directions across all 20 levels"; the outgoing rate does, the
+    incoming rate is in band at 8 of 20 and rises 50% → 80%. Same shape as §6.1's
+    "never worse than independent seeding" sitting three lines from its own 0.95× row.
+    **Caught because step 7 implemented the property as an ASSERTION rather than
+    quoting it.** Property 2 is not monotone either: it rises at exactly the four PB
+    steps, which is a sharper property than monotonicity.
+
+  **PR #41 — `BaselineCharacterPolicy` + adapter, and two defects its fixtures found.**
+  Core always-on (attacks, a concentration spell, a save-forcing spell, healing in BOTH
+  contexts, a slot budget, an opportunity attack) plus three default-off axes (summon,
+  ally buff, reaction mitigation). **It is the first subject in the project to populate
+  `healing_by_source[characters|combat]`** — every shipped build heals out of combat by
+  preference, so that context was structurally empty for every subject the framework
+  had. Six goldens of its own, at L1/L5/L10/L13/L20, a range no build covers (the three
+  builds field 27 (build, level) pairs and not one is above L16).
+  - **A round-1 early return dropped the opportunity attack** whenever its pre-rolled
+    round was 1, so `reactions_per_round` read 0.184 where the declared
+    `aoo_per_combat=1` requires 0.25 — a quarter of them, silently, because a quarter
+    of rounds are round 1. **Caught only because the declared parameter gives the
+    channel an EXACT expected value**; "greater than zero" would have passed. The three
+    economy slots are independent (CLAUDE.md #11) and a policy structured around what
+    the ACTION does will not keep them that way.
+  - **The summon axis populated no per-summon column**, because a mid-combat
+    `create_entity` never reaches `Roster.summons` and the column is roster-keyed. The
+    axis existed, the summon attacked, and the thing it was added to exercise read
+    UNAVAILABLE. Found by looking at the METRIC rather than at the policy.
+  - And the AoO rounds are now drawn DISTINCT: independent draws let two land on the
+    same round, where there is one reaction, so `aoo_per_combat=2` delivered fewer than
+    2. **A declared parameter that quietly means "at most this many" is not a
+    declaration.**
+
+  **THE CONCENTRATION COLUMN IS A MEAN-FIELD PREDICTOR, OPTIMISTIC IN THE MIDDLE**
+  (measured once the subject could be run; §3.5.1 carries the table). Predicted vs
+  measured failure: L1 0.25/0.257, L5 0.20/0.203, **L13 0.25/0.314**, L20 0.65/0.639.
+  The DC is `max(10, ⌊damage/2⌋)` PER HIT and a crit DOUBLES the enemy's dice. At low
+  level the floor binds on every hit including crits, so the mean-field value is exact;
+  at high level the pass rate is already at its natural-20 floor; **in the middle the
+  floor has stopped binding and the rate has not saturated**, so a 5% chance of a DC
+  near 25 against a +7 save turns a 75% pass into a 5% one. A measurement that exists
+  only because there is now a subject complete enough to run at every level — which is
+  §3.5's whole argument, arriving on its own terms.
+
+  **THE STEP'S BEST SINGLE NUMBER: with all three axes on and the enemy's control +
+  mitigation toggles on, the registry reports ZERO unavailable cells** — the first
+  configuration in the project's history for which that is true. War Angel at the same
+  enemy configuration reports 8 unavailable and 17 unmeasured; the subject reports 0 and
+  3, the three being the passive party's attack rates (no denominator, by design). That
+  is what makes §3.5.5's "the three builds stop being load-bearing for framework
+  correctness" operational rather than aspirational: a mechanism test that needs a
+  populated channel now has somewhere to get one.
+
+  **RECORDED AS A LIMITATION, NOT FIXED (§14): the subject's DPR is roughly FLAT above
+  L8** (11.0 at L8, 11.2 at L20, against 5.6 at L1). Faithful rather than wrong —
+  §3.5.1 declares a d8 weapon, two attacks from L5 and a primary capped at +5 by L8, so
+  nothing in the approved progression scales damage past L8. It is a FIXTURE for
+  exercising channels, not a reference DPR curve, and fixing it would mean inventing
+  scaling the approved table does not declare.
 
 - **FRAMEWORK STEP 7 DESIGN — THE BASELINE CHARACTER (2026-11-02, session 53). DESIGN
   ONLY; implementation is s54.** `evaluation_framework.md` §3.5 (new, 255 lines), §8's
@@ -5287,8 +5470,11 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      distribution FIRED and `disadvantage` did NOT — step 6 does not make control a
      status object, so nothing attaches a condition to a d20, and its trigger moves to
      §10/§9. See the s51 Done entry;
-     **(7) the BASELINE CHARACTER + BASELINE PARTY (§3.5) — DESIGN LOCKED (s53),
-     IMPLEMENTATION IS THE NEXT TASK.** The player-side mirror of step 5: the framework
+     **(7) the BASELINE CHARACTER + BASELINE PARTY (§3.5) — DONE (s54), in three PRs:
+     #39 the subject's data + the reaction channel + the roster-split prerequisite
+     (nothing moved), #40 the party + ONE combined re-baseline (9 of GOLDEN_DPR's 13
+     rows; the 4 `enemy="none"` rows bit-identical as predicted), #41 the policy +
+     adapter + six goldens of its own.** The player-side mirror of step 5: the framework
      gets its own declared SUBJECT so a framework defect and a content gap stop being
      indistinguishable. Why it was needed, measured: `ac` is absent from the character in
      20 of 27 (build, level) pairs, and its presence correlates exactly with whether that
@@ -5301,8 +5487,12 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      a CORE capability, which needs BOTH halves of the reaction channel wired because
      `record_reaction()`'s only caller is a unit test and no metric reads
      `reactions_used`. Threat class (§3.5.4, the user's design) supplies the weights
-     later into a seam that already exists;
-     (8) sweep YAML + config-hash caching + the baselines registry; **(9) RNG SUBSTREAMS
+     later into a seam that already exists — and s54 gave it a MEASURED argument it did
+     not have: uniform weights aim control at passive stand-ins too, so War Angel L13's
+     control turns lost fall 73.4% and its DPR rises 20.0%, which makes the control
+     channel read healthier than it should;
+     **(8) sweep YAML + config-hash caching + the baselines registry — THE NEXT TASK;**
+     **(9) RNG SUBSTREAMS
      (added s44)** — per-entity/per-purpose generators via `SeedSequence.spawn()`, the
      prerequisite for §6.1's paired seeding to buy any precision at all (MEASURED: ~1×, not
      the 10–100× the design assumed). Needs its own decision record: it moves every seeded
@@ -6143,8 +6333,40 @@ combat policy through two lenses, and reformulate it as needed:
 >   `typed_damage_share 0` explains it on the same screen, which is a data point FOR
 >   leaving it as §14 decided.
 > - **(b), (d), (e), (g)** — untouched.
-> - **NEW (s53), carried into s54 as step 7's own worklist** — these are not open
->   questions, they are the agreed contents of the next task:
+> **§14 DEFERRALS AS OF s54 — the step-7 worklist is CLOSED.** All eight items landed
+> (PRs #39/#40/#41); what step 7 left open is below, and the s53 worklist that follows
+> is kept only as the record of what was agreed.
+> - **(a) convergence THRESHOLDS — still live, and s54 added a THIRD stressor.** The
+>   baseline subject's `attacks_per_round` is a lattice over a fixed denominator like
+>   War Angel's, so it inherits s51's discreteness stressor at a new subject. The fix
+>   remains a SWEEP across builds and tiers, which **step 8 makes cheap for the first
+>   time** — and step 8 is now the next task, so this is the session to do it in.
+> - **(i) THREAT CLASS — upgraded from qualitative to MEASURED.** Uniform weights aim
+>   control at passive stand-ins, so War Angel L13's control turns lost fall
+>   0.1138 → 0.0303/round (−73.4%) and its DPR rises 20.0%. The control channel
+>   therefore reads HEALTHIER than it should — the deferral is NOT conservative. The
+>   user's call (s54) was to leave it deferred with the measurement recorded, since
+>   step 8's sweeps make the weighting rule cheap to calibrate. Seam is live.
+> - **NEW (s54): the baseline subject's DPR is roughly FLAT above L8** (11.0 → 11.2
+>   from L8 to L20, against 5.6 at L1), because §3.5.1's approved progression declares
+>   nothing that scales damage past the L8 ASI. Faithful, not wrong: the subject is a
+>   fixture for exercising channels. **Trigger:** the first time anyone compares a build
+>   against the baseline's DPR rather than against its channel coverage — which needs a
+>   declared damage-scaling column and a fresh review, not a patch.
+> - **NEW (s54): §3.5.1's `conc pass` column is optimistic through the mid-levels**
+>   (L13 predicted 0.25 failure, measured 0.314) because the DC is `max(10, ⌊damage/2⌋)`
+>   PER HIT and crits double the dice. Not a defect — the column is the approved sanity
+>   check — but a reader of baseline concentration numbers should expect a few points
+>   worse. §3.5.1 carries the table.
+> - **(b), (c), (d), (e), (f), (g), (h), (j), (k)** — untouched by s54. (f) `disadvantage`
+>   did NOT fire for the fifth session running: the baseline subject imposes none on its
+>   own attacks either.
+> - **CLOSED by s54: the Starfire `ac` defect (viii) and `with_party` as a second source
+>   for the party.** Also closed: the three identical `make_training_dummy` wrappers
+>   question is still OPEN (see below) — s54 did not touch it.
+>
+> - **NEW (s53), carried into s54 as step 7's own worklist — ALL EIGHT ITEMS DONE** —
+>   these are not open questions, they were the agreed contents of s54:
 >   (i) `make_baseline_character(level)` over §3.5.1's approved progression;
 >   (ii) the `BaselineCharacterPolicy`, core capabilities + default-off axes, **including
 >   the opportunity attack**; (iii) `BaselineEnemyPolicy` gains the weighted roster split

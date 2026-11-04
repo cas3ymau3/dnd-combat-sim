@@ -430,6 +430,29 @@ retune should preserve them rather than the individual numbers:
    ground before the slide resumes. That is a sharper property than monotonicity — it
    ties this curve's shape to the one column in the table that moves in steps — and it
    is what the test asserts.
+
+   > **AND THE COLUMN IS A MEAN-FIELD PREDICTOR THAT IS OPTIMISTIC IN THE MIDDLE
+   > (measured s54, once the subject could be run).** `conc pass` evaluates the save
+   > at the DC implied by the enemy's MEAN damage per hit. The simulated rate is worse,
+   > and by a varying amount, for two named reasons: the DC is `max(10, ⌊damage/2⌋)`
+   > **per hit**, and a CRIT doubles the enemy's dice.
+   >
+   > | lvl | predicted fail | measured fail (2,000 days) | floor binds | crit DC |
+   > |---|---|---|---|---|
+   > | 1 | 0.25 | 0.2568 ± 0.0070 | 100% | 10.0 |
+   > | 5 | 0.20 | 0.2033 ± 0.0045 | 98% | 12.0 |
+   > | 13 | 0.25 | **0.3144 ± 0.0051** | 6% | 24.8 |
+   > | 20 | 0.65 | 0.6391 ± 0.0055 | 0% | 41.3 |
+   >
+   > The gap is largest at L13 and negligible at the ends, and the two columns on the
+   > right say why. At low level the DC **floor binds on every hit**, crits included, so
+   > every DC is 10 and the mean-field value is exact. At high level the pass rate is
+   > already near its natural-20 floor, so a crit DC of 41 changes little. **In the
+   > middle the floor has stopped binding and the pass rate has not yet saturated**, so
+   > both effects land at once: a 5% chance of a DC around 25 against a +7 save turns a
+   > 75% pass into a 5% one. The column stays as the approved sanity check it is; what
+   > is recorded here is that a reader should expect the simulated rate to be a few
+   > points worse through the mid-levels, and why.
 3. **`CON save` reaches +7 at L13, better than either real build** (War Angel +4,
    Starfire +2). Deliberate — a baseline should be representative rather than weak — but
    it means baseline concentration figures will look markedly healthier than the ones
@@ -445,6 +468,17 @@ alternative is a decision rather than a rediscovery.
 axes** — the same shape as `enemy_options`, so every registry channel has a fixture that
 genuinely populates it while the off-by-default axes keep the baseline's own numbers
 stable.
+
+> **MEASURED (s54), and this is the step's single best summary.** With all three axes on
+> and the enemy's `control` + `mitigation` toggles on, the registry reports **ZERO
+> unavailable cells** — the first configuration in the project's history for which that
+> is true. War Angel at the same enemy configuration reports **8 unavailable and 17
+> unmeasured**; the subject reports **0 and 3**. The three are the passive party's
+> attack rates, which have no denominator because passive members do not attack
+> (§3.5.2) and which go live with §3.3's multi-character party. Asserted in
+> `tests/test_baseline_character.py` — that is what makes §3.5.5's "the three builds
+> stop being load-bearing for framework correctness" an operational fact rather than an
+> intention: a mechanism test needing a populated channel now has somewhere to get one.
 
 | | capability | why it is in this tier |
 |---|---|---|
@@ -1926,8 +1960,18 @@ check mechanisms, not the composite. Three things carry that load instead:
    step 5 as the implementation. **No `SCHEMA_VERSION` bump**; §12 parity still
    bit-identical; `control=False` stays the default, so nothing but a run that asks for
    control moves. §14 deferral (f) was checked and did NOT fire — see §14.
-7. **The BASELINE CHARACTER + BASELINE PARTY (§3.5)** *(inserted s53, at the user's
-   direction — the old 7/8 shift to 8/9)*. The player-side mirror of step 5: the
+7. ~~**The BASELINE CHARACTER + BASELINE PARTY (§3.5)**~~ **DONE (s54)**, in three
+   PRs with the re-baseline isolated in the middle one: **7a** the subject's data
+   (`builds/character_stats`), the reaction channel's two halves and the
+   `BaselineEnemyPolicy` roster-split prerequisite, moving nothing; **7b** the party
+   (`evaluation/party.py`, `RunConfig.party_size` defaulting to 4), the
+   `char_target_prob` refusal, `with_party` retired and the Starfire `ac` fix, as ONE
+   combined re-baseline — 9 of `GOLDEN_DPR`'s 13 rows moved and the 4 `enemy="none"`
+   rows were bit-identical, exactly as §3.5.2 predicted; **7c** `BaselineCharacterPolicy`
+   + its adapter + six goldens of its own. The `allies` cells changed state as §3.5.5
+   said, plus an EIGHTH that was not `allies`-keyed (§3.5.5). What the step measured
+   that nothing predicted is in §3.5.5 and §14.
+   *(inserted s53, at the user's direction — the old 7/8 shift to 8/9)*. The player-side mirror of step 5: the
    framework gets its own declared SUBJECT so that a framework defect and a content gap
    stop being indistinguishable. `make_baseline_character(level)` over a declared
    per-level progression; a party of four whose members are passive HP pools; targeting
@@ -2187,6 +2231,20 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   precisely to hold the parity proof while it lasts. §3.4 carries the full reason.
   *One piece of the migration is already cheaper than expected:* the AC needs no
   migration at all, since every baked-in value already equals the table's (§3.4 item 1).
+
+- **The baseline subject's DPR is roughly FLAT above L8, so it is not a reference
+  curve** *(measured s54)*. 11.0 at L8 through 11.2 at L20, against 5.6 at L1.
+  Faithful rather than wrong: §3.5.1 declares a d8 versatile weapon, two attacks from
+  L5 and a primary ability capped at +5 by the L8 ASI, so **nothing in the approved
+  progression scales damage past L8** — no third attack, no per-level rider, no
+  cantrip progression. The subject is a FIXTURE for exercising channels (every core
+  channel has a producer at every one of the 20 levels, which no real build manages),
+  not a yardstick for "what should a level-17 character do". Recorded rather than
+  fixed, because fixing it means inventing damage scaling the approved table does not
+  declare, and §3.5.1's instruction is to implement those numbers. **Trigger:** the
+  first time anyone wants to compare a build against the baseline's DPR rather than
+  against its channel coverage — at which point the progression needs a declared
+  damage-scaling column and a fresh review, not a patch.
 
 - **THREAT CLASS — the per-build weights that decide who the enemy attacks**
   *(opened s53, user)*. §3.5.4 has the design; this is the register entry. Uniform

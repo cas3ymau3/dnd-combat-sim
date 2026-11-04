@@ -168,8 +168,16 @@ def test_roster_character_accessor_refuses_to_hide_plurality():
 # Registry + sparse level sets (§2 axis 4)
 # ---------------------------------------------------------------------------
 
-def test_registry_holds_the_three_builds_and_they_satisfy_the_protocol():
-    assert available_builds() == ["silvertail", "starfire_scion", "war_angel"]
+def test_registry_holds_the_three_builds_plus_the_baseline_subject():
+    """FOUR entries since s54, and the fourth is not a build.
+
+    ``baseline`` is the framework's own declared SUBJECT (§3.5), registered through
+    the same seam precisely so that every mechanism test can reach it the way it
+    reaches a build — which is what lets framework correctness move off the three
+    real builds (§3.5.5) without a second code path.
+    """
+    assert available_builds() == ["baseline", "silvertail", "starfire_scion",
+                                  "war_angel"]
     for name in available_builds():
         assert isinstance(get_adapter(name), BuildAdapter)
 
