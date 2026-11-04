@@ -605,9 +605,14 @@ def test_the_account_is_cleared_at_the_combat_boundary():
 DAYS, SEED = 400, 11
 
 
-def _report(level=13, build="war_angel", **options):
+def _report(level=13, build="war_angel", party_size=None, **options):
+    """A control run.  ``party_size`` is passed through for the tests that need the
+    control pressure concentrated on the CHARACTER — see
+    ``test_the_attacks_distribution_has_spread_only_once_turns_can_be_skipped``, which
+    measures how much the declared party dilutes it."""
+    kwargs = {} if party_size is None else {"party_size": party_size}
     return run(RunConfig(build=build, level=level, n_days=DAYS, seed=SEED,
-                         enemy="baseline", enemy_options=options))
+                         enemy="baseline", enemy_options=options, **kwargs))
 
 
 def test_the_credit_EQUALS_what_the_account_actually_spends():
@@ -825,14 +830,30 @@ def test_the_attacks_distribution_has_spread_only_once_turns_can_be_skipped():
     """§14's trigger, both sides of it.  s49 and s50 declined this distribution
     because the quantity was a CONSTANT; whole-turn suppression is the first thing in
     the model that makes it vary, and a zero IQR remains the correct answer for a run
-    without control."""
-    controlled = _report(control=True).distribution("attacks_per_round_distribution")
+    without control.
+
+    **A THIRD arm since s54**, and it is a measurement rather than a fixture repair:
+    the declared party aims ~3/4 of the enemy's control at PASSIVE stand-ins, where a
+    lost turn costs nothing, so the character is suppressed rarely enough that the
+    quantity collapses back to a constant. Control-on-a-solo-character is what makes
+    this distribution vary; control-against-a-party barely does. That is the same
+    dilution that moved step 7's largest golden (+20.0% on the control row) and the
+    same measured argument for §3.5.4's threat class — recorded here because a reader
+    of a party run's zero IQR would otherwise conclude control does nothing.
+    """
+    controlled = _report(control=True, party_size=1).distribution(
+        "attacks_per_round_distribution")
     assert controlled["iqr"].value > 0.0
     assert controlled["p10"].value < controlled["p90"].value
 
-    uncontrolled = _report().distribution("attacks_per_round_distribution")
+    uncontrolled = _report(party_size=1).distribution(
+        "attacks_per_round_distribution")
     assert uncontrolled["iqr"].value == 0.0
     assert uncontrolled["p10"].value == uncontrolled["p90"].value
+
+    # The party DILUTES it back to a constant at this day count.
+    diluted = _report(control=True).distribution("attacks_per_round_distribution")
+    assert diluted["iqr"].value == 0.0
 
 
 def test_the_attacks_distribution_is_a_LATTICE_and_its_intervals_say_so():

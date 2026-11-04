@@ -21,8 +21,11 @@ summons
     Entities the build CREATED (``create_entity`` / substrate #7) and commands —
     Silvertail's primal companion.
 allies
-    Friendly entities the build does not command (Starfire Scion's passive party
-    member under ``with_party``).
+    Friendly entities the build does not command.  Since s54 these are the
+    framework's declared PARTY (``RunConfig.party_size``, built by
+    ``evaluation/party.py``) — passive HP pools that absorb their share of the
+    enemy's attacks and never act, so ``dpr_by_role[allies]`` is a TRUE ZERO
+    (§3.5.2).  A build may still field its own; the role does not care which.
 enemies
     The opposition.
 
@@ -56,6 +59,21 @@ class Roster:
     summons: list["Entity"] = field(default_factory=list)
     allies: list["Entity"] = field(default_factory=list)
     enemies: list["Entity"] = field(default_factory=list)
+    #: Ids of the allies the FRAMEWORK added as declared-party stand-ins
+    #: (``evaluation/party.install``), as opposed to friendlies a build fielded itself.
+    #:
+    #: **DECLARED, not inferred** (the s49 rule).  The two facts can come apart: a
+    #: build may field its own ally, and a run may declare a party, and counting
+    #: ``len(allies)`` against ``party_size`` would conflate them the moment both
+    #: happen.  It is a list of IDS rather than entities so that role exclusivity and
+    #: id uniqueness keep checking exactly the four role lists.
+    #:
+    #: Read by availability predicates that need to know whether there is anyone in the
+    #: roster a build could MEANINGFULLY interact with: a passive non-combatant
+    #: stand-in is present but is not an ally who chose not to act
+    #: (``_requires_a_healable_other``), which is the distinction §3.5.2 says
+    #: provenance has to carry.
+    party_stand_ins: list[int] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if not self.characters:
@@ -118,6 +136,12 @@ class Roster:
         """Sources of the roster/party TOTAL — reported beside the headline, never
         merged into it."""
         return self.ids("characters", "summons", "allies")
+
+    @property
+    def build_fielded_allies(self) -> list["Entity"]:
+        """Allies the BUILD constructed — the roster's allies minus the framework's
+        declared-party stand-ins."""
+        return [e for e in self.allies if e.id not in set(self.party_stand_ins)]
 
     def summary(self) -> dict[str, list[str]]:
         """Role → entity names.  For provenance and human-readable output."""

@@ -22,6 +22,7 @@ import pytest
 
 from src.builds import enemy_stats
 from src.builds import starfire_scion as ss
+from src.builds.character_stats import make_party_member
 from src.builds.enemy import ScriptedEnemyPolicy
 from src.content import interpret_save_spell, load_abilities
 from src.day_runner import DayRunner
@@ -1110,12 +1111,16 @@ def test_fount_of_moonlights_contribution_is_gated_on_its_concentration_survivin
     ABLATING it costs more where the concentration survives than where it does not.
     Measured at 400 days / seed 0, four runs:
 
-      ==================  =========  ============  ==============  ============
-      enemy               breaks/day  rider ON      rider ABLATED   contribution
-      ==================  =========  ============  ==============  ============
-      passive (`none`)        0.000      29.6295         28.3900        +1.2395
-      acting (`scripted`)     1.000      27.1698         28.5800        -1.4102
-      ==================  =========  ============  ==============  ============
+      ==================  ==========  ===========  ==============  ============
+      enemy               breaks/day  rider ON     rider ABLATED   contribution
+      ==================  ==========  ===========  ==============  ============
+      passive (`none`)         0.000      29.6295         28.3900        +1.2395
+      acting (`scripted`)      0.995      27.0587         28.2859        -1.2272
+      ==================  ==========  ===========  ==============  ============
+
+    (The acting row moved from 1.000 / -1.4102 when the s54 ``ac`` fix stopped this
+    build fighting at AC 0 — see
+    ``test_the_standardized_enemy_ends_fount_of_moonlights_concentration_nearly_every_day``.)
 
     The gate is binary enough at L15 that the contribution changes SIGN — this build
     has one 4th-level slot and no short-rest recovery, so a single break ends the
@@ -1138,7 +1143,7 @@ def test_fount_of_moonlights_contribution_is_gated_on_its_concentration_survivin
 
     # The GATE is a measurement in each arm, not an assumption about the arms.
     assert held_breaks == 0.0, "a passive enemy forces no concentration checks"
-    assert lost_breaks == 1.0, "the standardized enemy ends it on every day"
+    assert lost_breaks > 0.95, "the standardized enemy ends it on nearly every day"
 
     held_contribution = held_on - held_off
     lost_contribution = lost_on - lost_off
@@ -1486,8 +1491,14 @@ def test_l15_party_member_soaks_a_share_of_enemy_attacks():
     # `_ally_roster` turns it into integer weights over the real roster.
     rng = SeededRNG(0)
     runner, char, dummy = ss.make_day_runner(
-        15, rng, fourth_level_spell="fire_shield", with_party=True)
-    party = next(e for e in runner.entities if e is not char and e is not dummy)
+        15, rng, fourth_level_spell="fire_shield")
+    # The party member is built by THE one constructor (s54): `with_party` is retired
+    # as a second source for the party, and this build no longer owns a
+    # `make_party_member` of its own. A factory-level test installs it itself, the same
+    # way `tests/test_summon_survival.py` installs an enemy policy — the framework's
+    # `party.install` is for runs made through `RunConfig`.
+    party = make_party_member(15)
+    runner.entities.append(party)
     runner.policies[dummy.id] = _l15_enemy(char, allies=[party],
                                            char_target_prob=PARTY_SPLIT)
     to_char_party = to_party = 0
@@ -1498,7 +1509,7 @@ def test_l15_party_member_soaks_a_share_of_enemy_attacks():
     # Without party: char_target_prob 1.0 → all enemy damage hits the character.
     rng = SeededRNG(0)
     runner2, char2, dummy2 = ss.make_day_runner(
-        15, rng, fourth_level_spell="fire_shield", with_party=False)
+        15, rng, fourth_level_spell="fire_shield")
     runner2.policies[dummy2.id] = _l15_enemy(char2)
     to_char_solo = sum(
         runner2.run_day().damage_source_to(dummy2.id, char2.id) for _ in range(n))
@@ -1516,9 +1527,13 @@ def _mean_dpr_l15_party(fourth_level_spell, precast_mode, with_party, n_days,
     runner, char, dummy = ss.make_day_runner(
         15, rng, rounds_per_combat=rounds_per_combat,
         fourth_level_spell=fourth_level_spell,
-        precast_mode=precast_mode, precast_prob=precast_prob,
-        with_party=with_party)
-    allies = [e for e in runner.entities if e is not char and e is not dummy]
+        precast_mode=precast_mode, precast_prob=precast_prob)
+    allies = []
+    if with_party:
+        # One source for the party member (s54) — see the note in
+        # test_l15_party_split_cuts_fire_shield_thorns_dpr.
+        allies = [make_party_member(15)]
+        runner.entities.extend(allies)
     runner.policies[dummy.id] = _l15_enemy(
         char, rounds_per_combat, allies=allies,
         char_target_prob=PARTY_SPLIT if allies else 1.0)
@@ -1597,15 +1612,25 @@ def test_the_party_split_moves_fire_shield_and_leaves_fount_of_moonlight_flat():
     assert (fs_party - fom_party) < (fs_solo - fom_solo)
 
 
-def test_the_standardized_enemy_ends_fount_of_moonlights_concentration_every_day():
-    """The measured cause of the row above, asserted rather than left in prose — and
-    the largest single consequence of step 5b on this build.
+def test_the_standardized_enemy_ends_fount_of_moonlights_concentration_nearly_every_day():
+    """The measured cause of the row above, asserted rather than left in prose.
 
     This build has ONE 4th-level slot per long rest and no short-rest recovery, so
     pre-cast FoM is one cast per day.  Against the retired hand-written enemy that cast
-    survived the day 95% of the time; against the standardized enemy it never does.
-    Asserted as a RATE with no tolerance on the upper side, because 1.000 per day at
-    every day count is the finding: it is not "more often", it is every time.
+    survived the day 95% of the time; against the standardized enemy it almost never
+    does — 99 of 100 days at seed 0.
+
+    **RE-BASELINED (s54), and the reason is the point.** It asserted
+    ``breaks == days`` exactly, "not more often, every time" — which was true only
+    because ``make_starfire_scion`` never set ``ac``, so the Scion fought at **AC 0**
+    and was hit by everything. With its declared AC 16-18 installed the rate is 0.99,
+    not 1.00. So the strongest-looking assertion in this file was measuring the AC-0
+    defect, and the exactness that made it read as a finding is what the defect bought.
+    Generalizable: **an exact equality is only as strong as the thing it is exact
+    about** — it told nobody that one of its inputs was zero.
+
+    Now asserted as a bound with the slack on the side that matters (it must be nearly
+    every day for the gate argument to hold) rather than as an equality.
     """
     from src.builds.enemy import ScriptedEnemyPolicy as _Scripted
 
@@ -1623,5 +1648,9 @@ def test_the_standardized_enemy_ends_fount_of_moonlights_concentration_every_day
         runner.run_day()
 
     assert ss.LEVELS[15]["resources"]["slot_4th"] == (1, 0)   # one cast per day
-    assert char.concentration_breaks == days                  # ...ended every day
+    assert char.concentration_breaks == 99                    # ...ended 99 of 100 days
+    assert char.concentration_breaks >= days - 1              # the claim, with slack
+    # And the character is NOT fighting at AC 0 any more, which is what moved this
+    # number — pinned here so the next re-baseline of it has somewhere to look.
+    assert char.stat("ac", (1, 0, 0)) == ss.LEVELS[15]["char_ac"] == 18
     assert _Scripted is ScriptedEnemyPolicy                   # the policy, not a stub

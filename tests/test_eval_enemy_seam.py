@@ -34,9 +34,8 @@ bonus`, which drives a real `resolve_saving_throw` and asserts the counterfactua
 | dummy's six saves                  | present on every build  | `..._carries_all_six_saves`, all three       |
 |                                    | RESOLVES a save         | **THE GAP** — war_angel L13 + counterfactual |
 | factory enemy policy               | none, on every build    | `..._installs_an_enemy_policy_any_more`, ×3  |
-| `_ally_roster`                     | allies present          | starfire L15 with_party, ctp=0.4 → 40/60     |
-|                                    | allies, ctp=1.0         | same, weights 100/0 (focus-fire unaffected)  |
-|                                    | no allies               | war_angel L13 → None (single-target path)    |
+| `_ally_roster`                     | allies present          | starfire L15, party_size=4 → uniform 25×4 (s54) |
+|                                    | no allies               | war_angel L13, party_size=1 → None (solo path)  |
 | `_requires_control_channel`        | 3 answers (was 7)       | `..._three_control_unavailability_reasons_...`|
 | console "NOT RESOLVED"             | unreachable             | all three kinds assert its ABSENCE           |
 | `enemy_path` prefix                | constant, kept          | `test_enemy_path_still_distinguishes_...`    |
@@ -145,7 +144,7 @@ from src.evaluation import enemy as enemy_seam
 from src.evaluation.config import RunConfig
 from src.evaluation.metrics import METRICS, RunContext
 from src.evaluation.roster import Roster
-from src.evaluation.runner import run, simulate
+from src.evaluation.runner import assemble, run, simulate
 from src.verbs import resolve_saving_throw
 from src.rng import SeededRNG
 
@@ -165,20 +164,20 @@ def _control_reason(config: RunConfig) -> str:
 
 
 def built(config: RunConfig):
-    """``(runner, roster)`` with the declared enemy installed — what a real run has.
+    """``(runner, roster)`` assembled exactly as a real run assembles it.
 
-    s52 moved ``enemy.install`` out of each adapter's ``build()`` and into
-    ``runner.simulate``, so that a new adapter cannot forget it (see
-    ``build_adapters``' module docstring).  ``adapter.build(config, rng)`` therefore
-    returns the factory's PASSIVE enemy, and a test that wants to inspect the
-    installed policy has to do what ``simulate`` does.  This helper is that, in one
-    place, so the install step cannot silently go missing from a test the way it could
-    have gone missing from an adapter.
+    **NOW DELEGATES TO ``runner.assemble`` (s54), and the reason is a finding.** This
+    helper used to hand-mirror ``simulate``'s body — ``adapter.build`` then
+    ``enemy.install`` — with a docstring saying it existed "so the install step cannot
+    silently go missing from a test the way it could have gone missing from an adapter".
+    When step 7 added ``party.install`` to ``simulate``, this mirror kept producing
+    PARTYLESS rosters and three tests asserted the pre-party behaviour while passing.
+    It went missing in precisely the way it was written to prevent, which is the seam
+    check applied to a test helper: a duplicated SEQUENCE is as much a second source as
+    a duplicated number.
     """
-    adapter = config.validate()
-    runner, roster = adapter.build(config, SeededRNG(0))
-    enemy_seam.install(runner, roster, config)
-    return runner, roster
+    config.validate()
+    return assemble(config, SeededRNG(0))
 
 
 # ---------------------------------------------------------------------------
@@ -566,7 +565,11 @@ def test_scripted_kind_is_the_attack_roll_half_only():
     assert params["forces_saves"] is False
     assert params["control_channel"] is False
     assert params["n_attacks"] == enemy_stats.baseline_n_attacks(13)
-    assert params["targeting"] == "single_target"
+    # `weighted_roster` since s54: the declared party means BOTH kinds split their
+    # swings across the friendlies, which is §3.5.3's requirement rather than a
+    # property of this kind — if the two kinds differed here, §3.4's comparison arm
+    # would differ in targeting MODEL as well as in save-forcing.
+    assert params["targeting"] == "weighted_roster"
     # Its damage comes off the Entity (no dice on the Choice), so the overlay must
     # have put the table's dice there.
     n, sides, bonus = enemy_stats.baseline_attack_dice(13)
@@ -636,9 +639,10 @@ def test_scripted_policy_reports_weighted_roster_targeting():
     ``describe_parameters()`` at all".  Deleting the baked-in path would have made it
     unreachable full stop, i.e. dead code — which is the trap §7.6 was written about.
     So 5b gave ``char_target_prob`` teeth instead: the off-target share lands on the
-    build's ALLIES when it fields any.  Starfire's ``with_party`` axis is now the
-    production fixture, exercised in ``test_the_off_target_share_lands_on_a_real_ally``
-    below.  This direct-construction case stays as the unit-level check.
+    build's ALLIES when it fields any.  s54's declared PARTY is now the production
+    fixture — every run with ``party_size > 1`` reaches it — exercised in
+    ``test_a_party_splits_the_enemys_swings_by_UNIFORM_weights`` below.  This
+    direct-construction case stays as the unit-level check.
     """
     char, ally = Entity(name="char", hp=40), Entity(name="ally", hp=40)
     params = ScriptedEnemyPolicy(target=char, n_attacks=2,
@@ -646,52 +650,99 @@ def test_scripted_policy_reports_weighted_roster_targeting():
     assert params["targeting"] == "weighted_roster"
 
 
-def test_the_off_target_share_lands_on_a_real_ally():
-    """The PRODUCTION fixture for the branch above, and the one capability 5b had to
-    rescue rather than delete.
+def test_declaring_char_target_prob_alongside_a_party_is_REFUSED():
+    """§3.5.3's refusal, and the §4 argument behind it.
 
-    Starfire's ``with_party`` axis puts a real party member in the roster, so
-    ``char_target_prob < 1.0`` now splits the enemy's swings across it instead of
-    sending the off-target share to an unmodelled friendly, i.e. nowhere.
+    **Party size and "how often is the character attacked" are ONE QUANTITY IN TWO
+    PLACES.** A config declaring a party of four *and* ``char_target_prob`` claims a
+    party the enemy ignores, which is the same failure this option schema already
+    refuses for ``focus='summon'`` on a summonless roster. So the split is DERIVED from
+    the roster and declaring it as well is refused rather than silently losing.
+
+    **THIS REPLACES ``test_the_off_target_share_lands_on_a_real_ally``**, whose fixture
+    was Starfire's ``with_party`` axis — retired in s54 as a second source for the party
+    (the seam check's third catch of that shape in s53).
     """
     config = RunConfig(build="starfire_scion", level=15, n_days=1, enemy="scripted",
-                       build_options={"with_party": True},
                        enemy_options={"char_target_prob": 0.4})
+    with pytest.raises(ValueError, match="cannot be declared alongside a party"):
+        built(config)
+
+
+def test_a_party_splits_the_enemys_swings_by_UNIFORM_weights():
+    """The capability ``char_target_prob`` used to reach, now derived from the roster.
+
+    Asserted as the WEIGHTS rather than as a DPR, because a weight cannot be right by
+    luck of the seed. They are integers summing to exactly 100 — not cosmetic: that is
+    what makes the multi-entity pre-roll ``roll_one(100)``, the same die the solo path
+    rolls, so the two paths stay comparable draw for draw.
+
+    Uniform is a PLACEHOLDER whose replacement is already designed (§3.5.4's threat
+    class), and **uniform is the special case where every class is equal**, so nothing
+    structural changes when it arrives.
+    """
+    config = RunConfig(build="starfire_scion", level=15, n_days=1, enemy="scripted")
     runner, roster = built(config)
     policy = runner.policies[roster.enemies[0].id]
     assert policy.describe_parameters()["targeting"] == "weighted_roster"
-    assert len(roster.allies) == 1
+    assert len(roster.allies) == 3                      # party_size 4 - the character
 
-    # The weights are the integers the dice-stream argument rests on (see
-    # enemy._ally_roster): they sum to exactly 100, so the multi-entity pre-roll is
-    # the same roll_one(100) the single-target path makes.
     weights = dict(policy._roster)                      # noqa: SLF001 — the point
-    assert weights[roster.character] == 40
-    assert weights[roster.allies[0]] == 60
     assert sum(weights.values()) == 100
+    # 100 / 4 divides exactly here; where it does not, the remainder goes to the
+    # CHARACTER, so the rounding never favours the party.
+    assert weights[roster.character] == 25
+    assert all(weights[a] == 25 for a in roster.allies)
 
 
-def test_focus_fire_is_unaffected_by_an_ally_being_present():
-    """The DEFAULT value of the same declaration, which is the half that must not
-    move: at ``char_target_prob=1.0`` the allies take weight 0 and can never be
-    picked, so a standardized focus-fire run on a build that fields a party measures
-    exactly what it measures on one that does not.  Asserted as the weight rather than
-    as a DPR, because a weight cannot be right by luck of the seed.
+def test_BOTH_enemy_kinds_now_split_the_same_way():
+    """§3.5.3's actual requirement, at the seam rather than at the policy.
+
+    §3.4 claims ``baseline`` vs ``scripted`` isolates "the enemy forces saves" from
+    "the enemy swings". **Before s54 that became false the moment a party existed** —
+    ``ScriptedEnemyPolicy`` took a weighted roster and ``BaselineEnemyPolicy``
+    focus-fired, so the two arms would have differed in targeting MODEL as well. They
+    agreed only because the standardized default was focus-fire onto an empty ally
+    roster (measured s53: 126,661 vs 105,484 on the character and **0** on the party,
+    either way).
+    """
+    weights = {}
+    for kind in ("scripted", "baseline"):
+        runner, roster = built(RunConfig(build="starfire_scion", level=15, n_days=1,
+                                         enemy=kind))
+        policy = runner.policies[roster.enemies[0].id]
+        assert policy.describe_parameters()["targeting"] == "weighted_roster"
+        weights[kind] = sorted(w for _, w in policy._roster)     # noqa: SLF001
+    assert weights["scripted"] == weights["baseline"] == [25, 25, 25, 25]
+
+
+def test_party_size_1_keeps_char_target_prob_as_the_live_knob():
+    """The OTHER branch of the refusal: with no allies the option is still honoured,
+    because a config that has not declared a party has not claimed anything.
+
+    This is the solo basis every pre-s54 number was measured on, and it is still
+    reachable by declaring it — which is what makes the re-baseline a change of
+    DEFAULT rather than a loss of capability.
     """
     config = RunConfig(build="starfire_scion", level=15, n_days=1, enemy="scripted",
-                       build_options={"with_party": True})
+                       party_size=1, enemy_options={"char_target_prob": 0.4})
     runner, roster = built(config)
-    weights = dict(runner.policies[roster.enemies[0].id]._roster)   # noqa: SLF001
-    assert weights[roster.character] == 100
-    assert weights[roster.allies[0]] == 0
+    policy = runner.policies[roster.enemies[0].id]
+    assert roster.allies == []
+    assert policy.describe_parameters()["targeting"] == "single_target"
+    assert policy._roster is None                        # noqa: SLF001
+    assert policy.describe_parameters()["char_target_prob"] == 0.4
 
 
 def test_a_build_with_no_allies_keeps_the_single_target_path():
     """``_ally_roster`` returns None when there is nothing to absorb the off-target
-    share, which is what keeps War Angel's ``char_target_prob`` meaning what it
-    always meant: the share goes to an unmodelled party member, i.e. nowhere."""
+    share, which is what keeps ``char_target_prob`` meaning what it always meant: the
+    share goes to an unmodelled party member, i.e. nowhere.
+
+    Needs ``party_size=1`` since s54 — the default of 4 gives every roster allies.
+    """
     config = RunConfig(build="war_angel", level=13, n_days=1, enemy="scripted",
-                       enemy_options={"char_target_prob": 0.4})
+                       party_size=1, enemy_options={"char_target_prob": 0.4})
     runner, roster = built(config)
     policy = runner.policies[roster.enemies[0].id]
     assert policy.describe_parameters()["targeting"] == "single_target"
@@ -768,6 +819,7 @@ def test_different_builds_at_one_level_face_an_identical_resolved_enemy():
     """
     blocks = []
     policies = []
+    weights = []
     for build in SHARED_LEVEL_BUILDS:
         config = RunConfig(build=build, level=SHARED_LEVEL, n_days=1,
                            enemy="baseline", enemy_options={"control": True})
@@ -775,9 +827,14 @@ def test_different_builds_at_one_level_face_an_identical_resolved_enemy():
         blocks.append(enemy_seam.resolve(config))
         params = runner.policies[roster.enemies[0].id].describe_parameters()
         # 'focus'/'fallback' name the ROSTER, which differs by construction — the
-        # enemy's own parameters are what must agree.
+        # enemy's own parameters are what must agree.  Since s54 'roster_weights' is a
+        # third such key: it is keyed by entity NAME, and the character's name is a
+        # property of the build. The WEIGHTS still have to agree, which is checked
+        # separately below — that is the §3.4 claim, and "the enemy attacks whichever
+        # friendlies are present" was never part of it.
         policies.append({k: v for k, v in params.items()
-                         if k not in ("focus", "fallback")})
+                         if k not in ("focus", "fallback", "roster_weights")})
+        weights.append(sorted(params["roster_weights"].values()))
 
     first, *rest = blocks
     for other in rest:
@@ -785,6 +842,13 @@ def test_different_builds_at_one_level_face_an_identical_resolved_enemy():
     first_policy, *other_policies = policies
     for other in other_policies:
         assert other == first_policy
+    # The DISTRIBUTION of incoming attention is identical even though the names are
+    # not: every build at this level is attacked on the same share of swings, which is
+    # what makes two builds' defensive numbers comparable at all (§3.5.2).
+    first_weights, *other_weights = weights
+    assert first_weights == [25, 25, 25, 25]
+    for other in other_weights:
+        assert other == first_weights
 
 
 @pytest.mark.parametrize("build", SHARED_LEVEL_BUILDS)
@@ -959,6 +1023,69 @@ GOLDEN_DAYS, GOLDEN_SEED = 400, 11
 #: Regenerating these is a DELIBERATE act with a decision record, exactly as the
 #: numbers in ``src/validation.py`` were.  An engine change that moves them has
 #: moved the physics, and the commit that does it should say which physics.
+# ===========================================================================
+# RE-BASELINED (s54, framework step 7) — ONE combined record for TWO changes
+# ===========================================================================
+#
+# Two of step 7's items move these rows, and they are recorded together rather than
+# twice because they were applied together and a reader cannot separate them from the
+# values alone (PROGRESS items iv and viii):
+#
+#   (iv) `RunConfig.party_size` DEFAULTS TO 4 (§3.5.2) — the enemy spreads its swings
+#        across four friendlies instead of focus-firing the character. The user
+#        overruled the draft's default of 1 and accepted the re-baseline now, because
+#        a default of 1 would leave every defensive number still measured under
+#        focus-fire, which is the defect the party exists to remove.
+#  (viii) `make_starfire_scion` now sets `ac` — it never did, so the Scion fought at
+#        AC 0, its own data having declared `char_ac` 16-18 all along.
+#
+# WHAT MOVED, AND THE BOUND HELD EXACTLY. §3.5.2 predicted 9 of 13 rows would move
+# with 4 untouched, the 4 being `enemy="none"`, because a passive entity nothing
+# targets is bit-identical. Measured: exactly that, with the four `none` rows equal to
+# the last bit (and asserted directly in `test_eval_party_seam`).
+#
+#   row                                                old  ->  new        move
+#   war_angel  1 none                           8.29234375      unchanged
+#   war_angel  5 none                          16.45281250      unchanged
+#   war_angel 12 none                          37.91640625      unchanged
+#   war_angel 13 none                          35.45781250      unchanged
+#   war_angel  4 baseline                       6.99390625 ->  6.94234375   -0.74%
+#   war_angel 13 baseline                      34.76328125 -> 35.32109375   +1.60%
+#   war_angel 13 scripted                      34.94093750 -> 35.42390625   +1.38%
+#   war_angel 13 baseline control+mitigation   27.93671875 -> 33.53046875  +20.02%
+#   war_angel 13 baseline legendary_cadence    34.43031250 -> 35.24687500   +2.37%
+#   war_angel 16 baseline                      41.16687500 -> 38.03234375   -7.61%
+#   silvertail 10 baseline                      6.33437500 ->  6.29640625   -0.60%
+#   silvertail 10 baseline focus=summon         6.31828125 ->  6.38718750   +1.09%
+#   starfire_scion 15 baseline                 27.42734375 -> 28.82609375   +5.10%
+#
+# THE STARFIRE ROW DECOMPOSES EXACTLY, which is what keeps the combined record
+# honest: at `party_size=1` it reads **27.22875000**, the value the `ac` fix alone was
+# predicted to produce, so the AC contributes -0.1986 and the party the remaining
+# +1.5973.
+#
+# THREE DIRECTIONS WERE MEASURED RATHER THAN ARGUED, per the standing rule that a
+# mechanical argument is not a measurement — and the third is a sign flip no
+# prediction had:
+#
+#  * **war_angel 13 rises** (+1.60%) because the party absorbs ~3/4 of the swings, so
+#    concentration checks fall 11.41 -> 3.79 per day and Bless survives. §3.5.2
+#    predicted a concentration-dependent build's own DPR would go UP, and it does.
+#  * **the control row rises most** (+20.02%) because control is aimed by the same
+#    uniform weights, so ~3/4 of it lands on PASSIVE stand-ins, where a lost turn
+#    costs nothing: control turns lost fall 0.1138 -> 0.0303 per round, a 73.4% drop.
+#    This is a MEASURED argument for §3.5.4's threat class, which until now was
+#    justified only qualitatively — see §14.
+#  * **war_angel 16 FALLS** (-7.61%), the only sizeable move against the grain, and
+#    the NEW reaction channel is what diagnosed it. L14+ has Flourish Parry and its
+#    Counter, which converts an incoming hit into an outgoing attack, so a build whose
+#    damage partly depends on BEING ATTACKED loses output when a party absorbs the
+#    attacks. `reactions_per_round` goes 0.54766 -> 0.33578; subtracting the constant
+#    0.25 opportunity attack leaves the parry component at 0.29766 -> 0.08578, a
+#    **71.2% drop**, which is the ~3/4 reduction in incoming swings. L13 has no parry,
+#    which is exactly why L13 rises and L16 falls. Worth noting on its own: the channel
+#    that was dead at BOTH ENDS one PR ago is what made this legible in one run.
+#
 GOLDEN_DPR: dict[tuple, float] = {
     # ------------------------------------------------------------------
     # THE RETIRED PARITY PROOF'S COVERAGE, carried forward (s52).
@@ -983,11 +1110,11 @@ GOLDEN_DPR: dict[tuple, float] = {
     # bit-identical to the retired harness (41.247656 there), because L16 is one of
     # the four War Angel levels whose baked-in enemy swung for a hand-written flat 32
     # instead of the table's 9d6+5.  That is the re-baseline 5b was for.
-    ("war_angel", 16, "baseline", ()): 41.166875,
+    ("war_angel", 16, "baseline", ()): 38.03234375,
     # ------------------------------------------------------------------
-    ("war_angel", 4, "baseline", ()): 6.99390625,
-    ("war_angel", 13, "baseline", ()): 34.76328125,
-    ("war_angel", 13, "scripted", ()): 34.9409375,
+    ("war_angel", 4, "baseline", ()): 6.94234375,
+    ("war_angel", 13, "baseline", ()): 35.32109375,
+    ("war_angel", 13, "scripted", ()): 35.42390625,
     ("war_angel", 13, "none", ()): 35.4578125,
     # RE-BASELINED (s51), deliberately and with a decision record: framework step 6
     # applies the control cost at RUNTIME (evaluation_framework.md §7), so this is the
@@ -1002,11 +1129,11 @@ GOLDEN_DPR: dict[tuple, float] = {
     # the credit was made exact at the user's direction.  Every other row in this table
     # is UNCHANGED, which is the assertion that the default (control off) moved nothing.
     ("war_angel", 13, "baseline",
-     (("control", True), ("mitigation", True))): 27.93671875,
-    ("war_angel", 13, "baseline", (("legendary_cadence", True),)): 34.4303125,
-    ("silvertail", 10, "baseline", ()): 6.334375,
-    ("silvertail", 10, "baseline", (("focus", "summon"),)): 6.31828125,
-    ("starfire_scion", 15, "baseline", ()): 27.42734375,
+     (("control", True), ("mitigation", True))): 33.53046875,
+    ("war_angel", 13, "baseline", (("legendary_cadence", True),)): 35.246875,
+    ("silvertail", 10, "baseline", ()): 6.29640625,
+    ("silvertail", 10, "baseline", (("focus", "summon"),)): 6.3871875,
+    ("starfire_scion", 15, "baseline", ()): 28.82609375,
 }
 
 
@@ -1082,32 +1209,66 @@ def test_the_attacks_channel_detects_the_seam_through_bless_not_through_ac():
         baseline             0.93409  11.485
         baseline+legendary   0.92565  13.634
 
-    So the attacks channel IS the sensitive detector the handoff expected (none vs
-    baseline is ~15σ at a stderr of ~0.0008) — just not via the AC, which is
-    identical on both paths.  The ORDERING is the assertion here, because it is the
-    mechanism; the values are a record, not a target.
+    So the attacks channel IS the sensitive detector the handoff expected — just not
+    via the AC, which is identical on both paths.  The ORDERING is the assertion here,
+    because it is the mechanism; the values are a record, not a target.
+
+    **PARAMETRIZED OVER ``party_size`` (s54), because the party ATTENUATES the detector
+    and the attenuation is the same mechanism one step on.** A party absorbing ~3/4 of
+    the swings forces ~3/4 fewer concentration checks, so Bless survives and the hit
+    rate moves far less. Measured at 2,000 days / seed 11:
+
+        ======================  =============  =============
+        arm                     party_size=1   party_size=4
+        ======================  =============  =============
+        none                    0.95102 / 0.0  0.95102 / 0.0
+        scripted                0.93531 / 11.4 0.95002 / 3.65
+        baseline                0.93409 / 11.5 0.94793 / 3.67
+        baseline+legendary      0.92565 / 13.6 0.94570 / 5.17
+        none vs +legendary      **20.7σ**      **4.8σ**
+        ======================  =============  =============
+
+    The ordering is strict in BOTH columns, so the detector is intact either way; what
+    changes is its power, by a factor of about four. Testing both arms rather than
+    relaxing the threshold is step 5's "test the BRANCH" applied to a declaration that
+    only just gained a second value — and the σ claim is kept where it was measured
+    instead of being quietly weakened to fit.
+
+    Note the ``none`` row is IDENTICAL across the two columns to five decimal places,
+    which is §3.5.2's bit-identity bound showing up in the attacks channel rather than
+    in DPR: a passive entity nothing targets changes nothing at all.
     """
-    def measure(kind, **options):
+    def measure(kind, party_size, **options):
         report = run(RunConfig(build="war_angel", level=13, n_days=2_000, seed=11,
-                               enemy=kind, enemy_options=options))
+                               enemy=kind, enemy_options=options,
+                               party_size=party_size))
         return (report.values["attack_roll_rate[characters|hit]"],
                 report.values["concentration_checks_per_day"].value)
 
-    passive, passive_checks = measure("none")
-    attacks_only, attacks_only_checks = measure("scripted")
-    with_saves, with_saves_checks = measure("baseline")
-    legendary, legendary_checks = measure("baseline", legendary_cadence=True)
+    gaps = {}
+    for party_size, min_sigma in ((1, 10.0), (4, 3.0)):
+        passive, passive_checks = measure("none", party_size)
+        attacks_only, attacks_only_checks = measure("scripted", party_size)
+        with_saves, _ = measure("baseline", party_size)
+        legendary, legendary_checks = measure("baseline", party_size,
+                                              legendary_cadence=True)
 
-    # The pressure axis: strictly more incoming attacks, left to right.
-    assert passive_checks == 0.0
-    assert passive_checks < attacks_only_checks < legendary_checks
-    # ...and the accuracy axis moves strictly the other way.
-    assert (passive.value > attacks_only.value > with_saves.value
-            > legendary.value)
-    # The move is large, which is what makes the channel a detector: a seam that
-    # was NOT installed would leave these equal.
-    pooled = math.hypot(passive.stderr, legendary.stderr)
-    assert (passive.value - legendary.value) > 10 * pooled
+        # The pressure axis: strictly more incoming attacks, left to right.
+        assert passive_checks == 0.0
+        assert passive_checks < attacks_only_checks < legendary_checks
+        # ...and the accuracy axis moves strictly the other way.
+        assert (passive.value > attacks_only.value > with_saves.value
+                > legendary.value), party_size
+        # The move is large, which is what makes the channel a detector: a seam that
+        # was NOT installed would leave these equal.
+        pooled = math.hypot(passive.stderr, legendary.stderr)
+        sigma = (passive.value - legendary.value) / pooled
+        assert sigma > min_sigma, (party_size, sigma)
+        gaps[party_size] = sigma
+
+    # The attenuation itself, asserted rather than left in the table above: a party
+    # weakens the detector by roughly 4x because it is what removes the pressure.
+    assert gaps[1] > 3 * gaps[4]
 
 
 def test_bless_cannot_touch_the_crit_rate_and_the_data_agrees():

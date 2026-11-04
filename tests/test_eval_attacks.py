@@ -391,14 +391,37 @@ def test_the_property_vocabulary_is_closed_and_not_a_partition():
 @pytest.fixture(scope="module")
 def silvertail():
     """The only build with a summon, so the only one that exercises the role
-    dimension's measured/measured case rather than measured/unavailable."""
+    dimension's measured/measured case rather than measured/unavailable.
+
+    ``party_size=1`` since s54: this module's fixtures are about the ROLE dimension's
+    three states, and the default party puts entities in the ``allies`` role, which
+    turns its UNAVAILABLE cells into UNMEASURED ones.  Both are real states and both
+    are tested — the solo roster here, the party in
+    ``test_a_present_but_passive_role_is_UNMEASURED_not_unavailable`` below — but a
+    fixture cannot be the witness for two different states at once.
+    """
     return run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=30, seed=3,
-                         build_options=ZONE))
+                         build_options=ZONE, party_size=1))
 
 
 @pytest.fixture(scope="module")
 def war_angel():
-    return run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=30, seed=3))
+    return run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=30, seed=3,
+                         party_size=1))
+
+
+@pytest.fixture(scope="module")
+def war_angel_with_party():
+    """War Angel with the DEFAULT declared party (§3.5.2) — the one roster that shows
+    all THREE states of the role dimension at once.
+
+    It has characters (MEASURED), a declared party that never swings (UNMEASURED) and
+    no summons at all (UNAVAILABLE).  Silvertail cannot do this: give it a party and
+    every role is present, so nothing is unavailable — which is how the first cut of
+    the test below got it wrong, and why the claim is an assertion.
+    """
+    return run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=30,
+                         seed=3))
 
 
 def test_the_character_cell_is_not_moved_by_the_summons_rolls(silvertail):
@@ -548,3 +571,36 @@ def test_the_attacks_rows_exercise_two_of_the_three_states(silvertail):
     assert any(r.measured for r in rows)
     assert any(not r.available for r in rows)
     assert all(r.value is None for r in rows if not r.available)
+
+
+def test_a_present_but_passive_role_is_UNMEASURED_not_unavailable(
+        war_angel_with_party):
+    """THE THIRD STATE, and §3.5.5 scheduled this transition in advance.
+
+    With a declared party the ``allies`` cells stop being "this build's roster has no
+    allies" and become UNMEASURED: the allies are there, they simply never roll an
+    attack, so there is no denominator.  More honest than "unavailable" — and the
+    distinction is the whole of §3.4's three-state machinery, because "this build has
+    no allies", "its allies never swung" and "its allies hit 0% of the time" are three
+    different facts and only one of them is ever true.
+
+    So the role dimension now exercises all THREE states on one real run, which it
+    could not do before the party existed — on War Angel, which has no summons. **The
+    first cut of this test used Silvertail and asserted the same thing, and it was
+    false**: give a summon build a party and every role is present, so no cell is
+    unavailable. The fixture that shows three states has to be MISSING a role, which is
+    the opposite of what "exercises every state" suggests. Caught because the claim was
+    written as an assertion.
+    """
+    report = war_angel_with_party
+    for prop in ATTACK_PROPERTIES:
+        cell = report.values[f"attack_roll_rate[allies|{prop}]"]
+        assert cell.available is True              # the allies DO exist now...
+        assert cell.value is None                  # ...and never swung
+        assert "no allies" not in (cell.note or "")
+
+    rows = [report.values[METRICS.breakdown("attack_roll_rate").cell_name(k)]
+            for k in METRICS.breakdown("attack_roll_rate").keys()]
+    assert any(r.measured for r in rows)                                    # measured
+    assert any(r.available and r.value is None for r in rows)               # unmeasured
+    assert any(not r.available for r in rows)                               # unavailable

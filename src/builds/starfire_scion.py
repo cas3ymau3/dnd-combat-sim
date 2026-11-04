@@ -656,6 +656,18 @@ def make_starfire_scion(level: int) -> Entity:
         name=f"StarfireScion-L{level}",
         hp=data["char_hp"],
         base_stats={
+            # THE ONE-LINE FIX (s54, §3.5 / PROGRESS item viii).  The row has declared
+            # `char_ac` (16-18) since the build existed, and this build's OWN
+            # (now-deleted) make_party_member and make_ally both read it. The one
+            # entity that did not get it was the character the build is about, so the
+            # Scion fought at AC 0 — `Entity.stat()` returns 0 for a missing key *by
+            # design*. Worth ~23% of its incoming damage: 65.2 -> 52.9 per round.
+            #
+            # It survived because every Starfire test is a DIRECTIONAL ABLATION at a
+            # fixed enemy, so AC 0 moved both arms equally and every test passed.
+            # Generalized in s53: an ablation test is blind to anything that moves both
+            # arms, which is most of the defender side.
+            "ac": data["char_ac"],
             "attack_bonus": data["attack_bonus"],          # DEX martial-arts melee
             "spell_attack_bonus": data["spell_attack_bonus"],  # WIS spell attacks
             "spell_save_dc": data["spell_save_dc"],        # Sacred Flame DC
@@ -713,30 +725,19 @@ def make_training_dummy(level: int) -> Entity:
     return dummy
 
 
-def make_party_member(level: int) -> Entity:
-    """A passive PARTY MEMBER (design.md §3.6) — one extra FRIENDLY HP pool that
-    soaks a share of the enemy's attacks.
-
-    The foundation-min piece of substrate #7's 7c slice (the multi-entity-combat
-    on-ramp): a SINGLE infinite-HP pool — the full §3.6 three-HP-pool model is a
-    later slice — carrying just an AC so the enemy's attacks against it resolve, and
-    NO policy, so it never acts (it draws attacks, deals no damage).  Its whole job
-    is to pull a fraction of the enemy's swings away from the character: with the
-    enemy splitting attacks across {character, party}, the character's defender-side
-    reactions (Fire-Shield thorns, substrate #5) fire on only a FRACTION of incoming
-    hits instead of every one — dissolving the single-dummy thorns over-count
-    (PROGRESS session 16 / the substrate-#7 design note's first slice).
-    """
-    data = LEVELS[level]
-    return Entity(
-        name=f"PartyMember-L{level}",
-        hp=10**9,
-        # A peer's AC (§3.6 says party AC scales with level via the CR table; a
-        # melee peer at the Scion's own AC is the foundation-min stand-in).  No
-        # saves/resources — the enemy here only melee-attacks, and the party never
-        # acts, so nothing else is read.
-        base_stats={"ac": data["char_ac"]},
-    )
+# ``make_party_member`` LIVED HERE AND IS DELETED (s54, §3.5.2).
+#
+# It was the project's only party member: a single passive infinite-HP pool at this
+# build's own ``char_ac``, appended by the retired ``with_party`` axis.  With
+# ``RunConfig.party_size`` live, the framework builds the party, and keeping this one
+# would have left **two sources for one quantity** — and worse, a framework-standard
+# party whose AC came from one particular character's level row, which is §3.4's
+# coupling with the labels swapped.  The one constructor is now
+# ``builds/character_stats.make_party_member``, reading the §3.5.1 baseline progression.
+#
+# ``make_ally`` below STAYS and is a different entity: it also carries the saving throws
+# a 7c ally-effect reads, and an ``AllyEffectPolicy`` is attached to it so the intercept
+# seam consults it.  A passive pool and a policy-bearing effect target are two things.
 
 
 def make_ally(level: int) -> Entity:
@@ -1627,7 +1628,6 @@ def make_day_runner(
     fourth_level_spell: str = "fount_of_moonlight",
     precast_mode: "str | None" = None,
     precast_prob: float = 0.5,
-    with_party: bool = False,
 ):
     """Assemble (DayRunner, character, dummy) for the given level.
 
@@ -1655,19 +1655,17 @@ def make_day_runner(
     roster by the framework's seam.  DPR still reads the dummy's column either way, so
     the enemy's own damage to the character never pollutes it.
 
-    `with_party` (substrate #7 / 7c foundation-min) registers a passive PARTY
-    MEMBER (``make_party_member`` — one extra friendly HP pool, design.md §3.6) in the
-    friendly roster.  Who attacks it is the ENEMY's business and therefore declared:
-    `enemy_options['char_target_prob'] < 1.0` makes the standardized enemy split its
-    swings across {character, party}.  Before s52 the split lived here, off the row's
-    ``char_weight``/``party_weight`` (design.md
-    §3.5).  So the character is attacked on only a fraction of swings and its
-    Fire-Shield thorns fire less — dissolving the single-dummy thorns over-count
-    (PROGRESS session 16).  DEFAULT False keeps the legacy 1-vs-1 scenario
-    bit-identical (every prior DPR/ablation number is unchanged).  Read the build's
-    own DPR column from the result via ``damage_by_source(char.id)`` (equals the old
-    ``damage_received_by(dummy.id)`` in the no-party case, since the character only
-    damages the dummy); the passive party member itself deals nothing.
+    **`with_party` IS RETIRED (s54, §3.5.2).**  It appended exactly one passive party
+    member here.  With ``RunConfig.party_size`` live a run would get three from the
+    framework *and* one more from this option — **two sources for one quantity**, and
+    inconsistent by construction rather than merely at risk of it.  ``party_size`` is
+    now the only place the party is declared, and ``evaluation/party.py`` the only place
+    it is built.  (Found by the seam check while the design was still being settled —
+    the third instance of that shape in s53.)
+
+    Read the build's own DPR column from the result via ``damage_by_source(char.id)``
+    (equals ``damage_received_by(dummy.id)`` when nothing else damages the dummy);
+    passive party members themselves deal nothing.
     """
     char = make_starfire_scion(level)
     dummy = make_training_dummy(level)
@@ -1681,21 +1679,12 @@ def make_day_runner(
     policies: dict[int, object] = {char.id: policy}
     entities: list[Entity] = [char, dummy]
 
-    if with_party:
-        # Multi-entity (7c): a passive party member joins the friendly roster as a real
-        # HP pool.  It is appended at EVERY level the option is legal, not only where a
-        # row used to carry `enemy_attack` — the party's existence is a build scenario
-        # and no longer gated on the enemy.
-        entities.append(make_party_member(level))
-
-    # THE ENEMY NEVER ACTS HERE (evaluation_framework.md §3.4, step 5b).  Until s52 the
-    # factory installed a ScriptedEnemyPolicy off this build's own data row — including
-    # the WEIGHTED-ROSTER split across `with_party`'s party member.  Both are now the
-    # framework's: `RunConfig.enemy` declares the model and
-    # `enemy_options['char_target_prob']` declares the share of swings the party soaks,
-    # with the seam reading the allies off the roster.  `with_party` stays a BUILD axis
-    # because the party member is a friendly HP pool this build fields; who attacks it
-    # is not a character-build property.
+    # NEITHER THE ENEMY NOR THE PARTY IS BUILT HERE (evaluation_framework.md §3.4 /
+    # §3.5.2).  Until s52 the factory installed a ScriptedEnemyPolicy off this build's
+    # own data row — including the WEIGHTED-ROSTER split across `with_party`'s party
+    # member.  All three are now the framework's: `RunConfig.enemy` declares the model,
+    # `RunConfig.party_size` declares the party (s54), and the split across the
+    # friendlies is DERIVED from the roster rather than declared anywhere.
 
     runner = DayRunner(
         rng=rng,
@@ -1742,14 +1731,12 @@ def make_ally_effects_runner(
         ally_policy.install()                       # pre-cast the persistent payload
         policies[ally.id] = ally_policy
 
-    # THE ENEMY NEVER ACTS HERE (evaluation_framework.md §3.4, step 5b).  Until s52 the
-    # factory installed a ScriptedEnemyPolicy off this build's own data row — including
-    # the WEIGHTED-ROSTER split across `with_party`'s party member.  Both are now the
-    # framework's: `RunConfig.enemy` declares the model and
-    # `enemy_options['char_target_prob']` declares the share of swings the party soaks,
-    # with the seam reading the allies off the roster.  `with_party` stays a BUILD axis
-    # because the party member is a friendly HP pool this build fields; who attacks it
-    # is not a character-build property.
+    # NEITHER THE ENEMY NOR THE PARTY IS BUILT HERE (evaluation_framework.md §3.4 /
+    # §3.5.2).  Until s52 the factory installed a ScriptedEnemyPolicy off this build's
+    # own data row — including the WEIGHTED-ROSTER split across `with_party`'s party
+    # member.  All three are now the framework's: `RunConfig.enemy` declares the model,
+    # `RunConfig.party_size` declares the party (s54), and the split across the
+    # friendlies is DERIVED from the roster rather than declared anywhere.
 
     runner = DayRunner(
         rng=rng,

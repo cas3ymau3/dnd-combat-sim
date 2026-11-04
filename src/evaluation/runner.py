@@ -44,11 +44,13 @@ from typing import TYPE_CHECKING, Any, Callable
 from ..rng import SeededRNG
 from ..telemetry import CombatTelemetry
 from .enemy import install as install_enemy
+from .party import install as install_party
 from .metrics import METRICS, DaySample, MetricRegistry, RunContext
 from .statistics import MetricSamples
 
 if TYPE_CHECKING:                                    # pragma: no cover
-    from ..day_runner import DayResult
+    from ..day_runner import DayResult, DayRunner
+    from .adapters import BuildAdapter
     from .config import RunConfig
     from .roster import Roster
 
@@ -107,6 +109,42 @@ class RunOutput:
         return self.column("characters", "summons", "allies")
 
 
+def assemble(config: "RunConfig", rng: "SeededRNG", *,
+             adapter: "BuildAdapter | None" = None) -> "tuple[DayRunner, Roster]":
+    """Build a run's ``(runner, roster)``: the factory, then the party, then the enemy.
+
+    **ONE SOURCE for the assembly ORDER**, and it exists because a second copy of it
+    already fell behind twice.  s52 moved ``enemy.install`` out of the three adapters
+    into ``simulate``, so an adapter could not forget it — and
+    ``tests/test_eval_enemy_seam.built()`` then hand-mirrored ``simulate``'s body to
+    inspect an installed policy.  When s54 added the party to ``simulate``, that mirror
+    silently kept producing partyless rosters: a helper whose whole docstring is "so the
+    install step cannot go missing from a test the way it could have gone missing from
+    an adapter" went missing in exactly that way.  The seam check's own answer applies to
+    test helpers too, so the order lives here and both callers use it.
+
+    THE ORDER IS LOAD-BEARING, in both steps:
+
+    1. ``party.install`` — the enemy's weighted targeting roster is DERIVED from the
+       friendly roster (§3.5.3), so the party has to exist before the enemy is built
+       against it.
+    2. ``enemy.install`` — with ``enemy`` a required field and every kind standardized,
+       an adapter that forgot this would face whatever its factory built while
+       provenance claimed the declared kind: a §4 lie, and silent.
+
+    Neither step draws a die, so neither shifts the stream relative to ``adapter.build``
+    (asserted in ``test_eval_enemy_seam`` and ``test_eval_party_seam``).
+    """
+    from .adapters import get_adapter
+
+    if adapter is None:
+        adapter = get_adapter(config.build)
+    runner, roster = adapter.build(config, rng)
+    roster = install_party(runner, roster, config)
+    install_enemy(runner, roster, config)
+    return runner, roster
+
+
 def simulate(config: "RunConfig", *, registry: MetricRegistry = METRICS,
              collect_telemetry: bool = True, rng: "SeededRNG | None" = None,
              on_day: "Callable[[int, DayResult], None] | None" = None) -> RunOutput:
@@ -127,18 +165,7 @@ def simulate(config: "RunConfig", *, registry: MetricRegistry = METRICS,
 
     if rng is None:
         rng = SeededRNG(config.seed)
-    runner, roster = adapter.build(config, rng)
-    # THE ENEMY IS INSTALLED HERE, not in the adapter (moved s52, step 5b).  Through
-    # s50-s51 each of the three adapters ended its own `build()` with an unconditional
-    # `enemy.install(...)`, which was safe while the DEFAULT was `build_default`: an
-    # adapter that forgot the call simply got the factory's own enemy, consistently with
-    # the provenance block its config produced.  With `enemy` required and every kind
-    # standardized, a forgetful adapter would instead face whatever its factory built
-    # while provenance claimed the declared kind — a §4 lie, and silent.  There is
-    # exactly one correct place for a call that must always happen: the one function
-    # every run goes through.  (`install` draws no dice, so moving it past
-    # `adapter.build` shifts no stream — asserted in test_eval_enemy_seam.)
-    install_enemy(runner, roster, config)
+    runner, roster = assemble(config, rng, adapter=adapter)
     described = adapter.describe(config)
 
     # Availability is decided ONCE, from the run's own context, before any day is

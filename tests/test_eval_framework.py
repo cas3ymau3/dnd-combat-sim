@@ -75,7 +75,10 @@ def test_headline_column_is_the_characters_own_output():
 # ---------------------------------------------------------------------------
 
 def test_war_angel_roster_roles():
-    output = simulate(RunConfig(enemy="none", build="war_angel", level=1, n_days=2, seed=0))
+    """``party_size=1`` for the SOLO roster — the basis every pre-s54 number was
+    measured on, and still reachable by declaring it (§3.5.2)."""
+    output = simulate(RunConfig(enemy="none", build="war_angel", level=1, n_days=2,
+                                seed=0, party_size=1))
     roster = output.roster
     assert [e.name for e in roster.characters] == [roster.character.name]
     assert roster.summons == [] and roster.allies == []
@@ -96,16 +99,32 @@ def test_silvertail_roster_tags_the_beast_as_a_summon():
     assert roster.summons[0].id in roster.party_source_ids
 
 
-def test_starfire_party_member_is_recovered_by_difference_not_position():
-    """``with_party`` appends a party member the factory never returns; the adapter
-    must find it without knowing where it sits in the entity list."""
-    with_party = simulate(RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=2,
-                                    seed=0, build_options={"with_party": True}))
-    without = simulate(RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=2,
-                                 seed=0, build_options={"with_party": False}))
-    assert len(with_party.roster.allies) == 1
-    assert with_party.roster.role_of(with_party.roster.allies[0].id) == "allies"
-    assert without.roster.allies == []
+def test_the_declared_party_is_tagged_allies_on_every_build():
+    """**REPLACES ``test_starfire_party_member_is_recovered_by_difference_not_position``
+    (s54).** That test's fixture was Starfire's ``with_party`` axis, retired as a second
+    source for the party now that ``RunConfig.party_size`` declares it; the adapter's
+    recover-by-difference helper survives with no shipped producer, which
+    ``build_adapters`` records.
+
+    The coverage it had — allies present, correctly role-tagged, versus a roster with
+    none — is kept here on the live mechanism, and widened to every build: the party is
+    the framework's, so it must appear identically on all three rather than only on the
+    one whose factory happened to build one.
+    """
+    for build, level in (("war_angel", 13), ("starfire_scion", 15), ("silvertail", 10)):
+        party = simulate(RunConfig(enemy="baseline", build=build, level=level,
+                                   n_days=2, seed=0))
+        assert len(party.roster.allies) == 3, build          # 4 - the character
+        for ally in party.roster.allies:
+            assert party.roster.role_of(ally.id) == "allies"
+        # Distinct entities, and none of them is the character or a summon.
+        assert len({a.id for a in party.roster.allies}) == 3
+        assert not ({a.id for a in party.roster.allies}
+                    & set(party.roster.ids("characters", "summons", "enemies")))
+
+        solo = simulate(RunConfig(enemy="baseline", build=build, level=level,
+                                  n_days=2, seed=0, party_size=1))
+        assert solo.roster.allies == [], build
 
 
 def test_summon_damage_never_merges_into_the_headline():

@@ -180,17 +180,18 @@ ENEMY_OPTION_SCHEMA: dict[str, OptionSpec] = {
     "char_target_prob": OptionSpec(
         "char_target_prob", default=1.0, values=None,
         description=(
-            "scripted only: probability each swing lands on the focus target. Default "
-            "1.0 (focus-fire) because the standardized basis is comparable rather than "
-            "realistic (memory standardized-dpr-baseline-not-realism); War Angel's "
-            "baked-in 0.40 was a PARTY-SIZE assumption, and party size is an "
-            "enemy-side scenario axis, not a character-build property. WHERE THE "
-            "OFF-TARGET SHARE LANDS is derived from the roster, not declared: on the "
-            "build's ALLIES if it fields any (a real HP pool — Starfire's with_party "
-            "member), otherwise on an unmodelled party member, i.e. nowhere. Derived "
-            "because the two facts cannot come apart — 'which entities can absorb a "
-            "swing' IS the roster — so this is the s48 interval-from-statistic case, "
-            "not the s49 sum_rule case."
+            "scripted only, and REFUSED once the roster has allies (§3.5.3, s54): "
+            "probability each swing lands on the focus target. It is now the SOLO knob "
+            "— with a party, the split across the friendlies is DERIVED from the "
+            "roster, because party size and 'how often is the character attacked' are "
+            "one quantity in two places, and a config declaring both claims an "
+            "assumption the run would not apply (§4). Default 1.0, which with "
+            "party_size=1 is the focus-fire basis every pre-s54 number was measured "
+            "on; War Angel's baked-in 0.40 was a PARTY-SIZE assumption, which is now "
+            "spelled party_size. Derived rather than declared because the two facts "
+            "cannot come apart — 'which entities can absorb a swing' IS the roster — "
+            "so this is the s48 interval-from-statistic case, not the s49 sum_rule "
+            "case."
         ),
     ),
     "band_override": OptionSpec(
@@ -402,6 +403,7 @@ def install(runner: "DayRunner", roster: "Roster", config: "RunConfig") -> dict[
             "on the multi-enemy / spatial model (§10)."
         )
     enemy = roster.enemies[0]
+    _refuse_char_target_prob_with_allies(roster, config)
     options = resolved_options(config)
     band = options.get("band_override") or band_for_level(config.level)
 
@@ -413,6 +415,40 @@ def install(runner: "DayRunner", roster: "Roster", config: "RunConfig") -> dict[
     else:
         runner.policies[enemy.id] = policy
     return resolve(config)
+
+
+def _refuse_char_target_prob_with_allies(roster: "Roster", config: "RunConfig") -> None:
+    """Refuse an explicit ``char_target_prob`` once the roster has allies (§3.5.3).
+
+    **Party size and "how often is the character attacked" are ONE QUANTITY IN TWO
+    PLACES.**  A config that declares a party of four *and* ``char_target_prob = 1.0``
+    claims a party the enemy ignores, which is exactly the §4 failure this option schema
+    already refuses elsewhere (``focus='summon'`` on a summonless roster, ``control``
+    options with the channel off).  So targeting is DERIVED: the enemy splits across
+    whoever is in the friendly roster, and declaring the split as well is refused rather
+    than silently losing to the derivation.
+
+    Checked HERE and not in ``validate_options`` because it is roster-dependent, and the
+    roster does not exist until the adapter and the party seam have both run — the same
+    reason ``focus='summon'`` is checked in ``_focus_pair``.
+
+    Only an EXPLICIT value is refused.  The schema default (1.0) is still reported by
+    ``resolved_options`` for a ``scripted`` run, where it remains the live knob on a solo
+    roster; a config that never mentioned the option has claimed nothing.
+    """
+    if "char_target_prob" not in config.enemy_options:
+        return
+    if not roster.allies:
+        return
+    raise ValueError(
+        f"enemy_options['char_target_prob'] cannot be declared alongside a party: "
+        f"this roster has {len(roster.allies)} ally/allies (party_size="
+        f"{config.party_size}), and the enemy's split across them is DERIVED from the "
+        "roster (evaluation_framework.md §3.5.3). Declaring both claims an assumption "
+        "the run would not apply — party size and 'how often is the character attacked' "
+        "are one quantity. Set party_size=1 to make char_target_prob the live knob "
+        "again, or drop the option and let the roster decide."
+    )
 
 
 def _complete_stat_block(enemy: "Entity", level: int, options: dict[str, Any],
@@ -461,7 +497,7 @@ def _focus_pair(roster: "Roster", focus: str) -> "tuple[Entity, Entity | None]":
 
 
 def _ally_roster(roster: "Roster", primary: "Entity",
-                 char_target_prob: float) -> "list[tuple[Entity, int]] | None":
+                 char_target_prob: float = 1.0) -> "list[tuple[Entity, int]] | None":
     """The weighted friendly roster for a ``scripted`` enemy, or ``None`` for the
     single-target path.
 
@@ -486,12 +522,29 @@ def _ally_roster(roster: "Roster", primary: "Entity",
     """
     allies = roster.allies
     if not allies:
-        return None                       # nothing to absorb it — legacy path
-    primary_weight = int(round(char_target_prob * 100))
-    share, extra = divmod(100 - primary_weight, len(allies))
-    weights = [(primary, primary_weight)]
-    for i, ally in enumerate(allies):
-        weights.append((ally, share + (extra if i == 0 else 0)))
+        return None                       # nothing to absorb it — the solo path
+    # UNIFORM weights across the friendlies (§3.5.2/§3.5.3, s54).  Before the party
+    # existed the split came from `char_target_prob`, which is now REFUSED whenever
+    # there are allies — the two are one quantity (see
+    # `_refuse_char_target_prob_with_allies`).  So the only caller that still passes a
+    # probability is a solo roster, which returns above, and the party case derives its
+    # weights from the roster alone.
+    #
+    # Uniform is a PLACEHOLDER with its replacement already designed: §3.5.4's threat
+    # class supplies real per-entity weights into this exact seam, and **uniform is the
+    # special case where every class is equal**, so nothing structural changes when it
+    # arrives.
+    #
+    # Integer weights summing to exactly 100, which is not cosmetic: it is what makes
+    # the multi-entity pre-roll `roll_one(100)` — the same die, in the same order, as
+    # the solo path's `roll_one(100) <= p_pct` — so the two paths stay comparable draw
+    # for draw. With n friendlies not dividing 100 the remainder goes to the PRIMARY,
+    # which is the character, so the rounding error never favours the party.
+    n = 1 + len(allies)
+    share, extra = divmod(100, n)
+    weights = [(primary, share + extra)]
+    for ally in allies:
+        weights.append((ally, share))
     return weights
 
 
@@ -511,12 +564,20 @@ def _make_policy(roster: "Roster", config: "RunConfig", options: dict[str, Any])
             rounds_per_combat=config.rounds_per_combat,
             damage_type=options["damage_type"],
             roster=_ally_roster(roster, primary, options["char_target_prob"]),
+            # NOTE: with allies present `_ally_roster` ignores char_target_prob and
+            # derives uniform weights; an explicit value is refused upstream by
+            # `_refuse_char_target_prob_with_allies`, so the two can never disagree.
         )
 
     return BaselineEnemyPolicy(
         level=config.level,
         primary=primary,
         fallback=fallback,
+        # §3.5.3: the SAME weighted split `scripted` gets, so §3.4's comparison arm
+        # keeps isolating "the enemy forces saves" from "the enemy swings" instead of
+        # also differing in targeting MODEL. None on a solo roster → focus-fire,
+        # drawing no targeting dice, so nothing pre-party moves.
+        roster=_ally_roster(roster, primary),
         rounds_per_combat=config.rounds_per_combat,
         damage_type=options["damage_type"],
         control=options["control"],
