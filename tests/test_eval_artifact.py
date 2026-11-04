@@ -463,9 +463,19 @@ def test_the_unconverged_warning_counts_DISTRIBUTION_points_too():
     The fixture is a quick-tier War Angel L13 run with control on, because that is the
     configuration where BOTH kinds are non-empty — the branch that matters is "some of
     each", which neither kind alone exercises.
+
+    **``party_size=1`` since s54, and the reason is the same mechanism in reverse.**
+    The unconverged DISTRIBUTION point exists because whole-turn suppression makes
+    ``attacks_per_round`` vary. The declared party aims ~3/4 of the enemy's control at
+    PASSIVE stand-ins, so the character is suppressed far less often, the quantity
+    collapses back toward a constant and the distribution converges — leaving this
+    fixture with no unconverged points and the test asserting over an empty list. So
+    the solo roster is pinned here deliberately: it is the regime that produces the
+    branch, not a leftover default.
     """
     report = run(RunConfig(build="war_angel", level=13, n_days=2000, seed=11,
-                           enemy="baseline", enemy_options={"control": True}))
+                           enemy="baseline", enemy_options={"control": True},
+                           party_size=1))
 
     scalars = [v.metric for v in report.unconverged()]
     points = [f"{name}:{point.statistic}"

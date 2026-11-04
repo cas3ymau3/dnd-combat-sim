@@ -868,10 +868,17 @@ def test_an_inert_toggle_reports_an_UNBOUNDED_variance_reduction():
     because it is the cheapest possible detector for "this comparison is exact" — and
     it is the value §14 records as the open question for whoever settles the
     comparison-artifact shape, since ``inf`` is not valid JSON.
+
+    **FIXTURE REPLACED (s54).** It was ``build_options={"with_party": True}``, inert
+    because the appended party member was never targeted at ``char_target_prob=1.0``.
+    That axis is retired, and the replacement is a sharper statement of the same thing:
+    under ``enemy="none"`` nothing attacks, so adding three passive friendlies is
+    **bit-identical** — which is the bound §3.5.2 measured BEFORE the party was built,
+    and the reason step 7's re-baseline is confined to the acting-enemy rows.
     """
     base = RunConfig(build="starfire_scion", level=15, n_days=60, seed=42,
-                     enemy="baseline")
-    inert = base.replace(build_options={"with_party": True})
+                     enemy="none", party_size=1)
+    inert = base.replace(party_size=4)
 
     delta = compare([base, inert], labels=["solo", "party"]).delta("party", "dpr")
     assert delta.delta == 0.0
@@ -1053,8 +1060,10 @@ def test_allies_are_excluded_under_both_attributions():
     """An ally is a party member the build does not COMMAND, so its damage was never
     the build's to claim — unlike a summon, which is what the build's action economy
     bought."""
-    base = RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=20, seed=1,
-                     build_options={"with_party": True})
+    # The allies are the framework's declared party since s54 (party_size defaults
+    # to 4), not a build option — which is the whole point of §3.5.2.
+    base = RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=20,
+                     seed=1)
     for attribution in ("character", "character_and_summons"):
         report = run(base.replace(attribution=attribution))
         ally = report["dpr_by_role[allies]"]
@@ -1259,13 +1268,37 @@ def test_external_healing_required_is_clamped_and_never_negative():
     assert report["external_healing_required_per_day"].value == 0.0  # …clamped
 
     # And where damage genuinely exceeds self-healing, it is the shortfall.
-    under_fire = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=20, seed=11,
-                               build_options=ZONE))
-    taken = under_fire.breakdown("damage_taken_per_round_by_role")["characters"].value
-    healed = under_fire.breakdown("healing_by_source")[("characters", "between")].value
-    rounds = RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10).rounds_per_day
-    assert under_fire["external_healing_required_per_day"].value == pytest.approx(
-        taken * rounds - healed)
+    #
+    # **THE IDENTITY HOLDS ONLY WHERE THE CLAMP NEVER BINDS, and s54 found that out the
+    # hard way.** This assertion used to run at the default roster, where the clamp
+    # happened never to fire on this config, so `mean(max(0, x))` and `max(0, mean(x))`
+    # were equal — the dormancy question's second answer, equal for a reason that would
+    # stop holding. The declared party made incoming damage small and spiky relative to
+    # healing, the clamp started firing on some days, and the identity broke (36.35 vs
+    # a predicted 30.40). Note the test's OWN docstring is about the clamp being per-day
+    # for exactly this reason, three lines above an assertion that assumed it was not.
+    #
+    # So both regimes are now asserted: the exact identity where the clamp cannot bind,
+    # and the inequality that is true unconditionally (Jensen on a convex clamp).
+    solo = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=20,
+                         seed=11, build_options=ZONE, party_size=1))
+    rounds = RunConfig(enemy="baseline", build="silvertail", level=10).rounds_per_day
+
+    def shortfall(report):
+        taken = report.breakdown("damage_taken_per_round_by_role")["characters"].value
+        healed = report.breakdown("healing_by_source")[("characters", "between")].value
+        return taken * rounds - healed
+
+    assert solo["external_healing_required_per_day"].value == pytest.approx(
+        shortfall(solo))
+
+    under_fire = run(RunConfig(enemy="baseline", build="silvertail", level=10,
+                               n_days=20, seed=11, build_options=ZONE))
+    assert under_fire["external_healing_required_per_day"].value >= max(
+        0.0, shortfall(under_fire))
+    # ...and strictly greater, which is the clamp BINDING on at least one day — the
+    # branch the first half of this test is about, now exercised by the same fixture.
+    assert under_fire["external_healing_required_per_day"].value > shortfall(under_fire)
 
 
 def test_a_build_that_reserves_its_hit_dice_needs_its_full_damage_healed():
@@ -1288,14 +1321,34 @@ def test_healing_provided_to_others_is_unavailable_where_there_is_no_other():
     """A 0 here would report ROSTER POVERTY as a build property. War Angel's Prayer
     of Healing heals five creatures RAW and heals one in this model only because the
     roster HAS one — so the availability predicate keeps the modelling limit visible
-    instead of scoring the build as selfish."""
-    alone = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=10, seed=11))
+    instead of scoring the build as selfish.
+
+    **THREE answers since s54** (per-feature ritual step 5 — test the BRANCH, and this
+    declaration just gained a third value). The declared party puts entities in the
+    roster that are present but are PASSIVE non-combatant stand-ins, which is neither
+    "nobody is there" nor "someone is there who could be healed". Folding it into the
+    first would have published a true zero that still reports roster poverty as a build
+    property; folding it into the second would have said nothing is wrong.
+    """
+    # (1) nobody at all — party_size=1, the solo roster.
+    alone = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=10,
+                          seed=11, party_size=1))
     provided = alone["healing_provided_to_others_per_day"]
     assert provided.available is False
-    assert "roster" in provided.note.lower()
+    assert "nothing else is present" in provided.note
 
-    # Silvertail HAS another entity, so the same zero is a real measurement: the
-    # character could heal the beast and does not.
+    # (2) only the declared party's stand-ins — present, but not someone to heal.
+    with_party = run(RunConfig(enemy="baseline", build="war_angel", level=13,
+                               n_days=10, seed=11))
+    stand_ins = with_party["healing_provided_to_others_per_day"]
+    assert stand_ins.available is False
+    assert "PASSIVE stand-ins" in stand_ins.note
+    assert stand_ins.note != provided.note          # genuinely distinguishable
+
+    # (3) Silvertail HAS another entity the build itself fielded, so the same zero is
+    # a real measurement: the character could heal the beast and does not. A summon is
+    # not a stand-in, which is why `Roster.party_stand_ins` is DECLARED rather than
+    # inferred from `len(allies)` against `party_size`.
     with_summon = run(RunConfig(enemy="baseline", enemy_options={"focus": "summon"}, build="silvertail", level=10, n_days=10, seed=11))
     measured = with_summon["healing_provided_to_others_per_day"]
     assert measured.available is True

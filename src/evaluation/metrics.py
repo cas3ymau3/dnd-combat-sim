@@ -1456,17 +1456,37 @@ def _attacks_made_denominator(key: tuple[str, ...]) -> Denominator:
 
 
 def _requires_healable_other(ctx: RunContext) -> "str | None":
-    """Is there anyone this build could even heal that is not itself?"""
+    """Is there anyone this build could even heal that is not itself?
+
+    THREE distinguishable answers since s54, and the third is the one the declared
+    party added.  Splitting it rather than folding it into "nothing is present" is the
+    same call the s50 review praised for ``_requires_control_channel``: the new
+    situation is genuinely different, and the fix for it is a different fix.
+    """
     others = tuple(r for r in ATTRIBUTABLE_ROLES if r not in ctx.config.own_roles)
-    if any(getattr(ctx.roster, role) for role in others):
+    present = [e for role in others for e in getattr(ctx.roster, role)]
+    stand_ins = set(ctx.roster.party_stand_ins)
+    if any(e.id not in stand_ins for e in present):
         return None
+    if present:
+        return (
+            "the only healable entities outside the attributed roles are the "
+            f"{len(present)} PASSIVE stand-ins of the declared party "
+            f"(party_size={ctx.config.party_size}, §3.5.2) — non-combatant HP pools "
+            "with no policy, which no shipped build's daily plan targets with a heal. "
+            "A zero here would still report ROSTER POVERTY as a build property rather "
+            "than a modelling limit: War Angel's Prayer of Healing heals five "
+            "creatures RAW. Goes live with §3.3's multi-character party, which is "
+            "what gives a build someone worth healing; until then a build that heals "
+            "its party is CONTENT work (§14)."
+        )
     return (
         "this roster holds no healable entity outside the attributed roles — "
         "enemies are never healed (healing.md §5), and nothing else is present. A "
         "zero here would report ROSTER POVERTY as a build property: War Angel's "
         "Prayer of Healing heals five creatures RAW and heals one in this model "
-        "only because the roster has one. Goes live with §3.3's multi-character "
-        "party."
+        "only because the roster has one. Declare party_size > 1 for stand-ins, or "
+        "§3.3's multi-character party for a real one."
     )
 
 

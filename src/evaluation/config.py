@@ -27,6 +27,14 @@ the baked-in path; step 5b (s52) DELETED the baked-in path.  So:
 * ``enemy_options`` — validated against ``enemy.ENEMY_OPTION_SCHEMA``, a closed
   schema; an option that cannot APPLY to the chosen kind is refused, not ignored.
 
+THE PARTY WENT LIVE IN s54 (§13 step 7)
+---------------------------------------
+``party_size`` is the third of the three "not a property of the build" declarations,
+after ``enemy`` and the baseline subject.  It defaults to **4** rather than to the
+minimal 1, deliberately and at the user's direction — see the field's docstring.  It is
+applied by ``evaluation/party.py``, from ``runner.simulate``, immediately before the
+enemy is installed, because the enemy's targeting is DERIVED from the friendly roster.
+
 ``mode="finite_hp"`` is still rejected: it needs ``DayRunner(enemy_ids=…)``, which
 no factory passes, and it is not part of step 5.
 
@@ -148,6 +156,23 @@ class RunConfig:
         no existing baseline moves; the value is recorded in provenance and reports
         under different attributions must not be compared (§5.2's rule, the same one
         that governs ``mode`` and the enemy path).
+    party_size:
+        The whole party INCLUDING the character (§3.5.2), so the default of 4 adds
+        three passive members to a one-character build.  Counts characters + allies;
+        a summon is not a party slot (``evaluation/party.py`` says why).
+
+        **IT DEFAULTS TO 4, AND THAT IS THE DECISION** (user, s53).  The draft
+        proposed defaulting to 1 so nothing existing would move, with the baseline
+        scenario declaring 4 — "the default is minimal, the standard is four".  The
+        user overruled it on the argument that matters: **if most runs use the
+        default, then defaulting to 1 means every defensive number in the project is
+        still measured under focus-fire**, which is the exact defect §3.5.2 exists to
+        remove.  A default nobody uses is not a default; it is a trap that costs more
+        to unwind once artifacts exist than it does to pay for now.
+
+        Like ``mode``, ``attribution`` and ``enemy``, it changes what the defensive
+        numbers MEAN and not merely their value, so reports produced under different
+        party sizes must not be compared (§5.2).
     """
 
     build: str
@@ -165,6 +190,8 @@ class RunConfig:
     seed: int = 0
     mode: str = "fixed_length"
     attribution: str = "character"
+    #: The whole party INCLUDING the character (§3.5.2).  See the docstring above.
+    party_size: int = 4
 
     # ------------------------------------------------------------------
     # Validation
@@ -176,6 +203,12 @@ class RunConfig:
             raise ValueError(f"rounds_per_combat must be >= 1, got {self.rounds_per_combat}.")
         if self.n_days < 1:
             raise ValueError(f"n_days must be >= 1, got {self.n_days}.")
+        if self.party_size < 1:
+            raise ValueError(
+                f"party_size counts the whole party INCLUDING the character, so it "
+                f"must be >= 1; got {self.party_size}. Pass 1 for the solo basis "
+                "every pre-s54 number was measured on (§3.5.2)."
+            )
         if self.combats_per_day != COMBATS_PER_DAY:
             raise ValueError(
                 f"combats_per_day must be {COMBATS_PER_DAY}: DayRunner.run_day "
@@ -278,6 +311,7 @@ class RunConfig:
             "seed": self.seed,
             "mode": self.mode,
             "attribution": self.attribution,
+            "party_size": self.party_size,
         }
 
     def canonical_json(self) -> str:

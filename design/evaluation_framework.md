@@ -400,13 +400,36 @@ CON +2.
 **Three properties of this table are the reason it is the right shape**, and a future
 retune should preserve them rather than the individual numbers:
 
-1. **Hit rates stay inside a 60-70% band in BOTH directions across all 20 levels.** That
-   is the signal that the character track and `enemy_stats` are scaled against each other
-   rather than drifting apart. If a retune breaks that band, the AC or attack track is
-   wrong — it is the cheapest available check on the whole progression.
+1. **The OUTGOING hit rate stays inside a 60-70% band across all 20 levels, and the
+   INCOMING rate rises monotonically from 50% to 80%.** The first is the signal that the
+   character's attack track and `enemy_stats`' AC track are scaled against each other
+   rather than drifting apart: if a retune breaks that band, the AC or attack track is
+   wrong, and it is the cheapest available check on the whole progression. The second is
+   the enemy getting relatively stronger, which is the *same* mechanism as property 2 —
+   a character who is hit more often fails more concentration checks — so the two
+   properties are one fact seen from two sides.
+
+   > **CORRECTED (s54), and the correction is the point.** This property was written as
+   > "hit rates stay inside a 60-70% band in BOTH directions across all 20 levels",
+   > which **the table three lines above refutes**: the incoming column reads 50% at
+   > L1-2, 55% at L3-6, 60-70% only at L7-14, then 75% at L15-18 and 80% at L19-20 — in
+   > band at 8 of 20 levels and out of it at 12. Every number in the table was right and
+   > only the sentence was wrong, which is exactly the shape §6.1 carried for eight
+   > sessions ("pairing is never worse than independent seeding", against its own 0.95x
+   > row) and which no row-level review catches. It surfaced here because step 7
+   > implemented the property as an ASSERTION rather than quoting it — **prose cannot
+   > fail** — and the two halves above are what the assertion actually holds
+   > (`tests/test_character_stats.py`). The alternative fix, raising the high-level AC
+   > track until the incoming rate stayed in band, was considered and rejected: it would
+   > move the approved table and reverse property 2's deliberate choice.
 2. **`conc pass` falls 75% → 35%** as enemy damage grows, so concentration becomes a
    genuine cost at high level instead of a formality. That is a deliberate modelling
-   choice, not an artifact.
+   choice, not an artifact. **Not monotonically** (measured s54): it rises at exactly
+   the four PB steps (5 / 9 / 13 / 17), because a PB step hands the character a whole
+   +1 at once while the enemy's damage grows smoothly, so each one buys back a tier's
+   ground before the slide resumes. That is a sharper property than monotonicity — it
+   ties this curve's shape to the one column in the table that moves in steps — and it
+   is what the test asserts.
 3. **`CON save` reaches +7 at L13, better than either real build** (War Angel +4,
    Starfire +2). Deliberate — a baseline should be representative rather than weak — but
    it means baseline concentration figures will look markedly healthier than the ones
@@ -595,11 +618,44 @@ structural change is required when it arrives — only a source for the numbers,
   honest than "unavailable" — the allies do exist, they just do not attack — and the
   three-state machinery already distinguishes them. **This is a metric-set review
   trigger.**
+
+  **MEASURED (s54): the seven are right, and there is an EIGHTH cell that is not
+  `allies`-keyed.** All seven changed state exactly as described. But
+  `healing_provided_to_others_per_day` changed state too, and it is a plain scalar:
+  its availability predicate asked "is there anyone outside the attributed roles?",
+  and a declared party makes the answer yes. Letting it go available would have
+  published a true zero that still reports **roster poverty as a build property** —
+  the exact failure the predicate was written to prevent, since no shipped build's
+  daily plan heals a passive stand-in and War Angel's Prayer of Healing heals five
+  creatures RAW. So the predicate gained a THIRD distinguishable answer (the same call
+  the s50 review praised for `_requires_control_channel`): nobody present / only the
+  declared party's stand-ins / someone the build itself fielded. Distinguishing the
+  middle case needs a DECLARATION, not a count — `len(allies)` against `party_size`
+  conflates a build's own ally with a stand-in the moment both exist — so
+  `Roster.party_stand_ins` carries the ids. **The lesson is the count itself: a cell
+  changing state is not the same question as a cell being keyed by the dimension that
+  changed**, and only the keyed ones were enumerated in advance.
 - **Every seeded number under an acting enemy moves**, because the enemy's attacks are
   split differently and a split changes how many dice are drawn. That is a deliberate
   re-baseline with its own record, the same shape as 5b's — and it is BOUNDED: `enemy="none"`
   runs are provably unchanged, because a passive entity nothing targets is bit-identical
   (measured, §3.5.2). 9 of `GOLDEN_DPR`'s 13 rows move; 4 do not.
+
+  **DONE (s54), and the bound held exactly**: 9 moved, 4 untouched, the 4 being the
+  `enemy="none"` rows, equal to the last bit. The record is in
+  `tests/test_eval_enemy_seam.py` above `GOLDEN_DPR`, as ONE combined entry covering both
+  this and the Starfire `ac` fix, since the two were applied together and cannot be
+  separated from the values alone. Three things it measured rather than predicted:
+  - **a concentration-dependent build's DPR does rise** (+1.60% at War Angel L13;
+    concentration checks 11.41 → 3.79 per day), as this section said it would;
+  - **the control arm rises most** (+20.0%), because uniform weights aim control at
+    passive stand-ins too — a measured argument for §3.5.4's threat class, in §14;
+  - **War Angel L16 FALLS** (−7.61%), which nothing predicted. L14+ converts an incoming
+    hit into an outgoing attack through Flourish Parry's Counter, so a build whose damage
+    partly depends on BEING ATTACKED loses output when a party absorbs the attacks. The
+    reaction channel this same step wired is what made that legible: the parry component
+    of `reactions_per_round` drops 71.2%, matching the reduction in incoming swings.
+    A channel dead at both ends one PR earlier diagnosed the step's own largest surprise.
 - **It does NOT make the project a build-evaluation exercise.** The baseline character
   exists so the framework can be tested; whether any real build's choices are good is
   §13's first full build evaluation and is explicitly not in scope here
@@ -2141,9 +2197,22 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   **Cheap because the seam exists.** Both enemy policies take per-entity integer weights
   once §3.5.3 lands, and uniform is the special case where every class is equal — so the
   classifier needs a vocabulary, a per-adapter `threat_class`, and a weighting rule, but
-  no structural change. Trigger: whenever the realism of the defensive channels starts
-  mattering more than their comparability, or the first build whose survivability is the
-  question being asked.
+  no structural change. §3.5.3 landed in s54, so the seam is now live: both policies take
+  the weights and `_ally_roster` derives them uniformly.
+
+  **AND THE ARGUMENT IS NO LONGER ONLY QUALITATIVE (measured s54).** Uniform weights aim
+  the enemy's CONTROL by the same split as its swings, so with a party of four roughly
+  three quarters of it lands on PASSIVE stand-ins, where a lost turn costs nothing:
+  War Angel L13's `control_turns_lost_per_round` falls **0.1138 → 0.0303** (a 73.4%
+  drop) and its DPR rises **+20.0%**, the largest move in step 7's re-baseline. An enemy
+  that wastes three quarters of its control on non-combatants is the clearest case yet
+  that uniform is a placeholder — a real opponent aims control at whatever is dangerous,
+  which is precisely what a threat class encodes. Note the direction this cuts: it makes
+  the control channel read HEALTHIER than it should, so the deferral is not conservative.
+
+  Trigger: whenever the realism of the defensive channels starts mattering more than
+  their comparability, or the first build whose survivability is the question being
+  asked. Step 8's sweeps make the weighting rule cheap to calibrate for the first time.
 
 - **The three existing builds' data is sparse where the framework needs it**
   *(surfaced s52, scoped s53)* — recorded as CONTENT work, explicitly not blocking the

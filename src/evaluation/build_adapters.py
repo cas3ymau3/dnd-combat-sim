@@ -67,10 +67,12 @@ def _resolved_options(adapter, config: "RunConfig") -> dict[str, Any]:
 def _extra_entities(runner: "DayRunner", known: "list[Entity]") -> list["Entity"]:
     """Entities the runner holds that the factory did not hand back.
 
-    Some factories append an entity to the roster internally (Starfire Scion's
-    passive party member under ``with_party``) without returning it.  Recovering
-    them by SET DIFFERENCE — not by index — keeps the adapter free of the
-    tuple-position coupling this whole layer exists to remove.
+    Some factories append an entity to the roster internally (Starfire Scion's old
+    passive party member under the retired ``with_party`` axis) without returning it.
+    Recovering them by SET DIFFERENCE — not by index — keeps the adapter free of the
+    tuple-position coupling this whole layer exists to remove.  No shipped factory does
+    this since s54; the helper stays because dropping an entity a factory made is
+    exactly the failure it prevents.
     """
     known_ids = {e.id for e in known}
     return [e for e in runner.entities if e.id not in known_ids]
@@ -152,13 +154,6 @@ class StarfireScionAdapter:
                 "precast_prob", default=0.5, values=None,
                 description="Pre-cast probability when precast_mode='rng'.",
             ),
-            "with_party": OptionSpec(
-                "with_party", default=False, values=(True, False),
-                description=(
-                    "L15+ register a passive party member and split the enemy's "
-                    "swings across {character, party}."
-                ),
-            ),
         }
 
     def build(self, config: "RunConfig", rng: "SeededRNG"):
@@ -166,8 +161,13 @@ class StarfireScionAdapter:
         runner, char, dummy = starfire_scion.make_day_runner(
             config.level, rng, config.rounds_per_combat, **opts,
         )
-        # The passive party member is appended to the runner's roster internally
-        # and never returned — recover it by difference, not by position.
+        # `_extra_entities` recovers anything the factory appended to the runner and
+        # did not hand back, BY SET DIFFERENCE rather than by index. With `with_party`
+        # retired (s54) this build appends nothing, so the list is empty today — the
+        # call stays because the alternative is an adapter that silently drops an
+        # entity the factory made, and that is the tuple-position coupling this whole
+        # layer exists to remove. The framework's own party arrives later, from
+        # `party.install`, and is not this adapter's business.
         allies = _extra_entities(runner, [char, dummy])
         roster = Roster(characters=[char], allies=allies, enemies=[dummy])
         return runner, roster
