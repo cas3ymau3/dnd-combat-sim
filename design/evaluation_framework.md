@@ -1811,6 +1811,52 @@ Per `validate-mechanism-not-build-value` and `enemy_model.md` §11 — tests ass
 
 We do NOT assert that any build's evaluated DPR is "correct".
 
+### 12.1 A preliminary run on unfinished machinery is a machinery exercise, not a measurement
+
+Project memory: **`preliminary-run-is-a-machinery-exercise`** (added s54, at the user's
+direction, when the first build evaluation was resequenced ahead of framework steps 8
+and 9).
+
+> **Running the pipeline before it is finished is a legitimate and useful thing to do —
+> and what it produces is DIAGNOSTIC OUTPUT, not data.** Its purpose is to exercise the
+> machinery, expose issues, and refine focus. It may not be cited as a result, a
+> baseline, a target, or as evidence about the subject, and it may not be carried forward
+> or diffed against as though it were a baseline. The run that counts is the one on the
+> finished machinery, and it is **scheduled at the same time as the preliminary one** so
+> that "we'll redo it properly later" is a roadmap item rather than an intention.
+
+**Why this needs to be its own memory rather than a note on one task.** It is the third
+and strongest member of a family the project already had, and the three are easy to
+conflate:
+
+| memory | what it forbids |
+|---|---|
+| `standardized-dpr-baseline-not-realism` | reading REALISM into a deliberately standardized scenario |
+| `validate-mechanism-not-build-value` | reading BUILD VALUE out of a mechanism test |
+| **`preliminary-run-is-a-machinery-exercise`** | reading ANYTHING out of a run whose machinery is admittedly incomplete |
+
+The first two bound how a *valid* measurement may be interpreted. This one says the
+output is not a measurement at all, which is a different and stronger claim — and the one
+most likely to erode, because a rendered artifact full of plausible numbers does not look
+provisional. Hence two obligations rather than one: **label the artifact itself**, not
+only the conversation around it, and **schedule the definitive run in the same decision**.
+
+**What makes a run "preliminary" is NAMED, not vibes.** The test is whether a known,
+scheduled change to the machinery will move the numbers. At s54 the answer was yes on two
+counts, both already measured rather than suspected: §14(a)'s convergence thresholds are
+untuned with three recorded stressors, so some `unconverged` flags are spurious; and
+§6.1's paired seeding is **measured inert** until step 9's RNG substreams, so intervals
+are wider than they will be and step 9 re-baselines every seeded figure by construction.
+A run is preliminary exactly while such a list is non-empty, and it stops being
+preliminary when the list is empty — not when it starts looking convincing.
+
+**It also protects the exercise from itself.** Because the output is not data, the
+temptation is to make it better until it is — widening the metric set, polishing the
+renderer, building the sweep driver that is actually the next framework step. The
+exercise's value is in what it EXPOSES, so its exit condition is a written list of issues
+and a note on which deferred items proved to matter, not a nicer artifact. See PROGRESS
+roadmap items 4b (the preliminary run and its guardrails) and 5c (the definitive one).
+
 **WHAT RETIRED THE PARITY PROOF (s52), and the honest shape of what replaces it.**
 Framework step 5b deletes the enemy material from the build tables, which deletes
 `make_training_dummy`'s baked-in source and `make_day_runner`'s enemy wiring — the two

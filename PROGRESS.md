@@ -381,6 +381,27 @@ it counts as done:
    REASON. A zero from an unwired channel reads as a measurement and is worse than
    no row at all. Two builds blocked for different reasons get different reasons.
 
+## Running something before it is finished (added s54)
+
+**Project memory: `preliminary-run-is-a-machinery-exercise`.** Defined in full in
+`design/evaluation_framework.md` §12.1; the short form, because it governs whole tasks
+rather than single features:
+
+> Running the pipeline before it is finished is legitimate and useful, and what it
+> produces is **diagnostic output, not data**. It may not be cited as a result, a
+> baseline or a target, nor carried forward or diffed against. Two obligations come with
+> it: **label the artifact itself**, not only the conversation around it, and **schedule
+> the definitive run in the same decision**, so "we will redo it properly later" is a
+> roadmap item rather than an intention.
+
+Whether a run is preliminary is a NAMED test, not a judgement call: *is there a known,
+scheduled change to the machinery that will move the numbers?* While that list is
+non-empty the run is preliminary; it stops being preliminary when the list empties, not
+when the output starts looking convincing. And because the output is not data, the
+standing temptation is to improve it until it is — which is how a diagnostic exercise
+grows into the framework step it was supposed to precede. The exit condition is a written
+list of what it exposed, not a better artifact.
+
 ## Periodic METRIC-SET REVIEW (every ~2 sessions that touch the registry)
 
 Added session 44 at the user's request. The registry grows easily — auto-generated
@@ -5594,11 +5615,12 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    > **#6b below re-runs the SAME build on the finished framework** — that run is the
    > one whose numbers mean anything.
    >
-   > This sits alongside [[validate-mechanism-not-build-value]] and
+   > **Project memory: [[preliminary-run-is-a-machinery-exercise]]** (added s54; defined
+   > in `evaluation_framework.md` §12.1). It sits alongside
+   > [[validate-mechanism-not-build-value]] and
    > [[standardized-dpr-baseline-not-realism]] and is strictly stronger than either:
-   > those two forbid reading build VALUE out of a mechanism test. This forbids reading
-   > anything out of this evaluation at all, because two framework steps are missing
-   > underneath it — §14(a)'s convergence thresholds are untuned with three recorded
+   > those two bound how a VALID measurement may be read, this one says the output is
+   > not a measurement at all, because two framework steps are missing underneath it — §14(a)'s convergence thresholds are untuned with three recorded
    > stressors, and §6.1's paired seeding is measured INERT until step 9's substreams.
    > So intervals are wider than they will be and some "unconverged" flags are
    > spurious.
@@ -5676,7 +5698,11 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    optional.** Once framework steps 8 and 9 are done and the housekeeping PR has
    landed, re-run **the same build #6a evaluated**, on the finished framework. **This
    is the run whose numbers count**; #6a's do not and must not be carried forward,
-   cited, or diffed against as though they were a baseline. Expect the numbers to move:
+   cited, or diffed against as though they were a baseline
+   ([[preliminary-run-is-a-machinery-exercise]], §12.1 — which requires the definitive
+   run to be scheduled in the SAME decision as the preliminary one, so that "we will redo
+   it properly later" is a roadmap item rather than an intention; THIS ENTRY is that
+   obligation discharged). Expect the numbers to move:
    step 9 re-baselines every seeded figure by construction, and step 8's threshold work
    changes which estimates are reported as converged.
 
