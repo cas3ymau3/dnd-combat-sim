@@ -1774,6 +1774,186 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 
 ## Done
 
+- **#6a PRELIMINARY BUILD EVALUATION — WAR ANGEL L1-16, RENDERED END TO END
+  (2026-11-05, session 55).** The project's first legible output across a build's whole
+  range, after 54 sessions with none. **NOT DATA** —
+  [[preliminary-run-is-a-machinery-exercise]], `evaluation_framework.md` §12.1: the
+  numbers below may not be cited as a result, a baseline or a target, and may not be
+  diffed against. Item 5c re-runs the same build on the finished framework and that
+  run's numbers are the ones that count. The preliminary list is still non-empty (§14(a)'s
+  untuned thresholds, §6.1's inert pairing), which is what keeps this preliminary.
+  **1170 tests green** (1164 at handoff, +6). Driver: a throwaway for-loop in the
+  scratchpad, deliberately not a sweep — that is step 8.
+
+  **TWO CONTENT FIXES WERE PREREQUISITES, and they are the same defect twice.** A
+  missing `base_stats` key reads as a silent 0 by design, so:
+  - **`ac` was absent at L1-L12** — twelve of sixteen levels fought at AC 0. Written off
+    the guide (four stated AC lines + the `armor:` trail: 17 chain shirt L1-4, 18
+    breastplate L5+). Second instance of this exact defect; s54's item (viii) was the
+    Starfire Scion's.
+  - **five of six SAVES read 0 at EVERY level** (only `con_save`, only L13-16), so the
+    enemy's §6 save channel resolved against +0. Now DERIVED at every level from the
+    guide's header (ability mod + PB where proficient; STR/CON from the starting class,
+    DEX from Resilient at L15) — the s49 rule's derive case, since a 5e save bonus IS
+    that sum. Checked against the guide's one stated save line at L15 (all six exact)
+    and against the six hand-written rows it replaced.
+
+  **THE GOLDEN SET IS A HEADLINE NET, AND THAT IS THE SESSION'S STRUCTURAL FINDING.**
+  Both fixes were nearly invisible to `GOLDEN_DPR`. The AC fix moved ONE row of 19 by
+  2.19%, which at 20,000 days is 0.07σ on the headline — pure dice-stream reshuffle —
+  while damage taken fell **71.3%**. The save fix moved four rows, inert on DPR
+  everywhere except with control on (+0.91%, 11σ), while control turns lost fell
+  **16.5%**. So a build whose offense is decoupled from its defense can have its entire
+  defensive side wrong with 18 of 19 goldens passing. `test_the_characters_own_ac_is_
+  load_bearing_on_the_damage_it_takes` is a first course of a defensive net; it covers
+  AC, not saves.
+
+  **TWO TESTS WERE ASSERTING MORE THAN THEY COULD CARRY**, both found by the fixes and
+  both repaired rather than relaxed:
+  - `test_the_attacks_channel_detects_the_seam...` asserted a four-arm hit-rate chain
+    strictly at two party sizes — six inequalities, **three of them sub-2σ**. The
+    `party_size=4` column's numbers are UNCHANGED from s54's own recorded table, so its
+    0.94σ link was never resolved: it had been passing on the luck of a sign. It now
+    asserts the end-to-end gap, the resolved links, and that the unresolved one is
+    unresolved — the last a deliberate tripwire for step 9.
+  - `test_the_unconverged_warning_counts_DISTRIBUTION_points_too` went INERT: better
+    control resistance stopped `attacks_per_round` varying at L13 and the fixture's own
+    `assert points` guard fired on an empty list. That guard is why this was caught at
+    all. Repointed to L16, whose branch rests on Flourish Counter rather than on the
+    character failing saves.
+
+  **WHAT THE RENDERER GOT RIGHT — the first clean step 6 in eight sessions.** Every
+  count the output claims about itself is self-consistent at all 16 levels: the
+  top-level `[unconverged]` count against the flagged rows, and both the `UNAVAILABLE`
+  and `UNMEASURED` headers against their listed names including the `(+N more)` tails.
+  s52's miscount is genuinely fixed. The cross-row identities hold too:
+  `checks/day × break_rate == breaks/day` exactly at L13-16, and
+  `headline == dpr_by_role[characters] == dpr_by_role[*]` to the last bit.
+  **A caution worth recording: my first checking script reported all eight header counts
+  as mismatched, and the SCRIPT was the defect.** The checker is as likely to be wrong
+  as the checked.
+
+  **THE RENDERED RANGE** (2,000 days = §10 `quick`, seed 11, `enemy="baseline"`,
+  `party_size=4`, engine 961426b). Face validity only, NOT a result:
+
+  | lvl | eAC | dpr | atk/rd | hit | adv | taken (gross/net) | conc checks | unconv |
+  |----:|----:|------:|------:|-----:|-----:|------------:|-----:|---:|
+  |  1 | 13 |  8.33 | 1.25 | .742 | .584 | 0.79 / 0.50 | 0 | 15 |
+  |  2 | 14 |  7.44 | 1.25 | .601 |  0   | 1.27 / 0.77 | 0 | 14 |
+  |  3 | 14 |  7.42 | 1.25 | .600 |  0   | 1.44 / 0.72 | 0 | 15 |
+  |  4 | 15 |  6.85 | 1.25 | .553 |  0   | 1.69 / 0.75 | 0 | 15 |
+  |  5 | 15 | 16.52 | 1.81 | .750 |  0   | 2.82 / 0.91 | 0 |  8 |
+  |  6 | 15 | 20.80 | 1.81 | .807 |  0   | 2.95 / 0.83 | 0 |  8 |
+  |  7 | 16 | 20.90 | 2.00 | .751 |  0   | 3.80 / 1.39 | 0 |  7 |
+  |  8 | 16 | 23.53 | 2.00 | .824 | .333 | 3.92 / 1.23 | 0 |  6 |
+  |  9 | 16 | 27.55 | 2.00 | .905 | .399 | 5.01 / 2.04 | 0 |  7 |
+  | 10 | 16 | 35.40 | 3.19 | .854 | .253 | 5.26 / 2.01 | 0 |  7 |
+  | 11 | 17 | 33.63 | 3.19 | .810 | .251 | 6.08 / 2.55 | 0 |  8 |
+  | 12 | 17 | 38.09 | 3.19 | .853 | .253 | 6.80 / 3.05 | 0 |  7 |
+  | 13 | 17 | 35.29 | 2.69 | .948 | .302 | 6.95 / 2.98 | 3.70 |  8 |
+  | 14 | 17 | 36.59 | 2.76 | .948 | .294 | 5.05 / 0.80 | 2.50 |  8 |
+  | 15 | 18 | 35.86 | 2.77 | .925 | .293 | 5.97 / 1.44 | 2.76 | 10 |
+  | 16 | 18 | 38.10 | 2.77 | .976 | .820 | 6.76 / 1.95 | 2.90 | 10 |
+
+  Three non-monotonic DPR steps, all with mechanical explanations the data carries:
+  L2-4 falls as enemy AC climbs 13→15 against a flat attack bonus; L11 falls as enemy
+  AC reaches 17; L13 falls because round 1 goes to Bless + Shield of Faith
+  (`atk/rd` 3.19 → 2.69). **Not evaluated as build quality — that is item 6 and
+  [[validate-mechanism-not-build-value]].**
+
+  ### The issues the exercise exposed
+
+  1. **A STRUCTURALLY IMPOSSIBLE CELL RENDERS AS A CONFIDENT EXACT ZERO.** `cha_save` is
+     absent from `band_save_weights` at bands 0-4 AND 5-10, so the enemy cannot force a
+     CHA save below L11 — yet **ten of sixteen levels** print
+     `saves_forced_per_round[cha_save|*]` as `0 +/- 0`, `converged=True`,
+     `available=True`, unflagged. It is the only unflagged cell in its breakdown, so the
+     cell carrying NO information looks like the most trustworthy one. The sibling
+     `save_fail_rate[cha_save|*]` correctly reads UNMEASURED — the same structural fact,
+     rendered two incompatible ways in one report, and §3.4's "NOT a measured zero"
+     promise broken by the row that should have honoured it. **Cause:**
+     `_saves_cell_availability` reads only `enemy_options['control']`; it never consults
+     the enemy's resolved save WEIGHTS, though `_role_cell_availability` does exactly
+     this for a missing roster role. The pattern exists and was not applied to the
+     ability dimension — the s54 "two lists" rule (cells KEYED by a dimension vs cells
+     whose availability PREDICATE reads it) with the second list unwritten.
+  2. **THE SAME CONVERGENCE FLAG MEANS TWO OPPOSITE THINGS AND NOTHING DISTINGUISHES
+     THEM.** Across 102 flags at L1-10, bucketed by the days each would need at its own
+     declared criterion:
+
+     | how far from passing | band 0-4 | band 5-10 | total |
+     |---|---:|---:|---:|
+     | ≤2× quick tier (threshold artifact) | 11 | 25 | **36** |
+     | 2-10× | 16 | 18 | 34 |
+     | 10-100× | 26 | 0 | 26 |
+     | >100× (structurally unmeasurable) | 6 | 0 | 6 |
+
+     At band 5-10, 58% clear with at most double the days —
+     `saves_forced_per_round[dex_save|*]` at L10 is 2.03% against a 2.00% threshold, i.e.
+     **58 extra days**. At band 0-4 it inverts: 32 of 59 need 10×+, and
+     `saves_forced_per_round[int_save|*]` needs **414,000 days**, twice the publication
+     tier, because `save_round_prob` is 0.007 there against 0.342 at band 11-16. A
+     near-miss and a structural impossibility print identically.
+  3. **A DISTRIBUTION OVER A CONSTANT PRINTS SIX ROWS OF THE SAME NUMBER.**
+     `attacks_per_round` is exact (`+/- 0`) at **L1-L13** — thirteen of sixteen levels,
+     everything below Flourish Counter — so `attacks_per_round_distribution` renders
+     p10=p25=p50=p75=p90 and `iqr 0 [0, 0]`: six rows carrying no information. The
+     renderer already has what it needs to say so. (I first wrote "twelve of sixteen"
+     from the table and the measurement said thirteen; L13's round-1 buff turn changes
+     the VALUE but not the variance.)
+  4. **`saves_forced_per_round` CANNOT USE ITS OWN EVENT FLOOR.** It declares no
+     `events`, so `n_events` is the DAY count (2,000) while its sibling
+     `save_fail_rate` reports actual saves (12 at L1 int_save). Documented behaviour —
+     `events=None` means "the day is the event" — but the consequence is that
+     `min_events`, the guard that exists for rare-event cells, is structurally inert for
+     the family with the rarest cells. `rel_stderr` catches them anyway, so the practical
+     cost today is a misleading `n_events` in the artifact rather than a missing flag.
+  5. **§14(h) CONFIRMED AS PREDICTED, NOT CHASED.** `typed_damage_share 0 +/- 0` and
+     `damage_mitigated_per_round` unavailable at all 16 levels: War Angel is the untyped
+     build the deferral names.
+  6. **A CORRECTED READ, recorded because the first one was wrong.** The empty
+     concentration channel at L1-L12 looked like a content gap. It is not: the guide does
+     not cast Bless in combat before L13 (War God's Blessing is the first), so
+     `concentration_checks_per_day = 0` is FAITHFUL. The framework consequence stands —
+     the concentration panel cannot be exercised below L13 by this build.
+
+  ### Which deferred items the exercise shows actually matter
+
+  - **§14(a) convergence thresholds — THE ONE TO FIX, and now quantified** (issue 2
+     above). Step 8's cheap opportunity is real: the quick tier's flag count is dominated
+     by near-misses, and the fix needs to distinguish "short run" from "impossible
+     channel", which a single global `rel_stderr` cannot.
+  - **§3.4's three-states machinery needs a per-cell availability predicate that reads
+     the ENEMY's resolved parameters** (issue 1). Not on the §14 list at all; the exercise
+     put it there.
+  - **§14(d) a KEYED distribution** — the exercise is the first consumer that wanted one
+     and still did not need it. `dpr_by_combat` (42.9 / 42.9 / 42.4 / 24.1 at L16) already
+     carries the per-combat story as a breakdown. **Lower priority than it looked.**
+  - **§14(e) a COMPARISON artifact** — never reached. Sixteen single-run reports read fine
+     side by side with no comparison object. **Lower priority than it looked.**
+  - **§14(f) an `attacks` metric for DISADVANTAGE** — still did not fire. Worth noting
+     WHY, since six sessions of "no" is weak evidence on its own: War Angel's *sap*
+     imposes disadvantage on the ENEMY, so the build exercises the mechanic without ever
+     needing the character-side metric. A build that takes disadvantage would be the
+     real test, and none of the three is one.
+  - **§14(i) THREAT CLASS** — reconfirmed from the other side: the three passive stand-ins
+     absorb **83% of incoming damage at L16** (33.17 vs 6.76 per round), and they hold
+     `10**9` HP, so the defensive channel is measured against allies who cannot fall. The
+     approximation is deliberate and documented (`standardized-dpr-baseline-not-realism`);
+     what the exercise adds is its magnitude.
+  - **§14(j) sparse build data — CLOSED FOR WAR ANGEL'S AC AND SAVES, open elsewhere.**
+     Silvertail and Starfire Scion were not touched. Two of three builds shipped with the
+     character's own AC missing; nobody has checked the other `base_stats` keys the verbs
+     read.
+  - **§3.5.5's intent to move framework correctness onto the baseline SUBJECT is not yet
+     actionable for every test:** the subject produces no unconverged distribution points
+     at L5/L13/L20, so it could not host
+     `test_the_unconverged_warning_counts_DISTRIBUTION_points_too` and a real build had to.
+  - **HOUSEKEEPING for item 5b (added):** `2 + (level - 1) // 4` now has a FOURTH copy
+     (`enemy_stats`, `character_stats`, `silvertail`, `war_angel`), written rather than
+     imported because the other three belong to the enemy table, the baseline subject's
+     table and another build. Four copies is enough to lift it somewhere shared.
+
 - **EVALUATION FRAMEWORK STEP 7 — THE BASELINE CHARACTER AND PARTY, IMPLEMENTED
   (2026-11-04, session 54).** `evaluation_framework.md` §3.5.1 (properties 1 and 2
   corrected + the concentration measurement), §3.5.5 (the eighth cell), §8's coverage
@@ -5317,11 +5497,14 @@ Engine prerequisites, in the order we built them:
 
 ### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24; RESEQUENCED s54)
 
-> **NEXT TASK = item 4b below: the PRELIMINARY BUILD EVALUATION (#6a).** Reordered by
-> the user at the s54 stock-take to run AHEAD of framework steps 8 and 9. **It is NOT
-> DATA and NOT A VALIDATION** — it exercises the machinery to expose issues and refine
-> focus, and item 5c re-runs the same build on the finished framework afterwards. Read
-> 4b's guardrails before starting: the build is not the subject, the machinery is.
+> **NEXT TASK = item 4c below: FRAMEWORK STEPS 8 AND 9.** Item 4b (#6a, the preliminary
+> build evaluation) is **DONE in s55** — War Angel L1-16 rendered end to end, with its
+> issue list and its read on the deferrals in the Done entry at the top of this file.
+> **Start step 8 with §14(a)'s convergence thresholds**: 4b quantified them (36 of 102
+> flags at L1-10 clear with ≤2x the days, while 6 need >100x, and nothing in the output
+> distinguishes a near-miss from an impossible channel), which makes it the cheapest
+> real improvement on the list rather than a guess. Item 5c then re-runs the SAME build
+> on the finished framework; 4b's numbers are NOT a baseline to diff against (§12.1).
 
 The project has two tracks. **Track 1 (current focus): "make the model produce
 honest, complete build evaluations"** — the enemy-profile arc through to a real
@@ -5604,8 +5787,16 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s52 wrote as a
      deliberate TRIPWIRE for exactly this step. Do not widen that test's bound to keep it
      green; updating it IS part of step 9's decision record.)
-4b. **#6a — PRELIMINARY BUILD EVALUATION. *** NEXT TASK *** (reordered by the user,
-   s54, ahead of framework steps 8 and 9.)**
+4b. ~~**#6a — PRELIMINARY BUILD EVALUATION**~~ **DONE (s55).** War Angel L1-16 rendered
+   at the `quick` tier against `enemy="baseline"`, read by eye at every level. The three
+   exit conditions are discharged in the Done entry at the top of this file: the rendered
+   evaluation, the list of issues it exposed (6), and the read on which deferred items
+   actually matter. Two content fixes were prerequisites and both were the same defect —
+   a missing `base_stats` key reading as a silent 0: `ac` absent at L1-12, and five of
+   six SAVES absent at every level. **The structural finding: `GOLDEN_DPR` is a HEADLINE
+   net, so both fixes were nearly invisible to it** (the AC fix moved one row by 2.19%,
+   which is 0.07 sigma of real effect and the rest reshuffle, while damage taken fell
+   71.3%). Kept to ONE session of the 2-4 budgeted.
 
    > **THIS IS NOT DATA. IT IS NOT A VALIDATION. (user, s54 — read this before writing
    > a single number anywhere.)** The purpose is to **exercise the machinery we have
@@ -5668,7 +5859,7 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    only (where AC already exists), or run the low levels under `enemy="none"` and say
    plainly that they carry no defensive measurement.
 
-4c. **Framework steps 8 and 9 — AFTER #6a.** `evaluation_framework.md` §13 steps 8
+4c. **Framework steps 8 and 9. *** NEXT TASK *** (#6a is done; s55).** `evaluation_framework.md` §13 steps 8
    and 9, unchanged in content; only their position moved. Step 8 (sweep manifests,
    config-hash caching, baselines registry, a CLI) is also the first cheap opportunity
    to fix §14(a)'s convergence thresholds. Step 9 (RNG substreams) re-baselines

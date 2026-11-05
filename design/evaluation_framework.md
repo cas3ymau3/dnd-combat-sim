@@ -2107,6 +2107,27 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   check is cheap and the answer is structural: 5b changes *which* enemy a run faces, not
   *what an enemy does*, so no standardized kind gained the ability to impose
   disadvantage. The trigger stands where s51 left it.
+- **Per-cell availability does not read the ENEMY's resolved parameters** *(added s55,
+  from the #6a preliminary run — this one was not on the list; the exercise put it
+  there)*. `cha_save` is absent from `enemy_stats.band_save_weights` at bands 0-4 and
+  5-10, so the standardized enemy **cannot** force a CHA save below L11. The run knows
+  this before day 1, and `saves_forced_per_round[cha_save|*]` nonetheless reports
+  `0.0 ± 0.0`, `converged=True`, `available=True` — an unflagged exact zero, and the only
+  unflagged cell in its breakdown, so the cell carrying no information looks like the most
+  trustworthy one. **Ten of War Angel's sixteen levels render it that way.** Its sibling
+  `save_fail_rate[cha_save|*]` correctly reports UNMEASURED, so one report states the same
+  structural fact two incompatible ways, and §3.4's "UNAVAILABLE … NOT a measured zero"
+  promise is broken by the row that should have honoured it.
+
+  The cause is narrow and the fix pattern already exists: `_saves_cell_availability` reads
+  only `enemy_options['control']`, while `_role_cell_availability` does per-cell
+  availability properly for a missing roster role. So the machinery is there and was not
+  applied to the `ability` dimension — the s54 "enumerate by two lists" rule (cells KEYED
+  by a dimension, and cells whose availability PREDICATE reads it) with the second list
+  unwritten. Deferred rather than fixed in s55 because that session's guardrail was not to
+  widen the output layer; it belongs with step 8's registry work. Worth doing then: the
+  same question applies to any cell whose key space is wider than what the resolved enemy
+  can produce, which is not only the save abilities.
 - **General status-uptime metric** — §8 asks for "share of turns under specified
   statuses" in general; only the control channel is covered today. Needs `StatusSet`
   sampling at turn boundaries.
@@ -2211,6 +2232,39 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   near-normal points) with four different points. `resolution_sigmas = 3.0` and
   `min_tail_observations = 50` remain uncalibrated against any data. The bimodal-build
   trigger is untouched and is still the one that matters.
+
+  **THE FIRST ACROSS-LEVEL EVIDENCE (s55, the #6a preliminary run), and it reframes what
+  needs fixing.** Every stressor above is about one criterion being wrong for one SHAPE.
+  Rendering War Angel at all 16 levels exposed something different and more basic: **the
+  same `[unconverged]` flag means two opposite things, and nothing in the output
+  distinguishes them.** Across the 102 flags at L1-L10, bucketed by the day count each
+  estimate would need to pass its OWN declared criterion (`stderr ∝ 1/√n`):
+
+  | how far from passing            | band 0-4 | band 5-10 | total |
+  |---------------------------------|---------:|----------:|------:|
+  | ≤2× quick tier                  |       11 |        25 |  36   |
+  | 2-10×                           |       16 |        18 |  34   |
+  | 10-100×                         |       26 |         0 |  26   |
+  | >100×                           |        6 |         0 |   6   |
+
+  At band 5-10, 58% of flags clear with at most double the days —
+  `saves_forced_per_round[dex_save|*]` at L10 reads 2.03% against the 2.00% threshold,
+  i.e. **58 extra days**. At band 0-4 it inverts: 32 of 59 need 10× or more, and
+  `saves_forced_per_round[int_save|*]` needs **≈414,000 days**, twice the publication
+  tier, because `enemy_stats.band_save_round_prob` is 0.007 at that band against 0.342 at
+  band 11-16. A reader cannot tell "run it longer" from "this channel does not exist at
+  this CR", and at the quick tier the low-level reports carry ~15 flags of which most are
+  the first kind and six are the second.
+
+  **This does NOT change the fix — it is still a sweep, not a nudge** — but it adds a
+  requirement the earlier entries did not state: whatever step 8 calibrates should report
+  the DISTANCE from the criterion, or the days required, alongside the boolean. The
+  boolean is the part that cannot carry the distinction, and no choice of constant fixes
+  that. Note also that `min_events`, the guard built for exactly the rare-event case, is
+  structurally unavailable to `saves_forced_per_round`: it declares no `events`, so
+  `n_events` is the DAY count (2,000) while its sibling `save_fail_rate` reports actual
+  saves (12 at L1 `int_save`). `rel_stderr` catches those cells anyway, so the cost today
+  is a misleading `n_events` in the artifact rather than a missing flag.
 - **Paired comparison ON A QUANTILE** *(added s48)* — §6.1's machinery runs on per-day
   influence values and a quantile has none, so `paired_delta` does not extend to it. The
   construction that WOULD work is named in §5.4 (a paired bootstrap over one shared
