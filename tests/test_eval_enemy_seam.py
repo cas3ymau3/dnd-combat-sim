@@ -1226,6 +1226,52 @@ def test_golden_dpr_under_the_standardized_enemy(key):
     assert value.value == GOLDEN_DPR[key]
 
 
+def test_the_characters_own_ac_is_load_bearing_on_the_damage_it_takes():
+    """The DEFENSIVE channel has a regression net, and this is it.
+
+    s55 found War Angel fighting at AC 0 for twelve of sixteen levels and the whole
+    suite passing over it.  Two reasons it hid, and both are closed by different
+    tests, which is why this one exists separately from the data check:
+
+    * nothing asserted a defensive number below L13 — `GOLDEN_DPR` is a HEADLINE
+      net, so a defect confined to the panel reaches it only through the dice
+      stream (it moved L4 by 2.19%, which is 2 sigma of reshuffle and reads as
+      noise);
+    * `test_every_level_declares_an_ac_and_the_armor_change_is_at_level_5` now
+      guards the DATA, but it would pass just as happily if the engine stopped
+      consulting a target's AC altogether.
+
+    So what is asserted here is the WIRING: the character's own `ac` is load-bearing
+    on what the enemy lands on it.  An ablation on the build row, because that is the
+    only way to vary the one input under test — and it is deliberately a DIRECTION
+    with a wide margin, not a value, so it needs no decision record when a golden
+    moves.
+
+    The effect is large and this day count cannot see anything subtle, which is the
+    honest limit of the test. Measured at 20,000 days (see the s55 re-baseline record
+    above `GOLDEN_DPR`): damage taken 2.6519 -> 0.7625 per round, -71.3%, while the
+    character's own DPR is unmoved at 0.07 sigma — at L4 nothing couples an incoming
+    hit to outgoing damage, so the AC is felt ONLY on this side.
+    """
+    def taken(ac):
+        row = war_angel.LEVELS[4]["extra_base_stats"]
+        before = row["ac"]
+        row["ac"] = ac
+        try:
+            return run(RunConfig(build="war_angel", level=4, n_days=200, seed=11,
+                                 enemy="baseline")
+                       ).values["net_damage_taken_per_round"]
+        finally:
+            row["ac"] = before
+
+    unarmored, declared = taken(0), taken(war_angel.LEVELS[4]["extra_base_stats"]["ac"])
+
+    assert unarmored.value > 2 * declared.value
+    # ...and the gap is not noise: both estimates are many standard errors apart.
+    gap = unarmored.value - declared.value
+    assert gap > 5 * (unarmored.stderr + declared.stderr)
+
+
 def test_incoming_pressure_orders_war_angels_dpr_the_right_way():
     """The MECHANISM behind the goldens, asserted as an ordering rather than as
     values — this is what a reader should take from the diff of the two enemy paths.
