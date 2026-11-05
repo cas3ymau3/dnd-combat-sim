@@ -465,15 +465,31 @@ def test_the_unconverged_warning_counts_DISTRIBUTION_points_too():
     each", which neither kind alone exercises.
 
     **``party_size=1`` since s54, and the reason is the same mechanism in reverse.**
-    The unconverged DISTRIBUTION point exists because whole-turn suppression makes
-    ``attacks_per_round`` vary. The declared party aims ~3/4 of the enemy's control at
-    PASSIVE stand-ins, so the character is suppressed far less often, the quantity
-    collapses back toward a constant and the distribution converges — leaving this
-    fixture with no unconverged points and the test asserting over an empty list. So
-    the solo roster is pinned here deliberately: it is the regime that produces the
-    branch, not a leftover default.
+    The unconverged DISTRIBUTION point needs ``attacks_per_round`` to VARY. The declared
+    party aims ~3/4 of the enemy's control at PASSIVE stand-ins, so the character is
+    suppressed far less often, the quantity collapses back toward a constant and the
+    distribution converges — leaving this fixture with no unconverged points and the
+    test asserting over an empty list. So the solo roster is pinned here deliberately:
+    it is the regime that produces the branch, not a leftover default.
+
+    **L13 -> L16 (s55), and the fixture's guard is what caught it.** Deriving War
+    Angel's save bonuses made the character resist control markedly better (control
+    turns lost per round 0.0310 -> 0.0259, -16.5%), so at L13 ``attacks_per_round``
+    stopped varying enough to leave any point unconverged and
+    ``assert points`` fired on an empty list. That guard exists for exactly this —
+    a fixture going inert is the failure mode that makes a regression test pass
+    while testing nothing — and it is why it is asserted rather than assumed.
+
+    L16 is the replacement because its branch rests on something STURDIER than the
+    character failing its saves: Fighter-07's Flourish Counter converts an incoming hit
+    into an outgoing attack, so ``attacks_per_round`` varies with how often the enemy
+    connects rather than with how often control lands. Measured at the quick tier,
+    L15 and L16 both produce the branch (3 unconverged scalars, 1 unconverged point)
+    while L13 and the baseline SUBJECT at L5/L13/L20 produce no unconverged points at
+    all — so the subject cannot host this test today, which is worth recording against
+    §3.5.5's intent to move framework correctness onto it.
     """
-    report = run(RunConfig(build="war_angel", level=13, n_days=2000, seed=11,
+    report = run(RunConfig(build="war_angel", level=16, n_days=2000, seed=11,
                            enemy="baseline", enemy_options={"control": True},
                            party_size=1))
 

@@ -116,10 +116,39 @@ INDOMITABLE_MIN_SUCCESS = 0.5
 # ---------------------------------------------------------------------------
 # Per-level build data
 # ---------------------------------------------------------------------------
-# Each entry is one level's combat-relevant stat block plus the validation
-# context (the enemy AC assumed by the build guide and its simulated DPR
-# target).  `char_hp` is recorded for completeness; it does not affect DPR in
-# the threshold model (nothing damages us at these levels).
+# Each entry is one level's combat-relevant stat block.  It carries NO enemy
+# material and no DPR target: s52 (evaluation_framework.md §3.4, step 5b) moved the
+# enemy out of every build's table, and `target_dpr` went with `src/validation.py`.
+# This comment described both until s55 and was stale on both counts.
+#
+# `char_hp` matters once the enemy acts (`enemy="baseline"`/`"scripted"`): the old
+# "nothing damages us at these levels" was true only of the passive dummy.
+#
+# AC — WRITTEN OFF THE GUIDE (s55), NOT DERIVED.  `ac` was absent at L1-L12, so
+# twelve of sixteen levels fought at AC 0 (`Entity.stat()` returns 0 for a missing
+# key by design), making every defensive number below L13 garbage.  The values come
+# from `design/build-guides/38_the_war_angel.txt`, which states AC explicitly four
+# times and tracks the armor on exactly those lines:
+#
+#   line 170-171  Level-01  armor: chain shirt   AC: 13 + 2(DEX) + 2(shield) = 17
+#   line 193-194  Level-02  armor: chain shirt   AC: 13 + 2(DEX) + 2(shield) = 17
+#   line 272-273  Level-05  armor: breastplate   AC: 14 + 2(DEX) + 2(shield) = 18
+#   line 608-609  Level-16  armor: breastplate   AC: 14 + 2 + 2 + 2(SoF)     = 20
+#
+# `armor:` appears nowhere else in the guide but the starting-equipment list, so
+# there is ONE equipment change, at L5, and the twelve missing rows read 17 (L1-4)
+# and 18 (L5-12).  Guide line 290 states it in prose as well ("breastplate armor,
+# which boosts our base (shielded) AC to 18 (and 20 w/shield of faith)"), and 18 is
+# what L13-L16 already declared.  Shield of Faith stays a POLICY modifier (the +2
+# that makes the guide's 20) and is deliberately not baked into the row.
+#
+# SAVES are NOT in these rows: all six are DERIVED at every level by
+# `save_bonuses(level)` below.  Until s55 only `con_save` was declared, and only at
+# L13-L16, so five of six saves read 0 everywhere and all six read 0 below L13 — the
+# same failure mode as the missing `ac`, and wider, because it reached the levels that
+# DID declare one.  The four hand-written `"con_save": 4` rows were removed with that
+# change: the derivation reproduces them, so keeping them would be a second source
+# for a number the ability-score table already determines.
 
 LEVELS: dict[int, dict] = {
     1: {
@@ -129,6 +158,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 4,
         "weapon_mastery": "vex",
         "char_hp": 12,
+        "extra_base_stats": {
+            "ac": 17,               # chain shirt 13 + DEX 2 + shield 2
+        },
     },
     2: {
         "weapon": "longsword",
@@ -137,6 +169,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 5,
         "weapon_mastery": "sap",
         "char_hp": 18,   # guide lists 18.5 (avg); HP is DPR-irrelevant here
+        "extra_base_stats": {
+            "ac": 17,               # chain shirt 13 + DEX 2 + shield 2
+        },
     },
     3: {
         "weapon": "longsword",
@@ -145,6 +180,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 5,
         "weapon_mastery": "sap",
         "char_hp": 25,
+        "extra_base_stats": {
+            "ac": 17,               # chain shirt 13 + DEX 2 + shield 2
+        },
     },
     4: {
         "weapon": "longsword",
@@ -153,6 +191,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 5,
         "weapon_mastery": "sap",
         "char_hp": 31,
+        "extra_base_stats": {
+            "ac": 17,               # chain shirt 13 + DEX 2 + shield 2
+        },
     },
     5: {
         "weapon": "longsword",
@@ -161,6 +202,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 5,          # CHA 3 + dueling 2
         "weapon_mastery": "sap",
         "char_hp": 38,
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         # True Strike now carries a +1d6 radiant rider on hit (cantrip scaling).
         "true_strike_dice": [(1, 6)],
         # Resource pools that come online at level 5.
@@ -179,6 +223,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 6,          # CHA 4 + dueling 2
         "weapon_mastery": "sap",
         "char_hp": 44,
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),          # 9 / LR with PoH + SR
@@ -197,6 +244,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 6,
         "weapon_mastery": "sap",
         "char_hp": 52,
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),
@@ -216,6 +266,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 6,
         "weapon_mastery": "sap",
         "char_hp": 59,              # build guide: 59.5
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),
@@ -236,6 +289,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 7,          # CHA 5 + dueling 2
         "weapon_mastery": "sap",
         "char_hp": 67,
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),
@@ -256,6 +312,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 7,
         "weapon_mastery": "sap",
         "char_hp": 74,              # build guide: 74.5
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         # No true_strike_dice: True Strike is dropped; action = 2 plain weapon attacks
         "resources": {
             "war_priest": (3, "full"),
@@ -283,6 +342,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 7,          # CHA 5 + dueling 2 (unchanged)
         "weapon_mastery": "sap",
         "char_hp": 82,
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "resources": {
             "war_priest": (3, "full"),
             "channel_divinity": (2, 1),
@@ -310,6 +372,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 7,          # CHA 5 + dueling 2
         "weapon_mastery": "sap",
         "char_hp": 88,              # build guide: 88.5
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "resources": {
             "war_priest": (3, "full"),
             "channel_divinity": (2, 1),
@@ -351,7 +416,6 @@ LEVELS: dict[int, dict] = {
         "weapon_mastery": "sap",
         "char_hp": 95,              # build guide: 95 (Aid +5 is HP-only)
         "extra_base_stats": {
-            "con_save": 4,          # PB 5 + CON −1 (proficient via Fighter-01)
             "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF buff)
         },
         # Enemy profile for the incoming-damage loop (D3b): a CR-appropriate
@@ -414,7 +478,6 @@ LEVELS: dict[int, dict] = {
         "cha_mod": 5,               # Flourish Parry AC bonus & bleed flat damage
         "flourish_parry": True,
         "extra_base_stats": {
-            "con_save": 4,          # PB 5 + CON −1
             "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF)
         },
         "resources": {
@@ -442,9 +505,12 @@ LEVELS: dict[int, dict] = {
         # gives +1 DEX (→17) and DEX-save proficiency, but DEX is NOT our
         # CHA-based attack stat (Pact of the Blade), so attack/damage are
         # UNCHANGED, and medium armor already caps DEX-to-AC at +2 so AC is
-        # unchanged too.  The dex_save bonus (PB 5 + DEX 3 = +8) is
-        # DPR-IRRELEVANT in the threshold-HP model — added below for completeness
-        # only.
+        # unchanged too.  The dex_save bonus (PB 5 + DEX 3 = +8) was written into
+        # this row and L16's by hand and called "DPR-irrelevant in the threshold-HP
+        # model"; s55 derives all six saves at every level (`save_bonuses`) and both
+        # rows were removed because the derivation reproduces the +8 exactly.  It is
+        # also no longer DPR-irrelevant: the enemy's §6 save channel resolves against
+        # these, and a failed save can cost a turn.
         #
         # The real movers are all on the MONSTER side (CR-15): enemy AC 17→18
         # (the main DPR drop — harder for us to hit), enemy to-hit +11→+12 (more
@@ -467,8 +533,6 @@ LEVELS: dict[int, dict] = {
         "cha_mod": 5,               # Flourish Parry AC bonus & bleed flat damage
         "flourish_parry": True,
         "extra_base_stats": {
-            "con_save": 4,          # PB 5 + CON −1
-            "dex_save": 8,          # PB 5 + DEX 3 (Resilient) — cosmetic, DPR-irrelevant
             "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF)
         },
         "resources": {
@@ -526,8 +590,6 @@ LEVELS: dict[int, dict] = {
         "flourish_parry": True,
         "indomitable_bonus": INDOMITABLE_BONUS,  # +9 reroll (fighter level)
         "extra_base_stats": {
-            "con_save": 4,          # PB 5 + CON −1
-            "dex_save": 8,          # PB 5 + DEX 3 (Resilient) — cosmetic
             "ac": 18,               # breastplate 14 + DEX 2 + shield 2 (+2 SoF)
         },
         "resources": {
@@ -583,14 +645,126 @@ _WA_CLASS_LEVELS: dict[int, tuple[int, int, int]] = {
     9: (4, 1, 4), 10: (5, 1, 4), 11: (6, 1, 4), 12: (6, 1, 5),
     13: (6, 1, 6), 14: (7, 1, 6), 15: (8, 1, 6), 16: (9, 1, 6),
 }
-WAR_ANGEL_CON_MOD = -1
+# ---------------------------------------------------------------------------
+# Ability scores → saving-throw bonuses (DERIVED, s55)
+# ---------------------------------------------------------------------------
+# Until s55 only `con_save` was declared, and only at L13-L16, so the other five
+# saves read 0 at EVERY level — the same failure mode as the missing `ac`, and
+# wider, because it reached the levels that DID declare an AC.  The enemy's §6 save
+# channel was therefore measuring a character with no save bonuses.
+#
+# DERIVED RATHER THAN DECLARED, and the s49 rule is the reason this is the right
+# call rather than the convenient one: declare a fact, derive it only when the two
+# facts CANNOT vary independently.  A 5e saving throw bonus IS `ability modifier +
+# (PB if proficient)` — the same kind of necessity that made an interval method a
+# property of its statistic in s48, not the kind of coincidence that made
+# `sum_rule` look derivable from `crossed` until it wasn't.  Sixteen hand-written
+# rows would also be 96 independent numbers, i.e. 96 chances to mistype one.
+#
+# EVERY INPUT IS STATED IN THE GUIDE'S HEADER (38_the_war_angel.txt:17-32), so this
+# is reading, not modelling from memory (per-feature ritual rule 1):
+#
+#   Point-Buy Stats   STR 08  DEX 15  CON 08  INT 08  WIS 15(+1)=16  CHA 15(+2)=17
+#   lvl-06  shadow touched  +1 CHA (CHA=18)
+#   lvl-09  ASI             +2 CHA (CHA=20)
+#   lvl-11  mage slayer     +1 DEX (DEX=16)
+#   lvl-15  resilient (DEX) +1 DEX (DEX=17)   ← and DEX SAVE PROFICIENCY
+#
+# (lvl-19's epic boon of speed is past this build's L16 ceiling and is omitted.)
+#
+# AND THE DERIVATION IS CHECKED AGAINST THE GUIDE, not just against itself.  The
+# guide states one complete save line, at L15 (line 600): "STR(+4), DEX(+8),
+# CON(+4), INT(-1), WIS(+3), CHA(+5)".  `save_bonuses(15)` reproduces all six
+# exactly, which is what makes the other fifteen levels trustworthy — asserted in
+# `tests/test_war_angel.py`, not left as this comment.
+_BASE_ABILITY_SCORES: dict[str, int] = {
+    "str": 8, "dex": 15, "con": 8, "int": 8, "wis": 16, "cha": 17,
+}
 
-# WIS = 16 (guide's point buy, 38_the_war_angel.txt:23) → +3.  Prayer of Healing is a
-# CLERIC spell, so its "spellcasting ability modifier" is WIS, not the build's headline
-# CHA.  Kept as a module constant rather than a `wis_mod` base stat because nothing
-# else on this build reads WIS — adding a stat for one consumer would be the wrong
-# trade.
-WAR_ANGEL_WIS_MOD = 3
+#: character level → the score changes that ARRIVE at it (cumulative from there on).
+_ABILITY_SCORE_CHANGES: dict[int, dict[str, int]] = {
+    6: {"cha": 1},      # shadow touched
+    9: {"cha": 2},      # ASI
+    11: {"dex": 1},     # mage slayer
+    15: {"dex": 1},     # resilient (DEX)
+}
+
+#: ability → the character level its SAVE proficiency arrives.
+#:
+#: STR and CON come from the STARTING class (Fighter-01) and nothing else does:
+#: multiclassing grants no saving-throw proficiencies, so Cleric's and Warlock's
+#: WIS/CHA never arrive however many levels of each the build takes.  The guide's own
+#: L15 line is the evidence rather than a rules memory — it shows WIS at +3 and CHA at
+#: +5, the bare modifiers, while STR and CON carry the full +5 PB.
+_SAVE_PROFICIENCY_AT: dict[str, int] = {"str": 1, "con": 1, "dex": 15}
+
+ABILITIES = ("str", "dex", "con", "int", "wis", "cha")
+
+
+def ability_scores(level: int) -> dict[str, int]:
+    """The six ability SCORES at *level*, base plus everything that has arrived."""
+    scores = dict(_BASE_ABILITY_SCORES)
+    for arrives_at, changes in _ABILITY_SCORE_CHANGES.items():
+        if level >= arrives_at:
+            for ability, delta in changes.items():
+                scores[ability] += delta
+    return scores
+
+
+def ability_mod(score: int) -> int:
+    """A 5e ability modifier.  Floor division is correct for scores below 10:
+    ``(8 - 10) // 2 == -1``, which is the CON/STR/INT modifier this build dumps to."""
+    return (score - 10) // 2
+
+
+def ability_mods(level: int) -> dict[str, int]:
+    """The six ability MODIFIERS at *level*."""
+    return {a: ability_mod(s) for a, s in ability_scores(level).items()}
+
+
+def proficiency_bonus(level: int) -> int:
+    """PB at *level* — the universal 5e track (+2/+3/+4/+5 at 1/5/9/13).
+
+    **The FOURTH copy of this one-liner** (``enemy_stats._pb``,
+    ``character_stats._pb``, ``silvertail``), which is a duplicated sequence and so a
+    duplicated source by the s54 rule.  It is written here rather than imported
+    because the other three belong to the enemy table, the baseline SUBJECT's table
+    and another build: a real build taking its PB from the framework's own stand-in
+    subject would be a worse coupling than a repeated rule.  Four copies is enough
+    evidence to lift it somewhere shared — recorded for the housekeeping PR (PROGRESS
+    item 5b) rather than done mid-exercise.
+    """
+    return 2 + (level - 1) // 4
+
+
+def save_bonuses(level: int) -> dict[str, int]:
+    """The six ``*_save`` base stats at *level*: modifier + PB where proficient.
+
+    Keyed the way the verbs read them (``resolve_saving_throw`` takes a stat name),
+    so this drops straight into ``Entity.base_stats`` and no level can silently
+    omit one.
+    """
+    mods, pb = ability_mods(level), proficiency_bonus(level)
+    return {
+        f"{ability}_save": mods[ability]
+        + (pb if level >= _SAVE_PROFICIENCY_AT.get(ability, 10 ** 6) else 0)
+        for ability in ABILITIES
+    }
+
+
+# CON modifier — now READ FROM the table above rather than restated, since a second
+# copy of a number the table already determines is a second source for it.  The build
+# dumps CON and buys HP back with Dwarven Toughness + the Tough feat, neither of which
+# touches Hit Dice.  A negative modifier is exactly why HitDiceSpec floors each die at
+# 0: RAW a Hit Die can never reduce your hit points.
+WAR_ANGEL_CON_MOD = ability_mod(_BASE_ABILITY_SCORES["con"])
+
+# WIS modifier, same source.  Prayer of Healing is a CLERIC spell, so its
+# "spellcasting ability modifier" is WIS, not the build's headline CHA.  Kept as a
+# module constant rather than a `wis_mod` base stat because nothing else on this build
+# reads WIS — adding a stat for one consumer would be the wrong trade.  WIS never
+# changes on this build, so the level-free base score is the whole story.
+WAR_ANGEL_WIS_MOD = ability_mod(_BASE_ABILITY_SCORES["wis"])
 
 
 def _war_angel_hit_dice(level: int) -> HitDiceSpec:
@@ -617,8 +791,14 @@ def make_war_angel(level: int) -> Entity:
             "damage_dice": data["damage_dice"],
             "damage_bonus": data["damage_bonus"],
             "weapon_mastery": data["weapon_mastery"],
-            # Save bonuses etc. that only some levels need (e.g. con_save for
-            # concentration checks at L13).
+            # All six saving throws at EVERY level, derived (see `save_bonuses`).
+            # Before s55 only `con_save` was here, hand-written at L13-L16, so five
+            # of six saves read 0 everywhere and all six read 0 below L13.
+            **save_bonuses(level),
+            # Per-level extras that are genuinely declared rather than derived.
+            # Listed AFTER the saves so a row could deliberately override one; no
+            # row does, and `test_no_level_row_restates_a_derived_save` keeps it
+            # that way, because an override would be a silent second source.
             **data.get("extra_base_stats", {}),
         },
         resources=_make_resources(data),
