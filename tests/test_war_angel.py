@@ -59,6 +59,37 @@ def test_factory_stats_level_2_switches_to_sap_longsword():
     assert char.base_stats["weapon_mastery"] == "sap"  # longsword
 
 
+def test_every_level_declares_an_ac_and_the_armor_change_is_at_level_5():
+    """EVERY level, read through ``stat()`` — the assertion behind a prose claim.
+
+    `ac` was ABSENT at L1-L12 until s55, and the failure mode is what makes this
+    test worth its lines: ``Entity.stat()`` returns 0 for a missing key BY DESIGN,
+    so a missing row does not raise, it silently makes the character unhittable-in-
+    reverse — AC 0, every swing lands.  Twelve of sixteen levels ran that way, and
+    the whole 1164-test suite passed over it, because nothing asserted a defensive
+    number below L13 (the one golden it touched moved only by dice-stream reshuffle).
+    A membership check over ``LEVELS`` would not have caught it either; only reading
+    the value the engine will actually read does.
+
+    The values come from `design/build-guides/38_the_war_angel.txt` (cited line by
+    line in the `LEVELS` header): chain shirt 13+2+2 = 17 through L4, breastplate
+    14+2+2 = 18 from L5.  ONE equipment change, so what is asserted is the STEP and
+    its position, not sixteen unrelated constants — a transcription slip that moved
+    the breastplate a level would survive sixteen equality checks written by hand.
+
+    Shield of Faith's +2 (the guide's 20 at L16) is deliberately NOT in here: it is
+    applied by the policy as a modifier, so a row carrying it would double-count.
+    """
+    acs = {level: war_angel.make_war_angel(level).stat("ac")
+           for level in sorted(war_angel.LEVELS)}
+
+    assert sorted(acs) == list(range(1, 17))         # no level opts out
+    assert all(ac > 0 for ac in acs.values())        # the AC-0 failure mode itself
+    assert sorted(set(acs.values())) == [17, 18]     # exactly two armor values
+    assert [l for l, ac in acs.items() if ac == 17] == [1, 2, 3, 4]
+    assert min(l for l, ac in acs.items() if ac == 18) == 5
+
+
 def test_unimplemented_level_raises():
     with pytest.raises(NotImplementedError):
         war_angel.make_war_angel(17)

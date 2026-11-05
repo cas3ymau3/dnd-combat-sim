@@ -1024,6 +1024,59 @@ GOLDEN_DAYS, GOLDEN_SEED = 400, 11
 #: numbers in ``src/validation.py`` were.  An engine change that moves them has
 #: moved the physics, and the commit that does it should say which physics.
 # ===========================================================================
+# RE-BASELINED (s55, PROGRESS item 4b) — ONE row, and it moved for NO physics
+# ===========================================================================
+#
+# THE CHANGE. `war_angel.LEVELS` gained `ac` at L1-L12, written off
+# `design/build-guides/38_the_war_angel.txt` (the four AC lines and the armor trail
+# are cited in the table's own header comment): 17 at L1-4 (chain shirt), 18 at L5-12
+# (breastplate).  Twelve of sixteen levels had been fighting at AC 0, because
+# `Entity.stat()` returns 0 for a missing key by design.
+#
+# This is the SECOND instance of exactly this defect: s54's item (viii) was
+# `make_starfire_scion` not setting `ac` either.  Two of the three builds shipped with
+# the character's AC missing, which is §14(j)'s sparse-content deferral arriving as a
+# measurement error rather than as a gap — see the note at the foot of this record.
+#
+# WHAT MOVED. One row of nineteen, and §3.4 predicted which one: AC is consulted only
+# when something attacks the character, so every `enemy="none"` row is bit-identical,
+# and every row at L13+ already declared `ac` 18.  That leaves L4 `baseline` alone.
+#
+#   row                                                old  ->  new        move
+#   war_angel  4 baseline                       6.94234375 ->  6.79015625   -2.19%
+#   (the other 18 rows: unchanged, to the last bit)
+#
+# AND THE MOVE IS A DICE-STREAM RESHUFFLE, NOT A PHYSICS CHANGE — measured, because a
+# mechanical argument is not a measurement and the sign here invites a wrong one.  The
+# character's own DPR FALLING when it becomes harder to hit reads like a mechanism; it
+# is not.  At L4 nothing couples an incoming hit to the character's outgoing damage
+# (no concentration until L13, no Flourish Counter until L14), but a landed swing
+# draws damage dice, so changing how often swings land shifts every subsequent draw.
+#
+# At 20,000 days, same seed, ac=0 vs ac=17:
+#
+#              ac=0                      ac=17                   verdict
+#   dpr        6.81105 +/- 0.01053       6.81002 +/- 0.01059     0.07 sigma — UNMOVED
+#   taken/rd   2.6519  +/- 0.0089        0.7625  +/- 0.0067      -71.3%  — THE SIGNAL
+#
+# So the -2.19% at 400 days is ~2 sigma of reshuffle (stderr 0.0757 there), and the
+# fix's real effect is on the DEFENSIVE channel, which had been reading 3.5x the
+# damage the character actually takes.  That is the number the exercise needed fixed,
+# and it never appeared in this table at all — which is worth stating plainly: the
+# golden set is a HEADLINE regression net, so a defect confined to the panel moves it
+# only through the stream.  A build whose offense is decoupled from its defense can
+# have its entire defensive side wrong with 18 of 19 goldens passing.
+#
+# STILL WRONG, AND LEFT WRONG DELIBERATELY: only `con_save` is declared, and only at
+# L13-L16, so the other five saves read 0 at EVERY War Angel level.  The baseline
+# enemy's save channel is therefore measuring a character with no save bonuses (the
+# L13 panel shows it: `save_fail_rate` 0.50 on the declared con_save against
+# 0.78-0.88 on the undeclared ones).  Wider than the AC gap, since it reaches L13-16
+# too.  Not fixed here because the guide states the save line only at L15
+# (post-Resilient DEX), so the other fifteen levels would be derivation rather than
+# reading — content work, and the user's (§14(j)).
+#
+# ===========================================================================
 # RE-BASELINED (s54, framework step 7) — ONE combined record for TWO changes
 # ===========================================================================
 #
@@ -1112,7 +1165,7 @@ GOLDEN_DPR: dict[tuple, float] = {
     # instead of the table's 9d6+5.  That is the re-baseline 5b was for.
     ("war_angel", 16, "baseline", ()): 38.03234375,
     # ------------------------------------------------------------------
-    ("war_angel", 4, "baseline", ()): 6.94234375,
+    ("war_angel", 4, "baseline", ()): 6.79015625,   # re-baselined s55
     ("war_angel", 13, "baseline", ()): 35.32109375,
     ("war_angel", 13, "scripted", ()): 35.42390625,
     ("war_angel", 13, "none", ()): 35.4578125,

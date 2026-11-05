@@ -116,10 +116,38 @@ INDOMITABLE_MIN_SUCCESS = 0.5
 # ---------------------------------------------------------------------------
 # Per-level build data
 # ---------------------------------------------------------------------------
-# Each entry is one level's combat-relevant stat block plus the validation
-# context (the enemy AC assumed by the build guide and its simulated DPR
-# target).  `char_hp` is recorded for completeness; it does not affect DPR in
-# the threshold model (nothing damages us at these levels).
+# Each entry is one level's combat-relevant stat block.  It carries NO enemy
+# material and no DPR target: s52 (evaluation_framework.md §3.4, step 5b) moved the
+# enemy out of every build's table, and `target_dpr` went with `src/validation.py`.
+# This comment described both until s55 and was stale on both counts.
+#
+# `char_hp` matters once the enemy acts (`enemy="baseline"`/`"scripted"`): the old
+# "nothing damages us at these levels" was true only of the passive dummy.
+#
+# AC — WRITTEN OFF THE GUIDE (s55), NOT DERIVED.  `ac` was absent at L1-L12, so
+# twelve of sixteen levels fought at AC 0 (`Entity.stat()` returns 0 for a missing
+# key by design), making every defensive number below L13 garbage.  The values come
+# from `design/build-guides/38_the_war_angel.txt`, which states AC explicitly four
+# times and tracks the armor on exactly those lines:
+#
+#   line 170-171  Level-01  armor: chain shirt   AC: 13 + 2(DEX) + 2(shield) = 17
+#   line 193-194  Level-02  armor: chain shirt   AC: 13 + 2(DEX) + 2(shield) = 17
+#   line 272-273  Level-05  armor: breastplate   AC: 14 + 2(DEX) + 2(shield) = 18
+#   line 608-609  Level-16  armor: breastplate   AC: 14 + 2 + 2 + 2(SoF)     = 20
+#
+# `armor:` appears nowhere else in the guide but the starting-equipment list, so
+# there is ONE equipment change, at L5, and the twelve missing rows read 17 (L1-4)
+# and 18 (L5-12).  Guide line 290 states it in prose as well ("breastplate armor,
+# which boosts our base (shielded) AC to 18 (and 20 w/shield of faith)"), and 18 is
+# what L13-L16 already declared.  Shield of Faith stays a POLICY modifier (the +2
+# that makes the guide's 20) and is deliberately not baked into the row.
+#
+# STILL SPARSE, and deliberately left so (§14(j)): only `con_save` is declared, and
+# only at L13-L16.  The other five saves read 0 at EVERY level, so the baseline
+# enemy's save channel is measuring a character with no save bonuses.  That is the
+# same class of defect as the AC gap and wider, since it reaches L13-16 too — it is
+# recorded as CONTENT work rather than fixed here, because the guide states the save
+# line only at L15 (post-Resilient) and the rest would be derivation, not reading.
 
 LEVELS: dict[int, dict] = {
     1: {
@@ -129,6 +157,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 4,
         "weapon_mastery": "vex",
         "char_hp": 12,
+        "extra_base_stats": {
+            "ac": 17,               # chain shirt 13 + DEX 2 + shield 2
+        },
     },
     2: {
         "weapon": "longsword",
@@ -137,6 +168,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 5,
         "weapon_mastery": "sap",
         "char_hp": 18,   # guide lists 18.5 (avg); HP is DPR-irrelevant here
+        "extra_base_stats": {
+            "ac": 17,               # chain shirt 13 + DEX 2 + shield 2
+        },
     },
     3: {
         "weapon": "longsword",
@@ -145,6 +179,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 5,
         "weapon_mastery": "sap",
         "char_hp": 25,
+        "extra_base_stats": {
+            "ac": 17,               # chain shirt 13 + DEX 2 + shield 2
+        },
     },
     4: {
         "weapon": "longsword",
@@ -153,6 +190,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 5,
         "weapon_mastery": "sap",
         "char_hp": 31,
+        "extra_base_stats": {
+            "ac": 17,               # chain shirt 13 + DEX 2 + shield 2
+        },
     },
     5: {
         "weapon": "longsword",
@@ -161,6 +201,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 5,          # CHA 3 + dueling 2
         "weapon_mastery": "sap",
         "char_hp": 38,
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         # True Strike now carries a +1d6 radiant rider on hit (cantrip scaling).
         "true_strike_dice": [(1, 6)],
         # Resource pools that come online at level 5.
@@ -179,6 +222,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 6,          # CHA 4 + dueling 2
         "weapon_mastery": "sap",
         "char_hp": 44,
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),          # 9 / LR with PoH + SR
@@ -197,6 +243,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 6,
         "weapon_mastery": "sap",
         "char_hp": 52,
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),
@@ -216,6 +265,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 6,
         "weapon_mastery": "sap",
         "char_hp": 59,              # build guide: 59.5
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),
@@ -236,6 +288,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 7,          # CHA 5 + dueling 2
         "weapon_mastery": "sap",
         "char_hp": 67,
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "true_strike_dice": [(1, 6)],
         "resources": {
             "war_priest": (3, "full"),
@@ -256,6 +311,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 7,
         "weapon_mastery": "sap",
         "char_hp": 74,              # build guide: 74.5
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         # No true_strike_dice: True Strike is dropped; action = 2 plain weapon attacks
         "resources": {
             "war_priest": (3, "full"),
@@ -283,6 +341,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 7,          # CHA 5 + dueling 2 (unchanged)
         "weapon_mastery": "sap",
         "char_hp": 82,
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "resources": {
             "war_priest": (3, "full"),
             "channel_divinity": (2, 1),
@@ -310,6 +371,9 @@ LEVELS: dict[int, dict] = {
         "damage_bonus": 7,          # CHA 5 + dueling 2
         "weapon_mastery": "sap",
         "char_hp": 88,              # build guide: 88.5
+        "extra_base_stats": {
+            "ac": 18,               # breastplate 14 + DEX 2 + shield 2
+        },
         "resources": {
             "war_priest": (3, "full"),
             "channel_divinity": (2, 1),
