@@ -1782,8 +1782,14 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   diffed against. Item 5c re-runs the same build on the finished framework and that
   run's numbers are the ones that count. The preliminary list is still non-empty (§14(a)'s
   untuned thresholds, §6.1's inert pairing), which is what keeps this preliminary.
-  **1170 tests green** (1164 at handoff, +6). Driver: a throwaway for-loop in the
-  scratchpad, deliberately not a sweep — that is step 8.
+  **1170 tests, 1169 passing + 1 conditionally skipped** (1164 at handoff, +6). Driver:
+  a throwaway for-loop in the scratchpad, deliberately not a sweep — that is step 8.
+  *(The skip is `test_a_dirty_tree_is_flagged_in_both_the_console_and_the_warnings`,
+  which skips when `engine_dirty` is false. It passed in every mid-session run and
+  skipped in the final one, for the obvious reason — and the observation worth keeping is
+  that it therefore NEVER runs on a clean checkout, so the dirty-tree warning path is
+  exercised only by accident, when someone runs the suite mid-edit. Not fixed: it needs a
+  synthetic dirty provenance, which is output-layer work.)*
 
   **TWO CONTENT FIXES WERE PREREQUISITES, and they are the same defect twice.** A
   missing `base_stats` key reads as a silent 0 by design, so:
