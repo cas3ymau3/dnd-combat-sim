@@ -1024,6 +1024,66 @@ GOLDEN_DAYS, GOLDEN_SEED = 400, 11
 #: numbers in ``src/validation.py`` were.  An engine change that moves them has
 #: moved the physics, and the commit that does it should say which physics.
 # ===========================================================================
+# RE-BASELINED (s55b, PROGRESS item 4b) — the SAVE bonuses, derived
+# ===========================================================================
+#
+# THE CHANGE, and it is the AC fix's twin.  Until now War Angel declared ONE save,
+# `con_save`, and only at L13-L16 (plus `dex_save` at L15-16), so five of six saves
+# read 0 at every level and all six read 0 below L13.  The enemy's §6 save channel was
+# resolving against +0.  All six are now DERIVED at every level by
+# `war_angel.save_bonuses(level)` from the guide's header block (point-buy scores, the
+# four stated score changes, save proficiency from the STARTING class plus Resilient).
+#
+# The derivation is checked against the guide rather than against itself: guide line
+# 600 states one complete save line at L15 — "STR(+4), DEX(+8), CON(+4), INT(-1),
+# WIS(+3), CHA(+5)" — and `save_bonuses(15)` reproduces all six.  It also reproduces
+# the six hand-written rows it replaced (`con_save` 4 at L13-16, `dex_save` 8 at
+# L15-16), which is what makes deleting them a de-duplication rather than a change.
+# Both are asserted in `tests/test_war_angel.py`.
+#
+# WHAT MOVED: four rows, and the set is exactly "L13+ under `baseline`".
+#
+#   row                                                old  ->  new        move
+#   war_angel 13 baseline                      35.32109375 -> 35.21703125  -0.29%
+#   war_angel 13 baseline control+mitigation    33.53046875 -> 33.91578125  +1.15%
+#   war_angel 13 baseline legendary_cadence     35.24687500 -> 35.15781250  -0.25%
+#   war_angel 16 baseline                       38.03234375 -> 38.10968750  +0.20%
+#   (the other 15 rows: unchanged, to the last bit)
+#
+# WAR_ANGEL 4 BASELINE DID NOT MOVE, which is the row a reader would expect to and the
+# most informative thing in this record.  Two reasons compound.  A save-for-damage
+# outcome HALVES damage rather than rolling different dice, so changing a save bonus
+# draws no extra numbers; and at band 0-4 `save_round_prob` is 0.007 against 0.342 at
+# band 11-16, so there is almost nothing to halve.  With no concentration below L13
+# either, the L4 stream is bit-identical and the headline is unchanged at 20,000 days
+# to five decimals (6.81002 both arms).  Contrast the AC fix, which DID move L4:
+# whether a swing LANDS changes how many damage dice are drawn.
+#
+# AND THE HEADLINE IS THE WRONG PLACE TO READ THIS CHANGE — measured, at 20,000 days,
+# ablating the derived saves against the pre-s55 state:
+#
+#   case                      dpr (pre -> derived)   sigma   taken/rd        ctrl lost/rd
+#   L4 default                6.81002 -> 6.81002       0     0.7625 -> 0.7616      n/a
+#   L13 default              35.31158 -> 35.31203     0.03    3.1193 -> 2.9712      n/a
+#   L13 control+mitigation   33.38717 -> 33.69235      11     2.4004 -> 2.2908  0.0310 -> 0.0259
+#   L16 default              38.08130 -> 38.09283     0.6     1.7961 -> 1.7503      n/a
+#
+# So on the headline the saves are INERT everywhere except with control on (+0.91%,
+# 11 sigma), while the channels they actually feed move in the predicted direction at
+# every level: damage taken -2.6% to -4.7%, concentration breaks -1.4% to -4.1%, and
+# control turns lost -16.5% — the largest relative move in the table and the clearest
+# signal that the channel had been reading a character with no save bonuses.  Three of
+# the four golden moves above are therefore mostly dice-stream reshuffle; only the
+# control row is carrying a real effect, and its sign is the one a prediction gets
+# right.
+#
+# This is the SECOND time in two changes that the thing that was broken was invisible
+# to GOLDEN_DPR except through the stream, and the generalization is in the s55 record
+# below: the golden set is a HEADLINE net, so the defensive and control channels have
+# no regression net of their own.  `test_the_characters_own_ac_is_load_bearing_on_the_
+# damage_it_takes` is a first course of that, and it covers AC, not saves.
+#
+# ===========================================================================
 # RE-BASELINED (s55, PROGRESS item 4b) — ONE row, and it moved for NO physics
 # ===========================================================================
 #
@@ -1163,10 +1223,10 @@ GOLDEN_DPR: dict[tuple, float] = {
     # bit-identical to the retired harness (41.247656 there), because L16 is one of
     # the four War Angel levels whose baked-in enemy swung for a hand-written flat 32
     # instead of the table's 9d6+5.  That is the re-baseline 5b was for.
-    ("war_angel", 16, "baseline", ()): 38.03234375,
+    ("war_angel", 16, "baseline", ()): 38.10968750,   # re-baselined s55 (saves)
     # ------------------------------------------------------------------
     ("war_angel", 4, "baseline", ()): 6.79015625,   # re-baselined s55
-    ("war_angel", 13, "baseline", ()): 35.32109375,
+    ("war_angel", 13, "baseline", ()): 35.21703125,   # re-baselined s55 (saves)
     ("war_angel", 13, "scripted", ()): 35.42390625,
     ("war_angel", 13, "none", ()): 35.4578125,
     # RE-BASELINED (s51), deliberately and with a decision record: framework step 6
@@ -1182,8 +1242,9 @@ GOLDEN_DPR: dict[tuple, float] = {
     # the credit was made exact at the user's direction.  Every other row in this table
     # is UNCHANGED, which is the assertion that the default (control off) moved nothing.
     ("war_angel", 13, "baseline",
-     (("control", True), ("mitigation", True))): 33.53046875,
-    ("war_angel", 13, "baseline", (("legendary_cadence", True),)): 35.246875,
+     (("control", True), ("mitigation", True))): 33.91578125,  # re-baselined s55
+    ("war_angel", 13, "baseline",
+     (("legendary_cadence", True),)): 35.15781250,   # re-baselined s55 (saves)
     ("silvertail", 10, "baseline", ()): 6.29640625,
     ("silvertail", 10, "baseline", (("focus", "summon"),)): 6.3871875,
     ("starfire_scion", 15, "baseline", ()): 28.82609375,
@@ -1326,8 +1387,10 @@ def test_the_attacks_channel_detects_the_seam_through_bless_not_through_ac():
     → more concentration checks → more broken Bless → fewer attacks made with the
     +1d4 → a lower hit rate.
 
-    Measured at 2,000 days, seed 11, War Angel L13 (hit rate / concentration checks
-    per day), and the two columns are perfectly inversely ordered:
+    Measured in s50 at 2,000 days, seed 11, War Angel L13 (hit rate / concentration
+    checks per day).  **A HISTORICAL record, kept for the mechanism and not current:**
+    `build_default` was retired in s52, and s55's derived save bonuses moved the
+    `baseline` rows (see the s55 table below for the live numbers).
 
         none                 0.95102   0.000
         build_default        0.94338   7.405
@@ -1336,29 +1399,48 @@ def test_the_attacks_channel_detects_the_seam_through_bless_not_through_ac():
         baseline+legendary   0.92565  13.634
 
     So the attacks channel IS the sensitive detector the handoff expected — just not
-    via the AC, which is identical on both paths.  The ORDERING is the assertion here,
-    because it is the mechanism; the values are a record, not a target.
+    via the AC, which is identical on both paths.  The MECHANISM is what is asserted
+    here; the values are a record, not a target.
 
-    **PARAMETRIZED OVER ``party_size`` (s54), because the party ATTENUATES the detector
-    and the attenuation is the same mechanism one step on.** A party absorbing ~3/4 of
-    the swings forces ~3/4 fewer concentration checks, so Bless survives and the hit
-    rate moves far less. Measured at 2,000 days / seed 11:
+    **PARAMETRIZED OVER ``party_size`` (s54), because the party ATTENUATES the
+    detector and the attenuation is the same mechanism one step on.** A party absorbing
+    ~3/4 of the swings forces ~3/4 fewer concentration checks, so Bless survives and
+    the hit rate moves far less.
 
-        ======================  =============  =============
-        arm                     party_size=1   party_size=4
-        ======================  =============  =============
-        none                    0.95102 / 0.0  0.95102 / 0.0
-        scripted                0.93531 / 11.4 0.95002 / 3.65
-        baseline                0.93409 / 11.5 0.94793 / 3.67
-        baseline+legendary      0.92565 / 13.6 0.94570 / 5.17
-        none vs +legendary      **20.7σ**      **4.8σ**
-        ======================  =============  =============
+    **REWRITTEN (s55), and the reason matters more than the rewrite.** This test used
+    to assert the four-arm hit-rate chain as a STRICT ordering at both party sizes —
+    six strict inequalities. Deriving War Angel's save bonuses flipped one of them, and
+    measuring the rest showed that **three of the six were sub-2 sigma and had been
+    passing on the luck of a sign**. At 2,000 days / seed 11:
 
-    The ordering is strict in BOTH columns, so the detector is intact either way; what
-    changes is its power, by a factor of about four. Testing both arms rather than
-    relaxing the threshold is step 5's "test the BRANCH" applied to a declaration that
-    only just gained a second value — and the σ claim is kept where it was measured
-    instead of being quietly weakened to fit.
+        ==========================  =========================  =========================
+        adjacent gap                party_size=1               party_size=4
+        ==========================  =========================  =========================
+        none -> scripted            +0.01571  **+13.7 sigma**  +0.00100  *+0.94 sigma*
+        scripted -> baseline        -0.00045  *-0.36 sigma*    +0.00215  *+1.98 sigma*
+        baseline -> +legendary      +0.01012  **+7.6 sigma**   +0.00302  *+2.71 sigma*
+        none -> +legendary          **20.8 sigma**             **5.7 sigma**
+        ==========================  =========================  =========================
+
+    The `party_size=4` column's numbers are UNCHANGED from the table s54 recorded here,
+    so its 0.94 sigma link was never resolved — it passed because the noise happened to
+    fall the right way. Only the `scripted -> baseline` link at `party_size=1` actually
+    moved, and it moved for a reason the change predicts: `baseline` differs from
+    `scripted` by also forcing SAVES, and a character with real save bonuses takes half
+    damage on the ones it now makes, so the save channel barely dents Bless and the two
+    arms become indistinguishable (-0.36 sigma, from ~+1.0 sigma before).
+
+    So what is asserted is what the day count can carry: the END-TO-END gap, which is
+    robust at both party sizes and is the detector's actual claim; the two individual
+    links that ARE resolved; that the unresolved one is unresolved; and that no gap is
+    SIGNIFICANTLY inverted anywhere. Keeping the strict chain would be asserting an
+    exact ordering about differences this run cannot see — and an inequality is only as
+    strong as the gap it is about.
+
+    The `abs(...) < 2.0` line is deliberately a TRIPWIRE, in the shape of
+    `test_pairing_is_statistically_INERT_once_the_streams_diverge`: §13 step 9's RNG
+    substreams tighten exactly these intervals, so if that link ever becomes resolvable
+    this test should fail and make someone look at which direction it resolved to.
 
     Note the ``none`` row is IDENTICAL across the two columns to five decimal places,
     which is §3.5.2's bit-identity bound showing up in the attacks channel rather than
@@ -1371,7 +1453,7 @@ def test_the_attacks_channel_detects_the_seam_through_bless_not_through_ac():
         return (report.values["attack_roll_rate[characters|hit]"],
                 report.values["concentration_checks_per_day"].value)
 
-    gaps = {}
+    gaps, sigmas = {}, {}
     for party_size, min_sigma in ((1, 10.0), (4, 3.0)):
         passive, passive_checks = measure("none", party_size)
         attacks_only, attacks_only_checks = measure("scripted", party_size)
@@ -1379,18 +1461,32 @@ def test_the_attacks_channel_detects_the_seam_through_bless_not_through_ac():
         legendary, legendary_checks = measure("baseline", party_size,
                                               legendary_cadence=True)
 
-        # The pressure axis: strictly more incoming attacks, left to right.
+        # The pressure axis: strictly more incoming attacks, left to right.  This one
+        # IS robust — the counts are far apart and `none` is an exact zero.
         assert passive_checks == 0.0
         assert passive_checks < attacks_only_checks < legendary_checks
-        # ...and the accuracy axis moves strictly the other way.
-        assert (passive.value > attacks_only.value > with_saves.value
-                > legendary.value), party_size
-        # The move is large, which is what makes the channel a detector: a seam that
-        # was NOT installed would leave these equal.
+
+        # The accuracy axis, link by link.  No adjacent pair may be SIGNIFICANTLY
+        # inverted; which pairs are resolved at all is recorded and asserted below.
+        chain = [("none", passive), ("scripted", attacks_only),
+                 ("baseline", with_saves), ("+legendary", legendary)]
+        for (a_name, a), (b_name, b) in zip(chain, chain[1:]):
+            sigma = (a.value - b.value) / math.hypot(a.stderr, b.stderr)
+            assert sigma > -2.0, (party_size, a_name, b_name, sigma)
+            sigmas[(party_size, a_name, b_name)] = sigma
+
+        # The detector's real claim: end to end, the move is large.  A seam that was
+        # NOT installed would leave these equal.
         pooled = math.hypot(passive.stderr, legendary.stderr)
         sigma = (passive.value - legendary.value) / pooled
         assert sigma > min_sigma, (party_size, sigma)
         gaps[party_size] = sigma
+
+    # The two links that ARE resolved, ordered the way the mechanism requires...
+    assert sigmas[(1, "none", "scripted")] > 10.0
+    assert sigmas[(1, "baseline", "+legendary")] > 5.0
+    # ...and the one that is not. See the docstring: this is a tripwire for step 9.
+    assert abs(sigmas[(1, "scripted", "baseline")]) < 2.0
 
     # The attenuation itself, asserted rather than left in the table above: a party
     # weakens the detector by roughly 4x because it is what removes the pressure.

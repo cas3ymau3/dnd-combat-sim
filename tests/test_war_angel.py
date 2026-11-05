@@ -90,6 +90,78 @@ def test_every_level_declares_an_ac_and_the_armor_change_is_at_level_5():
     assert min(l for l, ac in acs.items() if ac == 18) == 5
 
 
+def test_save_bonuses_reproduce_the_guides_level_15_line():
+    """The DERIVATION'S independent check, and the reason the other fifteen levels
+    can be trusted.
+
+    `save_bonuses` is computed from the guide's header block — point-buy scores, the
+    four stated score changes, and save proficiency from the STARTING class plus
+    Resilient — so checking it against those inputs would only check the arithmetic
+    against itself.  The guide states one COMPLETE save line, at L15 (line 600):
+    "STR(+4), DEX(+8), CON(+4), INT(-1), WIS(+3), CHA(+5)".  That line is not an
+    input to the derivation, so reproducing all six values is a real check on the
+    reading: it pins the modifiers, the +5 PB, WHICH saves are proficient, and the
+    fact that Resilient (DEX) adds a proficiency and not merely a point.
+
+    L15 is also the strongest single level to check, because it is the only one where
+    all three proficiency states are visible at once: STR/CON proficient from L1, DEX
+    proficient as of this level, and WIS/CHA never — which is what multiclassing into
+    Cleric and Warlock does NOT grant.
+    """
+    assert war_angel.save_bonuses(15) == {
+        "str_save": 4, "dex_save": 8, "con_save": 4,
+        "int_save": -1, "wis_save": 3, "cha_save": 5,
+    }
+
+
+def test_derived_saves_reproduce_the_retired_hand_written_rows():
+    """s55 deleted SIX hand-written save rows because the derivation determines
+    them: ``"con_save": 4`` at L13-L16 and ``"dex_save": 8`` at L15-L16.  Deleting a
+    number is only safe if what replaces it agrees, so the old values are asserted
+    here rather than trusted — this is the check that the removal was a
+    de-duplication and not a change.
+
+    The dex_save pair is the stronger of the two, and it was found by
+    ``test_no_level_row_restates_a_derived_save`` failing on its first run rather
+    than by reading the table: those rows sat behind a comment calling the bonus
+    "cosmetic, DPR-irrelevant", which was true of the passive dummy and is not true
+    of an enemy that forces saves.
+    """
+    for level in (13, 14, 15, 16):
+        assert war_angel.save_bonuses(level)["con_save"] == 4
+    for level in (15, 16):
+        assert war_angel.save_bonuses(level)["dex_save"] == 8
+
+
+def test_every_level_declares_all_six_saves_through_stat():
+    """Read through ``stat()``, which is the only reading that matters.
+
+    The defect this replaces: five of six saves were absent at EVERY level and all
+    six below L13, and ``Entity.stat()`` returns 0 for a missing key BY DESIGN, so
+    the enemy's save channel was resolving against +0 without anything raising. A
+    zero is a legal save bonus for a dumped stat, so "nonzero" is NOT the property to
+    assert — PRESENCE is, and only the derived dict can report that honestly.
+    """
+    derived = {f"{a}_save" for a in war_angel.ABILITIES}
+    assert len(derived) == 6
+    for level in sorted(war_angel.LEVELS):
+        char = war_angel.make_war_angel(level)
+        assert derived <= set(char.base_stats), f"L{level} is missing a save"
+        for name in derived:
+            assert char.stat(name) == war_angel.save_bonuses(level)[name]
+
+
+def test_no_level_row_restates_a_derived_save():
+    """``extra_base_stats`` is merged AFTER the derived saves, so a row could
+    override one — and would then be a silent second source for a value the
+    ability-score table determines, which is exactly what the four deleted
+    ``con_save`` rows were.  The merge order is deliberate (a genuine exception
+    should be possible and visible); this asserts that no row takes it today."""
+    for level, data in sorted(war_angel.LEVELS.items()):
+        restated = [k for k in data.get("extra_base_stats", {}) if k.endswith("_save")]
+        assert restated == [], f"L{level} restates a derived save: {restated}"
+
+
 def test_unimplemented_level_raises():
     with pytest.raises(NotImplementedError):
         war_angel.make_war_angel(17)
