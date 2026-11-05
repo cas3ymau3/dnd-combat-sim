@@ -5949,17 +5949,21 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
 > out of monk unarmored defense (`10 + DEX + WIS`) exactly — guide 41 has no `AC:` line at
 > all, so that IS the method — its one declared save reproduces, War Angel's 16 levels
 > agree with `save_bonuses`, and Silvertail's AC follows three stated lines plus the
-> `armor:` trail (18 chain mail → 19 splint at L4, no change after). Use
-> `war_angel.save_bonuses` as the template: derive from the header, then verify against
-> whatever the guide states outright.
+> `armor:` trail (18 chain mail → 19 splint at L4 → 20 plate at L8, no change after).
+> Use `war_angel.save_bonuses` as the template: derive from the header, then verify
+> against whatever the guide states outright.
 >
 > Silvertail's existing hand-written L8/L10 `char_saves` rows do not match this rule and
 > are superseded by it — derive the six and replace them.
 >
-> **NO MAGIC ITEMS AT BASELINE (user, s55).** Guide 32 offers Silvertail a cloak of
-> protection as a synergistic option, not as part of the build, so it is out of both AC
-> and saves. Its baseline AC is therefore **19 from L4 on**, and the `char_ac` 20 declared
-> at L8/L10 has the cloak's +1 baked in — it comes down when those rows are redone.
+> **NO MAGIC ITEMS AT BASELINE (user, s55)**, so guide 32's cloak of protection is out of
+> both AC and saves — it is offered as a synergistic option, not as part of the build, and
+> nothing carries a flat item term. Silvertail's `char_ac` 20 at L8/L10 is CORRECT anyway,
+> because **L8 moves into plate**: the L8 block's equipment line still reads `splint armor
+> (200 gp)` (copy-pasted from L4) while its sum is `18 + 2(shield)` and its NOTE prices the
+> buy at **1500gp** — base 18 and 1500gp are both plate, splint being 17 at 200gp as L4 and
+> guides 27/29/34 all say. Only the code comment is wrong, crediting the 20 to
+> `splint(17) + cloak(+1)`.
 >
 > Guide section coverage: 32 and 41 have all 20 levels; **38 has 17**, so War Angel L18-20
 > exist only in the progression summary — AC and saves derive there, attack/damage/

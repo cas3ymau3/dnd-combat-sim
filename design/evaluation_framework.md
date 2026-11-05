@@ -2446,12 +2446,17 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
     medium armour so the L11/L15 DEX gains do not raise it.
   * **silvertail** — STR 15 DEX 14 CON 12 INT 8 WIS 17 CHA 8; L5 +1 WIS, L9 +1 WIS, L13
     +1 WIS, L16 +1 DEX, L20 +1 DEX. Proficient: STR/CON (fighter-01), WIS from L9, DEX
-    from L16 (both Resilient). AC 18 (chain mail) → 19 (splint, L4), and no armour change
-    after. **NO MAGIC ITEMS AT BASELINE (user, s55)**, so guide 32's cloak of protection
-    is out: it is offered there as a synergistic option, not as part of the build. That
-    makes Silvertail's baseline AC **19 from L4 on**, and the `char_ac` 20 declared at
-    L8/L10 is the cloak's +1 baked in — it comes down when these rows are redone. Saves
-    carry no flat item term for the same reason.
+    from L16 (both Resilient). AC **18** (chain mail) → **19** (splint, L4) → **20**
+    (plate, L8), all mundane, with no armour change after L8. Two reading notes, because
+    the L8 block is the one place guide 32 is easy to misread: its equipment line still
+    says `splint armor (200 gp)`, copy-pasted from L4, while its stated sum is
+    `18 + 2(shield) = 20` and its NOTE prices the purchase at **1500gp** — base 18 and
+    1500gp are both PLATE (splint is 17 at 200gp, as the same guide's L4 says and as
+    guides 27, 29 and 34 each state independently). And **no magic items at baseline
+    (user, s55)**: guide 32 offers a cloak of protection as a synergistic option, not as
+    part of the build, so nothing carries a flat item term into AC or saves. The declared
+    `char_ac` 20 at L8/L10 is therefore CORRECT; only that build's code comment is wrong,
+    crediting the 20 to `splint(17) + cloak(+1)` instead of to plate.
   * **starfire_scion** — STR 8 DEX 16 CON 14 INT 10 WIS 17 CHA 8; L5 +1 WIS, L8 +1 WIS,
     L12 +1 WIS, L16 +2 DEX, L20 +2 DEX. Proficient: STR/DEX (monk-01), WIS from L12
     (Resilient). AC = `10 + DEX + WIS` at every level (unarmored defense).
