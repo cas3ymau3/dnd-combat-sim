@@ -299,6 +299,48 @@ type, condition, resource, …):
      the prose was too strong for the measurement, here the measurement was too clean
      for the model, and both are read as evidence of care.
 
+   **AND AN INEQUALITY IS ONLY AS STRONG AS ITS NARROWEST GAP (added s55, the same rule
+   one step out).** s54's version is about an assertion that is EXACT; this is about one
+   that is merely STRICT, which hides worse because nothing about it looks remarkable.
+   `test_the_attacks_channel_detects_the_seam_through_bless_not_through_ac` asserted a
+   four-arm hit-rate chain as a strict ordering at two party sizes — **six strict
+   inequalities, of which three were sub-2σ**. s55's save derivation flipped one of them,
+   and measuring the rest showed the `party_size=4` column's gaps were 0.94σ, 1.98σ and
+   2.71σ **on numbers unchanged from the table s54 itself had recorded in that docstring**.
+   So that column had never been resolved; it passed because the noise fell the right way,
+   twice.
+   - The habit: when a test asserts an ORDER over more than two arms, compute the σ of
+     each adjacent gap and assert only the links the run can actually resolve. For the
+     rest, assert the end-to-end gap (which is what the mechanism claims anyway) and
+     assert explicitly that the unresolved link is unresolved — that last one doubles as a
+     TRIPWIRE for whatever will tighten the intervals later (here, §13 step 9's
+     substreams).
+   - Why a chain is the dangerous shape: each extra arm adds an inequality, each
+     inequality is an independent chance to be asserting noise, and a chain of N arms
+     reads as ONE finding. The docstring's prose said "the ordering is strict in BOTH
+     columns, so the detector is intact either way", which was true of the output and not
+     of the evidence.
+
+   **AND A HEADLINE REGRESSION NET IS BLIND TO A PANEL-ONLY DEFECT (added s55).** Both of
+   that session's content fixes — War Angel's missing `ac` at L1-12 and five of its six
+   missing SAVES — were nearly invisible to `GOLDEN_DPR`, which is 19 exact points and the
+   project's strongest regression signal. The AC fix moved ONE row by 2.19%, which at
+   20,000 days is **0.07σ on the headline** (pure dice-stream reshuffle: a landed swing
+   draws damage dice, so hit frequency shifts every later draw) while damage taken fell
+   **71.3%**. The save fix moved four rows and was inert on DPR everywhere except with
+   control on, while control turns lost fell 16.5%. **A build whose offense is decoupled
+   from its defense can have its entire defensive side wrong with 18 of 19 goldens
+   passing** — and the full 1164-test suite passed over it for twelve levels, because
+   nothing asserted a defensive number below L13.
+   - The habit: when adding a regression net, name which CHANNEL it covers, and do not let
+     "we have exact goldens" stand in for "this is covered". A golden on the headline
+     constrains the panel only through the RNG stream, which is noise, not coverage.
+   - What a defensive net looks like:
+     `test_the_characters_own_ac_is_load_bearing_on_the_damage_it_takes` asserts a
+     DIRECTION with a wide margin (ablate the input, the channel must move a lot) rather
+     than a value, so it needs no decision record when a golden moves. It covers AC; saves
+     and the control channel still have none.
+
    **AND A MECHANICAL ARGUMENT IS NOT A MEASUREMENT (broadened s50, after the rule as
    written failed to catch two overclaims in one session).** s49 wrote this rule for
    claims of the shape "this bug would have been VISIBLE / LARGE". Neither s50 overclaim
@@ -321,6 +363,28 @@ type, condition, resource, …):
    (Both s50 cases also show the cure is cheap. The first was free, because the claim was
    already a test.) **Prefer writing a quantitative claim as an assertion rather than as
    prose** — prose cannot fail.
+
+   **AND A TEST CAN GO INERT WITHOUT FAILING — A FIXTURE GUARD IS WHAT CATCHES IT (added
+   s55).** Step 5 asks whether every branch is covered when the test is WRITTEN. This is
+   the same question a year later: a test whose fixture stops producing the condition
+   under test still passes, and passes forever.
+   `test_the_unconverged_warning_counts_DISTRIBUTION_points_too` exists for s52's
+   miscounting warning, and needs a run with BOTH unconverged scalars and unconverged
+   distribution POINTS. s55's save derivation made War Angel resist control better, so
+   `attacks_per_round` stopped varying at L13, so no point was unconverged — and the
+   fixture's own
+   `assert points, "fixture must have unconverged DISTRIBUTION points"` fired on an empty
+   list. **That guard is the entire reason this was caught rather than silently losing a
+   regression test.**
+   - The habit: when a test needs its fixture to EXHIBIT something — a non-empty list, a
+     quantity that varies, a branch actually taken — assert that precondition in the test,
+     separately from the property under test. It costs one line and converts "quietly
+     tests nothing" into a failure with a message.
+   - This matters most right before something that moves every number. §13 step 9's RNG
+     substreams re-baseline every seeded figure by construction, so expect more fixtures to
+     drift out of their regime; a fixture pinned to a REGIME (s55 repointed this one to
+     L16, whose variance comes from Flourish Counter rather than from the character failing
+     saves) is sturdier than one pinned to a level.
 6. **Render ONE REAL OUTPUT by eye before calling it done.** Added session 48, from the
    bug that session found. Run the feature on a real run at a realistic size and LOOK at
    what it prints — not a fixture, not an assertion, the actual artifact a reader would
@@ -353,6 +417,23 @@ type, condition, resource, …):
      because it reads as a complete answer. s52's also shows the dormancy question
      applies here: the warning and the per-row flags agreed for four sessions only
      because no distribution had ever been unconverged.
+   - **THE STREAK BROKE, AND THE NEAR-MISS IS THE LESSON (s55).** s55 ran this step over
+     **all 16 levels** of a real build and found NO defect — the first session in this
+     step's history to find none. Every count the output claims about itself was
+     self-consistent at every level (the top-level `[unconverged]` count against the
+     flagged rows, and the `UNAVAILABLE`/`UNMEASURED` headers against their listed names
+     including the `(+N more)` tails), and two cross-row identities held exactly
+     (`checks/day × break_rate == breaks/day`; `headline == dpr_by_role[characters] ==
+     dpr_by_role[*]`). s52's miscount is genuinely fixed.
+   - **BUT THE FIRST VERIFICATION SCRIPT REPORTED ALL EIGHT HEADER COUNTS AS MISMATCHED,
+     AND THE SCRIPT WAS THE DEFECT.** Its section parser was too fragile for the real
+     text. Had it been trusted, s55 would have "found" five renderer bugs that do not
+     exist and spent the session on them. **A checker is as likely to be wrong as the
+     thing it checks, and more likely when what it checks has just been hardened** — this
+     step's whole history is renderer defects, which is exactly the prior that makes a
+     false positive here feel like a confirmation. So when a check fires on something that
+     has been looked at repeatedly, verify the CHECKER against a couple of cases by hand
+     before believing it, and say so when reporting the result.
 7. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
