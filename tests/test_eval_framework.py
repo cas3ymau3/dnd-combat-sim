@@ -438,20 +438,28 @@ def test_a_new_build_needs_only_an_adapter():
 # §14's sparse-build-data deferral, as an assertion rather than a prose tally
 # ---------------------------------------------------------------------------
 
-#: (build, number of levels, saves the character carries at EVERY level).
+#: build -> how many of the six saves the character carries at EVERY modeled level.
 #:
 #: The CURRENT state, deliberately, not the desired one.  `evaluation_framework.md`
-#: §14's sparse-build-data entry and the Track 2 pointer in PROGRESS both quote "9 of
-#: 27 (build, level) pairs resolve five or six saves against +0", and a tallied count
-#: in prose has nothing behind it — so it is pinned here, where closing the gap makes
-#: the test fail and send whoever closed it at the note to update.
+#: §14's sparse-build-data entry and the Track 2 pointer in PROGRESS both quote these
+#: tallies, and a tallied count in prose has nothing behind it — so they are pinned
+#: here, where closing the gap makes the test fail and sends whoever closed it at the
+#: notes to update them.
 _SAVE_COVERAGE: dict[str, int] = {
     "war_angel": 6,        # all six, every level (s55, derived from the guide)
     "starfire_scion": 1,   # con_save only — War Angel's exact pre-s55 state
 }
 
+#: build -> the levels it models today.  The TARGET is 1-20 for all three (user, s55),
+#: so this is the other half of the gap and the larger half: 33 of 60 pairs do not exist.
+_MODELED_LEVELS: dict[str, list[int]] = {
+    "war_angel": list(range(1, 17)),
+    "silvertail": [4, 8, 10],
+    "starfire_scion": [1, 4, 5, 9, 10, 11, 12, 15],
+}
 
-def test_the_sparse_save_coverage_is_what_section_14_says_it_is():
+
+def test_the_sparse_build_data_is_what_section_14_says_it_is():
     """Read through each FACTORY, because that is what the engine reads.
 
     A `LEVELS`-table check would miss both halves of how this defect appears: the
@@ -459,32 +467,37 @@ def test_the_sparse_save_coverage_is_what_section_14_says_it_is():
     `make_starfire_scion` never read it, and War Angel's saves are now DERIVED and so
     appear in no table at all.  Only the constructed Entity knows.
 
-    And "nonzero" is NOT the property to assert — 0 is a legal save bonus for a dumped
-    stat (War Angel's own INT is -1, and a +0 would be unremarkable).  PRESENCE is the
-    property, because `Entity.stat()` returns 0 for a missing key BY DESIGN, which is
-    what makes absent data indistinguishable from a real zero at the point of use.
+    And "nonzero" is NOT the property to assert for a save — 0 is a legal bonus for a
+    dumped stat (War Angel's own INT is -1, and a +0 would be unremarkable).  PRESENCE
+    is the property, because `Entity.stat()` returns 0 for a missing key BY DESIGN,
+    which is what makes absent data indistinguishable from a real zero at the point of
+    use.
 
-    **This test is a TRIPWIRE and is MEANT to fail when the gap closes.** It pins the
-    state §14 describes; giving the Scion or Silvertail L4 its saves should break it,
-    at which point the fix is to update this dict AND the two notes that quote it, not
-    to loosen the assertion.
+    **This test is a TRIPWIRE and is MEANT to fail when either gap closes.** It pins
+    the state §14 describes — the sparse LEVEL SETS and the sparse saves within them.
+    Bringing a build toward 1-20, or giving the Scion or Silvertail L4 its saves, should
+    break it, and the fix is then to update these dicts AND the two notes that quote
+    them, not to loosen the assertion.
     """
     saves = {f"{a}_save" for a in ("str", "dex", "con", "int", "wis", "cha")}
-    factories = {"war_angel": war_angel.make_war_angel,
-                 "silvertail": silvertail.make_silvertail,
-                 "starfire_scion": starfire_scion.make_starfire_scion}
-    levels = {"war_angel": war_angel.LEVELS,
-              "silvertail": silvertail.LEVELS,
-              "starfire_scion": starfire_scion.LEVELS}
+    builds = {"war_angel": (war_angel.make_war_angel, war_angel.LEVELS),
+              "silvertail": (silvertail.make_silvertail, silvertail.LEVELS),
+              "starfire_scion": (starfire_scion.make_starfire_scion,
+                                 starfire_scion.LEVELS)}
 
+    # --- half one: the LEVEL SETS, against the 1-20 target -------------------
+    for name, (_, levels) in builds.items():
+        assert sorted(levels) == _MODELED_LEVELS[name], (name, sorted(levels))
+    missing = sum(len([l for l in range(1, 21) if l not in _MODELED_LEVELS[name]])
+                  for name in builds)
+    assert missing == 33, missing
+    assert sum(len(v) for v in _MODELED_LEVELS.values()) == 27
+
+    # --- half two: the SAVES within the levels that do exist -----------------
     present: dict[str, dict[int, int]] = {}
-    for name, factory in factories.items():
+    for name, (factory, levels) in builds.items():
         present[name] = {level: len(saves & set(factory(level).base_stats))
-                         for level in sorted(levels[name])}
-
-    # 27 (build, level) pairs in total — the number §3.5 and §14 both quote.
-    assert sum(len(v) for v in present.values()) == 27
-
+                         for level in sorted(levels)}
     for build, expected in _SAVE_COVERAGE.items():
         assert set(present[build].values()) == {expected}, (build, present[build])
 
@@ -497,4 +510,4 @@ def test_the_sparse_save_coverage_is_what_section_14_says_it_is():
              for lv, n in by_level.items() if n < 6]
     assert len(short) == 9, short
     assert sorted(short) == [("silvertail", 4)] + [
-        ("starfire_scion", lv) for lv in sorted(levels["starfire_scion"])]
+        ("starfire_scion", lv) for lv in _MODELED_LEVELS["starfire_scion"]]

@@ -2402,48 +2402,88 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
     Until then a run at those levels against an acting enemy fights at AC 0. §3.5's
     baseline character is the reason this does not have to be fixed first.
 
-  **AC IS NOW COMPLETE ON ALL THREE BUILDS, AND THE GAP HAS MOVED TO THE SAVES (s55).**
-  Both cases above are closed: the Scion's one-line wiring in s54, War Angel's twelve
-  values in s55 — and the values were RECOVERABLE FROM THE GUIDE rather than authored,
-  which is the part worth carrying forward. The guide states AC explicitly and tracks the
-  armour, so "the user's to author" turned out to be "read four lines and the `armor:`
-  trail". **Expect the same of the other two builds: check the guide before concluding a
-  value has to be invented.**
+  **RESCOPED (user, s55): THE TARGET IS EVERY BUILD AT LEVELS 1-20, SO THE GAP IS MOSTLY
+  LEVELS THAT DO NOT EXIST.** Both cases above are closed — the Scion's `ac` wiring in
+  s54, War Angel's twelve values in s55 — but closing them only completed the levels each
+  build already models, and the level sets are sparse (§2):
 
-  Measured through each factory (what the engine will actually read), not off the `LEVELS`
-  tables:
+  | build | modeled | missing from 1-20 |
+  |---|---|---|
+  | `war_angel` | 16 (1-16) | 17-20 |
+  | `silvertail` | 3 (4, 8, 10) | the other **17** |
+  | `starfire_scion` | 8 (1, 4, 5, 9, 10, 11, 12, 15) | the other **12** |
 
-  | build | levels | `ac` | the six saves |
-  |---|---|---|---|
-  | `war_angel` | 16 | all 16 | **all six at all 16** (s55, derived) |
-  | `silvertail` | 3 | all 3, guide-cited (`guide 32 L4`, `guide 32:453`) | L8/L10 all six; **L4 none** |
-  | `starfire_scion` | 8 | all 8 (s54) | **`con_save` only, at all 8** |
+  **33 of 60 (build, level) pairs do not exist at all**, and of the 27 that do, 9 still
+  resolve five or six saving throws against +0 (`silvertail` L4: none; `starfire_scion`:
+  `con_save` only, at all 8 levels — exactly War Angel's pre-s55 state). So before any
+  build is evaluated the way #6a evaluated War Angel, its AC and its six save modifiers
+  have to exist at every level 1-20.
 
-  So **9 of 27 (build, level) pairs still resolve five or six saving throws against +0**,
-  and the Starfire Scion is in exactly the state War Angel was in before s55: one declared
-  save, five silent zeros, while the standardized enemy's §6 channel forces saves against
-  them. It reads as a defensive profile and it is an artifact of absent data.
+  **THEY ARE RECOVERABLE AT EVERY LEVEL, FOR ALL THREE BUILDS — VERIFIED, NOT ASSUMED.**
+  This is the transferable lesson from s55, where this entry's own "AUTHORING twelve
+  values, which is the user's to do" turned out to be "read four lines and the `armor:`
+  trail". Each guide's header block carries the point-buy scores, every stated score
+  change, and the starting class's save proficiencies, which is everything a 5e save
+  bonus needs (`ability modifier + PB if proficient` — the s49 rule's derive case). The
+  test of that claim is whether the method reproduces what the builds ALREADY declare,
+  and it does, on four independent checks:
 
-  **The template exists and is cheap.** `war_angel.save_bonuses(level)` derives all six
-  from the guide's header block — point-buy scores, the stated score changes, and save
-  proficiency from the STARTING class plus any Resilient-style feat — because a 5e save
-  bonus IS `ability modifier + (PB if proficient)`, which is the s49 rule's derive case
-  rather than its declare case. The derivation is checked against the ONE complete save
-  line the guide happens to state (L15), which is the pattern to reuse: derive from the
-  header, then verify against whatever single line the guide states, rather than
-  hand-writing a row per level. Two notes for whoever does it:
-  - **Silvertail's L8/L10 saves are hand-written** (`char_saves`, with class-proficiency
-    reasoning in comments but no guide citation), so they are a candidate for the same
-    derivation — and deriving them should REPRODUCE them, the way s55's reproduced the six
-    hand-written War Angel rows it deleted. If it does not, one of the two is wrong.
-  - **The Scion's `char_ac` values carry arithmetic** (`10 + DEX 3 + WIS 3`, unarmored
-    defense) **but no guide line**, unlike Silvertail's. Worth citing when that build is
-    next opened, since the arithmetic is only as good as the ability scores behind it.
+  | check | result |
+  |---|---|
+  | `starfire_scion` AC from monk unarmored defense (`10 + DEX + WIS`) | **all 8 declared `char_ac` reproduced** |
+  | `starfire_scion`'s one declared save (`con_save` 2 at L15) | reproduced |
+  | `war_angel` saves vs `save_bonuses` | all 16 levels agree |
+  | `silvertail` AC from three stated lines + the `armor:` trail | L1 `16+2=18`, L4 `17+2=19`, L8 `18+2=20`, no armour change after L8 |
 
-  **Scheduled, not merely noted (user, s55): do this when the Silvertail and Starfire
-  Scion builds are next picked up** — see the Track 2 pointer in PROGRESS. Still CONTENT
-  work and still not blocking the framework, for the reason this entry has always given:
-  §3.5's baseline character is the complete subject.
+  Guide 41 contains **no `* AC:` line at all**, which is why the Scion's AC has to be
+  derived rather than read — and why reproducing all eight declared values matters: it
+  establishes the method for the twelve levels that have none. The per-build inputs,
+  transcribed from the headers (guide 38:19-32, 32:19-31, 41:19-32):
+
+  * **war_angel** — STR 8 DEX 15 CON 8 INT 8 WIS 16 CHA 17; L6 +1 CHA, L9 +2 CHA, L11 +1
+    DEX, L15 +1 DEX, L19 +1 DEX. Proficient: STR/CON (fighter-01), DEX from L15
+    (Resilient). AC 17 (chain shirt, L1-4) → 18 (breastplate, L5+), DEX capped at +2 by
+    medium armour so the L11/L15 DEX gains do not raise it.
+  * **silvertail** — STR 15 DEX 14 CON 12 INT 8 WIS 17 CHA 8; L5 +1 WIS, L9 +1 WIS, L13
+    +1 WIS, L16 +1 DEX, L20 +1 DEX. Proficient: STR/CON (fighter-01), WIS from L9, DEX
+    from L16 (both Resilient). AC 18 (chain mail) → 19 (splint, L4) → 20 (splint + cloak
+    of protection, L8). **The cloak also gives +1 to all saving throws** (guide 32 states
+    it), which is a flat term the derivation has to carry from L8 on.
+  * **starfire_scion** — STR 8 DEX 16 CON 14 INT 10 WIS 17 CHA 8; L5 +1 WIS, L8 +1 WIS,
+    L12 +1 WIS, L16 +2 DEX, L20 +2 DEX. Proficient: STR/DEX (monk-01), WIS from L12
+    (Resilient). AC = `10 + DEX + WIS` at every level (unarmored defense).
+
+  Per-level write-up coverage differs and matters for the REST of a level's data, not for
+  AC and saves: guides 32 and 41 have all 20 level sections, guide 38 has 17 — so **War
+  Angel L18-20 exist only as one-line entries in the progression summary**, and AC and
+  saves are derivable there while attack/damage/resources/tactics are not.
+
+  **THE ONE PLACE THE DERIVATION DOES NOT REPRODUCE EXISTING DATA — and it is the
+  existing data that is wrong.** Silvertail's two hand-written `char_saves` rows cannot be
+  recovered by the rule that reproduces everything above:
+
+  * **L10** matches on four of six — STR +6, DEX +2, CON +5, WIS +8 are exactly
+    `mod + PB(4)` with the guide's stated proficiencies — while INT and CHA are declared
+    `+1` where the scores give `-1`.
+  * **L8 is inconsistent with L10's own proficiency set.** STR reads UNPROFICIENT at L8
+    (`0`) and proficient at L10 (`+6`) with no feat between them that could do that, and
+    WIS reads proficient at L8 (`+7`) although Resilient (WIS) arrives at **L9**.
+  * The comments confirm the intent diverged rather than the arithmetic slipping: L8's
+    says *"Cleric/Ranger: WIS + CHA proficient"* and L10's says *"Cleric (WIS/CHA) +
+    Fighter (STR/CON) + resilient WIS"* — two different proficiency sets two levels apart,
+    and **multiclassing grants no saving-throw proficiencies**, so neither matches the
+    guide's own `fighter-01 --> CON/STR save`.
+
+  So the existing rows are **not** a safe reference to check a derivation against; the
+  guide's header is. (s55 predicted the opposite — that deriving them would reproduce them
+  the way War Angel's did — and the prediction was wrong, which is the whole reason to run
+  the check rather than assert it.)
+
+  **Scheduled, not merely noted (user, s55): do this BEFORE evaluating either build, as
+  part of bringing it to 1-20** — see the Track 2 pointer in PROGRESS. Still CONTENT work
+  and still not blocking the framework, for the reason this entry has always given: §3.5's
+  baseline character is the complete subject, at all 20 levels, which is why framework
+  correctness does not wait on any of this.
 
 - **A build's data row carried its own enemy, so its choices were implicitly tuned
   against it** *(surfaced s52, REFRAMED s53)* — a property of the CONTENT, recorded here

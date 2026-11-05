@@ -5928,28 +5928,46 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
 
 ### TRACK 2 (LATER) — declarative ability layer + Starfire Scion (War Angel validation CONCLUDED at L16)
 
-> **BEFORE TOUCHING EITHER BUILD: GIVE ITS CHARACTER THE SIX SAVING THROWS, OFF THE
-> GUIDE (user, s55).** Scheduled here rather than left as a deferral, because it is
-> cheap, it is invisible until someone reads a save number, and s55 proved the values
-> are READ, not invented. AC is already complete on all three builds; **saves are not**:
+> **BEFORE EVALUATING EITHER BUILD: BRING IT TO LEVELS 1-20, AND GET AC + ALL SIX SAVE
+> MODIFIERS AT EVERY LEVEL OFF THE BUILD GUIDE (user, s55).** The goal is to evaluate each
+> character at **1-20**, and the level sets are sparse, so most of the gap is levels that
+> do not exist at all:
 >
-> | build | `ac` | the six saves |
-> |---|---|---|
-> | `war_angel` | all 16 | all six at all 16 *(s55, derived)* |
-> | `silvertail` | all 3, guide-cited | L8/L10 all six; **L4 none** |
-> | `starfire_scion` | all 8 | **`con_save` only, at all 8** |
+> | build | modeled | missing from 1-20 | AC today | saves today |
+> |---|---|---|---|---|
+> | `war_angel` | 16 (1-16) | 17-20 | all 16 | all six at all 16 *(s55)* |
+> | `silvertail` | 3 (4, 8, 10) | the other **17** | all 3 | L8/L10 all six; **L4 none** |
+> | `starfire_scion` | 8 (1,4,5,9,10,11,12,15) | the other **12** | all 8 | **`con_save` only** |
 >
-> So **9 of 27 (build, level) pairs resolve five or six saves against +0** while the
-> standardized enemy forces saves against them — it reads as a defensive profile and it
-> is absent data. The Scion is in exactly War Angel's pre-s55 state.
+> **33 of 60 (build, level) pairs do not exist**, and 9 of the 27 that do still resolve
+> five or six saves against +0 while the standardized enemy forces saves against them.
 >
-> **Use `war_angel.save_bonuses(level)` as the template, and read the guide first.** It
-> derives all six from the guide's header (ability mod + PB where proficient; save
-> proficiency from the STARTING class only, plus any Resilient-style feat), then VERIFIES
-> against the one complete save line the guide happens to state. Deriving Silvertail's
-> hand-written L8/L10 `char_saves` should REPRODUCE them — if it does not, one of the two
-> is wrong. Full reasoning, the measured table and two provenance notes:
-> `design/evaluation_framework.md` §14, the sparse-build-data entry.
+> **THE VALUES ARE IN THE GUIDES — verified, not hoped.** Each header block carries the
+> point-buy scores, every stated score change, and the STARTING class's save
+> proficiencies, which is all a 5e save needs (`mod + PB if proficient`). Checked by
+> reproducing what the builds already declare: the Scion's **all 8** `char_ac` values come
+> out of monk unarmored defense (`10 + DEX + WIS`) exactly — guide 41 has no `AC:` line at
+> all, so that IS the method — its one declared save reproduces, War Angel's 16 levels
+> agree with `save_bonuses`, and Silvertail's AC follows three stated lines plus the
+> `armor:` trail (18 chain mail → 19 splint at L4 → 20 splint + cloak at L8, no change
+> after). Use `war_angel.save_bonuses` as the template: derive from the header, then verify
+> against whatever the guide states outright.
+>
+> **TWO TRAPS, both found by checking (s55):**
+> 1. **Silvertail's hand-written L8/L10 `char_saves` are WRONG — do not check a derivation
+>    against them.** L10 matches on four of six with INT/CHA each +2 off; L8 is
+>    inconsistent with L10's own proficiency set (STR unproficient at L8, proficient at
+>    L10; WIS proficient at L8 though Resilient (WIS) arrives at L9). The comments show
+>    two different proficiency sets two levels apart, both assuming multiclass save
+>    proficiencies that 5e does not grant. s55 predicted these WOULD reproduce and was
+>    wrong, which is why the check is worth running.
+> 2. **Silvertail's cloak of protection (L8+) adds +1 to ALL saves**, not just AC — a flat
+>    term the derivation has to carry.
+>
+> Guide section coverage: 32 and 41 have all 20 levels; **38 has 17**, so War Angel L18-20
+> exist only in the progression summary — AC and saves derive there, attack/damage/
+> resources/tactics do not. Full reasoning, the four verification checks and the per-build
+> inputs: `design/evaluation_framework.md` §14, the sparse-build-data entry.
 
 > **Re-prioritized to Track 2 (session 33):** this was the prior "NEXT MAJOR
 > FOCUS" but is now sequenced AFTER the Track 1 enemy/outputs/eval work above.
