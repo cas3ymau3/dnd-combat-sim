@@ -5928,6 +5928,29 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
 
 ### TRACK 2 (LATER) — declarative ability layer + Starfire Scion (War Angel validation CONCLUDED at L16)
 
+> **BEFORE TOUCHING EITHER BUILD: GIVE ITS CHARACTER THE SIX SAVING THROWS, OFF THE
+> GUIDE (user, s55).** Scheduled here rather than left as a deferral, because it is
+> cheap, it is invisible until someone reads a save number, and s55 proved the values
+> are READ, not invented. AC is already complete on all three builds; **saves are not**:
+>
+> | build | `ac` | the six saves |
+> |---|---|---|
+> | `war_angel` | all 16 | all six at all 16 *(s55, derived)* |
+> | `silvertail` | all 3, guide-cited | L8/L10 all six; **L4 none** |
+> | `starfire_scion` | all 8 | **`con_save` only, at all 8** |
+>
+> So **9 of 27 (build, level) pairs resolve five or six saves against +0** while the
+> standardized enemy forces saves against them — it reads as a defensive profile and it
+> is absent data. The Scion is in exactly War Angel's pre-s55 state.
+>
+> **Use `war_angel.save_bonuses(level)` as the template, and read the guide first.** It
+> derives all six from the guide's header (ability mod + PB where proficient; save
+> proficiency from the STARTING class only, plus any Resilient-style feat), then VERIFIES
+> against the one complete save line the guide happens to state. Deriving Silvertail's
+> hand-written L8/L10 `char_saves` should REPRODUCE them — if it does not, one of the two
+> is wrong. Full reasoning, the measured table and two provenance notes:
+> `design/evaluation_framework.md` §14, the sparse-build-data entry.
+
 > **Re-prioritized to Track 2 (session 33):** this was the prior "NEXT MAJOR
 > FOCUS" but is now sequenced AFTER the Track 1 enemy/outputs/eval work above.
 > Content preserved as-is — it is the binding plan for when Track 2 begins.

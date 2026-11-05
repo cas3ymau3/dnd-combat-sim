@@ -432,3 +432,69 @@ def test_a_new_build_needs_only_an_adapter():
             RunConfig(enemy="none", build="test_tiny_build", level=4, n_days=1).validate()
     finally:
         adapters_module._REGISTRY.pop("test_tiny_build", None)
+
+
+# ---------------------------------------------------------------------------
+# §14's sparse-build-data deferral, as an assertion rather than a prose tally
+# ---------------------------------------------------------------------------
+
+#: (build, number of levels, saves the character carries at EVERY level).
+#:
+#: The CURRENT state, deliberately, not the desired one.  `evaluation_framework.md`
+#: §14's sparse-build-data entry and the Track 2 pointer in PROGRESS both quote "9 of
+#: 27 (build, level) pairs resolve five or six saves against +0", and a tallied count
+#: in prose has nothing behind it — so it is pinned here, where closing the gap makes
+#: the test fail and send whoever closed it at the note to update.
+_SAVE_COVERAGE: dict[str, int] = {
+    "war_angel": 6,        # all six, every level (s55, derived from the guide)
+    "starfire_scion": 1,   # con_save only — War Angel's exact pre-s55 state
+}
+
+
+def test_the_sparse_save_coverage_is_what_section_14_says_it_is():
+    """Read through each FACTORY, because that is what the engine reads.
+
+    A `LEVELS`-table check would miss both halves of how this defect appears: the
+    Starfire Scion's `ac` was declared in its table for sessions while
+    `make_starfire_scion` never read it, and War Angel's saves are now DERIVED and so
+    appear in no table at all.  Only the constructed Entity knows.
+
+    And "nonzero" is NOT the property to assert — 0 is a legal save bonus for a dumped
+    stat (War Angel's own INT is -1, and a +0 would be unremarkable).  PRESENCE is the
+    property, because `Entity.stat()` returns 0 for a missing key BY DESIGN, which is
+    what makes absent data indistinguishable from a real zero at the point of use.
+
+    **This test is a TRIPWIRE and is MEANT to fail when the gap closes.** It pins the
+    state §14 describes; giving the Scion or Silvertail L4 its saves should break it,
+    at which point the fix is to update this dict AND the two notes that quote it, not
+    to loosen the assertion.
+    """
+    saves = {f"{a}_save" for a in ("str", "dex", "con", "int", "wis", "cha")}
+    factories = {"war_angel": war_angel.make_war_angel,
+                 "silvertail": silvertail.make_silvertail,
+                 "starfire_scion": starfire_scion.make_starfire_scion}
+    levels = {"war_angel": war_angel.LEVELS,
+              "silvertail": silvertail.LEVELS,
+              "starfire_scion": starfire_scion.LEVELS}
+
+    present: dict[str, dict[int, int]] = {}
+    for name, factory in factories.items():
+        present[name] = {level: len(saves & set(factory(level).base_stats))
+                         for level in sorted(levels[name])}
+
+    # 27 (build, level) pairs in total — the number §3.5 and §14 both quote.
+    assert sum(len(v) for v in present.values()) == 27
+
+    for build, expected in _SAVE_COVERAGE.items():
+        assert set(present[build].values()) == {expected}, (build, present[build])
+
+    # Silvertail is the only build that varies BY LEVEL, which is why it is not in the
+    # dict above: L4 predates the saves its later rows declare.
+    assert present["silvertail"] == {4: 0, 8: 6, 10: 6}
+
+    # The headline tally, derived from the three readings rather than restated.
+    short = [(b, lv) for b, by_level in present.items()
+             for lv, n in by_level.items() if n < 6]
+    assert len(short) == 9, short
+    assert sorted(short) == [("silvertail", 4)] + [
+        ("starfire_scion", lv) for lv in sorted(levels["starfire_scion"])]

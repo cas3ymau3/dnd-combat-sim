@@ -2402,6 +2402,49 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
     Until then a run at those levels against an acting enemy fights at AC 0. §3.5's
     baseline character is the reason this does not have to be fixed first.
 
+  **AC IS NOW COMPLETE ON ALL THREE BUILDS, AND THE GAP HAS MOVED TO THE SAVES (s55).**
+  Both cases above are closed: the Scion's one-line wiring in s54, War Angel's twelve
+  values in s55 — and the values were RECOVERABLE FROM THE GUIDE rather than authored,
+  which is the part worth carrying forward. The guide states AC explicitly and tracks the
+  armour, so "the user's to author" turned out to be "read four lines and the `armor:`
+  trail". **Expect the same of the other two builds: check the guide before concluding a
+  value has to be invented.**
+
+  Measured through each factory (what the engine will actually read), not off the `LEVELS`
+  tables:
+
+  | build | levels | `ac` | the six saves |
+  |---|---|---|---|
+  | `war_angel` | 16 | all 16 | **all six at all 16** (s55, derived) |
+  | `silvertail` | 3 | all 3, guide-cited (`guide 32 L4`, `guide 32:453`) | L8/L10 all six; **L4 none** |
+  | `starfire_scion` | 8 | all 8 (s54) | **`con_save` only, at all 8** |
+
+  So **9 of 27 (build, level) pairs still resolve five or six saving throws against +0**,
+  and the Starfire Scion is in exactly the state War Angel was in before s55: one declared
+  save, five silent zeros, while the standardized enemy's §6 channel forces saves against
+  them. It reads as a defensive profile and it is an artifact of absent data.
+
+  **The template exists and is cheap.** `war_angel.save_bonuses(level)` derives all six
+  from the guide's header block — point-buy scores, the stated score changes, and save
+  proficiency from the STARTING class plus any Resilient-style feat — because a 5e save
+  bonus IS `ability modifier + (PB if proficient)`, which is the s49 rule's derive case
+  rather than its declare case. The derivation is checked against the ONE complete save
+  line the guide happens to state (L15), which is the pattern to reuse: derive from the
+  header, then verify against whatever single line the guide states, rather than
+  hand-writing a row per level. Two notes for whoever does it:
+  - **Silvertail's L8/L10 saves are hand-written** (`char_saves`, with class-proficiency
+    reasoning in comments but no guide citation), so they are a candidate for the same
+    derivation — and deriving them should REPRODUCE them, the way s55's reproduced the six
+    hand-written War Angel rows it deleted. If it does not, one of the two is wrong.
+  - **The Scion's `char_ac` values carry arithmetic** (`10 + DEX 3 + WIS 3`, unarmored
+    defense) **but no guide line**, unlike Silvertail's. Worth citing when that build is
+    next opened, since the arithmetic is only as good as the ability scores behind it.
+
+  **Scheduled, not merely noted (user, s55): do this when the Silvertail and Starfire
+  Scion builds are next picked up** — see the Track 2 pointer in PROGRESS. Still CONTENT
+  work and still not blocking the framework, for the reason this entry has always given:
+  §3.5's baseline character is the complete subject.
+
 - **A build's data row carried its own enemy, so its choices were implicitly tuned
   against it** *(surfaced s52, REFRAMED s53)* — a property of the CONTENT, recorded here
   so the next session does not mistake it for an engine finding.
