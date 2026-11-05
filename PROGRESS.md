@@ -5949,20 +5949,17 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
 > out of monk unarmored defense (`10 + DEX + WIS`) exactly — guide 41 has no `AC:` line at
 > all, so that IS the method — its one declared save reproduces, War Angel's 16 levels
 > agree with `save_bonuses`, and Silvertail's AC follows three stated lines plus the
-> `armor:` trail (18 chain mail → 19 splint at L4 → 20 splint + cloak at L8, no change
-> after). Use `war_angel.save_bonuses` as the template: derive from the header, then verify
-> against whatever the guide states outright.
+> `armor:` trail (18 chain mail → 19 splint at L4, no change after). Use
+> `war_angel.save_bonuses` as the template: derive from the header, then verify against
+> whatever the guide states outright.
 >
-> **TWO TRAPS, both found by checking (s55):**
-> 1. **Silvertail's hand-written L8/L10 `char_saves` are WRONG — do not check a derivation
->    against them.** L10 matches on four of six with INT/CHA each +2 off; L8 is
->    inconsistent with L10's own proficiency set (STR unproficient at L8, proficient at
->    L10; WIS proficient at L8 though Resilient (WIS) arrives at L9). The comments show
->    two different proficiency sets two levels apart, both assuming multiclass save
->    proficiencies that 5e does not grant. s55 predicted these WOULD reproduce and was
->    wrong, which is why the check is worth running.
-> 2. **Silvertail's cloak of protection (L8+) adds +1 to ALL saves**, not just AC — a flat
->    term the derivation has to carry.
+> Silvertail's existing hand-written L8/L10 `char_saves` rows do not match this rule and
+> are superseded by it — derive the six and replace them.
+>
+> **NO MAGIC ITEMS AT BASELINE (user, s55).** Guide 32 offers Silvertail a cloak of
+> protection as a synergistic option, not as part of the build, so it is out of both AC
+> and saves. Its baseline AC is therefore **19 from L4 on**, and the `char_ac` 20 declared
+> at L8/L10 has the cloak's +1 baked in — it comes down when those rows are redone.
 >
 > Guide section coverage: 32 and 41 have all 20 levels; **38 has 17**, so War Angel L18-20
 > exist only in the progression summary — AC and saves derive there, attack/damage/

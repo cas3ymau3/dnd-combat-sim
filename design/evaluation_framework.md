@@ -2446,9 +2446,12 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
     medium armour so the L11/L15 DEX gains do not raise it.
   * **silvertail** — STR 15 DEX 14 CON 12 INT 8 WIS 17 CHA 8; L5 +1 WIS, L9 +1 WIS, L13
     +1 WIS, L16 +1 DEX, L20 +1 DEX. Proficient: STR/CON (fighter-01), WIS from L9, DEX
-    from L16 (both Resilient). AC 18 (chain mail) → 19 (splint, L4) → 20 (splint + cloak
-    of protection, L8). **The cloak also gives +1 to all saving throws** (guide 32 states
-    it), which is a flat term the derivation has to carry from L8 on.
+    from L16 (both Resilient). AC 18 (chain mail) → 19 (splint, L4), and no armour change
+    after. **NO MAGIC ITEMS AT BASELINE (user, s55)**, so guide 32's cloak of protection
+    is out: it is offered there as a synergistic option, not as part of the build. That
+    makes Silvertail's baseline AC **19 from L4 on**, and the `char_ac` 20 declared at
+    L8/L10 is the cloak's +1 baked in — it comes down when these rows are redone. Saves
+    carry no flat item term for the same reason.
   * **starfire_scion** — STR 8 DEX 16 CON 14 INT 10 WIS 17 CHA 8; L5 +1 WIS, L8 +1 WIS,
     L12 +1 WIS, L16 +2 DEX, L20 +2 DEX. Proficient: STR/DEX (monk-01), WIS from L12
     (Resilient). AC = `10 + DEX + WIS` at every level (unarmored defense).
@@ -2458,26 +2461,8 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   Angel L18-20 exist only as one-line entries in the progression summary**, and AC and
   saves are derivable there while attack/damage/resources/tactics are not.
 
-  **THE ONE PLACE THE DERIVATION DOES NOT REPRODUCE EXISTING DATA — and it is the
-  existing data that is wrong.** Silvertail's two hand-written `char_saves` rows cannot be
-  recovered by the rule that reproduces everything above:
-
-  * **L10** matches on four of six — STR +6, DEX +2, CON +5, WIS +8 are exactly
-    `mod + PB(4)` with the guide's stated proficiencies — while INT and CHA are declared
-    `+1` where the scores give `-1`.
-  * **L8 is inconsistent with L10's own proficiency set.** STR reads UNPROFICIENT at L8
-    (`0`) and proficient at L10 (`+6`) with no feat between them that could do that, and
-    WIS reads proficient at L8 (`+7`) although Resilient (WIS) arrives at **L9**.
-  * The comments confirm the intent diverged rather than the arithmetic slipping: L8's
-    says *"Cleric/Ranger: WIS + CHA proficient"* and L10's says *"Cleric (WIS/CHA) +
-    Fighter (STR/CON) + resilient WIS"* — two different proficiency sets two levels apart,
-    and **multiclassing grants no saving-throw proficiencies**, so neither matches the
-    guide's own `fighter-01 --> CON/STR save`.
-
-  So the existing rows are **not** a safe reference to check a derivation against; the
-  guide's header is. (s55 predicted the opposite — that deriving them would reproduce them
-  the way War Angel's did — and the prediction was wrong, which is the whole reason to run
-  the check rather than assert it.)
+  Silvertail's existing hand-written `char_saves` rows at L8/L10 do not match this rule
+  and are simply superseded by it — derive the six and replace them.
 
   **Scheduled, not merely noted (user, s55): do this BEFORE evaluating either build, as
   part of bringing it to 1-20** — see the Track 2 pointer in PROGRESS. Still CONTENT work
