@@ -5928,6 +5928,48 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
 
 ### TRACK 2 (LATER) — declarative ability layer + Starfire Scion (War Angel validation CONCLUDED at L16)
 
+> **BEFORE EVALUATING EITHER BUILD: BRING IT TO LEVELS 1-20, AND GET AC + ALL SIX SAVE
+> MODIFIERS AT EVERY LEVEL OFF THE BUILD GUIDE (user, s55).** The goal is to evaluate each
+> character at **1-20**, and the level sets are sparse, so most of the gap is levels that
+> do not exist at all:
+>
+> | build | modeled | missing from 1-20 | AC today | saves today |
+> |---|---|---|---|---|
+> | `war_angel` | 16 (1-16) | 17-20 | all 16 | all six at all 16 *(s55)* |
+> | `silvertail` | 3 (4, 8, 10) | the other **17** | all 3 | L8/L10 all six; **L4 none** |
+> | `starfire_scion` | 8 (1,4,5,9,10,11,12,15) | the other **12** | all 8 | **`con_save` only** |
+>
+> **33 of 60 (build, level) pairs do not exist**, and 9 of the 27 that do still resolve
+> five or six saves against +0 while the standardized enemy forces saves against them.
+>
+> **THE VALUES ARE IN THE GUIDES — verified, not hoped.** Each header block carries the
+> point-buy scores, every stated score change, and the STARTING class's save
+> proficiencies, which is all a 5e save needs (`mod + PB if proficient`). Checked by
+> reproducing what the builds already declare: the Scion's **all 8** `char_ac` values come
+> out of monk unarmored defense (`10 + DEX + WIS`) exactly — guide 41 has no `AC:` line at
+> all, so that IS the method — its one declared save reproduces, War Angel's 16 levels
+> agree with `save_bonuses`, and Silvertail's AC follows three stated lines plus the
+> `armor:` trail (18 chain mail → 19 splint at L4 → 20 plate at L8, no change after).
+> Use `war_angel.save_bonuses` as the template: derive from the header, then verify
+> against whatever the guide states outright.
+>
+> Silvertail's existing hand-written L8/L10 `char_saves` rows do not match this rule and
+> are superseded by it — derive the six and replace them.
+>
+> **NO MAGIC ITEMS AT BASELINE (user, s55)**, so guide 32's cloak of protection is out of
+> both AC and saves — it is offered as a synergistic option, not as part of the build, and
+> nothing carries a flat item term. Silvertail's `char_ac` 20 at L8/L10 is CORRECT anyway,
+> because **L8 moves into plate**: the L8 block's equipment line still reads `splint armor
+> (200 gp)` (copy-pasted from L4) while its sum is `18 + 2(shield)` and its NOTE prices the
+> buy at **1500gp** — base 18 and 1500gp are both plate, splint being 17 at 200gp as L4 and
+> guides 27/29/34 all say. Only the code comment is wrong, crediting the 20 to
+> `splint(17) + cloak(+1)`.
+>
+> Guide section coverage: 32 and 41 have all 20 levels; **38 has 17**, so War Angel L18-20
+> exist only in the progression summary — AC and saves derive there, attack/damage/
+> resources/tactics do not. Full reasoning, the four verification checks and the per-build
+> inputs: `design/evaluation_framework.md` §14, the sparse-build-data entry.
+
 > **Re-prioritized to Track 2 (session 33):** this was the prior "NEXT MAJOR
 > FOCUS" but is now sequenced AFTER the Track 1 enemy/outputs/eval work above.
 > Content preserved as-is — it is the binding plan for when Track 2 begins.
