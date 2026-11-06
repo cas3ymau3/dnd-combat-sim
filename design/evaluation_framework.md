@@ -1795,6 +1795,167 @@ across the process boundary.
   | `standard` | ~50,000 | matches today's `validation.py` default |
   | `publication` | ~200,000+ | committed artifacts / site content |
 
+### 10.1 The sweep contract (LOCKED s57, `sweep_schema_version` 1)
+
+Locked BEFORE the driver was written, per the per-feature ritual's step 4 and on the
+§9.1 precedent: that schema was locked ahead of its writer and absorbed three later
+additions at `schema_version` 1 without a break. A sweep manifest is the same kind of
+object — a consumer will be built against it — so its shape is settled here.
+
+**TWO OBJECTS, NOT ONE.** §10's first bullet says a sweep is *declared* in YAML; §9.1
+says a sweep *is* "a directory of run records plus a manifest". Those are different
+objects with different jobs, and conflating them is the mistake available here:
+
+| | **declaration** | **manifest** |
+|---|---|---|
+| direction | input | output |
+| format | YAML | JSON |
+| lives in | `sweeps/*.yaml`, **committed** | the sweep's output directory, **generated** |
+| job | which measurements to take | what was taken, from where, and at what version |
+| versioned by | `sweep_schema_version` | `manifest_schema_version` |
+
+**The two versions are separate from the run record's `schema_version`** (user, s57).
+Three objects, three consumers, three churn rates: a manifest field added next session
+must not force a bump on the record, which would cost the record's comparability story
+for a field nothing is built against. The record's version is quoted *inside* the
+manifest per cell, which is what makes a mixed-version sweep detectable rather than
+silently absorbed.
+
+#### The declaration
+
+```yaml
+sweep_schema_version: 1
+name: convergence_calibration
+description: §14(a)'s thresholds — days_required across builds, levels and tiers.
+base:                       # a partial RunConfig; every field the axes do not vary
+  enemy: baseline
+  seed: 11
+axes:                       # applied IN ORDER; cells are the product
+  build: [war_angel, silvertail]
+  level: available          # the sentinel — see below
+  n_days: [2000, 20000]
+```
+
+- **`base` is a partial `RunConfig`** and is validated as one. A field named in both
+  `base` and `axes` is an error, not an override: a cell whose value depends on which of
+  two places you read is the implicit-enemy failure of §3.4 in a different costume.
+- **Axes are applied in declaration order and cells are their product**, so the cell
+  count is `prod(len(axis))` and `plan` prints it before anything is simulated.
+- **An axis name may be a dotted path** into the two option dicts —
+  `build_options.zone_effect`, `enemy_options.control` — so a build's scenario axes and
+  the enemy's §7 toggles sweep identically. That is §3.1's "the same kind of thing"
+  carried up one layer.
+- **`level: available` is a SENTINEL, and it exists because level sets are SPARSE
+  (§2).** 33 of the 60 (build, level) pairs do not exist, pinned by a tripwire in
+  `test_eval_framework.py`. It resolves per cell from the adapter's
+  `available_levels()` — which means axis order is load-bearing: `build` must precede
+  `level`, and a declaration that gets this wrong is refused with that sentence.
+  An **explicitly listed** nonexistent pair is an **error**, never a silent skip: a
+  sweep that quietly drops a third of its cells reports a smaller, cleaner-looking
+  study than the one that was asked for.
+
+#### The manifest
+
+```json
+{
+  "manifest_schema_version": 1,
+  "kind": "sweep_manifest",
+  "name": "convergence_calibration",
+  "sweep_id": "convergence_calibration-3f91ab07c2d5e648",
+  "sweep_hash": "3f91ab07c2d5e648",
+  "declaration": { "...the parsed YAML, verbatim..." },
+  "engine_commit": "5283fa5...", "engine_dirty": false,
+  "generated_at": "...", "axes": ["build", "level", "n_days"],
+  "record_schema_version": 1, "registry_fingerprint": "7c1e...",
+  "cells": [ CELL, ... ],
+  "cache": {"store": "artifacts/records", "hits": 12, "misses": 36, "disabled_reason": null},
+  "warnings": [ {"code": "...", "message": "..."} ]
+}
+```
+
+A **CELL** is the manifest's row shape, one per `RunConfig`:
+
+| field | meaning |
+|---|---|
+| `coordinate` | the cell's axis position as a **dict** of axis → value |
+| `run_id` / `config_hash` | the record's own identifiers (§9.1), unchanged |
+| `cache_key` | `(config_hash, engine_commit)` — the record's filename in the store |
+| `record` | path to the run record, relative to the manifest |
+| `source` | `computed` / `cached` — where this cell's record came from on THIS run |
+| `status` | `ok` / `failed`; `note` carries the failure |
+| `day_tier` / `schema_version` / `engine_commit` | per-cell, so a mixed sweep is visible |
+
+**`coordinate` is a DICT, never a string to parse.** This is §5.4's rule — the one that
+cost a registry rewrite in s46 when 25 of 51 entries had flattened a key into a metric
+NAME — applied one layer up. A consumer groups by `coordinate.level`; nothing anywhere
+parses `war_angel@L13` back into `("war_angel", 13)`.
+
+**IDENTITY EXCLUDES THE ENGINE; VALIDITY INCLUDES IT.** `sweep_hash` is taken over the
+resolved cell configs — *which measurements this sweep asks for* — and **not** over
+`engine_commit`, while the cache key is `(config_hash, engine_commit)` and does. The two
+hashes answer different questions and the precedent is already in the codebase:
+`artifact.run_id` deliberately leaves the commit out because "folding it in would make
+the id churn on every commit for runs that are otherwise the same scenario". A sweep is
+the same scenario at a new engine version, so it keeps its id and its directory, and
+every record in it is re-derived.
+
+### 10.2 The cache
+
+**The key is `(config_hash, engine_commit)`, with the whole-repo HEAD sha** (user, s57).
+It over-invalidates — a docs-only commit busts every cached cell — and that is the
+accepted cost. The alternative considered and rejected was a fingerprint narrowed to a
+declared path set (`src/`, `content/`, `reference/data/`), which would make this
+section's "recomputes only what changed" literally true but turns a *path left off the
+list* into a silently wrong cache hit. §10's own ordering decides it: correctness and
+reproducibility first.
+
+**`resolved` is NOT in the key, and that is a decision rather than an omission.** §10's
+original wording says "resolved config", and the resolved block — `adapter.describe` plus
+`enemy.resolve`, the latter carrying the band save weights since s56 — is a pure function
+of the declared config and the repo contents, both of which the key already holds. So
+hashing it adds nothing, and a key you can only compute by doing half the work is worth
+less than one you can compute from the declaration alone. The single case where that
+purity fails is a dirty tree, and the answer there is not to hash more:
+
+**A DIRTY TREE REFUSES THE CACHE ENTIRELY.** `engine_dirty` means the sha no longer
+identifies the code, so neither a read nor a write is sound — a record written from
+uncommitted work would be indistinguishable from one written at that commit, and would
+be served to a later clean run. §9.1 already raises `engine_dirty` as a top-level
+warning on the record; here it also disables the store, with the reason recorded in
+`cache.disabled_reason` rather than left to be inferred from a hit count of zero.
+
+**THE STORE IS SHARED AND CONTENT-ADDRESSED** (user, s57): one `records/` store keyed by
+`cache_key`, with each sweep directory holding only its manifest and its concatenated
+tidy CSV. Two sweeps asking for the same cell reuse one record, which is what makes
+§14(a)'s calibration affordable — its sweeps overlap almost entirely. The alternative,
+a per-sweep directory of records, is the one that is NOT engine-change-safe:
+`write_artifact` stems on `run_id`, which carries no engine component, so re-running a
+scenario after an engine change silently overwrites the earlier record. Putting the sha
+in the filename is what makes the store append-only by construction.
+
+What sharing costs, stated rather than glossed: **a sweep directory is no longer
+self-contained.** The manifest names every record by key and relative path so the set is
+reconstructible, and the concatenated CSV is self-contained *for analysis*, which is what
+the tidy form is for. Copying records into a sweep directory to hand it to someone is a
+downstream operation needing no schema change — the same move §9 makes about the website.
+
+**THE STORE MUST BE GITIGNORED, AND THE REASON IS A SEAM** (found s57, by checking).
+`report.engine_version()` reads `git status --porcelain`, which counts UNTRACKED files.
+So artifacts written anywhere tracked-adjacent flip `engine_dirty=True` on every
+subsequent run: the output layer silently poisoning the provenance layer, and then the
+cache, through a path neither module mentions. `artifacts/` is ignored; a publication
+artifact meant for the repo is a deliberate, named exception.
+
+**Heterogeneous cells are REFUSED, not concatenated.** A record written under a
+28-declaration registry and one written under 31 are both valid and not comparable.
+`write_sweep_csv` already raises when columns differ between reports — s57 promotes that
+from an incidental column error into a declared manifest check that names the cells which
+differ, because by then the cheap signal (`schema_version`, `registry_fingerprint`) is
+already in every cell.
+
+**Eviction is NOT built.** The store grows monotonically; pruning it is a cleanup command
+whose absence costs disk and not correctness, and nothing shipped needs it yet (§14).
+
 ---
 
 ## 11. Baselines as a separate registry
@@ -2095,9 +2256,16 @@ check mechanisms, not the composite. Three things carry that load instead:
      method, because the saves channel has two producers and only one of them is
      readable; and discharged §4's never-met requirement that the band save weights be
      recorded at the values actually used.
-   - **STILL OPEN: the sweep manifest + CLI, config-hash caching, the §11 baselines
-     registry, and the threshold CALIBRATION** (which needs the sweep driver to exist,
-     per §14(a)).
+   - **8c — the sweep DECLARATION, MANIFEST, CLI and CACHE (s57).** Shape LOCKED in
+     §10.1/§10.2 before the writer existed, on the §9.1 precedent. `src/evaluation/sweep.py`
+     + `sweeps/*.yaml` + `python -m src.evaluation.sweep {plan,run}`. Three separate
+     version numbers (`sweep_schema_version`, `manifest_schema_version`, the record's
+     `schema_version` — user), a shared content-addressed record store keyed
+     `(config_hash, engine_commit)` with the whole-repo HEAD sha (user), and the
+     `level: available` sentinel for §2's sparse level sets. **No number moved**:
+     nothing in the engine, the registry or the estimators was touched.
+   - **STILL OPEN: the §11 baselines registry (8d), and the threshold CALIBRATION
+     (8e)**, which 8c's driver now makes reachable per §14(a).
 
    **RESEQUENCED (user, s54): a PRELIMINARY build evaluation runs BEFORE this step and
    before step 9.** Neither step is needed to produce one — step 9 is measured inert
@@ -2138,6 +2306,16 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
 - **Per-ability damage attribution** — needs `Choice.label → DamageEvent.label` (§8.2).
 - **Parallel sweep execution** — interacts with RNG determinism; only if sweeps become
   the bottleneck (§10).
+- **Record-store EVICTION** *(added s57, with 8c)* — the shared store (§10.2) grows
+  monotonically: every engine commit that a sweep is re-run across leaves its previous
+  generation of records behind, keyed under the old sha. Pruning it is a cleanup command
+  whose absence costs DISK and not correctness, so it is named rather than built, and
+  nothing shipped needs it yet. Trigger: the store outgrowing the machine, or a
+  publication-tier sweep (§10's 200,000+ days) being re-run more than a couple of times.
+  Worth stating what makes the deferral safe: the store is append-only *by construction*
+  — the sha is in the filename, so nothing is ever overwritten and a stale entry can
+  never be served to a run at a different commit. An unbounded cache is only a hazard
+  when a stale entry can be mistaken for a fresh one.
 - **Interactive website** — the static artifact schema does not preclude it; no schema
   change required later (§9).
 - **An `attacks` metric for DISADVANTAGE** *(added s49)* — §8.1's channel records
