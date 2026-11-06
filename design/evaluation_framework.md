@@ -1986,6 +1986,243 @@ block (§4) to make the model-relative nature of every number explicit.
 A baseline entry is `(source, build, level, metric, value, provenance)`; scoring is a
 report-layer operation.
 
+### 11.1 The baselines contract (LOCKED s58, `baselines_schema_version` 1)
+
+Locked BEFORE the loader was written, per the per-feature ritual's step 4 and on the
+§9.1 / §10.1 precedent — both were settled ahead of their writers and then absorbed
+later additions at version 1 without a break. Four questions were put to the user
+before a line existed; this section is their answers.
+
+**Baselines are their OWN registry, and they are DATA.** `baselines/*.yaml`,
+committed and diffable, loaded into a `BaselineRegistry` — the same shape as
+`sweeps/*.yaml` → `SweepDeclaration`, which is a one-session-old tested precedent.
+The alternative, a declaration on `MetricDef`, is refused for the reason this whole
+section exists: it would make the metric registry carry per-`(build, level)` values,
+which is exactly "a build implicitly owning the standard it is judged by" one layer
+up, and it collides with the framework's build-agnosticism.
+
+A consequence worth stating because it governs a ritual: **baseline declarations do
+NOT count toward the metric registry's declaration total** (28 at s58), and the
+periodic metric-set review's trigger stays tied to the metric registry. A baseline is
+an INPUT datum about one coordinate, not a declaration of something to measure, and
+the review's survival rule ("does anyone read this row?") has no meaning for an input.
+
+#### The entry's coordinate is a DICT, and §11's tuple does not survive contact
+
+§11 above says `(source, build, level, metric, value, provenance)`. **The only
+genuinely external source the project has does not fit that tuple**, which was found
+by reading the corpus rather than by reasoning about it:
+`design/build-guides/36_the_reanimating_bloodshot.txt` carries Treantmonk's **Damage
+Classes by Tier**, and it is keyed by `(class, tier)` — **no build**, `level` is a
+**band**, and the value is an **interval** (class A tier 2 = 37–43). Three of the
+tuple's six positions are wrong for it.
+
+So an entry's position is a **`coordinate` dict** over declared dimensions, never a
+string to parse and never a fixed tuple. This is §5.4's rule — the one that cost a
+registry rewrite in s46 — and §10.1's `coordinate`, for the third time: a consumer
+reads `coordinate["tier"]`; nothing parses `treantmonk@A/T2` apart again.
+
+Each coordinate dimension is declared with **how it matches a run**, over a closed
+two-value vocabulary, because the two are different operations and conflating them
+would silently score every build against every entry:
+
+| match | meaning |
+|---|---|
+| `exact` | the run's own field must equal the entry's value (`build`, a single `level`) |
+| `contains` | the entry declares a BAND and matches any run whose field falls inside it (`tier` → levels 11–16) |
+| `free` | not matched at all; the dimension LABELS the entry and rides into the score (`class`) |
+
+A `free` dimension is what makes "which damage class is this build in?" expressible:
+every entry at the matching tier is scored, and the four verdicts together locate the
+run. Without it the question has to be answered by a consumer parsing names.
+
+#### A value is a POINT or an INTERVAL, and collapsing is refused
+
+Treantmonk's artifact is a range. Entering it as a midpoint would fabricate precision,
+which is the failure the s43 correction above is entirely about, so the shape carries
+both and scoring differs by kind:
+
+- a **point** baseline yields a `delta` (`value − baseline`) and a `ratio`
+  (`value / baseline`);
+- an **interval** baseline yields a verdict over a closed three-value vocabulary —
+  `inside` / `above` / `below` — and **no delta**, because the distance to a band is
+  not a number the band supports.
+
+An interval declares **each bound's closure** and may be **unbounded on one side**
+(never both — a band open at both ends matches everything and says nothing). Closure is
+a field rather than a convention because a source's bands are usually meant to
+*partition* and a listing in whole numbers does not say how; §11.3 works through the
+case that forced it. An interval also carries `published`, the source's own listing
+verbatim, so where the applied bounds are an interpretation the original stays
+recoverable from the data.
+
+**The ratio's zero-denominator case is answered the way the row shape already answers
+it.** A point baseline of exactly 0 makes the ratio undefined; it is written `null`
+with a note, never a sentinel and never `inf`. Worth being explicit that this is NOT
+§9.1's deferred `PairedDelta.variance_reduction` trap arriving: that `inf` comes from
+a *paired variance* of exactly zero across two runs, and a score is a property of ONE
+run, so the comparison artifact's decision is still deferred and still unmade. The two
+merely rhyme.
+
+#### `source` — a closed `kind`, declared sources, and NO catch-all
+
+Source NAMES stay open; each is declared with its provenance. What is CLOSED is the
+source's `kind`, over three values that each change how a score must be **read**:
+
+| kind | means | how a score reads |
+|---|---|---|
+| `internal_run` | another run of this engine against our standardized enemy | a delta is meaningful |
+| `external_published` | a figure published by someone else under *their own* assumptions | a **reference point, not a target** (§11 above) |
+| `hand_calculation` | a careful calculation outside the engine, the user's own included | the retired `target_dpr` class; present so one can never be mistaken for the first kind |
+
+**There is deliberately no `other`.** s57's step-4 lesson says a catch-all is
+unambiguous only while something outside the data supplies the missing information —
+and for a record read months later by an R script or a website, nothing outside the
+data supplies which of these three a baseline is. That is precisely the fact deciding
+whether a delta may be read as a shortfall, so a catch-all would be the one cell where
+the comparability caveat goes missing.
+
+#### `basis` is REQUIRED, and `unknown` is a legal value
+
+Found by the seam check at design time, and it is the dormancy question's **third**
+answer — already unequal, somewhere nobody looks. Our `dpr` is `damage/round` over the
+`rounds` denominator, in `fixed_length` mode, character-scoped, post-mitigation,
+against the standardized enemy. An external figure shares the **unit** and almost
+certainly not the **denominator**, which is §5.2's comparability trap exactly. With no
+declared basis and a silent default to the metric's own, **every score would render
+valid while some compared two different quantities that happen to share a unit** — and
+nothing would fail.
+
+So an entry declares the basis it was computed on, and `unknown` is legal and
+meaningful: it is what an `external_published` source honestly says, and a score
+carrying it is labelled rather than silently trusted. A basis that is declared and
+DIFFERS from the metric's own resolved basis raises a warning on the score; a basis of
+`unknown` raises a different one. Two facts, two distinguishable answers, per the
+availability mechanism's own rule.
+
+#### Scoring is REPORT-LAYER, and a score has four states
+
+A score is a join of `(this run's estimate, a matching baseline entry)`, and the
+estimate side can be missing in ways that must not read as zero — the §9.1 three-state
+vocabulary, one layer up:
+
+| state | when |
+|---|---|
+| `scored` | the run measured the metric and an entry matched |
+| `unmeasured` | an entry matched but the run's estimate is `unmeasured` (§9.1) |
+| `unavailable` | an entry matched but the run structurally cannot produce the metric |
+| `unmatched` | the run produced a number and the source declares no entry at this coordinate |
+
+`unmatched` is the state with no §9.1 analogue and it is not an error: a source that
+covers levels 11–20 says nothing about L4, and that silence is information. All four
+are serialized distinctly, and **none of them is ever a 0**.
+
+### 11.2 Where a score serializes — and why NOT inside a cached record
+
+A `scores` section on the run record (`report_to_dict(report, baselines=…)`), additive
+at `schema_version` 1 on the `convergence` and `distributions` precedent, **plus its
+own tidy table**. The table is separate from the run record's CSV rather than extra
+columns on it, because the two have different **grains**: the existing frame is keyed
+`(run, metric)` and a score is keyed `(run, metric, source, coordinate)` — two sources
+for one metric are two rows. Folding them in would put a blank on every one of the ~95
+rows per cell that has no baseline and would change what one row of the frame means,
+which is the s46 flattened-key failure one layer up.
+
+**THE RECORD STORE WRITES RECORDS UNSCORED, AND THAT IS A CORRECTNESS DECISION** (found
+by the seam check, before the code). §10.2's cache key is `(config_hash,
+engine_commit)` and nothing else. A `scores` block baked into a stored record is scored
+against whichever baseline set was loaded at compute time, so a later run asking for a
+*different* set would be served the earlier one's scores — §10.2's named failure,
+reached through a path neither module mentions. Two ways out, and the cheap one is
+wrong:
+
+- **widen the key** with a baselines fingerprint: over-invalidates every simulated cell
+  whenever any baseline is edited, which pays a SIMULATION cache's price for a
+  post-hoc join on data the record already holds;
+- **keep scores out of the store** (chosen): `RecordStore.put` writes unscored records,
+  and scoring a record is a cheap derivation anyone can redo against whatever set they
+  hold. This is also just what "scoring is a report-layer operation" means when taken
+  literally.
+
+**The `scores` key is ABSENT when no baselines were supplied, not present-and-empty.**
+Those are different facts — "this record was not scored" against "it was scored and
+nothing matched" — and the project already distinguishes exactly this pair twice: blank
+versus `*` in the tidy frame's dimension columns, and `unavailable` versus `unmeasured`
+in a row's status. Keeping them distinct also means no existing record's bytes change.
+
+**ONE RENDERER FOR THE TIDY SCORE ROWS, built from the same block the JSON serializes**
+— the s57 cached-versus-computed lesson applied before it could bite: two renderers for
+one quantity drift inside two sessions.
+
+**A score block names its own baseline set.** The record quotes a
+`baselines_fingerprint` beside the existing `registry_fingerprint`, over the loaded
+source declarations and entries. A fingerprint rather than only a version number
+because the question a reader of a score asks is *which baseline set scored this*,
+which is a content question; `baselines_schema_version` answers the different, format
+question and is separate from the declaration's, the manifest's and the record's, by
+s57's three-objects-three-churn-rates argument.
+
+### 11.3 What ships at s58, and what is deliberately test-only
+
+One production source: **`treantmonk_damage_classes`**, kind `external_published`, 16
+entries over `(class, tier)` — interval values, a banded `level` dimension, no `build`,
+`basis: unknown`. It is the project's only external reference point, it exercises
+`interval` + `contains` + `free` + `unknown` in one object, and it is cited to its line
+in the guide corpus per the per-feature ritual's rule 1.
+
+Read honestly, the other two kinds have **no production instance**, and that is named
+rather than hidden (the s48 precedent, where writing the roll call first exposed two
+declaration values with no production fixture):
+
+- `internal_run` is test-only until item 5c, which is the first thing that wants to
+  score one run against another.
+- `hand_calculation` is test-only **by design**: §11's correction retires the user's own
+  `target_dpr` figures, so shipping one would re-add the thing the correction removed.
+  The kind exists so that if one is ever entered it cannot be read as the first kind.
+
+#### The bands are EXTENDED to span the reals, and that is a declared interpretation
+
+As published, the four classes tile within each tier **only over the integers** (T2:
+D 15–21, C 22–28, B 29–36, A 37–43) — and that qualifier is load-bearing, because a
+measured DPR is a real number. **Any DPR strictly between 33 and 34 belonged to no class
+at tier 3**, and every tier has three such interior gaps. Found while writing the roll
+call, against a first draft of this paragraph that claimed the classes tile without
+qualification; stated as arithmetic rather than with a measured figure, because no number
+this project produces before the framework is finished may be cited (§12.1).
+
+**Resolved (user, s58): extend the bands so they span the reals.** Each band's upper
+bound is **inclusive**, the adjoining band's lower bound is **exclusive at that same
+number**, and the **top band of a tier is unbounded above**, so a build out-scaling
+class A is still class A rather than off the scale. Class D keeps its published floor, so
+a DPR beneath the whole scale falls in no class — which is a real answer, not a gap,
+since the source says nothing about output below its own range. Exactly one class then
+contains any value at or above that floor: the four verdicts **locate** a run rather than
+bracketing it.
+
+Three things make this a defensible interpretation rather than an invention, and all
+three are recorded in the data rather than only here:
+
+1. **The published listing already tiles.** In all four tiers, each class begins exactly
+   one above the ceiling of the class below it — so the bands were plainly meant to
+   partition and the whole numbers are a presentational artifact. That premise is
+   asserted (`test_the_published_classes_TILE_over_the_integers`), not assumed, because a
+   future re-transcription that broke it would un-warrant the extension.
+2. **Closure is DECLARED, not conventional.** `Interval` carries `low_inclusive` /
+   `high_inclusive` and prints in interval notation (`(33, 41]`) wherever it renders,
+   because two bands sharing a number differ only in which side is open — and a frame or
+   console showing bare numbers would hide exactly the fact that makes the scale a
+   partition. The tidy frame gets a column per bound *and* per closure.
+3. **The published range survives.** Every entry keeps `interval.published` verbatim
+   (`"34-41"`), so what the source actually said is recoverable from the data, not just
+   from a commit message. `above`/`below` stay distinct verdicts, because at the ends of
+   the scale they are still different answers.
+
+Worth recording that the first draft argued the other way — that a rounding convention
+would be this project modelling the source's intent, which rule 1 exists to stop. The
+objection is answered rather than overruled: what makes the extension legitimate is the
+tiling premise in (1), which is a fact about the source and is now a test. Had the
+published bands *not* tiled, the original reasoning would still hold.
+
 ---
 
 ## 12. Validation framing
@@ -2264,8 +2501,26 @@ check mechanisms, not the composite. Three things carry that load instead:
      `(config_hash, engine_commit)` with the whole-repo HEAD sha (user), and the
      `level: available` sentinel for §2's sparse level sets. **No number moved**:
      nothing in the engine, the registry or the estimators was touched.
-   - **STILL OPEN: the §11 baselines registry (8d), and the threshold CALIBRATION
-     (8e)**, which 8c's driver now makes reachable per §14(a).
+   - **8d — the §11 BASELINES REGISTRY (s58).** Shape LOCKED in §11.1-§11.3 before the
+     loader existed, on the §9.1 / §10.1 precedent; four questions settled with the user
+     first. `src/evaluation/baselines.py` + `baselines/treantmonk_damage_classes.yaml`,
+     a `scores` section on the record (additive at `schema_version` 1), its own tidy
+     score frame, and a console reader. **No number moved** — scoring is opt-in at every
+     layer, so an unscored record's bytes and the existing tidy frame are untouched.
+     Three things the step changed about the §11 design as written:
+     - **§11's own `(source, build, level, metric, value, provenance)` tuple does not
+       survive contact with the only external source the project has.** Treantmonk's
+       Damage Classes are keyed `(class, tier)` — no build, a BANDED level, an INTERVAL
+       value — so three of six positions are wrong for it, and the coordinate became a
+       dict over declared dimensions with a closed `exact`/`contains`/`free` match rule.
+     - **`basis` is REQUIRED with no default**, from the design-time seam check: an
+       external figure shares the UNIT and may not share the DENOMINATOR, and a silent
+       default would render every score valid while some compared two different
+       quantities, with nothing failing.
+     - **Scores are NOT written into a cached record**, because §10.2's key does not
+       include the baseline set. See §11.2.
+   - **STILL OPEN: the threshold CALIBRATION (8e)**, which 8c's driver makes reachable
+     per §14(a).
 
    **RESEQUENCED (user, s54): a PRELIMINARY build evaluation runs BEFORE this step and
    before step 9.** Neither step is needed to produce one — step 9 is measured inert
@@ -2316,6 +2571,28 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   — the sha is in the filename, so nothing is ever overwritten and a stale entry can
   never be served to a run at a different commit. An unbounded cache is only a hazard
   when a stale entry can be mistaken for a fresh one.
+- **WHICH METRICS ACTUALLY NEED A FULL DISTRIBUTION** *(added s58, the user's point at
+  that session's metric-set review)*. §5.4's kind 3 was built as a general capability and
+  three distributions are registered, but the question of whether anyone needs the SHAPE
+  of a given quantity was never asked per-quantity. The user's example is
+  `attacks_per_round`: its variability is not something a real-world build comparison
+  will ever turn on, so the machinery carried for it is cost without a reader. The
+  review's own rule points the same way — a declaration survives if someone READS it —
+  and a distribution is a declaration that expands into six estimated statistics, so it
+  is the most expensive kind to keep speculatively.
+  - Not acted on at s58 because that session's scope was 8d plus the two reviews, and
+    because cutting a distribution is a registry change that wants its own session.
+  - **One consequence to check before cutting that one in particular**, so a later
+    session does not do it casually: `attacks_per_round_distribution` is the only
+    PRODUCTION instance of §14(a)'s "no day count helps" branch (the lattice case — an
+    exact order-statistic interval cannot be narrower than one lattice step), and it is
+    the subject of s53's deliberate step-9 tripwire. Cutting it would make that branch
+    test-only and would remove a tripwire written for the next framework step. Measured
+    at s58 across four subjects at 2,000 days: of 11 distinct unconverged estimates,
+    exactly 3 have a null `days_required`, and all 3 are this distribution's.
+  - Trigger: the first build evaluation whose write-up names which shapes it actually
+    used (roadmap item 5c), or any session adding a fourth distribution — which should
+    have to answer this question for its own quantity first.
 - **Interactive website** — the static artifact schema does not preclude it; no schema
   change required later (§9).
 - **An `attacks` metric for DISADVANTAGE** *(added s49)* — §8.1's channel records
