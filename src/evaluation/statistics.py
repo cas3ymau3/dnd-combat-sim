@@ -146,10 +146,11 @@ CRITERIA = (
 #: Stated once, so the two `verdict()` implementations and the design note cannot
 #: drift: this is why a `ci_width_vs_spread` shortfall carries no day count.
 NO_DAY_COUNT_FOR_WIDTH = (
-    "no day count is derivable for this criterion: an interval's width relative to the "
-    "sample spread does not fall as 1/sqrt(n) in general, and an exact order-statistic "
-    "interval on a LATTICE quantity cannot be narrower than one lattice step, so it is "
-    "PINNED above the threshold until it collapses to zero width (s51, §14(a))"
+    "no day count is derivable for this criterion: an exact order-statistic interval "
+    "on a LATTICE quantity cannot be narrower than one lattice step, so its width "
+    "relative to the sample spread is PINNED above the threshold at every n, and this "
+    "gate cannot tell a lattice quantity from a continuous one (s51, measured s59, "
+    "§14(a))"
 )
 
 
@@ -1191,10 +1192,32 @@ class DistributionConvergence:
         number.  s51 measured why on ``attacks_per_round_distribution``: attacks per
         round is a count over a fixed 16-round denominator, so it moves in steps of
         1/16, and an exact order-statistic interval cannot be narrower than one
-        step.  Its ``width/spread`` is pinned near 0.33 against the 0.10 threshold
-        at every day count until the interval collapses to zero width outright —
-        a 1/sqrt(n) extrapolation there would print a finite, reasonable-looking day
-        count for something no day count achieves.
+        step.  Its ``width/spread`` is pinned against the 0.10 threshold at every day
+        count until the interval collapses to zero width outright — a 1/sqrt(n)
+        extrapolation there would print a finite, reasonable-looking day count for
+        something no day count achieves.
+
+        **BOTH HALVES OF THAT WERE MEASURED IN s59, and the first draft of this note
+        had the general half BACKWARDS.**  The retired wording claimed width/spread
+        "does not fall as 1/sqrt(n) in general", which is false for a CONTINUOUS
+        quantity: on ``dpr_distribution`` (war_angel L16, seed 11) ``ratio*sqrt(n)``
+        sits in a narrow band across a 200x range in n, and the extrapolation from
+        n=400 predicted convergence at n=879 against an observed crossing between 800
+        and 1,000.  What IS true is the lattice half, and it is worse than "not
+        derivable" — on ``attacks_per_round``'s own sample the p90 ratio reads 0.1429
+        at n=400 (predicting 816), 0.1250 at n=2,000 (predicting 3,125) and 0.1250 at
+        n=20,000 (predicting 31,250): the prediction is falsified at every step and
+        RENEWS ITSELF, because the ratio is pinned at exactly one lattice step over
+        the spread (0.0625/0.5) and never moves.
+
+        So the refusal is kept for a narrower and sounder reason than it was written
+        with: a day count would be accurate for the two shipped distributions and
+        unboundedly wrong for a lattice one, and **nothing in a**
+        :class:`~src.evaluation.metrics.DistributionDef` **says which kind it is over.**
+        Quoting the number would be right today and silently wrong for whoever
+        declares the next count-valued distribution; declaring the distinction is the
+        alternative, and it is named in §14 rather than taken, because it adds a
+        registry declaration to serve a case no shipped row exercises.
         """
         if value is None or ci95 is None:
             return ConvergenceVerdict.not_measured(

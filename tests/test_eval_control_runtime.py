@@ -81,9 +81,12 @@ prose and nothing could otherwise reach.
 | the CREDITED pair (the only pair)  | measured                   | war_angel L13 baseline+control                |
 |                                    | unavailable                | war_angel L13 baseline (control off)          |
 |                                    | == realized, rel 1e-12     | war_angel L13 — §7.6 as revised               |
-| `attacks_per_round_distribution`   | spread > 0                 | war_angel L13 baseline+control                |
-|                                    | spread == 0                | war_angel L13 baseline (and that is correct)  |
-|                                    | unavailability inherited   | over= an always-available scalar → n/a        |
+| `attacks_per_round` the SCALAR     | stderr > 0                 | war_angel L13 baseline+control, solo + party  |
+| (s59: the DISTRIBUTION over it was | stderr == 0 EXACTLY        | war_angel L13 baseline (and that is correct)  |
+|  cut — §14; these rows are what    | lattice, varying sample    | solo+control: 8 distinct values, all k/16     |
+|  survived, one layer down)         | lattice, constant sample   | solo, no control: {2.6875} — the guard's case |
+| `control_turns_lost_per_round`     | measured                   | solo+control 0.0992; party+control 0.0236     |
+|                                    | UNAVAILABLE (not zero)     | both no-control arms                          |
 | §12 parity                         | control OFF unchanged      | the goldens + validation.py, untouched        |
 
 DO NOT LET THE PROSE OVERCLAIM (s49, broadened s50)
@@ -605,14 +608,31 @@ def test_the_account_is_cleared_at_the_combat_boundary():
 DAYS, SEED = 400, 11
 
 
+def _config(level=13, build="war_angel", party_size=None, **options):
+    kwargs = {} if party_size is None else {"party_size": party_size}
+    return RunConfig(build=build, level=level, n_days=DAYS, seed=SEED,
+                     enemy="baseline", enemy_options=options, **kwargs)
+
+
 def _report(level=13, build="war_angel", party_size=None, **options):
     """A control run.  ``party_size`` is passed through for the tests that need the
     control pressure concentrated on the CHARACTER — see
-    ``test_the_attacks_distribution_has_spread_only_once_turns_can_be_skipped``, which
-    measures how much the declared party dilutes it."""
-    kwargs = {} if party_size is None else {"party_size": party_size}
-    return run(RunConfig(build=build, level=level, n_days=DAYS, seed=SEED,
-                         enemy="baseline", enemy_options=options, **kwargs))
+    ``test_the_attacks_SCALAR_varies_only_once_turns_can_be_skipped``, which measures
+    how much the declared party dilutes it."""
+    return run(_config(level, build, party_size, **options))
+
+
+def _per_day_attacks(level=13, build="war_angel", party_size=None, **options):
+    """The per-day ``attacks_per_round`` vector itself.
+
+    Reads ``RunOutput.samples`` rather than a distribution, because s59 CUT
+    ``attacks_per_round_distribution`` (§14) and the two facts these tests are about
+    — that the quantity varies at all, and that it lives on a 1/16 lattice — are
+    properties of the SAMPLE, not of a registered estimator over it.  Asserting them
+    here keeps both findings after the declaration went away.
+    """
+    return simulate(_config(level, build, party_size, **options)) \
+        .samples["attacks_per_round"].per_day_values()
 
 
 def test_the_credit_EQUALS_what_the_account_actually_spends():
@@ -826,66 +846,103 @@ def test_the_console_panel_stays_aligned_whatever_the_longest_name_is():
 # §14's distribution trigger
 # ---------------------------------------------------------------------------
 
-def test_the_attacks_distribution_has_spread_only_once_turns_can_be_skipped():
-    """§14's trigger, both sides of it.  s49 and s50 declined this distribution
-    because the quantity was a CONSTANT; whole-turn suppression is the first thing in
-    the model that makes it vary, and a zero IQR remains the correct answer for a run
-    without control.
+def test_the_attacks_SCALAR_varies_only_once_turns_can_be_skipped():
+    """§14's trigger, both sides of it — REPOINTED FROM THE DISTRIBUTION TO THE
+    SCALAR (s59), because the distribution was cut and the finding is not about it.
 
-    **A THIRD arm since s54**, and it is a measurement rather than a fixture repair:
-    the declared party aims ~3/4 of the enemy's control at PASSIVE stand-ins, where a
-    lost turn costs nothing, so the character is suppressed rarely enough that the
-    quantity collapses back to a constant. Control-on-a-solo-character is what makes
-    this distribution vary; control-against-a-party barely does. That is the same
-    dilution that moved step 7's largest golden (+20.0% on the control row) and the
-    same measured argument for §3.5.4's threat class — recorded here because a reader
-    of a party run's zero IQR would otherwise conclude control does nothing.
+    s49 and s50 declined a distribution over this quantity because it was a CONSTANT;
+    whole-turn suppression is the first thing in the model that makes it vary, and
+    exact zero variance remains the correct answer for a run without control. That
+    claim is about the SAMPLE, so the scalar's standard error states it directly, and
+    more sharply than a quantile could: ``se == 0.0`` exactly is a stronger sentence
+    than ``iqr == 0.0``, which a lattice quantity can also satisfy WHILE varying —
+    s59 measured the baseline subject at L20 doing exactly that, p10 == p90 with a
+    positive stderr and a mean above its own p90.
+
+    **The party DILUTION, which is the third arm and the reason this test is worth
+    keeping, is now measured on the quantity it is actually about.** The declared
+    party aims most of the enemy's control at PASSIVE stand-ins, where a lost turn
+    costs nothing. The old version could only show this as the shape collapsing to a
+    degenerate ``iqr == 0``; ``control_turns_lost_per_round`` shows it as a magnitude::
+
+        arm                  attacks_per_round          control_turns_lost/round
+        solo + control       2.614063 +/- 0.005450      0.099246 +/- 0.002814
+        solo, no control     2.687500 +/- 0.000000      UNAVAILABLE (not zero)
+        party + control      2.674219 +/- 0.002478      0.023573 +/- 0.001685
+        party, no control    2.687500 +/- 0.000000      UNAVAILABLE (not zero)
+
+    So the party absorbs **76%** of the control the solo character would take, which
+    is the "~3/4 at passive stand-ins" the previous docstring asserted from the
+    MECHANISM — now measured rather than reasoned (the s50 rule). The two control arms
+    are separated by **23 sigma**, so the inequality below is resolved rather than
+    lucky (the s55 narrowest-gap habit); the 0.60 bound is deliberately looser than
+    the measured 0.76 so that it states a direction and does not need revisiting every
+    time a golden moves.
     """
-    controlled = _report(control=True, party_size=1).distribution(
-        "attacks_per_round_distribution")
-    assert controlled["iqr"].value > 0.0
-    assert controlled["p10"].value < controlled["p90"].value
+    solo_controlled = _report(control=True, party_size=1)
+    solo_plain = _report(party_size=1)
+    party_controlled = _report(control=True)
+    party_plain = _report()
 
-    uncontrolled = _report(party_size=1).distribution(
-        "attacks_per_round_distribution")
-    assert uncontrolled["iqr"].value == 0.0
-    assert uncontrolled["p10"].value == uncontrolled["p90"].value
+    # Control is what makes the quantity vary at all...
+    assert solo_controlled["attacks_per_round"].stderr > 0.0
+    assert party_controlled["attacks_per_round"].stderr > 0.0
+    # ...and without it the variance is not merely small, it is exactly zero.
+    assert solo_plain["attacks_per_round"].stderr == 0.0
+    assert party_plain["attacks_per_round"].stderr == 0.0
 
-    # The party DILUTES it back to a constant at this day count.
-    diluted = _report(control=True).distribution("attacks_per_round_distribution")
-    assert diluted["iqr"].value == 0.0
+    # The channel is UNAVAILABLE without control, not a measured zero (§3.4).
+    assert not solo_plain["control_turns_lost_per_round"].measured
+    assert not party_plain["control_turns_lost_per_round"].measured
+
+    # The party dilutes it. Measured 76%; asserted as a direction with margin.
+    solo_lost = solo_controlled["control_turns_lost_per_round"].value
+    party_lost = party_controlled["control_turns_lost_per_round"].value
+    assert solo_lost > party_lost
+    assert (solo_lost - party_lost) / solo_lost > 0.60
 
 
-def test_the_attacks_distribution_is_a_LATTICE_and_its_intervals_say_so():
-    """Noticed by eye on a rendered output, then measured: this is the registry's first
-    distribution over a DISCRETE quantity, and that changes how its convergence reads.
+def test_attacks_per_round_is_a_LATTICE_quantity_over_a_fixed_denominator():
+    """Noticed by eye on a rendered output in s51, then measured; REPOINTED in s59
+    from the cut distribution's intervals ONTO THE SAMPLE, which is where the lattice
+    actually lives.
 
-    Attacks per round is a count over a fixed 16-round denominator, so every value and
-    every interval endpoint is a multiple of 1/16, and the whole IQR is 0.1875 — three
-    steps. An exact order-statistic interval therefore cannot be narrower than one step
-    until it collapses to zero width, which pins `ci_width_vs_spread` at about 0.33
-    against its 0.10 threshold: `p10` reports [unconverged] at the quick tier with 200
-    tail observations, and 20,000 days converges it. Nothing was tuned (§14's threshold
-    entry records this as a second, distinct stressor — discreteness, not shape); what
-    is asserted here is the lattice itself, which is the part that cannot change.
+    Attacks per round is a count over a fixed 16-round denominator, so every per-day
+    value is a multiple of 1/16. s51 asserted this through the distribution's quantile
+    values and interval widths; with the distribution gone the underlying fact is
+    unchanged and is asserted one layer down, which is strictly more direct — the
+    quantiles were multiples of 1/16 only BECAUSE the sample was.
+
+    **This is also the measured reason the distribution was cut** (§14): the lattice
+    step is 1/16 = 0.0625 and the whole observed range here spans 8 steps, so an exact
+    order-statistic interval cannot resolve the shape at any affordable day count,
+    while the MEAN resolves control's effect at ~13 sigma.
+
+    The ``len(set(...)) > 1`` guard is the s55 fixture guard, not decoration: on a run
+    without control every per-day value is 2.6875, and a "multiples of 1/16" assertion
+    over a constant vector passes while testing nothing.
     """
-    shape = _report(control=True).distribution("attacks_per_round_distribution")
     step = 1 / 16
-    for label in ("p10", "p25", "p50", "p75", "p90"):
-        point = shape[label]
-        assert point.value % step == pytest.approx(0.0, abs=1e-9)
-        low, high = point.ci95
-        width = high - low
-        assert width == pytest.approx(round(width / step) * step, abs=1e-9)
+    values = _per_day_attacks(control=True, party_size=1)
+
+    assert len(set(values)) > 1, (
+        "fixture must EXHIBIT a varying quantity — a lattice assertion over a "
+        "constant vector passes vacuously (measured: 8 distinct values here)"
+    )
+    for value in values:
+        assert value / step == pytest.approx(round(value / step), abs=1e-9)
+
+    # Without control the sample is a single lattice point, which is the other half
+    # of the s49/s50 measurement and is why this quantity got no distribution.
+    assert set(_per_day_attacks(party_size=1)) == {2.6875}
 
 
-def test_the_distribution_cannot_disagree_with_the_scalar_it_describes():
-    """§5.4's property for the kind: declared OVER a registered scalar, so the mean
-    of the per-day vector IS that scalar.  Checked on the new one because it is the
-    first distribution over a quantity whose spread comes from the ENGINE rather than
-    from dice."""
-    report = _report(control=True)
-    assert report.distribution("attacks_per_round_distribution").over == \
-        "attacks_per_round"
-    assert METRICS["attacks_per_round"].unit == \
-        report.distribution("attacks_per_round_distribution").unit
+# REMOVED s59: test_the_distribution_cannot_disagree_with_the_scalar_it_describes.
+# It asserted §5.4's defining property of kind 3 (the mean of the per-day vector IS
+# the scalar the distribution is declared over) on `attacks_per_round_distribution`,
+# and its stated reason for living HERE rather than in the distributions module was
+# that this was "the first distribution over a quantity whose spread comes from the
+# ENGINE rather than from dice" — a rationale that left with the declaration. The
+# property itself is covered for BOTH surviving distributions by
+# tests/test_eval_distributions.py::test_the_mean_of_the_sample_is_the_scalar_it_is_
+# declared_over, so nothing is lost by not repointing it.

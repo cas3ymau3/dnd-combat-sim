@@ -547,10 +547,21 @@ class EvalReport:
         Why it stayed invisible for four sessions is the dormancy question one layer
         out: the warning predates distributions (s47 vs s48), and the two originally
         shipped distributions converged at every tier, so the two sides agreed by
-        accident. s51's ``attacks_per_round_distribution`` is the registry's first
-        LATTICE distribution and the first that is legitimately unconverged at the
+        accident. s51's ``attacks_per_round_distribution`` was the registry's first
+        LATTICE distribution and the first that was legitimately unconverged at the
         quick tier — which made the gap reachable, and one rendered output made it
         visible.
+
+        **That row was CUT in s59 (§14), so the paragraph above is history and a
+        reader will not find it in the registry.** The defect it describes is still
+        fixed, and the fix no longer depends on any row being unconverged: this method
+        is a view over :meth:`unconverged_verdicts`, so the two sides cannot disagree
+        by construction rather than by which declarations happen to exist. Worth
+        noting because the cut removed the condition that made the ORIGINAL bug
+        reachable — which is exactly the state the suite was in for the four sessions
+        it went unnoticed, and the reason the regression test now reaches the branch
+        by lowering a day count instead (see
+        ``tests/test_eval_artifact.py::test_the_unconverged_warning_counts_DISTRIBUTION_points_too``).
 
         **A VIEW over :meth:`unconverged_verdicts` since s56** — see there for why
         that is one traversal and not two.

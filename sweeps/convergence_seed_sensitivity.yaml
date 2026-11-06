@@ -1,0 +1,34 @@
+# §14(a) / step 9 ordering check — framework step 8e.
+#
+# THE QUESTION THIS EXISTS TO ANSWER, AND WHY IT IS A SWEEP RATHER THAN AN
+# ARGUMENT. Step 9 (RNG substreams) re-baselines every seeded number, so
+# calibrating convergence thresholds before it looks like measuring in a regime
+# that then moves. The argument that it is fine: substreams change the PAIRED
+# COVARIANCE (§6.1) and not a single run's own variance, so a single-run
+# convergence criterion should be largely insensitive. **That is a mechanical
+# argument, and the s50 rule is that a mechanical argument is not a measurement**
+# — s50 wrote that rule after two such derivations in one session were both wrong
+# with one term missing.
+#
+# A reshuffled stream is what substreams produce, and a different seed is the
+# cheapest available instance of one. So: hold the configuration fixed, vary only
+# the seed, and measure how much each gate's ATTAINED value moves. If the spread
+# across seeds is small next to the distance between a gate's attained value and
+# its threshold, the thresholds are not sensitive to the stream and calibrating
+# before step 9 is sound. If it is not small, that is the finding, and it says to
+# calibrate AFTER step 9 instead.
+#
+# Levels are NAMED rather than `available`, across all four CR bands, because this
+# is a sensitivity probe and not a census — 30 cells at the quick tier, against the
+# calibration sweep's 94. Both builds carry all five named levels (an explicitly
+# listed nonexistent pair is an ERROR by §10.1, never a silent skip).
+sweep_schema_version: 1
+name: convergence_seed_sensitivity
+description: Is a single-run convergence verdict sensitive to the RNG stream? (step 9 ordering)
+base:
+  enemy: baseline
+  n_days: 2000
+axes:
+  build: [war_angel, baseline]
+  level: [1, 4, 8, 13, 16]
+  seed: [11, 23, 37]

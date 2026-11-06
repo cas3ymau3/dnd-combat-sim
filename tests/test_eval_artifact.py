@@ -496,10 +496,40 @@ def test_the_unconverged_warning_counts_DISTRIBUTION_points_too():
     while L13 and the baseline SUBJECT at L5/L13/L20 produce no unconverged points at
     all — so the subject cannot host this test today, which is worth recording against
     §3.5.5's intent to move framework correctness onto it.
+
+    **THE DAY COUNT IS NOW THE FIXTURE'S AXIS, NOT THE ROSTER (s59), AND THE SUBJECT
+    CAN HOST THIS TEST AFTER ALL — the paragraphs above are history, not
+    instructions.** 8e CUT ``attacks_per_round_distribution`` (§14), which was this
+    fixture's only source of an unconverged point, so ``control=True`` and
+    ``party_size=1`` — both of which existed solely to make ``attacks_per_round``
+    vary — no longer buy anything and are dropped. The two surviving distributions
+    clear ``ci_width_vs_spread`` comfortably at every DECLARED tier (measured on
+    war_angel L16 at 2,000 days: dpr p10 = 0.0649, net_damage_taken p10 = 0.0187
+    against the 0.10 threshold), and the gate stops firing above roughly 800 days. So
+    the branch is now reached by LOWERING the day count, which any build can do —
+    including §3.5's baseline SUBJECT, which the paragraph above records as unable to
+    host this test. That is one line of §3.5.5's intent discharged as a side effect of
+    the cut, and it is why the fixture moved rather than merely shrinking.
+
+    **Measured at baseline L20, 700 days: 6 unconverged scalars and 3 unconverged
+    distribution points, 9 names in total.** Both kinds non-empty, which is the
+    branch. The 9 matters for the LAST assertion in this test rather than for the
+    branch: ``warnings_for`` truncates its name list at 12 sorted entries, so a
+    fixture with more unconverged rows than that cannot assert that every point is
+    NAMED — it would be asserting against an ellipsis. The old fixture never met the
+    limit because it had four names; the first s59 repoint (war_angel L16 at 400 days)
+    produced 25 and failed here, which is how the limit was found. Candidates were
+    measured rather than guessed: war_angel L16 reaches 9 names only at 900 days with
+    the points down to 3, while the subject sits at 9 across 700-900 days.
+
+    The s55 guard below is what will catch the next drift, and it now has a specific
+    thing to catch in EACH direction: lower the estimators' variance and the fixture
+    goes inert as the points rise above the threshold; raise the count of unconverged
+    scalars and the truncation assertion starts failing instead. Re-pick the day count
+    in either case, and do not relax either assertion.
     """
-    report = run(RunConfig(build="war_angel", level=16, n_days=2000, seed=11,
-                           enemy="baseline", enemy_options={"control": True},
-                           party_size=1))
+    report = run(RunConfig(build="baseline", level=20, n_days=700, seed=11,
+                           enemy="baseline"))
 
     scalars = [v.metric for v in report.unconverged()]
     points = [f"{name}:{point.statistic}"

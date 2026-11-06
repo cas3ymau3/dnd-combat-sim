@@ -33,7 +33,7 @@ declaration this change touches; one named fixture per VALUE.
 | artifact row                        | `convergence` object present | `test_every_row_in_a_real_artifact_carries_a_convergence_object` |
 | tidy CSV                            | two new columns              | `test_the_tidy_csv_carries_the_criterion_and_the_days_required` |
 | console flag                        | finite-days shape            | `test_the_console_flag_names_the_criterion_and_the_days` |
-|                                     | no-day-count shape           | `test_the_console_flag_says_no_day_count_helps_for_the_lattice` |
+|                                     | no-day-count shape           | `test_the_console_flag_says_no_day_count_helps_for_a_width_shortfall` |
 |                                     | absent when converged        | `test_a_converged_row_carries_no_flag_at_all` |
 | `unconverged` warning               | partition sums to its total  | `test_the_distance_summary_PARTITIONS_the_unconverged_set` |
 
@@ -425,13 +425,37 @@ def war_angel_l4():
     return build_report(simulate(config))
 
 
+#: The l16 fixture's day count, deliberately BELOW every declared tier — see that
+#: fixture's docstring for why that is the honest choice rather than a shortcut.
+SUB_TIER_DAYS = 400
+
+
 @pytest.fixture(scope="module")
 def war_angel_l16():
-    """L16, whose `attacks_per_round_distribution` is the LATTICE case — the only
-    regime that produces a `ci_width_vs_spread` flag, hence the only one that
-    exercises the no-day-count rendering path."""
+    """The regime that produces a `ci_width_vs_spread` flag — REPOINTED (s59).
+
+    Until s59 this was L16 at the quick tier, where `attacks_per_round_distribution`
+    was the LATTICE case and the only row in the registry that could raise this gate.
+    **That declaration was cut** (§14), and with it the gate's only instance at any
+    declared tier: measured on war_angel L16, both surviving distributions clear 0.10
+    comfortably at 2,000 days (dpr p10 = 0.0649, net_damage_taken p10 = 0.0187), and
+    the gate stops firing anywhere above ~800 days.
+
+    So the fixture drops to 400 days, which produces 10 `ci_width_vs_spread` flags
+    across both distributions alongside 15 finite-day-count flags — i.e. BOTH kinds in
+    one report. Pinned to the REGIME and not to the number, per s55: what this must
+    EXHIBIT is asserted in `test_the_fixtures_EXHIBIT_both_kinds_of_flag`, and if a
+    later change moves the crossing, re-pick the day count rather than widen that
+    assertion.
+
+    **Worth stating plainly rather than hiding in a fixture: after the cut this gate
+    has no production instance at any declared tier.** It is retained on a measured
+    counterfactual — a day count would be unboundedly wrong for a lattice quantity
+    (see `NO_DAY_COUNT_FOR_WIDTH`) — not on a live row. That is insurance against the
+    next count-valued distribution, and §14 records it as such.
+    """
     config = RunConfig(build="war_angel", level=16, enemy="baseline",
-                       n_days=DAYS, seed=11)
+                       n_days=SUB_TIER_DAYS, seed=11)
     return build_report(simulate(config))
 
 
@@ -508,12 +532,16 @@ def test_the_console_flag_names_the_criterion_and_the_days(war_angel_l4):
     assert any("min_events" in line and "x)" in line for line in flags)
 
 
-def test_the_console_flag_says_no_day_count_helps_for_the_lattice(war_angel_l16):
+def test_the_console_flag_says_no_day_count_helps_for_a_width_shortfall(war_angel_l16):
+    """RENAMED s59 (was `..._for_the_lattice`). The flag is no longer raised BY a
+    lattice row — that declaration was cut — but the gate still refuses a day count,
+    because it cannot tell which kind of quantity it is over. The rendering contract
+    is unchanged: the reason, and no multiplier."""
     text = render(war_angel_l16)
-    lattice = [line for line in text.splitlines()
-               if "ci_width_vs_spread" in line]
-    assert lattice, "L16 must render the lattice distribution's flag"
-    for line in lattice:
+    shortfalls = [line for line in text.splitlines()
+                  if "ci_width_vs_spread" in line]
+    assert shortfalls, "the l16 fixture must render a width-shortfall flag"
+    for line in shortfalls:
         assert "no day count helps" in line
         assert "days (" not in line          # no multiplier is quoted
 

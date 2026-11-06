@@ -2202,6 +2202,18 @@ def _build_default_registry() -> MetricRegistry:
     # uninformative 0) and party_dpr_opening_round (party-scoped, so its spread is
     # not comparable to the headline's anyway). Both are one declaration away if a
     # reader turns up for them.
+    #
+    # CUT s59: attacks_per_round_distribution. Registered in s51 because §7's
+    # whole-turn suppression made the quantity vary for the first time, and REMOVED
+    # on measurement rather than on taste — see evaluation_framework.md §14's
+    # distribution entry for the numbers. The short form, so nobody re-declares it:
+    # across the 47-cell corpus at the default standardized enemy its stderr is
+    # EXACTLY zero on 24 cells and all five quantiles are identical on 27, and the
+    # two scalars `control_turns_lost_per_round` / `control_turns_reduced_per_round`
+    # already name, separately, the one distinction its definition claimed only p10
+    # could draw. On war_angel L13 with control on, the scalar mean moves ~12.7 sigma
+    # while every quantile stays put. If a reader ever wants the SHAPE of the action
+    # economy, the question to ask first is which lattice step it would have to resolve.
     distribution(DistributionDef(
         name="dpr_distribution",
         over="dpr",
@@ -2214,29 +2226,6 @@ def _build_default_registry() -> MetricRegistry:
             "separates a swingy build from a steady one. Describes exactly the "
             "sample the dpr scalar averages, so its mean IS that scalar."
         ),
-    ))
-    distribution(DistributionDef(
-        name="attacks_per_round_distribution",
-        over="attacks_per_round",
-        definition=(
-            "The day-to-day SHAPE of the build's action economy. DECLINED in s49 and "
-            "again in s50 for a measured reason — every turn acted, so the quantity "
-            "was a CONSTANT (2.68750 with a standard error of exactly 0 on War Angel "
-            "L13 under every enemy kind, control included). §7's whole-turn "
-            "suppression is the first thing in the model that stops a turn from "
-            "happening, so it varies for the first time, and the shape is the "
-            "question control exists to ask: a mean of 2.4 attacks/round is a build "
-            "that attacks a little less every round OR one that is occasionally "
-            "stunned out of a turn entirely, and only p10 tells those apart. Zero "
-            "spread remains the correct answer for any run without control. NOTE for "
-            "the reader: this is a LATTICE quantity — a count over a fixed 16-round "
-            "denominator, so it moves in steps of 1/16 and its whole IQR is about "
-            "three steps. An exact interval cannot be narrower than one step, so the "
-            "quantiles read [unconverged] at the quick tier for a reason that is "
-            "discreteness rather than noise, and more days is the only thing that "
-            "resolves them (measured: 20,000 days converges p10)."
-        ),
-        group="panel",
     ))
     distribution(DistributionDef(
         name="net_damage_taken_distribution",

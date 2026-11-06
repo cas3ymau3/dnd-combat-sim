@@ -503,17 +503,23 @@ def test_per_day_values_is_the_vector_the_scalar_averages(report):
 # ---------------------------------------------------------------------------
 
 def test_both_shipped_distributions_estimate_every_declared_statistic(report):
-    """CHANGED DELIBERATELY (s51): three distributions ship, not two.
+    """CHANGED DELIBERATELY TWICE (s51 up to three, s59 back down to two).
 
-    `attacks_per_round_distribution` was registered when framework step 6 made the
-    quantity vary for the first time — until whole-turn suppression existed it was a
-    CONSTANT (stderr exactly 0), which is the measured reason s49 and s50 declined
-    it. The function name is kept so the s48 history of this test stays greppable;
-    "both" is now "all", and the set below is the assertion that matters.
+    `attacks_per_round_distribution` was registered in s51 when framework step 6 made
+    the quantity vary for the first time — until whole-turn suppression existed it was
+    a CONSTANT (stderr exactly 0), which is the measured reason s49 and s50 declined
+    it. **s59 CUT it again**, on a corpus measurement rather than on taste: across the
+    47 (build, level) pairs at the default standardized enemy its stderr is EXACTLY
+    zero on 24 and all five quantiles are identical on 27, and the scalars
+    `control_turns_lost_per_round` / `control_turns_reduced_per_round` already name
+    separately the one distinction its definition claimed only p10 could draw. See
+    `evaluation_framework.md` §14's distribution entry for the numbers.
+
+    The function name is kept so the s48 history of this test stays greppable; "both"
+    is accurate again, and the set below is the assertion that matters.
     """
     assert set(report.distributions) == {"dpr_distribution",
-                                         "net_damage_taken_distribution",
-                                         "attacks_per_round_distribution"}
+                                         "net_damage_taken_distribution"}
     shape = report.distribution("dpr_distribution")
     assert list(shape.points) == ["p10", "p25", "p50", "p75", "p90", "iqr"]
     assert shape.over == "dpr" and shape.unit == "damage/round"
@@ -655,8 +661,7 @@ def test_the_statistic_travels_as_a_key_not_inside_the_metric_name(report):
     assert {r["statistic"] for r in rows} == {"p10", "p25", "p50", "p75",
                                               "p90", "iqr"}
     assert all(r["distribution"] in ("dpr_distribution",
-                                     "net_damage_taken_distribution",
-                                     "attacks_per_round_distribution")
+                                     "net_damage_taken_distribution")
                for r in rows)
     # And the other kinds leave the column blank — 'not keyed by it', not 'margin'.
     others = [r for r in report_to_rows(report) if r["kind"] != "distribution"]
