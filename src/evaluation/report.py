@@ -52,6 +52,7 @@ from typing import TYPE_CHECKING, Any, Iterable
 
 from .metrics import ALL, METRICS, BreakdownDef, DistributionDef, MetricRegistry
 from .statistics import (
+    ConvergenceVerdict,
     DistributionPoint,
     MetricValue,
     PairedDelta,
@@ -514,6 +515,22 @@ class EvalReport:
                 for point in dist.points.values()
                 if not point.converged]
 
+    def unconverged_verdicts(self) -> "list[tuple[str, ConvergenceVerdict]]":
+        """EVERY estimate a reader should not read yet, named, WITH ITS VERDICT.
+
+        **The single enumeration, and that is the point (s56).**  s52's defect was two
+        enumerations of one set — the warning counted scalars and the artifact counted
+        both kinds — and the fix was a method both had to read.  §14(a) now wants a
+        SECOND view of the same set (how far each one is from passing), and adding a
+        second traversal for it would re-create exactly the shape that failed.  So this
+        is the traversal, and :meth:`unconverged_names` is a view over it: a count and a
+        breakdown of that count cannot disagree, because they cannot be computed from
+        different lists.
+        """
+        return ([(v.metric, v.convergence) for v in self.unconverged()]
+                + [(f"{name}:{point.statistic}", point.convergence)
+                   for name, point in self.unconverged_points()])
+
     def unconverged_names(self) -> list[str]:
         """EVERY estimate in this report a reader should not read yet, named.
 
@@ -534,10 +551,11 @@ class EvalReport:
         LATTICE distribution and the first that is legitimately unconverged at the
         quick tier — which made the gap reachable, and one rendered output made it
         visible.
+
+        **A VIEW over :meth:`unconverged_verdicts` since s56** — see there for why
+        that is one traversal and not two.
         """
-        return ([v.metric for v in self.unconverged()]
-                + [f"{name}:{point.statistic}"
-                   for name, point in self.unconverged_points()])
+        return [name for name, _ in self.unconverged_verdicts()]
 
 
 def build_report(output: "RunOutput", *,

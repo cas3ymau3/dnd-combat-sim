@@ -720,6 +720,24 @@ This requires a small protocol addition: **`BaselineEnemyPolicy.describe_paramet
 -> dict`** returning its effective knobs, and the analogous `BuildAdapter.describe()`.
 Both are pure reads and cannot affect a die roll.
 
+**THE SAVE-WEIGHTS CLAUSE ABOVE WAS UNMET UNTIL s56, AND THE REASON IS WORTH KEEPING.**
+`describe_parameters()` has returned the resolved `save_weights` since s38 — the
+requirement was implemented on the policy, and tested — but **nothing serializes that
+block**. The artifact's enemy provenance comes from `evaluation/enemy.resolve()`, which
+is a pure function of the config and never consulted the policy, so the one §4
+requirement that names the weights explicitly was satisfied in code that no report
+reads. `resolve()` now publishes them itself, per channel:
+`save_weights = {"damage": {...}, "control": {...}}`, empty for a kind that forces no
+saves and empty for the control channel until `enemy_options['control']` is on (because
+reporting a value nothing will read is this section's failure in the other direction).
+
+Two things generalize. **An implemented requirement is not a met requirement until
+something a reader sees carries it** — the s53 writer/reader rule, applied to a
+provenance field rather than to a telemetry channel: there was a writer and no reader.
+And it surfaced only because step 8b needed to READ the weights for an availability
+predicate, which is the same lesson as s53's reaction channel: asking what the framework
+should be able to DO is how you find what it cannot SEE.
+
 **`engine_commit` is not optional.** Artifacts are committed and displayed by a static
 site over time; without the code version there is no way to tell whether two reports
 are comparable or separated by an engine change. It cannot be reconstructed after the
@@ -1433,7 +1451,7 @@ hidden — it is priced correctly.
 | DPR (character column) | available — damage ledger |
 | damage taken; per-(source,target) columns | available — ledger |
 | damage reduced / typed mitigation | available — §13 mitigation channel (s39) |
-| saves forced by type; failures by type and % | available — §13 saves channel |
+| saves forced by type; failures by type and % | available — §13 saves channel. **POOLS BOTH DIRECTIONS** (`record_save` is not actor-keyed), which is why per-cell availability needs the build's declaration as well as the enemy's resolved weights (§14, s56). And it covers THREE of the engine's five save sites: a buff's `application_save` and Sanctuary's `negate_save` write to no channel at all — deferred, with its own §14 entry |
 | control turns lost / reduced | available — §13 control channel (s40) + §7 above; APPLIED at runtime since s51, and the realized cost reported beside the credit (§7.6) |
 | limited resources per day / per combat | available — §13 economy channel |
 | reaction economy: reactions taken per round | available — §13 reactions channel (s54), `reactions_per_round`. Was DEAD AT BOTH ENDS when s53 found it: `CombatTelemetry.reactions_used` had a recorder whose only caller was a unit test and no metric read it, so War Angel's once-per-combat AoO recorded 0 over 800 rounds. Step 7 wired both halves and ACTOR-KEYED the channel on the way (a bare counter pools the character's reaction, a commanded summon's and the enemy's — the per-METRIC ritual's first question had no answer). **Reported per ROUND only**, not per combat: one quantity, one unit (×`rounds_per_combat` for the other). Three writers, and only two are economy debits — see §8.2a |
@@ -1642,6 +1660,34 @@ same order, so a consumer writes one parser:
 | `status` | **the closed three-state vocabulary** (below) |
 | `value` / `stderr` / `ci95` | `null` unless `status == "measured"` |
 | `n` / `n_events` / `converged` / `note` | the §6.2 payload |
+| `convergence` | §14(a)'s distance payload — **added s56, additive at `schema_version` 1** (below) |
+
+**THE ROW GAINED ONE FIELD AT VERSION 1, NOT SIX (s56, step 8a).** §14(a) requires the
+DISTANCE from the convergence criterion alongside the boolean, because the boolean
+cannot distinguish "run it longer" from "this channel does not exist at this CR". That
+is six numbers; they go in as ONE nested `convergence` object —
+`{criterion, attained, required, days_run, days_required, days_factor, note}` — so the
+locked field list above grows by one name and a consumer that does not care reads past
+it. Decided additive rather than a `schema_version` bump (user): no consumer exists to
+break, every pre-s56 field keeps its meaning and position, and a bump would cost the
+artifact's comparability story for a field nothing is built against yet. The precedent
+is s48 filling `distributions` and s51 adding a dimension, both at version 1.
+
+Two fields of it join the tidy CSV — `convergence_criterion` and
+`convergence_days_required` — and only those two, because the JSON row is where the full
+payload lives and a tidy frame wants the pair anyone filters or groups by. The rest is
+derivable from them plus `n`.
+
+**`days_required` is null on an unconverged row when NO finite day count passes the
+criterion**, which is a different fact from a large number and is why `converged` must
+be read first. It is null for two reasons, both stated in the row's `note`: a
+ratio-scale estimate sitting exactly on zero has no relative error to shrink, and a
+distribution's `ci_width_vs_spread` has no known scaling in n at all (s51's lattice
+measurement — an exact order-statistic interval cannot be narrower than one lattice
+step, so it is pinned above the threshold until it collapses to zero width). The
+`unconverged` warning's message now also carries the four-bucket split §14(a)
+tabulated, and the buckets PARTITION the flagged set so a reader can check the summary
+against its own total by addition.
 
 **The three report states survive serialization DISTINCTLY** (§3.4), as one `status`
 field over a closed vocabulary, because collapsing any two of them is the failure the
@@ -2035,6 +2081,24 @@ check mechanisms, not the composite. Three things carry that load instead:
    evaluation wants a framework that has been tested against something complete.
    Re-baselines every seeded number under an acting enemy, with its own record.
 8. Sweep YAML + config-hash caching + baselines registry.
+   **PARTIALLY DONE (s56): 8a and 8b, the two output-layer pieces #6a named, in one PR.**
+   The session's scope was settled with the user as those two and nothing else.
+   - **8a — the convergence VERDICT.** §14(a)'s requirement: the flag now carries the
+     binding criterion, its attained-vs-required pair, and the days it needs.
+     `ConvergenceVerdict` in `statistics.py`, a `convergence` object on the artifact row
+     (additive at `schema_version` 1 — §9.1), two tidy-CSV columns, the console flag,
+     and a four-bucket partition in the `unconverged` warning. **No constant was
+     retuned**, so no flag flips and no golden moves; the CALIBRATION is 8e and §14(a)
+     is explicit that it needs a sweep across builds and tiers.
+   - **8b — per-cell availability reads the resolved enemy.** §14's entry, closed. Also
+     forced `BuildAdapter.forced_save_abilities` into existence as a fifth protocol
+     method, because the saves channel has two producers and only one of them is
+     readable; and discharged §4's never-met requirement that the band save weights be
+     recorded at the values actually used.
+   - **STILL OPEN: the sweep manifest + CLI, config-hash caching, the §11 baselines
+     registry, and the threshold CALIBRATION** (which needs the sweep driver to exist,
+     per §14(a)).
+
    **RESEQUENCED (user, s54): a PRELIMINARY build evaluation runs BEFORE this step and
    before step 9.** Neither step is needed to produce one — step 9 is measured inert
    today and nothing depends on it; step 8's sweeps make MANY runs cheap where a first
@@ -2107,9 +2171,57 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   check is cheap and the answer is structural: 5b changes *which* enemy a run faces, not
   *what an enemy does*, so no standardized kind gained the ability to impose
   disadvantage. The trigger stands where s51 left it.
-- **Per-cell availability does not read the ENEMY's resolved parameters** *(added s55,
-  from the #6a preliminary run — this one was not on the list; the exercise put it
-  there)*. `cha_save` is absent from `enemy_stats.band_save_weights` at bands 0-4 and
+- ~~**Per-cell availability does not read the ENEMY's resolved parameters**~~
+  **CLOSED (s56, step 8b)** *(added s55 from the #6a preliminary run — this one was not
+  on the list; the exercise put it there)*. `_saves_cell_availability` now asks whether
+  THIS RUN can force a save matching the cell's filter at all, from both producers, and
+  returns a reason naming each side. Four things the fix turned up that the entry below
+  did not anticipate:
+
+  1. **The defect reaches further than War Angel could show.** At band 17+ the DAMAGE
+     weights carry only `{str, dex, con, cha}` and the CONTROL weights only
+     `{str, dex, con, wis, cha}`, so `int_save` is impossible in BOTH channels at
+     L17-20 under every option setting and `wis_save` is impossible in the damage
+     channel there. On the **baseline subject** — §3.5's complete-at-every-level
+     fixture, whose whole job is to make a framework defect distinguishable from a
+     content gap — that is four more unflagged exact zeros, measured before the fix.
+     War Angel stops at 16, so #6a could not see them. Worth keeping as a pattern: a
+     defect found on a real build at the levels it happens to model is not thereby
+     bounded by them, and the subject is the cheap place to look for the rest.
+  2. **The cell has TWO producers, so the fix needed a DECLARATION and not just a
+     read.** `telemetry.record_save` has exactly two call sites and neither is
+     actor-keyed, so a cell pools saves the enemy forced ON the character with saves
+     the build forced ON the enemy — `saves_forced_per_round`'s own definition says
+     so. The enemy half is readable before day 1; the build half is a Python policy
+     and is not, and the two vary independently (band vs level-and-options). That is
+     the s49 independence test, so `BuildAdapter.forced_save_abilities(config)` is a
+     fifth protocol method, declared by all four adapters. Its contract states the
+     asymmetry plainly: **over-inclusive is safe, under-inclusive discards a real
+     measurement**, because an unavailable cell is not collected.
+  3. **It is narrower than "saves the build forces", and that distinction is
+     load-bearing.** Two of the engine's five `resolve_saving_throw` call sites write
+     to no channel at all — see the new deferral below — so Starfire's Sanctuary
+     `wis_save` is deliberately NOT declared. Declaring it would hold an empty cell
+     open on the strength of a save no metric can see.
+  4. **Margins are not exempt**, unlike `_role_cell_availability`'s. `[*|*]` on a run
+     with a passive enemy and a build that forces nothing has no producer either, and
+     a zero there is the same false measurement one aggregation level up.
+
+  Two side effects worth recording. `enemy.resolve()` now publishes the resolved
+  per-channel save weights, which **discharges a §4 requirement that had never been
+  met**: §4 asks by name for "band save weights ... recorded as the actual weights
+  drawn from the frozen table", and `BaselineEnemyPolicy.describe_parameters()` has
+  published them since s38 while nothing serialized that block. And a test that had
+  been resting on the defect was found: `test_unmeasured_is_a_distinct_state_from_
+  unavailable` used `cha_save` at band 5-10, where no run could force one — so the cell
+  it called UNMEASURED was structurally impossible, which looks identical from the
+  outside. It is repointed to `int_save` at band 11-16, where the ability genuinely can
+  be forced and a short run simply did not. **A fixture chosen to produce an empty
+  denominator produced an impossible one instead, and nothing could tell.**
+
+  The original entry follows.
+
+   `cha_save` is absent from `enemy_stats.band_save_weights` at bands 0-4 and
   5-10, so the standardized enemy **cannot** force a CHA save below L11. The run knows
   this before day 1, and `saves_forced_per_round[cha_save|*]` nonetheless reports
   `0.0 ± 0.0`, `converged=True`, `available=True` — an unflagged exact zero, and the only
@@ -2128,6 +2240,29 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   widen the output layer; it belongs with step 8's registry work. Worth doing then: the
   same question applies to any cell whose key space is wider than what the resolved enemy
   can produce, which is not only the save abilities.
+- **TWO of the engine's five save sites write to NO telemetry channel** *(added s56,
+  found while settling step 8b)*. `resolve_saving_throw` has five call sites. Three are
+  accounted for: `resolve_save_damage` → the `damage` channel, `resolve_control_save` →
+  the `control` channel, and the concentration check → the economy channel, which is
+  deliberately separate. The other two are invisible to every metric:
+  - **a buff's `application_save`** (`scheduler._handle_cast_effect`) — the target of a
+    cast resisting the whole effect;
+  - **Sanctuary's `negate_save`** (`resolve_attack_roll`) — the ATTACKER saving or
+    losing its attack, which Starfire L15 actually rolls.
+
+  This is the s53 writer/reader rule asked of a channel's writers rather than of a whole
+  channel: the saves channel is alive at both ends, and two sites that could be writing
+  to it are not, so a build's saves-channel numbers are complete only by coincidence of
+  which effects it uses. Deferred rather than fixed at 8b for two reasons. It needs a
+  DESIGN decision first — an `application_save` is neither damaging nor incapacitating,
+  so §13's two-value channel vocabulary has no cell for it, and the attacker-side
+  Sanctuary save inverts the channel's implicit direction. And wiring either one MOVES
+  `saves_forced_per_round` for the builds that use them, which is a re-baseline and
+  belongs in its own decision. It has one concrete consequence meanwhile, recorded in
+  `BuildAdapter.forced_save_abilities`: Starfire must NOT declare `wis_save`, because
+  declaring it would keep an empty cell available on the strength of a save nothing
+  records.
+
 - **General status-uptime metric** — §8 asks for "share of turns under specified
   statuses" in general; only the control channel is covered today. Needs `StatusSet`
   sampling at turn boundaries.
@@ -2255,6 +2390,38 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   band 11-16. A reader cannot tell "run it longer" from "this channel does not exist at
   this CR", and at the quick tier the low-level reports carry ~15 flags of which most are
   the first kind and six are the second.
+
+  **THE DISTANCE IS NOW REPORTED (s56, step 8a) — AND NO CONSTANT WAS TOUCHED.** The
+  requirement below is discharged; the calibration is not, and the two were deliberately
+  separated (user). `Convergence.check` and `DistributionConvergence.check` now delegate
+  to a `verdict()` that evaluates each declared gate as DATA and returns a
+  `ConvergenceVerdict`: the flag, the BINDING gate, that gate's own attained and
+  required values, and the days every unsatisfied gate needs from its own scaling in n.
+  It rides in the artifact row's new `convergence` object (§9.1), two tidy-CSV columns,
+  the console flag, and a four-bucket partition in the `unconverged` warning that uses
+  the same boundaries the table above tabulates.
+  - **The BOOLEAN is unchanged, and that is asserted rather than argued.** The gate
+    order was re-expressed (the exactness escape moved out from between `min_days` and
+    `min_events` into "the precision gates do not apply"), so
+    `test_the_flag_is_UNCHANGED_against_the_pre_s56_gate_order` compares the new verdict
+    against the retired body over all 5,760 combinations of edge values. Nothing in the
+    registry was retuned, so no flag flips and no golden moves.
+  - **Three gates can quote a day count and two CANNOT, which is the part that carries
+    the distinction.** `min_days` is a day count; events and tail observations grow as
+    n; `stderr` falls as 1/√n, so `rel_stderr` costs `(attained/required)²` days and
+    `resolution_sigmas` costs `(required/attained)²`. But a ratio-scale estimate of
+    exactly zero with a positive standard error has no relative error at any n, and a
+    distribution's `ci_width_vs_spread` has no scaling law at all — s51's lattice
+    measurement is exactly the counter-example, pinned near 0.33 against 0.10 at every
+    day count. Both report their distance and refuse a day count, and an UNREACHABLE
+    gate binds ahead of any finite one however large, because "no day count helps" is
+    the stronger statement and must not be buried by a bigger number.
+  - **What it looks like in the output**, War Angel L4 and L16 at the quick tier — the
+    near miss and the impossibility that used to render identically:
+
+        save_fail_rate[*|damage]      [unconverged: min_events 313 vs 500, ~3,195 days (1.6x)]
+        save_fail_rate[int_save|*]    [unconverged: min_events 17 vs 500, ~59k days (29.4x)]
+        attacks_per_round_dist[p25]   [unconverged: ci_width_vs_spread 0.333 vs 0.1, no day count helps]
 
   **This does NOT change the fix — it is still a sweep, not a nudge** — but it adds a
   requirement the earlier entries did not state: whatever step 8 calibrates should report

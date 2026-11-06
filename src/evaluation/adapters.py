@@ -90,6 +90,46 @@ class BuildAdapter(Protocol):
         unset must be reported as the value ACTUALLY used, not as "default".
         """
 
+    def forced_save_abilities(self, config: "RunConfig") -> "frozenset[str]":
+        """Save abilities this build's OWN plan can force, in the §13 saves channel.
+
+        **Why this is DECLARED and not derived (s49's rule, applied at step 8b).**
+        The saves channel pools both directions — ``telemetry.record_save`` is called
+        from ``resolve_save_damage`` and ``resolve_control_save``, neither keyed by
+        actor, and ``saves_forced_per_round``'s own definition says so.  So a cell
+        like ``[dex_save|*]`` has TWO producers: the enemy forcing a save on the
+        character, and the build forcing one on the enemy.  Per-cell availability
+        (§3.4's three states) has to consult both, or it declares a cell structurally
+        empty while real data flows into it.
+
+        The enemy side is readable before day 1 — ``RunContext.enemy`` resolves the
+        band's save weights.  The build side is NOT: the plan is a Python policy, and
+        no amount of inspection tells the framework which ``Choice`` it will emit.
+        The two also vary independently (the enemy's abilities move with the band, the
+        build's with its level and its options), which is exactly the independence
+        test that makes this a declaration rather than a derivation.
+
+        **OVER-INCLUSIVE IS SAFE; UNDER-INCLUSIVE HIDES DATA.**  Naming an ability the
+        plan merely MIGHT force leaves its cell available, which is the behaviour
+        before this method existed.  Omitting one the plan does force marks the cell
+        unavailable and the collection is skipped, so a real measurement is thrown
+        away.  Declare the union over everything the plan can do at this config and do
+        not try to be precise about which round or which resource state.
+
+        **Only what reaches the CHANNEL counts, which is narrower than "saves this
+        build forces".**  Two of the engine's five ``resolve_saving_throw`` call sites
+        write to no channel at all: a buff's ``application_save``
+        (``scheduler._handle_cast_effect``) and Sanctuary's ``negate_save``
+        (``resolve_attack_roll``).  Starfire's Sanctuary rolls a ``wis_save`` that no
+        metric can see, so ``wis_save`` is NOT declared for it — declaring it would
+        keep an empty cell available on the strength of a save the channel never
+        records.  See §8's coverage map.
+
+        Return an empty frozenset for a build that forces none.  That is not a
+        degenerate case: it is War Angel, and it is the value that makes this whole
+        mechanism fire.
+        """
+
 
 # ---------------------------------------------------------------------------
 # Registry

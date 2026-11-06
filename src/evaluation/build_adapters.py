@@ -115,6 +115,22 @@ class WarAngelAdapter:
             "daily_plan": config.level >= 5,     # Magic Weapon / Prayer of Healing hooks
         }
 
+    def forced_save_abilities(self, config: "RunConfig") -> "frozenset[str]":
+        """NONE, at every level — and this is the declaration that makes step 8b fire.
+
+        Verified rather than assumed: `src/builds/war_angel.py` contains no
+        `save_stat`, no `action_type="save_spell"` and no zone, so nothing in its
+        plan can put a save into the §13 channel in either direction.  Every save
+        this build's rows record was forced BY the enemy ON the character.
+
+        That is why its `saves_forced_per_round[cha_save|*]` read `0 +/- 0`,
+        `converged=True`, `available=True` at ten of sixteen levels (§14): the
+        enemy cannot force a CHA save below L11 and neither can the build, so the
+        cell had no producer at all and still rendered as the most trustworthy row
+        in its breakdown.
+        """
+        return frozenset()
+
 
 # ---------------------------------------------------------------------------
 # Starfire Scion — five scenario axes, sparse levels
@@ -198,6 +214,25 @@ class StarfireScionAdapter:
             "primal_strike_unarmed_source": ps_source,
         }
 
+    def forced_save_abilities(self, config: "RunConfig") -> "frozenset[str]":
+        """``dex_save`` — Sacred Flame and Searing Arc Strike, both `save_spell`.
+
+        Declared level-independently and that is DELIBERATE, per the protocol's
+        over-inclusive rule: Sacred Flame is gated on a `spellfire_spark` and
+        Searing Arc on focus points, so which levels can actually produce one is a
+        function of resource state within a day rather than of the level row.
+        Over-declaring leaves the cell available, which is the pre-8b behaviour and
+        costs nothing; under-declaring would discard a real measurement.
+
+        **`wis_save` is deliberately absent**, and it is the case the protocol's
+        last paragraph is about.  `starfire_scion.py:830` rolls a `wis_save` for
+        Sanctuary's `negate_save`, but that save is resolved in
+        `resolve_attack_roll` and NOTHING records it — the channel has two writers
+        and this is not one of them.  Declaring it would hold an empty cell open on
+        the strength of a save no metric can see.
+        """
+        return frozenset({"dex_save"})
+
 
 # ---------------------------------------------------------------------------
 # Silvertail — the summon build; four axes, three levels
@@ -258,6 +293,28 @@ class SilvertailAdapter:
             "level": config.level,
             "options": opts,
         }
+
+    def forced_save_abilities(self, config: "RunConfig") -> "frozenset[str]":
+        """``wis_save`` only when the Spirit Guardians zone is installed.
+
+        The one adapter whose answer depends on an OPTION rather than on the build
+        alone, which is why the protocol takes the whole `RunConfig`: a damaging
+        zone fires a `SaveDamageEvent` at every occupant's turn boundary
+        (`scheduler._fire_zone_saves`), so with `zone_effect='spirit_guardians'`
+        the build is a producer in the damage channel and without it there is no
+        zone to fire.  Read through `_resolved_options` so the default is the value
+        actually used rather than whatever the caller omitted (§4).
+        """
+        opts = _resolved_options(self, config)
+        if opts.get("zone_effect") != "spirit_guardians":
+            return frozenset()
+        # Read the ability off the SAME level-row entry the factory builds the zone
+        # from, rather than repeating "wis_save" here: one source, so re-keying the
+        # spell cannot leave the predicate answering about the old ability. A level
+        # with no entry declares nothing, which matches the factory's own
+        # `data.get("spirit_guardians")`.
+        spec = silvertail.LEVELS[config.level].get("spirit_guardians")
+        return frozenset() if spec is None else frozenset({spec["save_stat"]})
 
 
 # ---------------------------------------------------------------------------
@@ -391,6 +448,22 @@ class BaselineCharacterAdapter:
                 "per level"
             ),
         }
+
+    def forced_save_abilities(self, config: "RunConfig") -> "frozenset[str]":
+        """``baseline_character.SAVE_SPELL_SAVE`` — the subject's save-for-half spell.
+
+        Read from the module constant rather than written out, so the subject's one
+        save-forcing capability has a single source: §3.5.1 declares the save spell
+        as a CORE capability present at every level (L1 borrows L2's slot row for
+        exactly this reason), so the answer is level-independent and that is a
+        property of the approved progression rather than a simplification.
+
+        This is also the arm that proves the predicate does not over-reach: the
+        subject forces `dex_save`, the band's enemy forces `dex_save`, and both at
+        every level — so `[dex_save|*]` must stay available at L17-20 while
+        `[int_save|*]`, which NEITHER side can produce there, goes unavailable.
+        """
+        return frozenset({baseline_character.SAVE_SPELL_SAVE})
 
 
 WAR_ANGEL = register(WarAngelAdapter())

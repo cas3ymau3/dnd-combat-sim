@@ -419,6 +419,17 @@ def test_a_new_build_needs_only_an_adapter():
         def describe(self, config):
             return {"build": self.name, "options": {}}
 
+        def forced_save_abilities(self, config):
+            """The build's half of the §13 saves channel (s56, step 8b).
+
+            Declared here because the protocol requires it of every adapter and
+            `_producible_saves` raises rather than guessing — the `needs_roster`
+            precedent, so an adapter that forgets fails loudly instead of silently
+            re-creating the unflagged-zero defect.  Empty, because this adapter
+            wraps War Angel's factory and that build forces no saves at all.
+            """
+            return frozenset()
+
     from src.evaluation import adapters as adapters_module
 
     adapter = TinyAdapter()
