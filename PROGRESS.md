@@ -629,6 +629,81 @@ not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell on
 
 #### Metric-set review log
 
+- **Session 58 (2026-11-06) — FULL REVIEW RUN, 28 declarations walked, ALL 28 KEPT, NO
+  PRUNES (user).** 17 scalars + 8 breakdowns + 3 distributions; 77 metric cells + 18
+  distribution statistics. Due because 8d adds a declaration KIND to the framework. The
+  session's two reviews (this and the config ledger) were scheduled with the user at
+  startup, before any coding, and 8d was deliberately the whole of the build scope.
+  - **THE TWO PAIRS THREE REVIEWS RAISED AND KEPT NOW HAVE MEASUREMENTS, AND THE FIRST
+    ONE WENT THE OTHER WAY.** s50, s54 and s56 each recorded
+    `spell_slots_per_day` vs `limited_resources_per_day` as "two cells of one breakdown
+    over resource kind at n=2", and s54 sharpened it by measuring them printing the
+    IDENTICAL value (7.837) on the baseline subject — the dormancy question's second
+    answer sitting in the panel. **Measured across all four subjects at 400 days, they
+    SEPARATE on two of them:** baseline 8.6375/8.6375 (same), silvertail 0/0 (same), but
+    **war_angel 27.92 vs 1.015** and **starfire 46.66 vs 0.00**. The equality was a
+    property of the one subject whose only limited resource IS spell slots. So the pair
+    is KEPT on evidence rather than on argument, and the reason it looked like one
+    quantity is that three reviews in a row examined it on the fixture that made it true.
+    - The transferable part: **s54 predicted the equality would stop holding "the moment
+      a subject carries ki or channel divinity". It had already stopped holding, on two
+      shipped builds, at the time the prediction was written.** A dormancy question asked
+      about the FUTURE is worth also asking about the rest of the existing corpus — the
+      s56 lesson ("re-ask it of the baseline subject") pointed one direction, and this is
+      the same move pointed the other way.
+  - **`party_dpr_opening_round` KEPT, and the reason the last review deferred the
+    decision to this one turned out not to work.** s54 said "worth deciding at step 8,
+    which is the first session where a sweep makes 'does anyone read this?' answerable by
+    looking". **The sweep did not make it answerable; it made the question uniform** —
+    every registered row lands in the tidy frame R reads, so "who reads this" now has the
+    same answer for all 28 declarations and discriminates nothing. Worth recording as a
+    correction to the plan rather than quietly dropping it.
+    - What IS now measurable is whether the quantity is redundant, and it is not:
+      opening-round vs all-round party DPR reads 1.80 vs 11.21 (baseline L13), 23.35 vs
+      33.75 (war angel L13), 15.85 vs 15.71 (silvertail L10) and **12.90 vs 26.96
+      (starfire L15, a 2.1x ramp)**. Nothing else in the registry carries front-loading.
+      It still survives by LABEL — party-scoped only because the per-(round, source)
+      ledger deferral forces it — which is the fourth review running that this is true.
+  - **s56's PROPOSED PRUNE SIGNAL WAS TRIED AND DOES NOT FIRE.** s56 carried forward that
+    "a row whose `days_required` is always null is a row whose criterion no day count
+    fixes, which is a prune SIGNAL rather than a prune". Measured across four subjects at
+    2,000 days: of **11** distinct unconverged estimates, exactly **3** have a null
+    `days_required`, and all three are `attacks_per_round_distribution`'s `iqr`/`p25`/
+    `p90` under `ci_width_vs_spread` — the LATTICE case §14(a) documents deliberately,
+    and flagged in only 1 of the 4 subjects. So the signal as formulated selects a
+    known-good row, and excluding the unreachable-gate case leaves it selecting nothing.
+    **Recorded as attempted-and-empty rather than left open**, so the next review starts
+    from the result.
+  - **Availability was walked across all four subjects**, which is the first review to do
+    that rather than reason about it. `enemy="baseline"`, `control=True`: the mitigation
+    pair is unavailable on every subject but **flips available under
+    `enemy_options={"mitigation": True}`** (verified), so s50's "unavailable for a reason
+    already scheduled to be fixed" no longer applies to it — it is reachable TODAY by a
+    keyword. `healing_provided_to_others_per_day` is unavailable on three of four and
+    available on Silvertail, which is its s54 third answer behaving exactly as designed.
+    Everything else is available, with the per-cell gaps (`dpr_by_role` 3/4,
+    `healing_by_source` 6/8, `attack_roll_rate` 6/9 on the three subjects without a
+    non-stand-in ally) falling out of the roster rather than out of a channel.
+  - **THE USER'S OWN FINDING, AND IT IS THE REVIEW'S MAIN OUTPUT: which metrics do we
+    actually need a full DISTRIBUTION for?** §5.4's kind 3 was built as a general
+    capability and three distributions are registered, but nobody ever asked the question
+    per-quantity — and `attacks_per_round` is an example where the variability will never
+    matter to a real build comparison. A distribution is the most expensive declaration
+    kind to keep speculatively (one declaration, six estimated statistics). **Deferred
+    with a trigger rather than acted on** (§14), because 8d was the session's scope and
+    cutting a distribution is a registry change wanting its own session — with one
+    consequence named so a later session does not cut that one casually: it is the ONLY
+    production instance of §14(a)'s "no day count helps" branch and the subject of s53's
+    deliberate step-9 tripwire.
+  - **Baseline declarations do NOT join this count** (user): a baseline is an INPUT datum
+    about one coordinate, not a declaration of something to measure, and the survival
+    rule ("does anyone read this row?") has no meaning for an input. The metric registry
+    stays at 28 and the review's due-trigger stays tied to it; the baselines registry
+    keeps its own count (1 source, 16 entries).
+  - **Prior full reviews: s46** (51 → 22 declarations), **s50** (26 kept), **s54** (27
+    walked, 1 added).
+
+
 - **Registry DECLARATION SET untouched by s56 — the full review is NOT yet due.** Step 8a
   and 8b added and removed no declaration (still **28**: 17 scalars + 8 breakdowns + 3
   distributions). What changed is one availability PREDICATE and the PAYLOAD every row
@@ -769,7 +844,16 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 56 (2026-11-06) — nothing to reset (raised with the
+- **Last reviewed for reset: session 58 (2026-11-06) — nothing to reset (raised with the
+  user at startup; marker bumped per the >=2-session rule).** The s36 tear-down still
+  stands (allowlist at the git/python/pytest baseline; Chrome OFF). s57 and s58 were both
+  pure Python, so nothing accumulated. The container's missing `pytest` recurred for the
+  **eighth** session running and was again installed with `pip install pytest` — a
+  property of the cloud container, not a tweak to revert; `numpy` 2.5.3 and `PyYAML`
+  6.0.3 are both already present, so 8d's YAML baselines needed no new dependency.
+  **Connectors were NOT raised** (the standing note's condition: "Currently disabled" is
+  empty and this session needed none).
+- **Prior — session 56 (2026-11-06) — nothing to reset (raised with the
   user at startup; marker bumped per the >=2-session rule).** The s36 tear-down still
   stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s55 and s56 were
   both pure Python, so nothing accumulated. The container's missing `pytest` recurred for
@@ -1983,6 +2067,130 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **FRAMEWORK STEP 8d — THE §11 BASELINES REGISTRY, AND THE FULL METRIC-SET REVIEW
+  (2026-11-06, session 58).** `evaluation_framework.md` §11 extended with **§11.1 (the
+  baselines contract, LOCKED at `baselines_schema_version` 1)**, **§11.2 (where a score
+  serializes)** and **§11.3 (what ships, and what is test-only)**; §13 step 8 (8d done,
+  8e open); §14 (one new deferral, the user's). New: `src/evaluation/baselines.py`,
+  `baselines/treantmonk_damage_classes.yaml`, `tests/test_eval_baselines.py`.
+  **Scope settled with the user at startup as 8d + BOTH DUE REVIEWS and nothing else** —
+  8e and step 9 are the next session's. **1304 tests passing** (1261 + 1 skipped at
+  handoff, +42 all in the new module; the 1304 is the MID-EDIT figure because
+  `test_a_dirty_tree_is_flagged…` runs only then — a clean checkout reads **1303 passing
+  + 1 skipped**, for the third session running that this prediction has held).
+  **NO NUMBER MOVED**: scoring is opt-in at every layer, so `GOLDEN_DPR` is untouched,
+  an unscored record's bytes are identical, and the existing tidy frame keeps its 39
+  columns and 95 rows.
+
+  **THE SHAPE WAS LOCKED BEFORE THE WRITER, FOR THE THIRD OBJECT RUNNING** (§9.1 at s47,
+  §10.1 at s57, §11.1 here). Four questions went to the user before a line existed, and
+  the thing worth recording is that **three of the four answers were confirmed and the
+  design still changed materially**, because the questions were not the whole of it: two
+  further changes came from running the seam check and the roll call at design time, as
+  step 4's promotion requires, and one came from reading the corpus.
+
+  - **§11's OWN TUPLE DOES NOT SURVIVE CONTACT WITH THE ONLY EXTERNAL SOURCE THERE IS.**
+    §11 has said since s42 that an entry is `(source, build, level, metric, value,
+    provenance)`. Reading the corpus rather than reasoning about it found Treantmonk's
+    **Damage Classes by Tier** in `design/build-guides/36_the_reanimating_bloodshot.txt`
+    (lines 107-112): keyed `(class, tier)`, so **no build**, `level` is a **BAND**, and
+    the value is an **INTERVAL** (class A tier 2 = 37-43). **Three of the tuple's six
+    positions are wrong for it.** So a coordinate is a DICT over declared dimensions —
+    §5.4's rule for the third time, after breakdown keys (s46) and sweep cells (s57) —
+    with a closed `exact` / `contains` / `free` match rule. `free` is what makes "which
+    damage class is this build in?" expressible: a run is scored against all four classes
+    at its tier and the four verdicts together locate it, with no consumer parsing names.
+  - **AN INTERVAL YIELDS A VERDICT, NOT A DELTA.** `inside` / `above` / `below`, because
+    the distance to a band is not a number the band supports, and a midpoint would
+    fabricate precision — which is the failure §11's own s43 correction is entirely
+    about. Three verdicts rather than one "outside" because at a boundary **the PAIR is
+    the answer**.
+  - **`basis` IS REQUIRED WITH NO DEFAULT — the seam check's finding, at design time.**
+    Our `dpr` is `damage/round` over `rounds` in `fixed_length` mode, character-scoped,
+    post-mitigation, against the standardized enemy. An external figure shares the UNIT
+    and almost certainly not the DENOMINATOR, which is §5.2's comparability trap exactly.
+    With a silent default to the metric's own basis, **every score would render valid
+    while some compared two different quantities that happen to share a unit, and nothing
+    would fail** — the dormancy question's third answer (already unequal, somewhere
+    nobody looks), which is the one s52 called the worst. `unknown` is legal and
+    MEANINGFUL: it is what an `external_published` source honestly says, and it gets a
+    *different* warning from a basis that is stated and differs. Two facts, two
+    distinguishable answers.
+  - **THE `kind` VOCABULARY IS CLOSED WITH NO CATCH-ALL**, which is s57's newly-promoted
+    step-4 lesson applied to the first thing that came along. For a record read months
+    later by an R script, **nothing outside the data supplies which kind a baseline is**
+    — and that is precisely the fact deciding whether a delta may be read as a shortfall,
+    so an `other` would be the one cell where the comparability caveat goes missing. The
+    promotion paid for itself in one session.
+
+  **SCORES ARE NOT WRITTEN INTO A CACHED RECORD, AND THAT IS A CORRECTNESS DECISION**
+  (§11.2, found by the seam check before any code). §10.2's cache key is `(config_hash,
+  engine_commit)` and nothing else. A `scores` block inside a stored record is scored
+  against whichever baseline set was loaded at compute time, so **a later run asking for
+  a DIFFERENT set would be served the earlier one's scores** — §10.2's named failure,
+  reached through a path neither module mentions. Two ways out and the cheap one is
+  wrong: widening the key with a baselines fingerprint over-invalidates every *simulated*
+  cell whenever any baseline is edited, paying a simulation cache's price for a post-hoc
+  join on data the record already holds. So `RecordStore.put` writes records unscored,
+  and that is also just what "scoring is a report-layer operation" means taken literally.
+  Asserted, not argued: `test_the_record_STORE_writes_records_UNSCORED`.
+  - **The `scores` key is ABSENT when unscored, not present-and-empty.** "This record was
+    not scored" and "it was scored and nothing matched" are different facts, and the
+    project already distinguishes exactly that pair twice — blank vs `*` in the tidy
+    frame's dimension columns, and `unavailable` vs `unmeasured` in a row. It also means
+    no existing record's bytes change, which is why no artifact test needed touching.
+  - **The score frame is its OWN tidy table**, keyed `(run, metric, source, coordinate)`
+    against the record frame's `(run, metric)`. Two sources for one metric are two rows;
+    folding them in would put a blank on every one of the 95 rows per cell that has no
+    baseline and change what one row of that frame MEANS — the s46 flattened-key failure
+    one layer up. One renderer feeds both the JSON block and the frame, per s57's
+    cached-versus-computed lesson, applied before it could bite.
+
+  **TWO DEFECTS, FROM TWO DIFFERENT RITUAL STEPS — and both were in things this session
+  had just written.**
+
+  1. **THE ROLL CALL FOUND A FALSE CLAIM IN §11.3, THREE PARAGRAPHS AFTER WRITING IT.**
+     The first draft said Treantmonk's four classes "tile contiguously within each
+     tier", which is true over the **INTEGERS** and false over the reals: at tier 3, D
+     tops at 33 and C starts at 34, so **any DPR strictly between 33 and 34 belongs to
+     no class**, and every tier has three such interior gaps. Found while filling the
+     roll call's `verdict` row — looking for a fixture per value is what made the
+     boundary concrete. The response is deliberately NOT to invent a rounding convention:
+     reading "26-33" as `[26, 34)` would make the tiling hold but would be this project
+     modelling the source's intent, which rule 1 exists to stop. The two verdicts say it
+     exactly. It is now an assertion (`test_a_value_in_an_integer_GAP_belongs_to_no_
+     class`) rather than prose, and stated as arithmetic rather than with a measured
+     figure, because §12.1 forbids citing one.
+  2. **RENDERING ONE REAL OUTPUT FOUND TWO FACTS PRINTED EIGHT TIMES (step 6).**
+     `reference_point` and `basis_unknown` are properties of the SOURCE, not of each
+     comparison, and the first draft printed both on all four damage classes — **two
+     facts, eight lines, burying the four verdicts that are the actual answer.** Warnings
+     constant across a source's scores are now hoisted to the source line with their
+     count; a row-specific one (`ratio_undefined`) still prints on its own row, and both
+     branches have tests. **That is step 6's EIGHTH defect and its FIFTH in a renderer or
+     summary layer** — the class is now predictive rather than retrospective, and this
+     one was again not computational: every number was right and the presentation was
+     wrong.
+
+  **STEP 6's SUBSTANCE, AND THE CHECKER WAS VERIFIED BEFORE BEING BELIEVED.** Three real
+  runs at the quick tier (War Angel L13, the baseline subject L2, Starfire L15, 2,000
+  days each). Every count the output claims about itself checks out: 4 JSON scores
+  against 4 score-CSV rows against the console's `(4)`, the fingerprint identical on
+  every row and in the header, the record frame unchanged at 39 columns and 95 rows with
+  no `baseline` column, and `artifacts/` still invisible to `git status --porcelain` so
+  the s57 provenance seam stays shut. **All 12 verdicts were re-derived by hand from the
+  intervals, independently of the code path** — s55's lesson, since what is being checked
+  is exactly the thing just hardened. Face validity holds and the verdict ordering is
+  monotone in all three (a run cannot be above a class and below a lower one).
+  **Those numbers are not data** ([[preliminary-run-is-a-machinery-exercise]]): they were
+  rendered to look at the machinery, and item 5c is still the run that counts.
+
+  **THE FULL METRIC-SET REVIEW RAN IN THE SAME SESSION — see the review log entry.** 28
+  declarations walked, ALL 28 KEPT, and the two pairs three previous reviews had raised
+  and kept now have MEASUREMENTS instead of arguments. The headline: **the resource pair
+  separates on two of four subjects**, so s54's dormancy reading of it was answered in
+  the opposite direction from the one expected.
 
 - **FRAMEWORK STEP 8c — THE SWEEP DECLARATION, MANIFEST, CLI AND CACHE (2026-11-06,
   session 57).** `evaluation_framework.md` §10 rewritten with **§10.1 (the sweep
@@ -6056,17 +6264,17 @@ Engine prerequisites, in the order we built them:
 
 ### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24; RESEQUENCED s54)
 
-> **NEXT TASK = item 4c below, now at 8d: THE §11 BASELINES REGISTRY, then 8e, then
-> step 9.** 8a + 8b landed in s56 (the convergence verdict and per-cell availability);
-> **8c landed in s57** (the sweep declaration, manifest, CLI and cache — §10.1/§10.2
-> locked before the writer). What remains of step 8 is **8d**, which ADDS a declaration
-> kind and therefore triggers the full metric-set review in the session that does it,
-> and **8e**, the threshold calibration, which 8c has now unblocked: §14(a) is explicit
-> that the fix is a SWEEP across builds and tiers rather than a nudge to a constant, and
-> 8a's `days_required` is the quantity to sweep over. Then **step 9** (RNG substreams),
-> which re-baselines `GOLDEN_DPR` by construction. Item 5b (housekeeping) then 5c
-> (#6b, the definitive re-evaluation) follow; #6a's numbers are NOT a baseline to diff
-> against (§12.1).
+> **NEXT TASK = item 4c below, now at 8e: THE THRESHOLD CALIBRATION, then step 9.**
+> 8a + 8b landed in s56 (the convergence verdict and per-cell availability); **8c landed
+> in s57** (the sweep declaration, manifest, CLI and cache); **8d landed in s58** (the
+> §11 baselines registry, with §11.1-§11.3 locked before the writer — and the full
+> metric-set review ran in the same session, 28 declarations walked, all kept). What
+> remains of step 8 is **8e**, the threshold calibration, which 8c unblocked: §14(a) is
+> explicit that the fix is a SWEEP across builds and tiers rather than a nudge to a
+> constant, and 8a's `days_required` is the quantity to sweep over. Then **step 9** (RNG
+> substreams), which re-baselines `GOLDEN_DPR` by construction. Item 5b (housekeeping)
+> then 5c (#6b, the definitive re-evaluation) follow; #6a's numbers are NOT a baseline to
+> diff against (§12.1).
 
 The project has two tracks. **Track 1 (current focus): "make the model produce
 honest, complete build evaluations"** — the enemy-profile arc through to a real
@@ -6424,9 +6632,9 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    only (where AC already exists), or run the low levels under `enemy="none"` and say
    plainly that they carry no defensive measurement.
 
-4c. **Framework steps 8 and 9. *** IN PROGRESS: 8a + 8b DONE (s56), 8c DONE (s57);
-   8d + 8e + step 9 are the NEXT TASK. *** ** `evaluation_framework.md` §13 steps 8 and
-   9, unchanged in content; only their position moved.
+4c. **Framework steps 8 and 9. *** IN PROGRESS: 8a + 8b DONE (s56), 8c DONE (s57),
+   8d DONE (s58); 8e + step 9 are the NEXT TASK. *** ** `evaluation_framework.md` §13
+   steps 8 and 9, unchanged in content; only their position moved.
    - ~~**8a — the convergence VERDICT**~~ **DONE (s56)**: §14(a)'s distance payload, no
      constant retuned. See the s56 Done entry at the top of this file.
    - ~~**8b — per-cell availability reads the resolved ENEMY**~~ **DONE (s56)**: §14's
@@ -6439,13 +6647,20 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      engine_commit)`, and the `level: available` sentinel for §2's sparse level sets.
      No number moved. See the s57 Done entry for the four defects building it found and
      which ritual step found each.
-   - **8d — the §11 baselines registry. NEXT.** `(source, build, level, metric, value,
-     provenance)`, scoring as a report-layer operation. This one ADDS a declaration
-     kind, so it IS a registry-touching session and triggers the full metric-set review.
-     Note what 8c now provides: a sweep is the natural shape for scoring a whole build
-     against a baseline source at once, and `coordinate` is already the dict a scoring
-     join keys on.
-   - **8e — the threshold CALIBRATION.** **WHO READS THE SWEEP IS SETTLED (user, s57):
+   - ~~**8d — the §11 baselines registry**~~ **DONE (s58)**: §11.1-§11.3 locked BEFORE
+     the loader, four shape questions settled with the user first.
+     `src/evaluation/baselines.py` + `baselines/treantmonk_damage_classes.yaml`, a
+     `scores` section on the record (additive at `schema_version` 1), its own tidy score
+     frame, and a console reader. No number moved. **§11's own `(source, build, level,
+     metric, value, provenance)` tuple did NOT survive contact** with the only external
+     source the project has — Treantmonk's Damage Classes are keyed `(class, tier)`, so
+     the coordinate is a dict with a closed `exact`/`contains`/`free` match rule and an
+     interval value yields a verdict rather than a delta. Two further changes came from
+     the seam check and the roll call at design time (`basis` required with no default;
+     scores kept OUT of the cached record). **The full metric-set review ran in the same
+     session** — 28 walked, all kept, and the two long-standing pairs now have
+     measurements. See the s58 Done entry.
+   - **8e — the threshold CALIBRATION. NEXT.** **WHO READS THE SWEEP IS SETTLED (user, s57):
      R over the tidy frame, NOT a Python aggregation layer in `sweep.py`.** The
      concatenated CSV is already the analysis form and is the whole reason §9 chose tidy
      long; 8c therefore ships no consumer, which keeps §9's line that the sim does not
@@ -6470,7 +6685,7 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    - **ONE THING 8a ADDED TO 5b's LIST (housekeeping):** `BuildAdapter` now has five
      methods and the protocol's docstring lists "the four axes of variance an adapter
      absorbs" — the prose and the protocol have diverged by one. **Still open after
-     s57** (8c touched no adapter).
+     s58** (neither 8c nor 8d touched an adapter).
 
 5b. **HOUSEKEEPING PR — scheduled, not optional (user, s54).** Run this **once the
    evaluation framework is finished (after step 9) and BEFORE the first full build

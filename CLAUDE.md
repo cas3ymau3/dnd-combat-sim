@@ -175,9 +175,21 @@ engine primitives. Module map (`src/`):
   `make_baseline_enemy(level)`: **the one enemy-`Entity` constructor** (s52). No build
   module builds an enemy of its own any more.
 - `evaluation/` — the build-agnostic evaluation framework (`design/evaluation_framework.md`
-  §13, steps 1-6 done). `enemy.py` is the enemy-construction seam; `runner.simulate` is
-  the single place `enemy.install` is called. **There is no `src/validation.py`** — step 5b
-  deleted it; the end-to-end signal is `GOLDEN_DPR` in `tests/test_eval_enemy_seam.py`.
+  §13, steps 1-7 done; step 8 at 8e). `enemy.py` is the enemy-construction seam;
+  `runner.simulate` is the single place `enemy.install` is called. **There is no
+  `src/validation.py`** — step 5b deleted it; the end-to-end signal is `GOLDEN_DPR` in
+  `tests/test_eval_enemy_seam.py`.
+  - `sweep.py` + `sweeps/*.yaml` — the sweep driver (§10.1/§10.2): declaration → cells →
+    a shared content-addressed record store keyed `(config_hash, engine_commit)` → a
+    manifest and one concatenated tidy frame. `python -m src.evaluation.sweep {plan,run}`.
+  - `baselines.py` + `baselines/*.yaml` — the §11 baselines registry: **its own** registry
+    of DATA, never a declaration on `MetricDef`, because a target is a reference and not
+    a property of the build. An entry's position is a `coordinate` dict over declared
+    dimensions (`exact`/`contains`/`free`), its value is a POINT or an INTERVAL, and its
+    `basis` is required with `unknown` legal. Scoring is report-layer and **opt-in**:
+    `report_to_dict(report, baselines=…)` adds a `scores` section, and the record STORE
+    deliberately writes records UNSCORED, because the cache key does not include the
+    baseline set (§11.2).
 
 Key invariants to preserve when extending:
 - All dice through `SeededRNG.roll()` — never call random directly.
