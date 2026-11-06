@@ -133,6 +133,30 @@ type, condition, resource, …):
      passed on 0.1875 and on 0.44. **Declaring a parameter is also what makes its channel
      assertable**, which is a reason to declare beyond provenance.
 
+   **AND A DORMANCY PREDICTION IS WORTH TESTING AGAINST THE CORPUS THAT ALREADY
+   EXISTS, NOT ONLY AGAINST THE FUTURE (added s58).** The dormancy question's second
+   answer — "equal for a reason that will stop holding" — invites a prediction about
+   when it stops, and a prediction is the easiest thing to leave unchecked because
+   nothing it says is due yet. s54 recorded that `spell_slots_per_day` and
+   `limited_resources_per_day` print one number on the baseline subject and would
+   separate "the moment a subject carries ki or channel divinity". **They had already
+   separated, on two shipped builds, at the moment that sentence was written** — War
+   Angel 27.92 vs 1.015, Starfire 46.66 vs 0.00. Three consecutive reviews then re-raised
+   the pair, each time examining it on the one subject that made it look like one
+   quantity, because the entry they inherited framed the question as a future event.
+   - The check is one measurement: **before writing "this will stop holding when X",
+     evaluate the quantity on every subject the corpus already has.** The answer is
+     either a sharper prediction or a finding, and it costs a loop.
+   - This is the s56 "re-ask it of the baseline subject" lesson pointed the other way.
+     That one says a defect found on one build is not bounded by it; this one says an
+     EQUALITY found on one build is not a property of the model. Same root cause — a
+     single fixture standing in for the corpus — and the subject is implicated in both,
+     since the subject is exactly where the resource pair's equality was true.
+   - It also explains why the entry survived: every review did its job on the evidence
+     in front of it, and the evidence in front of it was a Done entry rather than a run.
+     **An inherited argument is not an inherited measurement**, and a review that starts
+     from the former will keep reaching the former's conclusion.
+
    **A CLOSED VOCABULARY THAT IS TOTAL ONE LAYER DOWN CAN BE PARTIAL ONE LAYER UP
    (added s57).** §9.1 raises a run record's `precision` warning on
    `day_tier == "quick"`. That is a sound test for ONE run, because a reader knows which
@@ -611,6 +635,22 @@ plan heals a passive stand-in while War Angel's Prayer of Healing heals five cre
 RAW. The fix was a third distinguishable answer, which needed a DECLARATION
 (`Roster.party_stand_ins`) because `len(allies)` against `party_size` conflates a build's
 own ally with a framework stand-in the moment both exist.
+
+**"DOES ANYONE READ THIS?" STOPPED DISCRIMINATING ONCE THE SWEEP EXISTED (added s58).**
+s50 and s54 both deferred two rows on the grounds that step 8 would make the question
+answerable by looking, since a sweep is the first thing that shows many runs at once.
+**It did not. It made the question UNIFORM.** A sweep concatenates every registered row
+into one tidy frame for R, so "does anyone read this?" now has the same answer for all
+28 declarations and separates nothing — the reader is a script that takes the whole
+frame. So the rule's first clause cannot be settled by the artifact layer, and a future
+review should not re-plan around a consumer that reads everything.
+
+> What a sweep DOES make answerable is the second clause: whether a row is REDUNDANT.
+> That is a measurement across subjects and levels, and s58 ran it —
+> `party_dpr_opening_round` against the all-round party margin reads 1.80 vs 11.21,
+> 23.35 vs 33.75, 15.85 vs 15.71 and 12.90 vs 26.96, so it carries front-loading that
+> nothing else in the registry carries. **Re-point the question at derivability, which
+> is measurable, rather than at readership, which is now constant.**
 
 **THE SURVIVAL RULE — apply this, not "derivable ⇒ cut" (added s46).** The naive rule
 is wrong and the s46 review found the counter-example immediately:
@@ -2075,9 +2115,9 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   8e open); §14 (one new deferral, the user's). New: `src/evaluation/baselines.py`,
   `baselines/treantmonk_damage_classes.yaml`, `tests/test_eval_baselines.py`.
   **Scope settled with the user at startup as 8d + BOTH DUE REVIEWS and nothing else** —
-  8e and step 9 are the next session's. **1304 tests passing** (1261 + 1 skipped at
-  handoff, +42 all in the new module; the 1304 is the MID-EDIT figure because
-  `test_a_dirty_tree_is_flagged…` runs only then — a clean checkout reads **1303 passing
+  8e and step 9 are the next session's. **1311 tests passing** (1261 + 1 skipped at
+  handoff, +49 all in the new module; the 1311 is the MID-EDIT figure because
+  `test_a_dirty_tree_is_flagged…` runs only then — a clean checkout reads **1310 passing
   + 1 skipped**, for the third session running that this prediction has held).
   **NO NUMBER MOVED**: scoring is opt-in at every layer, so `GOLDEN_DPR` is untouched,
   an unscored record's bytes are identical, and the existing tidy frame keeps its 39
@@ -2104,8 +2144,9 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   - **AN INTERVAL YIELDS A VERDICT, NOT A DELTA.** `inside` / `above` / `below`, because
     the distance to a band is not a number the band supports, and a midpoint would
     fabricate precision — which is the failure §11's own s43 correction is entirely
-    about. Three verdicts rather than one "outside" because at a boundary **the PAIR is
-    the answer**.
+    about. An interval declares each bound's CLOSURE and may be unbounded on one side
+    (never both — a band open at both ends matches everything and says nothing); see
+    defect 1 below for why that is a declared field rather than a convention.
   - **`basis` IS REQUIRED WITH NO DEFAULT — the seam check's finding, at design time.**
     Our `dpr` is `damage/round` over `rounds` in `fixed_length` mode, character-scoped,
     post-mitigation, against the standardized enemy. An external figure shares the UNIT
@@ -2150,18 +2191,41 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   **TWO DEFECTS, FROM TWO DIFFERENT RITUAL STEPS — and both were in things this session
   had just written.**
 
-  1. **THE ROLL CALL FOUND A FALSE CLAIM IN §11.3, THREE PARAGRAPHS AFTER WRITING IT.**
-     The first draft said Treantmonk's four classes "tile contiguously within each
-     tier", which is true over the **INTEGERS** and false over the reals: at tier 3, D
-     tops at 33 and C starts at 34, so **any DPR strictly between 33 and 34 belongs to
-     no class**, and every tier has three such interior gaps. Found while filling the
-     roll call's `verdict` row — looking for a fixture per value is what made the
-     boundary concrete. The response is deliberately NOT to invent a rounding convention:
-     reading "26-33" as `[26, 34)` would make the tiling hold but would be this project
-     modelling the source's intent, which rule 1 exists to stop. The two verdicts say it
-     exactly. It is now an assertion (`test_a_value_in_an_integer_GAP_belongs_to_no_
-     class`) rather than prose, and stated as arithmetic rather than with a measured
-     figure, because §12.1 forbids citing one.
+  1. **THE ROLL CALL FOUND A FALSE CLAIM IN §11.3, THREE PARAGRAPHS AFTER WRITING IT —
+     AND THE USER THEN RESOLVED IT THE OTHER WAY.** The first draft said Treantmonk's
+     four classes "tile contiguously within each tier", which is true over the
+     **INTEGERS** and false over the reals: at tier 3, D tops at 33 and C starts at 34,
+     so **any DPR strictly between 33 and 34 belonged to no class**, and every tier has
+     three such interior gaps. Found while filling the roll call's `verdict` row —
+     looking for a fixture per value is what made the boundary concrete.
+     - Claude's first response was to REFUSE a rounding convention, on the grounds that
+       reading "26-33" as `[26, 34)` would be this project modelling the source's intent
+       (rule 1). **The user resolved it the other way at step 7: EXTEND the bands.**
+       Upper bound inclusive, the adjoining lower bound exclusive at that same number,
+       and the top band of each tier UNBOUNDED ABOVE, so a build out-scaling class A is
+       still class A rather than off the scale. Class D keeps its published floor, so a
+       DPR beneath the whole scale falls in no class — a real answer, not a gap.
+     - **The original objection is answered rather than overruled, and that is the part
+       worth carrying.** What legitimates the extension is a fact about the SOURCE: in
+       all four tiers each class begins exactly one above the ceiling of the class
+       below, so the bands were plainly meant to PARTITION and the whole numbers are
+       presentational. Had they not tiled, the first reasoning would still hold — so the
+       premise is a TEST (`test_the_published_classes_TILE_over_the_integers`), not a
+       comment, and a future re-transcription that breaks it fails there.
+     - Three supports, all in the DATA rather than only in the prose: closure is
+       DECLARED per bound (`Interval.low_inclusive` / `high_inclusive`) and prints in
+       interval notation wherever it renders, because two bands sharing a number differ
+       only in which side is open; the tidy frame gets a column per bound AND per
+       closure; and every entry keeps `interval.published` verbatim, so what the source
+       actually said stays recoverable from the file. **Exactly one class now contains
+       any value at or above D's floor**, asserted — so the four verdicts LOCATE a run
+       rather than bracketing it.
+     - Worth noting the shape of the exchange: the roll call found the defect and the
+       user's fix was the better one. **The design-time check earns its keep by
+       surfacing the question while the answer is still cheap** — the `scores` block was
+       one unmerged commit old, so changing its serialized shape cost nothing. Had this
+       surfaced after a consumer existed, the integer gaps would have been a live
+       misreporting bug with a migration attached.
   2. **RENDERING ONE REAL OUTPUT FOUND TWO FACTS PRINTED EIGHT TIMES (step 6).**
      `reference_point` and `basis_unknown` are properties of the SOURCE, not of each
      comparison, and the first draft printed both on all four damage classes — **two
@@ -2185,6 +2249,24 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   monotone in all three (a run cannot be above a class and below a lower one).
   **Those numbers are not data** ([[preliminary-run-is-a-machinery-exercise]]): they were
   rendered to look at the machinery, and item 5c is still the run that counts.
+
+  **RITUAL STEP 7: TWO LESSONS PROMOTED OF FOUR CANDIDATES (user).** The test applied is
+  s57's — *would a session that has not read this Done entry do the wrong thing without
+  it?*
+  - **PROMOTED to step 4** — "a dormancy prediction is worth testing against the corpus
+    that already exists, not only against the future". Not covered by any existing rule,
+    and it cost three reviews.
+  - **PROMOTED to the metric-set review protocol** (not the per-feature ritual, since it
+    is a correction to that review's own METHOD) — "does anyone read this?" stopped
+    discriminating once the sweep existed.
+  - **NOT promoted** — "reading the corpus beat reasoning about the design". True, and
+    §11's tuple stood 16 sessions before one look at the guide file broke half of it, but
+    that IS rule 1 ("verify the text, do not model from memory") applied to a schema
+    instead of a spell. A second entry saying the same thing makes the ritual longer
+    without making it stronger.
+  - **NOT promoted** — step 6's renderer class. It is maintained as a running tally
+    whose argument rests on the count, and the count was updated; that is maintaining a
+    rule, not adding one.
 
   **THE FULL METRIC-SET REVIEW RAN IN THE SAME SESSION — see the review log entry.** 28
   declarations walked, ALL 28 KEPT, and the two pairs three previous reviews had raised

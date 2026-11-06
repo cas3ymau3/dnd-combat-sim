@@ -257,9 +257,15 @@ def _score_lines(block: dict[str, Any]) -> list[str]:
                 out.append(f"      {row['note']}")
             continue
         if row["baseline_interval"] is not None:
-            low, high = row["baseline_interval"]
-            out.append(f"{head}   {row['value']:,.4g} vs [{low:,.4g}, {high:,.4g}]"
-                       f"   -> {row['verdict'].upper()}")
+            band = row["baseline_interval"]
+            # Interval notation, because the CLOSURE is load-bearing: a band whose
+            # lower bound is exclusive at the same number where the one below it is
+            # inclusive is how the scale partitions (§11.1), and printing bare numbers
+            # would hide it. The source's own listing rides alongside.
+            published = (f"  (published {band['published']})"
+                         if band.get("published") else "")
+            out.append(f"{head}   {row['value']:,.4g} vs {band['label']}"
+                       f"   -> {row['verdict'].upper()}{published}")
         else:
             ratio = ("n/a" if row["ratio"] is None else f"{row['ratio']:,.3f}x")
             out.append(f"{head}   {row['value']:,.4g} vs {row['baseline']:,.4g}"

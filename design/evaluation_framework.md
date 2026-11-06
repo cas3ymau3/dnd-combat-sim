@@ -2048,6 +2048,14 @@ both and scoring differs by kind:
   `inside` / `above` / `below` — and **no delta**, because the distance to a band is
   not a number the band supports.
 
+An interval declares **each bound's closure** and may be **unbounded on one side**
+(never both — a band open at both ends matches everything and says nothing). Closure is
+a field rather than a convention because a source's bands are usually meant to
+*partition* and a listing in whole numbers does not say how; §11.3 works through the
+case that forced it. An interval also carries `published`, the source's own listing
+verbatim, so where the applied bounds are an interpretation the original stays
+recoverable from the data.
+
 **The ratio's zero-denominator case is answered the way the row shape already answers
 it.** A point baseline of exactly 0 makes the ratio undefined; it is written `null`
 with a note, never a sentinel and never `inf`. Worth being explicit that this is NOT
@@ -2172,23 +2180,48 @@ declaration values with no production fixture):
   `target_dpr` figures, so shipping one would re-add the thing the correction removed.
   The kind exists so that if one is ever entered it cannot be read as the first kind.
 
-The four tiers' classes tile contiguously within each tier **over the integers** (T2:
-D 15–21, C 22–28, B 29–36, A 37–43) — and that qualifier is load-bearing, because a
-measured DPR is a real number. **Any DPR strictly between 33 and 34 belongs to no class
-at tier 3**, and every tier has three such gaps at its interior boundaries. Found while
-writing the roll call, against a first draft of this paragraph that claimed the classes
-tile without qualification; stated as arithmetic rather than with a measured figure,
-because no number this project produces before the framework is finished may be cited
-(§12.1).
+#### The bands are EXTENDED to span the reals, and that is a declared interpretation
 
-The response is deliberately **not** to invent a rounding convention: reading
-"26–33" as `[26, 34)` would make the tiling hold, but it would be this project
-modelling the source's intent, which rule 1 of the per-feature ritual exists to stop
-and which §11's "reference point, not a target" makes worse. Instead the two verdicts
-say it exactly — 33.75 is `above` D and `below` C, i.e. **between two classes** — which
-is why `above`/`below` are distinct verdicts rather than one "outside", and why an
-entry's interval is stored as published. A run below the D floor or above the A ceiling
-is the same answer at the ends of the scale.
+As published, the four classes tile within each tier **only over the integers** (T2:
+D 15–21, C 22–28, B 29–36, A 37–43) — and that qualifier is load-bearing, because a
+measured DPR is a real number. **Any DPR strictly between 33 and 34 belonged to no class
+at tier 3**, and every tier has three such interior gaps. Found while writing the roll
+call, against a first draft of this paragraph that claimed the classes tile without
+qualification; stated as arithmetic rather than with a measured figure, because no number
+this project produces before the framework is finished may be cited (§12.1).
+
+**Resolved (user, s58): extend the bands so they span the reals.** Each band's upper
+bound is **inclusive**, the adjoining band's lower bound is **exclusive at that same
+number**, and the **top band of a tier is unbounded above**, so a build out-scaling
+class A is still class A rather than off the scale. Class D keeps its published floor, so
+a DPR beneath the whole scale falls in no class — which is a real answer, not a gap,
+since the source says nothing about output below its own range. Exactly one class then
+contains any value at or above that floor: the four verdicts **locate** a run rather than
+bracketing it.
+
+Three things make this a defensible interpretation rather than an invention, and all
+three are recorded in the data rather than only here:
+
+1. **The published listing already tiles.** In all four tiers, each class begins exactly
+   one above the ceiling of the class below it — so the bands were plainly meant to
+   partition and the whole numbers are a presentational artifact. That premise is
+   asserted (`test_the_published_classes_TILE_over_the_integers`), not assumed, because a
+   future re-transcription that broke it would un-warrant the extension.
+2. **Closure is DECLARED, not conventional.** `Interval` carries `low_inclusive` /
+   `high_inclusive` and prints in interval notation (`(33, 41]`) wherever it renders,
+   because two bands sharing a number differ only in which side is open — and a frame or
+   console showing bare numbers would hide exactly the fact that makes the scale a
+   partition. The tidy frame gets a column per bound *and* per closure.
+3. **The published range survives.** Every entry keeps `interval.published` verbatim
+   (`"34-41"`), so what the source actually said is recoverable from the data, not just
+   from a commit message. `above`/`below` stay distinct verdicts, because at the ends of
+   the scale they are still different answers.
+
+Worth recording that the first draft argued the other way — that a rounding convention
+would be this project modelling the source's intent, which rule 1 exists to stop. The
+objection is answered rather than overruled: what makes the extension legitimate is the
+tiling premise in (1), which is a fact about the source and is now a test. Had the
+published bands *not* tiled, the original reasoning would still hold.
 
 ---
 

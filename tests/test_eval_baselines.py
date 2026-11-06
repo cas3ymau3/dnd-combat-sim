@@ -27,7 +27,13 @@ each VALUE.  An empty cell is the finding.
 | interval verdict                | inside             | ``test_the_four_classes_LOCATE_a_run``         |
 |                                 | above              | ``test_the_four_classes_LOCATE_a_run``         |
 |                                 | below              | ``test_the_four_classes_LOCATE_a_run``         |
-|                                 | (between classes)  | ``test_a_value_in_an_integer_GAP_...``         |
+| ``Interval.low_inclusive`` /    | inclusive          | ``treantmonk`` class D's floor (PRODUCTION)    |
+| ``Interval.high_inclusive``     | exclusive          | ``treantmonk`` classes C/B/A's floors          |
+| ``Interval.high``               | finite             | ``treantmonk`` classes D/C/B (PRODUCTION)      |
+|                                 | unbounded (None)   | ``treantmonk`` class A (PRODUCTION)            |
+|                                 | both ends open     | ``test_an_interval_open_at_both_ends_...``     |
+| ``interval`` declaration form   | 2-element list     | ``test_an_interval_may_be_given_as_a_list``    |
+|                                 | full mapping       | ``treantmonk`` (PRODUCTION)                    |
 | point score                     | delta + ratio      | ``test_a_point_baseline_yields_delta_...``     |
 |                                 | baseline == 0      | ``test_a_zero_point_baseline_refuses_...``    |
 | ``Score.state``                 | scored             | ``test_the_four_classes_LOCATE_a_run``         |
@@ -100,6 +106,8 @@ from src.evaluation.baselines import (
     BaselineRegistry,
     BaselineSource,
     CoordinateDimension,
+    Interval,
+    _as_interval,
     load_registry,
     load_source,
     parse_source,
@@ -227,26 +235,87 @@ def test_the_four_classes_LOCATE_a_run(production, war_angel_report):
     assert descending == sorted(descending), (
         f"verdicts must not contradict the class ordering, got {by_class}"
     )
+    # Since the bands partition the scale above D's floor (user, s58), a run at or
+    # above it lands in EXACTLY ONE class -- so the four verdicts locate it rather
+    # than merely bracketing it. WHICH class is a DPR claim and is not asserted.
+    inside = [r.coordinate["damage_class"] for r in rows
+              if r.verdict == VERDICT_INSIDE]
+    assert len(inside) == 1, (
+        f"exactly one class must contain the run, got {inside}; zero would mean the "
+        f"run is below the whole scale, which is possible but is a different finding"
+    )
 
 
-def test_a_value_in_an_integer_GAP_belongs_to_no_class(production):
-    """§11.3's correction, as an assertion rather than as prose.
+def test_the_published_classes_TILE_over_the_integers(production):
+    """What WARRANTS the bound extension, asserted rather than assumed.
 
-    The classes tile contiguously over the INTEGERS, so a real-valued DPR can fall
-    between two of them: at tier 3, D tops at 33 and C starts at 34.  The first draft
-    of §11.3 claimed they tile without qualification; writing the roll call found it.
-    Asserted here because prose cannot fail (step 5).
+    The applied bounds are a declared interpretation (§11.1), and the thing that makes
+    it an interpretation of THIS source rather than an invention is that the published
+    listing already tiles: in all four tiers each class begins exactly one above the
+    ceiling of the class below it.  If a future re-transcription broke that, the
+    extension would no longer be warranted — so the premise is a test, not a comment.
+    """
+    src = production.source(PRODUCTION_SOURCE)
+    ascending = ("D", "C", "B", "A")
+    for tier_band in ([1, 4], [5, 10], [11, 16], [17, 20]):
+        published = {}
+        for entry in src.entries:
+            if entry.coordinate["tier"] == tier_band:
+                low, high = entry.interval.published.split("-")
+                published[entry.coordinate["damage_class"]] = (int(low), int(high))
+        assert set(published) == set(ascending)
+        for lower, upper in zip(ascending, ascending[1:]):
+            assert published[lower][1] + 1 == published[upper][0], (
+                f"tier {tier_band}: published {upper} ({published[upper]}) does not "
+                f"begin one above {lower} ({published[lower]}), so the bound extension "
+                f"is not warranted for this listing"
+            )
+
+
+def test_the_bands_PARTITION_the_scale_above_D(production):
+    """The extension's payoff, as an assertion (user, s58).
+
+    Before it, the bands tiled only over the integers: at tier 3, D topped at 33 and C
+    started at 34, so **every real value between them belonged to no class** — found
+    while writing this roll call, against a first draft of §11.3 that claimed they tile
+    without qualification.  Now the upper bound is inclusive, the adjoining lower bound
+    exclusive at that same number, and A is unbounded above, so exactly one class
+    contains any value at or above D's floor.
+
+    Below D's floor there is deliberately still no class, and that is a real answer
+    rather than a gap: the source says nothing about output beneath its own scale.
     """
     src = production.source(PRODUCTION_SOURCE)
     tier3 = {e.coordinate["damage_class"]: e.interval
              for e in src.matching({"build": "x", "level": 13}, "dpr")}
-    assert tier3["D"][1] == 33.0 and tier3["C"][0] == 34.0
-    gap = 33.75
-    assert gap > tier3["D"][1], "33.75 is above D's ceiling"
-    assert gap < tier3["C"][0], "33.75 is below C's floor"
-    # ... so no class contains it, and the PAIR of verdicts is the honest answer.
-    contained = [cls for cls, (low, high) in tier3.items() if low <= gap <= high]
-    assert contained == []
+
+    # The old gap, and both sides of the shared boundary.
+    for value, expected in ((33.0, "D"), (33.5, "C"), (33.75, "C"), (34.0, "C"),
+                            (41.0, "C"), (41.000001, "B"), (1e6, "A")):
+        holding = [cls for cls, band in tier3.items() if band.contains(value)]
+        assert holding == [expected], f"{value} -> {holding}, expected [{expected}]"
+
+    # Exactly one class, everywhere at or above D's floor -- a partition, not a cover.
+    floor = tier3["D"].low
+    for value in (floor, floor + 0.5, 30.0, 33.0, 33.5, 49.0, 49.5, 200.0):
+        assert sum(band.contains(value) for band in tier3.values()) == 1, value
+    # ... and none below it.
+    assert all(not band.contains(floor - 0.01) for band in tier3.values())
+
+
+def test_the_published_range_SURVIVES_the_extension(production):
+    """The applied bounds are an interpretation, so the source's own listing stays
+    recoverable from the data rather than only from the commit message."""
+    src = production.source(PRODUCTION_SOURCE)
+    assert all(e.interval.published for e in src.entries)
+    tier3 = {e.coordinate["damage_class"]: e.interval
+             for e in src.matching({"build": "x", "level": 13}, "dpr")}
+    assert tier3["C"].published == "34-41"
+    assert tier3["C"].low == 33.0 and tier3["C"].low_inclusive is False, (
+        "the APPLIED lower bound is the band below's ceiling, exclusive"
+    )
+    assert tier3["A"].high is None, "the top band of a scale is unbounded above"
+    assert tier3["A"].published == "50-57"
 
 
 # ---------------------------------------------------------------------------
@@ -332,8 +401,56 @@ def test_basis_is_REQUIRED_with_no_default():
 
 def test_an_interval_may_not_be_inverted():
     with pytest.raises(ValueError, match="is above high"):
-        BaselineEntry(coordinate={"level": 1}, metric="dpr", basis="x",
-                      interval=(9.0, 2.0))
+        Interval(low=9.0, high=2.0)
+
+
+def test_an_interval_open_at_both_ends_is_refused():
+    """It matches every value and therefore says nothing — the same class of refusal as
+    a baseline with no basis: a declaration that cannot be wrong."""
+    with pytest.raises(ValueError, match="unbounded on BOTH sides"):
+        Interval()
+
+
+def test_an_interval_may_be_given_as_a_list():
+    """The convenience form a simple source or a fixture uses: a 2-element list is a
+    CLOSED band, and anything needing bound closure uses the mapping."""
+    band = _as_interval([2, 5])
+    assert (band.low, band.high) == (2.0, 5.0)
+    assert band.low_inclusive and band.high_inclusive
+    assert band.label() == "[2, 5]"
+    with pytest.raises(ValueError, match="exactly two elements"):
+        _as_interval([1, 2, 3])
+
+
+def test_the_interval_label_shows_the_CLOSURE():
+    """The closure is load-bearing, so it must be visible wherever a band prints: two
+    bands sharing a number differ only in which side is open."""
+    assert Interval(low=33, high=41, low_inclusive=False).label() == "(33, 41]"
+    assert Interval(low=26, high=33).label() == "[26, 33]"
+    assert Interval(low=49, high=None, low_inclusive=False).label() == "(49, inf)"
+    assert Interval(low=None, high=10).label() == "(-inf, 10]"
+
+
+def test_an_unbounded_band_still_reaches_a_verdict():
+    """Class A is unbounded above, so nothing can ever be ABOVE it — and the branch that
+    would compare against a None bound must not raise."""
+    top = Interval(low=49, high=None, low_inclusive=False)
+    assert top.verdict(49.0) == VERDICT_BELOW
+    assert top.verdict(49.5) == VERDICT_INSIDE
+    assert top.verdict(1e9) == VERDICT_INSIDE
+    bottom = Interval(low=None, high=10)
+    assert bottom.verdict(-1e9) == VERDICT_INSIDE
+    assert bottom.verdict(10.0) == VERDICT_INSIDE
+    assert bottom.verdict(10.0001) == VERDICT_ABOVE
+
+
+def test_a_shared_boundary_belongs_to_exactly_one_band():
+    """The whole point of declaring closure: at the number two bands share, the lower
+    one's inclusive ceiling takes it and the upper one's exclusive floor does not."""
+    lower = Interval(low=26, high=33)
+    upper = Interval(low=33, high=41, low_inclusive=False)
+    assert lower.contains(33.0) and not upper.contains(33.0)
+    assert not lower.contains(33.0001) and upper.contains(33.0001)
 
 
 def test_an_entrys_coordinate_must_match_the_declared_dimensions():
@@ -688,9 +805,14 @@ def test_the_tidy_frame_and_the_JSON_block_share_ONE_renderer(war_angel_report,
         assert flat["state"] == json_row["state"]
         assert flat["verdict"] == json_row["verdict"]
         assert flat["value"] == json_row["value"]
-        if json_row["baseline_interval"]:
-            assert [flat["baseline_low"], flat["baseline_high"]] == \
-                json_row["baseline_interval"]
+        band = json_row["baseline_interval"]
+        if band:
+            assert flat["baseline_low"] == band["low"]
+            assert flat["baseline_high"] == band["high"]
+            assert flat["baseline_low_inclusive"] == band["low_inclusive"]
+            assert flat["baseline_high_inclusive"] == band["high_inclusive"]
+            assert flat["baseline_band"] == band["label"]
+            assert flat["baseline_published"] == band["published"]
 
 
 def test_the_score_csv_is_written_as_a_THIRD_file(tmp_path, war_angel_report,

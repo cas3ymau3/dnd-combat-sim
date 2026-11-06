@@ -180,18 +180,116 @@ class CoordinateDimension:
 
 
 @dataclass(frozen=True)
+class Interval:
+    """A baseline BAND, with each bound's closure declared (§11.1).
+
+    Closure is a field rather than a convention because a source's bands are usually
+    meant to PARTITION, and a published listing in whole numbers does not say how.
+    Treantmonk's classes are the case that forced this: listed as ``26-33`` and
+    ``34-41``, they leave every real value between 33 and 34 in no class at all.  The
+    fix is the user's call (s58) and it is a declared INTERPRETATION, not a reading of
+    the source: the upper bound is inclusive, the adjoining band's lower bound is
+    exclusive at that same number, and the top band of a scale is unbounded above.
+    :attr:`published` keeps the source's own listing beside the applied bounds so the
+    transcription stays auditable.
+
+    ``None`` means unbounded on that side.  At least one bound must be finite — an
+    interval open at both ends matches everything and says nothing.
+    """
+
+    low: "float | None" = None
+    high: "float | None" = None
+    low_inclusive: bool = True
+    high_inclusive: bool = True
+    #: The source's own listing, verbatim, e.g. ``"26-33"``.  Audit trail for the
+    #: extension above: a reader can always recover what was published.
+    published: "str | None" = None
+
+    def __post_init__(self) -> None:
+        if self.low is None and self.high is None:
+            raise ValueError(
+                "An interval unbounded on BOTH sides matches every value and says "
+                "nothing; declare at least one bound."
+            )
+        if self.low is not None and self.high is not None and self.low > self.high:
+            raise ValueError(
+                f"Interval low {self.low} is above high {self.high}."
+            )
+
+    def verdict(self, value: float) -> str:
+        """Where ``value`` sits relative to this band."""
+        if self.low is not None:
+            if value < self.low or (value == self.low and not self.low_inclusive):
+                return VERDICT_BELOW
+        if self.high is not None:
+            if value > self.high or (value == self.high and not self.high_inclusive):
+                return VERDICT_ABOVE
+        return VERDICT_INSIDE
+
+    def contains(self, value: float) -> bool:
+        return self.verdict(value) == VERDICT_INSIDE
+
+    def label(self) -> str:
+        """Standard interval notation, so the closure is visible wherever it prints."""
+        left = "[" if self.low_inclusive else "("
+        right = "]" if self.high_inclusive else ")"
+        low = "-inf" if self.low is None else f"{self.low:,.4g}"
+        high = "inf" if self.high is None else f"{self.high:,.4g}"
+        if self.low is None:
+            left = "("
+        if self.high is None:
+            right = ")"
+        return f"{left}{low}, {high}{right}"
+
+    def describe(self) -> dict[str, Any]:
+        return {"low": self.low, "high": self.high,
+                "low_inclusive": self.low_inclusive,
+                "high_inclusive": self.high_inclusive,
+                "label": self.label(), "published": self.published}
+
+
+def _as_interval(raw: Any) -> "Interval | None":
+    """Accept either a 2-element ``[low, high]`` closed band or the full mapping."""
+    if raw is None or isinstance(raw, Interval):
+        return raw
+    if isinstance(raw, (list, tuple)):
+        if len(raw) != 2:
+            raise ValueError(
+                f"An interval given as a list must have exactly two elements, got "
+                f"{list(raw)!r}. Use the mapping form to declare bound closure."
+            )
+        low, high = raw
+        return Interval(low=None if low is None else float(low),
+                        high=None if high is None else float(high))
+    if isinstance(raw, dict):
+        unknown = set(raw) - {"low", "high", "low_inclusive", "high_inclusive",
+                              "published"}
+        if unknown:
+            raise ValueError(f"Unknown interval key(s) {sorted(unknown)}.")
+        low, high = raw.get("low"), raw.get("high")
+        return Interval(
+            low=None if low is None else float(low),
+            high=None if high is None else float(high),
+            low_inclusive=bool(raw.get("low_inclusive", True)),
+            high_inclusive=bool(raw.get("high_inclusive", True)),
+            published=raw.get("published"),
+        )
+    raise ValueError(f"An interval must be a list or a mapping, got {type(raw).__name__}.")
+
+
+@dataclass(frozen=True)
 class BaselineEntry:
     """One reference value at one coordinate.
 
     Exactly one of :attr:`value` and :attr:`interval` is set — the POINT/INTERVAL fork
-    of §11.1.  ``interval`` is stored AS PUBLISHED; nothing here widens or rounds it.
+    of §11.1.
     """
 
     coordinate: dict[str, Any]
     metric: str
     basis: str
     value: "float | None" = None
-    interval: "tuple[float, float] | None" = None
+    interval: "Interval | None" = None
     note: str = ""
 
     def __post_init__(self) -> None:
@@ -202,13 +300,6 @@ class BaselineEntry:
                 f"value={self.value!r}, interval={self.interval!r}. A point and a band "
                 f"score differently (§11.1), so which one this is cannot be left open."
             )
-        if self.interval is not None:
-            low, high = self.interval
-            if low > high:
-                raise ValueError(
-                    f"Baseline entry at {self.coordinate!r}: interval low {low} is "
-                    f"above high {high}."
-                )
         if not self.basis:
             raise ValueError(
                 f"Baseline entry at {self.coordinate!r} for {self.metric!r} declares no "
@@ -227,7 +318,7 @@ class BaselineEntry:
         return {"coordinate": dict(self.coordinate), "metric": self.metric,
                 "basis": self.basis,
                 "value": self.value,
-                "interval": list(self.interval) if self.interval else None,
+                "interval": self.interval.describe() if self.interval else None,
                 "note": self.note or None}
 
 
@@ -365,7 +456,7 @@ class Score:
     coordinate: dict[str, Any] = field(default_factory=dict)
     value: "float | None" = None
     baseline: "float | None" = None
-    baseline_interval: "tuple[float, float] | None" = None
+    baseline_interval: "Interval | None" = None
     basis: "str | None" = None
     run_basis: "str | None" = None
     delta: "float | None" = None
@@ -399,7 +490,7 @@ class Score:
             "state": self.state,
             "value": self.value,
             "baseline": self.baseline,
-            "baseline_interval": (list(self.baseline_interval)
+            "baseline_interval": (self.baseline_interval.describe()
                                   if self.baseline_interval else None),
             "basis": self.basis,
             "run_basis": self.run_basis,
@@ -538,13 +629,12 @@ def parse_source(data: dict[str, Any], *, where: str = "<dict>") -> BaselineSour
     )
     entries: list[BaselineEntry] = []
     for raw in data.get("entries") or []:
-        interval = raw.get("interval")
         entries.append(BaselineEntry(
             coordinate=dict(raw.get("coordinate") or {}),
             metric=raw["metric"],
             basis=raw.get("basis", ""),
             value=raw.get("value"),
-            interval=(float(interval[0]), float(interval[1])) if interval else None,
+            interval=_as_interval(raw.get("interval")),
             note=raw.get("note", ""),
         ))
     return BaselineSource(
@@ -629,13 +719,7 @@ def _score_one(report: "EvalReport", src: BaselineSource,
                      **common)
 
     if entry.is_interval:
-        low, high = entry.interval            # type: ignore[misc]
-        if value.value < low:
-            verdict = VERDICT_BELOW
-        elif value.value > high:
-            verdict = VERDICT_ABOVE
-        else:
-            verdict = VERDICT_INSIDE
+        verdict = entry.interval.verdict(value.value)   # type: ignore[union-attr]
         return Score(state=STATE_SCORED, value=value.value, verdict=verdict,
                      warnings=tuple(warnings), note=entry.note or None, **common)
 
@@ -713,6 +797,8 @@ SCORE_RUN_COLUMNS = ("run_id", "config_hash", "build", "level", "engine_commit",
                      "baselines_fingerprint")
 SCORE_VALUE_COLUMNS = ("metric", "source", "source_kind", "coordinate", "state",
                        "value", "baseline", "baseline_low", "baseline_high",
+                       "baseline_low_inclusive", "baseline_high_inclusive",
+                       "baseline_band", "baseline_published",
                        "delta", "ratio", "verdict", "basis", "run_basis",
                        "warnings", "note")
 SCORE_COLUMNS = SCORE_RUN_COLUMNS + SCORE_VALUE_COLUMNS
@@ -754,8 +840,16 @@ def scores_to_rows(report: "EvalReport",
             "state": row["state"],
             "value": row["value"],
             "baseline": row["baseline"],
-            "baseline_low": interval[0] if interval else None,
-            "baseline_high": interval[1] if interval else None,
+            # Each bound and its CLOSURE get their own column: an exclusive bound and
+            # an inclusive one at the same number are different bands, and a frame that
+            # printed only the numbers could not tell them apart. `baseline_band` is the
+            # same fact in interval notation for a human skimming the frame.
+            "baseline_low": interval["low"] if interval else None,
+            "baseline_high": interval["high"] if interval else None,
+            "baseline_low_inclusive": interval["low_inclusive"] if interval else None,
+            "baseline_high_inclusive": interval["high_inclusive"] if interval else None,
+            "baseline_band": interval["label"] if interval else None,
+            "baseline_published": interval["published"] if interval else None,
             "delta": row["delta"],
             "ratio": row["ratio"],
             "verdict": row["verdict"],
