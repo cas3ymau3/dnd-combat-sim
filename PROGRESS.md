@@ -385,6 +385,40 @@ type, condition, resource, …):
      drift out of their regime; a fixture pinned to a REGIME (s55 repointed this one to
      L16, whose variance comes from Flourish Counter rather than from the character failing
      saves) is sturdier than one pinned to a level.
+   **AND A FIXTURE'S CONDITION MAY BE UNREACHABLE RATHER THAN MERELY ABSENT (added
+   s56).** s55's lesson is that a test whose fixture stops exhibiting the condition under
+   test still passes; assert the precondition. This is the same question asked one level
+   deeper, and it is nastier because the guard s55 prescribes would have PASSED.
+   `test_unmeasured_is_a_distinct_state_from_unavailable` needed a cell that was
+   available but had no observations, and used `save_fail_rate[cha_save|*]` on Silvertail
+   L10 — band 5-10, where `cha_save` has no weight in the damage channel at all. So the
+   cell it called UNMEASURED was **structurally impossible**: no day count could have
+   filled it. The fixture was chosen to produce an empty denominator and produced an
+   unreachable one instead, **and from the outside the two are identical** — both show
+   `value=None`.
+   - The habit: when a fixture must exhibit "X happens not to have occurred", assert that
+     X is REACHABLE, not just that it is currently absent. Reachability is usually a
+     different question from presence and usually answerable from the run's own resolved
+     parameters (here: does the band carry a weight for this ability at all).
+   - It went unnoticed for ten sessions because the test was *right about everything it
+     asserted*. It is the complement of the s54 exact-equality lesson: there a clean
+     measurement came from a defective input, here a correct assertion came from a
+     fixture that could not have failed.
+
+   **AND WHEN A PREDICATE PUBLISHES A REASON DERIVED FROM DATA, THE REASON INHERITS THAT
+   DATA'S UNCERTAINTY (added s56; the user's challenge is what found it).** Step 8b turns
+   "this band's weights do not include ability X" into a published UNAVAILABLE row with a
+   sentence attached. The predicate is right — the run cannot produce a save with no
+   weight — but the first draft of the sentence read as a fact about monsters at that CR,
+   and the census cannot support that: band 17+ is its thinnest at 35 monsters, and INT
+   appears 0-4 times in ANY band, so the zero would flip with one more monster. WIS
+   damaging at 17+, by contrast, looks real (7/55 to 0/63). **The availability mechanism
+   exists to stop a zero reading as a measurement; it must not replace it with prose that
+   reads as a rule.** Same family as "prefer an assertion, prose cannot fail" — except a
+   REASON cannot be an assertion, so the only guard is to make it say what its source
+   recorded and stop there. Worth noting the provenance honestly: this was found because
+   the user asked "I don't understand", not because the check was run.
+
 6. **Render ONE REAL OUTPUT by eye before calling it done.** Added session 48, from the
    bug that session found. Run the feature on a real run at a realistic size and LOOK at
    what it prints — not a fixture, not an assertion, the actual artifact a reader would
@@ -434,6 +468,44 @@ type, condition, resource, …):
      false positive here feel like a confirmation. So when a check fires on something that
      has been looked at repeatedly, verify the CHECKER against a couple of cases by hand
      before believing it, and say so when reporting the result.
+   **A DEFECT IS NOT BOUNDED BY THE LEVELS IT WAS FOUND AT — RE-ASK IT OF THE BASELINE
+   SUBJECT (added s56).** 8b's defect was found on War Angel at L1-L10, and the obvious
+   reading is "ten of sixteen levels, now fixed". Asking the same question of §3.5's
+   baseline subject — the only subject complete at all 20 levels — found FOUR more
+   instances at L17-20 that War Angel could not have shown, because it stops at 16 and
+   because the 17+ band drops two abilities the lower bands carry. The subject costs one
+   run to interrogate and exists precisely to be the complete case, so the habit is
+   cheap: **when a defect is found on a real build, re-ask it of the subject before
+   calling the fix complete.** The general shape is that a build's level set is a sample,
+   and a defect's extent measured on a sample is a lower bound.
+
+   **AN IMPLEMENTED REQUIREMENT IS NOT A MET REQUIREMENT (added s56).** §4 asks by name
+   for the band save weights to be "recorded as the actual weights drawn from the frozen
+   table, not as 'default'". `BaselineEnemyPolicy.describe_parameters()` has returned them
+   since s38, with tests — and **nothing serializes that block**. The artifact's enemy
+   provenance comes from `enemy.resolve()`, which never consulted the policy, so the
+   requirement was satisfied in code no report reads, for eighteen sessions, with a green
+   suite.
+   - This is the s53 writer/reader rule applied to a PROVENANCE field rather than a
+     telemetry channel: a writer with no reader. The reusable form is a grep target —
+     **when a design document states that something must be RECORDED, grep for what
+     SERIALIZES it, not for what computes it**, and if the two are different modules say
+     which one the reader actually sees.
+   - And note how it surfaced: not by auditing §4, but because 8b needed to READ the
+     weights for an availability predicate. Third time now (s53's reaction channel, s54's
+     AC, this) that **asking what the framework should be able to DO found what it cannot
+     SEE**, which is a stronger search strategy than reading the requirements list.
+
+   **REFUSING TO EXTRAPOLATE IS A DESIGN DECISION, AND IT GETS NAMED (added s56).** 8a
+   derives "days required" from each convergence gate's scaling in n. Three gates have a
+   scaling law; two do not, and quoting one for them would have printed a finite,
+   checkable-looking day count for something no day count achieves — s51 had already
+   measured the lattice case pinned at 0.33 against a 0.10 threshold forever. So: **before
+   deriving a quantity from a scaling law, name the law and enumerate the cases that do
+   not obey it**, and give those a distinguishable answer rather than a number. The
+   output-layer consequence is that "no day count helps" has to outrank any finite
+   requirement however large, or the stronger statement gets buried by a bigger number.
+
 7. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
@@ -2029,6 +2101,21 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
      `saves_forced_per_round`, which is a re-baseline. It has one consequence already
      applied: Starfire must NOT declare `wis_save`, or an empty cell stays open on the
      strength of a save nothing records.
+
+  **A THIRD FINDING, AND IT CAME FROM THE USER ASKING "I DON'T UNDERSTAND".** The 17+
+  claim above was first written as a structural fact. Challenged at the close, and
+  checked: band 17+ is the **thinnest band in the census** (35 monsters against 303 at
+  band 0-4), and INT appears 0-4 times in ANY band of either census, so its zero there
+  carries no information and would flip with one more monster. WIS *damaging* at 17+ does
+  look real (7 of 55 at band 11-16 to 0 of 63, about 1.5-in-10,000 under the earlier
+  rate) and WIS CONTROL stays strong at 13 of 34 — which is exactly the §4 correction
+  `band_save_weights`' own docstring states. **The predicate was right and the PROSE was
+  not:** availability is a claim about what this run can produce, and the reason text had
+  quietly upgraded it to a claim about monsters at that CR. The sentence now says what the
+  census recorded and points at the new §14 entry; the deferral proper is a CONTENT
+  question for the census, like the s36 cross-band reconciliation, not something this
+  layer can decide. Recorded with its provenance — it was found because the user asked,
+  not because the check was run — and generalized into ritual step 5.
 
   **REGISTRY STATUS: NOT a registry-touching session by the review's own rule.** No
   declaration was added or removed — still **28** (17 scalars + 8 breakdowns + 3

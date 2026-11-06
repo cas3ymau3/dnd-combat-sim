@@ -1517,10 +1517,19 @@ def _no_such_save_reason(ctx: RunContext, ability: str,
     else:
         can = sorted({a for c in channels
                       for a in (enemy["save_weights"].get(c) or {})})
+        # Says what the TABLE records, and stops there.  An earlier draft of this
+        # sentence read as a rules fact ("the enemy cannot force an INT save at this
+        # CR"), and the census does not support that: band 17+ is its thinnest, 35
+        # monsters, and INT appears 0-4 times in ANY band, so a zero there would flip
+        # with one more monster. The run still genuinely cannot force the save — which
+        # is what this cell's availability is about — but the reason must not borrow
+        # authority the sample does not have. See §14's census-thinness note.
         enemy_half = (
             f"the standardized enemy at band {enemy['band']} draws {where}'s saves "
-            f"from {can} (enemy_stats.band_save_weights / band_control_weights), "
-            f"which does not include {ability}"
+            f"from {can}, which does not include {ability} — i.e. the frozen census "
+            f"recorded no {ability} there (enemy_stats.band_save_weights / "
+            f"band_control_weights; a zero weight on a thin band may be a sample "
+            f"artifact rather than a fact about monsters at this CR, §14)"
         )
     if "damage" not in channels:
         # Naming the build's declaration here would be a true sentence that implies a

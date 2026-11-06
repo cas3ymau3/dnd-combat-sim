@@ -2240,6 +2240,48 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   widen the output layer; it belongs with step 8's registry work. Worth doing then: the
   same question applies to any cell whose key space is wider than what the resolved enemy
   can produce, which is not only the save abilities.
+- **A ZERO SAVE WEIGHT ON A THIN BAND MAY BE A CENSUS ARTIFACT, AND 8b MAKES IT
+  LOAD-BEARING** *(added s56, after the user challenged the 17+ claim — the check was
+  prompted, not volunteered, which is the honest provenance for it)*. Step 8b converts
+  "this band's weights do not include ability X" into a published UNAVAILABLE row with a
+  reason. That is correct about the RUN — the resolved enemy genuinely cannot draw an
+  ability with no weight — but it inherits whatever the frozen census recorded, and the
+  census is not uniform across bands:
+
+  | band | damaging-save rows | INT | WIS | control rows | INT | WIS | monsters |
+  |---|---:|---:|---:|---:|---:|---:|---:|
+  | 0-4 | 57 | 2 | 6 | 78 | 1 | 31 | 303 |
+  | 5-10 | 68 | 4 | 9 | 66 | 1 | 25 | 126 |
+  | 11-16 | 55 | 1 | 7 | 40 | 1 | 17 | 46 |
+  | **17+** | **63** | **0** | **0** | **34** | **0** | 13 | **35** |
+
+  Two different situations, and they must not be read the same way:
+  - **INT at 17+, in BOTH channels, is a SMALL-SAMPLE ZERO.** INT appears 0-4 times in
+    any band of either census, so 0 of 63 (damaging) and 0 of 34 (control) carry no
+    information — one more tabulated monster would flip both cells, and 17+ is the
+    thinnest band in the census.
+  - **WIS *damaging* at 17+ looks REAL.** 7 of 55 at band 11-16 to 0 of 63 is about
+    1.5-in-10,000 under the earlier rate, and WIS CONTROL stays strong there (13 of
+    34). That is exactly the §4 correction `band_save_weights`' own docstring states:
+    the mental-save mass lives in the control channel, and it concentrates there as CR
+    rises.
+
+  **What was changed, and what was not.** The predicate is unchanged: availability is a
+  statement about what this run can produce, and the run cannot produce a save with no
+  weight. What was wrong was the REASON TEXT, which read as a fact about monsters at that
+  CR; it now says what the census recorded and names this entry. **The deferral proper is
+  a CONTENT question for the census, not a framework one** — whether the 17+ band is
+  thick enough to support a zero, which is a re-tabulation decision like the s36
+  cross-band reconciliation and not something the evaluation layer can decide.
+  Trigger: anyone reading a 17+ report and wanting the INT row back, or any future
+  widening of the census.
+
+  The transferable part is smaller than the finding and more useful: **when a predicate
+  starts publishing a REASON derived from data, the reason inherits that data's
+  uncertainty, and prose is where that gets lost.** The availability mechanism was built
+  to stop a zero reading as a measurement; it must not replace it with a sentence that
+  reads as a rule.
+
 - **TWO of the engine's five save sites write to NO telemetry channel** *(added s56,
   found while settling step 8b)*. `resolve_saving_throw` has five call sites. Three are
   accounted for: `resolve_save_damage` → the `damage` channel, `resolve_control_save` →
