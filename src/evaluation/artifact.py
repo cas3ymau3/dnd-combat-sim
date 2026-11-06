@@ -488,7 +488,8 @@ def _config_hash(report: "EvalReport") -> str:
 # ---------------------------------------------------------------------------
 
 def report_to_dict(report: "EvalReport", *,
-                   include_data_dictionary: bool = True) -> dict[str, Any]:
+                   include_data_dictionary: bool = True,
+                   baselines: "Any | None" = None) -> dict[str, Any]:
     """The full run record (§9.1), as JSON-safe primitives.
 
     ``include_data_dictionary`` defaults ON so a single artifact is SELF-DESCRIBING:
@@ -496,6 +497,18 @@ def report_to_dict(report: "EvalReport", *,
     notes without importing the Python registry.  That is §5.1's "the registry IS the
     data dictionary" delivered across the process boundary, and it costs a few KB of
     static text against a run that took minutes to produce.
+
+    ``baselines`` is a :class:`~src.evaluation.baselines.BaselineRegistry` (§11.2).
+    Passing one adds a ``scores`` section, additive at :data:`SCHEMA_VERSION` 1 on the
+    ``convergence`` and ``distributions`` precedent.  **Omitting it leaves the key
+    ABSENT rather than present-and-empty**, because "this record was not scored" and
+    "it was scored and nothing matched" are different facts — the same distinction the
+    tidy frame draws between a blank and a ``*``, and a row's ``unavailable`` from its
+    ``unmeasured``.
+
+    **The record STORE never passes one** (§11.2): §10.2's cache key is
+    ``(config_hash, engine_commit)`` and nothing else, so a scored record in the shared
+    store would be served to a later run asking for a DIFFERENT baseline set.
     """
     provenance = report.provenance
     record: dict[str, Any] = {
@@ -518,6 +531,10 @@ def report_to_dict(report: "EvalReport", *,
                               if d.name in report.distributions],
         },
     }
+    if baselines is not None:
+        from .baselines import scores_block
+
+        record["scores"] = scores_block(report, baselines)
     if include_data_dictionary:
         record["data_dictionary"] = report.registry.data_dictionary()
     return record
@@ -547,18 +564,21 @@ def _provenance_to_dict(provenance: Any) -> dict[str, Any]:
 
 
 def to_json(report: "EvalReport", *, include_data_dictionary: bool = True,
-            indent: "int | None" = 2) -> str:
+            indent: "int | None" = 2, baselines: "Any | None" = None) -> str:
     return json.dumps(report_to_dict(report,
-                                     include_data_dictionary=include_data_dictionary),
+                                     include_data_dictionary=include_data_dictionary,
+                                     baselines=baselines),
                       indent=indent, sort_keys=False)
 
 
 def write_json(report: "EvalReport", path: "str | Path", *,
-               include_data_dictionary: bool = True) -> Path:
+               include_data_dictionary: bool = True,
+               baselines: "Any | None" = None) -> Path:
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(
-        to_json(report, include_data_dictionary=include_data_dictionary) + "\n",
+        to_json(report, include_data_dictionary=include_data_dictionary,
+                baselines=baselines) + "\n",
         encoding="utf-8",
     )
     return target
@@ -738,20 +758,35 @@ def write_csv(report: "EvalReport", path: "str | Path", *,
 
 def write_artifact(report: "EvalReport", directory: "str | Path", *,
                    stem: "str | None" = None,
-                   include_data_dictionary: bool = True) -> dict[str, Path]:
+                   include_data_dictionary: bool = True,
+                   baselines: "Any | None" = None) -> dict[str, Path]:
     """Write ``<stem>.json`` and ``<stem>.csv`` into ``directory``.
 
     ``stem`` defaults to the run id, which already identifies the scenario and hashes
     the config — so re-running the same scenario overwrites its own artifact rather
     than accumulating near-duplicates, and two different scenarios cannot collide.
+
+    With ``baselines`` (§11.2) the JSON gains its ``scores`` section and a THIRD file
+    appears, ``<stem>.scores.csv``.  Separate from the run record's CSV rather than
+    extra columns on it because the two have different GRAINS — that frame is keyed
+    ``(run, metric)`` and a score is keyed ``(run, metric, source, coordinate)``, so two
+    sources for one metric are two rows.  Without ``baselines`` the output is exactly
+    the two files it has always been, which is what ``RecordStore.put`` writes.
     """
     root = Path(directory)
     name = stem or run_id(report)
-    return {
+    written = {
         "json": write_json(report, root / f"{name}.json",
-                           include_data_dictionary=include_data_dictionary),
+                           include_data_dictionary=include_data_dictionary,
+                           baselines=baselines),
         "csv": write_csv(report, root / f"{name}.csv"),
     }
+    if baselines is not None:
+        from .baselines import write_scores_csv
+
+        written["scores_csv"] = write_scores_csv(
+            report, baselines, root / f"{name}.scores.csv")
+    return written
 
 
 def write_sweep_csv(reports: "Iterable[EvalReport]", path: "str | Path") -> Path:

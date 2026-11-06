@@ -1,0 +1,131 @@
+baselines_schema_version: 1
+name: treantmonk_damage_classes
+kind: external_published
+description: >-
+  Treantmonk's Damage Classes by Tier — four DPR bands (A/B/C/D) per tier of play, the
+  project's only genuinely EXTERNAL reference point for damage output.
+provenance: >-
+  Transcribed verbatim from the "Treantmonk Damage Classes by Tier" block in
+  design/build-guides/36_the_reanimating_bloodshot.txt, lines 107-112 (the user's own
+  guide file quoting Treantmonk's published tiering). Figures are Treantmonk's, produced
+  under his own enemy and encounter assumptions, which this project does not know — hence
+  basis: unknown on every entry, and kind: external_published, which makes every score
+  against it a REFERENCE POINT and not a target to match (evaluation_framework.md §11).
+  The band bounds are stored AS PUBLISHED: they tile contiguously over the INTEGERS, so a
+  real-valued DPR can fall between two classes (§11.3), and that is reported as the pair
+  of verdicts rather than papered over with a rounding convention this source does not
+  state.
+
+dimensions:
+  - name: damage_class
+    match: free
+    description: >-
+      Treantmonk's class letter, A (highest) to D. FREE rather than matched: a run is
+      scored against ALL FOUR classes at its tier, and the four verdicts together are
+      what locate the build. Nothing in a RunConfig names a damage class.
+  - name: tier
+    match: contains
+    run_field: level
+    description: >-
+      Tier of play as a LEVEL BAND — tier 1 = levels 1-4, 2 = 5-10, 3 = 11-16,
+      4 = 17-20, the same boundaries the guide's own T1/T2/T3/T4 average rows use. A
+      band rather than an exact level, because the source bands levels and pretending
+      otherwise would invent per-level precision it does not have.
+
+entries:
+  - coordinate: {damage_class: A, tier: [1, 4]}
+    metric: dpr
+    basis: unknown
+    interval: [13, 15]
+    note: >-
+      Class A, tier 1 (levels 1-4): 13-15 DPR as published.
+  - coordinate: {damage_class: A, tier: [5, 10]}
+    metric: dpr
+    basis: unknown
+    interval: [37, 43]
+    note: >-
+      Class A, tier 2 (levels 5-10): 37-43 DPR as published.
+  - coordinate: {damage_class: A, tier: [11, 16]}
+    metric: dpr
+    basis: unknown
+    interval: [50, 57]
+    note: >-
+      Class A, tier 3 (levels 11-16): 50-57 DPR as published.
+  - coordinate: {damage_class: A, tier: [17, 20]}
+    metric: dpr
+    basis: unknown
+    interval: [70, 78]
+    note: >-
+      Class A, tier 4 (levels 17-20): 70-78 DPR as published.
+  - coordinate: {damage_class: B, tier: [1, 4]}
+    metric: dpr
+    basis: unknown
+    interval: [10, 12]
+    note: >-
+      Class B, tier 1 (levels 1-4): 10-12 DPR as published.
+  - coordinate: {damage_class: B, tier: [5, 10]}
+    metric: dpr
+    basis: unknown
+    interval: [29, 36]
+    note: >-
+      Class B, tier 2 (levels 5-10): 29-36 DPR as published.
+  - coordinate: {damage_class: B, tier: [11, 16]}
+    metric: dpr
+    basis: unknown
+    interval: [42, 49]
+    note: >-
+      Class B, tier 3 (levels 11-16): 42-49 DPR as published.
+  - coordinate: {damage_class: B, tier: [17, 20]}
+    metric: dpr
+    basis: unknown
+    interval: [60, 69]
+    note: >-
+      Class B, tier 4 (levels 17-20): 60-69 DPR as published.
+  - coordinate: {damage_class: C, tier: [1, 4]}
+    metric: dpr
+    basis: unknown
+    interval: [7, 9]
+    note: >-
+      Class C, tier 1 (levels 1-4): 7-9 DPR as published.
+  - coordinate: {damage_class: C, tier: [5, 10]}
+    metric: dpr
+    basis: unknown
+    interval: [22, 28]
+    note: >-
+      Class C, tier 2 (levels 5-10): 22-28 DPR as published.
+  - coordinate: {damage_class: C, tier: [11, 16]}
+    metric: dpr
+    basis: unknown
+    interval: [34, 41]
+    note: >-
+      Class C, tier 3 (levels 11-16): 34-41 DPR as published.
+  - coordinate: {damage_class: C, tier: [17, 20]}
+    metric: dpr
+    basis: unknown
+    interval: [50, 59]
+    note: >-
+      Class C, tier 4 (levels 17-20): 50-59 DPR as published.
+  - coordinate: {damage_class: D, tier: [1, 4]}
+    metric: dpr
+    basis: unknown
+    interval: [4, 6]
+    note: >-
+      Class D, tier 1 (levels 1-4): 4-6 DPR as published.
+  - coordinate: {damage_class: D, tier: [5, 10]}
+    metric: dpr
+    basis: unknown
+    interval: [15, 21]
+    note: >-
+      Class D, tier 2 (levels 5-10): 15-21 DPR as published.
+  - coordinate: {damage_class: D, tier: [11, 16]}
+    metric: dpr
+    basis: unknown
+    interval: [26, 33]
+    note: >-
+      Class D, tier 3 (levels 11-16): 26-33 DPR as published.
+  - coordinate: {damage_class: D, tier: [17, 20]}
+    metric: dpr
+    basis: unknown
+    interval: [35, 49]
+    note: >-
+      Class D, tier 4 (levels 17-20): 35-49 DPR as published.

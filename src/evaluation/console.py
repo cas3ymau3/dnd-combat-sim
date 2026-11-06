@@ -191,9 +191,94 @@ def _enemy_line(provenance: Any) -> str:
     return f"{path}  level {block['level']} band {block['band']}{suffix}"
 
 
-def render(report: "EvalReport") -> str:
-    """The whole report as one text block."""
-    record = report_to_dict(report, include_data_dictionary=False)
+def _coord_value(value: Any) -> str:
+    """A coordinate position for display: a declared BAND reads as ``11-16``.
+
+    A ``contains`` dimension's value is a two-element range, and rendering it as a
+    Python list (``[11, 16]``) puts punctuation in front of the reader for no gain.
+    """
+    if isinstance(value, (list, tuple)) and len(value) == 2:
+        return f"{value[0]}-{value[1]}"
+    return str(value)
+
+
+def _score_lines(block: dict[str, Any]) -> list[str]:
+    """The §11.2 ``scores`` section, rendered.
+
+    **This exists so the block is not a writer with no reader.**  s53 found a telemetry
+    channel dead at both ends and s56 found a §4 provenance requirement satisfied in
+    code nothing serialized; both are the same defect, and shipping a scores section no
+    renderer reads would be the third instance in three sessions.  So the console reads
+    it, and the roll call names this as the reader.
+
+    Two things it must not do.  It must not print a DELTA for an interval baseline (the
+    distance to a band is not a number the band supports), and it must not let an
+    ``external_published`` score read as a shortfall — §11's correction is that such a
+    figure is a REFERENCE POINT, so its warning is printed beside the number rather than
+    filed away in the JSON.
+    """
+    out: list[str] = []
+    rows = block["scores"]
+    counts: dict[str, int] = {}
+    for row in rows:
+        counts[row["state"]] = counts.get(row["state"], 0) + 1
+    out.append("")
+    out.append(f"BASELINE SCORES  ({len(rows)}) -- "
+               + ", ".join(f"{n} {state}" for state, n in sorted(counts.items())))
+    out.append(_THIN)
+    out.append(f"  baseline set {block['baselines_fingerprint']}"
+               f"   (schema {block['baselines_schema_version']})")
+    # A warning that holds for EVERY score of a source is a fact about the source, so
+    # it is printed once there rather than on each row.  Found by rendering this by eye:
+    # the first draft printed 'reference_point' and 'basis_unknown' on all four damage
+    # classes -- two facts, eight lines, burying the four verdicts that are the answer.
+    hoisted: dict[str, set[str]] = {}
+    for src in block["sources"]:
+        mine = [r for r in rows if r["source"] == src["name"]]
+        sets = [{w["code"] for w in r["warnings"]} for r in mine]
+        hoisted[src["name"]] = set.intersection(*sets) if sets else set()
+        marker = "  REFERENCE POINT, not a target" if src["is_reference_point"] else ""
+        out.append(f"  [{src['kind']}] {src['name']}"
+                   f"   {src['n_entries']} entr{'y' if src['n_entries'] == 1 else 'ies'}"
+                   f"{marker}")
+        for code in sorted(hoisted[src["name"]]):
+            message = next(w["message"] for r in mine for w in r["warnings"]
+                           if w["code"] == code)
+            out.append(f"      [{code}] {message}   (all {len(mine)} score(s))")
+    for row in rows:
+        label = row["coordinate"] or {}
+        coord = " ".join(f"{k}={_coord_value(label[k])}" for k in sorted(label))
+        head = f"  {row['metric']}  vs {row['source']}"
+        if coord:
+            head += f" [{coord}]"
+        if row["state"] != "scored":
+            out.append(f"{head}   {row['state'].upper()}")
+            if row["note"]:
+                out.append(f"      {row['note']}")
+            continue
+        if row["baseline_interval"] is not None:
+            low, high = row["baseline_interval"]
+            out.append(f"{head}   {row['value']:,.4g} vs [{low:,.4g}, {high:,.4g}]"
+                       f"   -> {row['verdict'].upper()}")
+        else:
+            ratio = ("n/a" if row["ratio"] is None else f"{row['ratio']:,.3f}x")
+            out.append(f"{head}   {row['value']:,.4g} vs {row['baseline']:,.4g}"
+                       f"   delta {row['delta']:+,.4g}   ratio {ratio}")
+        for warning in row["warnings"]:
+            if warning["code"] in hoisted.get(row["source"], ()):
+                continue
+            out.append(f"      [{warning['code']}] {warning['message']}")
+    return out
+
+
+def render(report: "EvalReport", *, baselines: "Any | None" = None) -> str:
+    """The whole report as one text block.
+
+    ``baselines`` (§11.2) adds the BASELINE SCORES section; without one the output is
+    byte-identical to what it has always been, so no existing rendered artifact moves.
+    """
+    record = report_to_dict(report, include_data_dictionary=False,
+                            baselines=baselines)
     provenance = report.provenance
     config = provenance.config
     results = record["results"]
@@ -330,6 +415,10 @@ def render(report: "EvalReport") -> str:
             out.append(f"  {shown}{more}")
             out.append(f"      {reason}")
 
+    # -- baseline scores (§11.2), before the warnings ------------------
+    if "scores" in record:
+        out.extend(_score_lines(record["scores"]))
+
     # -- warnings, last, where the eye stops ----------------------------
     out.append("")
     out.append("WARNINGS")
@@ -345,7 +434,8 @@ def render(report: "EvalReport") -> str:
     return "\n".join(out)
 
 
-def print_report(report: "EvalReport", file: "TextIO | None" = None) -> None:
+def print_report(report: "EvalReport", file: "TextIO | None" = None, *,
+                 baselines: "Any | None" = None) -> None:
     """Print the report, degrading gracefully on a narrow console encoding.
 
     This file's own scaffolding is ASCII, but the text it renders is not entirely:
@@ -355,7 +445,7 @@ def print_report(report: "EvalReport", file: "TextIO | None" = None) -> None:
     characters are replaced and the numbers still arrive.
     """
     stream = file or sys.stdout
-    text = render(report)
+    text = render(report, baselines=baselines)
     try:
         print(text, file=stream)
     except UnicodeEncodeError:
