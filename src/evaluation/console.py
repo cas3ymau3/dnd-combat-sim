@@ -67,11 +67,56 @@ def _fmt_value(row: dict[str, Any]) -> str:
     return text
 
 
+def _fmt_days(days: float) -> str:
+    """A day count a reader can compare against §10's tiers at a glance."""
+    if days >= 1_000_000:
+        return f"{days / 1_000_000:.2g}M"
+    if days >= 10_000:
+        return f"{round(days / 1_000):,.0f}k"
+    return f"{round(days):,.0f}"
+
+
 def _flag(row: dict[str, Any]) -> str:
-    """A trailing marker for a row a reader should not take at face value."""
-    if row["status"] == STATUS_MEASURED and not row["converged"]:
+    """A trailing marker for a row a reader should not take at face value.
+
+    **The bare `[unconverged]` was the same word for two opposite situations
+    (§14(a), fixed s56).**  At band 5-10, 58% of the #6a run's flags cleared with at
+    most double the days — `saves_forced_per_round[dex_save|*]` at L10 needed FIFTY-
+    EIGHT more — while six needed over a hundred times the tier, one of them twice
+    the publication budget because the channel barely exists at that CR.  A reader
+    could not tell those apart, and no constant fixes that, so the flag now carries
+    the binding criterion's own two numbers and the days it would take.
+
+    Three shapes, and the third is the one that matters:
+
+        [unconverged: rel_stderr 0.043 vs 0.02, ~9.2k days (4.6x)]
+        [unconverged: min_days 40 vs 100, ~100 days (2.5x)]
+        [unconverged: ci_width_vs_spread 0.667 vs 0.1, no day count helps]
+
+    "no day count helps" is NOT "a very large number of days".  It is printed only
+    where the criterion has no known scaling in n (a distribution's interval width)
+    or where no n satisfies it at all (a ratio-scale estimate sitting exactly on
+    zero), and the row's `convergence.note` says which.  Units are deliberately
+    left to the criterion NAME rather than formatted per criterion: `rel_stderr` is
+    a fraction, `resolution_sigmas` is standard errors, the two floors are counts,
+    and a renderer that guessed would be a fourth place that has to be kept in step.
+    """
+    if row["status"] != STATUS_MEASURED or row["converged"]:
+        return ""
+    verdict = row["convergence"]
+    criterion = verdict["criterion"]
+    if criterion is None:                     # defensive: unconverged names one
         return "  [unconverged]"
-    return ""
+    attained, required = verdict["attained"], verdict["required"]
+    parts = [criterion if attained is None or required is None
+             else f"{criterion} {attained:.3g} vs {required:.3g}"]
+    days, factor = verdict["days_required"], verdict["days_factor"]
+    if days is None:
+        parts.append("no day count helps")
+    else:
+        parts.append(f"~{_fmt_days(days)} days"
+                     + (f" ({factor:.3g}x)" if factor is not None else ""))
+    return "  [unconverged: " + ", ".join(parts) + "]"
 
 
 #: Floor for the metric-name column.  The width is DERIVED from the rows being

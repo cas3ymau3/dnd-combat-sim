@@ -385,6 +385,40 @@ type, condition, resource, …):
      drift out of their regime; a fixture pinned to a REGIME (s55 repointed this one to
      L16, whose variance comes from Flourish Counter rather than from the character failing
      saves) is sturdier than one pinned to a level.
+   **AND A FIXTURE'S CONDITION MAY BE UNREACHABLE RATHER THAN MERELY ABSENT (added
+   s56).** s55's lesson is that a test whose fixture stops exhibiting the condition under
+   test still passes; assert the precondition. This is the same question asked one level
+   deeper, and it is nastier because the guard s55 prescribes would have PASSED.
+   `test_unmeasured_is_a_distinct_state_from_unavailable` needed a cell that was
+   available but had no observations, and used `save_fail_rate[cha_save|*]` on Silvertail
+   L10 — band 5-10, where `cha_save` has no weight in the damage channel at all. So the
+   cell it called UNMEASURED was **structurally impossible**: no day count could have
+   filled it. The fixture was chosen to produce an empty denominator and produced an
+   unreachable one instead, **and from the outside the two are identical** — both show
+   `value=None`.
+   - The habit: when a fixture must exhibit "X happens not to have occurred", assert that
+     X is REACHABLE, not just that it is currently absent. Reachability is usually a
+     different question from presence and usually answerable from the run's own resolved
+     parameters (here: does the band carry a weight for this ability at all).
+   - It went unnoticed for ten sessions because the test was *right about everything it
+     asserted*. It is the complement of the s54 exact-equality lesson: there a clean
+     measurement came from a defective input, here a correct assertion came from a
+     fixture that could not have failed.
+
+   **AND WHEN A PREDICATE PUBLISHES A REASON DERIVED FROM DATA, THE REASON INHERITS THAT
+   DATA'S UNCERTAINTY (added s56; the user's challenge is what found it).** Step 8b turns
+   "this band's weights do not include ability X" into a published UNAVAILABLE row with a
+   sentence attached. The predicate is right — the run cannot produce a save with no
+   weight — but the first draft of the sentence read as a fact about monsters at that CR,
+   and the census cannot support that: band 17+ is its thinnest at 35 monsters, and INT
+   appears 0-4 times in ANY band, so the zero would flip with one more monster. WIS
+   damaging at 17+, by contrast, looks real (7/55 to 0/63). **The availability mechanism
+   exists to stop a zero reading as a measurement; it must not replace it with prose that
+   reads as a rule.** Same family as "prefer an assertion, prose cannot fail" — except a
+   REASON cannot be an assertion, so the only guard is to make it say what its source
+   recorded and stop there. Worth noting the provenance honestly: this was found because
+   the user asked "I don't understand", not because the check was run.
+
 6. **Render ONE REAL OUTPUT by eye before calling it done.** Added session 48, from the
    bug that session found. Run the feature on a real run at a realistic size and LOOK at
    what it prints — not a fixture, not an assertion, the actual artifact a reader would
@@ -434,6 +468,44 @@ type, condition, resource, …):
      false positive here feel like a confirmation. So when a check fires on something that
      has been looked at repeatedly, verify the CHECKER against a couple of cases by hand
      before believing it, and say so when reporting the result.
+   **A DEFECT IS NOT BOUNDED BY THE LEVELS IT WAS FOUND AT — RE-ASK IT OF THE BASELINE
+   SUBJECT (added s56).** 8b's defect was found on War Angel at L1-L10, and the obvious
+   reading is "ten of sixteen levels, now fixed". Asking the same question of §3.5's
+   baseline subject — the only subject complete at all 20 levels — found FOUR more
+   instances at L17-20 that War Angel could not have shown, because it stops at 16 and
+   because the 17+ band drops two abilities the lower bands carry. The subject costs one
+   run to interrogate and exists precisely to be the complete case, so the habit is
+   cheap: **when a defect is found on a real build, re-ask it of the subject before
+   calling the fix complete.** The general shape is that a build's level set is a sample,
+   and a defect's extent measured on a sample is a lower bound.
+
+   **AN IMPLEMENTED REQUIREMENT IS NOT A MET REQUIREMENT (added s56).** §4 asks by name
+   for the band save weights to be "recorded as the actual weights drawn from the frozen
+   table, not as 'default'". `BaselineEnemyPolicy.describe_parameters()` has returned them
+   since s38, with tests — and **nothing serializes that block**. The artifact's enemy
+   provenance comes from `enemy.resolve()`, which never consulted the policy, so the
+   requirement was satisfied in code no report reads, for eighteen sessions, with a green
+   suite.
+   - This is the s53 writer/reader rule applied to a PROVENANCE field rather than a
+     telemetry channel: a writer with no reader. The reusable form is a grep target —
+     **when a design document states that something must be RECORDED, grep for what
+     SERIALIZES it, not for what computes it**, and if the two are different modules say
+     which one the reader actually sees.
+   - And note how it surfaced: not by auditing §4, but because 8b needed to READ the
+     weights for an availability predicate. Third time now (s53's reaction channel, s54's
+     AC, this) that **asking what the framework should be able to DO found what it cannot
+     SEE**, which is a stronger search strategy than reading the requirements list.
+
+   **REFUSING TO EXTRAPOLATE IS A DESIGN DECISION, AND IT GETS NAMED (added s56).** 8a
+   derives "days required" from each convergence gate's scaling in n. Three gates have a
+   scaling law; two do not, and quoting one for them would have printed a finite,
+   checkable-looking day count for something no day count achieves — s51 had already
+   measured the lattice case pinned at 0.33 against a 0.10 threshold forever. So: **before
+   deriving a quantity from a scaling law, name the law and enumerate the cases that do
+   not obey it**, and give those a distinguishable answer rather than a number. The
+   output-layer consequence is that "no day count helps" has to outrank any finite
+   requirement however large, or the stronger statement gets buried by a bigger number.
+
 7. **Reflect after building — STOP and ask.** Once the feature is built and green,
    pause and ask the user whether building it surfaced any open questions OR any
    updates to how we work (this ritual, the validation framing, the schema, the
@@ -532,6 +604,30 @@ not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell on
 66, because the maintenance and interpretation cost lives in the declarations.
 
 #### Metric-set review log
+
+- **Registry DECLARATION SET untouched by s56 — the full review is NOT yet due.** Step 8a
+  and 8b added and removed no declaration (still **28**: 17 scalars + 8 breakdowns + 3
+  distributions). What changed is one availability PREDICATE and the PAYLOAD every row
+  carries (§14(a)'s convergence distance), which is the same call s52 made and the user
+  confirmed then, by the review's own "count DECLARATIONS, not rows" rule. Raised with
+  the user explicitly at startup and judged not registry-touching.
+  - **`_saves_cell_availability`: ONE answer → THREE**, which makes the pattern
+    **four-for-four** (s50's `_requires_control_channel` 2 → 7, s52's narrowing 7 → 3,
+    s54's `_requires_a_healable_other` 2 → 3). A seam that adds a genuinely new
+    situation adds an ANSWER, not a branch inside an old one. The three: the control
+    channel's own reason (unchanged, and still returned FIRST because it is the one a
+    caller can act on in a keyword); a "no producer in either channel" reason that names
+    both sides; and available.
+  - **Carry into the NEXT review, which 8d will trigger** (the baselines registry adds a
+    declaration kind): `convergence` is now a published row field, so "does anyone read
+    this?" has a new answer shape — a row whose `days_required` is always null is a row
+    whose criterion no day count fixes, which is a prune SIGNAL rather than a prune.
+    And the two pairs s50 and s54 both raised and kept — `party_dpr_opening_round`'s
+    missing reader, and `spell_slots_per_day` vs `limited_resources_per_day` printing
+    one number on the baseline subject — are still raised and still kept, for a FOURTH
+    review running. s54 said "worth deciding at step 8, which is the first session where
+    a sweep makes 'does anyone read this?' answerable by looking": the sweep is 8c, so
+    that decision moves to it rather than being due now.
 
 - **Session 50 (2026-10-28) — 26 declarations reviewed, ALL 26 KEPT (user).** 16 scalars +
   8 breakdowns + 2 distributions = 88 estimated cells (76 metric cells + 12 distribution
@@ -649,7 +745,16 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 54 (2026-11-04) — nothing to reset (raised with the
+- **Last reviewed for reset: session 56 (2026-11-06) — nothing to reset (raised with the
+  user at startup; marker bumped per the >=2-session rule).** The s36 tear-down still
+  stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s55 and s56 were
+  both pure Python, so nothing accumulated. The container's missing `pytest` recurred for
+  the **sixth** session running and was again installed with `pip install pytest` — a
+  property of the cloud container, not a tweak to revert. One new container note, also
+  NOT a tweak: `PyYAML` 6.0.3 and `numpy` 2.5.3 are both already present, so step 8c's
+  sweep manifest needs no new dependency. **Connectors were NOT raised** (the standing
+  note's condition: "Currently disabled" is empty and this session needed none).
+- **Prior — session 54 (2026-11-04) — nothing to reset (raised with the
   user at startup; marker bumped per the >=2-session rule).** The s36 tear-down still
   stands (allowlist at the git/gh/python/pytest baseline; Chrome OFF). s53 and s54 were
   both pure Python, so nothing accumulated. The container's missing `pytest` recurred for
@@ -1854,6 +1959,173 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **FRAMEWORK STEP 8, PARTS A AND B — THE CONVERGENCE VERDICT AND PER-CELL
+  AVAILABILITY (2026-11-06, session 56).** `evaluation_framework.md` §4 (the
+  save-weights clause, discharged), §8's saves row, §9.1 (the row's new `convergence`
+  object), §13 step 8 (8a + 8b done, the rest open), §14(a) (the distance reported;
+  no constant retuned) and §14's per-cell-availability entry (CLOSED). **Scope settled
+  with the user at startup as 8a + 8b only**, with the sweep manifest, CLI, caching,
+  the §11 baselines registry and the threshold CALIBRATION left for the next session.
+  **1222 tests, ALL 1222 PASSING** (1170 at handoff, +52: 51 new across two modules,
+  plus one that s55 predicted would be erratic).
+  *(s55 recorded that `test_a_dirty_tree_is_flagged_in_both_the_console_and_the_warnings`
+  gates on `engine_dirty` and therefore "NEVER runs on a clean checkout — the dirty-tree
+  warning path is exercised only by accident, when someone runs the suite mid-edit."
+  That is exactly what happened: it SKIPPED in s55's final clean run and RAN here,
+  because the authoritative run was made before the commit. So on a clean checkout this
+  PR reads 1221 passing + 1 skipped. The prediction held on its first test, which is
+  worth more than the one extra test — and it is still not fixed, for the reason s55
+  gave: it needs a synthetic dirty provenance.)*
+
+  Both parts fix the same class of defect: **the output layer stating something false
+  with complete confidence.** Neither moves a number — `GOLDEN_DPR` is untouched, and
+  that is asserted rather than hoped.
+
+  **8a — THE SAME FLAG MEANT TWO OPPOSITE THINGS.** §14(a)'s requirement, added by #6a:
+  report the DISTANCE from the criterion alongside the boolean. `Convergence.check` and
+  `DistributionConvergence.check` now delegate to a `verdict()` that evaluates each
+  declared gate as DATA and returns a `ConvergenceVerdict` carrying the binding gate,
+  its attained-vs-required pair, and the days every unsatisfied gate needs. It rides in
+  the artifact row (one nested object, additive at `schema_version` 1 — user), two tidy
+  CSV columns, the console flag and a four-bucket partition in the `unconverged`
+  warning. What a reader now sees, on the two levels that used to render identically:
+
+        save_fail_rate[*|damage]      [unconverged: min_events 313 vs 500, ~3,195 days (1.6x)]
+        save_fail_rate[int_save|*]    [unconverged: min_events 17 vs 500, ~59k days (29.4x)]
+        attacks_per_round_dist[p25]   [unconverged: ci_width_vs_spread 0.333 vs 0.1, no day count helps]
+
+  - **THREE GATES CAN QUOTE A DAY COUNT AND TWO CANNOT, and refusing to extrapolate the
+    two is the whole honesty of the feature (user).** `stderr` falls as 1/sqrt(n), so
+    `rel_stderr` costs `(attained/required)^2` days and `resolution_sigmas` costs the
+    inverse square; events and tail observations grow as n. But a ratio-scale estimate
+    sitting exactly on zero has no relative error at any n, and a distribution's
+    `ci_width_vs_spread` has **no scaling law at all** — s51 measured the lattice case
+    pinned near 0.33 against a 0.10 threshold at every day count, because an exact
+    order-statistic interval cannot be narrower than one lattice step. Both report their
+    distance and quote no days. An UNREACHABLE gate also binds AHEAD of any finite one
+    however large, because "no day count helps" is the stronger statement and a bigger
+    number would bury it.
+  - **THE BOOLEAN IS UNCHANGED, AND THAT IS THE MOST LOAD-BEARING TEST IN THE PR.** The
+    gate order was re-expressed (the exactness escape moved out from between `min_days`
+    and `min_events` into "the precision gates do not apply"), which is an argument, not
+    a measurement. `test_the_flag_is_UNCHANGED_against_the_pre_s56_gate_order` compares
+    the new verdict against the **retired body, copied verbatim and frozen**, over all
+    5,760 combinations of edge values. The roll call is what found this gap: nothing in
+    the suite pinned the flag in isolation, so a quietly reordered gate would have
+    surfaced as a changed `[unconverged]` count inside some unrelated test, or not at
+    all — `GOLDEN_DPR` is a HEADLINE net and a convergence flag is panel content (the
+    s55 lesson, arriving one session later as a concrete gap).
+  - **`converged` IS NOW A PROPERTY, not a second field.** Storing the flag beside the
+    verdict would be the s54 "same quantity, two places" seam: they agree until one is
+    updated. Same on `DistributionPoint`. Only five construction sites existed, which is
+    why the right shape was affordable.
+  - **ONE ENUMERATION, NOT TWO.** s52's defect was two traversals of one set (the
+    warning counted scalars; the artifact counted both kinds). §14(a) wants a SECOND
+    view of that set, so adding a second traversal for it would have re-created exactly
+    the shape that failed. `unconverged_verdicts()` is the traversal and
+    `unconverged_names()` is a view over it, so a count and a breakdown of that count
+    cannot be computed from different lists. The buckets also PARTITION, asserted by
+    addition against the number in the same sentence.
+
+  **8b — A STRUCTURALLY IMPOSSIBLE CELL RENDERED AS A CONFIDENT EXACT ZERO.** `cha_save`
+  has no weight in `band_save_weights` below band 11-16, so no run below L11 can force
+  one, and War Angel forces no saves of any ability — yet
+  `saves_forced_per_round[cha_save|*]` read `0 +/- 0, converged=True, available=True` at
+  ten of sixteen levels, **unflagged, and the only unflagged cell in its breakdown**.
+  The predicate now asks whether this run can force a save matching the cell's filter at
+  all, from both producers, and names each side in the reason.
+
+  - **THE DEFECT REACHES FURTHER THAN WAR ANGEL COULD SHOW — found by asking the
+    baseline subject.** At band 17+ the DAMAGE weights carry only
+    `{str, dex, con, cha}` and the CONTROL weights only `{str, dex, con, wis, cha}`, so
+    `int_save` is impossible in BOTH channels at L17-20 under every option setting and
+    `wis_save` is impossible in the damage channel there. On §3.5's subject — the
+    complete-at-every-level fixture whose whole job is to make a framework defect
+    distinguishable from a content gap — that is **four more unflagged exact zeros**,
+    measured before the fix. War Angel stops at 16. **Carry forward: a defect found on a
+    real build at the levels it happens to model is not bounded by them, and the subject
+    is the cheap place to look for the rest.**
+  - **THE CELL HAS TWO PRODUCERS, so the fix needed a DECLARATION and not just a read.**
+    `telemetry.record_save` has exactly two call sites and neither is actor-keyed, so a
+    cell pools saves the enemy forced ON the character with saves the build forced ON the
+    enemy — the metric's own definition says so. The enemy half is readable before day 1;
+    the build half is a Python policy and is not, and the two vary independently (band vs
+    level-and-options). That is the s49 independence test, so
+    `BuildAdapter.forced_save_abilities(config)` is a fifth protocol method declared by
+    all four adapters. Its contract states the asymmetry: **over-inclusive is safe,
+    under-inclusive discards a real measurement**, because an unavailable cell is never
+    collected. It raises rather than guessing for an adapter that does not implement it
+    (the `needs_roster` precedent).
+  - **THE ROLL CALL FOUND THE ROW THAT DECIDES WHETHER THIS THROWS DATA AWAY.** "The
+    BUILD alone opens the cell" had no fixture anywhere in the suite, and a predicate
+    that ignored the declaration entirely would have passed every other test in the
+    module. Silvertail L10 with the Spirit Guardians zone against `enemy="none"` is the
+    only configuration in the project where the build is the sole producer, and it is
+    now `test_the_build_side_alone_keeps_a_cell_available`.
+  - **AND A TEST WAS RESTING ON THE DEFECT.**
+    `test_unmeasured_is_a_distinct_state_from_unavailable` used `cha_save` on Silvertail
+    L10 — band 5-10, where no run can force one. So the cell it called UNMEASURED was
+    **structurally impossible**, and the fixture chosen to produce an empty denominator
+    produced an unreachable one instead. From the outside the two look identical.
+    Repointed to `int_save` at band 11-16, where the ability genuinely can be forced and
+    eight days simply did not, with the `available is True` precondition asserted first
+    (s55's fixture-guard lesson). Two sum-identity tests also moved to measured-only
+    cells, which leaves their claims unchanged — an unavailable cell contributes nothing
+    to a margin.
+
+  **TWO FINDINGS NEITHER PART WENT LOOKING FOR.**
+
+  1. **§4 HAD A REQUIREMENT THAT WAS IMPLEMENTED AND STILL UNMET, FOR EIGHTEEN
+     SESSIONS.** §4 asks by name for "band save weights ... recorded as the actual
+     weights drawn from the frozen table, not as 'default'".
+     `BaselineEnemyPolicy.describe_parameters()` has returned them since s38 and is
+     tested — and **nothing serializes that block**. The artifact's enemy provenance
+     comes from `enemy.resolve()`, which never consulted the policy, so the requirement
+     was satisfied in code no report reads. `resolve()` now publishes them per channel.
+     This is the s53 writer/reader rule asked of a PROVENANCE FIELD rather than a
+     telemetry channel — a writer with no reader — and it surfaced only because 8b
+     needed to READ the weights, which is the same route s53's reaction channel took:
+     **asking what the framework should be able to DO is how you find what it cannot
+     SEE.**
+  2. **TWO OF THE ENGINE'S FIVE SAVE SITES WRITE TO NO CHANNEL AT ALL.**
+     `resolve_saving_throw` has five call sites; three are accounted for (damage,
+     control, and concentration via the economy channel). A buff's `application_save`
+     (`scheduler._handle_cast_effect`) and Sanctuary's `negate_save`
+     (`resolve_attack_roll`) are invisible to every metric, and Starfire L15 actually
+     rolls the second one. So a build's saves-channel numbers are complete only by
+     coincidence of which effects it uses. **Deferred with its own §14 entry**, because
+     it needs a design decision first (§13's two-value channel vocabulary has no cell
+     for a save that is neither damaging nor incapacitating, and the Sanctuary save
+     inverts the channel's implicit direction) and because wiring either one MOVES
+     `saves_forced_per_round`, which is a re-baseline. It has one consequence already
+     applied: Starfire must NOT declare `wis_save`, or an empty cell stays open on the
+     strength of a save nothing records.
+
+  **A THIRD FINDING, AND IT CAME FROM THE USER ASKING "I DON'T UNDERSTAND".** The 17+
+  claim above was first written as a structural fact. Challenged at the close, and
+  checked: band 17+ is the **thinnest band in the census** (35 monsters against 303 at
+  band 0-4), and INT appears 0-4 times in ANY band of either census, so its zero there
+  carries no information and would flip with one more monster. WIS *damaging* at 17+ does
+  look real (7 of 55 at band 11-16 to 0 of 63, about 1.5-in-10,000 under the earlier
+  rate) and WIS CONTROL stays strong at 13 of 34 — which is exactly the §4 correction
+  `band_save_weights`' own docstring states. **The predicate was right and the PROSE was
+  not:** availability is a claim about what this run can produce, and the reason text had
+  quietly upgraded it to a claim about monsters at that CR. The sentence now says what the
+  census recorded and points at the new §14 entry; the deferral proper is a CONTENT
+  question for the census, like the s36 cross-band reconciliation, not something this
+  layer can decide. Recorded with its provenance — it was found because the user asked,
+  not because the check was run — and generalized into ritual step 5.
+
+  **REGISTRY STATUS: NOT a registry-touching session by the review's own rule.** No
+  declaration was added or removed — still **28** (17 scalars + 8 breakdowns + 3
+  distributions). What changed is one availability PREDICATE and the payload every row
+  carries, which is the same call s52 made and the user confirmed then ("count
+  DECLARATIONS, not rows"). Worth carrying into the next review: `_saves_cell_availability`
+  went from **one answer to three** (the control reason, unchanged and still returned
+  first; a "no producer in either channel" reason naming both sides; and available), which
+  makes the pattern **four-for-four** — a seam that adds a genuinely new situation adds an
+  ANSWER, not a branch inside an old one.
 
 - **#6a PRELIMINARY BUILD EVALUATION — WAR ANGEL L1-16, RENDERED END TO END
   (2026-11-05, session 55).** The project's first legible output across a build's whole
@@ -5864,7 +6136,10 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      not have: uniform weights aim control at passive stand-ins too, so War Angel L13's
      control turns lost fall 73.4% and its DPR rises 20.0%, which makes the control
      channel read healthier than it should;
-     **(8) sweep YAML + config-hash caching + the baselines registry — THE NEXT TASK;**
+     **(8) sweep YAML + config-hash caching + the baselines registry — 8a (the
+     convergence verdict) and 8b (per-cell availability reads the resolved enemy) DONE
+     s56; the MANIFEST + CLI + caching, the baselines registry and the threshold
+     CALIBRATION are the next task;**
      **(9) RNG SUBSTREAMS
      (added s44)** — per-entity/per-purpose generators via `SeedSequence.spawn()`, the
      prerequisite for §6.1's paired seeding to buy any precision at all (MEASURED: ~1×, not
@@ -5946,13 +6221,36 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    only (where AC already exists), or run the low levels under `enemy="none"` and say
    plainly that they carry no defensive measurement.
 
-4c. **Framework steps 8 and 9. *** NEXT TASK *** (#6a is done; s55).** `evaluation_framework.md` §13 steps 8
-   and 9, unchanged in content; only their position moved. Step 8 (sweep manifests,
-   config-hash caching, baselines registry, a CLI) is also the first cheap opportunity
-   to fix §14(a)'s convergence thresholds. Step 9 (RNG substreams) re-baselines
-   `GOLDEN_DPR` and should trip
-   `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s53 wrote as a
-   deliberate tripwire for exactly that step.
+4c. **Framework steps 8 and 9. *** IN PROGRESS: 8a + 8b DONE (s56); 8c-8e + step 9 are
+   the NEXT TASK. *** ** `evaluation_framework.md` §13 steps 8 and 9, unchanged in
+   content; only their position moved.
+   - ~~**8a — the convergence VERDICT**~~ **DONE (s56)**: §14(a)'s distance payload, no
+     constant retuned. See the s56 Done entry at the top of this file.
+   - ~~**8b — per-cell availability reads the resolved ENEMY**~~ **DONE (s56)**: §14's
+     entry closed, and it forced `BuildAdapter.forced_save_abilities` into existence.
+   - **8c — the sweep MANIFEST (YAML) + a CLI + config-hash caching. NEXT.** This is
+     where the throwaway driver stops being throwaway, so settle the manifest SHAPE with
+     the user before writing a serializer (per-feature ritual step 4 — the §9.1
+     precedent). §9.1 already says a sweep is "a directory of run records plus a
+     manifest", which is the contract to honour.
+   - **8d — the §11 baselines registry.** `(source, build, level, metric, value,
+     provenance)`, scoring as a report-layer operation. This one ADDS a declaration
+     kind, so it IS a registry-touching session and triggers the full metric-set review.
+   - **8e — the threshold CALIBRATION.** Needs 8c to exist: §14(a) is explicit that the
+     fix is a sweep across builds and tiers, not a nudge to a constant, and 8a's
+     `days_required` is the quantity to sweep over. Note the ordering argument: step 9
+     re-baselines every seeded number, so calibrating before it means measuring in a
+     regime that then moves — but substreams change the paired COVARIANCE, not a single
+     run's own variance, so a single-run convergence criterion should be largely
+     insensitive. Worth checking rather than assuming (the s50 "a mechanical argument is
+     not a measurement" rule).
+   - **step 9 — RNG substreams.** Re-baselines `GOLDEN_DPR` by construction and should
+     trip `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s53 wrote
+     as a deliberate tripwire for exactly that step. Do NOT widen that bound to keep it
+     green; updating it IS part of the decision record.
+   - **ONE THING 8a ADDED TO 5b's LIST (housekeeping):** `BuildAdapter` now has five
+     methods and the protocol's docstring lists "the four axes of variance an adapter
+     absorbs" — the prose and the protocol have diverged by one.
 
 5b. **HOUSEKEEPING PR — scheduled, not optional (user, s54).** Run this **once the
    evaluation framework is finished (after step 9) and BEFORE the first full build

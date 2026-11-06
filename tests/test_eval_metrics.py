@@ -27,6 +27,7 @@ from src.evaluation import (
     SCALE_INTERVAL,
     SCALE_RATIO,
     Convergence,
+    ConvergenceVerdict,
     MetricDef,
     MetricRegistry,
     MetricValue,
@@ -403,8 +404,17 @@ def test_a_margin_is_computed_here_because_its_stderr_cannot_be_rebuilt_downstre
     forced = report.breakdown("saves_forced_per_round")
 
     total = forced.total()
-    by_ability = [v for k, v in forced.cells.items() if k[1] == ALL]
+    # MEASURED cells only, since s56 (step 8b): an ability the run cannot force in
+    # either channel is now UNAVAILABLE rather than a zero, and an unavailable cell
+    # contributes exactly nothing to the margin — `cha_save` has no weight in the
+    # damage channel below band 11-16 and this build's plan forces only `wis_save`.
+    # So the identity below is unchanged in CONTENT: it still says the margin equals
+    # the sum over the ability dimension.
+    by_ability = [v for k, v in forced.cells.items() if k[1] == ALL and v.measured]
     assert total is not None and total.measured and total.value > 0
+    assert len(by_ability) < len(SAVE_STATS), (
+        "fixture must have at least one UNAVAILABLE ability cell, or this test no "
+        "longer exercises the measured-only sum it was repointed for (s56)")
     assert total.value == pytest.approx(sum(v.value for v in by_ability))
     # The naive downstream reconstruction (assume independence) is NOT what we report.
     naive = math.sqrt(sum(v.stderr ** 2 for v in by_ability))
@@ -421,7 +431,10 @@ def test_an_uncrossed_breakdowns_cells_do_not_partition_the_total():
     forced = report.breakdown("saves_forced_per_round")
 
     total = forced.total().value
-    by_ability = sum(v.value for k, v in forced.cells.items() if k[1] == ALL)
+    # `v.measured` on this line too, since s56 — see the test above for why an
+    # unavailable ability cell adds nothing and the identity still holds.
+    by_ability = sum(v.value for k, v in forced.cells.items()
+                     if k[1] == ALL and v.measured)
     by_channel = sum(v.value for k, v in forced.cells.items()
                      if k[0] == ALL and v.measured)
     every_cell = sum(v.value for v in forced.cells.values() if v.measured)
@@ -619,20 +632,35 @@ def test_a_missing_role_column_is_unavailable_not_zero():
 
 
 def test_unmeasured_is_a_distinct_state_from_unavailable():
-    """A charisma-save fail rate on a run that forced no charisma save is a
+    """A save-ability fail rate on a run that happened to force none of them is a
     denominator of zero, not a broken channel.  Both refuse to report a zero; only
-    one of them is a gap in the model."""
-    report = run(RunConfig(enemy="baseline", build="silvertail", level=10, n_days=30, seed=3,
-                           build_options=ZONE))
+    one of them is a gap in the model.
+
+    **REPOINTED (s56, step 8b), and the move is the point rather than an adjustment.**
+    This test used `cha_save` on Silvertail L10 — band 5-10, where `cha_save` has no
+    weight in the damage channel at all.  So the cell it called UNMEASURED was in fact
+    STRUCTURALLY IMPOSSIBLE, and the run could not have forced one however long it ran.
+    That is the §14 defect this test was unknowingly resting on: the fixture was chosen
+    to produce an empty denominator and it produced an impossible one instead, which
+    looks identical from the outside.
+
+    It now uses `int_save` on War Angel L13 — band 11-16, where all six abilities carry
+    a weight, so the ability genuinely CAN be forced and eight days simply did not.
+    The `available is True` assertion is the precondition that makes the distinction
+    real, and is asserted first for that reason (s55's fixture-guard lesson).
+    """
+    report = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=8, seed=1))
     unmeasured = {v.metric for v in report.unmeasured()}
     unavailable = {v.metric for v in report.unavailable()}
 
-    assert "save_fail_rate[cha_save|*]" in unmeasured
+    # The precondition: the channel is open, so an empty denominator is a short run
+    # and nothing more.
+    assert report["save_fail_rate[int_save|*]"].available is True
+    assert "save_fail_rate[int_save|*]" in unmeasured
     assert not (unmeasured & unavailable)
-    assert report["save_fail_rate[cha_save|*]"].available is True
     # …while the count metric over the SAME empty channel is a real measured zero,
     # because its denominator (rounds) is never zero.
-    assert report["saves_forced_per_round[cha_save|*]"].value == 0.0
+    assert report["saves_forced_per_round[int_save|*]"].value == 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -915,8 +943,12 @@ def test_a_delta_against_an_unavailable_metric_reports_no_delta():
 def test_an_unpairable_comparison_falls_back_and_says_so():
     """Different day counts cannot be matched day-wise, so the interval reverts to
     the independent one — and the note tells the reader which they are reading."""
-    a = MetricValue(metric="dpr", value=10.0, n=5, stderr=0.3, converged=True)
-    b = MetricValue(metric="dpr", value=8.0, n=3, stderr=0.4, converged=True)
+    # As in test_eval_artifact: an explicit verdict, because this test is about the
+    # paired-delta guard and not about convergence.
+    passed = ConvergenceVerdict(converged=True, criterion=None, attained=None,
+                                required=None, days_required=None, days_run=5)
+    a = MetricValue(metric="dpr", value=10.0, n=5, stderr=0.3, convergence=passed)
+    b = MetricValue(metric="dpr", value=8.0, n=3, stderr=0.4, convergence=passed)
 
     delta = paired_delta("dpr", a, [0.1] * 5, b, [0.2] * 3)
 

@@ -174,6 +174,50 @@ WARNING_CODES = (
 )
 
 
+#: §14(a)'s buckets, with the SAME four boundaries the #6a preliminary run tabulated,
+#: so this summary and the deferral's own table are read against one scale: the day
+#: MULTIPLIER an unconverged estimate needs at its own declared criterion.  Closed and
+#: ordered, and they PARTITION the flagged set together with `no day count helps` — the
+#: fifth outcome, for a criterion no finite day count satisfies, which is the
+#: distinction the boolean could not carry at all.
+#:
+#: The top bucket is kept separate from 10-100x rather than folded into a single ">10x"
+#: because that is where the two meanings genuinely part company: s55 measured
+#: `saves_forced_per_round[int_save|*]` at ~414,000 days, twice the publication tier,
+#: against a 58-extra-days near miss in the same report.
+DISTANCE_BUCKETS = ((2.0, "<=2x"), (10.0, "2-10x"), (100.0, "10-100x"),
+                    (float("inf"), ">100x"))
+
+#: The fourth outcome, named once so the summary and its test cannot disagree on it.
+NO_DAY_COUNT_BUCKET = "no day count helps"
+
+
+def _distance_summary(verdicts: "list[tuple[str, Any]]") -> str:
+    """How far the flagged estimates are from passing, as one phrase (§14(a)).
+
+    **Partitions the set, deliberately.**  Every flagged estimate lands in exactly one
+    bucket and the counts sum to the headline number in the same sentence — a summary
+    whose parts do not add up to its own total is the per-feature ritual's step-6 defect
+    class (s52 shipped a count that was half the truth for four sessions), and the
+    cheapest guard against it is a summary a reader can check by addition.  Asserted
+    rather than merely intended: see
+    ``test_the_distance_summary_PARTITIONS_the_unconverged_set``.
+
+    Buckets with no members are omitted, so a run whose flags are all near misses reads
+    "<=2x: 11" rather than three zeroes to skim past.
+    """
+    counts: dict[str, int] = {}
+    for _name, verdict in verdicts:
+        factor = verdict.days_factor
+        if factor is None:
+            label = NO_DAY_COUNT_BUCKET
+        else:
+            label = next(lab for bound, lab in DISTANCE_BUCKETS if factor <= bound)
+        counts[label] = counts.get(label, 0) + 1
+    order = [lab for _b, lab in DISTANCE_BUCKETS] + [NO_DAY_COUNT_BUCKET]
+    return ", ".join(f"{lab}: {counts[lab]}" for lab in order if lab in counts)
+
+
 def warnings_for(report: "EvalReport") -> list[dict[str, str]]:
     """The top-level warnings array for one report.
 
@@ -229,6 +273,7 @@ def warnings_for(report: "EvalReport") -> list[dict[str, str]]:
             ),
         })
 
+    _ = None  # (anchor)
     if prov.day_tier == "quick":
         out.append({
             "code": "precision",
@@ -241,8 +286,9 @@ def warnings_for(report: "EvalReport") -> list[dict[str, str]]:
     # BOTH kinds (fixed s52): scalars/cells AND distribution points.  Reading
     # `report.unconverged()` here counted only the first, so this warning announced
     # half the total — see EvalReport.unconverged_names for the full account.
-    unconverged = report.unconverged_names()
-    if unconverged:
+    verdicts = report.unconverged_verdicts()
+    if verdicts:
+        unconverged = [name for name, _ in verdicts]
         out.append({
             "code": "unconverged",
             "message": (
@@ -250,6 +296,8 @@ def warnings_for(report: "EvalReport") -> list[dict[str, str]]:
                 f"convergence heuristic (§6.2) and should not be read yet: "
                 + ", ".join(sorted(unconverged)[:12])
                 + (", ..." if len(unconverged) > 12 else "")
+                + ". By distance from the criterion — "
+                + _distance_summary(verdicts)
             ),
         })
     return out
@@ -301,6 +349,10 @@ def _row(report: "EvalReport", name: str, *,
         "n": value.n,
         "n_events": value.n_events,
         "converged": value.converged,
+        # Additive at schema_version 1 (s56, §14(a)): ONE nested object rather than
+        # six loose fields, so a consumer that does not care reads past it, and the
+        # locked row's field list grows by one name instead of six.
+        "convergence": value.convergence.describe(),
         "note": value.note,
     }
 
@@ -348,6 +400,10 @@ def _distribution_row(report: "EvalReport", distribution: "DistributionValue",
         "n": point.n,
         "n_events": point.tail_observations,
         "converged": point.converged,
+        # As above. A distribution point's binding criterion is usually
+        # `ci_width_vs_spread`, whose `days_required` is null BY DESIGN — see
+        # `DistributionConvergence.verdict`.
+        "convergence": point.convergence.describe(),
         "note": point.note,
     }
 
@@ -526,9 +582,16 @@ RUN_COLUMNS = ("run_id", "config_hash", "schema_version", "build", "level",
 META_COLUMNS = ("metric", "kind", "breakdown", "distribution", "group", "unit",
                 "denominator", "is_margin", "sum_rule", "method")
 
-#: What the row SAYS.
+#: What the row SAYS.  ``convergence_criterion`` and ``convergence_days_required``
+#: joined at s56: the boolean cannot distinguish a near miss from a channel that does
+#: not exist at this CR (§14(a)), and a sweep has to be able to GROUP BY the reason.
+#: Two columns rather than the whole nested object, because the JSON row is where the
+#: full payload lives and a tidy frame wants the two fields anyone filters on. A null
+#: ``days_required`` on an unconverged row means no finite day count passes the
+#: criterion; read ``converged`` first, as on the verdict itself.
 VALUE_COLUMNS = ("status", "value", "stderr", "ci_low", "ci_high", "n", "n_events",
-                 "converged", "note")
+                 "converged", "convergence_criterion", "convergence_days_required",
+                 "note")
 
 
 def dimension_columns(registry: MetricRegistry) -> tuple[str, ...]:
@@ -615,6 +678,8 @@ def report_to_rows(report: "EvalReport") -> list[dict[str, Any]]:
             "n": row["n"],
             "n_events": row["n_events"],
             "converged": row["converged"],
+            "convergence_criterion": row["convergence"]["criterion"],
+            "convergence_days_required": row["convergence"]["days_required"],
             "note": row["note"],
         })
         return flat

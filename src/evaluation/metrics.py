@@ -1402,11 +1402,158 @@ def _role_cell_availability(position: int) -> Callable[[RunContext, tuple[str, .
     return check
 
 
+def _build_forced_saves(ctx: RunContext) -> "frozenset[str]":
+    """The BUILD's declared half of the saves channel (``BuildAdapter``).
+
+    Raises rather than guessing when an adapter does not declare it.  The
+    ``needs_roster`` precedent: a capability detected by ``hasattr`` lets an adapter
+    forget it silently, and here forgetting means either discarding a real
+    measurement or re-creating the unflagged-zero defect this predicate exists to
+    remove.  A loud failure at registration time is the cheap outcome.
+    """
+    from .adapters import get_adapter
+
+    adapter = get_adapter(ctx.config.build)
+    declare = getattr(adapter, "forced_save_abilities", None)
+    if declare is None:
+        raise NotImplementedError(
+            f"Build adapter {ctx.config.build!r} does not implement "
+            "forced_save_abilities(config). The §13 saves channel pools saves forced "
+            "BY the build with saves forced ON it (telemetry.record_save is not "
+            "actor-keyed), so per-cell availability cannot be decided without the "
+            "build's half — see BuildAdapter.forced_save_abilities."
+        )
+    return frozenset(declare(ctx.config))
+
+
+def _producible_saves(ctx: RunContext) -> "dict[str, frozenset[str]]":
+    """Save abilities this run can actually put into each §13 channel.
+
+    Both producers, in one place.  The ENEMY's half is read off the resolved block
+    (``enemy.resolve``'s ``save_weights``, which is the band's own frozen weights at
+    the options actually in force) and the BUILD's half off its adapter's
+    declaration.  An ability with a zero weight is excluded as firmly as an absent
+    one — ``_weighted_pick_stat`` can never select it either.
+
+    **The build contributes to the DAMAGE channel only**, and that is a fact about
+    the engine rather than a simplification: ``telemetry.record_save`` has exactly
+    two call sites, ``resolve_save_damage`` (channel ``"damage"``) and
+    ``resolve_control_save`` (channel ``"control"``), and the second is reached only
+    from a ``ControlSaveEvent``, which only ``BaselineEnemyPolicy`` emits.  No build
+    can write to the control channel, so nothing declared there would be true.
+    """
+    weights = ctx.enemy.get("save_weights") or {}
+    producible = {
+        channel: frozenset(a for a, w in (weights.get(channel) or {}).items() if w)
+        for channel in SAVE_CHANNELS
+    }
+    producible["damage"] = producible["damage"] | _build_forced_saves(ctx)
+    return producible
+
+
 def _saves_cell_availability(ctx: RunContext, key: tuple[str, ...]) -> "str | None":
-    """The control CHANNEL is unmeasurable in every run today (§3.4); the damage
-    channel is not.  Per-cell availability is what keeps both facts in one
-    breakdown instead of forcing the family back apart into flat rows."""
-    return _requires_control_channel(ctx) if key[1] == "control" else None
+    """Can this run force a save matching THIS cell's filter at all? (§3.4, §14)
+
+    Per-cell availability is what keeps two different facts in one breakdown instead
+    of forcing the family back apart into flat rows.  Until s56 it answered only one
+    of them — whether the CONTROL channel was switched on — and §14 records what that
+    cost: ``cha_save`` has no weight in the damage channel below L11, so no run below
+    L11 can force one, and ``saves_forced_per_round[cha_save|*]`` reported that
+    structural fact at **ten of War Angel's sixteen levels** as
+    ``0.0 +/- 0.0, converged=True, available=True`` — unflagged, and the only
+    unflagged cell in its breakdown, so the cell carrying no information read as the
+    most trustworthy one.  Its sibling ``save_fail_rate[cha_save|*]`` reported
+    UNMEASURED correctly, because its denominator is the forced count: one report,
+    one structural fact, two incompatible renderings, and §3.4's "UNAVAILABLE ... NOT
+    a measured zero" promise broken by the row that should have honoured it.
+
+    **The fix pattern already existed and had not been applied to this dimension.**
+    ``_role_cell_availability`` does exactly this for a missing roster role.  That is
+    the s54 "enumerate by TWO lists" rule with the second list unwritten: cells KEYED
+    by a dimension are easy to enumerate, cells whose availability PREDICATE must read
+    a dimension are not.
+
+    Order matters.  The control channel's own reason is returned FIRST and unchanged,
+    because it is the one a caller can act on in a single keyword and it says so; only
+    then does the ability question get asked.  Folding them would lose the distinction
+    the per-METRIC ritual's availability check exists to protect.
+
+    Margins are NOT exempt, unlike ``_role_cell_availability``'s.  ``[*|*]`` on a run
+    whose enemy is passive and whose build forces nothing has no producer either, and
+    a zero there is the same false measurement one aggregation level up.
+    """
+    ability, channel = key
+    if channel == "control":
+        reason = _requires_control_channel(ctx)
+        if reason is not None:
+            return reason
+
+    producible = _producible_saves(ctx)
+    channels = SAVE_CHANNELS if channel == ALL else (channel,)
+    if any(producible[c] if ability == ALL else ability in producible[c]
+           for c in channels):
+        return None
+    return _no_such_save_reason(ctx, ability, channels, producible)
+
+
+def _no_such_save_reason(ctx: RunContext, ability: str,
+                         channels: "tuple[str, ...]",
+                         producible: "dict[str, frozenset[str]]") -> str:
+    """Name BOTH producers and what each can do — one sentence per side.
+
+    Written from the resolved values rather than from the kind alone, so a reader can
+    check the verdict against the provenance block's ``enemy.save_weights`` without
+    taking the predicate's word for it.
+    """
+    enemy = ctx.enemy
+    subject = "a save of any ability" if ability == ALL else ability
+    where = (f"the {channels[0]} channel" if len(channels) == 1
+             else "either channel")
+    if not enemy["acts"] or not any(enemy["save_weights"].get(c) for c in channels):
+        enemy_half = (
+            f"the resolved enemy (kind={enemy['kind']!r}, band={enemy['band']}) forces "
+            f"no saves at all in {where}"
+        )
+    else:
+        can = sorted({a for c in channels
+                      for a in (enemy["save_weights"].get(c) or {})})
+        # Says what the TABLE records, and stops there.  An earlier draft of this
+        # sentence read as a rules fact ("the enemy cannot force an INT save at this
+        # CR"), and the census does not support that: band 17+ is its thinnest, 35
+        # monsters, and INT appears 0-4 times in ANY band, so a zero there would flip
+        # with one more monster. The run still genuinely cannot force the save — which
+        # is what this cell's availability is about — but the reason must not borrow
+        # authority the sample does not have. See §14's census-thinness note.
+        enemy_half = (
+            f"the standardized enemy at band {enemy['band']} draws {where}'s saves "
+            f"from {can}, which does not include {ability} — i.e. the frozen census "
+            f"recorded no {ability} there (enemy_stats.band_save_weights / "
+            f"band_control_weights; a zero weight on a thin band may be a sample "
+            f"artifact rather than a fact about monsters at this CR, §14)"
+        )
+    if "damage" not in channels:
+        # Naming the build's declaration here would be a true sentence that implies a
+        # false one — that declaring this ability would open the cell. It would not:
+        # resolve_control_save is reached only from a ControlSaveEvent, which only the
+        # standardized enemy emits, so no build can write to the control channel at
+        # all. Say THAT instead.
+        build_half = (
+            f"and build {ctx.config.build!r} cannot contribute to the control channel "
+            "at any ability (only the standardized enemy emits a ControlSaveEvent)"
+        )
+    else:
+        declared = sorted(_build_forced_saves(ctx))
+        build_half = (
+            f"and build {ctx.config.build!r} declares that its own plan forces "
+            + (f"{declared}" if declared else "no saves of any ability")
+            + " (BuildAdapter.forced_save_abilities)"
+        )
+    return (
+        f"{enemy_half}, {build_half} — so {subject} cannot be forced in this run by "
+        "EITHER side. §13's saves channel pools both directions, so this cell has no "
+        "producer at all: a zero here would read as a measured absence of pressure "
+        "rather than as a channel that does not exist at this CR (§3.4, §14)."
+    )
 
 
 

@@ -53,7 +53,7 @@ from src.evaluation.artifact import (
 )
 from src.evaluation.console import render
 from src.evaluation.metrics import ALL, METRICS
-from src.evaluation.statistics import MetricValue
+from src.evaluation.statistics import ConvergenceVerdict, MetricValue
 
 logging.disable(logging.CRITICAL)
 
@@ -150,8 +150,16 @@ def test_the_headline_is_a_name_pointer_into_scalars_not_a_duplicated_row(record
 # ---------------------------------------------------------------------------
 
 def test_status_of_maps_the_three_states_to_the_closed_vocabulary():
-    measured = MetricValue(metric="m", value=1.0, n=5, stderr=0.1, converged=True)
-    unmeasured = MetricValue(metric="m", value=None, n=5, stderr=None, converged=False)
+    # The verdict is built explicitly rather than through `Convergence.verdict`
+    # because this test is about `status_of`, which reads `value`/`available` and
+    # never looks at convergence — and a real verdict at n=5 would be False on
+    # min_days, which would say something about convergence that is not the point.
+    measured = MetricValue(metric="m", value=1.0, n=5, stderr=0.1,
+                           convergence=ConvergenceVerdict(
+                               converged=True, criterion=None, attained=None,
+                               required=None, days_required=None, days_run=5))
+    unmeasured = MetricValue(metric="m", value=None, n=5, stderr=None,
+                             convergence=ConvergenceVerdict.not_measured(5))
     unavailable = MetricValue.unavailable("m", "no such channel", n=5)
 
     assert status_of(measured) == STATUS_MEASURED

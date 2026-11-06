@@ -105,8 +105,10 @@ from typing import TYPE_CHECKING, Any
 
 from ..builds.enemy import BaselineEnemyPolicy, ScriptedEnemyPolicy
 from ..builds.enemy_stats import (
+    band_control_weights,
     band_damage_multipliers,
     band_for_level,
+    band_save_weights,
     enemy_base_stats,
     baseline_attack_dice,
     baseline_n_attacks,
@@ -369,9 +371,56 @@ def resolve(config: "RunConfig") -> dict[str, Any]:
     if kind in ACTING_KINDS:
         block["n_attacks"] = baseline_n_attacks(config.level)
         block["attack_dice"] = baseline_attack_dice(config.level)
+    # The SAVE ABILITIES this enemy can force, per channel, at this band.
+    #
+    # §4 asked for exactly this and did not have it: "band save weights must be
+    # recorded as the actual weights drawn from the frozen table, not as 'default'".
+    # `BaselineEnemyPolicy.describe_parameters()` has published them since s38, but
+    # nothing serializes that block, so the one §4 requirement naming them by name was
+    # unmet in every artifact the project has written.
+    #
+    # Added at step 8b because a per-cell availability predicate has to read them
+    # (§14's "per-cell availability does not read the ENEMY's resolved parameters"):
+    # `cha_save` has no weight in the DAMAGE channel below L11, so no run below L11
+    # can force one, and `saves_forced_per_round[cha_save|*]` was reporting that
+    # structural fact as an unflagged exact zero. Recording the weights here rather
+    # than having the predicate call `band_save_weights` itself is the point — a
+    # provenance block a reader can check against the flag they were shown, from one
+    # source, instead of two lookups that agree until one of them changes.
+    block["save_weights"] = _save_weights(kind, options, config.level, band)
     if options.get("mitigation"):
         block["damage_multiplier"] = band_damage_multipliers(config.level, band=band)
     return block
+
+
+def _save_weights(kind: str, options: dict[str, Any], level: int,
+                  band: str) -> dict[str, dict[str, int]]:
+    """Per-channel save-ability weights the resolved enemy will actually draw from.
+
+    An EMPTY dict for a channel means the enemy cannot force a save in it at all —
+    which is a different statement from "every ability has weight zero", and is why
+    the two channels are nested rather than merged into one ability set:
+
+    * ``scripted`` forces no saves of any kind (it is the attack-roll half), and
+      ``none`` never acts, so both channels are empty.
+    * ``baseline`` always has the damage channel; its CONTROL channel is empty
+      unless ``enemy_options['control']`` is on, because the policy does not
+      resolve control knobs otherwise and reporting weights nothing will read is
+      the §4 failure in the other direction.
+
+    Note the two channels do NOT carry the same abilities at the same band, which is
+    what makes the distinction load-bearing rather than tidy: at band 0-4 the damage
+    weights are ``{str, dex, con, int, wis}`` while control also carries ``cha``, and
+    at band 17+ the damage weights drop ``int`` and ``wis`` entirely while control
+    keeps ``wis``. A predicate that merged them would answer wrongly at both ends.
+    """
+    if kind != "baseline":
+        return {"damage": {}, "control": {}}
+    return {
+        "damage": dict(band_save_weights(level, band=band)),
+        "control": (dict(band_control_weights(level, band=band))
+                    if options.get("control") else {}),
+    }
 
 
 # ---------------------------------------------------------------------------

@@ -84,6 +84,188 @@ def _new_samples() -> "array[float]":
 
 
 # ---------------------------------------------------------------------------
+# The convergence VERDICT — the boolean, plus how far it is from passing
+# ---------------------------------------------------------------------------
+#
+# WHY THIS EXISTS (§14(a), framework step 8a).  The convergence flag is a BOOLEAN,
+# and across War Angel's sixteen levels the #6a preliminary run showed that the same
+# `[unconverged]` means two opposite things with nothing to tell them apart.  Bucketed
+# by the day count each estimate needs at its OWN declared criterion, the 102 flags at
+# L1-L10 split:
+#
+#     <=2x the quick tier   36      |  10-100x    26
+#     2-10x                 34      |  >100x       6
+#
+# `saves_forced_per_round[dex_save|*]` at L10 reads 2.03% against a 2.00% threshold —
+# FIFTY-EIGHT more days — and sits in the same report, rendered identically, as
+# `[int_save|*]`, which needs ~414,000 days because `band_save_round_prob` is 0.007 at
+# that band against 0.342 at band 11-16.  No choice of constant distinguishes "run it
+# longer" from "this channel barely exists at this CR", because the boolean is the part
+# that cannot carry the distinction.  §14(a)'s requirement, added s55: report the
+# DISTANCE from the criterion, or the days required, ALONGSIDE the flag.
+#
+# THE BOOLEAN IS UNCHANGED, DELIBERATELY (user, s56).  `check()` now delegates to
+# `verdict()` so there is ONE evaluation of the gates rather than two that can drift —
+# the s54 "same quantity, two places" rule — and `MetricValue.converged` is a PROPERTY
+# over the stored verdict for the same reason.  Nothing in the registry was retuned, so
+# no flag flips and no golden moves; calibrating the constants is step 8e, and §14(a) is
+# explicit that the fix is a SWEEP across builds and tiers rather than a nudge.
+#
+# WHAT days_required DOES NOT CLAIM.  It is derived from the criterion's own scaling in
+# n, and it is reported ONLY where that scaling is known: `stderr` falls as 1/sqrt(n),
+# and event and day counts grow as n.  A DISTRIBUTION's `ci_width_vs_spread` has no such
+# law — s51 measured an exact order-statistic interval on a LATTICE quantity pinned at
+# ~0.33 against a 0.10 threshold, unable to narrow below one lattice step until it
+# collapses to zero width entirely — so that criterion reports its distance and
+# explicitly refuses a day count.  Extrapolating it would print a confident, achievable-
+# looking number for a day count the run can never reach, which is the failure mode this
+# whole block exists to remove.
+
+#: Criterion names — a CLOSED vocabulary, because the artifact publishes them and a
+#: consumer will branch on them.  Six scalar, two distribution; `min_days` is shared.
+CRITERION_NOT_MEASURED = "not_measured"
+CRITERION_MIN_DAYS = "min_days"
+CRITERION_MIN_EVENTS = "min_events"
+CRITERION_REL_STDERR = "rel_stderr"
+CRITERION_RESOLUTION_SIGMAS = "resolution_sigmas"
+CRITERION_UNDEFINED_AT_ZERO = "undefined_at_zero"
+CRITERION_MIN_TAIL_OBSERVATIONS = "min_tail_observations"
+CRITERION_CI_WIDTH_VS_SPREAD = "ci_width_vs_spread"
+
+CRITERIA = (
+    CRITERION_NOT_MEASURED,
+    CRITERION_MIN_DAYS,
+    CRITERION_MIN_EVENTS,
+    CRITERION_REL_STDERR,
+    CRITERION_RESOLUTION_SIGMAS,
+    CRITERION_UNDEFINED_AT_ZERO,
+    CRITERION_MIN_TAIL_OBSERVATIONS,
+    CRITERION_CI_WIDTH_VS_SPREAD,
+)
+
+#: Stated once, so the two `verdict()` implementations and the design note cannot
+#: drift: this is why a `ci_width_vs_spread` shortfall carries no day count.
+NO_DAY_COUNT_FOR_WIDTH = (
+    "no day count is derivable for this criterion: an interval's width relative to the "
+    "sample spread does not fall as 1/sqrt(n) in general, and an exact order-statistic "
+    "interval on a LATTICE quantity cannot be narrower than one lattice step, so it is "
+    "PINNED above the threshold until it collapses to zero width (s51, §14(a))"
+)
+
+
+@dataclass(frozen=True)
+class _Criterion:
+    """One declared gate, evaluated against one estimate.
+
+    Internal: the public answer is :class:`ConvergenceVerdict`.  Separated out so
+    the two `verdict()` implementations state each gate once, as data, instead of
+    threading early returns — which is what let `check()`'s gate order drift out of
+    step with the reasons a reader is given.
+
+    ``days_required`` is ``None`` when NO finite day count satisfies the gate, and
+    ``reason`` then says why.  That is a different fact from a large finite number,
+    and conflating the two is the defect this class exists to fix.
+    """
+
+    name: str
+    attained: "float | None"
+    required: "float | None"
+    satisfied: bool
+    days_required: "float | None"
+    reason: str = ""
+
+
+@dataclass(frozen=True)
+class ConvergenceVerdict:
+    """Why an estimate converged, or how far from it — §14(a)'s payload.
+
+    Attributes
+    ----------
+    converged:
+        The flag, with EXACTLY the meaning it has always had.  Read this first:
+        every other field is ``None`` on a converged estimate, so a ``None``
+        ``days_required`` means "nothing to report" when ``converged`` is True and
+        "no finite day count would help" when it is False.  Kept that way rather
+        than reporting headroom for a converged row, because the honest headroom of
+        a criterion with no known scaling in n is not computable and a plausible
+        number there would be worse than a blank.
+    criterion:
+        Which declared gate BINDS — the unsatisfied one needing the most days, with
+        an unreachable gate outranking any finite one.  ``None`` when converged.
+    attained / required:
+        The binding gate's own two numbers, in that gate's own units (the name says
+        which: a fraction for ``rel_stderr``, standard errors for
+        ``resolution_sigmas``, counts for the two floors).  Both ``None`` where the
+        gate has no defined ratio — a ratio-scale estimate sitting exactly on zero,
+        or a point mass with no spread to resolve.
+    days_required:
+        Days needed for EVERY unsatisfied gate to pass, from that gate's own scaling
+        in n.  ``None`` means no finite day count does: see ``note``.
+    days_run:
+        The run's own day count, so ``days_factor`` is derivable by a consumer
+        holding the row alone rather than needing the provenance block.
+    """
+
+    converged: bool
+    criterion: "str | None"
+    attained: "float | None"
+    required: "float | None"
+    days_required: "float | None"
+    days_run: int
+    note: str = ""
+
+    @property
+    def days_factor(self) -> "float | None":
+        """``days_required / days_run`` — the multiplier s55 bucketed by.
+
+        This is the number that separates a 58-extra-days near miss from twice the
+        publication tier, and it is a PROPERTY rather than a field so it cannot
+        disagree with the two values it is computed from.
+        """
+        if self.days_required is None or self.days_run <= 0:
+            return None
+        return self.days_required / self.days_run
+
+    @classmethod
+    def not_measured(cls, days_run: int = 0, note: str = "") -> "ConvergenceVerdict":
+        """No value, so no gate applies and no day count is the answer."""
+        return cls(converged=False, criterion=CRITERION_NOT_MEASURED, attained=None,
+                   required=None, days_required=None, days_run=days_run,
+                   note=note or ("not measured, so no convergence criterion applies "
+                                 "and more days would not change that"))
+
+    @classmethod
+    def _decide(cls, criteria: "list[_Criterion]", days_run: int,
+                converged_note: str = "") -> "ConvergenceVerdict":
+        unsatisfied = [c for c in criteria if not c.satisfied]
+        if not unsatisfied:
+            return cls(converged=True, criterion=None, attained=None, required=None,
+                       days_required=None, days_run=days_run, note=converged_note)
+        # An UNREACHABLE gate binds ahead of any finite one, however large: "no day
+        # count helps" is a different verdict from "a great many days would", and
+        # reporting the larger finite number would bury the stronger statement.
+        binding = max(unsatisfied,
+                      key=lambda c: (c.days_required is None, c.days_required or 0.0))
+        days = (None if any(c.days_required is None for c in unsatisfied)
+                else max(c.days_required for c in unsatisfied))      # type: ignore[type-var]
+        return cls(converged=False, criterion=binding.name, attained=binding.attained,
+                   required=binding.required, days_required=days, days_run=days_run,
+                   note=binding.reason)
+
+    def describe(self) -> dict:
+        """The artifact row's ``convergence`` object (§9.1, additive at version 1)."""
+        return {
+            "criterion": self.criterion,
+            "attained": self.attained,
+            "required": self.required,
+            "days_run": self.days_run,
+            "days_required": self.days_required,
+            "days_factor": self.days_factor,
+            "note": self.note,
+        }
+
+
+# ---------------------------------------------------------------------------
 # The value type
 # ---------------------------------------------------------------------------
 
@@ -101,9 +283,12 @@ class MetricValue:
         Independent replicates — adventuring days.
     stderr:
         Standard error of :attr:`value`.  ``None`` whenever ``value`` is.
-    converged:
-        The metric's OWN declared heuristic (:class:`Convergence`), read from the
-        registry.  A metric is never converged when it has no value.
+    convergence:
+        The metric's OWN declared heuristic (:class:`Convergence`) EVALUATED — the
+        flag plus the binding criterion and the days that criterion needs (§14(a)).
+        :attr:`converged` is a property over it rather than a second field, because
+        two places holding one boolean is the s54 seam: they agree until one of them
+        is updated.  A metric is never converged when it has no value.
     n_events:
         The metric's declared event count, summed over the run — what the
         ``min_events`` guard reads.  For a metric that declares no event count this
@@ -119,10 +304,15 @@ class MetricValue:
     value: "float | None"
     n: int
     stderr: "float | None"
-    converged: bool
+    convergence: ConvergenceVerdict
     n_events: float = 0.0
     available: bool = True
     note: str = ""
+
+    @property
+    def converged(self) -> bool:
+        """The flag, with exactly the meaning it has always had (§6.2)."""
+        return self.convergence.converged
 
     @property
     def measured(self) -> bool:
@@ -139,7 +329,9 @@ class MetricValue:
     @classmethod
     def unavailable(cls, metric: str, reason: str, n: int = 0) -> "MetricValue":
         """The honest declaration for a metric this run cannot produce (§3.4)."""
-        return cls(metric=metric, value=None, n=n, stderr=None, converged=False,
+        return cls(metric=metric, value=None, n=n, stderr=None,
+                   convergence=ConvergenceVerdict.not_measured(
+                       n, "unavailable, so no convergence criterion applies: " + reason),
                    n_events=0.0, available=False, note=reason)
 
 
@@ -196,7 +388,14 @@ class Convergence:
 
     def check(self, value: "float | None", stderr: "float | None",
               n: int, n_events: float, scale: str = SCALE_RATIO) -> bool:
-        """The verdict.  Not measured → never converged.
+        """The flag alone.  Delegates to :meth:`verdict` so the gates are evaluated
+        in ONE place (s56): a second copy of this logic would be the s54 duplicated-
+        sequence seam, and the reasons a reader is given would drift from the verdict
+        a row carries.  Kept as a method because the registry's tests and three call
+        sites read the boolean directly, and because the gate order it documents
+        below is load-bearing.
+
+        Not measured → never converged.
 
         **The gate order is load-bearing (fixed s48).**  An EXACT estimate — every
         replicate agreed, so the standard error is not merely small but zero —
@@ -215,26 +414,97 @@ class Convergence:
         here; a zero value with a positive standard error is a noisy number
         straddling zero, which falls through to the relative test and fails it.
         """
+        return self.verdict(value, stderr, n, n_events, scale).converged
+
+    def verdict(self, value: "float | None", stderr: "float | None",
+                n: int, n_events: float,
+                scale: str = SCALE_RATIO) -> ConvergenceVerdict:
+        """The gates as DATA — the flag plus how far from passing (§14(a)).
+
+        Each gate states its own two numbers and its own scaling in ``n``, so the
+        binding one can be named and the days it needs computed.  The three
+        scalings, which are the only reason a day count can be quoted at all:
+
+        * ``min_days`` — the gate IS a day count.
+        * ``min_events`` — events accumulate in proportion to days, so
+          ``n' = n * required / attained``.
+        * ``rel_stderr`` / ``resolution_sigmas`` — ``stderr`` falls as
+          ``1/sqrt(n)``, so ``n' = n * (attained/required)**2`` and
+          ``n * (required/attained)**2`` respectively.
+
+        Two gates admit NO finite day count, and both are reported as such rather
+        than extrapolated.  A ratio-scale estimate of exactly zero with a positive
+        standard error has no relative error to shrink — what it needs is signal or
+        a :data:`SCALE_INTERVAL` declaration, not days.  And an estimate sitting
+        exactly on zero cannot have its SIGN resolved by any number of days.
+        """
         if value is None or stderr is None:
-            return False
-        if n < self.min_days:
-            return False
-        if stderr == 0.0:
-            # Exact: every replicate agreed. No event floor applies to a quantity
-            # with no sampling variation, and no relative criterion is needed.
-            return True
-        if n_events < self.min_events:
-            return False
-        if scale == SCALE_INTERVAL:
-            # A fraction of the value means nothing for a signed quantity (shift it
-            # by a constant and the verdict changes). What a reader needs is whether
-            # the SIGN is resolved.
-            return abs(value) >= self.resolution_sigmas * stderr
-        if value == 0.0:
-            # Zero with a POSITIVE stderr: a noisy number straddling zero. The
-            # relative criterion is undefined, and the honest verdict is "no".
-            return False
-        return abs(stderr / value) <= self.rel_stderr
+            return ConvergenceVerdict.not_measured(n)
+
+        criteria = [_Criterion(
+            name=CRITERION_MIN_DAYS, attained=float(n),
+            required=float(self.min_days), satisfied=n >= self.min_days,
+            days_required=float(self.min_days),
+        )]
+
+        # Exact: every replicate agreed. No event floor applies to a quantity with
+        # no sampling variation, and no relative criterion is needed. Evaluated
+        # independently of min_days (unlike check()'s old early return, which sat
+        # after it) so that an exact estimate short of min_days names min_days as
+        # the gate rather than a precision criterion it does not fail. The FLAG is
+        # unchanged either way: min_days is unsatisfied, so it is still False.
+        if stderr != 0.0:
+            if self.min_events:
+                criteria.append(_Criterion(
+                    name=CRITERION_MIN_EVENTS, attained=n_events,
+                    required=self.min_events,
+                    satisfied=n_events >= self.min_events,
+                    days_required=(n * self.min_events / n_events
+                                   if n_events > 0 else None),
+                    reason=("" if n_events > 0 else
+                            "no events were observed at all, so there is no rate to "
+                            "extrapolate a day count from"),
+                ))
+            if scale == SCALE_INTERVAL:
+                # A fraction of the value means nothing for a signed quantity (shift
+                # it by a constant and the verdict changes). What a reader needs is
+                # whether the SIGN is resolved.
+                sigmas = abs(value) / stderr
+                criteria.append(_Criterion(
+                    name=CRITERION_RESOLUTION_SIGMAS, attained=sigmas,
+                    required=self.resolution_sigmas,
+                    satisfied=sigmas >= self.resolution_sigmas,
+                    days_required=(n * (self.resolution_sigmas / sigmas) ** 2
+                                   if sigmas > 0 else None),
+                    reason=("" if sigmas > 0 else
+                            "the estimate sits exactly on zero, so no number of days "
+                            "resolves its sign"),
+                ))
+            elif value == 0.0:
+                # Zero with a POSITIVE stderr: a noisy number straddling zero. The
+                # relative criterion is undefined, and the honest verdict is "no".
+                criteria.append(_Criterion(
+                    name=CRITERION_UNDEFINED_AT_ZERO, attained=None, required=None,
+                    satisfied=False, days_required=None,
+                    reason=("a ratio-scale estimate of exactly zero with a positive "
+                            "standard error has no relative error, so no day count "
+                            "satisfies rel_stderr; what this needs is signal, or a "
+                            "SCALE_INTERVAL declaration if its zero is a break-even "
+                            "point rather than an absence"),
+                ))
+            else:
+                rel = abs(stderr / value)
+                criteria.append(_Criterion(
+                    name=CRITERION_REL_STDERR, attained=rel,
+                    required=self.rel_stderr, satisfied=rel <= self.rel_stderr,
+                    days_required=n * (rel / self.rel_stderr) ** 2,
+                ))
+
+        return ConvergenceVerdict._decide(
+            criteria, n,
+            converged_note=("exact: every replicate agreed, so no precision criterion "
+                            "applies" if stderr == 0.0 else ""),
+        )
 
     def describe(self) -> dict:
         return {"rel_stderr": self.rel_stderr, "min_events": self.min_events,
@@ -388,7 +658,8 @@ class MetricSamples:
                 value=value,
                 n=self.n,
                 stderr=stderr,
-                converged=convergence.check(value, stderr, self.n, n_events, scale),
+                convergence=convergence.verdict(value, stderr, self.n, n_events,
+                                                scale),
                 n_events=n_events,
                 available=True,
                 note=note,
@@ -893,7 +1164,10 @@ class DistributionConvergence:
 
     def check(self, value: "float | None", ci95: "tuple[float, float] | None",
               n: int, tail_observations: float, spread: "float | None") -> bool:
-        """The verdict.  No value, or no interval, is never converged.
+        """The flag alone — delegates to :meth:`verdict`, for the reason
+        :meth:`Convergence.check` gives: one evaluation of the gates, not two.
+
+        No value, or no interval, is never converged.
 
         An interval the estimator REFUSED to place (see
         :func:`order_statistic_interval`) fails here by construction, which is the
@@ -903,18 +1177,68 @@ class DistributionConvergence:
         verdict that differs between p10 and p50 says something about those two
         estimates rather than about which denominator each happened to get.
         """
+        return self.verdict(value, ci95, n, tail_observations, spread).converged
+
+    def verdict(self, value: "float | None", ci95: "tuple[float, float] | None",
+                n: int, tail_observations: float,
+                spread: "float | None") -> ConvergenceVerdict:
+        """The gates as data, as :meth:`Convergence.verdict` — with ONE difference
+        that is the whole reason the two are not shared code.
+
+        ``min_days`` and ``min_tail_observations`` both grow in proportion to days,
+        so each can quote the days it needs.  ``ci_width_vs_spread`` CANNOT, and it
+        reports its distance with :data:`NO_DAY_COUNT_FOR_WIDTH` instead of a
+        number.  s51 measured why on ``attacks_per_round_distribution``: attacks per
+        round is a count over a fixed 16-round denominator, so it moves in steps of
+        1/16, and an exact order-statistic interval cannot be narrower than one
+        step.  Its ``width/spread`` is pinned near 0.33 against the 0.10 threshold
+        at every day count until the interval collapses to zero width outright —
+        a 1/sqrt(n) extrapolation there would print a finite, reasonable-looking day
+        count for something no day count achieves.
+        """
         if value is None or ci95 is None:
-            return False
-        if n < self.min_days or tail_observations < self.min_tail_observations:
-            return False
+            return ConvergenceVerdict.not_measured(
+                n, "no value, or an interval the estimator refused to place: "
+                   "precision cannot be asserted without a bound")
+
+        criteria = [
+            _Criterion(name=CRITERION_MIN_DAYS, attained=float(n),
+                       required=float(self.min_days), satisfied=n >= self.min_days,
+                       days_required=float(self.min_days)),
+            _Criterion(name=CRITERION_MIN_TAIL_OBSERVATIONS,
+                       attained=tail_observations,
+                       required=self.min_tail_observations,
+                       satisfied=tail_observations >= self.min_tail_observations,
+                       days_required=(n * self.min_tail_observations / tail_observations
+                                      if tail_observations > 0 else None),
+                       reason=("" if tail_observations > 0 else
+                               "the statistic rests on no observations at all")),
+        ]
+
         width = ci95[1] - ci95[0]
         if not spread:
             # A point mass (p10 == p90): the distribution has no spread to resolve,
             # so the only interval that can be read at face value is a point one.
             # Falls out of the ratio rather than needing a special case for a zero
             # VALUE, which is what the old criterion needed.
-            return width == 0.0
-        return width / spread <= self.ci_width_vs_spread
+            criteria.append(_Criterion(
+                name=CRITERION_CI_WIDTH_VS_SPREAD, attained=None, required=None,
+                satisfied=width == 0.0, days_required=None,
+                reason=("the sample is a point mass (p10 == p90), so there is no "
+                        "spread to judge the interval against and the ratio is "
+                        "undefined; only a zero-width interval can be read at face "
+                        "value here, and more days will not produce one"),
+            ))
+        else:
+            ratio = width / spread
+            criteria.append(_Criterion(
+                name=CRITERION_CI_WIDTH_VS_SPREAD, attained=ratio,
+                required=self.ci_width_vs_spread,
+                satisfied=ratio <= self.ci_width_vs_spread,
+                days_required=None, reason=NO_DAY_COUNT_FOR_WIDTH,
+            ))
+
+        return ConvergenceVerdict._decide(criteria, n)
 
     def describe(self) -> dict:
         return {"ci_width_vs_spread": self.ci_width_vs_spread,
@@ -951,9 +1275,15 @@ class DistributionPoint:
     ci95: "tuple[float, float] | None"
     n: int
     tail_observations: float
-    converged: bool
+    convergence: ConvergenceVerdict
     available: bool = True
     note: str = ""
+
+    @property
+    def converged(self) -> bool:
+        """The flag — a property over the stored verdict, as on
+        :class:`MetricValue` and for the same s54 reason."""
+        return self.convergence.converged
 
     @property
     def measured(self) -> bool:
@@ -965,8 +1295,10 @@ class DistributionPoint:
         """Inherited from the metric this distribution is declared OVER (§3.4)."""
         return cls(distribution=distribution, statistic=statistic.label,
                    method=statistic.method, value=None, ci95=None, n=n,
-                   tail_observations=0.0, converged=False, available=False,
-                   note=reason)
+                   tail_observations=0.0,
+                   convergence=ConvergenceVerdict.not_measured(
+                       n, "unavailable, so no convergence criterion applies: " + reason),
+                   available=False, note=reason)
 
 
 def estimate_distribution(distribution: str, values: "Iterable[float]",
@@ -996,7 +1328,9 @@ def estimate_distribution(distribution: str, values: "Iterable[float]",
             out.append(DistributionPoint(
                 distribution=distribution, statistic=statistic.label,
                 method=statistic.method, value=None, ci95=None, n=0,
-                tail_observations=0.0, converged=False,
+                tail_observations=0.0,
+                convergence=ConvergenceVerdict.not_measured(
+                    0, "no days were simulated, so nothing was estimated"),
                 note="no days were simulated",
             ))
             continue
@@ -1020,7 +1354,7 @@ def estimate_distribution(distribution: str, values: "Iterable[float]",
             ci95=ci95,
             n=n,
             tail_observations=tail,
-            converged=convergence.check(value, ci95, n, tail, spread),
+            convergence=convergence.verdict(value, ci95, n, tail, spread),
             note=note,
         ))
     return out
