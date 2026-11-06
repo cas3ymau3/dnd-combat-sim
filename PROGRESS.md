@@ -133,6 +133,25 @@ type, condition, resource, …):
      passed on 0.1875 and on 0.44. **Declaring a parameter is also what makes its channel
      assertable**, which is a reason to declare beyond provenance.
 
+   **A CLOSED VOCABULARY THAT IS TOTAL ONE LAYER DOWN CAN BE PARTIAL ONE LAYER UP
+   (added s57).** §9.1 raises a run record's `precision` warning on
+   `day_tier == "quick"`. That is a sound test for ONE run, because a reader knows which
+   tier they asked for and `"custom"` means "something I chose". A SWEEP is the first
+   object that spans tiers, and there `"custom"` sits on **both sides** of quick — a
+   60-day cell was silently precise enough while a 20,000-day cell would have been
+   flagged beside a 2,000-day one. The name test had been standing in for an ORDINAL
+   comparison, and nothing was wrong with it at the layer it was written for.
+   - The check, when a change borrows a closed vocabulary across a layer boundary: **ask
+     whether the vocabulary's CATCH-ALL value is still unambiguous there.** A catch-all
+     is unambiguous only while something outside the data supplies the missing
+     information — here, the reader's own intent for a single run.
+   - Promoted over three other candidates from the same session (see the s57 Done entry)
+     on the test "would a session that has not read this do the wrong thing?" The project
+     has seven or eight closed vocabularies (`STATUSES`, `SUM_RULES`, `WARNING_CODES`,
+     `ENEMY_KINDS`, `MODES`, `ATTRIBUTIONS`, `zero_hp_category`, the sweep's own
+     `MANIFEST_WARNING_CODES`), and §11's baselines registry adds a `source` one in the
+     next session, so this is live rather than retrospective.
+
    **SAME QUANTITY, SAME STAGE — the seam check (added s50, same step because it is the
    same design-time question one layer down).**
 
@@ -439,6 +458,11 @@ type, condition, resource, …):
    - Pair it with step 5 rather than treating them as alternatives: step 5 is "did I
      cover every branch", this is "does the thing a reader sees look right". Neither
      subsumes the other, and in s48 only this one found the bug.
+   - **SEVEN DEFECTS NOW, AND FOUR OF THEM ARE THE RENDERER (tally updated s57).** s57
+     added one — `cache: 0 hit(s), 16 miss(es)`, which reads as sixteen keys that failed
+     to match when the cache had never been consulted — and found no COMPUTATIONAL defect
+     in the rendered output for the second session running. The class below is holding up:
+     the numbers were right and the sentence presenting them was wrong.
    - **SIX SESSIONS, SIX DEFECTS, and the class is now identifiable (s52).** s48 a
      boundary flip, s49 a 400-character margin note, s50 the console dropping the step's
      whole deliverable, s51 a misaligned column AND the lattice convergence reading, s52
@@ -2092,6 +2116,30 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   compares `base`'s top-level keys against the axis names, which are `enemy_options` and
   `enemy_options.control` — different strings, so the collision is invisible and the axis
   silently overwrites the base value one cell at a time. It has its own test.
+
+  **RITUAL STEP 7, AND THE PROMOTION WAS DELIBERATELY SELECTIVE (user asked whether these
+  need to be rituals at all).** Four process lessons came out of 8c; **one** was promoted.
+  The test applied: *would a session that has not read this Done entry do the wrong thing
+  without it?*
+  - **PROMOTED** — "a closed vocabulary total one layer down can be partial one layer up"
+    (step 4). Not covered by any existing rule, and live rather than retrospective: §11's
+    baselines registry adds a `source` vocabulary next session.
+  - **NOT promoted** — "two refusals are not one refusal". The roll call ALREADY caught
+    it, behaving exactly as step 5 describes; a rule saying "also check refusals" is
+    redundant with the mechanism that worked. It is evidence FOR step 5, not an addition.
+  - **NOT promoted** — "a filesystem side effect can be read elsewhere as evidence about
+    the code". True, but no second instance exists in this codebase, and §10.2 already
+    states it **where the next person to touch the store will read it**, which is a better
+    home than a ritual entry nobody reaches holding that question.
+  - **Step 6's tally updated**, which is maintaining a rule whose argument rests on its
+    running count rather than adding one.
+
+  The reason to say this out loud: the per-feature ritual is ~450 lines and has grown
+  2-4 lessons in each of the last four sessions. **A ritual nobody can read in full at
+  session start is an archive, and the first thing an archive loses is the rules that
+  matter most.** Worth a consolidation pass at some point — not proposed for a specific
+  session, because the right time is when a session finds itself skimming rather than
+  reading.
 
   **STEP 6's STREAK: NO DEFECT IN THE *RENDERED* OUTPUT, FOR THE SECOND SESSION RUNNING
   — and the checker was verified before being believed.** The real artifact is War Angel
@@ -6397,7 +6445,17 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      Note what 8c now provides: a sweep is the natural shape for scoring a whole build
      against a baseline source at once, and `coordinate` is already the dict a scoring
      join keys on.
-   - **8e — the threshold CALIBRATION.** 8c NOW EXISTS, so this is unblocked: §14(a) is explicit that the
+   - **8e — the threshold CALIBRATION.** **WHO READS THE SWEEP IS SETTLED (user, s57):
+     R over the tidy frame, NOT a Python aggregation layer in `sweep.py`.** The
+     concatenated CSV is already the analysis form and is the whole reason §9 chose tidy
+     long; 8c therefore ships no consumer, which keeps §9's line that the sim does not
+     know its consumers. The accepted cost, stated so it is not rediscovered: the
+     calibration analysis sits OUTSIDE the test suite, so a claim it makes cannot be
+     pinned as an assertion — and step 5's "prefer an assertion, prose cannot fail" then
+     applies to whatever 8e concludes. Whichever constants 8e lands on belong back in the
+     registry as declared values with a decision record, which IS assertable; the
+     exploration that chose them does not have to be.
+     8c NOW EXISTS, so this is unblocked: §14(a) is explicit that the
      fix is a sweep across builds and tiers, not a nudge to a constant, and 8a's
      `days_required` is the quantity to sweep over. Note the ordering argument: step 9
      re-baselines every seeded number, so calibrating before it means measuring in a
