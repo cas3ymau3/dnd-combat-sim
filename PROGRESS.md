@@ -133,6 +133,25 @@ type, condition, resource, …):
      passed on 0.1875 and on 0.44. **Declaring a parameter is also what makes its channel
      assertable**, which is a reason to declare beyond provenance.
 
+   **A CLOSED VOCABULARY THAT IS TOTAL ONE LAYER DOWN CAN BE PARTIAL ONE LAYER UP
+   (added s57).** §9.1 raises a run record's `precision` warning on
+   `day_tier == "quick"`. That is a sound test for ONE run, because a reader knows which
+   tier they asked for and `"custom"` means "something I chose". A SWEEP is the first
+   object that spans tiers, and there `"custom"` sits on **both sides** of quick — a
+   60-day cell was silently precise enough while a 20,000-day cell would have been
+   flagged beside a 2,000-day one. The name test had been standing in for an ORDINAL
+   comparison, and nothing was wrong with it at the layer it was written for.
+   - The check, when a change borrows a closed vocabulary across a layer boundary: **ask
+     whether the vocabulary's CATCH-ALL value is still unambiguous there.** A catch-all
+     is unambiguous only while something outside the data supplies the missing
+     information — here, the reader's own intent for a single run.
+   - Promoted over three other candidates from the same session (see the s57 Done entry)
+     on the test "would a session that has not read this do the wrong thing?" The project
+     has seven or eight closed vocabularies (`STATUSES`, `SUM_RULES`, `WARNING_CODES`,
+     `ENEMY_KINDS`, `MODES`, `ATTRIBUTIONS`, `zero_hp_category`, the sweep's own
+     `MANIFEST_WARNING_CODES`), and §11's baselines registry adds a `source` one in the
+     next session, so this is live rather than retrospective.
+
    **SAME QUANTITY, SAME STAGE — the seam check (added s50, same step because it is the
    same design-time question one layer down).**
 
@@ -439,6 +458,11 @@ type, condition, resource, …):
    - Pair it with step 5 rather than treating them as alternatives: step 5 is "did I
      cover every branch", this is "does the thing a reader sees look right". Neither
      subsumes the other, and in s48 only this one found the bug.
+   - **SEVEN DEFECTS NOW, AND FOUR OF THEM ARE THE RENDERER (tally updated s57).** s57
+     added one — `cache: 0 hit(s), 16 miss(es)`, which reads as sixteen keys that failed
+     to match when the cache had never been consulted — and found no COMPUTATIONAL defect
+     in the rendered output for the second session running. The class below is holding up:
+     the numbers were right and the sentence presenting them was wrong.
    - **SIX SESSIONS, SIX DEFECTS, and the class is now identifiable (s52).** s48 a
      boundary flip, s49 a 400-character margin note, s50 the console dropping the step's
      whole deliverable, s51 a misaligned column AND the lattice convergence reading, s52
@@ -1959,6 +1983,182 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **FRAMEWORK STEP 8c — THE SWEEP DECLARATION, MANIFEST, CLI AND CACHE (2026-11-06,
+  session 57).** `evaluation_framework.md` §10 rewritten with **§10.1 (the sweep
+  contract, LOCKED at `sweep_schema_version` 1 / `manifest_schema_version` 1)** and
+  **§10.2 (the cache)**, §13 step 8 (8c done; 8d + 8e open), §14 (one new deferral).
+  New: `src/evaluation/sweep.py`, `sweeps/war_angel_levels.yaml`,
+  `tests/test_eval_sweep.py`. **Scope settled with the user at startup as 8c ONLY** —
+  the §11 baselines registry (8d), the threshold calibration (8e) and RNG substreams
+  (step 9) are the next session's, and 8d is the one that triggers the full metric-set
+  review. **1262 tests, ALL PASSING** (1222 at handoff, +40, all in the new module).
+  **NO NUMBER MOVED**: nothing in the engine, the registry or the estimators was
+  touched, so `GOLDEN_DPR` is untouched and the registry still declares **28**
+  (17 scalars + 8 breakdowns + 3 distributions). Not a registry-touching session.
+
+  **THE SHAPE WAS LOCKED BEFORE THE WRITER, AND THE PRECEDENT PAID FOR ITSELF AGAIN.**
+  §9.1 was locked ahead of its serializer in s47 and then absorbed three additions at
+  `schema_version` 1 without a break; ritual step 4 generalized that into a rule, and
+  8c is the first time the rule was applied to a NEW object rather than inherited. Four
+  questions were put to the user before a line was written, and three of the four
+  answers are not what the code would have defaulted to.
+
+  **TWO OBJECTS, NOT ONE — and conflating them was the available mistake.** §10 says a
+  sweep is *declared* in YAML; §9.1 says a sweep *is* "a directory of run records plus a
+  manifest". Those are an INPUT and an OUTPUT with different formats, different homes
+  (`sweeps/*.yaml` is committed; the manifest is generated), different jobs and
+  **different version numbers**. Three versions over three objects (user): a manifest
+  field added next session must not force a bump on the record, which would cost the
+  record's comparability story for a field nothing is built against. The record's version
+  is quoted per CELL *inside* the manifest, which is what makes a mixed-version sweep
+  detectable instead of silently absorbed.
+
+  - **`coordinate` IS A DICT.** §5.4's rule — the one that cost a registry rewrite in
+    s46 when 25 of 51 entries had flattened a key into a metric NAME — applied one layer
+    up. A consumer groups by `coordinate["level"]`; nothing anywhere parses
+    `war_angel@L13` apart again.
+  - **IDENTITY EXCLUDES THE ENGINE; VALIDITY INCLUDES IT.** `sweep_hash` is over which
+    MEASUREMENTS the sweep asks for and not over `engine_commit`, so a sweep re-run at a
+    new engine version keeps its id and its directory while every record in it is
+    re-derived. The cache key is `(config_hash, engine_commit)` and does include it. The
+    precedent is already in the codebase: `artifact.run_id` deliberately leaves the
+    commit out because "folding it in would make the id churn on every commit for runs
+    that are otherwise the same scenario".
+  - **`level: available` is a SENTINEL, because level sets are SPARSE (§2).** 33 of the
+    60 (build, level) pairs do not exist. It resolves per cell from the adapter, which
+    makes axis ORDER load-bearing (`build` must be fixed first) — stated as a refusal
+    with the reason rather than discovered as a `KeyError` inside the product loop. An
+    explicitly-named nonexistent pair is an ERROR, never a skip: a sweep that quietly
+    drops a third of its cells reports a smaller, cleaner-looking study than the one
+    that was asked for.
+  - **CACHED AND COMPUTED CELLS SHARE ONE RENDERER.** A cache hit has no `EvalReport`,
+    only the serialized record, so the tempting shape renders the tidy frame from reports
+    for computed cells and from stored JSON for cached ones — **two renderers for one
+    quantity**, which is the s54 seam check's exact shape and would have drifted inside
+    two sessions. The store holds BOTH halves of `write_artifact`'s output, the per-record
+    CSV is rendered ONCE at compute time, and concatenation is file-level for every cell
+    alike. A pleasant consequence: comparing the stored HEADER LINES *is* the
+    heterogeneous-registry check §10.2 asks for, with no extra machinery.
+  - **A DECLARATION ERROR IS NOT A FAILED CELL.** Cell resolution validates every
+    `RunConfig`, so `plan` is as strict as `run` and a bad declaration never reaches a
+    simulation. `status="failed"` is therefore only ever a RUNTIME failure — and a
+    48-cell study must not lose 47 results to a crash in the 48th, so the manifest is
+    written anyway and the CLI exits non-zero, because a partial sweep that reports
+    success is worse than one that crashes.
+
+  **THE CACHE: WHAT WAS DECIDED AND WHY (§10.2).** The key is `(config_hash,
+  engine_commit)` with the **whole-repo HEAD sha** (user). It over-invalidates — a
+  docs-only commit busts every cached cell — and the alternative was a fingerprint
+  narrowed to a declared path set, which would make §10's "recomputes only what changed"
+  literally true but turns *a path left off the list* into a silently wrong cache hit.
+  §10's own ordering decides it: correctness and reproducibility first. **`resolved` is
+  NOT in the key, and that is a decision rather than an omission**: §10's original
+  wording says "resolved config", but the resolved block — `adapter.describe` plus
+  `enemy.resolve`, the latter carrying the band save weights since s56 — is a pure
+  function of the declared config and the repo contents, both of which the key already
+  holds. A key you can only compute by doing half the work is worth less than one you
+  can compute from the declaration.
+
+  The store is **shared and content-addressed** (user), one `records/` store across every
+  sweep, because 8e's calibration sweeps overlap almost entirely. The user's question was
+  whether that is resilient to future engine changes, and the answer is the reason to
+  prefer it: **the sha is in the FILENAME, so an engine change is a miss and a new commit
+  writes a new record BESIDE the old one.** The per-sweep alternative is the one that is
+  *not* engine-change-safe — `write_artifact` stems on `run_id`, which carries no engine
+  component, so re-running a scenario after an engine change silently overwrites the
+  earlier record. What sharing costs, stated rather than glossed: a sweep directory is no
+  longer self-contained; the manifest names every record by key and relative path, and
+  the concatenated CSV is self-contained for analysis, which is what the tidy form is
+  for. Eviction is NOT built and has its own §14 entry.
+
+  **FOUR DEFECTS FOUND WHILE BUILDING, AND THEY CAME FROM FOUR DIFFERENT RITUAL STEPS.**
+  That spread is the thing worth carrying — no single check would have found more than
+  one of them.
+
+  1. **THE STORE NEEDED TWO REFUSALS AND THE FIRST DRAFT HAD ONE (the roll call,
+     step 5).** `--no-cache` and a dirty tree are different facts: the first says
+     *recompute*, the second says *the sha does not identify the code*. Only the second
+     may not WRITE. The first draft collapsed them into one `enabled` flag, so a
+     dirty-tree run wrote its records **into the shared store, where a later CLEAN run
+     would have been served them** — §10.2's named failure, implemented, three paragraphs
+     after writing the paragraph that names it. The roll call found it because the
+     `RecordStore.readable` row had three values (clean+cache / `--no-cache` / dirty) and
+     the code had two codepaths; an empty cell in the table, exactly as advertised, and
+     found before a test existed. Dirty-tree records now go beside the sweep's own
+     manifest, so the sweep still produces its frame and the shared store stays
+     trustworthy.
+  2. **A CLOSED VOCABULARY THAT WAS TOTAL ONE LAYER DOWN IS PARTIAL ONE LAYER UP (step
+     6, by eye on a 60-day smoke run).** §9.1 raises the record's `precision` warning on
+     `day_tier == "quick"`, which is fine for ONE run because you know which tier you
+     asked for. A SWEEP is the first object that spans tiers, and `"custom"` sits on
+     **both sides** of quick: a 60-day cell was silently precise enough while a
+     20,000-day cell would have been flagged beside a 2,000-day one. The name test was
+     standing in for an ORDINAL comparison. The manifest keys on the day COUNT.
+  3. **AN ABSOLUTE PATH IN A COMMITTED ARTIFACT (step 6, same read).** The first draft
+     wrote `str(source_path)` into the manifest's `declaration.source_path` — a
+     scratchpad path, machine-specific and unresolvable for any other reader, in the one
+     field that says where the study was declared. Now repo-relative, with the name alone
+     for a declaration outside the repo, because that is all that can be said honestly.
+  4. **WRITING ARTIFACTS INTO THE REPO WOULD FLIP `engine_dirty` ON EVERY LATER RUN
+     (found by checking, before building).** `report.engine_version()` reads
+     `git status --porcelain`, which counts **untracked** files. So the output layer
+     would have silently poisoned the provenance layer — and then the cache, which keys
+     on it — through a path neither module mentions. `artifacts/` is gitignored. The
+     transferable shape is wider than the fix: **a layer's side effect on the FILESYSTEM
+     can be read by another layer as evidence about the CODE**, and nothing in either
+     module's text suggests they touch.
+
+  **ONE MORE, FROM WRITING THE CHECK RATHER THAN THE FEATURE.** The rule that a field in
+  both `base` and `axes` is refused (rather than resolved by precedence — a cell whose
+  value depends on which of two places you read it from is §3.4's implicit-enemy failure
+  in a different costume) has to see THROUGH the option dicts. A naive implementation
+  compares `base`'s top-level keys against the axis names, which are `enemy_options` and
+  `enemy_options.control` — different strings, so the collision is invisible and the axis
+  silently overwrites the base value one cell at a time. It has its own test.
+
+  **RITUAL STEP 7, AND THE PROMOTION WAS DELIBERATELY SELECTIVE (user asked whether these
+  need to be rituals at all).** Four process lessons came out of 8c; **one** was promoted.
+  The test applied: *would a session that has not read this Done entry do the wrong thing
+  without it?*
+  - **PROMOTED** — "a closed vocabulary total one layer down can be partial one layer up"
+    (step 4). Not covered by any existing rule, and live rather than retrospective: §11's
+    baselines registry adds a `source` vocabulary next session.
+  - **NOT promoted** — "two refusals are not one refusal". The roll call ALREADY caught
+    it, behaving exactly as step 5 describes; a rule saying "also check refusals" is
+    redundant with the mechanism that worked. It is evidence FOR step 5, not an addition.
+  - **NOT promoted** — "a filesystem side effect can be read elsewhere as evidence about
+    the code". True, but no second instance exists in this codebase, and §10.2 already
+    states it **where the next person to touch the store will read it**, which is a better
+    home than a ritual entry nobody reaches holding that question.
+  - **Step 6's tally updated**, which is maintaining a rule whose argument rests on its
+    running count rather than adding one.
+
+  The reason to say this out loud: the per-feature ritual is ~450 lines and has grown
+  2-4 lessons in each of the last four sessions. **A ritual nobody can read in full at
+  session start is an archive, and the first thing an archive loses is the rules that
+  matter most.** Worth a consolidation pass at some point — not proposed for a specific
+  session, because the right time is when a session finds itself skimming rather than
+  reading.
+
+  **STEP 6's STREAK: NO DEFECT IN THE *RENDERED* OUTPUT, FOR THE SECOND SESSION RUNNING
+  — and the checker was verified before being believed.** The real artifact is War Angel
+  L1-16 at the quick tier, 16 cells and 32,000 days in 2m09s. Every number the manifest
+  states about itself checks out against the list it describes (`n_cells` against the
+  cell list, `hits + misses` against the OK cells, the coordinate key set against the
+  declared axes, 16 unique run ids and 16 unique cache keys), and the frame is 1,520 rows
+  = one header + 16 × 95. The concatenation claim is NOT resting on the verification
+  script: cell L13's own stored CSV was compared row-for-row against its slice of the
+  concatenated frame and is identical, which is the hand check s55's lesson asks for
+  ("a checker is as likely to be wrong as the thing it checks, and more likely when what
+  it checks has just been hardened"). Face validity holds — DPR 8.3 at L1 to 38.1 at L16,
+  with the Extra Attack jump at L5 and dips at L11/L13 where the enemy band hardens.
+  **Those numbers are not data** and are not to be diffed against anything
+  ([[preliminary-run-is-a-machinery-exercise]]); they were rendered to look at the
+  machinery, and item 5c is still the run that counts. The ONE defect this read found was
+  a renderer wording: `cache: 0 hit(s), 16 miss(es)` reads as sixteen keys that failed to
+  match when the cache was never consulted, which is step 6's signature class — the
+  numbers right and the sentence presenting them wrong, four of its seven defects now.
 
 - **FRAMEWORK STEP 8, PARTS A AND B — THE CONVERGENCE VERDICT AND PER-CELL
   AVAILABILITY (2026-11-06, session 56).** `evaluation_framework.md` §4 (the
@@ -5856,14 +6056,17 @@ Engine prerequisites, in the order we built them:
 
 ### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24; RESEQUENCED s54)
 
-> **NEXT TASK = item 4c below: FRAMEWORK STEPS 8 AND 9.** Item 4b (#6a, the preliminary
-> build evaluation) is **DONE in s55** — War Angel L1-16 rendered end to end, with its
-> issue list and its read on the deferrals in the Done entry at the top of this file.
-> **Start step 8 with §14(a)'s convergence thresholds**: 4b quantified them (36 of 102
-> flags at L1-10 clear with ≤2x the days, while 6 need >100x, and nothing in the output
-> distinguishes a near-miss from an impossible channel), which makes it the cheapest
-> real improvement on the list rather than a guess. Item 5c then re-runs the SAME build
-> on the finished framework; 4b's numbers are NOT a baseline to diff against (§12.1).
+> **NEXT TASK = item 4c below, now at 8d: THE §11 BASELINES REGISTRY, then 8e, then
+> step 9.** 8a + 8b landed in s56 (the convergence verdict and per-cell availability);
+> **8c landed in s57** (the sweep declaration, manifest, CLI and cache — §10.1/§10.2
+> locked before the writer). What remains of step 8 is **8d**, which ADDS a declaration
+> kind and therefore triggers the full metric-set review in the session that does it,
+> and **8e**, the threshold calibration, which 8c has now unblocked: §14(a) is explicit
+> that the fix is a SWEEP across builds and tiers rather than a nudge to a constant, and
+> 8a's `days_required` is the quantity to sweep over. Then **step 9** (RNG substreams),
+> which re-baselines `GOLDEN_DPR` by construction. Item 5b (housekeeping) then 5c
+> (#6b, the definitive re-evaluation) follow; #6a's numbers are NOT a baseline to diff
+> against (§12.1).
 
 The project has two tracks. **Track 1 (current focus): "make the model produce
 honest, complete build evaluations"** — the enemy-profile arc through to a real
@@ -6221,22 +6424,38 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    only (where AC already exists), or run the low levels under `enemy="none"` and say
    plainly that they carry no defensive measurement.
 
-4c. **Framework steps 8 and 9. *** IN PROGRESS: 8a + 8b DONE (s56); 8c-8e + step 9 are
-   the NEXT TASK. *** ** `evaluation_framework.md` §13 steps 8 and 9, unchanged in
-   content; only their position moved.
+4c. **Framework steps 8 and 9. *** IN PROGRESS: 8a + 8b DONE (s56), 8c DONE (s57);
+   8d + 8e + step 9 are the NEXT TASK. *** ** `evaluation_framework.md` §13 steps 8 and
+   9, unchanged in content; only their position moved.
    - ~~**8a — the convergence VERDICT**~~ **DONE (s56)**: §14(a)'s distance payload, no
      constant retuned. See the s56 Done entry at the top of this file.
    - ~~**8b — per-cell availability reads the resolved ENEMY**~~ **DONE (s56)**: §14's
      entry closed, and it forced `BuildAdapter.forced_save_abilities` into existence.
-   - **8c — the sweep MANIFEST (YAML) + a CLI + config-hash caching. NEXT.** This is
-     where the throwaway driver stops being throwaway, so settle the manifest SHAPE with
-     the user before writing a serializer (per-feature ritual step 4 — the §9.1
-     precedent). §9.1 already says a sweep is "a directory of run records plus a
-     manifest", which is the contract to honour.
-   - **8d — the §11 baselines registry.** `(source, build, level, metric, value,
+   - ~~**8c — the sweep MANIFEST + a CLI + config-hash caching**~~ **DONE (s57)**:
+     §10.1 (the sweep contract) and §10.2 (the cache) locked BEFORE the writer, four
+     shape questions settled with the user first, `src/evaluation/sweep.py` +
+     `sweeps/*.yaml` + `python -m src.evaluation.sweep {plan,run}`. Three separate
+     version numbers, a shared content-addressed store keyed `(config_hash,
+     engine_commit)`, and the `level: available` sentinel for §2's sparse level sets.
+     No number moved. See the s57 Done entry for the four defects building it found and
+     which ritual step found each.
+   - **8d — the §11 baselines registry. NEXT.** `(source, build, level, metric, value,
      provenance)`, scoring as a report-layer operation. This one ADDS a declaration
      kind, so it IS a registry-touching session and triggers the full metric-set review.
-   - **8e — the threshold CALIBRATION.** Needs 8c to exist: §14(a) is explicit that the
+     Note what 8c now provides: a sweep is the natural shape for scoring a whole build
+     against a baseline source at once, and `coordinate` is already the dict a scoring
+     join keys on.
+   - **8e — the threshold CALIBRATION.** **WHO READS THE SWEEP IS SETTLED (user, s57):
+     R over the tidy frame, NOT a Python aggregation layer in `sweep.py`.** The
+     concatenated CSV is already the analysis form and is the whole reason §9 chose tidy
+     long; 8c therefore ships no consumer, which keeps §9's line that the sim does not
+     know its consumers. The accepted cost, stated so it is not rediscovered: the
+     calibration analysis sits OUTSIDE the test suite, so a claim it makes cannot be
+     pinned as an assertion — and step 5's "prefer an assertion, prose cannot fail" then
+     applies to whatever 8e concludes. Whichever constants 8e lands on belong back in the
+     registry as declared values with a decision record, which IS assertable; the
+     exploration that chose them does not have to be.
+     8c NOW EXISTS, so this is unblocked: §14(a) is explicit that the
      fix is a sweep across builds and tiers, not a nudge to a constant, and 8a's
      `days_required` is the quantity to sweep over. Note the ordering argument: step 9
      re-baselines every seeded number, so calibrating before it means measuring in a
@@ -6250,7 +6469,8 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      green; updating it IS part of the decision record.
    - **ONE THING 8a ADDED TO 5b's LIST (housekeeping):** `BuildAdapter` now has five
      methods and the protocol's docstring lists "the four axes of variance an adapter
-     absorbs" — the prose and the protocol have diverged by one.
+     absorbs" — the prose and the protocol have diverged by one. **Still open after
+     s57** (8c touched no adapter).
 
 5b. **HOUSEKEEPING PR — scheduled, not optional (user, s54).** Run this **once the
    evaluation framework is finished (after step 9) and BEFORE the first full build

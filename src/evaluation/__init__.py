@@ -4,8 +4,9 @@ evaluation — the build-agnostic evaluation framework (design/evaluation_framew
 §13's build sequence through step 6: ``RunConfig`` + ``BuildAdapter`` + ``Roster`` +
 the build registry (1), the metric registry + ``EvalReport`` + the statistics layer
 with paired seeding (2), serialization (3), the ``attacks`` channel (4), the
-enemy-construction seam and the deletion of the baked-in path (5a/5b), and
-control-at-runtime (6).
+enemy-construction seam and the deletion of the baked-in path (5a/5b),
+control-at-runtime (6), the baseline character and party (7), the convergence verdict
+and per-cell availability (8a/8b), and the sweep driver (8c).
 
 The layer's reason for existing (§1): ``src/validation.py`` was hardcoded to the War
 Angel and read entities by tuple position, so it could not be generalized in place.
@@ -63,6 +64,17 @@ from .report import (
 )
 from .roster import ROLES, Roster
 from .runner import RunOutput, run, simulate
+from .sweep import (
+    MANIFEST_SCHEMA_VERSION,
+    MANIFEST_WARNING_CODES,
+    SWEEP_SCHEMA_VERSION,
+    RecordStore,
+    SweepCell,
+    SweepDeclaration,
+    SweepResult,
+    cache_key,
+    run_sweep,
+)
 from .statistics import (
     DEFAULT_STATISTICS,
     IQR,
@@ -146,4 +158,14 @@ __all__ = [
     "write_sweep_csv",
     "render",
     "print_report",
+    # step 8c (§10, §10.1-10.2) — sweeps: declaration -> cells -> records + manifest
+    "SWEEP_SCHEMA_VERSION",
+    "MANIFEST_SCHEMA_VERSION",
+    "MANIFEST_WARNING_CODES",
+    "SweepDeclaration",
+    "SweepCell",
+    "SweepResult",
+    "RecordStore",
+    "cache_key",
+    "run_sweep",
 ]

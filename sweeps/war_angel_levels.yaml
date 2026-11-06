@@ -1,0 +1,16 @@
+# War Angel across its whole level set at the quick tier (§10's iteration tier).
+#
+# The study #6b (PROGRESS item 5c) wants: one cell per level, same enemy, same seed,
+# so a reader can read DPR and every panel channel as a function of level. `level:
+# available` is the sentinel (§10.1) — War Angel's level set is SPARSE, and naming a
+# list here would have to be re-edited every time the build gains a level.
+sweep_schema_version: 1
+name: war_angel_levels
+description: War Angel L1-16 vs the standardized baseline enemy, quick tier.
+base:
+  enemy: baseline
+  n_days: 2000
+  seed: 11
+axes:
+  build: [war_angel]
+  level: available
