@@ -1199,10 +1199,27 @@ valuable the moment substreams land. What it must not do is let a report *claim*
 precision it does not have — and it does not, because the interval reported is the
 measured paired one, whichever side of the independent figure it falls.
 
-The replacement test asserts the two-regime fact instead of the false guarantee, and is
-written to **FAIL when §13 step 9 lands**. That is deliberate: a tripwire is the right
+The replacement test asserted the two-regime fact instead of the false guarantee, and was
+written to **FAIL when §13 step 9 lands**. That was deliberate: a tripwire is the right
 shape for "this is inert today and must stop being inert", and it puts step 9's decision
 record where it belongs.
+
+> **STEP 9 LANDED IN s60 AND THE TRIPWIRE FIRED, reading 5.2498 against an upper bound
+> of 1.15. The bound was not widened; the claim was replaced** — the test is now
+> `test_pairing_BUYS_REAL_PRECISION_once_the_streams_diverge`. **Everything above this
+> note describes the SINGLE-TAPE engine and is kept as the record of why §6.3 exists,
+> not as a description of the current one.** What pairing is worth now is in §6.3:
+> a median variance reduction of **5.77** over 12 diverging cells x 3 seeds, against the
+> 1.0 recorded above.
+>
+> **And §6.1's own prescription for the fix was HALF WRONG, which is the third defect
+> this section has carried.** "Per entity or per (entity, purpose) generators via
+> `SeedSequence.spawn()`" is implemented as `ALIGNMENT = "run"` and measures a median of
+> **1.16** — still inert. Two corrections, both in §6.3: the generators must be DERIVED
+> from a `spawn_key` rather than handed out by `spawn()` in call order, and — the part
+> §6.1 never mentions — the streams must RE-SYNCHRONIZE at the unit the estimator
+> averages over. The paragraph above calls the per-entity keying "the prerequisite for
+> the real factor"; it is a prerequisite, and on its own it buys nothing.
 
 ### 6.2 Every scalar metric carries uncertainty
 
@@ -1252,6 +1269,167 @@ variance is zero. An exact estimate now escapes first, which also subsumes the o
 `value == 0` special case rather than sitting beside it.
 
 ---
+
+### 6.3 The substream contract (LOCKED s60, framework step 9)
+
+§6.1 measured its own default **statistically inert** and named the fix: "give each
+source of randomness its own stream (`numpy.random.SeedSequence.spawn()`), keyed per
+entity or per (entity, purpose)". This section is that fix built — and the first thing
+it has to record is that **§6.1's prescription, implemented exactly as written, does
+not work.** It is necessary and it is not sufficient, and only measuring it said so.
+
+#### What a stream is addressed by
+
+Every die names its stream as `(purpose, owner)`, and the generator is **derived** from
+`(seed, epoch, purpose, owner)`:
+
+```
+spawn_key = (*epoch, purpose_code, crc32(owner))
+generator = default_rng(SeedSequence(entropy=seed, spawn_key=spawn_key))
+```
+
+* **`purpose`** is a CLOSED vocabulary of eight with **no catch-all** — `attack_d20`,
+  `attack_dice`, `damage`, `save_d20`, `save_dice`, `healing`, `policy`, `schedule`.
+  A catch-all would silently re-couple whatever landed in it, which is the failure this
+  section exists to remove, and it would be invisible because the dice would still look
+  fine (the s57 lesson: a catch-all is unambiguous only while something outside the data
+  supplies the missing information, and here nothing does).
+* **`owner`** is a stable LABEL: `entity.name` for an entity's own dice, a policy's
+  declared `stream_owner` for its per-combat pre-rolls, `"day"` for the schedule.
+* **`epoch`** is the alignment prefix — the next subsection, and the part that works.
+
+**`spawn_key`, NOT `spawn()`.** `SeedSequence.spawn()` hands out children in call order,
+so a stream's identity would depend on the order streams were first touched — the
+single-tape problem one level up, in which a change to *which entity acts first* still
+reshuffles everything. A `spawn_key` is a pure function of the key. §6.1 named `spawn()`
+specifically; this is the first of two places its prescription needed correcting.
+
+**The owner is never `Entity.id`, and the obvious implementation is the broken one.**
+`Entity.id` comes from a module-global `itertools.count` that never resets, so it
+depends on how many entities the PROCESS built earlier — keying on it would make a run's
+dice depend on test ordering, a reproducibility defect that passes every single-process
+test. For the same reason the owner code is `zlib.crc32` and not `hash()`, whose string
+hashing is randomized per process. Both are asserted in `tests/test_rng.py`, with the
+crc values pinned as literals.
+
+#### The alignment epoch, and the measurement that chose it
+
+The epoch is which simulation coordinates enter the key, i.e. **where the streams
+re-synchronize**. Three values are declared and all three were MEASURED, because a
+mechanical argument is not a measurement and the whole history of §6.1 is that rule
+being learned the hard way:
+
+| `ALIGNMENT` | epoch | what it means |
+|---|---|---|
+| `run` | `()` | §6.1's literal wording. Streams never realign. |
+| `day` | `(day,)` | Realign at the estimator's replication unit. **PINNED.** |
+| `day_combat` | `(day, combat)` | Realign four times a day — the finest declared. |
+
+Measured over **12 diverging cells x 3 seeds** (36 measurements) spanning four subjects,
+both directions of divergence (character-side `build_options` and enemy-side
+`enemy_options`) and all three enemy kinds, at 1,000 days a side. Reported in the **same
+quantity §6.1's table has published since s44** — `variance_reduction =
+(independent_se / paired_se)²`, where `1.0` means pairing bought nothing:
+
+| alignment | range | median | geomean | worse than independent |
+|---|---|---|---|---|
+| `run` | 1.01 … 2.14 | 1.16 | — | 0 of 12 |
+| **`day`** | **1.95 … 15.22** | **5.77** | **5.71** | 0 of 36 |
+| `day_combat` | 1.84 … 38.34 | 5.48 | 5.93 | 0 of 36 |
+
+**`run` IS STILL INERT, AND THAT IS THE HEADLINE.** §6.1's named prerequisite, built
+exactly as specified, lands at a median of **1.16** — indistinguishable in kind from the
+`0.892 … 1.069` it was supposed to fix. Per-entity, per-purpose streams remove the
+shared CURSOR, but they do not realign a stream after it diverges, and divergence still
+happens in round 1 of combat 1 of day 1. **So what §6.1 called "the prerequisite for the
+real factor" was half of the answer, and the missing half is the half that mattered.**
+The epoch is not mentioned anywhere in §6.1; it was found by asking what unit the
+ESTIMATOR averages over rather than what unit the DICE belong to.
+
+One thing `run` did fix: it is **never worse than independent seeding** in 12 of 12
+cells, where §6.1 measured worse in 3 of 9. So the s52 correction's two-regime picture
+is now a *three*-regime one, and the retracted "never worse" guarantee is true of this
+arm — which is worth stating only to say that it still buys nothing anyone would notice.
+
+#### `day` vs `day_combat`: the measurement CANNOT separate them, and that is the finding
+
+Per cell, comparing the day/day_combat gap against the across-seed spread:
+**3 cells favour `day`, 3 favour `day_combat`, and 6 are within seed noise.** Medians
+and geometric means differ by under 5% and in opposite directions. So:
+
+> **`ALIGNMENT = "day"` is pinned on tie-breakers, not on variance reduction**, and the
+> record says so rather than implying the measurement chose it. The tie-breakers:
+> it is **cheaper** (one epoch coordinate; ~12% less wall time than `day_combat` on the
+> same work), it is **simpler**, and it is the only one of the two with a *stated reason*
+> behind it — the day is the unit the estimator averages over. `day_combat` would be
+> chosen by "finer must be better", which this measurement refutes.
+
+**AND THE FIRST CUT OF THIS MEASUREMENT SAID THE OPPOSITE, WHICH IS THE REUSABLE PART.**
+A first pass over **6** cells (all character-side, all starfire and silvertail, one seed)
+had `day` beating `day_combat` on 5 of 6 and was decisive-looking enough to write up as
+a law — "finer is worse". Widening to 12 cells across four subjects and both divergence
+directions dissolved it, and a seed arm showed half the remaining gaps were noise.
+**That is s58's "judging a quantity on whichever subset happens to be available" and
+s59's seed-stability check, arriving in the same session's own work** — and the
+narrow result was not merely weaker, it was *wrong in its general form*.
+
+Where the two DO differ systematically, there is a mechanism, and it was measured rather
+than argued because the direction is counter-intuitive:
+
+* **Per COMBAT, `day_combat` wins everywhere it should.** Starfire L15, 600 days,
+  correlation of A vs B per-combat damage: combat 2 `0.560 -> 0.818`, combat 3
+  `0.618 -> 0.896`, combat 4 `0.667 -> 0.908`; combat 1 a wash (`0.761 -> 0.745`).
+  Realigning at the combat boundary restores exactly the correlation per-day alignment
+  loses after its first divergence.
+* **At the DAY level it loses on that cell anyway** — `0.896 -> 0.837`. So the inversion
+  is not in the per-combat terms; it is in the cross-combat ones.
+* **The cause: per-combat draw-count mismatches CANCEL within a day, and a day total is
+  ORDER-INSENSITIVE.** A day's metric aggregates the day's draws, so what costs
+  covariance is the count of draws that are NOT shared, measured at the day level. Over
+  100 days of that cell: **1,219 non-shared draws aggregated per DAY against 2,461
+  aggregated per COMBAT — 2.02x more.** Splitting the day into four tapes turns one small
+  day-level count difference into four per-combat differences that add instead of
+  cancelling. `day_combat` shares **47.2%** of its draws against `day`'s **28.7%** and
+  still pairs worse on that cell: **more shared draws, less correlated estimate.**
+* It is not universal, and the cells that go the other way say why: `day_combat` wins
+  where the toggle's effect is per-combat UNIFORM (`aoo_per_combat`,
+  `legendary_cadence`), so there is no day-level cancellation to lose.
+
+**The transferable rule, and it is not about dice: synchronize at the unit the ESTIMATOR
+averages over.** Finer synchronization optimizes a quantity nobody estimates, and
+whether that costs the one that IS estimated depends on the toggle. This is §5.2's
+denominator discipline through a third door — a quantity measured at the wrong layer.
+
+#### What this does NOT change
+
+* **The physics.** No rule, stat, policy or table moved; only which numbers the channel
+  hands out. **Measured, not asserted**: seven cells at 20,000 days on the old
+  single-tape channel and on the new one, same seed, plus 20 panel-channel readings —
+  **27 comparisons, worst |z| = 1.60, median 0.58, signs mixed** (four DPR cells down,
+  three up), and the three structurally-exact `attacks_per_round` cells identical in
+  both arms. Every one of the nineteen golden moves at 400 days is therefore stream and
+  none is physics, which is the separation s55 found was the hard part of a re-baseline.
+  Stated honestly, because "within noise" is doing real work: this is a BOUND, not a
+  proof — nothing moved by more than roughly a fiftieth of these channels' values, which
+  is the strongest statement a finite-sample comparison supports. See the s60
+  re-baseline record above `GOLDEN_DPR`.
+* **Out-of-combat code still draws NOTHING.** `design/healing.md` §7(a) and the
+  per-feature ritual's rule 3 make out-of-combat healing mean-field *because* substreams
+  did not exist. Substreams are what could relax that, and relaxing it is **its own
+  decision with its own re-baseline**, deliberately not taken here: a change that moves
+  every number should move it for one reason at a time.
+* **Pairing stays the DEFAULT**, for the reasons §6.1 already gives — now with a measured
+  factor behind it instead of a retracted guarantee.
+* **The inert-toggle regime is unchanged**: a toggle that never diverges still pairs
+  exactly, delta `0 ± 0`, `variance_reduction` `inf`.
+
+#### Provenance
+
+`SeededRNG.describe()` records `seed`, `alignment` and the purpose vocabulary. The
+alignment is recorded because **it changes the numbers**: two runs at one seed and two
+alignments are different runs, and a reader comparing them without knowing that would be
+comparing two streams — the §4 failure of an assumption recorded without what it was
+worth.
 
 ## 7. Control applied at runtime (supersedes `enemy_model.md` §6 v1)
 
@@ -2561,16 +2739,26 @@ check mechanisms, not the composite. Three things carry that load instead:
    anything. See PROGRESS items 4b / 4c / 5c.
    Step 8 is also the first cheap opportunity to settle §14(a)'s convergence thresholds,
    which need a sweep across builds and tiers rather than a nudge to a constant.
-9. **RNG substreams** *(added s44)* — per-entity / per-(entity, purpose) generators via
-   `SeedSequence.spawn()`, the prerequisite for §6.1's paired seeding to actually buy
-   precision (MEASURED inert today — §6.1). Needs its own decision record: it moves every
-   seeded baseline, so it must be a deliberate, versioned change. It no longer breaks the
-   §12 parity proof — s52 retired that — so what it re-baselines is `GOLDEN_DPR`, and it
-   should also trip
-   `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s53 wrote as a
-   deliberate tripwire for exactly this step.
-   Sequenced last because nothing else depends on it and the intervals reported before
-   it are honest, just wider than they could be.
+9. ~~**RNG substreams** *(added s44)*~~ **DONE (s60). §6.3 locks the contract; THE
+   FRAMEWORK IS FINISHED.** `src/rng.py` routes every die to a substream keyed
+   `(seed, epoch, purpose, owner)`; the epoch is owned by `DayRunner.run_day`
+   (`begin_day` / `begin_combat`). Pairing goes from a median variance reduction of
+   **1.0** to **5.77** over 12 diverging cells x 3 seeds. s53's tripwire fired at
+   **5.2498** against its 1.15 bound and was REPLACED rather than widened. All nineteen
+   `GOLDEN_DPR` rows re-baselined, and the physics/stream separation is MEASURED: seven
+   cells at 20,000 days plus 20 panel readings give a worst |z| of 1.60 over 27
+   old-vs-new comparisons with mixed signs, so every golden move is stream and none is
+   physics.
+   - **§6.1's own prescription was half wrong**, which is why this needed its own step
+     rather than an afternoon: per-(entity, purpose) `spawn()` generators — declared and
+     kept measurable as `ALIGNMENT = "run"` — are **still inert** (median 1.16). The
+     mechanism is the per-DAY re-synchronization, which §6.1 does not mention.
+   - **The choice between `day` and `day_combat` is NOT settled by the measurement**
+     (3 cells each, 6 within seed noise); `day` is pinned on cost, simplicity and the
+     fact that it is the unit the estimator averages over. Pinned by assertion
+     (`test_the_PINNED_alignment_is_day`), not by prose.
+   - It did NOT relax the no-new-dice-outside-combat rule, which substreams now make
+     possible; that is its own decision and is named in §14.
 
 ~~`src/validation.py` **stays as-is** throughout as the regression check, and is migrated
 onto the framework only once step 1 reproduces its numbers exactly.~~ **DONE and then
@@ -2720,6 +2908,30 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   - Trigger: the first build evaluation whose write-up names which shapes it actually
     used (roadmap item 5c), or any session adding a fourth distribution — which should
     have to answer this question for its own quantity first.
+- **OUT-OF-COMBAT DICE — now POSSIBLE, deliberately NOT taken** *(added s60, with
+  step 9)*. `design/healing.md` §7(a) and the per-feature ritual's rule 3 forbid any
+  new dice source outside combat, and the stated reason is that out-of-combat code
+  runs at a point every build passes through, so one `rng.roll()` there shifts every
+  subsequent die for every build. **§6.3 removes that reason**: out-of-combat draws
+  would now live on their own `(purpose, owner)` substream and shift nothing else.
+  So the constraint is no longer load-bearing, and the honest status is "a convention
+  whose justification has expired" rather than "a rule".
+  - It is NOT relaxed here, on the principle that a change which moves every number
+    should move it for ONE reason at a time — step 9's re-baseline is already
+    nineteen golden rows, and folding a healing-model change into it would make the
+    two indistinguishable in the record, which is the exact failure the s54 combined
+    re-baseline record had to work around.
+  - What relaxing it would buy is real and should be stated so the deferral can be
+    judged: out-of-combat healing currently takes the die's EXPECTATION, so
+    `healing.md`'s H1/H2 report a mean with no spread, and any metric over
+    out-of-combat healing has a structurally zero variance that is a modelling
+    artefact rather than a measurement. A build whose plan leans on short-rest
+    recovery is therefore measured as more reliable than it is.
+  - Trigger: the first metric or build that needs the SPREAD of out-of-combat
+    healing, or the §3.3 multi-character party, whose members would heal each other
+    between combats. It needs a decision record, a `purpose` added to the closed
+    vocabulary, and its own re-baseline.
+
 - **Interactive website** — the static artifact schema does not preclude it; no schema
   change required later (§9).
 - **An `attacks` metric for DISADVANTAGE** *(added s49)* — §8.1's channel records

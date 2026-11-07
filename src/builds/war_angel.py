@@ -858,6 +858,12 @@ class WarAngelPolicy:
         Used only to bound the random AoO round.  Defaults to 4.
     """
 
+    #: The §6.3 substream owner for this policy's own per-combat pre-rolls.
+    #: DECLARED rather than derived from the class name: it is a DICE-STREAM
+    #: IDENTITY, so changing it re-baselines every seeded number, and a label
+    #: that says so is harder to rename by accident than ``__name__``.
+    stream_owner: str = "war_angel_policy"
+
     def __init__(self, level: int, target: Entity, rounds_per_combat: int = 4) -> None:
         if level not in LEVELS:
             raise NotImplementedError(
@@ -894,7 +900,8 @@ class WarAngelPolicy:
         more identical attack with no timing-dependent payoff, we collapse it to
         a uniformly random round in [1, rounds_per_combat] and emit it that round.
         """
-        self._aoo_round = rng.roll_one(self._rounds_per_combat)
+        self._aoo_round = rng.roll_one(
+            self._rounds_per_combat, stream=("policy", self.stream_owner))
         # Reset the once-per-round Flourish Parry gate; round numbers restart at
         # 1 each combat, so a stale value would mis-gate the new combat.
         self._last_parry_round = -1

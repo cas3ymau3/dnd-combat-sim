@@ -155,7 +155,8 @@ def resolve_healing(
         else:
             if rng is None:
                 raise ValueError("resolve_healing needs an rng unless mean_field=True")
-            rolls = list(rng.roll(n, sides))
+            rolls = list(rng.roll(n, sides,
+                                  stream=("healing", actor.name)))
 
     # H3 — per-die mods.  No consumer yet; the phase exists so Periapt of Wound
     # Closure lands as a per-die transform rather than as a special case bolted
@@ -169,7 +170,9 @@ def resolve_healing(
     # H6 — amplifier riders off the caster's modifier stack.
     amount = float(actor.stat(HEALING_BONUS_STAT, tick, phase=HEALING_PHASE)) + amount
     if not mean_field and rng is not None:
-        amount += actor.modifiers.roll_dice(HEALING_BONUS_STAT, rng, tick)
+        amount += actor.modifiers.roll_dice(
+            HEALING_BONUS_STAT, rng, tick,
+            stream=("healing", actor.name))
 
     if amount <= 0:
         return {}

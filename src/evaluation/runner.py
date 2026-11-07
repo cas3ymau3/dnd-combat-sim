@@ -76,6 +76,15 @@ class RunOutput:
     damage_taken: dict[int, list[int]] = field(default_factory=dict)
     #: §13 telemetry, merged across every day of the run.
     telemetry: CombatTelemetry = field(default_factory=CombatTelemetry)
+    #: The §6.3 dice channel this run ACTUALLY used, from ``SeededRNG.describe()``.
+    #:
+    #: Carried on the output rather than re-derived in the report layer from
+    #: ``src.rng.ALIGNMENT``, because those two can come apart: a caller may pass an
+    #: instrumented or differently-aligned generator through ``simulate(rng=...)``,
+    #: and provenance that reported the module constant would then state a value the
+    #: run did not use — §4's own failure, and the one s56 found by grepping for what
+    #: SERIALIZES a requirement rather than for what computes it.
+    dice_channel: dict[str, Any] = field(default_factory=dict)
     #: metric name → its per-day (numerator, denominator, events) columns.
     samples: dict[str, MetricSamples] = field(default_factory=dict)
     #: metric name → REASON it could not be measured (§3.4).  A metric in here has
@@ -203,6 +212,7 @@ def simulate(config: "RunConfig", *, registry: MetricRegistry = METRICS,
         damage_taken={i: [] for i in ids},
         samples=samples,
         unavailable=unavailable,
+        dice_channel=rng.describe() if hasattr(rng, "describe") else {},
     )
 
     for day_index in range(config.n_days):

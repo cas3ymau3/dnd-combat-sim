@@ -616,6 +616,22 @@ def test_an_unavailable_metric_scores_UNAVAILABLE_and_never_zero(war_angel_repor
     assert row.note
 
 
+#: The UNMEASURED-state fixture's coordinate, in ONE place.
+#:
+#: ``save_fail_rate[int_save|*]`` at band 11-16 is AVAILABLE (an INT save carries
+#: weight 20 of ~999 in that band's damage channel) and a two-day run usually forces
+#: none, which is the rare-but-reachable cell §9.1's third state needs.
+#:
+#: **It is a shared constant because it DRIFTED (s60).** §6.3's substreams reshuffled
+#: the stream and ``seed=11`` started forcing an INT save, failing both tests that
+#: hard-coded it — in two places, with one cause.  The fixture guards below are what
+#: caught it, and they say to re-pick the coordinate rather than widen the assertion;
+#: re-picking it twice is how a duplicated sequence gets out of step.
+_UNMEASURED_LEVEL = 13
+_UNMEASURED_DAYS = 2
+_UNMEASURED_SEED = 1
+
+
 def test_an_unmeasured_metric_scores_UNMEASURED_and_never_zero():
     """Available, but this run produced no estimate — §9.1's third state, one layer up.
 
@@ -624,7 +640,8 @@ def test_an_unmeasured_metric_scores_UNMEASURED_and_never_zero():
     exactly this reason: at band 5-10 the cell is structurally impossible, and from the
     outside an impossible cell and an unmeasured one look identical.
     """
-    config = RunConfig(build="war_angel", level=13, n_days=2, seed=11,
+    config = RunConfig(build="war_angel", level=_UNMEASURED_LEVEL,
+                       n_days=_UNMEASURED_DAYS, seed=_UNMEASURED_SEED,
                        enemy="baseline")
     report = build_report(simulate(config))
     metric = "save_fail_rate[int_save|*]"
@@ -650,7 +667,8 @@ def test_an_unmeasured_metric_scores_UNMEASURED_and_never_zero():
     source = BaselineSource(
         name="prior_run", kind="internal_run", provenance="p",
         dimensions=(CoordinateDimension(name="level", match=MATCH_EXACT),),
-        entries=(BaselineEntry(coordinate={"level": 13}, metric=metric,
+        entries=(BaselineEntry(coordinate={"level": _UNMEASURED_LEVEL},
+                               metric=metric,
                                basis=BASIS_UNKNOWN, value=0.4),))
     row = score(report, BaselineRegistry(sources=(source,)))[0]
     assert row.state == STATE_UNMEASURED
@@ -668,12 +686,13 @@ def test_every_score_state_is_reachable(war_angel_report, production):
         sources=(_internal_source(level=4),)))}
     seen |= {r.state for r in score(war_angel_report, BaselineRegistry(
         sources=(_internal_source(metric="mitigation_fraction", value=0.2),)))}
-    report = build_report(simulate(RunConfig(build="war_angel", level=13, n_days=2,
-                                             seed=11, enemy="baseline")))
+    report = build_report(simulate(RunConfig(
+        build="war_angel", level=_UNMEASURED_LEVEL, n_days=_UNMEASURED_DAYS,
+        seed=_UNMEASURED_SEED, enemy="baseline")))
     source = BaselineSource(
         name="prior_run", kind="internal_run", provenance="p",
         dimensions=(CoordinateDimension(name="level", match=MATCH_EXACT),),
-        entries=(BaselineEntry(coordinate={"level": 13},
+        entries=(BaselineEntry(coordinate={"level": _UNMEASURED_LEVEL},
                                metric="save_fail_rate[int_save|*]",
                                basis=BASIS_UNKNOWN, value=0.4),))
     seen |= {r.state for r in score(report, BaselineRegistry(sources=(source,)))}

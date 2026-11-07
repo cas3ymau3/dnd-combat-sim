@@ -315,7 +315,17 @@ def render(report: "EvalReport", *, baselines: "Any | None" = None) -> str:
         f"  {config['n_days']:,} days ({provenance.day_tier})"
         f"   mode={config['mode']}   attribution={config['attribution']}"
     )
+    # The dice channel is on the engine line because that is what it is a property
+    # of (§6.3): it changes the numbers, and two runs at one seed under two
+    # alignments are different runs.  Added s60 — framework step 9 wrote
+    # `SeededRNG.describe()` and §6.3 claimed provenance carried it, and for one
+    # commit NOTHING SERIALIZED IT.  Found by per-feature ritual step 6 (render one
+    # real output and look at it), which is the s56 pattern: when a design document
+    # says something must be RECORDED, grep for what serializes it, not for what
+    # computes it.
+    alignment = provenance.dice_channel.get("alignment")
     out.append(f"  engine {commit[:12]}"
+               + (f"   dice {alignment}" if alignment else "")
                + ("  *** DIRTY TREE ***" if provenance.engine_dirty else "")
                + (f"   paired seed {provenance.pairing['seed']}"
                   if provenance.pairing else ""))

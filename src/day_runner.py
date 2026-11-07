@@ -39,8 +39,15 @@ from dataclasses import dataclass, field
 from typing import Callable, TYPE_CHECKING
 
 from .healing import spend_hit_dice_at_short_rest, spend_summon_hit_dice
+from .rng import SCHEDULE_OWNER
 from .scheduler import Scheduler
 from .telemetry import CombatTelemetry
+
+#: The day-structure substream (§6.3): combat start minutes and short-rest
+#: placement.  It belongs to the DAY rather than to any entity, and keeping it
+#: separate is what makes two paired configs see the same day shape even when
+#: one of them draws a different number of dice inside a combat.
+_SCHEDULE_STREAM = ("schedule", SCHEDULE_OWNER)
 
 if TYPE_CHECKING:
     from .entity import Entity
@@ -390,6 +397,12 @@ class DayRunner:
         # ENDS the moment they all drop (rounds_per_combat becomes the cap, not the
         # length).  Default None = the legacy fixed-length model (byte-identical).
         self.enemy_ids: "set[int] | None" = set(enemy_ids) if enemy_ids else None
+        # The §6.3 ALIGNMENT EPOCH counter.  0-based and owned here, because the
+        # day is the estimator's replication unit and `run_day` is the only thing
+        # every run goes through once per replication.  A DayRunner reused for a
+        # second run would continue counting, which is correct: those are
+        # different days of one stream, not a replay.
+        self._day_index = 0
 
     # ------------------------------------------------------------------
     # Public API
@@ -404,6 +417,15 @@ class DayRunner:
           3. Run 4 combats.  After the SR-indexed combat apply the short rest.
              After every combat call the between_combats hook (if provided).
         """
+        # Step 0: enter the next ALIGNMENT EPOCH (§6.3).  The day is the
+        # estimator's replication unit, so this is where the substreams
+        # re-synchronize: whatever diverged in the previous day cannot carry
+        # into this one.  Owned HERE rather than in `runner.simulate` so that
+        # every caller of `run_day` gets it — a test driving a DayRunner
+        # directly is on the same epoch schedule as a measured run.
+        self.rng.begin_day(self._day_index)
+        self._day_index += 1
+
         # Step 1: long rest
         self._apply_lr()
 
@@ -422,6 +444,7 @@ class DayRunner:
         combats: list[CombatResult] = []
         for i in range(4):
             combat_num = i + 1
+            self.rng.begin_combat(combat_num)
 
             # Pre-combat / day-clock buff setup (Magic Weapon, etc.).
             if self.before_combat is not None:
@@ -509,7 +532,8 @@ class DayRunner:
         times: list[int] = []
         for start, end in _COMBAT_WINDOWS:
             # roll_one(n) gives [1, n]; shift to [start, end]
-            t = self.rng.roll_one(end - start + 1) + (start - 1)
+            t = self.rng.roll_one(end - start + 1,
+                                  stream=_SCHEDULE_STREAM) + (start - 1)
             times.append(t)
         return times
 
@@ -527,7 +551,8 @@ class DayRunner:
         else:
             # Both interval 1 and 3 are guaranteed ≥ 60 min given how
             # combat times are sampled — pick one at random.
-            return 1 if self.rng.roll_one(2) == 1 else 3
+            return 1 if self.rng.roll_one(
+                2, stream=_SCHEDULE_STREAM) == 1 else 3
 
     def _interval_length(self, after_combat_num: int, combat_times: list[int]) -> int:
         """Minutes available after combat *after_combat_num* before the next event.

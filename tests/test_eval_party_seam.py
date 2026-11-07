@@ -172,9 +172,9 @@ def test_installing_the_party_draws_no_dice():
     class CountingRNG(SeededRNG):
         draws = 0
 
-        def roll(self, n, sides):
+        def roll(self, n, sides, *, stream=None):
             CountingRNG.draws += 1
-            return super().roll(n, sides)
+            return super().roll(n, sides, stream=stream)
 
     config = RunConfig(build="war_angel", level=13, enemy="baseline", n_days=1)
     adapter = config.validate()
@@ -183,7 +183,7 @@ def test_installing_the_party_draws_no_dice():
     before = CountingRNG.draws
     party_seam.install(runner, roster, config)
     assert CountingRNG.draws == before
-    rng.roll_one(20)
+    rng.roll_one(20, stream=("attack_d20", "probe"))
     assert CountingRNG.draws == before + 1      # the probe works
 
 

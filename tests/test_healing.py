@@ -155,7 +155,9 @@ def test_mean_field_draws_no_dice_which_is_what_keeps_parity_alive():
     resolve_healing(caster, HealSpec(dice=(2, 8)), healed, mean_field=True)
     # Identical seeds, one of which has had a mean-field heal resolved against it:
     # the next 10 draws must still match exactly.
-    assert healed.roll(10, 20) == control.roll(10, 20)
+    heal_stream = ("healing", caster.name)
+    assert (healed.roll(10, 20, stream=heal_stream)
+            == control.roll(10, 20, stream=heal_stream))
 
 
 def test_in_combat_heal_rolls_and_a_capped_target_ledgers_only_what_APPLIED():

@@ -231,14 +231,15 @@ class Entity:
             return base
         return self.modifiers.compute(name, base, tick=tick, phase=phase)
 
-    def roll_bonus(self, name: str, rng, tick: tuple | None = None) -> int:
+    def roll_bonus(self, name: str, rng, tick: tuple | None = None, *,
+                   stream: tuple[str, str]) -> int:
         """Rolled contribution to *name* from dice-modifiers (e.g. Bless +1d4).
 
         Resolution-only: this rolls dice via the RNG, so it must be called from
         the attack/save resolvers, NEVER from policy.decide().  The pure stat()
         above stays dice-free.  Returns 0 if no dice-modifiers apply.
         """
-        return self.modifiers.roll_dice(name, rng, tick=tick)
+        return self.modifiers.roll_dice(name, rng, tick=tick, stream=stream)
 
     # ------------------------------------------------------------------
     # HP tracking

@@ -558,6 +558,12 @@ def _provenance_to_dict(provenance: Any) -> dict[str, Any]:
         "roster": provenance.roster,
         "engine_commit": provenance.engine_commit,
         "engine_dirty": provenance.engine_dirty,
+        # §6.3's dice channel.  ADDITIVE at `schema_version` 1, on the same reasoning
+        # as s58's `scores` block: a reader that does not know the key ignores it, and
+        # one that does learns which STREAM produced these numbers.  It belongs in
+        # provenance rather than in `config` because it is engine state — see the note
+        # on `Provenance.dice_channel`.
+        "dice_channel": provenance.dice_channel,
         "generated_at": provenance.generated_at,
         "day_tier": provenance.day_tier,
         "pairing": provenance.pairing,

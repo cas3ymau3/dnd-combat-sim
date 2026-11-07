@@ -55,12 +55,12 @@ class FakeRNG:
         self._values = list(values)
         self.roll_calls = []
 
-    def roll(self, n, sides):
+    def roll(self, n, sides, *, stream=None):
         self.roll_calls.append((n, sides))
         return [self._values.pop(0) for _ in range(n)]
 
-    def roll_one(self, sides):
-        return self.roll(1, sides)[0]
+    def roll_one(self, sides, *, stream=None):
+        return self.roll(1, sides, stream=stream)[0]
 
 
 def _resolve_attack(actor, target, weapon_stat, dice, bonus, rng) -> int:
@@ -1264,13 +1264,22 @@ class _RecordingRNG:
         self._rng = SeededRNG(seed)
         self.d100_rolls = 0
 
-    def roll(self, n, sides):
-        return self._rng.roll(n, sides)
+    def roll(self, n, sides, *, stream=None):
+        return self._rng.roll(n, sides, stream=stream)
 
-    def roll_one(self, sides):
+    def roll_one(self, sides, *, stream=None):
         if sides == 100:
             self.d100_rolls += 1
-        return self._rng.roll_one(sides)
+        return self._rng.roll_one(sides, stream=stream)
+
+    # §6.3: DELEGATED, not a no-op — this wrapper drives a real DayRunner, so the
+    # wrapped run has to keep the real epoch schedule or its dice are not the
+    # run's dice.
+    def begin_day(self, day_index):
+        self._rng.begin_day(day_index)
+
+    def begin_combat(self, combat_index):
+        self._rng.begin_combat(combat_index)
 
 
 def _fom_policy(precast_mode=None, precast_prob=0.5):
@@ -1589,10 +1598,40 @@ def test_the_party_split_moves_fire_shield_and_leaves_fount_of_moonlight_flat():
     checks -> the concentration-dependent thing stops), now on a second build.
 
     So what is asserted here is the part that is a MECHANISM rather than a ranking: the
-    party split moves the thorn loadout DOWN and leaves the rider loadout FLAT.  The
+    party split moves the thorn loadout DOWN and the rider loadout UP.  The
     ranking is deliberately NOT asserted — it is a build-value question
     ([[validate-mechanism-not-build-value]]), and asserting it was what made this test
     depend on an enemy nobody had declared.
+
+    **CORRECTED (s60): THE RIDER LOADOUT IS NOT FLAT, AND NEVER WAS.**  This test used
+    to assert ``abs(fom_party - fom_solo) < 0.5`` with "flat" as the stated claim.
+    Measured on the PRE-§6.3 engine, i.e. before anything in s60 touched the dice:
+
+        | days  | FoM solo | FoM party |   diff | sigma |
+        |-------|----------|-----------|--------|-------|
+        |   400 | 29.77531 |  30.27000 | +0.495 |  2.03 |
+        | 4,000 | 29.73816 |  30.32491 | +0.587 |  7.62 |
+
+    So the effect was real and 7.6 sigma all along, and the assertion passed at 400
+    days **by 0.005** against a tolerance picked by eye.  §6.3's substreams moved the
+    realization a hair and it failed — which is the only reason this was looked at.
+    Two of this project's own rules were being broken at once:
+      * **A tolerance in absolute units is not a measurement.**  Each arm's stderr at
+        400 days is ~0.17, so ``< 0.5`` is ~2 sigma — the bound sat INSIDE the noise
+        band, where it could neither confirm flatness nor detect a real effect.
+      * **The docstring contained its own refutation.**  It says, four paragraphs up,
+        that FoM IS a concentration spell and that the standardized enemy ends its
+        concentration 1.000 times per day.  A party that absorbs three quarters of the
+        incoming swings must therefore break it LESS often and let the rider fire for
+        longer.  That is the s52 §6.1 defect pattern exactly: the claim and its
+        refutation in one docstring, for as long as the docstring has existed.
+
+    The mechanism, now measured and asserted rather than denied: concentration breaks
+    fall 3,982 -> 3,575 over 4,000 days (-10.2%) when the party absorbs the hits, and
+    the rider loadout's DPR rises +0.636 (8.41 sigma) on the current engine.  Both
+    loadouts respond to the split; they respond through DIFFERENT channels and in
+    OPPOSITE directions, which is a sharper statement than "one moves and one does
+    not" and is what makes the gap narrow.
     """
     fs_solo = _mean_dpr_l15_party("fire_shield", None, with_party=False, n_days=400)
     fs_party = _mean_dpr_l15_party("fire_shield", None, with_party=True, n_days=400)
@@ -1603,12 +1642,16 @@ def test_the_party_split_moves_fire_shield_and_leaves_fount_of_moonlight_flat():
 
     # Fire Shield LOSES to the split: a reflected hit needs an incoming hit.
     assert fs_party < fs_solo - 1.0, (fs_solo, fs_party)
-    # FoM does not care who the enemy swings at: its riders fire on the CHARACTER's own
-    # hits.  Bounded tightly in BOTH directions — "flat" is the claim, and a one-sided
-    # assertion would pass on a loadout that gained.
-    assert abs(fom_party - fom_solo) < 0.5, (fom_solo, fom_party)
-    # ...so the split strictly narrows the gap, which is the whole mechanism, without
-    # any claim about which loadout ends up ahead.
+    # FoM GAINS, through concentration rather than through its riders: the riders do
+    # fire on the CHARACTER's own hits, but the spell carrying them is a concentration
+    # spell the enemy was ending every single day.  Asserted as a DIRECTION with a
+    # margin well above the ~0.17 per-arm stderr (measured +0.68 at 400 days, 2.9
+    # sigma; +0.64 at 4,000 days, 8.4 sigma) — NOT as a two-sided "flat" bound, which
+    # is what this test asserted for several sessions while being false.  See the
+    # docstring before loosening this.
+    assert fom_party > fom_solo + 0.3, (fom_solo, fom_party)
+    # ...so the split narrows the gap, which is the whole mechanism, without any claim
+    # about which loadout ends up ahead.
     assert (fs_party - fom_party) < (fs_solo - fom_solo)
 
 

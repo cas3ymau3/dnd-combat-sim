@@ -342,7 +342,15 @@ def test_extra_damage_dice_flow_through_to_damage():
     atk = AttackRollEvent(tick=(1, 0, 1), actor=attacker, target=target,
                           extra_damage_dice=[(1, 6)])
     queue = EventQueue()
-    resolve_attack_roll(atk, SeededRNG(0), queue, next_sequence=2)
+    # Seed 1, not 0: §6.3 re-keyed the d20 tape and seed 0's first draw on
+    # ("attack_d20", "atk") is now a NATURAL 1, which auto-misses however large the
+    # attack bonus is — so the queue came back empty and the test failed on a dice
+    # roll rather than on the property it is about.  Guarded below rather than left
+    # to the next reshuffle to find again (s55's fixture-guard rule).
+    resolve_attack_roll(atk, SeededRNG(1), queue, next_sequence=2)
+    assert len(queue) == 1, (
+        "fixture must HIT: a natural 1 auto-misses and enqueues no DamageEvent, "
+        "which is a property of the seed and not of extra_damage_dice")
     dmg = queue.pop()
     assert isinstance(dmg, DamageEvent)
     assert dmg.extra_damage_dice == [(1, 6)]
@@ -350,8 +358,8 @@ def test_extra_damage_dice_flow_through_to_damage():
     # resolve_damage rolls the weapon pool then each extra source, in order.
     # Replay that exact sequence to get the expected total (no crit, bonus 0).
     r = SeededRNG(7)
-    weapon = sum(r.roll(1, 6))
-    extra = sum(r.roll(1, 6))
+    weapon = sum(r.roll(1, 6, stream=("damage", attacker.name)))
+    extra = sum(r.roll(1, 6, stream=("damage", attacker.name)))
     total, _ = resolve_damage(dmg, SeededRNG(7), EventQueue(), 3)
     assert total == weapon + extra
 

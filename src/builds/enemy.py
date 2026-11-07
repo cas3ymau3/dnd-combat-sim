@@ -84,6 +84,12 @@ class ScriptedEnemyPolicy:
     the dummy's, so it never pollutes DPR.
     """
 
+    #: The §6.3 substream owner for this policy's own per-combat pre-rolls.
+    #: DECLARED rather than derived from the class name: it is a DICE-STREAM
+    #: IDENTITY, so changing it re-baselines every seeded number, and a label
+    #: that says so is harder to rename by accident than ``__name__``.
+    stream_owner: str = "scripted_enemy_policy"
+
     def __init__(
         self,
         target: "Entity",
@@ -113,7 +119,8 @@ class ScriptedEnemyPolicy:
         if self._roster is None:
             # LEGACY: pre-roll, per round and attack slot, whether it lands on char.
             self._targets_char = {
-                r: [rng.roll_one(100) <= self._p_pct for _ in range(self._n_attacks)]
+                r: [rng.roll_one(100, stream=("policy", self.stream_owner))
+                   <= self._p_pct for _ in range(self._n_attacks)]
                 for r in range(1, self._rounds + 1)
             }
         else:
@@ -129,7 +136,8 @@ class ScriptedEnemyPolicy:
         the single seeded channel: roll over the total weight and walk the cumulative
         buckets.  Generalises ``char_target_prob`` to N friendly targets."""
         total = sum(w for _, w in self._roster)
-        roll = rng.roll_one(total)              # 1..total
+        roll = rng.roll_one(
+            total, stream=("policy", self.stream_owner))   # 1..total
         cum = 0
         for ent, w in self._roster:
             cum += w
@@ -276,6 +284,12 @@ class BaselineEnemyPolicy:
     there is nothing for that toggle to flip.  Ranged-kiting and AoE-share are deferred
     to the positioning/multi-party arc (§9/§10) — no wiring here.
     """
+
+    #: The §6.3 substream owner for this policy's own per-combat pre-rolls.
+    #: DECLARED rather than derived from the class name: it is a DICE-STREAM
+    #: IDENTITY, so changing it re-baselines every seeded number, and a label
+    #: that says so is harder to rename by accident than ``__name__``.
+    stream_owner: str = "baseline_enemy_policy"
 
     def __init__(
         self,
@@ -431,10 +445,12 @@ class BaselineEnemyPolicy:
             # the fixed scalar self._damage_type (already covers untyped/single/force).
             if self._type_weights:
                 self._round_damage_type[r] = self._weighted_pick_stat(
-                    self._type_weights, rng)
+                    self._type_weights, rng,
+                    stream=("policy", self.stream_owner))
             if not self._control:
                 # OFF: the exact prior binary attack/save pre-roll (no drift).
-                is_save = rng.roll_one(100) <= self._save_round_pct
+                is_save = rng.roll_one(
+                    100, stream=("policy", self.stream_owner)) <= self._save_round_pct
                 self._save_round[r] = is_save
                 if is_save:
                     self._save_stat[r] = self._weighted_save(rng)
@@ -444,7 +460,7 @@ class BaselineEnemyPolicy:
             if self._control_displacement == "displace":
                 # One draw over the whole budget: save-dmg | pure-control (displaces
                 # attack) | attack.  Shares are of the action budget and sum to ≤100%.
-                roll = rng.roll_one(100)
+                roll = rng.roll_one(100, stream=("policy", self.stream_owner))
                 if roll <= self._save_round_pct:
                     self._save_round[r] = True
                     self._save_stat[r] = self._weighted_save(rng)
@@ -455,17 +471,21 @@ class BaselineEnemyPolicy:
             else:
                 # ride-on-top: keep the binary save/attack round AND layer pure control
                 # on top (isolates the lost-turn effect without dropping damage — §7).
-                is_save = rng.roll_one(100) <= self._save_round_pct
+                is_save = rng.roll_one(
+                    100, stream=("policy", self.stream_owner)) <= self._save_round_pct
                 self._save_round[r] = is_save
                 if is_save:
                     self._save_stat[r] = self._weighted_save(rng)
-                if rng.roll_one(100) <= self._control_prob_pct:
+                if rng.roll_one(
+                        100, stream=("policy", self.stream_owner)) \
+                        <= self._control_prob_pct:
                     self._pure_control[r] = True
                     self._control_stat[r] = self._weighted_control(rng)
 
             # Bundled rider (§4b): a save-for-damage round's AoE ALSO imposes control on
             # a second (control) save, with per-save-round probability rider_frac.
-            if self._save_round.get(r) and rng.roll_one(100) <= self._rider_frac_pct:
+            if self._save_round.get(r) and rng.roll_one(
+                    100, stream=("policy", self.stream_owner)) <= self._rider_frac_pct:
                 self._bundled_fire[r] = True
                 self._bundled_stat[r] = self._weighted_control(rng)
 
@@ -480,7 +500,8 @@ class BaselineEnemyPolicy:
             is_attack_round = not self._save_round.get(r, False) \
                 and not self._pure_control.get(r, False)
             if self._overflow_pct and is_attack_round \
-                    and rng.roll_one(100) <= self._overflow_pct:
+                    and rng.roll_one(
+                        100, stream=("policy", self.stream_owner)) <= self._overflow_pct:
                 self._overflow_fire[r] = True
                 self._overflow_stat[r] = self._weighted_control(rng)
 
@@ -493,7 +514,8 @@ class BaselineEnemyPolicy:
         ``describe_parameters`` about what would have to be true to hoist it.
         """
         total = sum(w for _, w in self._roster)
-        roll = rng.roll_one(total)              # 1..total
+        roll = rng.roll_one(
+            total, stream=("policy", self.stream_owner))   # 1..total
         cum = 0
         for ent, w in self._roster:
             cum += w
@@ -504,21 +526,24 @@ class BaselineEnemyPolicy:
     def _weighted_save(self, rng: "SeededRNG") -> str:
         """Pick a save type with probability proportional to its weight, through the
         single seeded channel (generalises ScriptedEnemyPolicy._weighted_pick)."""
-        return self._weighted_pick_stat(self._save_weights, rng)
+        return self._weighted_pick_stat(
+            self._save_weights, rng, stream=("policy", self.stream_owner))
 
     def _weighted_control(self, rng: "SeededRNG") -> str:
         """Pick a CONTROL save type by the control weights (WIS-heavy — §6)."""
-        return self._weighted_pick_stat(self._control_weights, rng)
+        return self._weighted_pick_stat(
+            self._control_weights, rng, stream=("policy", self.stream_owner))
 
     @staticmethod
-    def _weighted_pick_stat(weights: dict[str, int], rng: "SeededRNG") -> str:
+    def _weighted_pick_stat(weights: dict[str, int], rng: "SeededRNG", *,
+                            stream: tuple[str, str]) -> str:
         items = list(weights.items())
         total = sum(w for _, w in items)
         # A single option (or a degenerate total < 2 the d-channel can't roll) → return
         # it directly; this also makes a single-type toggle (§7, e.g. all-WIS) work.
         if len(items) == 1 or total < 2:
             return items[0][0]
-        roll = rng.roll_one(total)              # 1..total
+        roll = rng.roll_one(total, stream=stream)          # 1..total
         cum = 0
         for stat, w in items:
             cum += w

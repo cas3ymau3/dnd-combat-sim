@@ -142,9 +142,9 @@ def test_the_between_combats_healing_draws_no_dice():
             super().__init__(seed)
             self.draws = 0
 
-        def roll(self, n, sides):
+        def roll(self, n, sides, *, stream=None):
             self.draws += 1
-            return super().roll(n, sides)
+            return super().roll(n, sides, stream=stream)
 
     probe = CountingRNG(SEED)
     runner, char, _dummy, _beast = bc.make_day_runner(LEVEL, probe)
@@ -228,7 +228,10 @@ def test_one_aoo_is_bit_identical_to_the_independent_draw_it_replaced():
         policy = bc.BaselineCharacterPolicy(5, char, dummy, rounds_per_combat=4)
         policy.on_combat_start(0, SeededRNG(seed))
         drawn = policy._aoo_rounds                       # noqa: SLF001
-        assert drawn == [SeededRNG(seed).roll_one(4)]
+        # The replay names the policy's OWN substream (§6.3) — the equality
+        # is about the draw procedure, so it has to be on the same tape.
+        assert drawn == [SeededRNG(seed).roll_one(
+            4, stream=("policy", bc.BaselineCharacterPolicy.stream_owner))]
 
 
 def test_aoo_0_draws_no_dice_and_is_a_different_stream():
@@ -244,9 +247,9 @@ def test_aoo_0_draws_no_dice_and_is_a_different_stream():
             super().__init__(seed)
             self.draws = 0
 
-        def roll(self, n, sides):
+        def roll(self, n, sides, *, stream=None):
             self.draws += 1
-            return super().roll(n, sides)
+            return super().roll(n, sides, stream=stream)
 
     counts = []
     for aoo in (0, 1):
@@ -543,10 +546,22 @@ def test_the_fully_configured_subject_leaves_NO_channel_unavailable():
 # Each is 400 days at seed 11, the same tier as GOLDEN_DPR, so a move here and a move
 # there are comparable.  Regenerating one is a DELIBERATE act with a decision record
 # (§12), exactly as for GOLDEN_DPR.
+#
+# RE-BASELINED (s60, framework step 9 / §6.3): the RNG substream change, which moved
+# every seeded number in the project by construction.  All three, as expected — each
+# config draws dice.  See the s60 record above `GOLDEN_DPR` in
+# `tests/test_eval_enemy_seam.py` for the physics-vs-stream separation; it covers
+# these rows too, since they are the same engine at the same tier.
+#
+#   axis                   old  ->  new            move
+#   summon            11.84109375 -> 11.80203125   -0.33%
+#   ally_buff         11.84250000 -> 11.76234375   -0.68%
+#   reaction_mitigation 11.58359375 -> 11.66156250  +0.67%
+#
 AXIS_GOLDEN: dict[str, float] = {
-    "summon": 11.84109375,
-    "ally_buff": 11.8425,
-    "reaction_mitigation": 11.58359375,
+    "summon": 11.80203125,
+    "ally_buff": 11.76234375,
+    "reaction_mitigation": 11.66156250,
 }
 
 

@@ -60,9 +60,9 @@ class CountingRNG(SeededRNG):
         super().__init__(seed)
         self.draws = []
 
-    def roll(self, n, sides):
+    def roll(self, n, sides, *, stream=None):
         self.draws.append((n, sides))
-        return super().roll(n, sides)
+        return super().roll(n, sides, stream=stream)
 
 
 def _friendly(name, ac=18):
@@ -268,6 +268,20 @@ def test_both_policies_draw_the_same_targeting_pick_for_the_same_roster():
     Asserted as an equality of the DRAWN SEQUENCE rather than of the code, because
     the implementations are deliberately duplicated (see ``describe_parameters``) and
     what has to match is the contract, not the source.
+
+    **AND §6.3's SUBSTREAMS SEPARATED TWO THINGS THIS TEST HAD CONFLATED (s60).**
+    It used to compare the two policies on one shared tape, because there WAS only
+    one tape — so "same rule" and "same dice" were the same assertion.  Each policy
+    now owns its own ``("policy", stream_owner)`` substream, so two policies running
+    the identical rule legitimately draw DIFFERENT picks, and this test failed
+    without anything being wrong.
+    - The fix makes the tape explicit rather than incidental: the baseline is given
+      the scripted policy's ``stream_owner``, so the equality is now exactly the
+      claim the docstring always made — *same rule, same tape, same picks*.
+    - Worth recording as the seam check's dormancy question answered in the
+      affirmative: the two sides were numerically identical for a reason that
+      stopped holding, and the quantity the equality stands in for (the targeting
+      RULE) did not change at all.
     """
     friendlies = [_friendly(f"F{i}") for i in range(3)]
     roster = [(f, w) for f, w in zip(friendlies, (50, 30, 20))]
@@ -278,6 +292,9 @@ def test_both_policies_draw_the_same_targeting_pick_for_the_same_roster():
     scripted.on_combat_start(0, SeededRNG(11))
 
     baseline = _policy(friendlies[0], roster=roster, n_attacks=n)
+    # Same TAPE as well as same seed (§6.3): the two policies address different
+    # substreams by design, so comparing the RULE means holding the stream fixed.
+    baseline.stream_owner = ScriptedEnemyPolicy.stream_owner
     # The baseline draws its picks FIRST in each round's body, then the round-type
     # draws, so a shared seed gives the same picks only if the pick procedure matches.
     baseline_rng = SeededRNG(11)
