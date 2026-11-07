@@ -2571,8 +2571,109 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   — the sha is in the filename, so nothing is ever overwritten and a stale entry can
   never be served to a run at a different commit. An unbounded cache is only a hazard
   when a stale entry can be mistaken for a fresh one.
-- **WHICH METRICS ACTUALLY NEED A FULL DISTRIBUTION** *(added s58, the user's point at
-  that session's metric-set review)*. §5.4's kind 3 was built as a general capability and
+- ~~**WHICH METRICS ACTUALLY NEED A FULL DISTRIBUTION**~~ **ANSWERED FOR THE ONE ROW
+  IT NAMED, AND THAT ROW IS CUT (s59, with 8e).** The question stays open as a
+  standing requirement on any FOURTH distribution — see the closing paragraphs below —
+  but its live instance is settled. The user chose to settle it BEFORE calibrating
+  rather than after, and the ordering mattered for two independent reasons: the
+  threshold would otherwise have been tuned to accommodate a row that should not
+  exist, and a declaration change invalidates every cached record
+  (§10.2's key includes `engine_commit`), so a calibration sweep run first would have
+  been ~90 minutes of simulation thrown away.
+
+  **THE VERDICT: CUT, ON THE DERIVABILITY CLAUSE.** s58's correction to this review's
+  method says to re-point "does anyone read this?" at derivability, because the former
+  went uniform once a sweep concatenated every row into one frame. Asked that way the
+  answer is unambiguous, and it does not rest on taste:
+
+  1. **The row's own justification is refuted on the build it was written about.** Its
+     definition claims a mean of 2.4 attacks/round cannot distinguish a build that
+     attacks a little less every round from one occasionally stunned out of a turn
+     entirely, *"and only p10 tells those apart"*. Measured on war_angel L13 with
+     `control=True` — the exact configuration s51 registered it for — the scalar mean
+     moves `2.68750 → 2.67263`, about **12.7σ**, while **every quantile stays at
+     2.6875**. p10 tells a reader nothing and the mean tells them everything.
+  2. **Two scalars that PREDATE it already draw that distinction, separately.**
+     `control_turns_lost_per_round` and `control_turns_reduced_per_round` name the two
+     mechanisms the definition conflates, and both converge at the quick tier on every
+     cell measured (L13: `0.0262 ± 0.0008` and `0.0332 ± 0.0010`, each ~34σ from
+     zero). The distribution was never the only way to ask the question; it was a
+     worse way.
+  3. **Across the whole corpus the shape is degenerate**, which is the measurement s58
+     asked for and did not have. All 47 (build, level) pairs, default standardized
+     enemy: stderr **exactly zero on 24** (every starfire cell, every silvertail cell,
+     war_angel L1-13), all five quantiles **identical on 27**, and `IQR == 0` on
+     **33** — and the IQR is the one number the definition calls *"the single number
+     that separates a swingy build from a steady one"*. The largest spread anywhere is
+     0.25, four lattice steps.
+  4. **Under `control=True`, the configuration it exists for, it is still degenerate
+     on 5 of 7 cells**, which is the check that stops this being the s58 failure in
+     reverse — judging a quantity only in the configuration that makes it look a
+     particular way. It was asked of the regime the row was aimed at, and the answer
+     did not change.
+
+  Registry: **28 → 27 declarations** (17 scalars + 8 breakdowns + **2** distributions);
+  18 distribution statistics → 12. The SCALAR `attacks_per_round` is untouched, so the
+  77 metric cells are unchanged, and `GOLDEN_DPR` is untouched because the registry
+  does not touch dice.
+
+  **THE CONSEQUENCE §14 WARNED ABOUT WAS HALF WRONG, AND CHECKING IT CHANGED THE
+  ANSWER.** The entry below says cutting this row "would remove a tripwire written for
+  the next framework step". It does not: s53's step-9 tripwire is
+  `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which is about
+  `variance_reduction` on starfire L15 and never touched this distribution. The other
+  half was right — across 8 representative cells this row's `p25`/`iqr` at war_angel
+  L16 were the **only** production source of §14(a)'s "no day count helps" verdict, so
+  that branch now has no instance at any declared tier. Worth recording as a pattern:
+  **a deferral's stated cost is itself an inherited argument, and s58's lesson applies
+  to it — check it before paying it.** One of the two reasons not to cut dissolved on
+  inspection.
+
+  **AND THE BRANCH WAS ALMOST DELETED ON THE STRENGTH OF A FALSE CLAUSE IN ITS OWN
+  REASON TEXT.** With the lattice row gone the obvious move is to let
+  `ci_width_vs_spread` quote a day count like the other three gates, which would delete
+  the branch outright. `NO_DAY_COUNT_FOR_WIDTH` gave two grounds, and the first is
+  **measurably false**: it claimed width/spread "does not fall as 1/sqrt(n) in
+  general", but on `dpr_distribution` (war_angel L16, seed 11) `ratio·√n` sits in a
+  narrow band across a **200× range in n**, and the extrapolation from n=400 predicted
+  convergence at n=879 against an observed crossing between 800 and 1,000. The only
+  measurement ever offered for that clause compares p50 (0.044) against p10 (0.074) at
+  a *single* n, which tests nothing about scaling in n — a mechanical argument, by the
+  s50 rule.
+
+  The lattice clause, measured on `attacks_per_round`'s own sample with the project's
+  own estimator, is not merely true but worse than "not derivable":
+
+  | n | p90 `width/spread` | what 1/√n predicts |
+  |---:|---:|---:|
+  | 400 | 0.1429 | converges at 816 |
+  | 2,000 | 0.1250 | converges at 3,125 |
+  | 20,000 | 0.1250 | converges at 31,250 |
+
+  **The prediction is falsified at every step and renews itself**, because the ratio is
+  pinned at exactly one lattice step over the spread (0.0625/0.5) and never moves. So a
+  day count would be accurate for both shipped distributions and unboundedly wrong for
+  a lattice one, and **nothing in a `DistributionDef` says which kind it is over**. The
+  branch is therefore KEPT, for a narrower and sounder reason than it was written with,
+  and its prose now says that reason instead of the false general one. Declaring the
+  distinction on `DistributionDef` is the alternative that would allow the day count;
+  it is named here and NOT taken, because it adds a registry declaration to serve a
+  case no shipped row exercises — and adding one would re-trigger the metric-set
+  review. (s51's "20,000 days converges p10" is consistent with all of this and was
+  briefly read as contradicting it: p10 converges because its interval collapses to
+  *zero* width — ratio 0.0000 at every n above — not because the ratio shrank.)
+
+  **A free side effect, recorded because it discharges a line of §3.5.5.** Because the
+  branch is now reached by lowering a day count rather than by thinning the roster, any
+  build can host it — including the baseline SUBJECT. The fixture for
+  `test_the_unconverged_warning_counts_DISTRIBUTION_points_too` is now baseline L20 at
+  700 days, and that test's own docstring had recorded, as a finding against §3.5.5's
+  intent, that the subject *could not* host it.
+
+  **The original entry follows, as the standing requirement on a fourth
+  distribution.**
+
+  *(added s58, the user's point at that session's metric-set review)*. §5.4's kind 3 was built as a general capability and
   three distributions are registered, but the question of whether anyone needs the SHAPE
   of a given quantity was never asked per-quantity. The user's example is
   `attacks_per_round`: its variability is not something a real-world build comparison
