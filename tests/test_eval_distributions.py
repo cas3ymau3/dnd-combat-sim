@@ -709,9 +709,9 @@ class _CountingRNG(SeededRNG):
         super().__init__(seed)
         self.draws = 0
 
-    def roll(self, n, sides):
+    def roll(self, n, sides, *, stream=None):
         self.draws += 1
-        return super().roll(n, sides)
+        return super().roll(n, sides, stream=stream)
 
 
 def test_building_the_report_draws_nothing_from_the_combat_stream():

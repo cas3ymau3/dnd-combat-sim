@@ -154,6 +154,12 @@ class BaselineCharacterPolicy:
         exists to populate does not exist otherwise.
     """
 
+    #: The §6.3 substream owner for this policy's own per-combat pre-rolls.
+    #: DECLARED rather than derived from the class name: it is a DICE-STREAM
+    #: IDENTITY, so changing it re-baselines every seeded number, and a label
+    #: that says so is harder to rename by accident than ``__name__``.
+    stream_owner: str = "baseline_character_policy"
+
     def __init__(
         self,
         level: int,
@@ -258,7 +264,8 @@ class BaselineCharacterPolicy:
                 # matters.
                 self._aoo_rounds.append(available.pop())
                 continue
-            self._aoo_rounds.append(available.pop(rng.roll_one(len(available)) - 1))
+            self._aoo_rounds.append(available.pop(rng.roll_one(
+                len(available), stream=("policy", self.stream_owner)) - 1))
         self._ally_buffed = False
         self._last_mitigation_round = -1
 

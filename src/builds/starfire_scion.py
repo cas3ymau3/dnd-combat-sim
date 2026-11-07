@@ -860,6 +860,12 @@ class StarfireScionPolicy:
     where it consumes a Wild Shape charge and sets the form active for the combat.
     """
 
+    #: The §6.3 substream owner for this policy's own per-combat pre-rolls.
+    #: DECLARED rather than derived from the class name: it is a DICE-STREAM
+    #: IDENTITY, so changing it re-baselines every seeded number, and a label
+    #: that says so is harder to rename by accident than ``__name__``.
+    stream_owner: str = "starfire_scion_policy"
+
     def __init__(
         self,
         level: int,
@@ -1128,7 +1134,8 @@ class StarfireScionPolicy:
             return False
         if self._precast_mode == "rng":
             threshold = int(round(self._precast_prob * 100))
-            return rng.roll_one(100) <= threshold
+            return rng.roll_one(
+                100, stream=("policy", self.stream_owner)) <= threshold
         # None → legacy per-effect default (no dice drawn).
         return self._has_fire_shield
 

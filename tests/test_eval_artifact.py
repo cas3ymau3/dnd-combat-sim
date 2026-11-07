@@ -360,11 +360,23 @@ def test_per_cell_availability_survives_the_collapse(record):
 # ---------------------------------------------------------------------------
 
 def test_the_provenance_block_serializes_whole(record):
+    """An EXACT key set, so a field added to ``Provenance`` without being serialized
+    (or serialized without being noticed) fails here.
+
+    **It did its job in s60**: framework step 9 added ``dice_channel`` and this test
+    is where the addition had to be acknowledged. The set is updated rather than
+    loosened to a subset check — a subset check would have passed silently and the
+    whole value of the test is that it cannot.  The field is ADDITIVE at
+    ``schema_version`` 1, on the s58 ``scores`` precedent: a reader that does not know
+    the key ignores it.
+    """
     prov = record["provenance"]
     assert set(prov) == {
         "config", "resolved", "coverage", "roster", "engine_commit", "engine_dirty",
-        "generated_at", "day_tier", "pairing", "epistemic_note",
+        "dice_channel", "generated_at", "day_tier", "pairing", "epistemic_note",
     }
+    # §6.3: which STREAM produced these numbers, recorded because it changes them.
+    assert prov["dice_channel"]["alignment"] == "day"
     assert prov["epistemic_note"].startswith("No external validation source exists")
     assert prov["resolved"]["build"]
 

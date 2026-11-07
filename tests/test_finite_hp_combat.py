@@ -38,12 +38,21 @@ class StubRNG:
         self._d20 = d20
         self._die = die
 
-    def roll(self, n, sides):
+    def roll(self, n, sides, *, stream=None):
         v = self._d20 if sides == 20 else self._die
         return [v] * n
 
-    def roll_one(self, sides):
-        return self.roll(1, sides)[0]
+    def roll_one(self, sides, *, stream=None):
+        return self.roll(1, sides, stream=stream)[0]
+
+    # The §6.3 epoch hooks.  A stub that drives a ``DayRunner`` has to implement
+    # them: ``run_day`` calls them on every replication, and ``DayRunner`` does NOT
+    # guard the call with ``getattr`` on purpose — a defensive call would let the
+    # epoch go silently missing in production, which is the one thing that would
+    # make pairing inert again without anything failing.
+    def begin_day(self, day_index): pass
+
+    def begin_combat(self, combat_index): pass
 
 
 class AttackPolicy:

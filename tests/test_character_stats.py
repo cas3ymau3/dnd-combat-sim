@@ -370,9 +370,9 @@ def test_neither_constructor_draws_a_die():
     class CountingRNG(SeededRNG):
         calls = 0
 
-        def roll(self, n, sides):
+        def roll(self, n, sides, *, stream=None):
             CountingRNG.calls += 1
-            return super().roll(n, sides)
+            return super().roll(n, sides, stream=stream)
 
     rng = CountingRNG(7)
     for level in C.LEVELS:
@@ -380,5 +380,5 @@ def test_neither_constructor_draws_a_die():
         C.make_party_member(level)
     assert CountingRNG.calls == 0
     # The probe itself works, so a zero above is a measurement and not a broken test.
-    rng.roll_one(20)
+    rng.roll_one(20, stream=("attack_d20", "probe"))
     assert CountingRNG.calls == 1

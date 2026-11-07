@@ -482,7 +482,19 @@ type, condition, resource, …):
    - Pair it with step 5 rather than treating them as alternatives: step 5 is "did I
      cover every branch", this is "does the thing a reader sees look right". Neither
      subsumes the other, and in s48 only this one found the bug.
-   - **SEVEN DEFECTS NOW, AND FOUR OF THEM ARE THE RENDERER (tally updated s57).** s57
+   - **TEN DEFECTS NOW, AND SEVEN OF THEM ARE THE RENDERER OR THE SUMMARY LAYER
+     (tally updated s60).** s60 added one, and it is the sharpest instance of the class
+     yet because the computation was not merely right but *complete*: framework step 9
+     wrote `SeededRNG.describe()`, §6.3 stated that §4 provenance carried the dice
+     channel, and for one commit **nothing serialized it** — no caller, no artifact key,
+     no console field. Every number in the rendered output was correct; the output
+     simply did not say which STREAM produced it, which is the one fact §6.3 says a
+     reader needs. Found by rendering a real 2,000-day run and reading the header.
+     It is also the s56 grep rule arriving through this step: *when a design document
+     says something must be RECORDED, grep for what SERIALIZES it, not for what
+     COMPUTES it.* (s59 added the ninth — a blanket day-count refusal firing on a 9%
+     miss.)
+   - **SEVEN DEFECTS AT s57, AND FOUR OF THEM WERE THE RENDERER (the earlier tally).** s57
      added one — `cache: 0 hit(s), 16 miss(es)`, which reads as sixteen keys that failed
      to match when the cache had never been consulted — and found no COMPUTATIONAL defect
      in the rendered output for the second session running. The class below is holding up:
@@ -668,6 +680,22 @@ not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell on
 66, because the maintenance and interpretation cost lives in the declarations.
 
 #### Metric-set review log
+
+- **Session 60 (2026-11-07) — NO REVIEW DUE AND NONE RUN; the registry was not
+  touched.** Step 9 moves NUMBERS, not declarations: the registry still holds **27**
+  declarations (17 scalars + 8 breakdowns + 2 distributions), 77 metric cells and 12
+  distribution statistics, exactly as s59 left it. By this protocol's own "count
+  DECLARATIONS, not rows" corollary that is not registry-touching, so **the FULL review
+  s59 flagged as due remains due at the next registry-touching session** — it has not
+  been consumed by this one. Recorded explicitly because the handoff asked for the
+  verdict to be stated at startup rather than re-derived, and because a reader of the
+  log should be able to see that the gap between s58's full review and the next one is
+  deliberate rather than a lapse.
+  - One thing step 9 DID add that a future review should know about: `Provenance`
+    gained a `dice_channel` block (§6.3). It is PROVENANCE, not a metric, so it is
+    outside the registry and outside this review's scope — but it is the first field
+    added to a provenance block since s54, and §9.1's key set is asserted exactly, so
+    the addition is visible rather than silent.
 
 - **Session 59 (2026-11-07) — NO REVIEW DUE, but ONE PRUNE, which REVERSES a decision
   the s58 review had just made.** 8e retunes constants, and by this protocol's own
@@ -907,7 +935,20 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 58 (2026-11-06) — nothing to reset (raised with the
+- **Last reviewed for reset: session 60 (2026-11-07) — nothing to reset (raised with the
+  user at startup; marker bumped per the >=2-session rule).** The s36 tear-down still
+  stands (allowlist at the git/python/pytest baseline; Chrome OFF). s59 and s60 were
+  both pure Python, so nothing accumulated. The container's missing `pytest` recurred
+  for the **eleventh** session running and was again installed with `pip install
+  pytest` — a property of the cloud container, not a tweak to revert; `numpy` 2.5.3 and
+  `PyYAML` 6.0.3 are both already present, and step 9 needed no new dependency (numpy's
+  `SeedSequence` has been there all along). One container note, also NOT a tweak: a
+  `git worktree` at an older commit works fine in this container and is how the
+  physics-vs-stream comparison was run against the pre-change engine — worth knowing,
+  since the agent proxy blocks destructive ref updates but not this. **Connectors were
+  NOT raised** (the standing note's condition: "Currently disabled" is empty and this
+  session needed none).
+- **Prior — session 58 (2026-11-06) — nothing to reset (raised with the
   user at startup; marker bumped per the >=2-session rule).** The s36 tear-down still
   stands (allowlist at the git/python/pytest baseline; Chrome OFF). s57 and s58 were both
   pure Python, so nothing accumulated. The container's missing `pytest` recurred for the
@@ -2130,6 +2171,208 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **FRAMEWORK STEP 9 — RNG SUBSTREAMS. THE EVALUATION FRAMEWORK IS FINISHED
+  (2026-11-07, session 60).** `evaluation_framework.md` **§6.3 (the substream
+  contract, LOCKED s60)**, §6.1 corrected for the third time, §13 step 9 struck
+  through — **all nine steps done** — and one new §14 deferral. `src/rng.py` rewritten;
+  every `rng.roll()` call site in the engine now names its stream; the alignment epoch
+  is owned by `DayRunner.run_day`. **Scope settled with the user at startup as step 9
+  ONLY**, and the alignment chosen by MEASUREMENT at the user's direction rather than
+  by argument. **1,333 tests passing** (1332 + the dirty-tree test, which runs only
+  mid-edit; a clean checkout reads **1,332 passing + 1 skipped**, the SIXTH session
+  running that this prediction has held). **ALL NINETEEN `GOLDEN_DPR` ROWS AND ALL
+  THREE `AXIS_GOLDEN` ROWS RE-BASELINED**, and the separation is measured: every move
+  is STREAM and none is PHYSICS.
+
+  **PAIRING GOES FROM 1.0 TO A MEDIAN OF 5.77.** §6.1 has recorded since s44 that
+  common random numbers were worth ~1x in this engine — covariance −0.12…+0.06, and
+  *worse* than independent seeding in 3 of 9 diverging cells. Measured now over **12
+  diverging cells x 3 seeds**, spanning four subjects, both directions of divergence
+  and all three enemy kinds: **1.95 … 15.22, median 5.77**, never worse than
+  independent. That is roughly five times the days for the same interval, free, on
+  every comparison the framework makes.
+
+  **THE HEADLINE IS THAT §6.1's OWN PRESCRIPTION DOES NOT WORK.** §6.1 named the fix
+  by name and in detail — "per entity or per (entity, purpose) generators via
+  `SeedSequence.spawn()`" — and that is implemented, declared and kept measurable as
+  `ALIGNMENT = "run"`. It reads **1.01 … 2.14, median 1.16: still inert.** Removing the
+  shared cursor is not the mechanism. The mechanism is **re-synchronizing at the unit
+  the ESTIMATOR averages over**, which is the day, and §6.1 does not mention it
+  anywhere. Two corrections, both in §6.3: generators must be DERIVED from a
+  `spawn_key` rather than handed out by `spawn()` in call order (otherwise a stream's
+  identity depends on the order streams were first touched — the single-tape problem
+  one level up), and the epoch has to exist at all.
+  - **A design note's prescription for a fix is an inherited argument too.** s58
+    promoted "an inherited argument is not an inherited measurement" about a *finding*;
+    this is the same thing about a *plan*. The plan had sat in §6.1 since s44, was
+    re-cited in §13 step 9, in §12.1, in the s54 stock-take and in three handoff
+    prompts, and nobody had run it. It cost one afternoon to find out it was half of
+    the answer.
+
+  **THE ALIGNMENT IS PINNED ON TIE-BREAKERS, NOT ON VARIANCE REDUCTION, AND THE RECORD
+  SAYS SO.** `day` vs `day_combat`: **3 cells favour each and 6 are within seed
+  noise**; medians 5.77 vs 5.48, geometric means 5.71 vs 5.93 — i.e. they disagree in
+  opposite directions by under 5%. So the measurement **cannot separate them**, and
+  `ALIGNMENT = "day"` is chosen because it is cheaper (~12% less wall time), simpler,
+  and the only one of the two with a *stated reason* rather than a preference. Pinned
+  as an assertion (`test_the_PINNED_alignment_is_day`), per step 5's "prose cannot
+  fail".
+
+  **AND MY FIRST MEASUREMENT SAID THE OPPOSITE — THIS SESSION'S OWN BEST LESSON.** A
+  first pass over **6** cells (one seed, character-side only, two builds) had `day`
+  beating `day_combat` on 5 of 6, decisively enough that it was drafted into §6.3 as a
+  law: *"finer is worse"*. Widening to 12 cells across four subjects and both
+  divergence directions dissolved it; adding a seed arm showed half the remaining gaps
+  were noise. **The narrow result was not merely weaker — its general form was wrong.**
+  That is s58's "judging a quantity on whichever subset happens to be available" and
+  s59's seed-stability check arriving inside the same session's own work, and the
+  draft paragraph had already been written before either check ran.
+
+  **THE COUNTER-INTUITIVE HALF IS MEASURED RATHER THAN ARGUED.** Where the two do
+  differ, finer alignment can genuinely be worse, and the mechanism was localized
+  rather than accepted: per COMBAT `day_combat` wins everywhere it should (starfire
+  L15 correlations 0.560→0.818, 0.618→0.896, 0.667→0.908), yet the DAY total
+  correlates worse (0.896→0.837). The cause is that **a day total is
+  ORDER-INSENSITIVE, so per-combat draw-count mismatches CANCEL within a day**:
+  1,219 non-shared draws aggregated per day against **2,461** per combat, 2.02x more.
+  `day_combat` shares 47.2% of its draws against `day`'s 28.7% and still pairs worse
+  on that cell — **more shared draws, less correlated estimate**. The reusable rule,
+  and it is not about dice: **synchronize at the unit the estimator averages over, not
+  finer.**
+
+  **PHYSICS vs STREAM, WHICH s55 SAID WAS THE HARD PART OF A RE-BASELINE.** Step 9 is
+  the extreme case — no rule, stat, policy or table moved — so the claim is that ALL
+  nineteen golden moves are stream and NONE is physics, and a claim like that is
+  exactly where a correct-looking derivation ships with a term missing. So it was
+  measured, against the OLD engine in a git worktree at 58e2a43: **27 old-vs-new
+  comparisons at 20,000 days** (7 headline cells + 20 panel-channel readings), **worst
+  |z| = 1.60, median 0.58, signs mixed** four down three up, and the three
+  structurally-exact `attacks_per_round` cells (1.25000 / 2.68750 / 1.00000) identical
+  in both arms as the control. Stated as a BOUND and not a proof, because "within
+  noise" was doing real work: nothing moved by more than about a fiftieth of these
+  channels' values.
+  - **The most informative golden is the one that STOPPED moving.** The two silvertail
+    rows are now bit-identical at 6.24765625 where they read 6.29640625 and
+    6.38718750 — a 1.44% gap that was **entirely reshuffle, in the project's strongest
+    regression net, for as long as the net has existed**. `focus=summon` really does
+    re-aim the enemy (`damage_taken_per_round_by_role[characters]` 5.5778→0.0000,
+    `[summons]` 0.0000→6.8294), but at L10 silvertail makes zero concentration checks
+    and its summon is on the threshold HP model, so nothing couples the two. It is now
+    an explicit identity test rather than two constants that happen to agree.
+  - This is the s55 generalization with its **sign reversed**: that session found the
+    goldens blind to a real defect; this one finds them carrying a difference that was
+    never there.
+
+  **THREE DEFECTS, FROM THREE DIFFERENT RITUAL STEPS, AND TWO WERE IN CODE THAT
+  PREDATES THIS SESSION.**
+
+  1. **A FALSE "FLAT" CLAIM THAT HAD BEEN PASSING BY 0.005 (step 5 / the s55 narrowest-
+     gap rule).** `test_the_party_split_moves_fire_shield_and_leaves_fount_of_moonlight_
+     flat` asserted `abs(fom_party - fom_solo) < 0.5` with FLAT as the stated claim.
+     Measured **on the pre-§6.3 engine**: +0.49469 at 400 days (2.03σ) and **+0.587 at
+     4,000 days (7.62σ)**. So the effect was real and 7.6σ all along, and the assertion
+     passed by **five thousandths** against a tolerance picked by eye. §6.3 moved the
+     realization a hair, it failed, and that is the only reason anyone looked.
+     - **The tolerance was INSIDE the noise band.** Each arm's stderr at 400 days is
+       ~0.17, so `< 0.5` is ~2σ: the bound could neither confirm flatness nor detect a
+       real effect. *A tolerance in absolute units is not a measurement* — the
+       complement of s55's rule, which is about gaps asserted too strictly.
+     - **The docstring contained its own refutation**, four paragraphs above the
+       assertion: it says FoM IS a concentration spell and that the standardized enemy
+       ends its concentration 1.000 times per day. A party absorbing three quarters of
+       the swings must break it less. That is the s52 §6.1 defect verbatim — claim and
+       refutation in one document — and it is the **second** instance of that exact
+       pattern this session found in §6.1's own neighbourhood.
+     - Now asserted as a DIRECTION with the mechanism: breaks fall 3,982→3,575 (−10.2%)
+       and DPR rises +0.636 (8.41σ). Both loadouts respond to the split, through
+       different channels and in opposite directions — a sharper statement than "one
+       moves and one does not".
+  2. **A FOUR-ARM ORDERING CHAIN THAT WAS ASSERTING NOISE THREE TIMES, AND ONE OF ITS
+     LINKS IS FALSE (step 5 again, same rule, different shape).**
+     `test_incoming_pressure_orders_war_angels_dpr_the_right_way` claimed
+     `passive > attacks_only > attacks_and_saves > legendary` at 400 days. The adjacent
+     gaps are **1.42σ, 0.29σ and 0.60σ**, end-to-end 1.74σ — *not one link resolved*,
+     and its docstring presented the four values as "measured, not assumed", which
+     reads as a clean monotone ladder and is why nobody questioned it.
+     - At **20,000 days** the middle link is not merely unresolved but **absent**:
+       scripted 35.30868 vs baseline 35.31087, **0.13σ**, the same quantity to within
+       0.002 DPR. The mechanism says why, and the original claim had the *reason*
+       wrong: `baseline` does not add attacks to `scripted`'s, it REPLACES attack
+       rounds with save-for-damage rounds, so the incoming-hit rate driving
+       concentration barely moves. The other two links are 8.34σ and 5.86σ.
+     - Rewritten at 2,000 days asserting the two resolvable links, the end-to-end gap
+       (which is what the mechanism claims), and — per s55's prescription — **that the
+       unresolved link IS unresolved**, which doubles as a tripwire for anything that
+       later separates the two middle arms.
+  3. **§6.3 CLAIMED PROVENANCE CARRIED THE ALIGNMENT AND NOTHING SERIALIZED IT (step
+     6).** `SeededRNG.describe()` was written, §6.3 said §4 carried it, and for one
+     commit the method had **no caller, no artifact key and no console field**. Found
+     by rendering one real output at 2,000 days and looking at the header. This is
+     **step 6's TENTH defect and its SEVENTH in a renderer or summary layer**, and it
+     is the s56 pattern verbatim: *when a design document says something must be
+     RECORDED, grep for what SERIALIZES it, not for what COMPUTES it.* Now carried at
+     all three layers and asserted at all three, with the value taken from the
+     generator the run used rather than from the module constant — so a differently
+     aligned channel cannot report the pinned value.
+
+  **THE TRIPWIRE FIRED AND WAS REPLACED, NOT WIDENED.** s53 wrote
+  `test_pairing_is_statistically_INERT_once_the_streams_diverge` to fail at exactly
+  this step and said so in its docstring. It read **5.2498 against an upper bound of
+  1.15**. It is now `test_pairing_BUYS_REAL_PRECISION_once_the_streams_diverge`, with
+  bounds set by what its own 300 days can resolve — the seven-seed envelope is
+  vr 4.44…5.32 and correlation 0.776…0.817, so the band is 3.5…7.0 and corr > 0.6.
+  A tripwire that fires is a tripwire that worked; the claim gets replaced, which is
+  the only honest way to retire one.
+
+  **TWO FINDINGS FROM THE CALL-SITE SURVEY, both before a line was written** (the
+  handoff's "SURVEY THE CALL SITES BEFORE DESIGNING" earning its place):
+  - **The obvious owner key would have broken reproducibility.** `Entity.id` comes
+    from a module-global `itertools.count` that never resets, so keying a substream on
+    it would make a run's dice depend on how many entities the PROCESS built earlier —
+    i.e. on test ordering. A defect that passes every single-process test. Owners are
+    `entity.name` / a policy's declared `stream_owner` / `"day"`, and `zlib.crc32`
+    rather than `hash()` for the same reason one layer down (Python's string hash is
+    per-process randomized). Both asserted, with the crc values pinned as literals.
+  - **The enemy's draw count is config-determined, not outcome-determined**, which is
+    what makes this tractable: `BaselineEnemyPolicy.on_combat_start` pre-rolls
+    targeting, round type and save stat for every round of the combat up front.
+
+  **ONE DEFECT IN MY OWN NEW API, and a test is the only thing that caught it.** The
+  router was first named `SeededRNG.stream`, which collides with the ordinary
+  `self.stream` attribute `test_eval_metrics._RecordingRNG` keeps its recording in —
+  so the router became a **list** and every roll raised `TypeError`. Renamed
+  `substream`; the `roll(stream=...)` keyword keeps its name because that one is a KEY,
+  not the generator.
+
+  **FIXTURES DRIFTED, EXACTLY AS s55 PREDICTED A STREAM CHANGE WOULD MAKE THEM**, and
+  three of the four were repaired by pinning to a REGIME rather than re-picking a
+  coordinate (the s59 habit):
+  - `test_unmeasured_is_a_distinct_state_from_unavailable` now SEARCHES a small seed
+    budget for an available-but-unforced save ability and asserts one exists, instead
+    of hard-coding the seed that happened to produce one.
+  - `test_eval_baselines`'s two copies of the same coordinate are now ONE shared
+    constant — the drift had to be fixed twice, with one cause, which is s54's
+    duplicated-sequence lesson in miniature.
+  - `test_extra_damage_dice_flow_through_to_damage` hit a **natural 1** on the re-keyed
+    d20 tape (seed 0's first draw), so the queue came back empty and the test failed on
+    a dice roll rather than on its property. Seed moved and the hit is now GUARDED.
+  - `BaselineEnemyPolicy` and `ScriptedEnemyPolicy` no longer draw the same targeting
+    pick, because each owns its own substream — the test comparing them was conflating
+    "same rule" with "same dice", which only a single tape could make equivalent. It
+    now holds the stream fixed and asserts the rule, which is what its docstring always
+    claimed.
+
+  **WHAT WAS DELIBERATELY NOT DONE.** Substreams make out-of-combat dice possible for
+  the first time — `healing.md` §7(a) and the per-feature ritual's rule 3 forbid them
+  *because* one tape meant one `rng.roll()` outside combat shifted every build's dice.
+  **That reason has now expired**, and the constraint is honestly "a convention whose
+  justification is gone" rather than a rule. It is NOT relaxed here, on the principle
+  that a change which moves every number should move it for ONE reason at a time —
+  folding a healing-model change into a nineteen-row re-baseline would make the two
+  indistinguishable in the record. Named in §14 with its cost stated (out-of-combat
+  healing takes the die's expectation, so any metric over it has a structurally zero
+  variance that is a modelling artefact) and its trigger.
 
 - **FRAMEWORK STEP 8e — THE THRESHOLD CALIBRATION; STEP 8 IS COMPLETE (2026-11-07,
   session 59).** `evaluation_framework.md` §14(a) **CLOSED** (the entry that has asked
@@ -6537,19 +6780,19 @@ Engine prerequisites, in the order we built them:
 
 ### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24; RESEQUENCED s54)
 
-> **NEXT TASK = item 4c below, now at STEP 9: RNG SUBSTREAMS. STEP 8 IS COMPLETE.**
-> 8a + 8b landed in s56 (the convergence verdict and per-cell availability); **8c landed
-> in s57** (the sweep declaration, manifest, CLI and cache); **8d landed in s58** (the
-> §11 baselines registry); **8e landed in s59** — the threshold calibration, 171 cells
-> and 1,034,000 simulated days, and **no constant moved**, which is pinned as an
-> assertion rather than left as prose. §14(a) is CLOSED. It also cut
-> `attacks_per_round_distribution` (28 → 27 declarations) and fixed two gate defects of
-> one class — a gate stating something false about what a day count can do. What remains
-> is **step 9** (RNG substreams), which re-baselines `GOLDEN_DPR` by construction and
-> should trip s53's deliberate tripwire. 8e measured that calibrating before step 9 was
-> sound (634 of 640 verdicts identical across three seeds), so nothing it landed needs
-> re-measuring afterwards. Item 5b (housekeeping) then 5c (#6b, the definitive
-> re-evaluation) follow; #6a's numbers are NOT a baseline to diff against (§12.1).
+> **NEXT TASK = item 5b below: the HOUSEKEEPING PR. THE EVALUATION FRAMEWORK IS
+> FINISHED — all nine §13 steps are done.**
+> 8a + 8b landed in s56, 8c in s57, 8d in s58, 8e in s59, and **step 9 (RNG
+> substreams) in s60** — §6.3 locks the substream contract, pairing goes from a median
+> variance reduction of **1.0 to 5.77**, and all nineteen `GOLDEN_DPR` rows plus all
+> three `AXIS_GOLDEN` rows were re-baselined with the physics/stream separation
+> MEASURED (27 old-vs-new comparisons at 20,000 days, worst |z| 1.60, signs mixed).
+> s53's deliberate tripwire fired at 5.2498 against its 1.15 bound and was replaced
+> rather than widened. **§6.1's own named prescription turned out to be half the
+> answer** — per-(entity, purpose) `spawn()` generators are still inert (median 1.16);
+> the mechanism is re-synchronizing at the day, which §6.1 never mentions.
+> Item **5b (housekeeping)** is next, then **5c (#6b, the definitive re-evaluation)**.
+> #6a's numbers are NOT a baseline to diff against (§12.1).
 
 The project has two tracks. **Track 1 (current focus): "make the model produce
 honest, complete build evaluations"** — the enemy-profile arc through to a real
@@ -6907,9 +7150,10 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    only (where AC already exists), or run the low levels under `enemy="none"` and say
    plainly that they carry no defensive measurement.
 
-4c. **Framework steps 8 and 9. *** STEP 8 COMPLETE: 8a + 8b (s56), 8c (s57), 8d (s58),
-   8e (s59). STEP 9 is the NEXT TASK. *** ** `evaluation_framework.md` §13
-   steps 8 and 9, unchanged in content; only their position moved.
+4c. ~~**Framework steps 8 and 9.**~~ **DONE — ALL OF IT. *** STEP 8: 8a + 8b (s56),
+   8c (s57), 8d (s58), 8e (s59). STEP 9: s60. THE FRAMEWORK IS FINISHED. *** **
+   `evaluation_framework.md` §13 steps 8 and 9, unchanged in content; only their
+   position moved.
    - ~~**8a — the convergence VERDICT**~~ **DONE (s56)**: §14(a)'s distance payload, no
      constant retuned. See the s56 Done entry at the top of this file.
    - ~~**8b — per-cell availability reads the resolved ENEMY**~~ **DONE (s56)**: §14's
@@ -6965,10 +7209,25 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      run's own variance, so a single-run convergence criterion should be largely
      insensitive. Worth checking rather than assuming (the s50 "a mechanical argument is
      not a measurement" rule).
-   - **step 9 — RNG substreams.** Re-baselines `GOLDEN_DPR` by construction and should
-     trip `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which s53 wrote
-     as a deliberate tripwire for exactly that step. Do NOT widen that bound to keep it
-     green; updating it IS part of the decision record.
+   - ~~**step 9 — RNG substreams.**~~ **DONE (s60). §6.3 locks the contract.** Pairing
+     goes from a median variance reduction of **1.0 to 5.77** over 12 diverging cells x
+     3 seeds. s53's tripwire fired at **5.2498** against its 1.15 bound and was
+     REPLACED, not widened. All nineteen `GOLDEN_DPR` rows and all three `AXIS_GOLDEN`
+     rows re-baselined; the physics/stream separation is MEASURED against the old engine
+     in a worktree (27 comparisons at 20,000 days, worst |z| 1.60, mixed signs), so every
+     move is stream and none is physics.
+     - **§6.1's own prescription was HALF WRONG**, which is the finding worth carrying:
+       per-(entity, purpose) `spawn()` generators — declared and kept measurable as
+       `ALIGNMENT = "run"` — are still inert at median **1.16**. The mechanism is the
+       per-DAY re-synchronization, which §6.1 does not mention. *A design note's plan
+       for a fix is an inherited argument too* (s58's lesson, applied to a plan rather
+       than a finding).
+     - **`day` vs `day_combat` is NOT settled by the measurement** (3 cells each, 6
+       within seed noise); `day` is pinned on cost, simplicity and being the unit the
+       estimator averages over, asserted rather than argued. A first 6-cell measurement
+       said `day` won decisively and its general form was WRONG — see the s60 Done entry.
+     - Did NOT relax the no-new-dice-outside-combat rule, which substreams now make
+       possible; named in §14 as its own decision with its own re-baseline.
    - **ONE THING 8a ADDED TO 5b's LIST (housekeeping):** `BuildAdapter` now has five
      methods and the protocol's docstring lists "the four axes of variance an adapter
      absorbs" — the prose and the protocol have diverged by one. **Still open after

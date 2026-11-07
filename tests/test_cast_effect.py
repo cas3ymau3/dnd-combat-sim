@@ -57,11 +57,11 @@ class FakeRNG:
         self._values = list(values)
         self.roll_calls = []
 
-    def roll(self, n, sides):
+    def roll(self, n, sides, *, stream=None):
         self.roll_calls.append((n, sides))
         return [self._values.pop(0) for _ in range(n)]
 
-    def roll_one(self, sides):
+    def roll_one(self, sides, *, stream=None):
         self.roll_calls.append((1, sides))
         return self._values.pop(0)
 

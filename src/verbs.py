@@ -73,10 +73,12 @@ def resolve_saving_throw(
     (guide 41:308).  Applied after advantage/disadvantage to whichever d20 stands,
     on both the initial roll and any reroll.
     """
-    d20 = roll_d20(rng, advantage, disadvantage)
+    d20 = roll_d20(rng, advantage, disadvantage,
+                   stream=("save_d20", entity.name))
     if d20_floor is not None:
         d20 = max(d20, d20_floor)
-    bonus = int(entity.stat(save_stat)) + entity.roll_bonus(save_stat, rng)
+    bonus = int(entity.stat(save_stat)) + entity.roll_bonus(
+        save_stat, rng, stream=("save_dice", entity.name))
     total = d20 + bonus
     success = total >= dc
     log.info(
@@ -87,10 +89,12 @@ def resolve_saving_throw(
     if not success and reroll_decider is not None:
         extra = reroll_decider(dc, total)
         if extra is not None:
-            d20b = roll_d20(rng, advantage, disadvantage)
+            d20b = roll_d20(rng, advantage, disadvantage,
+                            stream=("save_d20", entity.name))
             if d20_floor is not None:
                 d20b = max(d20b, d20_floor)
-            bonusb = int(entity.stat(save_stat)) + entity.roll_bonus(save_stat, rng) + extra
+            bonusb = int(entity.stat(save_stat)) + entity.roll_bonus(
+                save_stat, rng, stream=("save_dice", entity.name)) + extra
             totalb = d20b + bonusb
             success = totalb >= dc
             log.info(
@@ -101,19 +105,27 @@ def resolve_saving_throw(
     return success
 
 
-def roll_d20(rng: "SeededRNG", advantage: bool, disadvantage: bool) -> int:
+def roll_d20(rng: "SeededRNG", advantage: bool, disadvantage: bool, *,
+             stream: tuple[str, str]) -> int:
     """Roll a d20, honoring advantage/disadvantage with RAW cancellation.
 
     Per the 2024 rules: if ANY source of advantage and ANY source of
     disadvantage both apply, they cancel and the roll is straight — regardless
     of how many sources are on each side.  So callers pass two booleans
     ("is there any advantage?" / "is there any disadvantage?"), not counts.
+
+    ``stream`` is the §6.3 substream key — ``("attack_d20", owner)`` or
+    ``("save_d20", owner)``.  Note that advantage draws TWO dice off that tape
+    where a straight roll draws one, so a toggle that grants advantage shifts
+    the owner's own d20 tape from that point in the epoch.  That is a genuine
+    divergence (the two runs really do roll different numbers of dice), and it
+    is confined to the epoch rather than to the rest of the run.
     """
     if advantage and not disadvantage:
-        return max(rng.roll(2, 20))
+        return max(rng.roll(2, 20, stream=stream))
     if disadvantage and not advantage:
-        return min(rng.roll(2, 20))
-    return rng.roll_one(20)
+        return min(rng.roll(2, 20, stream=stream))
+    return rng.roll_one(20, stream=stream)
 
 
 # ---------------------------------------------------------------------------
@@ -255,7 +267,8 @@ def resolve_attack_roll(
         advantage = True
 
     # Roll d20 (with adv/disadv cancellation handled in the helper)
-    d20 = roll_d20(rng, advantage, disadvantage)
+    d20 = roll_d20(rng, advantage, disadvantage,
+                   stream=("attack_d20", actor.name))
     is_crit = (d20 == 20)
     is_auto_miss = (d20 == 1)
 
@@ -263,7 +276,8 @@ def resolve_attack_roll(
     # modifiers (Bless +1d4) on this stat — rolled fresh per attack here, on the
     # resolution path, never via the pure stat() the policy reads.
     atk_bonus = actor.stat(event.weapon_stat, tick=tick)
-    atk_bonus += actor.roll_bonus(event.weapon_stat, rng, tick=tick)
+    atk_bonus += actor.roll_bonus(event.weapon_stat, rng, tick=tick,
+                                  stream=("attack_dice", actor.name))
     total_roll = d20 + atk_bonus
 
     # Effective AC of target
@@ -339,7 +353,8 @@ def resolve_attack_roll(
         # (P(hit)^2 either way, since we condition on the first roll being a hit).
         # The surviving hit keeps its crit only if the second die is also a 20.
         if hit and response.impose_disadvantage:
-            d20_2 = roll_d20(rng, False, False)
+            d20_2 = roll_d20(rng, False, False,
+                             stream=("attack_d20", actor.name))
             if d20_2 == 1 or (d20_2 + atk_bonus) < int(target_ac):
                 hit = False
                 log.info(
@@ -780,12 +795,15 @@ def resolve_damage(
     # Phase 2: roll the pool (weapon dice first, then each extra source).
     # A source with zero dice (pool_size 0) is a flat-only hit (e.g. the enemy's
     # fixed 28 damage) — skip the roll rather than calling rng.roll(0, …).
-    rolls = rng.roll(pool_size, sides) if pool_size >= 1 else []
+    damage_stream = ("damage", actor.name)
+    rolls = rng.roll(pool_size, sides, stream=damage_stream) \
+        if pool_size >= 1 else []
     extra_rolls: list[int] = []
     for n_extra, extra_sides in event.extra_damage_dice:
         count = n_extra * 2 if event.is_crit else n_extra
         if count >= 1:
-            extra_rolls.extend(rng.roll(count, extra_sides))
+            extra_rolls.extend(rng.roll(count, extra_sides,
+                                        stream=damage_stream))
 
     # Phase 3: per-die mods.  Elemental Adept's "treat any 1 on a damage die as a
     # 2" is a per-die FLOOR: each of the SPELL's own dice (the main pool) is raised
@@ -817,7 +835,8 @@ def resolve_damage(
             event.damage_type, event.origin, event.is_crit
         ):
             if n_rider >= 1:
-                rider_total += sum(rng.roll(n_rider, sides_rider))
+                rider_total += sum(rng.roll(n_rider, sides_rider,
+                                            stream=damage_stream))
     total += rider_total
 
     # Phase 5b: ACTOR-side control output scale (evaluation_framework.md §7.2).

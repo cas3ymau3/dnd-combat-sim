@@ -133,6 +133,21 @@ class Provenance:
     engine_dirty: bool
     generated_at: str
     day_tier: str
+    #: The §6.3 dice channel: ``{"alignment": ..., "purposes": [...]}``.
+    #:
+    #: **ENGINE state, not CONFIG state, and the distinction decides the cache.**  The
+    #: alignment is a module constant (``src.rng.ALIGNMENT``), so a run through
+    #: ``runner.simulate`` always uses the pinned value and ``engine_commit`` already
+    #: covers a change to it.  It is therefore recorded HERE, where a reader sees it,
+    #: and deliberately NOT added to ``RunConfig.canonical()`` — putting it in the
+    #: config hash would invalidate every cached record for a fact the other half of
+    #: §10.2's key already carries.
+    #:
+    #: It is recorded at all because **it changes the numbers**: two runs at one seed
+    #: and two alignments are different runs, and a reader comparing them without
+    #: knowing that would be comparing two streams (§4's failure of an assumption
+    #: stated without what it was worth).
+    dice_channel: dict[str, Any] = field(default_factory=dict)
     #: §6.1: the pairing is recorded so a reader knows a reported delta is paired
     #: (and that its stated interval means the paired thing).  ``None`` for a
     #: standalone run.
@@ -142,7 +157,8 @@ class Provenance:
     @classmethod
     def build(cls, config: "RunConfig", described: dict[str, Any],
               roster_summary: dict[str, list[str]],
-              pairing: "dict[str, Any] | None" = None) -> "Provenance":
+              pairing: "dict[str, Any] | None" = None,
+              dice_channel_block: "dict[str, Any] | None" = None) -> "Provenance":
         from .enemy import resolve as resolve_enemy
 
         sha, dirty = engine_version()
@@ -189,6 +205,7 @@ class Provenance:
             roster=roster_summary,
             engine_commit=sha,
             engine_dirty=dirty,
+            dice_channel=dict(dice_channel_block or {}),
             generated_at=datetime.now(timezone.utc).isoformat(),
             day_tier=config.day_tier,
             pairing=pairing,
@@ -654,6 +671,7 @@ def build_report(output: "RunOutput", *,
     return EvalReport(
         provenance=Provenance.build(
             output.config, output.described, output.roster.summary(), pairing,
+            dice_channel_block=output.dice_channel,
         ),
         registry=output.registry,
         values=values,

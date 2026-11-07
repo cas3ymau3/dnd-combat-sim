@@ -149,7 +149,17 @@ see PROGRESS.md). The mechanical prerequisites for the War Angel validation
 (levels 1–13) are in place; what remains is per-build policy + data, not new
 engine primitives. Module map (`src/`):
 
-- `rng.py` — SeededRNG, the single seed-logged dice channel.
+- `rng.py` — SeededRNG, the single seed-logged dice channel, routed into per-`(purpose,
+  owner)` SUBSTREAMS (`design/evaluation_framework.md` §6.3, framework step 9 / s60).
+  Every `roll()` names its stream; the generator is DERIVED from
+  `(seed, epoch, purpose, owner)` via a `spawn_key`, never handed out by
+  `SeedSequence.spawn()` in call order. `PURPOSES` is a closed vocabulary of eight with
+  NO catch-all, and `ALIGNMENT` (pinned `"day"`) is the epoch — the streams
+  re-synchronize at every day, which is the estimator's replication unit and the thing
+  that makes §6.1's paired seeding worth ~5.8x instead of ~1x. **Changing `ALIGNMENT`
+  or adding a purpose re-baselines every seeded number in the project.** The owner is a
+  stable LABEL (`entity.name`, a policy's declared `stream_owner`, or `"day"`) and
+  NEVER `Entity.id`, which is process-global.
 - `modifiers.py` — Modifier + ModifierStack (fold-left, tick expiry, phase filter).
 - `resources.py` — ResourcePool/ResourceEntry (SR/LR restore; spell_slot_1..9).
 - `statuses.py` — StatusSet (tick-expiring flags keyed on (round, turn_index)).
@@ -169,7 +179,7 @@ engine primitives. Module map (`src/`):
   property over it. `downed` is a REVERSIBLE state (`destroyed` is permanent); the
   scheduler and every commander read `is_out_of_action`.
 - `summons.py` — substrate #7 / 7a: `SummonSpec` + `create_entity`/`destroy_entity` (verb 12) on an `(entities, policies)` roster (day-start or mid-combat); a controlled ally is a `create_entity`'d Actor, COMMANDED on its controller's turn via `Choice.actor` (the cost is the controller's, the event's actor is the commanded entity → its own per-summon DPR column). Teardown keyed to `effect_source` via `Entity.remove_effect` (a `destroyed` flag).
-- `day_runner.py` — one adventuring day (LR → 4 combats); samples combat times + SR placement; before/between-combat hooks.
+- `day_runner.py` — one adventuring day (LR → 4 combats); samples combat times + SR placement; before/between-combat hooks. Also OWNS THE §6.3 ALIGNMENT EPOCH: `run_day` calls `rng.begin_day` / `rng.begin_combat`, and the call is deliberately NOT guarded with `getattr` — a defensive call would let the epoch go silently missing and make pairing inert again with nothing failing.
 - `builds/war_angel.py` — first concrete build (per-level data + policy).
 - `builds/enemy_stats.py` — the definitive per-level enemy table, AND
   `make_baseline_enemy(level)`: **the one enemy-`Entity` constructor** (s52). No build
@@ -192,7 +202,9 @@ engine primitives. Module map (`src/`):
     baseline set (§11.2).
 
 Key invariants to preserve when extending:
-- All dice through `SeededRNG.roll()` — never call random directly.
+- All dice through `SeededRNG.roll()` — never call random directly — and every call
+  NAMES ITS STREAM (`stream=(purpose, owner)`, a required keyword with no default,
+  because a default is a catch-all and a catch-all re-couples whatever lands in it).
 - All stat reads through `entity.stat(name, tick)` — never read `base_stats` directly.
 - Persistent resources through `entity.resources` (ResourcePool); turn-level action
   economy (action/bonus_action/reaction) is managed by the scheduler, NOT in the pool.

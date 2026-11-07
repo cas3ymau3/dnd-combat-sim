@@ -101,14 +101,14 @@ def test_roll_dice_sums_active_dice_in_range():
     stack.add(Modifier(stat="attack_bonus", value=0, source="bless", dice=(1, 4)))
     rng = SeededRNG(0)
     for _ in range(50):
-        rolled = stack.roll_dice("attack_bonus", rng)
+        rolled = stack.roll_dice("attack_bonus", rng, stream=("attack_dice", "T"))
         assert 1 <= rolled <= 4
 
 
 def test_roll_dice_zero_without_dice_modifiers():
     stack = ModifierStack()
     stack.add(Modifier(stat="attack_bonus", value=3, source="flat"))  # flat only
-    assert stack.roll_dice("attack_bonus", SeededRNG(0)) == 0
+    assert stack.roll_dice("attack_bonus", SeededRNG(0), stream=("attack_dice", "T")) == 0
 
 
 def test_roll_dice_respects_stat_and_expiry():
@@ -116,11 +116,12 @@ def test_roll_dice_respects_stat_and_expiry():
     stack.add(Modifier(stat="con_save", value=0, source="bless", dice=(1, 4)))
     rng = SeededRNG(1)
     # Wrong stat → 0.
-    assert stack.roll_dice("attack_bonus", rng) == 0
+    assert stack.roll_dice("attack_bonus", rng, stream=("attack_dice", "T")) == 0
     # Right stat → rolled.
-    assert stack.roll_dice("con_save", rng) >= 1
+    assert stack.roll_dice("con_save", rng, stream=("attack_dice", "T")) >= 1
     # Expired dice modifier → 0.
     stack2 = ModifierStack()
     stack2.add(Modifier(stat="con_save", value=0, source="bless",
                         dice=(1, 4), expires_at=(1, 0, 0)))
-    assert stack2.roll_dice("con_save", SeededRNG(1), tick=(2, 0, 0)) == 0
+    assert stack2.roll_dice("con_save", SeededRNG(1), tick=(2, 0, 0),
+                               stream=("save_dice", "T")) == 0

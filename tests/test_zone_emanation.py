@@ -37,11 +37,11 @@ class FakeRNG:
     def __init__(self, values):
         self._values = list(values)
 
-    def roll(self, n, sides):
+    def roll(self, n, sides, *, stream=None):
         return [self._values.pop(0) for _ in range(n)]
 
-    def roll_one(self, sides):
-        return self.roll(1, sides)[0]
+    def roll_one(self, sides, *, stream=None):
+        return self.roll(1, sides, stream=stream)[0]
 
 
 class _NoOp:

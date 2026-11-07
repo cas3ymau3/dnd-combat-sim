@@ -31,11 +31,11 @@ class FakeRNG:
         self._values = list(values)
         self.roll_calls = []  # list of (n, sides)
 
-    def roll(self, n, sides):
+    def roll(self, n, sides, *, stream=None):
         self.roll_calls.append((n, sides))
         return [self._values.pop(0) for _ in range(n)]
 
-    def roll_one(self, sides):
+    def roll_one(self, sides, *, stream=None):
         self.roll_calls.append((1, sides))
         return self._values.pop(0)
 
@@ -46,29 +46,29 @@ class FakeRNG:
 
 def test_roll_d20_advantage_takes_max():
     rng = FakeRNG([5, 17])
-    assert roll_d20(rng, advantage=True, disadvantage=False) == 17
+    assert roll_d20(rng, advantage=True, disadvantage=False, stream=("attack_d20", "T")) == 17
     assert rng.roll_calls == [(2, 20)]
 
 def test_roll_d20_disadvantage_takes_min():
     rng = FakeRNG([5, 17])
-    assert roll_d20(rng, advantage=False, disadvantage=True) == 5
+    assert roll_d20(rng, advantage=False, disadvantage=True, stream=("attack_d20", "T")) == 5
     assert rng.roll_calls == [(2, 20)]
 
 def test_roll_d20_both_cancels_to_straight():
     rng = FakeRNG([11])
-    assert roll_d20(rng, advantage=True, disadvantage=True) == 11
+    assert roll_d20(rng, advantage=True, disadvantage=True, stream=("attack_d20", "T")) == 11
     assert rng.roll_calls == [(1, 20)]  # single die, not 2d20
 
 def test_roll_d20_neither_is_straight():
     rng = FakeRNG([8])
-    assert roll_d20(rng, advantage=False, disadvantage=False) == 8
+    assert roll_d20(rng, advantage=False, disadvantage=False, stream=("attack_d20", "T")) == 8
     assert rng.roll_calls == [(1, 20)]
 
 def test_roll_d20_advantage_higher_average_than_disadvantage():
     """Statistical sanity over many real rolls."""
     rng = SeededRNG(seed=1)
-    adv = sum(roll_d20(rng, True, False) for _ in range(2000))
-    dis = sum(roll_d20(rng, False, True) for _ in range(2000))
+    adv = sum(roll_d20(rng, True, False, stream=("attack_d20", "T")) for _ in range(2000))
+    dis = sum(roll_d20(rng, False, True, stream=("attack_d20", "T")) for _ in range(2000))
     assert adv > dis
 
 

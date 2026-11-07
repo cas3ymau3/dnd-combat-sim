@@ -645,23 +645,52 @@ def test_unmeasured_is_a_distinct_state_from_unavailable():
     to produce an empty denominator and it produced an impossible one instead, which
     looks identical from the outside.
 
-    It now uses `int_save` on War Angel L13 — band 11-16, where all six abilities carry
-    a weight, so the ability genuinely CAN be forced and eight days simply did not.
-    The `available is True` assertion is the precondition that makes the distinction
-    real, and is asserted first for that reason (s55's fixture-guard lesson).
+    It now uses a save ability on War Angel L13 — band 11-16, where all six
+    abilities carry a weight, so the ability genuinely CAN be forced and a short run
+    simply did not.  The `available is True` assertion is the precondition that
+    makes the distinction real, and is asserted first for that reason (s55's
+    fixture-guard lesson).
+
+    **AND THE FIXTURE IS NOW A SEARCH RATHER THAN A PINNED SEED (s60).**  §6.3's
+    substreams re-baseline every seeded number, and `n_days=8, seed=1` stopped
+    producing an unforced ability — the fixture drifted out of its regime exactly as
+    s55 predicted a stream change would make fixtures do.  Re-picking the seed would
+    buy one session; what this test actually means is "the UNMEASURED state is
+    REACHABLE and does occur at a short day count", so it now asserts that over a
+    small seed budget.  The s59 habit, generalized: pin a fixture to a REGIME
+    (a short run in a band where every ability carries a weight), not to the one
+    coordinate that happened to land in it.
     """
-    report = run(RunConfig(enemy="baseline", build="war_angel", level=13, n_days=8, seed=1))
-    unmeasured = {v.metric for v in report.unmeasured()}
+    found = None
+    for seed in range(1, 9):
+        report = run(RunConfig(enemy="baseline", build="war_angel", level=13,
+                               n_days=8, seed=seed))
+        unmeasured = {v.metric for v in report.unmeasured()}
+        for ability in ("int_save", "cha_save", "wis_save", "str_save"):
+            name = f"save_fail_rate[{ability}|*]"
+            if name in unmeasured and report[name].available is True:
+                found = (seed, ability, report, unmeasured)
+                break
+        if found:
+            break
+
+    # The fixture guard: the regime must EXHIBIT the state under test (s55).  An
+    # empty search here means the regime moved, not that the state is gone — raise
+    # the day count's sparsity or widen the seed budget rather than deleting this.
+    assert found is not None, (
+        "no seed in 1-8 produced an available-but-unforced save ability at 8 days; "
+        "the fixture's REGIME has moved (see this test's docstring)")
+    seed, ability, report, unmeasured = found
     unavailable = {v.metric for v in report.unavailable()}
 
     # The precondition: the channel is open, so an empty denominator is a short run
     # and nothing more.
-    assert report["save_fail_rate[int_save|*]"].available is True
-    assert "save_fail_rate[int_save|*]" in unmeasured
+    assert report[f"save_fail_rate[{ability}|*]"].available is True
+    assert f"save_fail_rate[{ability}|*]" in unmeasured
     assert not (unmeasured & unavailable)
     # …while the count metric over the SAME empty channel is a real measured zero,
     # because its denominator (rounds) is never zero.
-    assert report["saves_forced_per_round[int_save|*]"].value == 0.0
+    assert report[f"saves_forced_per_round[{ability}|*]"].value == 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -758,8 +787,8 @@ class _RecordingRNG(SeededRNG):
         super().__init__(seed)
         self.stream: list[tuple[int, int, tuple[int, ...]]] = []
 
-    def roll(self, n: int, sides: int) -> list[int]:
-        result = super().roll(n, sides)
+    def roll(self, n: int, sides: int, *, stream=None) -> list[int]:
+        result = super().roll(n, sides, stream=stream)
         self.stream.append((n, sides, tuple(result)))
         return result
 
@@ -815,47 +844,44 @@ def test_a_paired_delta_on_an_inert_toggle_is_exactly_zero():
     assert delta.stderr == 0.0
 
 
-def test_pairing_is_statistically_INERT_once_the_streams_diverge():
-    """s52 REPLACES ``test_a_paired_delta_is_never_wider_than_the_independent_one``,
-    whose claim was FALSE — and which passed from s44 to s51 by luck of which side of
-    zero one seed's covariance landed on.
+def test_pairing_BUYS_REAL_PRECISION_once_the_streams_diverge():
+    """s60 RETIRES THE TRIPWIRE BY TRIPPING IT, which is what it was for.
 
-    The old docstring said "the assertion is the guaranteed direction, not a promised
-    factor".  There is no guaranteed direction:
-    ``Var(A − B) = Var(A) + Var(B) − 2·Cov(A, B)``, so pairing is narrower only when
-    ``Cov > 0``, and nothing in a single-tape RNG makes it positive.  §6.1 had already
-    MEASURED two comparisons at 0.95x and 0.97x — paired wider than independent — in
-    the table three lines above the sentence claiming it never happens.
+    s53 wrote this test as ``test_pairing_is_statistically_INERT_once_the_streams
+    _diverge`` and said in as many words that it was **meant to fail** when §13
+    step 9 landed: "when it lands, the variance reduction should rise well above
+    the upper bound here and this assertion should break.  That is the intended
+    signal, not a regression — update it in step 9's decision record, and do not
+    widen the bound to keep it green."  Step 9 landed in s60 and it read
+    **5.2498** against an upper bound of 1.15.  The bound was not widened; the
+    claim was replaced, which is the only honest way to retire a tripwire.
 
-    What s52 measured, over 5 comparisons x 3 enemy kinds at 300 days: two regimes and
-    nothing between them.  An INERT toggle pairs perfectly (correlation exactly 1.0,
-    delta ``0 +/- 0`` — asserted in the test above, and
-    ``variance_reduction`` is ``inf`` there).  A toggle that diverges the stream gives a
-    correlation of **-0.12 to +0.06** and a variance reduction of **0.892 to 1.069**,
-    below 1.0 — i.e. pairing WORSE than independent seeding — in **3 of the 9**
-    diverging cells.  So pairing is not a small win here; it is inert.
+    **WHAT IS TRUE NOW** (``evaluation_framework.md`` §6.3).  ``SeededRNG`` routes
+    each die to a substream keyed ``(seed, epoch, purpose, owner)``, and the
+    streams re-synchronize at every DAY — the unit the estimator averages over.
+    On this cell, measured over SEVEN seeds at this test's own 300 days:
+    ``variance_reduction`` **4.44 … 5.32** and correlation **0.776 … 0.817**.
+    Over the wider decision measurement (12 diverging cells x 3 seeds, 1,000 days)
+    the median is **5.77** and the minimum **1.95**.  So pairing is worth roughly
+    a FIVEFOLD cut in the variance of a delta here, against the 1.0 it was worth
+    before — i.e. about 5x the days for the same interval, free.
 
-    **The quantity is `variance_reduction`, and reading it off the property rather than
-    recomputing it here is deliberate (s52).**  The first cut of this test computed
-    ``paired / independent`` standard errors inline, which is the INVERSE of, and
-    un-squared relative to, the column §6.1's table has published since s44.  Two units
-    for one quantity is the §3.4 seam check one layer up, and it is invisible to any
-    check that only asks whether each number is right.  ``PairedDelta`` now owns the
-    definition and this test consumes it, so there is ONE source for the QUANTITY.
+    **THE BOUNDS ARE SET BY WHAT 300 DAYS CAN RESOLVE** (s55's rule: assert only
+    the links the run can actually resolve).  The seven-seed spread is 0.88 wide,
+    so the band below is that spread with margin either side, and the point of
+    the assertion is the MAGNITUDE — "pairing works, by a factor of several" —
+    not a pinned value.  A reading near 1.0 means the substream routing has been
+    broken or bypassed; a reading above the band is worth looking at rather than
+    accommodating, and §6.3 is where to start.
 
-    The same first cut also mis-counted the cells as 4 of 9.  **That half is NOT fixed by
-    a single source, and saying it was would be the overclaim this file keeps warning
-    about:** "3 of 9" is still a hand measurement living in prose, here and in §6.1.
-    Deriving it would mean re-running all nine cells (9 x 2 runs x 300 days) inside the
-    suite — minutes of simulation to pin a documentation number, which is not worth it.
-    So the count stays prose, knowingly, and what guards the next one is the habit rather
-    than a test: a tallied count in prose has nothing behind it.
-
-    **THIS TEST IS A TRIPWIRE AND IS MEANT TO FAIL.**  §13 step 9 (RNG substreams)
-    exists precisely to make pairing buy real precision; when it lands, the variance
-    reduction should rise well above the upper bound here and this assertion should
-    break.  That is the intended signal, not a regression — update it in step 9's
-    decision record, and do not widen the bound to keep it green.
+    **WHAT §6.1 GOT WRONG, AND IT IS WHY THIS TEST IS NOT JUST A NEW NUMBER.**
+    §6.1 named the fix as "per entity or per (entity, purpose) generators via
+    ``SeedSequence.spawn()``".  Built exactly that way — ``alignment="run"``,
+    which is kept as a declared value precisely so it stays measurable — pairing
+    reads **1.01 … 2.14, median 1.16**: still inert.  The mechanism was never the
+    per-entity keying alone; it is the per-DAY re-synchronization, which §6.1 does
+    not mention.  So the prerequisite this test was written against was half of
+    the answer, and the half that was missing is the half that mattered.
     """
     base = RunConfig(enemy="baseline", build="starfire_scion", level=15, n_days=DAYS,
                      seed=42)
@@ -873,19 +899,23 @@ def test_pairing_is_statistically_INERT_once_the_streams_diverge():
     assert delta.variance_reduction == pytest.approx(
         (delta.independent_stderr / delta.stderr) ** 2)
 
-    # Inert to within a few percent, in EITHER direction.  Bounds sit just outside the
-    # measured 0.892-1.069 envelope; the point is the magnitude, not the sign.
-    assert 0.85 <= delta.variance_reduction <= 1.15, (
-        f"variance_reduction = {delta.variance_reduction:.4f}. Above 1.15 means pairing "
-        "started WORKING — see §13 step 9 and this test's docstring before touching "
-        "the bound."
+    # Pairing WORKS.  Band = the measured seven-seed envelope (4.44-5.32) with
+    # margin; the point is the magnitude, not a pinned value.
+    assert 3.5 <= delta.variance_reduction <= 7.0, (
+        f"variance_reduction = {delta.variance_reduction:.4f}, outside the measured "
+        "3.5-7.0 band. Near 1.0 means the §6.3 substream routing is broken or "
+        "bypassed (check that `day_runner` still calls `begin_day`, and that no "
+        "call site shares a stream key it should not). Read this test's docstring "
+        "and §6.3 before touching the band."
     )
 
-    # And the covariance it rests on is indistinguishable from zero, which is the
-    # MECHANISM rather than the symptom (§6.1: one tape, read at a shifted offset).
+    # And the covariance it rests on is now strongly POSITIVE, which is the
+    # MECHANISM rather than the symptom: `Var(A-B) = Var(A)+Var(B)-2Cov(A,B)`, so
+    # pairing is narrower only when `Cov > 0`, and the epoch is what makes it so.
+    # Measured 0.776-0.817 over seven seeds; asserted well below that.
     va, vb, vd = delta.a.stderr ** 2, delta.b.stderr ** 2, delta.stderr ** 2
     correlation = ((va + vb - vd) / 2) / math.sqrt(va * vb)
-    assert abs(correlation) < 0.2, correlation
+    assert correlation > 0.6, correlation
 
 
 def test_an_inert_toggle_reports_an_UNBOUNDED_variance_reduction():

@@ -170,7 +170,8 @@ class ModifierStack:
         )
         return result
 
-    def roll_dice(self, stat: str, rng, tick: tuple | None = None) -> int:
+    def roll_dice(self, stat: str, rng, tick: tuple | None = None, *,
+                  stream: tuple[str, str]) -> int:
         """Sum the ROLLED contribution of all active dice-modifiers for *stat*.
 
         This is the resolution-only counterpart to compute(): it rolls each
@@ -179,12 +180,16 @@ class ModifierStack:
         rolls a die.  Called by the attack/save resolvers, never by decide().
 
         Returns 0 if no dice-modifiers are active for this stat.
+
+        ``stream`` is the §6.3 substream key, threaded from the resolver that
+        owns the roll — a Bless die added to an attack belongs to the ATTACKER's
+        ``attack_dice`` tape, not to whoever cast Bless.
         """
         total = 0
         for m in self._modifiers:
             if m.stat == stat and m.dice is not None and m.is_active(tick):
                 n, sides = m.dice
-                total += sum(rng.roll(n, sides))
+                total += sum(rng.roll(n, sides, stream=stream))
         return total
 
     def active_modifiers(self, tick: tuple | None = None) -> list[Modifier]:

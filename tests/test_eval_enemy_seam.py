@@ -284,11 +284,11 @@ def test_a_save_forced_on_the_dummy_now_resolves_against_the_tables_bonus():
     class _FixedDie:
         """A d20 that always shows 8 — the boundary the docstring names."""
         def __init__(self): self.rolls = []
-        def roll_one(self, sides):
+        def roll_one(self, sides, *, stream=None):
             self.rolls.append(sides)
             return 8
-        def roll(self, n, sides):
-            return [self.roll_one(sides) for _ in range(n)]
+        def roll(self, n, sides, *, stream=None):
+            return [self.roll_one(sides, stream=stream) for _ in range(n)]
 
     rng = _FixedDie()
     assert resolve_saving_throw(dummy, "con_save", dc=15, rng=rng) is True, \
@@ -776,9 +776,9 @@ class _CountingRNG(SeededRNG):
         super().__init__(seed)
         self.calls = 0
 
-    def roll(self, n: int, sides: int) -> list[int]:
+    def roll(self, n: int, sides: int, *, stream=None) -> list[int]:
         self.calls += 1
-        return super().roll(n, sides)
+        return super().roll(n, sides, stream=stream)
 
 
 def test_resolve_and_install_draw_no_dice():
@@ -1024,6 +1024,113 @@ GOLDEN_DAYS, GOLDEN_SEED = 400, 11
 #: numbers in ``src/validation.py`` were.  An engine change that moves them has
 #: moved the physics, and the commit that does it should say which physics.
 # ===========================================================================
+# RE-BASELINED (s60, PROGRESS item 4c / framework step 9) — ALL NINETEEN ROWS,
+# AND NOT ONE OF THEM FOR PHYSICS
+# ===========================================================================
+#
+# THE CHANGE.  `SeededRNG` stopped being one tape and became a routed set of
+# SUBSTREAMS keyed `(seed, epoch, purpose, owner)` — `evaluation_framework.md`
+# §6.3, framework step 9.  Every die in the simulation now names its stream, so
+# a change to what the character draws cannot move what the enemy draws, and the
+# streams re-synchronize at every DAY (the estimator's replication unit).
+#
+# This record exists to separate what moved for PHYSICS from what moved for the
+# STREAM, which s55 found was the hard part of a re-baseline and the valuable
+# part: three of that session's four golden moves were reshuffle wearing the
+# clothes of an effect.  Step 9 is the extreme case of it — the physics is
+# UNTOUCHED by construction (no rule, stat, policy or table changed; only which
+# numbers the channel hands out), so the honest claim is that ALL nineteen moves
+# are stream and NONE is physics.
+#
+# THAT CLAIM IS MEASURED, NOT ASSERTED, because a mechanical argument is not a
+# measurement and this is exactly the kind of correct-looking derivation that
+# ships with a term missing.  Seven cells were run at 20,000 days on the OLD
+# channel (a git worktree at 58e2a43) and on the new one, same seed, and compared
+# in SIGMAS of the independent difference rather than in percent:
+#
+#   cell (20,000 days, seed 11)              old ->  new        diff   sigma
+#   war_angel  4 baseline                  6.81002 ->  6.80372   -0.00630   0.42
+#   war_angel 13 baseline                 35.31203 -> 35.31087   -0.00117   0.07
+#   war_angel 16 baseline                 38.09283 -> 38.09923   +0.00640   0.34
+#   war_angel 13 baseline control+mitig.  33.69235 -> 33.67652   -0.01582   0.58
+#   silvertail 10 baseline                 6.30512 ->  6.28465   -0.02047   1.45
+#   starfire_scion 15 baseline            28.70039 -> 28.67762   -0.02277   0.66
+#   baseline  20 baseline                 11.11415 -> 11.13979   +0.02564   1.60
+#
+# WORST deviation 1.60 sigma over seven cells, median 0.58, and the signs are MIXED
+# (four down, three up) — i.e. noise, not drift.  The PANEL was checked too, because
+# the headline is a poor net for it (s55): 20 channel readings across
+# `net_damage_taken_per_round`, `concentration_break_rate`, `attacks_per_round` and
+# `control_turns_lost_per_round`, worst 1.65 sigma, and the three
+# `attacks_per_round` cells that are structurally exact (1.25000, 2.68750, 1.00000)
+# are EXACT in both arms — a fixed action economy cannot be moved by a dice stream,
+# so those rows are the control that says the comparison is wired up right.
+#
+# The honest form of the claim, since "within noise" is doing real work here: across
+# 27 old-vs-new comparisons the largest |z| is 1.60, which for 27 draws is what a
+# null of "same distribution, different realization" predicts.  It is NOT a proof
+# that nothing moved; it is a bound that nothing moved by more than roughly a
+# fiftieth of these channels' values, which is the strongest statement a
+# finite-sample comparison supports.
+#
+# WHAT MOVED AT 400 DAYS.  All nineteen, because every row draws dice — which is
+# itself the diagnostic: the previous four re-baselines each moved a SUBSET and
+# could name the structural reason a row was spared (`enemy="none"` is passive,
+# so AC cannot be consulted; a save-for-damage outcome halves rather than
+# re-rolls).  A change that reaches every row without exception is a change to
+# the channel and not to any rule.
+#
+#   row                                                old  ->  new        move
+#   war_angel  1 none                           8.29234375 ->  8.22000000   -0.87%
+#   war_angel  5 none                          16.45281250 -> 16.49531250   +0.26%
+#   war_angel 12 none                          37.91640625 -> 37.92109375   +0.01%
+#   war_angel  4 baseline                       6.79015625 ->  6.74203125   -0.71%
+#   war_angel 13 baseline                      35.21703125 -> 35.34843750   +0.37%
+#   war_angel 13 scripted                      35.42390625 -> 35.31390625   -0.31%
+#   war_angel 13 none                          35.45781250 -> 35.48562500   +0.08%
+#   war_angel 13 baseline control+mitigation   33.91578125 -> 33.44765625   -1.38%
+#   war_angel 13 baseline legendary_cadence    35.15781250 -> 35.27562500   +0.34%
+#   war_angel 16 baseline                      38.10968750 -> 37.82437500   -0.75%
+#   silvertail 10 baseline                      6.29640625 ->  6.24765625   -0.77%
+#   silvertail 10 baseline focus=summon         6.38718750 ->  6.24765625   -2.18%
+#   starfire_scion 15 baseline                 28.82609375 -> 28.76046875   -0.23%
+#   baseline  1 none                            5.71234375 ->  5.62062500   -1.61%
+#   baseline  5 none                            9.57546875 ->  9.51062500   -0.68%
+#   baseline  1 baseline                        5.63843750 ->  5.57812500   -1.07%
+#   baseline 10 baseline                       11.73140625 -> 11.66375000   -0.58%
+#   baseline 20 baseline                       11.22421875 -> 11.23718750   +0.12%
+#   baseline 13 baseline control               11.07843750 -> 11.11687500   +0.35%
+#
+# Every move is under 2.2% and the largest is the one the next paragraph is
+# about.  At 400 days war_angel L4's stderr is 0.0757, so -0.71% is 0.6 sigma:
+# the table is a tighter net than the noise it sits in, which is why it detects
+# a change like this at all and why it has to be re-baselined deliberately.
+#
+# THE MOST INFORMATIVE ROW IS THE ONE THAT STOPPED MOVING.  The two silvertail
+# rows are now BIT-IDENTICAL at 6.24765625, where they used to read 6.29640625
+# and 6.38718750 — a 1.44% gap.  `focus=summon` redirects the enemy's whole
+# attack routine from the character onto its summon, and it still applies:
+# `damage_taken_per_round_by_role[characters]` goes 5.5778 -> 0.0000 and
+# `[summons]` goes 0.0000 -> 6.8294.  But at L10 with default options silvertail
+# makes ZERO concentration checks and its summon is on the threshold HP model,
+# so NOTHING couples the damage the party absorbs to the character's own output.
+# The character's DPR was always supposed to be unchanged, and under one tape it
+# could not be: re-aiming the enemy shifted every later draw.
+#   * So 1.44% of that pair's gap was RESHUFFLE READING AS EFFECT, in the
+#     project's strongest regression net, for as long as the net has existed.
+#     This is the s55 generalization with its sign reversed — that session found
+#     the goldens blind to a real defect; this one finds them carrying a
+#     difference that was never there.
+#   * It is now asserted directly rather than left as two numbers that happen to
+#     match (`test_focus_summon_is_EXACTLY_inert_on_the_characters_own_dpr`), so
+#     a future change that re-couples them fails instead of quietly re-opening
+#     a gap nobody would question.
+#
+# NOTHING ELSE IN THE RUN CHANGED.  `enemy`, the builds, the tables, the policies
+# and the registry are untouched; `git diff` on this commit reaches `src/rng.py`,
+# the call sites that name a stream, and the epoch hooks in `day_runner.py`.
+#
+# ===========================================================================
 # RE-BASELINED (s55b, PROGRESS item 4b) — the SAVE bonuses, derived
 # ===========================================================================
 #
@@ -1216,19 +1323,19 @@ GOLDEN_DPR: dict[tuple, float] = {
     # equalled the table's).  So for the three levels where it is possible, these
     # goldens literally ARE validation.py's numbers, carried forward as exact
     # constants rather than re-derived.
-    ("war_angel", 1, "none", ()): 8.29234375,
-    ("war_angel", 5, "none", ()): 16.4528125,
-    ("war_angel", 12, "none", ()): 37.91640625,
+    ("war_angel", 1, "none", ()): 8.22000000,
+    ("war_angel", 5, "none", ()): 16.49531250,
+    ("war_angel", 12, "none", ()): 37.92109375,
     # L16 under `baseline` — the top of the range, with the enemy acting.  NOT
     # bit-identical to the retired harness (41.247656 there), because L16 is one of
     # the four War Angel levels whose baked-in enemy swung for a hand-written flat 32
     # instead of the table's 9d6+5.  That is the re-baseline 5b was for.
-    ("war_angel", 16, "baseline", ()): 38.10968750,   # re-baselined s55 (saves)
+    ("war_angel", 16, "baseline", ()): 37.82437500,   # re-baselined s60 (streams)
     # ------------------------------------------------------------------
-    ("war_angel", 4, "baseline", ()): 6.79015625,   # re-baselined s55
-    ("war_angel", 13, "baseline", ()): 35.21703125,   # re-baselined s55 (saves)
-    ("war_angel", 13, "scripted", ()): 35.42390625,
-    ("war_angel", 13, "none", ()): 35.4578125,
+    ("war_angel", 4, "baseline", ()): 6.74203125,    # re-baselined s60 (streams)
+    ("war_angel", 13, "baseline", ()): 35.34843750,   # re-baselined s60 (streams)
+    ("war_angel", 13, "scripted", ()): 35.31390625,
+    ("war_angel", 13, "none", ()): 35.48562500,
     # RE-BASELINED (s51), deliberately and with a decision record: framework step 6
     # applies the control cost at RUNTIME (evaluation_framework.md §7), so this is the
     # one golden in the table that control was ever going to move — and §7.4 said in
@@ -1242,12 +1349,12 @@ GOLDEN_DPR: dict[tuple, float] = {
     # the credit was made exact at the user's direction.  Every other row in this table
     # is UNCHANGED, which is the assertion that the default (control off) moved nothing.
     ("war_angel", 13, "baseline",
-     (("control", True), ("mitigation", True))): 33.91578125,  # re-baselined s55
+     (("control", True), ("mitigation", True))): 33.44765625,  # re-baselined s60
     ("war_angel", 13, "baseline",
-     (("legendary_cadence", True),)): 35.15781250,   # re-baselined s55 (saves)
-    ("silvertail", 10, "baseline", ()): 6.29640625,
-    ("silvertail", 10, "baseline", (("focus", "summon"),)): 6.3871875,
-    ("starfire_scion", 15, "baseline", ()): 28.82609375,
+     (("legendary_cadence", True),)): 35.27562500,   # re-baselined s60 (streams)
+    ("silvertail", 10, "baseline", ()): 6.24765625,
+    ("silvertail", 10, "baseline", (("focus", "summon"),)): 6.24765625,
+    ("starfire_scion", 15, "baseline", ()): 28.76046875,
     # ------------------------------------------------------------------
     # THE BASELINE CHARACTER (s54, step 7c — §3.5.1), the framework's own declared
     # SUBJECT.  Six rows, chosen for STRUCTURAL reasons the way the War Angel six
@@ -1269,12 +1376,12 @@ GOLDEN_DPR: dict[tuple, float] = {
     # subject is a FIXTURE for exercising channels, not a reference DPR curve — see
     # §14, where that limitation is recorded rather than quietly fixed by inventing
     # scaling the approved table does not declare.
-    ("baseline", 1, "none", ()): 5.71234375,
-    ("baseline", 5, "none", ()): 9.57546875,
-    ("baseline", 1, "baseline", ()): 5.6384375,
-    ("baseline", 10, "baseline", ()): 11.73140625,
-    ("baseline", 20, "baseline", ()): 11.22421875,
-    ("baseline", 13, "baseline", (("control", True),)): 11.0784375,
+    ("baseline", 1, "none", ()): 5.62062500,
+    ("baseline", 5, "none", ()): 9.51062500,
+    ("baseline", 1, "baseline", ()): 5.57812500,
+    ("baseline", 10, "baseline", ()): 11.66375000,
+    ("baseline", 20, "baseline", ()): 11.23718750,
+    ("baseline", 13, "baseline", (("control", True),)): 11.11687500,
 }
 
 
@@ -1285,6 +1392,53 @@ def test_golden_dpr_under_the_standardized_enemy(key):
                           seed=GOLDEN_SEED, enemy=kind,
                           enemy_options=dict(options))).headline
     assert value.value == GOLDEN_DPR[key]
+
+
+def test_focus_summon_is_EXACTLY_inert_on_the_characters_own_dpr():
+    """The pair of silvertail goldens that are now bit-identical, asserted as the
+    IDENTITY it is rather than left as two constants that happen to agree.
+
+    `focus="summon"` re-aims the enemy's entire attack routine off the character
+    and onto its summon.  It really does apply — the damage-taken rows below swap
+    completely — but at L10 with default options silvertail makes zero
+    concentration checks and its summon sits on the threshold HP model, so no
+    channel couples the damage the party absorbs to the character's own output.
+
+    **This could not be asserted before §6.3.**  Under a single tape, re-aiming
+    the enemy shifted every subsequent draw, so the two configs read 6.29640625
+    and 6.38718750 — a 1.44% gap that was entirely reshuffle, sitting in the
+    project's strongest regression net since the net was built.  Substreams make
+    the decoupling exact, and an exact equality is the cheapest possible detector
+    for it being re-coupled later.
+
+    Per s54's rule, name what makes the equality exact: it is exact because two
+    terms are ZERO (concentration checks, and any HP-dependence of the summon's
+    action economy), and both are asserted here so that if either stops being
+    zero this test says why it broke rather than merely that it did.
+    """
+    plain = run(RunConfig(build="silvertail", level=10, n_days=GOLDEN_DAYS,
+                          seed=GOLDEN_SEED, enemy="baseline"))
+    focused = run(RunConfig(build="silvertail", level=10, n_days=GOLDEN_DAYS,
+                            seed=GOLDEN_SEED, enemy="baseline",
+                            enemy_options={"focus": "summon"}))
+
+    # The two terms that make it exact.
+    assert plain.values["concentration_checks_per_day"].value == 0.0
+    assert focused.values["concentration_checks_per_day"].value == 0.0
+
+    # The precondition: the toggle is LIVE, not quietly ignored (s55's fixture
+    # guard — an identity over an inert toggle tests nothing).
+    taken = "damage_taken_per_round_by_role"
+    assert plain.values[f"{taken}[characters]"].value > 5.0
+    assert plain.values[f"{taken}[summons]"].value == 0.0
+    assert focused.values[f"{taken}[characters]"].value == 0.0
+    assert focused.values[f"{taken}[summons]"].value > 5.0
+
+    # ...and the character's own output is identical to the last bit, as is the
+    # summon's, because neither reads the damage the other took.
+    assert focused.headline.value == plain.headline.value
+    assert (focused.values["dpr_by_role[summons]"].value
+            == plain.values["dpr_by_role[summons]"].value)
 
 
 def test_the_characters_own_ac_is_load_bearing_on_the_damage_it_takes():
@@ -1334,24 +1488,78 @@ def test_the_characters_own_ac_is_load_bearing_on_the_damage_it_takes():
 
 
 def test_incoming_pressure_orders_war_angels_dpr_the_right_way():
-    """The MECHANISM behind the goldens, asserted as an ordering rather than as
-    values — this is what a reader should take from the diff of the two enemy paths.
+    """The MECHANISM behind the goldens: War Angel concentrates on Bless, so every
+    incoming hit is a chance to lose +1d4 on its own attacks, and more incoming
+    pressure means less of the character's own damage.
 
-    War Angel concentrates on Bless, so every incoming hit is a chance to lose
-    +1d4 on its own attacks.  More enemy attacks therefore mean strictly less of the
-    character's own damage, and the four standardized configurations line up in
-    exactly that order.  Measured, not assumed: 35.458 / 34.941 / 34.763 / 34.430.
+    **REWRITTEN (s60), AND THE OLD VERSION WAS ASSERTING NOISE THREE TIMES OVER.**
+    It claimed a four-arm STRICT ordering — `passive > attacks_only >
+    attacks_and_saves > legendary` — at 400 days, and its docstring presented
+    `35.458 / 34.941 / 34.763 / 34.430` as "measured, not assumed", which reads as
+    a clean monotone ladder and is exactly why nobody questioned it.  Measuring the
+    sigma of each adjacent gap at its own day count:
+
+        passive -> attacks_only          1.42 sigma
+        attacks_only -> attacks_and_saves 0.29 sigma
+        attacks_and_saves -> legendary    0.60 sigma
+        END TO END                        1.74 sigma
+
+    So **not one of the three links was resolved**, and the chain passed because the
+    dice fell that way.  This is s55's rule arriving for the second time — "an
+    inequality is only as strong as its narrowest gap", and a chain of N arms reads
+    as ONE finding while being N independent chances to assert noise.  §6.3's
+    substreams reshuffled the realization and the middle link flipped, which is the
+    only reason it was caught.
+
+    **AND ONE LINK IS FALSE, NOT MERELY UNRESOLVED — measured at 20,000 days:**
+
+        passive            35.44349 +/- 0.01126
+        attacks only       35.30868 +/- 0.01158    passive -> this:  8.34 sigma
+        attacks + saves    35.31087 +/- 0.01157    this -> that:     0.13 sigma
+        legendary_cadence  35.21356 +/- 0.01190    that -> this:     5.86 sigma
+                                                   END TO END:      14.04 sigma
+
+    `scripted` and `baseline` are the SAME quantity here to within 0.002 DPR at
+    twenty thousand days.  The mechanism says why, and the original claim had the
+    reason wrong rather than the measurement: `baseline` does not add attacks on top
+    of `scripted`'s, it REPLACES some attack rounds with save-for-damage rounds, so
+    the incoming-hit rate that drives concentration is essentially unchanged.  More
+    *pressure* does reduce DPR; more *save-forcing* at constant attack volume does
+    not, and only the end-to-end claim was ever about pressure.
+
+    So this test now asserts the two links the run can resolve, the end-to-end gap
+    (which is what the mechanism actually claims), and — per s55's prescription —
+    that the unresolved link IS unresolved, which doubles as a tripwire for anything
+    that later separates the two middle arms.
     """
+    DAYS = 2000          # 400 resolves none of this; measured gaps in the docstring
+
     def dpr(kind, **options):
-        return run(RunConfig(build="war_angel", level=13, n_days=GOLDEN_DAYS,
+        return run(RunConfig(build="war_angel", level=13, n_days=DAYS,
                              seed=GOLDEN_SEED, enemy=kind,
-                             enemy_options=options)).headline.value
+                             enemy_options=options)).headline
 
     passive = dpr("none")
     attacks_only = dpr("scripted")
     attacks_and_saves = dpr("baseline")
     legendary = dpr("baseline", legendary_cadence=True)
-    assert passive > attacks_only > attacks_and_saves > legendary
+
+    def sigmas(a, b):
+        return (a.value - b.value) / math.sqrt(a.stderr ** 2 + b.stderr ** 2)
+
+    # The two resolvable links, measured at 2,000 days as 2.60 and 3.85 sigma.
+    assert sigmas(passive, attacks_only) > 2.0
+    assert sigmas(passive, legendary) > 3.0
+
+    # The link that is NOT resolved, asserted as unresolved rather than ordered.
+    # 0.06 sigma at 2,000 days and 0.13 at 20,000 — it does not sharpen with data,
+    # because the two arms are the same quantity.  A failure here means something
+    # separated them: read the docstring before re-ordering anything.
+    assert abs(sigmas(attacks_only, attacks_and_saves)) < 1.0
+
+    # Legendary cadence IS more pressure, and it is resolvable against both middle
+    # arms end-to-end even though they are not resolvable against each other.
+    assert sigmas(attacks_and_saves, legendary) > 0.5
 
 
 def test_concentration_checks_are_the_seams_real_detector_on_war_angel():
