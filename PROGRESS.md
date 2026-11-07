@@ -669,6 +669,29 @@ not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell on
 
 #### Metric-set review log
 
+- **Session 59 (2026-11-07) — NO REVIEW DUE, but ONE PRUNE, which REVERSES a decision
+  the s58 review had just made.** 8e retunes constants, and by this protocol's own
+  "count DECLARATIONS, not rows" corollary that is not registry-touching (the s52/s56
+  precedent), so no review was due and none was run. The prune is recorded here anyway,
+  because it would otherwise look like the registry drifted between reviews:
+  **`attacks_per_round_distribution` CUT, 28 → 27** (17 scalars + 8 breakdowns + **2**
+  distributions; the 77 metric cells are unchanged because the SCALAR survives).
+  - **s58 walked this row and KEPT it, one session earlier.** That is not a
+    contradiction: s58 kept all 28 on the evidence in front of it, and the evidence in
+    front of it was argument rather than measurement — which is the lesson s58 itself
+    promoted ("an inherited argument is not an inherited measurement"). 8e had to
+    measure this row to calibrate `ci_width_vs_spread` against it, and the measurement
+    is what decided it. **The review's survival rule was applied, not bypassed**, on the
+    DERIVABILITY clause s58 re-pointed it to: two scalars that predate the row draw its
+    stated distinction separately and better.
+  - The transferable part, for the next review: **a row kept on argument is not
+    thereby settled, and the cheapest way to settle one is to need its number for
+    something else.** Three reviews raised the resource pair and kept it; the thing
+    that resolved it was s58 measuring it across four subjects. The thing that resolved
+    this row was 8e needing it. Neither was resolved by being walked again.
+  - Full numbers and the four measurements in the s59 Done entry at the top of this
+    file. The next FULL review is due at the next registry-touching session.
+
 - **Session 58 (2026-11-06) — FULL REVIEW RUN, 28 declarations walked, ALL 28 KEPT, NO
   PRUNES (user).** 17 scalars + 8 breakdowns + 3 distributions; 77 metric cells + 18
   distribution statistics. Due because 8d adds a declaration KIND to the framework. The
@@ -2107,6 +2130,174 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **FRAMEWORK STEP 8e — THE THRESHOLD CALIBRATION; STEP 8 IS COMPLETE (2026-11-07,
+  session 59).** `evaluation_framework.md` §14(a) **CLOSED** (the entry that has asked
+  three times for a sweep across builds and tiers), §13 step 8 complete, §14's
+  distribution deferral answered for the row it named. New: `sweeps/convergence_
+  calibration.yaml` (94 cells), `sweeps/convergence_calibration_control.yaml` (47),
+  `sweeps/convergence_seed_sensitivity.yaml` (30). **Scope settled with the user at
+  startup as 8e ONLY** — step 9 is the next session's. Registry **28 → 27**
+  declarations. **GOLDEN_DPR UNTOUCHED**: nothing here touches dice.
+
+  **THE HEADLINE IS THAT NOTHING MOVED, AND THAT IS A RESULT.** 1,034,000 simulated
+  days across 171 cells, and all six constants kept their values. §14(a) asked for a
+  measured operating point rather than four near-normal points, and it now has one;
+  what it cannot have, because the data says so, is a *discoverable* value —
+  `rel_stderr`'s attained distribution is smooth (0.02 passes 76.3% of rows at the
+  quick tier and 92.8% at 20,000, climbing steadily through 0.01/0.03/0.05/0.10 with
+  no elbow on any of its three declared bars). So it stays a stated convention in the
+  §6.2 sense, and the conclusion is pinned as an ASSERTION rather than prose
+  (`test_the_CALIBRATED_convergence_constants_are_pinned`), which is what the 4c
+  bullet said step 5's rule would require of it.
+
+  **THE ORDER WAS THE USER'S CALL AND IT WAS LOAD-BEARING TWICE.**
+  `attacks_per_round_distribution` was both the only production instance pinning
+  `ci_width_vs_spread` away from 0.10 *and* the row the user had named at the s58
+  review as one whose distribution nobody needs. Calibrating first would have tuned a
+  threshold to accommodate a row that should not exist; the user chose to settle the
+  row first. That also turned out to be the cache-correct order — a declaration change
+  moves `registry_fingerprint` and the engine commit, so every one of the 94 records
+  would have missed and a sweep run beforehand would have been ~100 minutes discarded.
+
+  - **THE ROW IS CUT, on the DERIVABILITY clause** — s58's own correction to the
+    review's method, which says to re-point "does anyone read this?" at derivability
+    because the former went uniform once a sweep concatenated every row into one
+    frame. Four measurements, not taste: (1) its definition claims *"only p10"* can
+    tell a build that attacks less every round from one stunned out of a turn, and on
+    war_angel L13 with `control=True` — the configuration s51 registered it for — the
+    mean moves 2.68750 → 2.67263 at **~12.7σ while every quantile stays at 2.6875**;
+    (2) `control_turns_lost_per_round` and `control_turns_reduced_per_round` already
+    draw that distinction separately and both converge everywhere measured; (3) across
+    all 47 (build, level) pairs its stderr is **exactly zero on 24** and all five
+    quantiles are **identical on 27**, with `IQR == 0` on 33; (4) under `control=True`
+    it is still degenerate on 5 of 7 cells, which is the check that stops this being
+    the s58 failure in reverse.
+  - **§14's STATED COST OF CUTTING WAS HALF WRONG, and checking it changed the
+    decision.** The deferral said cutting would "remove a tripwire written for the next
+    framework step". It does not: s53's step-9 tripwire is about `variance_reduction`
+    on starfire L15 and never touched this row. **A deferral's stated cost is itself an
+    inherited argument**, and s58's lesson applies to it — check it before paying it.
+    One of the two reasons not to cut dissolved on inspection.
+
+  **TWO DEFECTS IN THE GATES, BOTH THE SAME CLASS, BOTH FOUND BY THE SWEEP.** Each is a
+  gate saying something false about what a day count can do, and neither was reachable
+  by reading the code — which is the argument for the sweep over inspection.
+
+  1. **`ci_width_vs_spread` REFUSED A DAY COUNT BLANKETLY, and the cut turned that from
+     true into false.** Its reason text gave two grounds and **the general one is
+     measurably wrong**: it claimed width/spread "does not fall as 1/sqrt(n) in
+     general", when on `dpr_distribution` `ratio·√n` holds across a **200× range in n**
+     and the projection from n=400 named 879 days against an observed crossing between
+     800 and 1,000. The only measurement ever offered for that clause compares p50
+     (0.044) against p10 (0.074) at a *single* n, which tests nothing about scaling in
+     n. The lattice clause is true and worse than "not derivable": on
+     `attacks_per_round`'s own sample the p90 ratio reads 0.1429 at n=400 (projecting
+     816), 0.1250 at n=2,000 (projecting 3,125) and 0.1250 at n=20,000 (projecting
+     31,250) — **falsified at every step and self-renewing**, because the ratio is
+     pinned at exactly one lattice step over the spread.
+     - **The real distinction is not lattice-vs-continuous**, which is what the retired
+       wording assumed. EVERY per-day quantity here is an integer total over a fixed
+       round denominator, so `dpr`, `net_damage_taken_per_round` and
+       `attacks_per_round` all live on the **same 1/16 grid**. What separates them is
+       `step / spread` — the FLOOR on the ratio — measured at 0.0156, 0.0053 and
+       **0.1250**. Only the last exceeds 0.10, which is exactly why only it was pinned.
+     - So the refusal is now conditional on that floor, computed from the sample by
+       `lattice_step`. **No declaration was added**: the fact is derivable from the
+       data and cannot vary independently of it, which is the s49 test. Declaring it on
+       `DistributionDef` was the alternative and is named in §14 as not taken, because
+       it would add a registry declaration to serve a case no shipped row exercises.
+     - Measured consequence, from the 94-cell sweep: the gate fired on exactly **2 of
+       564** distribution points at the quick tier and **both converged at 20,000
+       days** — i.e. after the cut it fired *only* where it was wrong.
+  2. **`resolution_sigmas` QUOTED A DAY COUNT CONFIDENTLY ON A BREAK-EVEN QUANTITY, and
+     the fix is a THIRD state because the existing pair cannot express it.** Its day
+     count assumes the point estimate is the true value, and that assumption carries
+     the whole claim when the 95% interval straddles zero. The second tier measured it
+     failing **in both directions** on `net_damage_taken_per_round` over the baseline
+     subject: L6 (1.161σ, projecting 13,372) **converged** by 20,000, while L3 (1.617σ,
+     projecting 6,887) did not and was **LESS resolved** at ten times the data (0.550σ).
+     - **So the first fix proposed was wrong, and measuring it is what caught that.**
+       The natural move — refuse the day count when the interval straddles zero — would
+       have printed "no day count helps" for L6, where days demonstrably helped; of the
+       three straddling rows, refusal is right once and wrong twice. `days_provisional`
+       keeps the number and marks it, which is the only answer true of both rows. This
+       is the s50 rule paying off twice in one session, in both directions.
+     - §14(a) had said since s48 that 3.0 "was reasoned about, not calibrated: no
+       shipped build is close enough to break-even to exercise it". **That is false** —
+       5 of 47 rows fail it at the quick tier, and silvertail L4 reads `0.0039 ±
+       0.02140`. An uncalibrated constant's *description* is as likely to be wrong as
+       its value.
+
+  **8a's `days_required` EXTRAPOLATION IS VINDICATED — 285 of 287.** Of 4,183 rows
+  present at both tiers, 287 carried a finite prediction; 285 predicted ≤20,000 days
+  and converged there, 112 predicted more and did not. **Both failures are the
+  break-even rows above**, so the one unmeasured claim 8a shipped is now measured and
+  its only exceptions have a named mechanism.
+
+  **AND THE STEP-9 ORDERING WORRY IS ANSWERED BY MEASUREMENT.** The 4c bullet asked
+  whether calibrating before step 9 means measuring in a regime that then moves. The
+  standing answer was mechanical (substreams change the paired covariance, not a single
+  run's variance), and the s50 rule says that is not a measurement. A different seed is
+  the cheapest instance of a reshuffled stream, so the seed arm holds everything fixed
+  over {11, 23, 37}: **634 of 640 verdicts identical**, across-seed movement ~**70×
+  smaller** than the distance to the threshold (median ratio 0.0144), and **all 6 flips
+  sit on their own bar** (`saves_forced_per_round[dex_save|*]` reads 0.01989 / 0.01991
+  / 0.02106 against 0.02). The decision rule was written down before the answer was
+  seen. The transferable part: **a threshold's stability under a stream change is a
+  property of how far the data sits from it, not of the threshold's value** — so this
+  survives step 9 without re-measurement, where a constant moved to sit near a cluster
+  of attained values would not.
+
+  **A GAP IN MY OWN SWEEP DESIGN, caught by asking which rows the declaration could not
+  produce.** The main sweep leaves the enemy's §6 control channel at its default (off),
+  which is right for the standardized basis but leaves two of the four
+  `RARE_EVENT_CONVERGENCE` metrics UNAVAILABLE in all 94 cells — and those two are the
+  genuinely rare-event members. Judging the family without them would have been the s58
+  failure of examining a quantity on whichever subset happens to be available, so a
+  47-cell control arm was added. With all four producing rows, **all 166 measured
+  rare-event rows converge at the quick tier**, the worst attained `rel_stderr` is
+  0.0468 against the declared 0.10, and the family's docstring premise ("you will not
+  get 2% on a concentration break rate at any realistic day count") is **half right** —
+  true for `control_turns_*` (0 of 47 reach 0.02), false for `concentration_break_rate`
+  (12 of 25 do).
+
+  **STEP 6 FOUND A DEFECT, AND IT WAS MINE AND ONE COMMIT OLD.** Rendering the real
+  output after the cut showed `[unconverged: ci_width_vs_spread 0.109 vs 0.1, no day
+  count helps]` on a 9% miss — the blanket refusal, now firing only where it was false.
+  That is **step 6's NINTH defect and its SIXTH in a renderer or summary layer**, and
+  the class keeps holding: every number was right and the sentence presenting them was
+  wrong. The output now reads `~835 days (1.19x)` on that row, and the warning's
+  four-bucket partition still sums correctly with the unreachable bucket correctly
+  empty.
+
+  **AND THE CHECKER WAS THE DEFECT ONCE, EXACTLY AS s55 PREDICTS.** The extrapolation
+  analysis first reported **287 falsified predictions and zero vindicated** — and no row
+  at all in "already converged at 2,000", which is impossible when 78.9% of rows pass
+  their bar. Two bugs in my own script: the tidy frame writes `TRUE`/`FALSE` and it
+  compared against `"True"`, so every row read as unconverged; and its row key invented
+  two dimension columns that do not exist (`heal_context`, `attack_property` for
+  `context`, `property`) while omitting `combat`, which silently collided rows. s55's
+  rule is that a checker is as likely to be wrong as the thing it checks and more likely
+  when that thing has just been hardened — the implausible answer is what prompted the
+  check, and the fix turned 287 falsifications into 2.
+
+  **A FREE SIDE EFFECT worth recording because it discharges a line of §3.5.5.** The
+  no-day-count branch is now reached by lowering a day count rather than by thinning a
+  roster, so any build can host it — including the baseline SUBJECT.
+  `test_the_unconverged_warning_counts_DISTRIBUTION_points_too` now runs on baseline
+  L20 at 700 days, and that test's own docstring had recorded, as a finding against
+  §3.5.5's intent, that the subject *could not* host it.
+
+  **THE UNREACHABLE BRANCH HAS NO PRODUCTION INSTANCE LEFT, and it is covered by a REAL
+  RUN anyway.** Of 8,366 sweep rows, exactly 2 produced a `ci_width_vs_spread` verdict
+  and **zero** produced `undefined_at_zero`, so after the floor fix no run at any
+  declared tier yields an unreachable verdict — and the guard that had owned that branch
+  would have gone inert while passing. `pinned_lattice_report` is the answer: §5.4
+  permits a bespoke `MetricRegistry` explicitly, so the fixture re-declares the cut
+  distribution in one of its own and runs the engine against it. That exercises the
+  whole path (estimator → `lattice_step` → gate → console) with the engine's own
+  numbers, and the fixture documents why the row is not in production.
 
 - **FRAMEWORK STEP 8d — THE §11 BASELINES REGISTRY, AND THE FULL METRIC-SET REVIEW
   (2026-11-06, session 58).** `evaluation_framework.md` §11 extended with **§11.1 (the
@@ -6346,17 +6537,19 @@ Engine prerequisites, in the order we built them:
 
 ### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24; RESEQUENCED s54)
 
-> **NEXT TASK = item 4c below, now at 8e: THE THRESHOLD CALIBRATION, then step 9.**
+> **NEXT TASK = item 4c below, now at STEP 9: RNG SUBSTREAMS. STEP 8 IS COMPLETE.**
 > 8a + 8b landed in s56 (the convergence verdict and per-cell availability); **8c landed
 > in s57** (the sweep declaration, manifest, CLI and cache); **8d landed in s58** (the
-> §11 baselines registry, with §11.1-§11.3 locked before the writer — and the full
-> metric-set review ran in the same session, 28 declarations walked, all kept). What
-> remains of step 8 is **8e**, the threshold calibration, which 8c unblocked: §14(a) is
-> explicit that the fix is a SWEEP across builds and tiers rather than a nudge to a
-> constant, and 8a's `days_required` is the quantity to sweep over. Then **step 9** (RNG
-> substreams), which re-baselines `GOLDEN_DPR` by construction. Item 5b (housekeeping)
-> then 5c (#6b, the definitive re-evaluation) follow; #6a's numbers are NOT a baseline to
-> diff against (§12.1).
+> §11 baselines registry); **8e landed in s59** — the threshold calibration, 171 cells
+> and 1,034,000 simulated days, and **no constant moved**, which is pinned as an
+> assertion rather than left as prose. §14(a) is CLOSED. It also cut
+> `attacks_per_round_distribution` (28 → 27 declarations) and fixed two gate defects of
+> one class — a gate stating something false about what a day count can do. What remains
+> is **step 9** (RNG substreams), which re-baselines `GOLDEN_DPR` by construction and
+> should trip s53's deliberate tripwire. 8e measured that calibrating before step 9 was
+> sound (634 of 640 verdicts identical across three seeds), so nothing it landed needs
+> re-measuring afterwards. Item 5b (housekeeping) then 5c (#6b, the definitive
+> re-evaluation) follow; #6a's numbers are NOT a baseline to diff against (§12.1).
 
 The project has two tracks. **Track 1 (current focus): "make the model produce
 honest, complete build evaluations"** — the enemy-profile arc through to a real
@@ -6714,8 +6907,8 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    only (where AC already exists), or run the low levels under `enemy="none"` and say
    plainly that they carry no defensive measurement.
 
-4c. **Framework steps 8 and 9. *** IN PROGRESS: 8a + 8b DONE (s56), 8c DONE (s57),
-   8d DONE (s58); 8e + step 9 are the NEXT TASK. *** ** `evaluation_framework.md` §13
+4c. **Framework steps 8 and 9. *** STEP 8 COMPLETE: 8a + 8b (s56), 8c (s57), 8d (s58),
+   8e (s59). STEP 9 is the NEXT TASK. *** ** `evaluation_framework.md` §13
    steps 8 and 9, unchanged in content; only their position moved.
    - ~~**8a — the convergence VERDICT**~~ **DONE (s56)**: §14(a)'s distance payload, no
      constant retuned. See the s56 Done entry at the top of this file.
@@ -6742,7 +6935,19 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      scores kept OUT of the cached record). **The full metric-set review ran in the same
      session** — 28 walked, all kept, and the two long-standing pairs now have
      measurements. See the s58 Done entry.
-   - **8e — the threshold CALIBRATION. NEXT.** **WHO READS THE SWEEP IS SETTLED (user, s57):
+   - ~~**8e — the threshold CALIBRATION**~~ **DONE (s59). §14(a) is CLOSED.** 171 cells
+     over three declarations (94 + 47 control + 30 seed), 1,034,000 simulated days, and
+     **NO CONSTANT MOVED** — pinned as `test_the_CALIBRATED_convergence_constants_are_
+     pinned` rather than left as prose, which is the accepted-cost clause below
+     discharged. `rel_stderr` has no elbow at any threshold on any of its three bars, so
+     it stays a stated convention; `min_days` and `min_tail_observations` are
+     structurally unable to bind at any declared tier and are SUB-TIER guards, which is
+     correct rather than slack; `resolution_sigmas` IS exercised, contradicting §14(a)'s
+     own claim that nothing comes near break-even. Prerequisite: the row cut (see the
+     s59 Done entry, settled with the user first and also the cache-correct order).
+     Also: 8a's extrapolation vindicated 285 of 287, the step-9 ordering worry answered
+     by measurement, and two gate defects fixed. **The old text follows.**
+     **WHO READS THE SWEEP IS SETTLED (user, s57):
      R over the tidy frame, NOT a Python aggregation layer in `sweep.py`.** The
      concatenated CSV is already the analysis form and is the whole reason §9 chose tidy
      long; 8c therefore ships no consumer, which keeps §9's line that the sim does not

@@ -132,6 +132,24 @@ CRITERION_UNDEFINED_AT_ZERO = "undefined_at_zero"
 CRITERION_MIN_TAIL_OBSERVATIONS = "min_tail_observations"
 CRITERION_CI_WIDTH_VS_SPREAD = "ci_width_vs_spread"
 
+#: The 95% normal multiplier, named once because THREE places now depend on it:
+#: :class:`MetricValue`'s interval, and the two gates below that ask whether an
+#: interval straddles zero.  A renderer or a gate re-spelling 1.96 is the s54 seam.
+NORMAL_95 = 1.96
+
+#: Why a ``resolution_sigmas`` day count is a PROJECTION rather than a requirement.
+#: Measured s59 on the sweep's second tier: of the three straddling rows at 2,000
+#: days, baseline L6 (sigmas 1.161, projecting 13,357) CONVERGED by 20,000, while
+#: baseline L3 (sigmas 1.616, projecting 6,893) did not and was LESS resolved at the
+#: larger n (sigmas 0.550).  So the projection is neither reliable nor impossible,
+#: and both "~6.9k days" alone and "no day count helps" state something false.
+DAYS_ARE_PROVISIONAL_AT_BREAKEVEN = (
+    "this day count is a PROJECTION, not a requirement: it assumes the current point "
+    "estimate is the true value, and the 95% interval straddles zero, so the sign may "
+    "be real and resolve sooner than quoted or the quantity may be genuinely at "
+    "break-even, in which case no day count resolves it (measured both, s59, §14(a))"
+)
+
 CRITERIA = (
     CRITERION_NOT_MEASURED,
     CRITERION_MIN_DAYS,
@@ -147,10 +165,10 @@ CRITERIA = (
 #: drift: this is why a `ci_width_vs_spread` shortfall carries no day count.
 NO_DAY_COUNT_FOR_WIDTH = (
     "no day count is derivable for this criterion: an exact order-statistic interval "
-    "on a LATTICE quantity cannot be narrower than one lattice step, so its width "
-    "relative to the sample spread is PINNED above the threshold at every n, and this "
-    "gate cannot tell a lattice quantity from a continuous one (s51, measured s59, "
-    "§14(a))"
+    "is a pair of observations, so its width cannot fall below one lattice step "
+    "({step:.6g}) without collapsing to zero, and one step over this sample's spread "
+    "({spread:.6g}) is {floor:.4f} — already above the threshold, so the ratio is "
+    "PINNED at every n (s51, measured s59, §14(a))"
 )
 
 
@@ -166,6 +184,12 @@ class _Criterion:
     ``days_required`` is ``None`` when NO finite day count satisfies the gate, and
     ``reason`` then says why.  That is a different fact from a large finite number,
     and conflating the two is the defect this class exists to fix.
+
+    ``provisional`` is the THIRD state s59 had to add, because the pair above turned
+    out not to cover the cases.  A gate can have a finite day count that is a
+    projection rather than a requirement, and both of the existing answers are false
+    there: "~6.9k days" overstates what is known and "no day count helps" is simply
+    wrong (measured — see :data:`DAYS_ARE_PROVISIONAL_AT_BREAKEVEN`).
     """
 
     name: str
@@ -174,6 +198,8 @@ class _Criterion:
     satisfied: bool
     days_required: "float | None"
     reason: str = ""
+    #: The day count is a projection from the point estimate, not a requirement.
+    provisional: bool = False
 
 
 @dataclass(frozen=True)
@@ -214,6 +240,13 @@ class ConvergenceVerdict:
     days_required: "float | None"
     days_run: int
     note: str = ""
+    #: True when ``days_required`` is a PROJECTION that assumes the point estimate is
+    #: the true value, rather than a requirement derived from a scaling law alone.
+    #: DECLARED rather than derived (the s49 rule): a consumer could compute it from
+    #: ``criterion`` and ``attained`` by re-spelling the 1.96 multiplier, which would
+    #: put a statistical constant in a renderer and make two places own one fact.
+    #: Additive at ``schema_version`` 1, on the §9.1 precedent.
+    days_provisional: bool = False
 
     @property
     def days_factor(self) -> "float | None":
@@ -251,7 +284,7 @@ class ConvergenceVerdict:
                 else max(c.days_required for c in unsatisfied))      # type: ignore[type-var]
         return cls(converged=False, criterion=binding.name, attained=binding.attained,
                    required=binding.required, days_required=days, days_run=days_run,
-                   note=binding.reason)
+                   note=binding.reason, days_provisional=binding.provisional)
 
     def describe(self) -> dict:
         """The artifact row's ``convergence`` object (§9.1, additive at version 1)."""
@@ -262,6 +295,7 @@ class ConvergenceVerdict:
             "days_run": self.days_run,
             "days_required": self.days_required,
             "days_factor": self.days_factor,
+            "days_provisional": self.days_provisional,
             "note": self.note,
         }
 
@@ -471,15 +505,24 @@ class Convergence:
                 # it by a constant and the verdict changes). What a reader needs is
                 # whether the SIGN is resolved.
                 sigmas = abs(value) / stderr
+                # The day count here is n * (required/attained)^2 from stderr's
+                # 1/sqrt(n) scaling, which assumes the POINT ESTIMATE is the true
+                # value. That assumption is load-bearing exactly when the interval
+                # straddles zero, and s59 measured it failing in both directions on
+                # the baseline subject — so the projection is reported WITH that
+                # caveat rather than suppressed or presented as a requirement.
+                straddles_zero = 0.0 < sigmas < NORMAL_95
                 criteria.append(_Criterion(
                     name=CRITERION_RESOLUTION_SIGMAS, attained=sigmas,
                     required=self.resolution_sigmas,
                     satisfied=sigmas >= self.resolution_sigmas,
                     days_required=(n * (self.resolution_sigmas / sigmas) ** 2
                                    if sigmas > 0 else None),
-                    reason=("" if sigmas > 0 else
+                    reason=(DAYS_ARE_PROVISIONAL_AT_BREAKEVEN if straddles_zero else
+                            "" if sigmas > 0 else
                             "the estimate sits exactly on zero, so no number of days "
                             "resolves its sign"),
+                    provisional=straddles_zero,
                 ))
             elif value == 0.0:
                 # Zero with a POSITIVE stderr: a noisy number straddling zero. The
@@ -1164,7 +1207,8 @@ class DistributionConvergence:
     min_days: int = 100
 
     def check(self, value: "float | None", ci95: "tuple[float, float] | None",
-              n: int, tail_observations: float, spread: "float | None") -> bool:
+              n: int, tail_observations: float, spread: "float | None",
+              step: float = 0.0) -> bool:
         """The flag alone — delegates to :meth:`verdict`, for the reason
         :meth:`Convergence.check` gives: one evaluation of the gates, not two.
 
@@ -1178,11 +1222,13 @@ class DistributionConvergence:
         verdict that differs between p10 and p50 says something about those two
         estimates rather than about which denominator each happened to get.
         """
-        return self.verdict(value, ci95, n, tail_observations, spread).converged
+        return self.verdict(value, ci95, n, tail_observations, spread,
+                            step=step).converged
 
     def verdict(self, value: "float | None", ci95: "tuple[float, float] | None",
                 n: int, tail_observations: float,
-                spread: "float | None") -> ConvergenceVerdict:
+                spread: "float | None",
+                step: float = 0.0) -> ConvergenceVerdict:
         """The gates as data, as :meth:`Convergence.verdict` — with ONE difference
         that is the whole reason the two are not shared code.
 
@@ -1254,11 +1300,31 @@ class DistributionConvergence:
             ))
         else:
             ratio = width / spread
+            # s59: the refusal is CONDITIONAL on the floor, not blanket. `step/spread`
+            # is the narrowest ratio an exact order-statistic interval can reach
+            # without collapsing to zero width (see `lattice_step`), so a day count is
+            # underivable exactly when that floor already exceeds the threshold. Below
+            # the floor the ratio falls as 1/sqrt(n) and the day count is quotable —
+            # measured on dpr, where the projection from n=400 named 879 against an
+            # observed crossing between 800 and 1,000.
+            #
+            # This was a blanket refusal until s59, and cutting the one row that was
+            # genuinely pinned turned the blanket into a FALSEHOOD: the gate then fired
+            # only on continuous quantities, where days do help. Measured across the
+            # 94-cell calibration sweep, it fired on exactly 2 rows at the quick tier —
+            # net_damage_taken_distribution[p90] on the baseline subject at L1 and L18 —
+            # and BOTH converged at 20,000 days.
+            floor = (step / spread) if step else 0.0
+            pinned = floor > self.ci_width_vs_spread
             criteria.append(_Criterion(
                 name=CRITERION_CI_WIDTH_VS_SPREAD, attained=ratio,
                 required=self.ci_width_vs_spread,
                 satisfied=ratio <= self.ci_width_vs_spread,
-                days_required=None, reason=NO_DAY_COUNT_FOR_WIDTH,
+                days_required=(None if pinned
+                               else n * (ratio / self.ci_width_vs_spread) ** 2),
+                reason=(NO_DAY_COUNT_FOR_WIDTH.format(
+                            floor=floor, step=step, spread=spread)
+                        if pinned else ""),
             ))
 
         return ConvergenceVerdict._decide(criteria, n)
@@ -1324,6 +1390,32 @@ class DistributionPoint:
                    available=False, note=reason)
 
 
+def lattice_step(sorted_sample: "list[float]") -> float:
+    """The smallest gap between distinct observations — 0.0 if there is none.
+
+    **Why this is a load-bearing quantity and not a curiosity (s59).** Every one of
+    this project's per-day quantities is a count or an integer total over a FIXED
+    round denominator, so all of them live on a lattice: ``dpr``,
+    ``net_damage_taken_per_round`` and ``attacks_per_round`` were all measured on the
+    same 1/16 grid.  So "is this a lattice quantity?" does not separate them, and the
+    first draft of :data:`NO_DAY_COUNT_FOR_WIDTH` was written as though it did.
+
+    What separates them is ``step / spread``, which is the FLOOR on
+    ``ci_width_vs_spread``: an exact order-statistic interval is a pair of
+    observations, so its width is a whole number of steps and cannot fall below one
+    without collapsing to zero.  Measured at the quick tier: ``dpr`` 0.0156,
+    ``net_damage_taken_per_round`` 0.0053, ``attacks_per_round`` 0.1250 — and the
+    last one sits above the 0.10 threshold, which is exactly why its ratio was pinned
+    at 0.1250 at every day count from 400 to 20,000.
+
+    A genuinely continuous sample has a tiny minimum gap and therefore a floor at
+    essentially zero, so this is safe to apply unconditionally: it refuses a day count
+    only where one provably cannot be delivered.
+    """
+    gaps = [b - a for a, b in zip(sorted_sample, sorted_sample[1:]) if b > a]
+    return min(gaps) if gaps else 0.0
+
+
 def estimate_distribution(distribution: str, values: "Iterable[float]",
                           statistics: "Iterable[Statistic]", *,
                           convergence: DistributionConvergence,
@@ -1343,6 +1435,10 @@ def estimate_distribution(distribution: str, values: "Iterable[float]",
     sample = sorted(float(v) for v in values)
     n = len(sample)
     spread = (quantile(sample, 0.90) - quantile(sample, 0.10)) if n else None
+    # Computed ONCE beside the spread, and for the same reason: both are properties
+    # of the distribution rather than of whichever point is being judged, so every
+    # point is held to the same yardstick and the same floor.
+    step = lattice_step(sample)
     out: list[DistributionPoint] = []
 
     for statistic in statistics:
@@ -1377,7 +1473,8 @@ def estimate_distribution(distribution: str, values: "Iterable[float]",
             ci95=ci95,
             n=n,
             tail_observations=tail,
-            convergence=convergence.verdict(value, ci95, n, tail, spread),
+            convergence=convergence.verdict(value, ci95, n, tail, spread,
+                                            step=step),
             note=note,
         ))
     return out
