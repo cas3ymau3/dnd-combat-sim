@@ -157,6 +157,34 @@ type, condition, resource, …):
      **An inherited argument is not an inherited measurement**, and a review that starts
      from the former will keep reaching the former's conclusion.
 
+   **AND A DESIGN NOTE'S *PLAN FOR A FIX* IS AN INHERITED ARGUMENT TOO (added s60, at
+   the user's direction; same step because it is the same question asked of a
+   prescription rather than of a finding).** s58's rule above is about an inherited
+   CONCLUSION. s60 found the identical failure in an inherited PLAN, and a plan is
+   easier to leave unchecked because it reads as work not yet done rather than as a
+   claim.
+   - §6.1 has named the fix for its own measured-inert pairing since s44, in detail and
+     with a function: *"give each source of randomness its own stream
+     (`SeedSequence.spawn()`), keyed per entity or per (entity, purpose)"*, calling it
+     "the prerequisite for the real factor". That sentence was re-cited in §13 step 9,
+     in §12.1, in the s54 stock-take, in the roadmap's 4c bullet and in three
+     consecutive handoff prompts. **Nobody ran it for sixteen sessions.**
+   - Built exactly as written — it is declared and kept measurable as
+     `ALIGNMENT = "run"` — it is **still inert**, median variance reduction 1.16 against
+     the 1.0 it was meant to fix. The actual mechanism (re-synchronizing the streams at
+     the unit the ESTIMATOR averages over) **is not mentioned anywhere in §6.1**, and
+     was found by asking what the sample unit was rather than by reading the plan again.
+   - The check, and it costs one measurement: **before building a design note's
+     prescribed fix, measure that the prescription is the WHOLE mechanism, not merely a
+     necessary part of it.** Implement the smallest version, measure it, and only then
+     decide what else is needed. A prescription that is *necessary but insufficient* is
+     the dangerous shape: every step of it is correct, it passes any review that checks
+     its reasoning, and it fails only against a number.
+   - It also says something about how long this can hide. The plan was cited five times
+     without being tested, and each citation made it look better established. **A
+     prescription accumulates authority by being repeated**, exactly as s58's inherited
+     argument did — and the cure is the same one: need its number for something.
+
    **A CLOSED VOCABULARY THAT IS TOTAL ONE LAYER DOWN CAN BE PARTIAL ONE LAYER UP
    (added s57).** §9.1 raises a run record's `precision` warning on
    `day_tier == "quick"`. That is a sound test for ONE run, because a reader knows which
@@ -363,6 +391,34 @@ type, condition, resource, …):
      reads as ONE finding. The docstring's prose said "the ordering is strict in BOTH
      columns, so the detector is intact either way", which was true of the output and not
      of the evidence.
+
+   **AND A TOLERANCE IN ABSOLUTE UNITS IS NOT A MEASUREMENT (added s60, at the user's
+   direction — the COMPLEMENT of the two rules above).** s54's rule is about an
+   assertion that is too EXACT; s55's is about one that is too STRICT. This is about one
+   that is too LOOSE, which hides better than either because a generous bound looks like
+   care about noise.
+   - `test_the_party_split_..._leaves_fount_of_moonlight_flat` asserted
+     `abs(fom_party - fom_solo) < 0.5` with FLAT as the stated claim. Each arm's stderr
+     at its 400 days is **~0.17**, so the bound is **~2 sigma**: it sat INSIDE the noise
+     band, where it could neither confirm flatness nor detect a real effect. The real
+     effect, measured on the engine as it stood BEFORE s60 touched anything, is
+     **+0.587 at 7.62 sigma**. The assertion passed **by 0.005**.
+   - The check: **express a tolerance in sigmas of the run that has to satisfy it, or do
+     not write one.** If the honest bound turns out to be wider than the effect you are
+     denying, the test cannot make the claim and the day count has to go up — which is
+     information, not an obstacle.
+   - Two tells, both present here. **"Flat", "unchanged", "inert" and "no effect" are
+     claims about a quantity being SMALLER than something**, and that something has to
+     be named; a bare constant never is. And a two-sided bound written to be safe is
+     usually chosen by looking at the current output, which makes it a record of today's
+     realization rather than of a prediction.
+   - It is also the s52 defect pattern for the second time in one neighbourhood: this
+     docstring stated, four paragraphs above the assertion, that the spell in question
+     IS a concentration spell and that the enemy ends its concentration 1.000 times per
+     day — from which a party absorbing three quarters of the swings must break it less.
+     **The claim and its refutation were in one docstring**, as §6.1's were in one
+     section. The habit that catches it is cheap: when a test says a quantity does not
+     move, read the mechanism the SAME file gives for it and check the two agree.
 
    **AND A HEADLINE REGRESSION NET IS BLIND TO A PANEL-ONLY DEFECT (added s55).** Both of
    that session's content fixes — War Angel's missing `ac` at L1-12 and five of its six
@@ -2362,6 +2418,23 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
     "same rule" with "same dice", which only a single tape could make equivalent. It
     now holds the stream fixed and asserts the rule, which is what its docstring always
     claimed.
+
+  **STEP 7 (reflect) PROMOTED TWO RULES, both the user's choice from four candidates.**
+  - **"A design note's PLAN for a fix is an inherited argument too"**, into step 4
+    beside s58's rule about an inherited finding. §6.1's prescription was cited five
+    times across sixteen sessions without being run, and each citation made it look
+    better established; built exactly as written it is still inert. A prescription that
+    is *necessary but insufficient* is the dangerous shape — every step of it is
+    correct, so it passes any review that checks its reasoning and fails only against a
+    number.
+  - **"A tolerance in absolute units is not a measurement"**, into step 5 as the
+    COMPLEMENT of s54's too-exact rule and s55's too-strict one. A loose bound hides
+    better than either, because generosity about noise looks like care.
+  - Two candidates were raised and NOT taken: "measure a property at the layer that
+    consumes it" (the day/day_combat inversion generalized — it would sit beside §5.2's
+    denominator discipline, and is recorded in §6.3 rather than the ritual), and the
+    fixture-regime habit, which s55 and s59 already cover and which this session only
+    added a search pattern to.
 
   **WHAT WAS DELIBERATELY NOT DONE.** Substreams make out-of-combat dice possible for
   the first time — `healing.md` §7(a) and the per-feature ritual's rule 3 forbid them
