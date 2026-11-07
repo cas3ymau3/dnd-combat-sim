@@ -1,0 +1,36 @@
+# §14(a)'s threshold calibration — framework step 8e.
+#
+# WHAT THIS IS FOR. The convergence criteria are principled (translation-invariant,
+# no declared constants inside them) but their CONSTANTS are not derived from
+# anything: `ci_width_vs_spread = 0.10` was read off four build/level points that
+# all happened to be near-normal, and `resolution_sigmas = 3.0` /
+# `min_tail_observations = 50` were never calibrated against data at all. §14(a)
+# says three times that the fix is a SWEEP ACROSS BUILDS AND TIERS and not a nudge
+# to a constant, for the stated reason that retuning on one build at one tier
+# reproduces the original problem with different points.
+#
+# WHY BOTH TIERS. Every gate's ATTAINED value is recoverable from a record at one
+# tier, so a single tier would calibrate the thresholds. The second tier is here to
+# test 8a's `days_required` EXTRAPOLATION, which shipped unmeasured: each gate
+# quotes a day count from its own scaling in n, and 2,000 -> 20,000 is a clean 10x
+# against which a prediction made at the quick tier can be checked. That claim is
+# the one thing in 8a that prose cannot settle (ritual step 5).
+#
+# WHO READS IT (settled, user, s57): R over the concatenated tidy frame. There is
+# deliberately no Python aggregation layer in `sweep.py`, so this declaration ships
+# the DATA and the conclusions land back in the registry as declared constants with
+# a decision record — which is the assertable part.
+#
+# `level: available` resolves §2's SPARSE level sets per cell (33 of the 60
+# (build, level) pairs do not exist): war_angel 16, baseline 20, starfire_scion 8,
+# silvertail 3 = 47 cells per tier, 94 in all.
+sweep_schema_version: 1
+name: convergence_calibration
+description: §14(a)'s thresholds — every gate's attained value across builds, levels and two tiers.
+base:
+  enemy: baseline
+  seed: 11
+axes:
+  build: [war_angel, baseline, starfire_scion, silvertail]
+  level: available
+  n_days: [2000, 20000]

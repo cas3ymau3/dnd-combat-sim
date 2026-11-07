@@ -1734,9 +1734,19 @@ def test_the_metric_set_grew_only_by_the_declared_rows():
     question, since one combat holds the character's reaction, a commanded summon's
     and the enemy's.
 
-    28 declarations: 17 scalars + 8 breakdowns + 3 distributions.
+    **UPDATED (s59): the first PRUNE this test has ever recorded, and it goes the
+    other way.** 8e cut ``attacks_per_round_distribution`` — the very declaration the
+    s51 note above adds — on a corpus measurement: 24 of 47 (build, level) pairs have
+    stderr EXACTLY zero for the quantity and 27 have all five quantiles identical, so
+    its six statistics were one number repeated, while
+    ``control_turns_lost_per_round`` and ``control_turns_reduced_per_round`` already
+    name separately the distinction its definition claimed only p10 could draw. The
+    SCALAR ``attacks_per_round`` is untouched, so the names count falls by none.
+    See ``evaluation_framework.md`` §14's distribution entry.
+
+    27 declarations: 17 scalars + 8 breakdowns + 2 distributions.
     """
     assert len(METRICS.scalars()) == 17
     assert len(METRICS.breakdowns) == 8
-    assert len(METRICS.distributions()) == 3
+    assert len(METRICS.distributions()) == 2
     assert len(METRICS.names()) == 77

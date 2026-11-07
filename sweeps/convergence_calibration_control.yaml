@@ -1,0 +1,29 @@
+# §14(a)'s threshold calibration, CONTROL ARM — framework step 8e.
+#
+# WHY THIS EXISTS, stated plainly because it is a gap in the main declaration's
+# design rather than an extra. `convergence_calibration.yaml` leaves the enemy's §6
+# control channel at its default (OFF), which is right for a calibration meant to
+# describe the standardized comparison basis — but it means two of the four metrics
+# declaring RARE_EVENT_CONVERGENCE are UNAVAILABLE in all 94 of its cells:
+# `control_turns_lost_per_round` and `control_turns_reduced_per_round`. Those are
+# the genuinely rare-event members of that family, so the main sweep can calibrate
+# the family's threshold only on its two concentration metrics, and a conclusion
+# drawn from those alone would be the s58 failure — judging a quantity on the subset
+# of the corpus that happens to be available.
+#
+# QUICK TIER ONLY, deliberately. The main sweep's second tier is there to validate
+# 8a's `days_required` extrapolation, which needs no second arm: this one exists to
+# make the rare-event rows EXIST at all, and their attained rel_stderr at one tier is
+# what the family's bar is judged against. 47 cells against the main sweep's 94.
+sweep_schema_version: 1
+name: convergence_calibration_control
+description: §14(a)'s thresholds — the rare-event family, which only exists with control on.
+base:
+  enemy: baseline
+  n_days: 2000
+  seed: 11
+  enemy_options:
+    control: true
+axes:
+  build: [war_angel, baseline, starfire_scion, silvertail]
+  level: available

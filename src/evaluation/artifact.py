@@ -400,9 +400,11 @@ def _distribution_row(report: "EvalReport", distribution: "DistributionValue",
         "n": point.n,
         "n_events": point.tail_observations,
         "converged": point.converged,
-        # As above. A distribution point's binding criterion is usually
-        # `ci_width_vs_spread`, whose `days_required` is null BY DESIGN — see
-        # `DistributionConvergence.verdict`.
+        # As above. When a distribution point IS unconverged its binding criterion is
+        # usually `ci_width_vs_spread`, whose `days_required` is null BY DESIGN — see
+        # `DistributionConvergence.verdict`. Since s59 cut the lattice row that is a
+        # sub-tier occurrence only: both surviving distributions pass that gate at
+        # every declared tier (§14).
         "convergence": point.convergence.describe(),
         "note": point.note,
     }

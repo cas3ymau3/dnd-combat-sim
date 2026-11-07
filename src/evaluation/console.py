@@ -92,11 +92,25 @@ def _flag(row: dict[str, Any]) -> str:
         [unconverged: rel_stderr 0.043 vs 0.02, ~9.2k days (4.6x)]
         [unconverged: min_days 40 vs 100, ~100 days (2.5x)]
         [unconverged: ci_width_vs_spread 0.667 vs 0.1, no day count helps]
+        [unconverged: resolution_sigmas 1.62 vs 3, ~6.9k days (3.4x, projection only)]
 
     "no day count helps" is NOT "a very large number of days".  It is printed only
-    where the criterion has no known scaling in n (a distribution's interval width)
-    or where no n satisfies it at all (a ratio-scale estimate sitting exactly on
-    zero), and the row's `convergence.note` says which.  Units are deliberately
+    where no n satisfies the criterion at all: a ratio-scale estimate sitting exactly
+    on zero, or a distribution interval whose one-lattice-step FLOOR already exceeds
+    the threshold (`ci_width_vs_spread` quotes a day count below that floor since
+    s59 — it is not categorically unquotable).  The row's `convergence.note` says
+    which.
+
+    **"projection only" is the fourth shape and s59 added it**, because the three
+    above could not express what a `resolution_sigmas` shortfall on a near-break-even
+    quantity actually knows.  Its day count assumes the point estimate is the true
+    value, and when the 95% interval straddles zero that assumption is doing the
+    work: measured on the baseline subject, one such row converged at 10x the days
+    roughly as projected while another became LESS resolved.  Printing the bare number
+    would overstate it and printing "no day count helps" would be false, so the marker
+    rides alongside.  It is read from the verdict's own `days_provisional` field
+    rather than re-derived here from `attained`, which would put the 1.96 multiplier
+    in a renderer.  Units are deliberately
     left to the criterion NAME rather than formatted per criterion: `rel_stderr` is
     a fraction, `resolution_sigmas` is standard errors, the two floors are counts,
     and a renderer that guessed would be a fourth place that has to be kept in step.
@@ -114,8 +128,11 @@ def _flag(row: dict[str, Any]) -> str:
     if days is None:
         parts.append("no day count helps")
     else:
+        qualifiers = ([f"{factor:.3g}x"] if factor is not None else [])
+        if verdict.get("days_provisional"):
+            qualifiers.append("projection only")
         parts.append(f"~{_fmt_days(days)} days"
-                     + (f" ({factor:.3g}x)" if factor is not None else ""))
+                     + (f" ({', '.join(qualifiers)})" if qualifiers else ""))
     return "  [unconverged: " + ", ".join(parts) + "]"
 
 

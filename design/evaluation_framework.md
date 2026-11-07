@@ -2519,8 +2519,34 @@ check mechanisms, not the composite. Three things carry that load instead:
        quantities, with nothing failing.
      - **Scores are NOT written into a cached record**, because §10.2's key does not
        include the baseline set. See §11.2.
-   - **STILL OPEN: the threshold CALIBRATION (8e)**, which 8c's driver makes reachable
-     per §14(a).
+   - **8e — the threshold CALIBRATION (s59). STEP 8 IS NOW COMPLETE.** The sweep
+     §14(a) asked for three times, run through 8c's driver: 94 cells over 4 builds ×
+     `level: available` × {2,000, 20,000} days, plus a 47-cell control arm and a
+     30-cell seed arm. **No constant moved**, and that conclusion is pinned as an
+     assertion rather than left as prose (`test_the_CALIBRATED_convergence_constants_
+     are_pinned`). Full numbers in §14(a), which is CLOSED. Four things it settled
+     beyond the constants themselves:
+     - **8a's `days_required` extrapolation is VINDICATED, 285 of 287** finite
+       predictions. It was the one claim 8a shipped unmeasured, and it is the reason
+       the second tier earned its runtime.
+     - **Calibrating before step 9 is sound, measured rather than argued** — 634 of
+       640 verdicts identical across three seeds, and all 6 flips sit on their own
+       bar. The standing justification was mechanical, and the s50 rule says a
+       mechanical argument is not a measurement.
+     - **A PREREQUISITE CUT: `attacks_per_round_distribution`** (§14). It was both the
+       only production instance pinning `ci_width_vs_spread` and a candidate for
+       deletion, so calibrating against it would have tuned a threshold to accommodate
+       a row that should not exist. The user settled the order before anything was
+       measured.
+     - **TWO DEFECTS IN THE GATES THEMSELVES**, both of the same class — a gate
+       stating something false about what a day count can do — and both found by the
+       sweep rather than by reading the code. `ci_width_vs_spread` refused a day count
+       BLANKETLY, which was true only while a pinned row existed; it is now
+       conditional on `step/spread`, the floor an exact order-statistic interval
+       cannot go below. `resolution_sigmas` quoted one CONFIDENTLY on a near
+       break-even quantity, where the projection assumes the point estimate is the
+       truth; it now carries `days_provisional`, a third state the existing pair could
+       not express. Both are additive at `schema_version` 1.
 
    **RESEQUENCED (user, s54): a PRELIMINARY build evaluation runs BEFORE this step and
    before step 9.** Neither step is needed to produce one — step 9 is measured inert
@@ -2571,8 +2597,109 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   — the sha is in the filename, so nothing is ever overwritten and a stale entry can
   never be served to a run at a different commit. An unbounded cache is only a hazard
   when a stale entry can be mistaken for a fresh one.
-- **WHICH METRICS ACTUALLY NEED A FULL DISTRIBUTION** *(added s58, the user's point at
-  that session's metric-set review)*. §5.4's kind 3 was built as a general capability and
+- ~~**WHICH METRICS ACTUALLY NEED A FULL DISTRIBUTION**~~ **ANSWERED FOR THE ONE ROW
+  IT NAMED, AND THAT ROW IS CUT (s59, with 8e).** The question stays open as a
+  standing requirement on any FOURTH distribution — see the closing paragraphs below —
+  but its live instance is settled. The user chose to settle it BEFORE calibrating
+  rather than after, and the ordering mattered for two independent reasons: the
+  threshold would otherwise have been tuned to accommodate a row that should not
+  exist, and a declaration change invalidates every cached record
+  (§10.2's key includes `engine_commit`), so a calibration sweep run first would have
+  been ~90 minutes of simulation thrown away.
+
+  **THE VERDICT: CUT, ON THE DERIVABILITY CLAUSE.** s58's correction to this review's
+  method says to re-point "does anyone read this?" at derivability, because the former
+  went uniform once a sweep concatenated every row into one frame. Asked that way the
+  answer is unambiguous, and it does not rest on taste:
+
+  1. **The row's own justification is refuted on the build it was written about.** Its
+     definition claims a mean of 2.4 attacks/round cannot distinguish a build that
+     attacks a little less every round from one occasionally stunned out of a turn
+     entirely, *"and only p10 tells those apart"*. Measured on war_angel L13 with
+     `control=True` — the exact configuration s51 registered it for — the scalar mean
+     moves `2.68750 → 2.67263`, about **12.7σ**, while **every quantile stays at
+     2.6875**. p10 tells a reader nothing and the mean tells them everything.
+  2. **Two scalars that PREDATE it already draw that distinction, separately.**
+     `control_turns_lost_per_round` and `control_turns_reduced_per_round` name the two
+     mechanisms the definition conflates, and both converge at the quick tier on every
+     cell measured (L13: `0.0262 ± 0.0008` and `0.0332 ± 0.0010`, each ~34σ from
+     zero). The distribution was never the only way to ask the question; it was a
+     worse way.
+  3. **Across the whole corpus the shape is degenerate**, which is the measurement s58
+     asked for and did not have. All 47 (build, level) pairs, default standardized
+     enemy: stderr **exactly zero on 24** (every starfire cell, every silvertail cell,
+     war_angel L1-13), all five quantiles **identical on 27**, and `IQR == 0` on
+     **33** — and the IQR is the one number the definition calls *"the single number
+     that separates a swingy build from a steady one"*. The largest spread anywhere is
+     0.25, four lattice steps.
+  4. **Under `control=True`, the configuration it exists for, it is still degenerate
+     on 5 of 7 cells**, which is the check that stops this being the s58 failure in
+     reverse — judging a quantity only in the configuration that makes it look a
+     particular way. It was asked of the regime the row was aimed at, and the answer
+     did not change.
+
+  Registry: **28 → 27 declarations** (17 scalars + 8 breakdowns + **2** distributions);
+  18 distribution statistics → 12. The SCALAR `attacks_per_round` is untouched, so the
+  77 metric cells are unchanged, and `GOLDEN_DPR` is untouched because the registry
+  does not touch dice.
+
+  **THE CONSEQUENCE §14 WARNED ABOUT WAS HALF WRONG, AND CHECKING IT CHANGED THE
+  ANSWER.** The entry below says cutting this row "would remove a tripwire written for
+  the next framework step". It does not: s53's step-9 tripwire is
+  `test_pairing_is_statistically_INERT_once_the_streams_diverge`, which is about
+  `variance_reduction` on starfire L15 and never touched this distribution. The other
+  half was right — across 8 representative cells this row's `p25`/`iqr` at war_angel
+  L16 were the **only** production source of §14(a)'s "no day count helps" verdict, so
+  that branch now has no instance at any declared tier. Worth recording as a pattern:
+  **a deferral's stated cost is itself an inherited argument, and s58's lesson applies
+  to it — check it before paying it.** One of the two reasons not to cut dissolved on
+  inspection.
+
+  **AND THE BRANCH WAS ALMOST DELETED ON THE STRENGTH OF A FALSE CLAUSE IN ITS OWN
+  REASON TEXT.** With the lattice row gone the obvious move is to let
+  `ci_width_vs_spread` quote a day count like the other three gates, which would delete
+  the branch outright. `NO_DAY_COUNT_FOR_WIDTH` gave two grounds, and the first is
+  **measurably false**: it claimed width/spread "does not fall as 1/sqrt(n) in
+  general", but on `dpr_distribution` (war_angel L16, seed 11) `ratio·√n` sits in a
+  narrow band across a **200× range in n**, and the extrapolation from n=400 predicted
+  convergence at n=879 against an observed crossing between 800 and 1,000. The only
+  measurement ever offered for that clause compares p50 (0.044) against p10 (0.074) at
+  a *single* n, which tests nothing about scaling in n — a mechanical argument, by the
+  s50 rule.
+
+  The lattice clause, measured on `attacks_per_round`'s own sample with the project's
+  own estimator, is not merely true but worse than "not derivable":
+
+  | n | p90 `width/spread` | what 1/√n predicts |
+  |---:|---:|---:|
+  | 400 | 0.1429 | converges at 816 |
+  | 2,000 | 0.1250 | converges at 3,125 |
+  | 20,000 | 0.1250 | converges at 31,250 |
+
+  **The prediction is falsified at every step and renews itself**, because the ratio is
+  pinned at exactly one lattice step over the spread (0.0625/0.5) and never moves. So a
+  day count would be accurate for both shipped distributions and unboundedly wrong for
+  a lattice one, and **nothing in a `DistributionDef` says which kind it is over**. The
+  branch is therefore KEPT, for a narrower and sounder reason than it was written with,
+  and its prose now says that reason instead of the false general one. Declaring the
+  distinction on `DistributionDef` is the alternative that would allow the day count;
+  it is named here and NOT taken, because it adds a registry declaration to serve a
+  case no shipped row exercises — and adding one would re-trigger the metric-set
+  review. (s51's "20,000 days converges p10" is consistent with all of this and was
+  briefly read as contradicting it: p10 converges because its interval collapses to
+  *zero* width — ratio 0.0000 at every n above — not because the ratio shrank.)
+
+  **A free side effect, recorded because it discharges a line of §3.5.5.** Because the
+  branch is now reached by lowering a day count rather than by thinning the roster, any
+  build can host it — including the baseline SUBJECT. The fixture for
+  `test_the_unconverged_warning_counts_DISTRIBUTION_points_too` is now baseline L20 at
+  700 days, and that test's own docstring had recorded, as a finding against §3.5.5's
+  intent, that the subject *could not* host it.
+
+  **The original entry follows, as the standing requirement on a fourth
+  distribution.**
+
+  *(added s58, the user's point at that session's metric-set review)*. §5.4's kind 3 was built as a general capability and
   three distributions are registered, but the question of whether anyone needs the SHAPE
   of a given quantity was never asked per-quantity. The user's example is
   `attacks_per_round`: its variability is not something a real-world build comparison
@@ -2807,6 +2934,112 @@ everything it scored against (`target_dpr`) §11 retired. See §12.
   **The s46/s47 reservation held: it landed at `schema_version` 1 with no break.** Two
   distributions ship (`dpr`, `net_damage_taken_per_round`). Still open below: a PAIRED
   quantile delta, and keying a distribution.
+- ~~**The convergence THRESHOLDS are calibrated on a small sample**~~ **CALIBRATED
+  AND CLOSED (s59, framework step 8e).** The sweep this entry asked for three times
+  has been run and **no constant moved** — which is a result, not an absence of one,
+  and it is pinned as an assertion in
+  `test_the_CALIBRATED_convergence_constants_are_pinned` so a later nudge has to come
+  past a test and a decision record. Step 5's "prefer an assertion, prose cannot fail"
+  applied to the CONCLUSION, as the 4c bullet said it would.
+
+  **WHAT WAS RUN.** `sweeps/convergence_calibration.yaml` — 4 builds ×
+  `level: available` × {2,000, 20,000} days = **94 cells, 1,034,000 simulated days**,
+  8,366 tidy rows — plus `sweeps/convergence_calibration_control.yaml` (47 cells, the
+  control arm) and `sweeps/convergence_seed_sensitivity.yaml` (30 cells). The second
+  tier is in the main sweep to validate 8a's `days_required` extrapolation rather than
+  to calibrate: every gate's ATTAINED value is independent of the thresholds, so one
+  tier settles all six constants and the second settles a different question.
+
+  **THE SIX CONSTANTS, MEASURED.** Full numbers in the pinning test's docstring; the
+  shape of the answer here.
+
+  | constant | binds on | verdict |
+  |---|---|---|
+  | `rel_stderr` 0.02/0.05/0.10 | 77.1% of unconverged rows (quick), 78.9% (20k) | KEEP — no elbow exists |
+  | `min_events` 200/500 | 21.2% / 19.3% | KEEP — doing real work |
+  | `resolution_sigmas` 3.0 | 1.2% / 1.8% | KEEP — and §14(a) was WRONG that nothing exercises it |
+  | `ci_width_vs_spread` 0.10 | 2 of 564 points (quick), 0 of 564 (20k) | KEEP — the fix was the day count, not the bar |
+  | `min_days` 100 | never, at any declared tier | KEEP — a SUB-TIER guard by construction |
+  | `min_tail_observations` 50 | never, at any declared tier | KEEP — likewise |
+
+  - **`rel_stderr` has no discoverable operating point, and that is the finding.** Its
+    attained distribution is smooth — 0.02 passes 76.3% of rows at the quick tier and
+    92.8% at 20,000, and the pass rate climbs steadily through 0.01/0.03/0.05/0.10
+    with no elbow at any threshold on any of the three declared bars. So this constant
+    is irreducibly a **stated convention** in the §6.2 sense. What changed is that it
+    is now a MEASURED convention rather than one read off four near-normal points,
+    which is exactly what this entry asked for; what did not change, and could not
+    have, is that there is a principled value to discover.
+  - **TWO FLOORS ARE STRUCTURALLY UNABLE TO BIND, AND THAT IS CORRECT.** The smallest
+    tail fraction is 0.10, so tail observations are `0.10·n` and reach 50 at n=500,
+    while the smallest declared tier is 2,000 — measured minimum attained 200 (4×
+    slack) at the quick tier and 2,000 (40×) at 20,000. `min_days = 100` is 20× slack
+    against the same tier. These were never miscalibrated; they are guards for runs
+    BELOW the tier table, which is what their own docstrings say ("a p90 off 60 days
+    rests on six observations"). The pinning test asserts the arithmetic rather than
+    the prose, so a changed tier or tail fraction fails a test instead of silently
+    staling a paragraph.
+  - **§14(a)'s OWN CLAIM ABOUT `resolution_sigmas` IS FALSE, and the sweep is what
+    showed it.** This entry has said since s48 that 3.0 "was reasoned about, not
+    calibrated: no shipped build is close enough to break-even to exercise it". It is
+    exercised on 5 of 47 rows at the quick tier and 2 of 47 at 20,000:
+    `net_damage_taken_per_round` on the baseline SUBJECT at L3, L6, L7 and L8, and on
+    silvertail L4, sits within ±0.11 damage/round of break-even — silvertail L4 reads
+    `0.0039 ± 0.02140`, four thousandths of a point. The gate is doing precisely the
+    job it was designed for, on the fixture that exists to be the complete case. A
+    reminder that an uncalibrated constant's *description* is as likely to be wrong as
+    its value.
+  - **The rare-event family's relaxed bar is slack, defensibly.** The control arm
+    exists because the main sweep leaves control OFF, which makes two of the four
+    `RARE_EVENT_CONVERGENCE` metrics UNAVAILABLE in all 94 cells — judging the family
+    without them would have been the s58 failure of examining a quantity on whichever
+    subset happens to be available. With all four producing rows, **all 166 measured
+    rare-event rows converge at the quick tier** and the worst attained `rel_stderr` in
+    the family is 0.0468 against the declared 0.10, so every row would pass at 0.05
+    too. Its docstring's premise — "you will not get 2% on a concentration break rate
+    at any realistic day count" — is half right: it holds for `control_turns_*` (0 of
+    47 reach 0.02) and fails for `concentration_break_rate` (12 of 25 do). Kept at
+    0.10, with `min_events` named as the gate actually protecting those rows.
+
+  **8a's `days_required` EXTRAPOLATION IS VINDICATED — 285 of 287, and the 2 failures
+  found a defect.** Of 4,183 rows present at both tiers, 2,705 had already converged at
+  2,000 days and 287 carried a finite prediction. **285 predicted ≤20,000 days and
+  converged there**; 112 predicted >20,000 and did not, consistently. The two failures
+  were both near-break-even `resolution_sigmas` rows, which is what produced
+  `days_provisional` (below). This is the first measurement of a claim 8a shipped
+  unmeasured, and it is the reason the second tier was worth its ~100 minutes.
+
+  **AND CALIBRATING BEFORE STEP 9 IS SOUND — MEASURED, NOT ARGUED.** The 4c bullet's
+  ordering worry was that step 9 re-baselines every seeded number, so thresholds
+  calibrated now are measured in a regime that then moves. The standing answer was
+  mechanical: substreams change the paired COVARIANCE (§6.1), not a single run's own
+  variance, so a single-run criterion should be insensitive. The s50 rule is that a
+  mechanical argument is not a measurement, so it was measured. A reshuffled stream is
+  what substreams produce and a different seed is the cheapest instance of one, so the
+  seed sweep holds the configuration fixed over seeds {11, 23, 37} and compares how
+  far each gate's attained value MOVES against how far it sits from its threshold:
+
+  - **634 of 640 verdicts are identical across all three seeds**; 6 flip (0.94%).
+  - Across-seed movement of attained `rel_stderr` is **~70× smaller** than the
+    distance to the threshold (median ratio 0.0144, p90 0.26), and exceeds that
+    distance in only **5 of 356** cells.
+  - **Every one of the 6 flips sits on its own bar**: `saves_forced_per_round
+    [dex_save|*]` reads 0.01989 / 0.01991 / 0.02106 against 0.02, and
+    `save_fail_rate[str_save|*]` reads 0.04943 / 0.05241 / 0.04856 against 0.05. Those
+    rows must flip under any threshold whatever; no choice of constant prevents a
+    verdict from being unstable when the estimate straddles the bar.
+
+  The decision rule was stated before the answer was seen (the thresholds are
+  insensitive if no verdict flips except where it already sits within the across-seed
+  spread of its own threshold), and it is satisfied. Worth keeping as the general
+  shape: **a threshold's stability under a stream change is a property of how far the
+  data sits from it, not of the threshold's value** — so this conclusion survives step
+  9 without re-measurement, while a constant moved to sit near a cluster of attained
+  values would not.
+
+  **The original entry follows, for the four stressors it recorded and the two it
+  closed.**
+
 - **The convergence THRESHOLDS are calibrated on a small sample** *(added s48)* — the
   criteria themselves are principled (translation-invariant, no declared constants), but
   the numbers in them are not derived from anything. `ci_width_vs_spread = 0.10` was read
