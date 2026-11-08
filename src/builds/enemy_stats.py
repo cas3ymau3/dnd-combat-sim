@@ -176,7 +176,7 @@ def make_baseline_enemy(level: int, name: "str | None" = None) -> "Entity":
     One source for the enemy's stat block, and now the ONLY name for it.  Before step
     5b each build module built its own dummy out of its own ``LEVELS`` row, which is
     the coupling §3.4 exists to remove; s52 turned the three ``make_training_dummy``
-    functions into delegations to this one, and PROGRESS item 5b (s62) deleted all
+    functions into delegations to this one, and PROGRESS item 5b (s61) deleted all
     three — several names for one thing is the shape the seam check exists to remove,
     at a readability cost rather than a correctness one.  The framework's seam
     (``evaluation/enemy.py``) writes the same block over whatever it is handed.
@@ -192,7 +192,7 @@ def make_baseline_enemy(level: int, name: "str | None" = None) -> "Entity":
     act installs a policy itself (``tests/test_summon_survival._install_l8_enemy`` is
     the pattern).
 
-    WHAT THE THREE DELETED WRAPPERS RECORDED (preserved here, s62)
+    WHAT THE THREE DELETED WRAPPERS RECORDED (preserved here, s61)
     --------------------------------------------------------------
     Their docstrings held the s52 migration's findings, which outlive the functions:
 
@@ -556,7 +556,7 @@ def _pb(level: int) -> int:
     Statistics by Challenge Rating" PB column, read only by :func:`regenerate` to back
     the per-swing die count out of a target average.
 
-    **DELIBERATELY NOT ``progression.proficiency_bonus`` (PROGRESS item 5b, s62).**
+    **DELIBERATELY NOT ``progression.proficiency_bonus`` (PROGRESS item 5b, s61).**
     Item 5b collapsed three copies of this same one-liner into that shared function and
     left this one alone, because the seam check asks whether two places hold one
     QUANTITY and the answer here is no: that one is indexed by character level, this

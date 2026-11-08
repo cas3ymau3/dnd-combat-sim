@@ -692,8 +692,8 @@ def make_starfire_scion(level: int) -> Entity:
     return scion
 
 
-# ``make_training_dummy`` LIVED HERE AND IS DELETED (s62, PROGRESS item 5b), AND SO IS
-# THE ``enemy_resist`` PATH IT CARRIED (user's call, s62).
+# ``make_training_dummy`` LIVED HERE AND IS DELETED (s61, PROGRESS item 5b), AND SO IS
+# THE ``enemy_resist`` PATH IT CARRIED (user's call, s61).
 #
 # Two of the three builds' wrappers were one-line delegations to
 # ``enemy_stats.make_baseline_enemy`` — three names for one thing, which is what 5b

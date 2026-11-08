@@ -6,7 +6,7 @@ function lives here today; it is a module rather than a line in ``builds/__init_
 so that the next shared track (spell slots by caster level, ASI timing) has an obvious
 home, and so that the seam argument below has somewhere to be written down.
 
-WHY THIS MODULE EXISTS: FOUR COPIES, THREE OF THEM ONE FACT (PROGRESS item 5b, s62)
+WHY THIS MODULE EXISTS: FOUR COPIES, THREE OF THEM ONE FACT (PROGRESS item 5b, s61)
 -----------------------------------------------------------------------------------
 ``2 + (level - 1) // 4`` had accumulated FOUR copies — ``war_angel.proficiency_bonus``,
 ``silvertail._char_pb``, ``character_stats._pb`` and ``enemy_stats._pb`` — and s59

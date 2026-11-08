@@ -567,7 +567,7 @@ def _requires_mitigation_profile(ctx: RunContext) -> "str | None":
     the definition of it.  Reading the config here would report "unavailable" for a
     run whose roster plainly carries one.
 
-    **THE CONCRETE EXAMPLE THIS PARAGRAPH USED TO CITE IS GONE (s62).**  It named
+    **THE CONCRETE EXAMPLE THIS PARAGRAPH USED TO CITE IS GONE (s61).**  It named
     Starfire's ``enemy_resist`` block as a build factory installing a response of its
     own — which was always an ANALOGY rather than evidence, because that block set
     ``damage_response`` (the binary ×0.5/×2/×0 kind) and this predicate reads

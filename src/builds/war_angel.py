@@ -73,7 +73,7 @@ from ..policy import (
 )
 from ..resources import ResourceEntry, ResourcePool
 from . import enemy_stats          # THE enemy-Entity constructor (evaluation_framework.md §3.4)
-# PB is the UNIVERSAL character track, not this build's rule (PROGRESS item 5b, s62):
+# PB is the UNIVERSAL character track, not this build's rule (PROGRESS item 5b, s61):
 # imported rather than restated so `war_angel.proficiency_bonus` still resolves for any
 # caller while there is exactly one source.  See progression.py for why the enemy
 # table's numerically-identical column is NOT this fact.

@@ -109,7 +109,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 # The `pb` column's rule, shared with every character-side table rather than restated
-# here (PROGRESS item 5b, s62).  The SUBJECT is not the owner of the universal track —
+# here (PROGRESS item 5b, s61).  The SUBJECT is not the owner of the universal track —
 # that is the point of progression.py existing instead of the builds importing this
 # module.
 from .progression import proficiency_bonus

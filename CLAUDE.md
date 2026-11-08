@@ -129,7 +129,7 @@ These were reached deliberately; do not silently revisit them.
       - **No build factory constructs an enemy policy, and no `LEVELS` row carries
         enemy data.** `enemy_stats.make_baseline_enemy` is the one enemy-`Entity`
         constructor AND NOW ITS ONLY NAME: the three per-build `make_training_dummy`
-        wrappers that delegated to it are **DELETED (s62, PROGRESS item 5b)** and every
+        wrappers that delegated to it are **DELETED (s61, PROGRESS item 5b)** and every
         caller names it directly. Two were pure one-line aliases; Starfire's also set a
         `damage_response` from its own `LEVELS` row, dead at all eight of its levels and
         deleted with it. A factory run on its own faces a PASSIVE target. A test that needs the enemy

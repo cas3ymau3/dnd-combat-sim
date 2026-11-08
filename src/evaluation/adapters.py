@@ -16,7 +16,7 @@ THE FIVE METHODS AND WHAT EACH ABSORBS
 Counted against the PROTOCOL rather than against §2's prose, because the protocol is
 the thing that can be counted mechanically.  §2 enumerates FOUR axes of variance,
 which was the whole of it when this module was written; step 8b added a fifth that
-§2's factory table cannot show (see axis 5).  The divergence sat open from s56 to s62
+§2's factory table cannot show (see axis 5).  The divergence sat open from s56 to s61
 as "four axes, five methods" — recorded here rather than silently renumbered.
 
 1. **Factory name and signature** differ (``make_day_runner`` vs

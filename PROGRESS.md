@@ -2317,7 +2317,7 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
   factory table can show. So the docstring now counts against the PROTOCOL, which is the
   thing that can be counted mechanically, names the method that absorbs each axis, and
   records that `describe` is the fifth method but NOT a sixth axis — it is the §4
-  provenance obligation taken over all five. The s56→s62 divergence is recorded rather
+  provenance obligation taken over all five. The s56→s61 divergence is recorded rather
   than silently patched.
   - Fixed in passing, because it sat in the three lines being rewritten: that paragraph
     still said the tuple-position coupling "makes `validation.py` un-generalizable" in
@@ -3411,7 +3411,7 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
      actionable for every test:** the subject produces no unconverged distribution points
      at L5/L13/L20, so it could not host
      `test_the_unconverged_warning_counts_DISTRIBUTION_points_too` and a real build had to.
-  - ~~**HOUSEKEEPING for item 5b (added):**~~ **DONE (s62)** — `2 + (level - 1) // 4` had a FOURTH copy
+  - ~~**HOUSEKEEPING for item 5b (added):**~~ **DONE (s61)** — `2 + (level - 1) // 4` had a FOURTH copy
      (`enemy_stats`, `character_stats`, `silvertail`, `war_angel`), written rather than
      imported because the other three belong to the enemy table, the baseline subject's
      table and another build. Four copies is enough to lift it somewhere shared.
@@ -6961,7 +6961,7 @@ Engine prerequisites, in the order we built them:
 
 > **NEXT TASK = item 5c below (#6b, THE DEFINITIVE RE-EVALUATION). The evaluation
 > framework is FINISHED — all nine §13 steps are done — and item 5b, the HOUSEKEEPING
-> PR, LANDED IN s62 moving ZERO numbers.**
+> PR, LANDED IN s61 moving ZERO numbers.**
 > 8a + 8b landed in s56, 8c in s57, 8d in s58, 8e in s59, and **step 9 (RNG
 > substreams) in s60** — §6.3 locks the substream contract, pairing goes from a median
 > variance reduction of **1.0 to 5.77**, and all nineteen `GOLDEN_DPR` rows plus all
@@ -6971,7 +6971,7 @@ Engine prerequisites, in the order we built them:
 > rather than widened. **§6.1's own named prescription turned out to be half the
 > answer** — per-(entity, purpose) `spawn()` generators are still inert (median 1.16);
 > the mechanism is re-synchronizing at the day, which §6.1 never mentions.
-> Item **5b (housekeeping) is DONE (s62)** — the three `make_training_dummy` wrappers
+> Item **5b (housekeeping) is DONE (s61)** — the three `make_training_dummy` wrappers
 > and the fourth copy of the PB formula are gone, both golden-bearing test files are
 > BYTE-IDENTICAL, 1333 tests green. **5c (#6b, the definitive re-evaluation) is next.**
 > #6a's numbers are NOT a baseline to diff against (§12.1), and neither are s57's,
@@ -7414,15 +7414,15 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    - **ONE THING 8a ADDED TO 5b's LIST (housekeeping):** `BuildAdapter` now has five
      methods and the protocol's docstring lists "the four axes of variance an adapter
      absorbs" — the prose and the protocol have diverged by one. ~~Still open after
-     s58~~ **CLOSED (s62)**: the module docstring now counts against the PROTOCOL, names
+     s58~~ **CLOSED (s61)**: the module docstring now counts against the PROTOCOL, names
      the method that absorbs each axis, and records that §2's four is right for what §2
      enumerates — the fifth axis is a property of the POLICY, which a factory table
      cannot show.
 
-5b. ~~**HOUSEKEEPING PR — scheduled, not optional (user, s54).**~~ **DONE (s62), PR #53
+5b. ~~**HOUSEKEEPING PR — scheduled, not optional (user, s54).**~~ **DONE (s61), PR #53
    — all three items landed and ZERO numbers moved.** Both golden-bearing test files are
    byte-identical; 1333 tests green. Two of the three `make_training_dummy` wrappers were
-   the one-line aliases the entry below describes; **the third was not** (see the s62 Done
+   the one-line aliases the entry below describes; **the third was not** (see the s61 Done
    entry — Starfire's also carried a dead `enemy_resist` path, deleted at the user's call),
    and the entry's "~60 test sites" was 88. The PB formula's four copies became ONE shared
    `builds/progression.proficiency_bonus` plus the enemy table's own, which is a DIFFERENT
