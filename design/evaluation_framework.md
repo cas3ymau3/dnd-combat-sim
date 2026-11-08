@@ -194,7 +194,9 @@ reproduce `validation.py` bit-for-bit.
 
 **DONE (s52) — the deletion half.** `enemy="build_default"` is **retired**; the enemy
 material is gone from all three `LEVELS` tables; `make_training_dummy` in each build
-delegates to one shared constructor over the definitive table; the factories always
+delegates to one shared constructor over the definitive table (and those three wrappers
+are themselves **deleted in s62**, PROGRESS item 5b — two were pure aliases, Starfire's
+also carried a dead `enemy_resist` path); the factories always
 return a **passive** enemy and the seam installs every policy; and `src/validation.py`
 is **deleted** (§12 carries that decision record). Four decisions, each with its
 argument below, because this is the change §3.4 has been pointing at since s43.
@@ -291,8 +293,10 @@ inline where they exercise one mechanic.
 
 **ONE SOURCE FOR THE ENEMY ENTITY, two writers, and the second write is PROVED
 redundant.** `enemy_stats.make_baseline_enemy(level)` is now the only place an enemy
-`Entity` is constructed; all three `make_training_dummy` functions delegate to it, and
-`enemy.install`'s `_complete_stat_block` still writes the block over it. That is two
+`Entity` is constructed; all three `make_training_dummy` functions delegated to it
+until **PROGRESS item 5b (s62) deleted the wrappers** and pointed every caller at
+`make_baseline_enemy` directly — so it is now the only NAME for it as well as the only
+source. `enemy.install`'s `_complete_stat_block` still writes the block over it. That is two
 writes of ONE source, which is not what the seam check forbids (it forbids two
 *sources*) — but "identical today" is exactly the phrase this section exists to distrust,
 so the redundancy is an **assertion** rather than a comment: a test takes the

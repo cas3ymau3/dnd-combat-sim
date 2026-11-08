@@ -151,7 +151,7 @@ def test_sacred_flame_dice_come_from_data():
     scaling), NOT a literal tuple: 1d8 at L1/L4, 2d8 at L5 (Spellfire Adept)."""
     for level, dice in ((1, (1, 8)), (4, (1, 8)), (5, (2, 8))):
         char = ss.make_starfire_scion(level)
-        policy = ss.StarfireScionPolicy(level, char, ss.make_training_dummy(level))
+        policy = ss.StarfireScionPolicy(level, char, enemy_stats.make_baseline_enemy(level))
         assert policy._sacred_flame_dice == dice
 
 
@@ -172,7 +172,7 @@ def test_enemy_stats_are_live_from_the_monster_csv():
     """
     rows = {int(r["level"]): r for r in csv.DictReader(_CSV.open())}
     for level in (1, 4, 5, 9, 10, 11, 12, 15):
-        dummy = ss.make_training_dummy(level)
+        dummy = enemy_stats.make_baseline_enemy(level)
         assert dummy.stat("ac") == int(rows[level]["ac"])
         assert dummy.stat("dex_save") == int(rows[level]["dex.save.mod"])
 
@@ -255,7 +255,7 @@ def _full_resources(level: int, **overrides) -> dict:
 
 def test_policy_emits_action_and_bonus_each_round():
     char = ss.make_starfire_scion(1)
-    policy = ss.StarfireScionPolicy(1, char, ss.make_training_dummy(1))
+    policy = ss.StarfireScionPolicy(1, char, enemy_stats.make_baseline_enemy(1))
     choices = policy.decide(_snapshot(1, _full_resources(1)))
     assert any(c.cost == "action" for c in choices)
     assert any(c.cost == "bonus_action" for c in choices)
@@ -263,7 +263,7 @@ def test_policy_emits_action_and_bonus_each_round():
 
 def test_l1_bonus_priority_sacred_flame_then_unarmed():
     char = ss.make_starfire_scion(1)
-    policy = ss.StarfireScionPolicy(1, char, ss.make_training_dummy(1))
+    policy = ss.StarfireScionPolicy(1, char, enemy_stats.make_baseline_enemy(1))
     # Spellfire Spark available → BA is Sacred Flame (save_spell).
     ba = [c for c in policy.decide(_snapshot(1, _full_resources(1))) if c.cost == "bonus_action"]
     assert len(ba) == 1 and ba[0].action_type == "save_spell"
@@ -277,7 +277,7 @@ def test_l1_bonus_priority_sacred_flame_then_unarmed():
 
 def test_l4_action_guiding_bolt_then_quarterstaff():
     char = ss.make_starfire_scion(4)
-    policy = ss.StarfireScionPolicy(4, char, ss.make_training_dummy(4))
+    policy = ss.StarfireScionPolicy(4, char, enemy_stats.make_baseline_enemy(4))
     act = [c for c in policy.decide(_snapshot(1, _full_resources(4))) if c.cost == "action"]
     assert len(act) == 1 and act[0].damage_dice == (4, 6)             # Guiding Bolt
     assert act[0].weapon_stat == "spell_attack_bonus"
@@ -289,7 +289,7 @@ def test_l4_action_guiding_bolt_then_quarterstaff():
 
 def test_l4_archer_only_when_starry_form_active():
     char = ss.make_starfire_scion(4)
-    dummy = ss.make_training_dummy(4)
+    dummy = enemy_stats.make_baseline_enemy(4)
     policy = ss.StarfireScionPolicy(4, char, dummy)
     res = _full_resources(4, spellfire_spark=0)        # force the BA past Sacred Flame
     # Not activated yet → unarmed.
@@ -304,7 +304,7 @@ def test_l4_archer_only_when_starry_form_active():
 
 def test_on_combat_start_consumes_wild_shape_and_runs_out():
     char = ss.make_starfire_scion(4)              # wild_shape (2, +1 SR)
-    policy = ss.StarfireScionPolicy(4, char, ss.make_training_dummy(4))
+    policy = ss.StarfireScionPolicy(4, char, enemy_stats.make_baseline_enemy(4))
     assert char.resources.available("wild_shape") == 2
     policy.on_combat_start(0, SeededRNG(0))
     assert policy._starry_form_active and char.resources.available("wild_shape") == 1
@@ -321,7 +321,7 @@ def test_on_combat_start_consumes_wild_shape_and_runs_out():
 
 def test_quarterstaff_and_unarmed_hit_math_l1():
     char = ss.make_starfire_scion(1)
-    target = ss.make_training_dummy(1)            # AC 13
+    target = enemy_stats.make_baseline_enemy(1)            # AC 13
     # Quarterstaff 1d8+3: d20=15 hits (no crit), die=5 → 8.
     assert _resolve_attack(char, target, "attack_bonus", (1, 8), 3, FakeRNG([15, 5])) == 8
     # Unarmed 1d6+3: d20=15, die=4 → 7.
@@ -332,7 +332,7 @@ def test_quarterstaff_and_unarmed_hit_math_l1():
 
 def test_archer_and_guiding_bolt_hit_math_l5():
     char = ss.make_starfire_scion(5)
-    target = ss.make_training_dummy(5)            # AC 15
+    target = enemy_stats.make_baseline_enemy(5)            # AC 15
     # Archer 1d8 + WIS(4): d20=15 (hits, no crit), die=6 → 10.
     assert _resolve_attack(char, target, "spell_attack_bonus", (1, 8), 4, FakeRNG([15, 6])) == 10
     # Guiding Bolt 4d6 + 0: d20=15, dice all 5 → 20.
@@ -344,7 +344,7 @@ def test_sacred_flame_save_negates_from_data_l5():
     """Sacred Flame at L5 (2d8 from data, DC 15) — full on a failed DEX save,
     nothing on a made one.  Dice come from interpret_save_spell, not a literal."""
     char = ss.make_starfire_scion(5)              # spell_save_dc 15
-    target = ss.make_training_dummy(5)            # dex_save +2
+    target = enemy_stats.make_baseline_enemy(5)            # dex_save +2
     dice = interpret_save_spell(load_abilities()["sacred_flame"],
                                 {"character_level": 5}).damage_dice
     assert dice == (2, 8)
@@ -366,7 +366,7 @@ def test_searing_arc_dice_come_from_data():
     assert spec.damage_dice == (4, 6)
     assert spec.on_save == "half"
     assert spec.damage_type == "fire"
-    policy = ss.StarfireScionPolicy(10, ss.make_starfire_scion(10), ss.make_training_dummy(10))
+    policy = ss.StarfireScionPolicy(10, ss.make_starfire_scion(10), enemy_stats.make_baseline_enemy(10))
     assert policy._sas_dice == (4, 6)
     assert policy._sas_on_save == "half"
     assert policy._sas_type == "fire"
@@ -377,7 +377,7 @@ def test_searing_arc_save_for_half_math_l10():
     """Burning Hands save-FOR-HALF at L10 (4d6, DC 16, enemy DEX +3): full on a
     failed save, half ROUNDED DOWN on a made one (deterministic FakeRNG)."""
     char = ss.make_starfire_scion(10)               # spell_save_dc 16
-    target = ss.make_training_dummy(10)             # dex_save +3
+    target = enemy_stats.make_baseline_enemy(10)             # dex_save +3
     dice = (4, 6)
     # Failed save (d20=2 → 5 < 16): full 4d6 = 6+5+5+5 → 21.
     assert _resolve_burning_hands(char, target, dice, FakeRNG([2, 6, 5, 5, 5])) == 21
@@ -391,7 +391,7 @@ def test_l10_searing_arc_only_after_a_weapon_attack():
     quarterstaff (weapon-attack) turn it leads the BA ladder; with FP spent it
     falls back to Sacred Flame."""
     char = ss.make_starfire_scion(10)
-    dummy = ss.make_training_dummy(10)
+    dummy = enemy_stats.make_baseline_enemy(10)
     policy = ss.StarfireScionPolicy(10, char, dummy)
     policy.on_combat_start(0, SeededRNG(0))
     # NB: round 2, not round 1 — at L10 the turn-1 BA is spent casting Shillelagh
@@ -419,7 +419,7 @@ def test_searing_arc_fire_is_not_fueled_but_radiant_is():
     even though it IS a spell — proving the damage_type gate, not just origin, does
     real work.  A RADIANT spell of the same shape is fueled."""
     char = ss.make_starfire_scion(10)
-    dummy = ss.make_training_dummy(10)
+    dummy = enemy_stats.make_baseline_enemy(10)
     policy = ss.StarfireScionPolicy(10, char, dummy)
 
     def ctx(dtype):
@@ -440,7 +440,7 @@ def test_focus_points_refill_between_combats():
     """Uncanny Metabolism + Prayer of Healing recharge focus points fully between
     combats (guide), modeled by on_combat_start refilling the (LR-only) pool."""
     char = ss.make_starfire_scion(10)
-    policy = ss.StarfireScionPolicy(10, char, ss.make_training_dummy(10))
+    policy = ss.StarfireScionPolicy(10, char, enemy_stats.make_baseline_enemy(10))
     assert char.resources.available("focus_points") == 6
     char.resources.consume("focus_points", 6)
     assert char.resources.available("focus_points") == 0
@@ -457,7 +457,7 @@ def test_l9_extra_attack_emits_two_weapon_swings():
     cost="action" + one cost="none" (the engine's Extra-Attack shape).  A Guiding
     Bolt action is a spell and is NOT doubled."""
     char = ss.make_starfire_scion(9)
-    policy = ss.StarfireScionPolicy(9, char, ss.make_training_dummy(9))
+    policy = ss.StarfireScionPolicy(9, char, enemy_stats.make_baseline_enemy(9))
     policy.on_combat_start(0, SeededRNG(0))
     # GB exhausted → the action is the (Shillelagh) quarterstaff, doubled by Extra Attack.
     act = [c for c in policy.decide(_snapshot(2, _full_resources(9, guiding_bolt_free=0)))
@@ -476,7 +476,7 @@ def test_shillelagh_uses_higher_modifier_default_spellcasting_on_tie():
     """Shillelagh grants the OPTION to swing with WIS instead of DEX (user-flagged):
     use whichever ABILITY MODIFIER is higher, defaulting to the spellcasting (WIS)
     stat on a tie.  The 1d10 die applies regardless of which stat wins."""
-    policy = ss.StarfireScionPolicy(9, ss.make_starfire_scion(9), ss.make_training_dummy(9))
+    policy = ss.StarfireScionPolicy(9, ss.make_starfire_scion(9), enemy_stats.make_baseline_enemy(9))
     policy.on_combat_start(0, SeededRNG(0))
     # As built at L9: WIS(+4) > DEX(+3) → WIS wins (1d10, WIS to-hit, +4).
     c = policy._shillelagh_attack_choice("action")
@@ -500,7 +500,7 @@ def test_shillelagh_die_resolves_off_the_ladder_by_character_level():
                 15: ((1, 12), 5)}  # char L11-16 step holds at L15
     for level, (die, bonus) in expected.items():
         policy = ss.StarfireScionPolicy(
-            level, ss.make_starfire_scion(level), ss.make_training_dummy(level))
+            level, ss.make_starfire_scion(level), enemy_stats.make_baseline_enemy(level))
         assert policy._shillelagh_wis["dice"] == die, f"L{level} die"
         assert policy._shillelagh_wis["bonus"] == bonus, f"L{level} bonus"
         # And it reaches the actual swing.
@@ -515,7 +515,7 @@ def test_unarmed_die_is_1d8_at_l9_and_l10():
         assert ss.LEVELS[level]["unarmed"]["dice"] == (1, 8)
     # And the policy serves it: the BA falls back to a 1d8 unarmed when spells are spent.
     char = ss.make_starfire_scion(9)
-    policy = ss.StarfireScionPolicy(9, char, ss.make_training_dummy(9))
+    policy = ss.StarfireScionPolicy(9, char, enemy_stats.make_baseline_enemy(9))
     policy.on_combat_start(0, SeededRNG(0))
     ba = [c for c in policy.decide(_snapshot(2, _full_resources(9, spellfire_spark=0)))
           if c.cost == "bonus_action"][0]
@@ -528,7 +528,7 @@ def test_turn1_bonus_action_is_spent_casting_shillelagh():
     damage ladder runs normally.  The action (and Extra Attack) is unaffected.
     (DPR-identical to the former 'withhold the BA option' suppression.)"""
     char = ss.make_starfire_scion(9)
-    policy = ss.StarfireScionPolicy(9, char, ss.make_training_dummy(9))
+    policy = ss.StarfireScionPolicy(9, char, enemy_stats.make_baseline_enemy(9))
     policy.on_combat_start(0, SeededRNG(0))
     r1 = policy.decide(_snapshot(1, _full_resources(9, guiding_bolt_free=0)))
     # Turn-1 BA is the Shillelagh cast: a cast_effect, not a damage option.
@@ -543,7 +543,7 @@ def test_turn1_bonus_action_is_spent_casting_shillelagh():
     ba2 = [c for c in r2 if c.cost == "bonus_action"]
     assert ba2 and all(c.action_type != "cast_effect" for c in ba2)
     # Levels without Shillelagh (L1) never cast it — the turn-1 BA is a damage option.
-    p1 = ss.StarfireScionPolicy(1, ss.make_starfire_scion(1), ss.make_training_dummy(1))
+    p1 = ss.StarfireScionPolicy(1, ss.make_starfire_scion(1), enemy_stats.make_baseline_enemy(1))
     p1.on_combat_start(0, SeededRNG(0))
     r1_l1 = p1.decide(_snapshot(1, _full_resources(1)))
     assert any(c.cost == "bonus_action" and c.action_type != "cast_effect" for c in r1_l1)
@@ -554,7 +554,7 @@ def test_starry_form_activation_emits_a_bundled_cast_effect():
     BUNDLED (cost="none"), so it consumes no economy and the archer BA still fires
     (DPR-neutral).  Only round 1, only when the form is active."""
     char = ss.make_starfire_scion(4)
-    policy = ss.StarfireScionPolicy(4, char, ss.make_training_dummy(4))
+    policy = ss.StarfireScionPolicy(4, char, enemy_stats.make_baseline_enemy(4))
     res = _full_resources(4)
     # Not activated yet → no activation event.
     assert not any(c.action_type == "cast_effect" for c in policy.decide(_snapshot(1, res)))
@@ -595,10 +595,10 @@ def test_l5_outdamages_l4_against_the_same_enemy():
     enemy hardens with level, exactly as War Angel's targets do.)"""
     # The enemy held fixed is now a property of the TABLE, not of these two rows, so
     # the premise is read off the dummy the factory builds (s52, §3.4 step 5b).
-    assert (ss.make_training_dummy(4).stat("ac")
-            == ss.make_training_dummy(5).stat("ac") == 15)
-    assert (ss.make_training_dummy(4).stat("dex_save")
-            == ss.make_training_dummy(5).stat("dex_save") == 2)
+    assert (enemy_stats.make_baseline_enemy(4).stat("ac")
+            == enemy_stats.make_baseline_enemy(5).stat("ac") == 15)
+    assert (enemy_stats.make_baseline_enemy(4).stat("dex_save")
+            == enemy_stats.make_baseline_enemy(5).stat("dex_save") == 2)
     assert _mean_dpr(5, n_days=600) > _mean_dpr(4, n_days=600)
 
 
@@ -607,7 +607,7 @@ def _mean_dpr_l10(searing_arc: bool, n_days: int, seed: int = 0, rounds_per_comb
     so the BA falls back to Sacred Flame / unarmed) — same enemy either way."""
     rng = SeededRNG(seed)
     char = ss.make_starfire_scion(10)
-    dummy = ss.make_training_dummy(10)
+    dummy = enemy_stats.make_baseline_enemy(10)
     policy = ss.StarfireScionPolicy(10, char, dummy, rounds_per_combat)
     if not searing_arc:
         policy._has_searing_arc = False             # ablate the feature
@@ -636,7 +636,7 @@ def _mean_dpr_l9(thread_b: bool, n_days: int, seed: int = 0, rounds_per_combat: 
     Attack, no 1d10/WIS Shillelagh upgrade, no turn-1 BA cast cost)."""
     rng = SeededRNG(seed)
     char = ss.make_starfire_scion(9)
-    dummy = ss.make_training_dummy(9)
+    dummy = enemy_stats.make_baseline_enemy(9)
     policy = ss.StarfireScionPolicy(9, char, dummy, rounds_per_combat)
     if not thread_b:
         policy._extra_attacks = 0
@@ -668,7 +668,7 @@ def _mean_dpr_l11(shillelagh_die: tuple[int, int], n_days: int,
     isolating the die-size growth's contribution."""
     rng = SeededRNG(seed)
     char = ss.make_starfire_scion(11)
-    dummy = ss.make_training_dummy(11)
+    dummy = enemy_stats.make_baseline_enemy(11)
     policy = ss.StarfireScionPolicy(11, char, dummy, rounds_per_combat)
     policy._shillelagh_wis = {**policy._shillelagh_wis, "dice": shillelagh_die}
     runner = DayRunner(
@@ -695,10 +695,10 @@ def test_l12_outdamages_l11_against_the_same_enemy():
     are the SAME monster (AC 17 / DEX +3), so L12's gains (WIS 19 -> 20: +1 spell
     to-hit / DC / damage, and Searing Arc 4d6 -> 5d6) must lift DPR over L11.  The
     Shillelagh die is 1d12 at both, so this isolates the WIS-20 + upcast scaling."""
-    assert (ss.make_training_dummy(11).stat("ac")
-            == ss.make_training_dummy(12).stat("ac") == 17)
-    assert (ss.make_training_dummy(11).stat("dex_save")
-            == ss.make_training_dummy(12).stat("dex_save") == 3)
+    assert (enemy_stats.make_baseline_enemy(11).stat("ac")
+            == enemy_stats.make_baseline_enemy(12).stat("ac") == 17)
+    assert (enemy_stats.make_baseline_enemy(11).stat("dex_save")
+            == enemy_stats.make_baseline_enemy(12).stat("dex_save") == 3)
     assert _mean_dpr(12, n_days=600) > _mean_dpr(11, n_days=600)
 
 
@@ -711,7 +711,7 @@ def test_l15_searing_arc_is_elemental_adept_treated():
     """The L15 Scion holds Elemental Adept (fire), so its Searing Arc Choice carries
     the bypass + 1->2 high-grade (min_die=2, ignore_resistance) — fire only."""
     policy = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
-                                    ss.make_training_dummy(15))
+                                    enemy_stats.make_baseline_enemy(15))
     c = policy._searing_arc_choice()
     assert c.damage_type == "fire" and c.origin == "spell"
     assert c.min_die == 2 and c.ignore_resistance is True
@@ -722,7 +722,7 @@ def test_l15_fire_shield_warm_choose_one_selects_cold_resist_and_fire_thorns():
     resistance (#4) on the turn-1 pre-cast and reflects FIRE thorns (#5).  The fire
     thorns match our Elemental Adept element, so they bypass + high-grade."""
     policy = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
-                                    ss.make_training_dummy(15),
+                                    enemy_stats.make_baseline_enemy(15),
                                     fourth_level_spell="fire_shield")
     policy.on_combat_start(0, SeededRNG(0))
     assert policy._fire_shield_active
@@ -739,7 +739,7 @@ def test_fire_shield_chill_mode_selects_the_other_payload():
     """Flipping the choose_one to CHILL installs the OTHER payload: resist FIRE +
     COLD thorns.  Cold thorns do NOT match the fire Elemental Adept, so no bypass."""
     policy = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
-                                    ss.make_training_dummy(15),
+                                    enemy_stats.make_baseline_enemy(15),
                                     fourth_level_spell="fire_shield")
     policy._fire_shield_mode = "chill"
     policy.on_combat_start(0, SeededRNG(0))
@@ -754,7 +754,7 @@ def test_fire_shield_is_pre_cast_in_only_one_combat_per_day():
     """With Fire Shield prepared, the single 4th-level slot (slot_4th) → pre-cast
     in a single combat; later combats have it down (no resist install, no thorns)."""
     char = ss.make_starfire_scion(15)
-    policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15),
+    policy = ss.StarfireScionPolicy(15, char, enemy_stats.make_baseline_enemy(15),
                                     fourth_level_spell="fire_shield")
     assert char.resources.available("slot_4th") == 1
     policy.on_combat_start(0, SeededRNG(0))
@@ -770,13 +770,13 @@ def test_l15_fom_and_fire_shield_share_the_single_4th_level_slot():
     never cast (no over-count).  FoM default; Fire Shield only when prepared."""
     # Default loadout = FoM: it claims the slot, Fire Shield stays down.
     char = ss.make_starfire_scion(15)
-    fom_policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15))
+    fom_policy = ss.StarfireScionPolicy(15, char, enemy_stats.make_baseline_enemy(15))
     fom_policy.on_combat_start(0, SeededRNG(0))
     assert fom_policy._fount_of_moonlight_active and not fom_policy._fire_shield_active
     assert char.resources.available("slot_4th") == 0
     # Fire Shield loadout: it claims the slot, FoM stays down.
     char2 = ss.make_starfire_scion(15)
-    fs_policy = ss.StarfireScionPolicy(15, char2, ss.make_training_dummy(15),
+    fs_policy = ss.StarfireScionPolicy(15, char2, enemy_stats.make_baseline_enemy(15),
                                        fourth_level_spell="fire_shield")
     fs_policy.on_combat_start(0, SeededRNG(0))
     assert fs_policy._fire_shield_active and not fs_policy._fount_of_moonlight_active
@@ -839,7 +839,7 @@ def _mean_dpr_l15(fire_shield: bool, n_days: int, seed: int = 0,
     column and count toward DPR.  The Scion's offense is identical either way."""
     rng = SeededRNG(seed)
     char = ss.make_starfire_scion(15)
-    dummy = ss.make_training_dummy(15)
+    dummy = enemy_stats.make_baseline_enemy(15)
     # Prepare the Fire Shield loadout (not the default FoM one) so the slot is spent
     # on Fire Shield; ablation switches its cast off, isolating ONLY the thorns.
     policy = ss.StarfireScionPolicy(15, char, dummy, rounds_per_combat,
@@ -877,7 +877,7 @@ def test_fire_shield_thorns_lift_l15_dpr_at_a_fixed_enemy():
 
 def _l15_policy(primal_strike_unarmed=None):
     char = ss.make_starfire_scion(15)
-    policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15),
+    policy = ss.StarfireScionPolicy(15, char, enemy_stats.make_baseline_enemy(15),
                                     primal_strike_unarmed=primal_strike_unarmed)
     return policy, char
 
@@ -958,7 +958,7 @@ def test_l15_fom_radiant_is_fueled_by_fueled_spellfire():
     policy, char = _l15_policy()
     policy.on_combat_start(0, SeededRNG(0))
     ctx = DealDamageContext(
-        actor=char, target=ss.make_training_dummy(15),
+        actor=char, target=enemy_stats.make_baseline_enemy(15),
         damage_type="radiant", origin="spell", is_crit=False,
         base_damage_dice=(2, 6), resources=char.resources.as_dict(),
         round_number=1, turn_index=0,
@@ -1071,7 +1071,7 @@ def _mean_dpr_l15_rider(disable, n_days, seed=0, rounds_per_combat=4,
     """
     rng = SeededRNG(seed)
     char = ss.make_starfire_scion(15)
-    dummy = ss.make_training_dummy(15)
+    dummy = enemy_stats.make_baseline_enemy(15)
     policy = ss.StarfireScionPolicy(15, char, dummy, rounds_per_combat)
     if disable == "fom":
         policy._has_fount_of_moonlight = False
@@ -1229,7 +1229,7 @@ def test_the_dragon_form_floor_is_INERT_against_the_standardized_enemy():
     def breaks(dragon: bool) -> int:
         rng = SeededRNG(1)
         char = ss.make_starfire_scion(15)
-        dummy = ss.make_training_dummy(15)
+        dummy = enemy_stats.make_baseline_enemy(15)
         policy = ss.StarfireScionPolicy(15, char, dummy)
         if not dragon:
             policy._has_dragon_form = False          # cast FoM but DON'T guard it
@@ -1287,7 +1287,7 @@ def _fom_policy(precast_mode=None, precast_prob=0.5):
     with a given pre-cast setting."""
     char = ss.make_starfire_scion(15)
     policy = ss.StarfireScionPolicy(
-        15, char, ss.make_training_dummy(15),
+        15, char, enemy_stats.make_baseline_enemy(15),
         fourth_level_spell="fount_of_moonlight",
         precast_mode=precast_mode, precast_prob=precast_prob)
     return policy, char
@@ -1342,7 +1342,7 @@ def test_precast_default_is_legacy_per_effect():
     assert fom.cost == "action"
 
     char = ss.make_starfire_scion(15)
-    fs_policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15),
+    fs_policy = ss.StarfireScionPolicy(15, char, enemy_stats.make_baseline_enemy(15),
                                        fourth_level_spell="fire_shield")
     fs_policy.on_combat_start(0, SeededRNG(0))
     assert fs_policy._precast_this_combat                         # Fire Shield legacy = pre-cast
@@ -1678,7 +1678,7 @@ def test_the_standardized_enemy_ends_fount_of_moonlights_concentration_nearly_ev
     from src.builds.enemy import ScriptedEnemyPolicy as _Scripted
 
     char = ss.make_starfire_scion(15)
-    dummy = ss.make_training_dummy(15)
+    dummy = enemy_stats.make_baseline_enemy(15)
     policy = ss.StarfireScionPolicy(15, char, dummy, 4,
                                     fourth_level_spell="fount_of_moonlight",
                                     precast_mode="always")

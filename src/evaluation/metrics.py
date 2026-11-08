@@ -562,12 +562,20 @@ def _requires_mitigation_profile(ctx: RunContext) -> "str | None":
 
     Kept evidence-based rather than switched to reading
     ``enemy_options['mitigation']`` when the seam landed, and the reason is the
-    point: ``damage_multiplier`` is an ENTITY attribute that a build factory may
-    install itself (Starfire's ``enemy_resist`` block does install a
-    ``damage_response``, and a future build could install a multiplier), so the
-    config flag is one cause of a profile existing and not the definition of it.
-    Reading the config here would report "unavailable" for a run whose roster
-    plainly carries one.
+    point: ``damage_multiplier`` is an ENTITY attribute that anything constructing an
+    entity may install, so the config flag is one cause of a profile existing and not
+    the definition of it.  Reading the config here would report "unavailable" for a
+    run whose roster plainly carries one.
+
+    **THE CONCRETE EXAMPLE THIS PARAGRAPH USED TO CITE IS GONE (s62).**  It named
+    Starfire's ``enemy_resist`` block as a build factory installing a response of its
+    own — which was always an ANALOGY rather than evidence, because that block set
+    ``damage_response`` (the binary ×0.5/×2/×0 kind) and this predicate reads
+    ``damage_multiplier`` (§5's continuous factor); the two are different attributes.
+    PROGRESS item 5b deleted the block as dead.  The argument stands on its own: the
+    live producer is ``evaluation/enemy.py``, which sets ``damage_multiplier`` from the
+    band at construction, and a config read would be a SECOND source for "is there a
+    profile" where the roster is the first.
     """
     if any(e.damage_multiplier for e in ctx.roster.entities()):
         return None

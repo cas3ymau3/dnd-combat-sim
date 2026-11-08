@@ -17,6 +17,7 @@ MECHANISM, not a DPR number):
      with the right range — a ranged attacker draws no thorns, a melee one does.
 """
 
+from src.builds import enemy_stats
 from src.builds import starfire_scion as ss
 from src.builds import war_angel as wa
 from src.entity import Entity
@@ -60,7 +61,7 @@ def _incoming(range_, *, hit_margin=0, resources=None):
 
 def _fire_shield_scion():
     char = ss.make_starfire_scion(15)
-    policy = ss.StarfireScionPolicy(15, char, ss.make_training_dummy(15),
+    policy = ss.StarfireScionPolicy(15, char, enemy_stats.make_baseline_enemy(15),
                                     fourth_level_spell="fire_shield")
     policy._fire_shield_active = True            # simulate the pre-cast install
     return policy

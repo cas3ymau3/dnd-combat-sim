@@ -26,6 +26,7 @@ number-matching.  Specifically:
 
 import logging
 
+from src.builds import enemy_stats
 from src.builds import starfire_scion as ss
 from src.builds.enemy import ScriptedEnemyPolicy
 from src.content import interpret_save_spell
@@ -231,7 +232,7 @@ def test_elemental_adept_makes_searing_arc_full_vs_a_fire_resistant_enemy():
     # enemy takes FULL, high-graded Searing Arc — while a radiant Guiding Bolt of
     # the same dice is irrelevant to a fire feat (and untouched by fire resistance).
     sas = ss.StarfireScionPolicy(15, ss.make_starfire_scion(15),
-                                 ss.make_training_dummy(15))._searing_arc_choice()
+                                 enemy_stats.make_baseline_enemy(15))._searing_arc_choice()
     assert sas.min_die == 2 and sas.ignore_resistance is True
     enemy = Entity(name="fire-resistant", hp=10_000,
                    damage_response={"fire": "resistance"})

@@ -23,6 +23,7 @@ import logging
 
 import pytest
 
+from src.builds import enemy_stats
 from src.builds import starfire_scion as ss
 from src.entity import Entity
 from src.events import DamageEvent, EventQueue
@@ -80,7 +81,7 @@ def _ctx(damage_type="radiant", origin="spell", hit_dice=5, round_=1, turn=0,
 
 def _l5_policy():
     char = ss.make_starfire_scion(5)
-    return ss.StarfireScionPolicy(5, char, ss.make_training_dummy(5)), char
+    return ss.StarfireScionPolicy(5, char, enemy_stats.make_baseline_enemy(5)), char
 
 
 # ---------------------------------------------------------------------------
@@ -188,7 +189,7 @@ def test_off_below_level_5():
     """Fueled Spellfire is a L5 feat — the L4 policy has no Hit-Dice pool and the
     hook declines even on radiant spell damage."""
     char = ss.make_starfire_scion(4)
-    policy = ss.StarfireScionPolicy(4, char, ss.make_training_dummy(4))
+    policy = ss.StarfireScionPolicy(4, char, enemy_stats.make_baseline_enemy(4))
     assert not policy._fueled_spellfire
     assert policy.on_deal_damage(_ctx(hit_dice=0)) is None
 
@@ -215,7 +216,7 @@ def test_scheduler_closure_consumes_hit_dice():
 def test_scheduler_closure_is_none_without_the_hook():
     """An actor whose policy has no on_deal_damage (the dummy) gets no decider —
     so every existing build is bit-identical (no rider, no RNG draw)."""
-    dummy = ss.make_training_dummy(5)
+    dummy = enemy_stats.make_baseline_enemy(5)
     sched = Scheduler(rng=SeededRNG(0), entities=[dummy], policies={}, max_rounds=1)
     ev = DamageEvent(tick=(1, 0, 1), actor=dummy, target=None,
                      damage_dice=(1, 6), damage_type="radiant", origin="spell")

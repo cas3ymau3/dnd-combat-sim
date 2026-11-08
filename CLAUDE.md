@@ -127,9 +127,12 @@ These were reached deliberately; do not silently revisit them.
       a passive target carrying the table's full stat block, and `scripted` is a
       comparison arm (it swings but forces no saves).
       - **No build factory constructs an enemy policy, and no `LEVELS` row carries
-        enemy data.** `make_training_dummy` in all three builds delegates to
-        `enemy_stats.make_baseline_enemy`, the one enemy-`Entity` constructor; a
-        factory run on its own faces a PASSIVE target. A test that needs the enemy
+        enemy data.** `enemy_stats.make_baseline_enemy` is the one enemy-`Entity`
+        constructor AND NOW ITS ONLY NAME: the three per-build `make_training_dummy`
+        wrappers that delegated to it are **DELETED (s62, PROGRESS item 5b)** and every
+        caller names it directly. Two were pure one-line aliases; Starfire's also set a
+        `damage_response` from its own `LEVELS` row, dead at all eight of its levels and
+        deleted with it. A factory run on its own faces a PASSIVE target. A test that needs the enemy
         to act installs a policy itself (see `tests/test_summon_survival.py`'s
         `_install_l8_enemy` for the pattern), and `enemy.install` is called once, in
         `runner.simulate`, so no adapter can forget it.

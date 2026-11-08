@@ -2228,6 +2228,112 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 
 ## Done
 
+- **ROADMAP ITEM 5b — THE HOUSEKEEPING PR. ZERO NUMBERS MOVED (2026-11-08, session
+  62).** The scheduled mechanical PR between the finished framework and the definitive
+  build evaluation (the boundary the user named in s54: "the framework stops changing,
+  and the build-evaluation work wants the build modules legible"). All three items
+  landed. **1333 tests passing** (the mid-edit count — 1332 + the dirty-tree test;
+  SEVENTH session that prediction has held), full suite in foreground once.
+
+  **"ZERO NUMBERS MOVED" IS AN ASSERTION, NOT A HOPE, AND IT IS STRONGER THAN THE
+  HANDOFF ASKED FOR.** The handoff asked that `GOLDEN_DPR`'s 19 rows and `AXIS_GOLDEN`'s
+  3 be untouched. **Both files are BYTE-IDENTICAL** — `git diff --exit-code
+  tests/test_eval_enemy_seam.py tests/test_baseline_character.py` is clean, so not one
+  line of either changed, tables or otherwise. A refactor that cannot reach the file
+  holding the goldens is a better guarantee than a refactor whose goldens happen to
+  agree, and it is cheap to state that way.
+
+  **ITEM 1 — THE THREE `make_training_dummy` WRAPPERS ARE DELETED. ONE OF THEM WAS NEVER
+  AN ALIAS, AND THAT IS THIS SESSION'S FINDING.** 88 Python references across 11 files
+  (the s54 entry's "~60" was an undercount; the handoff's 88 re-counted exactly), all
+  module-qualified, all now naming `enemy_stats.make_baseline_enemy` directly. But:
+  - **The s54 entry said "each is a one-line delegation ... three names for one thing."
+    Two were. Starfire's was not** — it also did `dummy.damage_response =
+    dict(LEVELS[level].get("enemy_resist") or {})`, defended in its own comment as a
+    deliberate build-level seam (an INTRINSIC damage-type response, substrate #4, as
+    opposed to §5's mean-field `mult(t)` on `enemy_options['mitigation']`). **Deleting it
+    blind would have been a silent behaviour change at 50 call sites**, which is exactly
+    what a PR scheduled so as not to move a number must not do.
+  - **It was dead at every level, and had been for as long as it existed.** No `LEVELS`
+    row declares `enemy_resist` at any of the eight Starfire levels, and
+    `Entity.__init__` already does `dict(damage_response or {})` — so the line assigned
+    `{}` over `{}` eight times out of eight. A declared-but-unused seam is still a
+    capability, so **the deletion was put to the user as a decision rather than taken as
+    housekeeping**, and the user's call was to delete it. The way back is recorded where
+    the function lived: `Entity(damage_response=...)` at construction, or
+    `add_damage_response` for an effect-sourced one — not a build-specific target
+    constructor.
+  - **It falsified a THIRD claim on the way out.** `metrics._requires_mitigation_profile`
+    cited "Starfire's `enemy_resist` block does install a `damage_response`" as the
+    evidence for keeping that predicate evidence-based. That citation was **stale in two
+    independent ways at once**: the block installed nothing (above), *and* it was about
+    the wrong attribute — it set `damage_response` (the binary ×0.5/×2/×0 kind) while the
+    predicate reads `damage_multiplier` (§5's continuous factor). The argument survives
+    on its real producer, `evaluation/enemy.py` setting `damage_multiplier` from the
+    band; the example is gone and the docstring says so.
+  - The wrappers' docstring CONTENT was moved onto `make_baseline_enemy` before they were
+    deleted, per the s54 entry's named failure mode: the unchanged-AC finding, the
+    per-build saves difference (War Angel NONE, Starfire one `dex_save`, Silvertail
+    already correct), the "it never acts" rule with the
+    `test_summon_survival._install_l8_enemy` pattern, and Silvertail's bit-identical
+    migration numbers (6.31828125 at L10, 5.889375 at L8, 400 days / seed 11).
+
+  **ITEM 2 — THE FOURTH COPY OF `2 + (level - 1) // 4`. THREE OF THE FOUR ARE ONE FACT;
+  THE FOURTH IS A DIFFERENT TABLE THAT AGREES AT EVERY POINT.** The handoff asked for the
+  seam check to be applied to an arithmetic expression *before* hoisting, and it changed
+  the answer:
+  - **Hoisted:** `war_angel.proficiency_bonus`, `silvertail._char_pb` and
+    `character_stats._pb` are all one quantity — a CHARACTER's proficiency bonus at a
+    character LEVEL (the PHB column). New `src/builds/progression.py` owns it. The home
+    is NEUTRAL by necessity: war_angel's old docstring argued, correctly, that a real
+    build taking its PB from the framework's own stand-in SUBJECT would be a worse
+    coupling than a repeated rule — and that argument rules out every existing module,
+    which is the whole reason a new one earns its place. `war_angel.proficiency_bonus`
+    still resolves (imported into the module namespace), so no caller broke.
+  - **NOT hoisted:** `enemy_stats._pb` is the DMG "Monster Statistics by Challenge
+    Rating" PB column, indexed by CR and read only inside `regenerate` to back the
+    per-swing die count out of a target average. **It agrees with the character track at
+    every point of 1–20**, which is precisely the shape the dormancy question exists to
+    catch. Three reasons it is a different fact, now written at the site so nobody has to
+    re-derive it: the two tables are indexed by different things (the monster one extends
+    to CR 0 and the fractional CRs, where "character level" has no value); this side is
+    FITTED (polynomials over a chart, with the CSV as the artifact) while the character
+    side is closed-form rules text, so they can be retuned independently; and nothing in
+    the ruleset makes the agreement load-bearing — it is the DMG having been built to
+    mirror the PC track, a design coincidence of the ruleset rather than a derivation.
+    Importing it would make the enemy's to-hit a property of the character progression,
+    which is §3.4's coupling one layer down.
+  - **The reusable part: a copy COUNT is not a seam argument.** Four copies said "lift
+    this"; the seam check said "lift three of the four". The cheap test that separated
+    them was asking what each one is INDEXED BY, not what it computes — two functions
+    with identical bodies over identical ranges are still two facts if their arguments
+    mean different things. Nothing about the expression could have told us that.
+
+  **ITEM 3 — `BuildAdapter`'s "four axes" vs its FIVE methods, open since s56, closed.**
+  The honest fix was not renumbering four to five: the docstring was mirroring
+  `evaluation_framework.md` §2, and **§2's four is correct for what §2 enumerates** —
+  its axes are read off a table of the three factories' signatures, and the fifth
+  (`forced_save_abilities`, added at step 8b) is a property of the POLICY, which no
+  factory table can show. So the docstring now counts against the PROTOCOL, which is the
+  thing that can be counted mechanically, names the method that absorbs each axis, and
+  records that `describe` is the fifth method but NOT a sixth axis — it is the §4
+  provenance obligation taken over all five. The s56→s62 divergence is recorded rather
+  than silently patched.
+  - Fixed in passing, because it sat in the three lines being rewritten: that paragraph
+    still said the tuple-position coupling "makes `validation.py` un-generalizable" in
+    the present tense, and `src/validation.py` has been deleted since s52.
+
+  **WHAT THE SESSION SAYS ABOUT THE RITUAL — THE s60 STEP-4 RULE PAID FOR ITSELF ON ITS
+  FIRST OUTING.** "A design note's PLAN for a fix is an inherited argument too" was
+  promoted one session ago, and the handoff flagged that the s54 entry prescribing THIS
+  PR was itself such a plan. Checked at startup, its claims came apart: **three of them
+  were wrong** — "~60 call sites" (88), "each is a one-line delegation" (two of three),
+  and, downstream, metrics.py's cited example (stale twice over). None of the three was
+  discoverable by reading the entry more carefully; each needed one `grep` or one
+  evaluation. **A mechanical PR is where an inherited plan is MOST likely to be paid
+  without checking**, because the work looks like typing rather than deciding — and the
+  one claim that mattered would have moved a number at 50 call sites.
+
 - **FRAMEWORK STEP 9 — RNG SUBSTREAMS. THE EVALUATION FRAMEWORK IS FINISHED
   (2026-11-07, session 60).** `evaluation_framework.md` **§6.3 (the substream
   contract, LOCKED s60)**, §6.1 corrected for the third time, §13 step 9 struck
@@ -3305,7 +3411,7 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
      actionable for every test:** the subject produces no unconverged distribution points
      at L5/L13/L20, so it could not host
      `test_the_unconverged_warning_counts_DISTRIBUTION_points_too` and a real build had to.
-  - **HOUSEKEEPING for item 5b (added):** `2 + (level - 1) // 4` now has a FOURTH copy
+  - ~~**HOUSEKEEPING for item 5b (added):**~~ **DONE (s62)** — `2 + (level - 1) // 4` had a FOURTH copy
      (`enemy_stats`, `character_stats`, `silvertail`, `war_angel`), written rather than
      imported because the other three belong to the enemy table, the baseline subject's
      table and another build. Four copies is enough to lift it somewhere shared.
@@ -6853,8 +6959,9 @@ Engine prerequisites, in the order we built them:
 
 ### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24; RESEQUENCED s54)
 
-> **NEXT TASK = item 5b below: the HOUSEKEEPING PR. THE EVALUATION FRAMEWORK IS
-> FINISHED — all nine §13 steps are done.**
+> **NEXT TASK = item 5c below (#6b, THE DEFINITIVE RE-EVALUATION). The evaluation
+> framework is FINISHED — all nine §13 steps are done — and item 5b, the HOUSEKEEPING
+> PR, LANDED IN s62 moving ZERO numbers.**
 > 8a + 8b landed in s56, 8c in s57, 8d in s58, 8e in s59, and **step 9 (RNG
 > substreams) in s60** — §6.3 locks the substream contract, pairing goes from a median
 > variance reduction of **1.0 to 5.77**, and all nineteen `GOLDEN_DPR` rows plus all
@@ -6864,8 +6971,11 @@ Engine prerequisites, in the order we built them:
 > rather than widened. **§6.1's own named prescription turned out to be half the
 > answer** — per-(entity, purpose) `spawn()` generators are still inert (median 1.16);
 > the mechanism is re-synchronizing at the day, which §6.1 never mentions.
-> Item **5b (housekeeping)** is next, then **5c (#6b, the definitive re-evaluation)**.
-> #6a's numbers are NOT a baseline to diff against (§12.1).
+> Item **5b (housekeeping) is DONE (s62)** — the three `make_training_dummy` wrappers
+> and the fourth copy of the PB formula are gone, both golden-bearing test files are
+> BYTE-IDENTICAL, 1333 tests green. **5c (#6b, the definitive re-evaluation) is next.**
+> #6a's numbers are NOT a baseline to diff against (§12.1), and neither are s57's,
+> s58's, s59's or s60's.
 
 The project has two tracks. **Track 1 (current focus): "make the model produce
 honest, complete build evaluations"** — the enemy-profile arc through to a real
@@ -7303,10 +7413,20 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
        possible; named in §14 as its own decision with its own re-baseline.
    - **ONE THING 8a ADDED TO 5b's LIST (housekeeping):** `BuildAdapter` now has five
      methods and the protocol's docstring lists "the four axes of variance an adapter
-     absorbs" — the prose and the protocol have diverged by one. **Still open after
-     s58** (neither 8c nor 8d touched an adapter).
+     absorbs" — the prose and the protocol have diverged by one. ~~Still open after
+     s58~~ **CLOSED (s62)**: the module docstring now counts against the PROTOCOL, names
+     the method that absorbs each axis, and records that §2's four is right for what §2
+     enumerates — the fifth axis is a property of the POLICY, which a factory table
+     cannot show.
 
-5b. **HOUSEKEEPING PR — scheduled, not optional (user, s54).** Run this **once the
+5b. ~~**HOUSEKEEPING PR — scheduled, not optional (user, s54).**~~ **DONE (s62), PR #53
+   — all three items landed and ZERO numbers moved.** Both golden-bearing test files are
+   byte-identical; 1333 tests green. Two of the three `make_training_dummy` wrappers were
+   the one-line aliases the entry below describes; **the third was not** (see the s62 Done
+   entry — Starfire's also carried a dead `enemy_resist` path, deleted at the user's call),
+   and the entry's "~60 test sites" was 88. The PB formula's four copies became ONE shared
+   `builds/progression.proficiency_bonus` plus the enemy table's own, which is a DIFFERENT
+   fact and deliberately stayed. Original entry: Run this **once the
    evaluation framework is finished (after step 9) and BEFORE the first full build
    evaluation below**, which is the boundary the user named: the framework stops
    changing, and the build-evaluation work wants the build modules legible. It exists so

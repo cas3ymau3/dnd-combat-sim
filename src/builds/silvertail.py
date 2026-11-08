@@ -97,6 +97,7 @@ from ..healing import HitDiceSpec, attach_hit_dice
 from ..modifiers import Modifier
 from ..policy import Choice, InterceptResponse, RedirectSpec
 from ..resources import ResourceEntry, ResourcePool
+from .progression import proficiency_bonus   # the MASTER's PB (one source; see progression.py)
 from ..summons import SummonSpec, create_entity
 from ..zones import Zone, ZoneEffectSpec
 
@@ -112,11 +113,6 @@ BEAST_BASE_SAVES: dict[str, int] = {
     "str_save": 2, "dex_save": 2, "con_save": 2,
     "int_save": -1, "wis_save": 2, "cha_save": 0,
 }
-
-
-def _char_pb(level: int) -> int:
-    """The master's proficiency bonus at character *level* (2 / 3 / 4 / 5 / 6)."""
-    return 2 + (level - 1) // 4
 
 
 # ---------------------------------------------------------------------------
@@ -155,7 +151,7 @@ LEVELS: dict[int, dict] = {
             # saves: the full 2024 statblock (BEAST_BASE_SAVES + char PB) in the factory.
         },
         # The dummy is a passive target here unless a run declares otherwise (the 7a
-        # summon scenario).  Its AC / saves come from the table (make_training_dummy) so
+        # summon scenario).  Its AC / saves come from the table (make_baseline_enemy) so
         # the master's shocking grasp resolves against a real AC.
         # Loose all-hit upper bound (NOT a target): beast strike 1d8+1d6+5 ≈ 13 +
         # shocking grasp 1d8 ≈ 4.5 → ~18.  24 cushion.
@@ -370,7 +366,7 @@ def make_primal_companion(level: int, mortal: bool = False) -> Entity:
     # modifiers (per the user): STR/DEX/CON +2, INT -1, WIS +2, CHA +0.  The companion
     # adds the MASTER's proficiency bonus to ANY save it makes (2024 Primal Companion —
     # it uses your PB), so the effective save = base + char PB.
-    pb = _char_pb(level)
+    pb = proficiency_bonus(level)      # the MASTER's PB at character `level`, not the beast's own
     saves = {stat: base + pb for stat, base in BEAST_BASE_SAVES.items()}
     beast = Entity(
         name=f"PrimalCompanion-L{level}",
@@ -396,22 +392,6 @@ def make_primal_companion(level: int, mortal: bool = False) -> Entity:
     )
 
 
-def make_training_dummy(level: int) -> Entity:
-    """The target for *level*: the definitive table's full enemy stat block.
-
-    Delegates to ``enemy_stats.make_baseline_enemy`` — THE one enemy-``Entity``
-    constructor (evaluation_framework.md §3.4, step 5b).  Silvertail is the build that
-    needed the least migration, and that is a finding worth keeping: it ALREADY read
-    ``enemy_base_stats`` here and already drove the enemy off the table's dice, so its
-    baked-in enemy was bit-identical to the standardized one
-    (``enemy="baseline", enemy_options={'focus': 'summon'}`` — 6.31828125 at L10,
-    5.889375 at L8, 400 days / seed 11).  §3.4's examples single out the other two
-    builds; nobody had noticed this one was already there.
-
-    It never acts.  Whether the enemy acts is a declared ``RunConfig.enemy`` and the
-    framework's seam installs the policy; no build factory constructs one.
-    """
-    return enemy_stats.make_baseline_enemy(level)
 
 
 # ---------------------------------------------------------------------------
@@ -758,7 +738,7 @@ def make_silvertail_runner(
     """
     char = make_silvertail(level)
     beast = make_primal_companion(level, mortal=mortal_beast)
-    dummy = make_training_dummy(level)
+    dummy = enemy_stats.make_baseline_enemy(level)
 
     entities: list[Entity] = [char, dummy]
     policies: dict[int, object] = {}
