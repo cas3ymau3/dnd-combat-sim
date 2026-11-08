@@ -34,7 +34,7 @@ import logging
 
 import pytest
 
-from src.builds import silvertail, starfire_scion, war_angel
+from src.builds import enemy_stats, silvertail, starfire_scion, war_angel
 from src.evaluation import (
     RunConfig,
     Roster,
@@ -147,7 +147,7 @@ def test_summon_damage_never_merges_into_the_headline():
 
 def test_roster_rejects_overlapping_roles_and_empty_characters():
     char = war_angel.make_war_angel(1)
-    dummy = war_angel.make_training_dummy(1)
+    dummy = enemy_stats.make_baseline_enemy(1)
     with pytest.raises(ValueError, match="roles are exclusive"):
         Roster(characters=[char], summons=[char], enemies=[dummy])
     with pytest.raises(ValueError, match="at least one character"):
@@ -158,7 +158,7 @@ def test_roster_character_accessor_refuses_to_hide_plurality():
     char_a = war_angel.make_war_angel(1)
     char_b = war_angel.make_war_angel(2)
     roster = Roster(characters=[char_a, char_b],
-                    enemies=[war_angel.make_training_dummy(1)])
+                    enemies=[enemy_stats.make_baseline_enemy(1)])
     with pytest.raises(ValueError, match="multi-character"):
         _ = roster.character
     assert len(roster.headline_source_ids) == 2

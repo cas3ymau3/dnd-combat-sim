@@ -173,11 +173,43 @@ DUMMY_HP = 10 ** 9
 def make_baseline_enemy(level: int, name: "str | None" = None) -> "Entity":
     """THE enemy-``Entity`` constructor (evaluation_framework.md §3.4, s52).
 
-    One source for the enemy's stat block.  Before step 5b each build module built its
-    own dummy out of its own ``LEVELS`` row, which is the coupling §3.4 exists to
-    remove; all three ``make_training_dummy`` functions now delegate here, and the
-    framework's seam (``evaluation/enemy.py``) writes the same block over whatever it
-    is handed.
+    One source for the enemy's stat block, and now the ONLY name for it.  Before step
+    5b each build module built its own dummy out of its own ``LEVELS`` row, which is
+    the coupling §3.4 exists to remove; s52 turned the three ``make_training_dummy``
+    functions into delegations to this one, and PROGRESS item 5b (s61) deleted all
+    three — several names for one thing is the shape the seam check exists to remove,
+    at a readability cost rather than a correctness one.  The framework's seam
+    (``evaluation/enemy.py``) writes the same block over whatever it is handed.
+
+    **TWO of the three were one-line delegations; the third was not**, which the s54
+    entry scheduling 5b had recorded as all three.  Starfire's also set a
+    ``damage_response`` from its own ``LEVELS`` row — dead at all eight of its levels
+    and deleted with it (the record is in ``starfire_scion.py`` where it lived).
+
+    It never acts.  Whether the enemy acts is a declared ``RunConfig.enemy`` and the
+    framework's seam installs the policy; no build factory constructs one.  A factory
+    run on its own therefore faces a PASSIVE target, and a test that needs the enemy to
+    act installs a policy itself (``tests/test_summon_survival._install_l8_enemy`` is
+    the pattern).
+
+    WHAT THE THREE DELETED WRAPPERS RECORDED (preserved here, s61)
+    --------------------------------------------------------------
+    Their docstrings held the s52 migration's findings, which outlive the functions:
+
+    * **The AC was UNCHANGED at every level in all three builds** — each baked-in value
+      already equalled this table's, because both were copied out of the same CSV.
+      Pinned as an assertion in ``tests/test_eval_enemy_seam.py``, not left as prose.
+    * **The SAVES were the real change, and they differed per build.** War Angel's old
+      dummy carried NONE; Starfire's carried exactly one (``dex_save``); Silvertail's
+      already read ``enemy_base_stats``.  ``Entity.stat()`` returns 0 for a missing key
+      *by design*, so a save forced on either of the first two resolved against +0 and
+      printed a plausible number.
+    * **Silvertail needed the least migration, and that is a finding worth keeping.**
+      It already read ``enemy_base_stats`` here and already drove the enemy off this
+      table's dice, so its baked-in enemy was bit-identical to the standardized one
+      (``enemy="baseline", enemy_options={'focus': 'summon'}`` — 6.31828125 at L10,
+      5.889375 at L8, 400 days / seed 11).  §3.4's examples single out the other two
+      builds; nobody had noticed this one was already there.
 
     Why that second write is not the duplication the seam check forbids: it forbids two
     *sources*, and there is one — this function and ``_complete_stat_block`` both read
@@ -520,6 +552,22 @@ def _avg(count: int, sides: int, bonus: int) -> float:
 
 
 def _pb(level: int) -> int:
+    """The MONSTER proficiency bonus at challenge rating *level* — the DMG "Monster
+    Statistics by Challenge Rating" PB column, read only by :func:`regenerate` to back
+    the per-swing die count out of a target average.
+
+    **DELIBERATELY NOT ``progression.proficiency_bonus`` (PROGRESS item 5b, s61).**
+    Item 5b collapsed three copies of this same one-liner into that shared function and
+    left this one alone, because the seam check asks whether two places hold one
+    QUANTITY and the answer here is no: that one is indexed by character level, this
+    one by challenge rating, and the two tables agree at every point of 1-20 only
+    because the DMG was built to mirror the PC track.  The agreement is a coincidence
+    of the ruleset, not a derivation — the monster table extends to CR 0 and the
+    fractional CRs where "character level" has no value, and this side is FITTED (see
+    ``regenerate``) while the character side is closed-form rules text, so they can be
+    retuned independently.  Importing it would make the enemy's to-hit a property of
+    the character progression, which is the §3.4 coupling one layer down.
+    """
     return 2 + (level - 1) // 4
 
 

@@ -30,7 +30,7 @@ from src.resources import ResourceEntry, ResourcePool
 from src.rng import SeededRNG
 from src.scheduler import Scheduler
 from src.verbs import resolve_attack_roll, resolve_damage
-from src.builds import war_angel
+from src.builds import enemy_stats, war_angel
 
 
 # ---------------------------------------------------------------------------
@@ -166,7 +166,7 @@ def test_no_counter_when_spec_absent():
 
 def _l14_policy():
     char = war_angel.make_war_angel(14)
-    enemy = war_angel.make_training_dummy(14)
+    enemy = enemy_stats.make_baseline_enemy(14)
     pol = war_angel.WarAngelPolicy(level=14, target=enemy)
     return pol, char, enemy
 
@@ -221,7 +221,7 @@ def test_policy_still_parries_when_counter_budget_empty():
 
 def test_policy_below_l14_never_intercepts():
     char = war_angel.make_war_angel(13)
-    enemy = war_angel.make_training_dummy(13)
+    enemy = enemy_stats.make_baseline_enemy(13)
     pol = war_angel.WarAngelPolicy(level=13, target=enemy)
     assert pol.on_incoming_hit(_incoming(enemy, char, margin=1)) is None
 

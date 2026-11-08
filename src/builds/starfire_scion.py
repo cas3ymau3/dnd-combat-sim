@@ -692,37 +692,31 @@ def make_starfire_scion(level: int) -> Entity:
     return scion
 
 
-def make_training_dummy(level: int) -> Entity:
-    """The target for *level*: the definitive table's full enemy stat block.
-
-    Delegates to ``enemy_stats.make_baseline_enemy`` — THE one enemy-``Entity``
-    constructor (evaluation_framework.md §3.4, step 5b).  Before s52 this function
-    built the dummy out of this build's OWN ``LEVELS`` row, which is the coupling §3.4
-    exists to remove: the enemy's stat block, which enemy model drove it, and whether it
-    acted at all were character-build properties.
-
-    Two consequences of the delegation, both deliberate:
-
-    * The AC is UNCHANGED at every level — the baked-in values already equalled the
-      table's, because both were copied out of the same CSV (pinned in
-      ``tests/test_eval_enemy_seam.py``).
-    * The dummy now carries the table's SIX SAVES and ``enemy_save_dc``, which the old
-      one did not. Starfire's carried one (``dex_save``).  ``Entity.stat()`` returns 0 for a missing key *by design*, so
-      a save forced on the old dummy resolved against +0 and printed a plausible number.
-
-    It never acts.  Whether the enemy acts is a declared ``RunConfig.enemy`` and the
-    framework's seam installs the policy; no build factory constructs one.
-    """
-    dummy = enemy_stats.make_baseline_enemy(level)
-    # ``enemy_resist`` STAYS a build-level row: it is an INTRINSIC damage-type response
-    # (a fire-resistant enemy that halves Searing Arc — substrate #4), i.e. a declared
-    # SCENARIO for this build's typed damage, not the enemy's stat block.  The §5
-    # mean-field mult(t) profile is the enemy-side knob and lives on
-    # ``enemy_options['mitigation']``; the two are independent and both can apply.
-    # dict(... or {}) mirrors Entity.__init__: damage_response is read with .get(),
-    # so a bare None from a level row with no enemy_resist would crash resolve_damage.
-    dummy.damage_response = dict(LEVELS[level].get("enemy_resist") or {})
-    return dummy
+# ``make_training_dummy`` LIVED HERE AND IS DELETED (s61, PROGRESS item 5b), AND SO IS
+# THE ``enemy_resist`` PATH IT CARRIED (user's call, s61).
+#
+# Two of the three builds' wrappers were one-line delegations to
+# ``enemy_stats.make_baseline_enemy`` — three names for one thing, which is what 5b
+# deleted.  THIS one was not: it also did
+# ``dummy.damage_response = dict(LEVELS[level].get("enemy_resist") or {})``, defended in
+# a comment as a deliberate build-level seam (an INTRINSIC damage-type response — a
+# fire-resistant enemy that halves Searing Arc, substrate #4 — as opposed to §5's
+# mean-field ``mult(t)``, which is the enemy-side knob on
+# ``enemy_options['mitigation']``; the two were independent and both could apply).
+#
+# **It was dead at every level, and had been for as long as it existed.** No ``LEVELS``
+# row declares ``enemy_resist`` at any of the eight levels, and ``Entity.__init__``
+# already does ``dict(damage_response or {})``, so the line assigned ``{}`` over ``{}``
+# eight times out of eight.  The s54 entry that scheduled 5b described all three
+# wrappers as one-line delegations; this one disproved that, and the measurement is
+# what found it rather than the reading.  A declared-but-unused seam is still a
+# capability, so deleting it was put to the user as a decision rather than taken as
+# housekeeping.
+#
+# If a Starfire scenario ever needs an intrinsically resistant target, the way back is
+# ``Entity(damage_response=...)`` at construction or ``add_damage_response`` for an
+# effect-sourced one — not a build-specific target constructor.  The enemy's stat block
+# has ONE source (§3.4).
 
 
 # ``make_party_member`` LIVED HERE AND IS DELETED (s54, §3.5.2).
@@ -1675,7 +1669,7 @@ def make_day_runner(
     passive party members themselves deal nothing.
     """
     char = make_starfire_scion(level)
-    dummy = make_training_dummy(level)
+    dummy = enemy_stats.make_baseline_enemy(level)
     policy = StarfireScionPolicy(
         level=level, character=char, target=dummy, rounds_per_combat=rounds_per_combat,
         primal_strike_unarmed=primal_strike_unarmed,
@@ -1726,7 +1720,7 @@ def make_ally_effects_runner(
     """
     char = make_starfire_scion(level)
     ally = make_ally(level)
-    dummy = make_training_dummy(level)
+    dummy = enemy_stats.make_baseline_enemy(level)
     policy = StarfireScionPolicy(
         level=level, character=char, target=dummy, rounds_per_combat=rounds_per_combat,
     )

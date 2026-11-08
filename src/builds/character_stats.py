@@ -108,6 +108,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+# The `pb` column's rule, shared with every character-side table rather than restated
+# here (PROGRESS item 5b, s61).  The SUBJECT is not the owner of the universal track —
+# that is the point of progression.py existing instead of the builds importing this
+# module.
+from .progression import proficiency_bonus
+
 if TYPE_CHECKING:                                    # pragma: no cover
     from ..entity import Entity
 
@@ -170,11 +176,6 @@ LEVELS = tuple(range(1, 21))
 # The rules behind the declared columns
 # ---------------------------------------------------------------------------
 
-def _pb(level: int) -> int:
-    """Proficiency bonus: +2/+3/+4/+5/+6 at 1/5/9/13/17."""
-    return 2 + (level - 1) // 4
-
-
 def _primary_mod(level: int) -> int:
     """The primary-ability MODIFIER: 16 (+3) → 18 (+4) at the L4 ASI → 20 (+5) at L8."""
     if level >= 8:
@@ -207,7 +208,7 @@ def _hp(level: int) -> int:
 
 def _saves(level: int) -> dict[str, int]:
     """The six saving throws, two proficient (primary + CON)."""
-    pb = _pb(level)
+    pb = proficiency_bonus(level)
     saves = dict(_SECONDARY_SAVE_MODS)
     saves[PRIMARY_SAVE_KEY] = pb + _primary_mod(level)
     saves["con_save"] = pb + CON_MOD
@@ -227,7 +228,7 @@ def _build_table() -> dict[int, dict]:
     """The full per-level progression.  Derived, not transcribed."""
     table: dict[int, dict] = {}
     for level in LEVELS:
-        pb = _pb(level)
+        pb = proficiency_bonus(level)
         primary = _primary_mod(level)
         table[level] = {
             "level": level,

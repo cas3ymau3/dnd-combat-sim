@@ -73,6 +73,11 @@ from ..policy import (
 )
 from ..resources import ResourceEntry, ResourcePool
 from . import enemy_stats          # THE enemy-Entity constructor (evaluation_framework.md §3.4)
+# PB is the UNIVERSAL character track, not this build's rule (PROGRESS item 5b, s61):
+# imported rather than restated so `war_angel.proficiency_bonus` still resolves for any
+# caller while there is exactly one source.  See progression.py for why the enemy
+# table's numerically-identical column is NOT this fact.
+from .progression import proficiency_bonus
 
 if TYPE_CHECKING:
     from ..rng import SeededRNG
@@ -722,21 +727,6 @@ def ability_mods(level: int) -> dict[str, int]:
     return {a: ability_mod(s) for a, s in ability_scores(level).items()}
 
 
-def proficiency_bonus(level: int) -> int:
-    """PB at *level* — the universal 5e track (+2/+3/+4/+5 at 1/5/9/13).
-
-    **The FOURTH copy of this one-liner** (``enemy_stats._pb``,
-    ``character_stats._pb``, ``silvertail``), which is a duplicated sequence and so a
-    duplicated source by the s54 rule.  It is written here rather than imported
-    because the other three belong to the enemy table, the baseline SUBJECT's table
-    and another build: a real build taking its PB from the framework's own stand-in
-    subject would be a worse coupling than a repeated rule.  Four copies is enough
-    evidence to lift it somewhere shared — recorded for the housekeeping PR (PROGRESS
-    item 5b) rather than done mid-exercise.
-    """
-    return 2 + (level - 1) // 4
-
-
 def save_bonuses(level: int) -> dict[str, int]:
     """The six ``*_save`` base stats at *level*: modifier + PB where proficient.
 
@@ -805,28 +795,6 @@ def make_war_angel(level: int) -> Entity:
     ), _war_angel_hit_dice(level))
 
 
-def make_training_dummy(level: int) -> Entity:
-    """The target for *level*: the definitive table's full enemy stat block.
-
-    Delegates to ``enemy_stats.make_baseline_enemy`` — THE one enemy-``Entity``
-    constructor (evaluation_framework.md §3.4, step 5b).  Before s52 this function
-    built the dummy out of this build's OWN ``LEVELS`` row, which is the coupling §3.4
-    exists to remove: the enemy's stat block, which enemy model drove it, and whether it
-    acted at all were character-build properties.
-
-    Two consequences of the delegation, both deliberate:
-
-    * The AC is UNCHANGED at every level — the baked-in values already equalled the
-      table's, because both were copied out of the same CSV (pinned in
-      ``tests/test_eval_enemy_seam.py``).
-    * The dummy now carries the table's SIX SAVES and ``enemy_save_dc``, which the old
-      one did not. War Angel's carried NONE.  ``Entity.stat()`` returns 0 for a missing key *by design*, so
-      a save forced on the old dummy resolved against +0 and printed a plausible number.
-
-    It never acts.  Whether the enemy acts is a declared ``RunConfig.enemy`` and the
-    framework's seam installs the policy; no build factory constructs one.
-    """
-    return enemy_stats.make_baseline_enemy(level)
 
 
 # ---------------------------------------------------------------------------
@@ -1485,7 +1453,7 @@ def make_day_runner(level: int, rng: "SeededRNG", rounds_per_combat: int = 4):
     policy, and the framework's seam installs whatever enemy a run declares.
     """
     char = make_war_angel(level)
-    dummy = make_training_dummy(level)
+    dummy = enemy_stats.make_baseline_enemy(level)
     policy = WarAngelPolicy(level=level, target=dummy,
                             rounds_per_combat=rounds_per_combat)
     policies: dict[int, object] = {char.id: policy}

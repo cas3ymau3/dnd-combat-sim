@@ -186,7 +186,7 @@ def _snapshot(round_number: int) -> GameState:
 
 
 def test_policy_emits_action_attack_every_round():
-    dummy = war_angel.make_training_dummy(1)
+    dummy = enemy_stats.make_baseline_enemy(1)
     policy = war_angel.WarAngelPolicy(level=1, target=dummy)
     policy.on_combat_start(0, SeededRNG(0))
     for r in range(1, 5):
@@ -195,7 +195,7 @@ def test_policy_emits_action_attack_every_round():
 
 
 def test_policy_emits_exactly_one_aoo_per_combat():
-    dummy = war_angel.make_training_dummy(1)
+    dummy = enemy_stats.make_baseline_enemy(1)
     policy = war_angel.WarAngelPolicy(level=1, target=dummy)
     policy.on_combat_start(0, SeededRNG(0))
     aoo_rounds = [
@@ -207,7 +207,7 @@ def test_policy_emits_exactly_one_aoo_per_combat():
 
 
 def test_on_combat_start_is_reproducible():
-    dummy = war_angel.make_training_dummy(1)
+    dummy = enemy_stats.make_baseline_enemy(1)
     p1 = war_angel.WarAngelPolicy(level=1, target=dummy)
     p2 = war_angel.WarAngelPolicy(level=1, target=dummy)
     rounds_1 = []
@@ -229,7 +229,7 @@ def test_statuses_cleared_between_combats():
     from src.day_runner import DayRunner
 
     char = war_angel.make_war_angel(1)
-    dummy = war_angel.make_training_dummy(1)
+    dummy = enemy_stats.make_baseline_enemy(1)
     # Seed a stale status as if left over from a prior combat.
     char.statuses.apply("vex_advantage", dummy.id, expiry=(99, 0))
     policy = war_angel.WarAngelPolicy(level=1, target=dummy)
@@ -313,7 +313,7 @@ def test_on_hit_decider_consumes_bonus_action_and_slot_in_scheduler():
     char = war_angel.make_war_angel(6)
     # Drain war priest so the BA stays free for a smite, and pin a single slot.
     char.resources.consume("war_priest", char.resources.available("war_priest"))
-    dummy = war_angel.make_training_dummy(6)
+    dummy = enemy_stats.make_baseline_enemy(6)
     policy = war_angel.WarAngelPolicy(level=6, target=dummy)
     policy.on_combat_start(1, SeededRNG(0))
 
@@ -365,7 +365,7 @@ def test_extra_damage_dice_flow_through_to_damage():
 
 
 def test_guided_strike_on_miss_rescues_and_consumes_charge():
-    dummy = war_angel.make_training_dummy(5)
+    dummy = enemy_stats.make_baseline_enemy(5)
     policy = war_angel.WarAngelPolicy(level=5, target=dummy)
     policy.on_combat_start(1, SeededRNG(0))     # combat index 1 (no combat-1 cap)
 
@@ -379,7 +379,7 @@ def test_guided_strike_on_miss_rescues_and_consumes_charge():
 
 
 def test_guided_strike_declines_on_aoo_and_when_it_would_not_flip():
-    dummy = war_angel.make_training_dummy(5)
+    dummy = enemy_stats.make_baseline_enemy(5)
     policy = war_angel.WarAngelPolicy(level=5, target=dummy)
     policy.on_combat_start(1, SeededRNG(0))
     base = dict(target=dummy, resources={"channel_divinity": 2}, round_number=1)
@@ -394,7 +394,7 @@ def test_guided_strike_declines_on_aoo_and_when_it_would_not_flip():
 
 def test_guided_strike_is_greedy_no_combat_1_cap():
     """Greedy: rescue every flippable miss while charges remain, even in combat 1."""
-    dummy = war_angel.make_training_dummy(5)
+    dummy = enemy_stats.make_baseline_enemy(5)
     policy = war_angel.WarAngelPolicy(level=5, target=dummy)
     policy.on_combat_start(0, SeededRNG(0))     # combat 1 — no cap anymore
     mk = lambda: MissContext(actor=Entity(name="a", hp=1), target=dummy,
@@ -464,7 +464,7 @@ def test_bluff_only_fires_once_per_turn():
 
 def test_bluff_flag_resets_on_new_turn():
     """decide() resets _bluffed_this_turn so each turn starts fresh."""
-    dummy = war_angel.make_training_dummy(8)
+    dummy = enemy_stats.make_baseline_enemy(8)
     policy = war_angel.WarAngelPolicy(level=8, target=dummy)
     policy._bluffed_this_turn = True         # simulate end of previous turn
     from src.policy import GameState
@@ -533,7 +533,7 @@ def test_bluff_integrates_with_scheduler_applies_vex():
     from src.scheduler import Scheduler
 
     char = war_angel.make_war_angel(8)
-    dummy = war_angel.make_training_dummy(8)
+    dummy = enemy_stats.make_baseline_enemy(8)
     policy = war_angel.WarAngelPolicy(level=8, target=dummy)
     # Force the AoO to round 1 and drain WP/surge so only a WP-like setup fires
     # via war_priest being available; use a seed where attacks hit.
@@ -617,7 +617,7 @@ def test_l9_setup_still_bluffs_on_round_4():
 
 def test_l10_extra_attack_emits_two_action_attacks():
     """decide() at L10 should emit 2 action attacks (action + none) per turn."""
-    dummy = war_angel.make_training_dummy(10)
+    dummy = enemy_stats.make_baseline_enemy(10)
     policy = war_angel.WarAngelPolicy(level=10, target=dummy)
     from src.policy import GameState
     snap = GameState(
@@ -638,7 +638,7 @@ def test_l10_extra_attack_emits_two_action_attacks():
 
 def test_l10_surge_emits_two_extra_attacks():
     """decide() at L10 T1 with surge: 2 surge attacks (none + none), 2 action attacks."""
-    dummy = war_angel.make_training_dummy(10)
+    dummy = enemy_stats.make_baseline_enemy(10)
     policy = war_angel.WarAngelPolicy(level=10, target=dummy)
     from src.policy import GameState
     snap = GameState(
@@ -676,7 +676,7 @@ def test_l10_bluff_still_blocked_on_t4_aoo():
 
 def test_l10_no_true_strike_rider():
     """At L10, the action attack carries no extra_damage_dice (True Strike is gone)."""
-    dummy = war_angel.make_training_dummy(10)
+    dummy = enemy_stats.make_baseline_enemy(10)
     policy = war_angel.WarAngelPolicy(level=10, target=dummy)
     from src.policy import GameState
     snap = GameState(
@@ -696,7 +696,7 @@ def test_l10_no_true_strike_rider():
 
 def _l13_snapshot(round_number: int, **resource_overrides):
     from src.policy import GameState
-    dummy = war_angel.make_training_dummy(13)
+    dummy = enemy_stats.make_baseline_enemy(13)
     resources = {"action": 1, "bonus_action": 1, "reaction": 1,
                  "action_surge": 1, "war_priest": 3}
     resources.update(resource_overrides)
@@ -720,7 +720,7 @@ def test_l13_factory_char_and_enemy_stats():
     assert char.stat("ac") == 18                  # before Shield of Faith
     assert char.stat("con_save") == 4
 
-    dummy = war_angel.make_training_dummy(13)
+    dummy = enemy_stats.make_baseline_enemy(13)
     assert dummy.stat("attack_bonus") == enemy_stats.baseline_attack_bonus(13) == 11
     n, sides, bonus = enemy_stats.baseline_attack_dice(13)
     assert dummy.stat("damage_dice") == (n, sides) == (5, 8)
@@ -733,7 +733,7 @@ def test_l13_factory_char_and_enemy_stats():
 def test_l13_round1_suppresses_action_and_war_priest_keeps_surge():
     """Round 1 spends the action on Bless and the BA on Shield of Faith, so no
     normal action attack and no War Priest BA — but Action Surge attacks remain."""
-    policy = war_angel.WarAngelPolicy(level=13, target=war_angel.make_training_dummy(13))
+    policy = war_angel.WarAngelPolicy(level=13, target=enemy_stats.make_baseline_enemy(13))
     policy.on_combat_start(0, SeededRNG(0))
     choices = policy.decide(_l13_snapshot(1))
     assert not any(c.cost == "action" for c in choices)        # no Bless-turn attack
@@ -746,7 +746,7 @@ def test_l13_round1_suppresses_action_and_war_priest_keeps_surge():
 
 def test_l13_round2_is_normal():
     """From round 2 the bless-turn suppression lifts: action attack + War Priest BA."""
-    policy = war_angel.WarAngelPolicy(level=13, target=war_angel.make_training_dummy(13))
+    policy = war_angel.WarAngelPolicy(level=13, target=enemy_stats.make_baseline_enemy(13))
     policy.on_combat_start(0, SeededRNG(0))
     choices = policy.decide(_l13_snapshot(2))
     assert any(c.cost == "action" for c in choices)
@@ -807,7 +807,7 @@ def test_l13_enemy_policy_targeting_extremes():
 # ---------------------------------------------------------------------------
 
 def _l16_snapshot(round_number: int, **resource_overrides):
-    dummy = war_angel.make_training_dummy(16)
+    dummy = enemy_stats.make_baseline_enemy(16)
     resources = {"action": 1, "bonus_action": 1, "reaction": 1,
                  "action_surge": 1, "war_priest": 3}
     resources.update(resource_overrides)
@@ -830,7 +830,7 @@ def test_l16_factory_switches_to_rapier_vex():
 def test_l16_tactical_master_overrides_first_attack_to_sap():
     """Exactly one on-turn attack carries mastery_override='sap'; the rest keep
     the rapier's native vex (mastery_override=None)."""
-    policy = war_angel.WarAngelPolicy(level=16, target=war_angel.make_training_dummy(16))
+    policy = war_angel.WarAngelPolicy(level=16, target=enemy_stats.make_baseline_enemy(16))
     policy.on_combat_start(0, SeededRNG(0))
     # Round 2 (no Bless-turn suppression, no AoO unless rolled): action + WP + extra.
     choices = policy.decide(_l16_snapshot(2))
@@ -844,7 +844,7 @@ def test_l16_tactical_master_overrides_first_attack_to_sap():
 
 def test_l15_has_no_tactical_master_override():
     """L15 (longsword) sets no mastery_override — sap is the base weapon mastery."""
-    policy = war_angel.WarAngelPolicy(level=15, target=war_angel.make_training_dummy(15))
+    policy = war_angel.WarAngelPolicy(level=15, target=enemy_stats.make_baseline_enemy(15))
     policy.on_combat_start(0, SeededRNG(0))
     choices = policy.decide(_l16_snapshot(2))  # snapshot shape is level-agnostic
     assert all(c.mastery_override is None for c in choices)
@@ -854,7 +854,7 @@ def test_l16_indomitable_rerolls_flippable_concentration_check():
     """on_failed_save spends Indomitable on a non-last-round concentration check
     whose DC a +9 reroll can clear."""
     from src.policy import FailedSaveContext, SaveRerollResponse
-    policy = war_angel.WarAngelPolicy(level=16, target=war_angel.make_training_dummy(16))
+    policy = war_angel.WarAngelPolicy(level=16, target=enemy_stats.make_baseline_enemy(16))
     ctx = FailedSaveContext(
         entity=Entity(name="a", hp=10), save_kind="concentration",
         save_stat="con_save", dc=16, save_bonus=4, failed_total=12,
@@ -869,7 +869,7 @@ def test_l16_indomitable_rerolls_flippable_concentration_check():
 def test_l16_indomitable_gates():
     """on_failed_save declines: no resource, last round, wrong save kind."""
     from src.policy import FailedSaveContext
-    policy = war_angel.WarAngelPolicy(level=16, target=war_angel.make_training_dummy(16))
+    policy = war_angel.WarAngelPolicy(level=16, target=enemy_stats.make_baseline_enemy(16))
     base = dict(entity=Entity(name="a", hp=10), save_kind="concentration",
                 save_stat="con_save", dc=16, save_bonus=4, failed_total=12,
                 resources={"indomitable": 1}, round_number=2)
@@ -884,7 +884,7 @@ def test_l16_indomitable_gates():
 def test_l15_policy_has_no_indomitable():
     """Below L16 the failed-save hook always declines (Indomitable not online)."""
     from src.policy import FailedSaveContext
-    policy = war_angel.WarAngelPolicy(level=15, target=war_angel.make_training_dummy(15))
+    policy = war_angel.WarAngelPolicy(level=15, target=enemy_stats.make_baseline_enemy(15))
     ctx = FailedSaveContext(
         entity=Entity(name="a", hp=10), save_kind="concentration",
         save_stat="con_save", dc=16, save_bonus=4, failed_total=12,

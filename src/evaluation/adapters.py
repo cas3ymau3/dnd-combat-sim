@@ -11,15 +11,31 @@ Adding a build = writing an adapter (~20 lines wrapping the existing factory) an
 registering it.  No evaluation-layer code changes.  This mirrors the project's
 standing rule that new content should never force engine edits.
 
-The four axes of variance an adapter absorbs (§2):
+THE FIVE METHODS AND WHAT EACH ABSORBS
+--------------------------------------
+Counted against the PROTOCOL rather than against §2's prose, because the protocol is
+the thing that can be counted mechanically.  §2 enumerates FOUR axes of variance,
+which was the whole of it when this module was written; step 8b added a fifth that
+§2's factory table cannot show (see axis 5).  The divergence sat open from s56 to s61
+as "four axes, five methods" — recorded here rather than silently renumbered.
 
-1. factory name and signature (``make_day_runner`` vs ``make_silvertail_runner``);
-2. build-specific, open-ended scenario axes (0–5 today) — declared via
-   :class:`OptionSpec`;
-3. roster SHAPE — the adapter tags entities by role, killing the tuple-position
-   coupling that makes ``validation.py`` un-generalizable;
-4. sparse, disjoint level sets — each adapter reports its own
+1. **Factory name and signature** differ (``make_day_runner`` vs
+   ``make_silvertail_runner``) — absorbed by :meth:`~BuildAdapter.build`.
+2. **Scenario axes** are build-specific and open-ended (0–5 today) — declared via
+   :class:`OptionSpec` and reported by :meth:`~BuildAdapter.option_schema`.
+3. **Roster SHAPE** differs — :meth:`~BuildAdapter.build` tags entities by role,
+   killing the tuple-position coupling that made ``src/validation.py``
+   un-generalizable (that module was deleted in s52; the coupling is the record).
+4. **Sparse, disjoint level sets** — each adapter reports its own
    :meth:`~BuildAdapter.available_levels`.
+5. **Which save abilities the build's own PLAN can force** (§13's saves channel,
+   added at step 8b) — :meth:`~BuildAdapter.forced_save_abilities`.  This one is
+   invisible in §2's factory table because it is a property of the POLICY, not of the
+   factory signature, and a Python ``decide()`` cannot be inspected for it; that is
+   exactly why it is declared.  See the method's own docstring.
+
+:meth:`~BuildAdapter.describe` is the fifth method but NOT a sixth axis: it is the §4
+provenance obligation taken over all five, reporting the RESOLVED value of each.
 """
 
 from __future__ import annotations
