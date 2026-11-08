@@ -2229,7 +2229,7 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ## Done
 
 - **ROADMAP ITEM 5b — THE HOUSEKEEPING PR. ZERO NUMBERS MOVED (2026-11-08, session
-  62).** The scheduled mechanical PR between the finished framework and the definitive
+  61).** The scheduled mechanical PR between the finished framework and the definitive
   build evaluation (the boundary the user named in s54: "the framework stops changing,
   and the build-evaluation work wants the build modules legible"). All three items
   landed. **1333 tests passing** (the mid-edit count — 1332 + the dirty-tree test;
