@@ -737,6 +737,43 @@ not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell on
 
 #### Metric-set review log
 
+- **Session 62 (2026-11-09) — NO REVIEW DUE; ONE RUN ANYWAY, AND IT IS CONSUMED. 27
+  declarations walked against a 16-level MEASURED FRAME, ZERO CUT.** The ruling, stated
+  at startup rather than left ambiguous for a fourth session: **rendering the registry
+  is not TOUCHING it** — this protocol's own "count DECLARATIONS, not rows" corollary is
+  the unit, 5c changed zero `MetricDef`s, and that is the s52/s56/s59/s60 precedent. So
+  none was due. It was run anyway, as a CONSUMER of the authoritative frame, because
+  s58 established that "does anyone read this?" stopped discriminating once the sweep
+  existed and left DERIVABILITY as the only live clause — and derivability is a
+  measurement, which needs a frame. #6b is the first frame that exists.
+  - **Seven of 27 declarations carry NO information for this subject**: `damage_share`
+    (13 cells x 16 levels = 208 instances, all `unmeasured`), `typed_damage_share`
+    (measured 0.0 at all 16 levels), and five `16/16 unavailable` scalars —
+    `control_turns_lost_per_round`, `control_turns_reduced_per_round`,
+    `damage_mitigated_per_round`, `mitigation_fraction`,
+    `healing_provided_to_others_per_day`. The first two are §14(h) (War Angel is the
+    untyped build the deferral names) and are **14 of the 83 per-level cell slots, 17%
+    of the registry's width producing nothing here**.
+  - **None of the seven is a CUT**, and the reason is §3.4 rather than charity: an
+    `unavailable` row IS information ("we cannot measure this", never a zero), and all
+    five would be measured on a subject that exercises those channels. They survive on
+    CROSS-BUILD grounds, not on this build's evidence. Recorded explicitly because a
+    future review looking only at this frame would see seven dead rows and be wrong.
+  - **The three derivability measurements**, which is the part only a frame could
+    settle. (1) `concentration_breaks_per_day == checks/day x break_rate` holds to
+    MACHINE PRECISION (delta 0 or 1.11e-16) at L13-L16, while its stderr
+    (0.0030-0.0034) is NOT reconstructible from the other two rows without their
+    covariance — s46's survival-rule counter-example confirmed on real data, so it
+    survives. (2) `dpr == dpr_by_role[characters]` EXACT at 16/16 — the layer check
+    that replaced the retired §12 parity proof, holding on data rather than in a
+    fixture; the redundancy is by design. (3) `party_dpr_opening_round` is NOT
+    redundant and diverges in BOTH directions (6.98 vs 8.29 at L1, 27.01 vs 23.44 at
+    L8, 23.20 vs 35.31 at L13), because round 1 is action-surge-heavy at L8 and
+    Bless+Shield at L13 — s58's finding reconfirmed.
+  - Registry shape UNCHANGED: 27 declarations (17 scalars + 8 breakdowns + 2
+    distributions), 77 cells, 12 distribution statistics. **The full review s59 flagged
+    and s60/s61 deferred is now CONSUMED.**
+
 - **Session 60 (2026-11-07) — NO REVIEW DUE AND NONE RUN; the registry was not
   touched.** Step 9 moves NUMBERS, not declarations: the registry still holds **27**
   declarations (17 scalars + 8 breakdowns + 2 distributions), 77 metric cells and 12
@@ -991,7 +1028,19 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
-- **Last reviewed for reset: session 60 (2026-11-07) — nothing to reset (raised with the
+- **Last reviewed for reset: session 62 (2026-11-09) — nothing to reset (raised with the
+  user at startup; marker bumped per the >=2-session rule).** The s36 tear-down still
+  stands (allowlist at the git/python/pytest baseline; Chrome OFF). s61 and s62 were both
+  pure Python, so nothing accumulated. The container's missing `pytest` recurred for the
+  **twelfth** session running and was again installed with `pip install pytest` — a
+  property of the cloud container, NOT a config tweak to revert; `numpy` 2.5.3 and
+  `PyYAML` 6.0.3 are both already present and 5c needed no new dependency. s61 correctly
+  DEFERRED this review and said so at startup, which is why it was due here rather than
+  at s61. **Connectors were NOT raised** (the standing note's condition: "Currently
+  disabled" is empty and 5c needed none). One container note, also NOT a tweak and now
+  confirmed twice: `git worktree add <scratchpad>/x <sha>` works here and is how the
+  pre-step-9 stderr comparison was run (s60 used it for the physics/stream separation).
+- **Prior — session 60 (2026-11-07) — nothing to reset (raised with the
   user at startup; marker bumped per the >=2-session rule).** The s36 tear-down still
   stands (allowlist at the git/python/pytest baseline; Chrome OFF). s59 and s60 were
   both pure Python, so nothing accumulated. The container's missing `pytest` recurred
@@ -2227,6 +2276,223 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **ROADMAP ITEM 5c — #6b, THE DEFINITIVE RE-EVALUATION. WAR ANGEL L1-16 AT THE
+  STANDARD TIER (2026-11-09, session 62).** 16 cells, **800,000 simulated days**,
+  engine `a09a3ce` with **`dirty=False`**, **no manifest warnings**, §11 baseline
+  scoring rendered. `artifacts/sweeps/war_angel_levels-3680f51c545c69dd`.
+  **1340 tests passing** (1332 + the dirty-tree test + 7 new), full suite in
+  foreground once. **This is the run whose numbers count.**
+
+  **THE USER RESHAPED THE TASK AT STARTUP, AND THE RESHAPING IS WHAT PRODUCED THE
+  FINDINGS.** Item 5c as written asked for a numeric before/after against #6a's
+  engine. The user scrapped that and asked instead for a **level-by-level review of
+  the TACTICS** — "make sure that the strategy, not just the mechanics is correct now
+  that we're doing an actual authoritative run." That is the right instinct and it
+  closed a real gap: everything the project had validated to date was MECHANISM
+  ([[validate-mechanism-not-build-value]]), and nothing had ever checked that the
+  daily plan's CHOICES match what the guide says the character does. An authoritative
+  run with correct mechanics and wrong tactics is wrong in a way no golden catches —
+  the same shape as s55's "the golden set is a headline net".
+
+  ### The tier was raised to standard (50,000 days/cell) for a MEASURED reason
+  Two, and neither is preference. (1) §9.1 raises a `precision` warning on the quick
+  tier, and an authoritative artifact must not publish itself as imprecise — the
+  manifest now carries **no warnings at all**. (2) **A level sweep gets NO PAIRING
+  BENEFIT** (see finding 1), so each cell's noise is independent and every
+  level-over-level difference carries both cells' error. Quantified: L2 and L3 are
+  MECHANICALLY IDENTICAL, so at 2,000 days their spurious 0.9% gap was exactly 2 sigma
+  of one estimate. Cost ~65 min.
+
+  ### THE FOUR FINDINGS
+
+  **(1) THE STREAM OWNER LABEL ENCODES THE LEVEL, SO A LEVEL SWEEP CANNOT PAIR — AND
+  ITS BETWEEN-CELL CORRELATION IS AN ACCIDENT OF TWO DISPLAY NAMES.** L2 and L3 have
+  identical weapons, `+5/+5`, AC 17, enemy AC 14 and 1.25 atk/rd, so their true DPR
+  difference is **exactly zero**. They read **7.3945 vs 7.4133** — 0.019 +/- 0.009,
+  **2.0 sigma**, at 50,000 days. Traced to the first divergent draw:
+  `('attack_d20', 'WarAngel-L2')` vs `('attack_d20', 'WarAngel-L3')`.
+  `make_war_angel` names the entity `f"WarAngel-L{level}"` and §6.3 derives every
+  generator from `(seed, epoch, purpose, owner)` with `owner = entity.name`. Across
+  the 16 cells the correlation structure is three things at once: the `policy` stream
+  is SHARED (owner `war_angel_policy`, level-free); the character's `attack_d20` /
+  `damage` are DISTINCT per level; and the ENEMY's are shared wherever its AC
+  collides, because it is named `Dummy-AC{n}` — AC13:[1] AC14:[2,3] AC15:[4,5,6]
+  AC16:[7,8,9,10] AC17:[11,12,13,14] AC18:[15,16]. **Nothing violates §6.3** (it
+  requires a stable LABEL and `entity.name` is one) — but §6.3 says nothing about
+  stability ACROSS THE CELLS OF A SWEEP, and both names predate step 9 as display
+  strings that were silently promoted to STREAM IDENTITIES in s60. The s61 lesson
+  again: nobody asked what the quantity was INDEXED BY. **No code change, deliberately
+  — renaming re-keys every stream and moves every number in the project.**
+
+  **(2) STEP 9 BOUGHT #6b NOTHING, AND §12.1 IS WRONG ON THIS POINT.** The one
+  measurement kept from the scrapped before/after, in a `git worktree` at `58e2a43`
+  (step 8e, the commit before step 9), 20,000 days:
+
+  | lvl | pre-step-9 stderr | current stderr | ratio |
+  |---:|---:|---:|---:|
+  | 5 | 0.01547 | 0.01537 | 0.994 |
+  | 13 | 0.01158 | 0.01157 | 0.999 |
+  | 16 | 0.01353 | 0.01337 | 0.988 |
+
+  **Step 9 did not narrow a single run's interval** (ratios within the sampling noise
+  of a variance estimate); the means moved slightly, which is the stream reshuffle s60
+  already characterised. §12.1 lists as one of the two things that made #6a
+  preliminary: "§6.1's paired seeding is measured inert until step 9's RNG substreams,
+  so **intervals are wider than they will be**". **True of a PAIRED COMPARISON, false
+  of a single run.** #6b is sixteen single runs, so step 9's value here was zero and
+  every interval in the table was bought with DAYS. Combined with finding 1: *step 9's
+  value is entirely in comparisons that hold the stream owners fixed, and a per-level
+  evaluation is not one.* This is what item 5c actually asked — what finishing the
+  framework changed about the MEASUREMENT — and **the before/after it prescribed would
+  have answered it WORSE**: it would have shown the means moving and invited the
+  conclusion that step 9 mattered here, when the precision it exists to buy was
+  structurally unavailable.
+
+  **(3) THE §13 ECONOMY CHANNEL WAS MISSING A WRITER — FIXED, AND IT IS THE ONE DEFECT
+  THAT WOULD HAVE PUBLISHED FALSE NUMBERS.** Spending a resource is a TWO-CALL
+  SEQUENCE (`pool.consume` then `telemetry.record_resource`); the scheduler did both at
+  its six sites and the eleven out-of-combat callers did only the first. So the channel
+  had **two writers and reported one**, and at War Angel L13 `spell_slots_per_day` read
+  **1.022 against 9.908 actually spent — a 9.7x undercount**, while
+  `limited_resources_per_day` missed all 13 Hit Dice and 3.7 of 4.8 daily-plan Channel
+  Divinity charges. Neither metric's declared definition is qualified with "in combat",
+  so **both were FALSE as implemented, not merely narrow** — and L5 published a
+  confident, converged, available **0.000** while two slots a day went out the door.
+  Fixed by `resources.spend_recorded` plus the day's `between_telemetry` handle on
+  `BeforeCombatContext` (the accumulator s45 had already built — the scope question was
+  settled, not open). **Zero numbers moved**: recording draws no dice, so all 19
+  `GOLDEN_DPR` rows and all 3 `AXIS_GOLDEN` rows are untouched and both golden-bearing
+  files are unmodified. The fix is VISIBLE in the authoritative table — `slots` reads
+  2.00 at L5 and `ltd` reads 1/2/3/4 at L1-L4 (Hit Dice == character level), all of
+  which would have been 0.00.
+  - A helper is still a convention, which is what the eleven sites already failed to
+    follow, so the enforcement is `tests/test_economy_channel.py`: the invariant
+    asserted end to end against an instrumented `ResourcePool.consume`, in BOTH
+    directions (nothing unrecorded, no phantom credit from a refused spend). The s54
+    seam lesson applied to a SEQUENCE — a guard that cannot go stale, not a docstring
+    explaining why the duplication is safe.
+  - **This is the s53 lesson INVERTED.** s53 found a channel dead at BOTH ends. This
+    one was live at one end and silently half-fed, which is strictly harder to notice:
+    the entry in `metrics.py` saying the channel was "scaffolding, not data" stopped
+    being re-raised once the scheduler got its call sites, and **a channel going from
+    DEAD to PARTIALLY fed looks exactly like a channel going live.**
+  - SCOPED OUT and pinned by CONTAINMENT rather than prose: Starfire Scion spends
+    `slot_4th` and `wild_shape` inside `Policy.on_combat_start`, which runs BEFORE the
+    Scheduler exists, so no telemetry is in scope. Closing it means changing
+    `on_combat_start`'s signature on every policy.
+    `test_the_on_combat_start_spend_path_is_STILL_unrecorded_and_no_wider` fails if the
+    gap CLOSES (forcing this record to be updated) and if it WIDENS.
+
+  **(4) GUIDED STRIKE IGNORES THE GUIDE'S STATED PRIORITY, THE DOCSTRING'S PROMISED FIX
+  NEVER ARRIVED, AND THE NAIVE FIX REVERSES SIGN AT L8.** The guide: *"it's optimal to
+  use this preferentially on true-strike attacks, since those do more damage."* The
+  policy is greedy, and **cannot do otherwise**: `MissContext` carries `is_aoo` and
+  nothing else, so a True Strike action miss and a War Priest bonus-action miss are
+  indistinguishable to `on_miss`. `decide()` emits War Priest FIRST, so greedy meets
+  the cheaper miss first — measured at L5, **2.040 of 3.905 daily charges rescue the
+  BA swing** against 1.865 on True Strike, while 5.49 flippable TS misses/day go spare.
+  The docstring says the optimization "arrives at L8"; it never arrives at any level,
+  **and L8 is where it should INVERT**:
+
+  | lvl | greedy (shipped) | prefer-true-strike | delta | z |
+  |---:|---:|---:|---:|---:|
+  | 5 | 16.4393 | 16.5609 | +0.1216 | +2.57 |
+  | 6 | 20.8820 | 20.9121 | +0.0301 | +0.58 |
+  | 7 | 21.0055 | 21.1964 | +0.1909 | +3.26 |
+  | 8 | 23.4572 | 23.0444 | **-0.4128** | -7.59 |
+  | 9 | 27.5908 | 26.9851 | **-0.6057** | -13.37 |
+
+  Mechanism: Brutality::bluff (L8+) fires on the first SETUP hit of the turn, adding
+  vex and chaining advantage onto the same-turn True Strike, so from L8 a rescued War
+  Priest miss buys a hit AND the bluff AND advantage. **Bias left on #6b: DPR
+  understated by ~0.12 (0.74%) at L5 and ~0.19 (0.91%) at L7, 0.03 (n.s.) at L6, and
+  NOTHING at L8+** where the shipped rule is already near-optimal. At L10+ Extra Attack
+  equalizes every slot and the question dissolves. **Defect window = L5-L7.** Left
+  unfixed at the user's direction (record now, fix after 5c): the fix needs a new
+  `MissContext` field, which re-baselines goldens, and a level-dependent rule to settle.
+  - **My first estimate was a mechanical argument** — "TS hit 13.0 vs WP hit 9.5, so
+    +3.5 x 2.04 charges = +0.45 DPR". The measurement said +0.12, and at two levels
+    said the OPPOSITE SIGN. *A mechanical argument is not a measurement* (s50) and *the
+    narrow result's general form can be wrong* (s60), both arriving inside one session.
+
+  ### Smaller divergences, recorded at the level they appear
+  - **A measured NULL**: the guide CHANGES the guided-strike-on-AoO rule at L6 and the
+    model vetoes AoO rescues at every level. Prototyped at 4,000 days: **+0.04% /
+    -0.07% / -0.09% at L6/L7/L8, all under 0.4 sigma** — inert, because the CD budget
+    is already consumed by better opportunities. Recorded so nobody "fixes" it later
+    expecting a change.
+  - **Wrathful Smite is not crit-prioritized**, and unlike at L6 (4.11 casts against ~8
+    available, slack) the budget BINDS from L10 (3.67 + 2.00 + 1.00 = 6.67 against ~7).
+    Smite dice double on a crit. NOT quantified; the bound is stated rather than
+    guessed — ~3 crits/day against ~6.7 smites means most must land on ordinary hits by
+    arithmetic, so the gain is well under the 0.66 DPR ceiling. Needs the COMBAT INDEX
+    in `HitContext`, which it does not carry — the same missing-context shape as (4).
+  - **Mage Slayer is modeled as `+1 DEX` and nothing else.** `guarded_mind` recharges
+    on a short rest and therefore on PoH, so the guide counts three auto-successes on
+    mental saves per day; the model has none, so `control_turns_lost_per_round` and
+    `save_fail_rate` **OVERSTATE** this build's exposure from L11 up. Costs no DPR
+    (the guide says so outright), which is why it never surfaced.
+  - **Blade Ward unmodeled** — so the empty concentration panel below L13 has TWO
+    causes, where s55 (#6a issue 6) recorded only the Bless one. **Crusader's Mantle
+    unmodeled** — FAITHFUL, the guide explicitly decides against it.
+  - **The L1 guide inconsistency, model is right**: L1's mastery list grants
+    `longsword (sap), shortbow (vex), shortsword (vex)` — **rapier is not among the
+    three** — yet the character wields a rapier. Three statements say vex is live (the
+    L1 note, the L2 note on "we lose the extra chance to hit from vex", the L9 note "I
+    picked rapiers back up"), and the guide's own 8.32 figure is unreachable without it
+    (~6.7 by closed form). `shortsword` looks written where `rapier` was meant.
+  - **`char_hp` is INERT**, settled by measurement rather than by the stale comment
+    claiming it: L2 at `char_hp` 18 vs 19 gives byte-identical `dpr`,
+    `net_damage_taken_per_round` and `external_healing_required_per_day`. So the
+    guide's 18.5-vs-18 rounding is a non-issue, and `char_hp` is a declared-but-inert
+    field on all 16 rows (dormancy note only — a finite-HP path would read it).
+
+  ### What the authoritative table says about itself
+  (full table in the s62 scratchpad notes; headline DPR 8.29 -> 38.09 across L1-16)
+  - **Convergence is essentially solved at this tier**: ZERO unconverged rows at
+    L5-L16, five at L1-L4, relative stderr **0.02-0.10%** everywhere.
+  - **#6a's issue 1 is CLOSED, verified on the authoritative data.**
+    `saves_forced_per_round[cha_save|*]` and `save_fail_rate[cha_save|*]` both read
+    `unavailable`/`None` at L1 and L5 and both flip to `measured` **at exactly L11**,
+    which is where `band_save_weights` first carries `cha_save`. #6a had the first
+    printing `0 +/- 0`, converged, available — "the only unflagged cell in its
+    breakdown". The two incompatible renderings now agree. 8b's predicate is reading
+    the enemy's RESOLVED weights; a predicate hard-coding "off below 11" would look
+    identical here, and what distinguishes them is that the flip TRACKS THE BAND TABLE.
+  - **#6a's issue 2 is ADDRESSED and now LEGIBLE rather than closed.** The only
+    remaining flags, identical in kind at L1 and L4, are five structurally rare
+    band-0-4 enemy save channels (`save_round_prob` 0.007) needing **66k-435k days** —
+    beyond the publication tier. #6a's complaint was that "a near-miss and a structural
+    impossibility print identically"; 8a's distance payload now makes each state its
+    own requirement. Also confirms issue 4's precise scope: `min_events` binds on
+    `save_fail_rate` (which declares events) and all three `saves_forced_per_round`
+    cells bind on `rel_stderr` (which declares none).
+  - **§11 scoring** (opt-in; `kind=external_published`, `basis=unknown`, so REFERENCE
+    POINTS and never targets): L1-L4 class C, L5-L7 D, L8-L9 C, L10 B, L11-L16 C.
+    CONSISTENCY OBSERVATION AND EXPLICITLY NOT VALIDATION (CLAUDE.md: the guides are
+    the user's own work and no DPR number in them is an external validation source) —
+    the classes land where the guide's prose says at four independent points. That says
+    the model reproduces the guide's REASONING, not that the numbers are right.
+
+  ### THE SCOPE BOUND ON THIS RUN (user, s62) — and the labelling question it raises
+  **#6b's numbers may NOT be used to compare alternative behaviours or policies**,
+  because the positioning model is absent. The mechanism is NAMED rather than general:
+  `war_angel.py:1187` records that the guide "prices the parry and the opportunity
+  attack as both happening, knowing they compete in RAW", so Flourish Parry and the AoO
+  both fire off ONE reaction. Harmless for an ABSOLUTE reading under a fixed basis;
+  decisive for POLICY COMPARISON, because two policies that lean differently on
+  reaction economy are scored as though reactions were free.
+  - **§12.1's "preliminary" test and this bound are different in KIND, and the
+    distinction is worth keeping.** §12.1 says a run is preliminary while a known
+    scheduled change will move its numbers — and scheduling the positioning arc puts an
+    item on that list, so a LITERAL reading makes #6b preliminary again. The position
+    taken (user to overrule): **#6b stays DEFINITIVE as an absolute measurement under
+    the standardized basis and carries a SCOPE BOUND.** §12.1's list was machinery
+    half-built UNDERNEATH the run — defects that made the estimates untrustworthy. The
+    positioning gap does not corrupt the estimates; it bounds WHAT INFERENCES THEY
+    SUPPORT, which is the [[standardized-dpr-baseline-not-realism]] family. Calling it
+    preliminary would discard what steps 8 and 9 bought.
 
 - **ROADMAP ITEM 5b — THE HOUSEKEEPING PR. ZERO NUMBERS MOVED (2026-11-08, session
   61).** The scheduled mechanical PR between the finished framework and the definitive
@@ -6959,7 +7225,22 @@ Engine prerequisites, in the order we built them:
 
 ### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24; RESEQUENCED s54)
 
-> **NEXT TASK = item 5c below (#6b, THE DEFINITIVE RE-EVALUATION). The evaluation
+> **NEXT TASK = item 5d below (THE POSITIONING / OPPORTUNITY-ATTACK ARC), with item 6
+> (the first full build evaluation) now resting on #6b's completed data. Item 5c
+> (#6b, THE DEFINITIVE RE-EVALUATION) IS DONE (s62)** — War Angel L1-16 at the
+> standard tier, 800,000 days, engine `a09a3ce` clean, no manifest warnings, §11
+> scoring rendered. The user reshaped it from a numeric before/after into a
+> LEVEL-BY-LEVEL TACTICS REVIEW, which is what produced its four findings; the
+> prescribed before/after would have answered 5c's own question WORSE (see the s62
+> Done entry, finding 2). The §13 economy channel was fixed as a prerequisite
+> (`spell_slots_per_day` read 1.022 against 9.908 at L13) with zero numbers moved.
+> **Two carried items, both scheduled rather than open-ended:** the Guided Strike
+> priority fix (finding 4 — needs a `MissContext` field and a level-dependent rule;
+> re-baselines goldens) and the positioning arc (item 5d). #6a's numbers remain
+> non-citable, and so do s57's, s58's, s59's and s60's.
+>
+> **OLD POINTER (superseded, kept for the record):** NEXT TASK = item 5c below (#6b,
+> THE DEFINITIVE RE-EVALUATION). The evaluation
 > framework is FINISHED — all nine §13 steps are done — and item 5b, the HOUSEKEEPING
 > PR, LANDED IN s61 moving ZERO numbers.**
 > 8a + 8b landed in s56, 8c in s57, 8d in s58, 8e in s59, and **step 9 (RNG
@@ -7444,7 +7725,17 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      along with the wrappers.
    - *(Add further items here as they are found.)*
 
-5c. **#6b — DEFINITIVE RE-EVALUATION OF THE SAME BUILD (user, s54). Scheduled, not
+5c. ~~**#6b — DEFINITIVE RE-EVALUATION OF THE SAME BUILD**~~ **DONE (s62).** War Angel
+   L1-16 at the STANDARD tier (50,000 days/cell, 800,000 total), engine `a09a3ce`
+   `dirty=False`, no manifest warnings, §11 baseline scoring rendered. Four findings,
+   one fixed in-session; see the s62 Done entry at the top of this file. The tier bump
+   from quick was forced by a MEASUREMENT, not a preference (a level sweep cannot pair,
+   so L2 vs L3 — mechanically identical — showed a spurious 2-sigma gap). **The
+   original entry's prescribed before/after was SCRAPPED at the user's direction and
+   that was right**: s59 and s60 had already paid for it, and the one non-redundant
+   piece (does step 9 narrow a SINGLE run's interval? No — ratios 0.988-0.999) cost two
+   20k-day probes. Original entry follows.
+   **#6b — DEFINITIVE RE-EVALUATION OF THE SAME BUILD (user, s54). Scheduled, not
    optional.** Once framework steps 8 and 9 are done and the housekeeping PR has
    landed, re-run **the same build #6a evaluated**, on the finished framework. **This
    is the run whose numbers count**; #6a's do not and must not be carried forward,
@@ -7461,6 +7752,53 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    comparison that can tell us whether steps 8 and 9 were worth doing. Record it as a
    before/after with its own decision entry, the same shape as the re-baseline records
    in `tests/test_eval_enemy_seam.py`.
+
+5d. **THE POSITIONING / OPPORTUNITY-ATTACK ARC (user, s62). Scheduled after the build
+   evaluation, not open-ended.** Raised by the user during 5c's L1 review: the guide
+   assumes a FIXED number of opportunity attacks per combat, and the goal is a spatial
+   model where enemies provoke by moving out of reach. **Status verified in s62, not
+   recalled.**
+   - **BUILT (substrate 7b):** `src/zones.py` — `Zone` (emanation anchored to its
+     owner, or static), `ZoneEffectSpec`, `ZoneBuffSpec`, `Zone.contains()`,
+     `move_entity()` (verb 11). `Entity.zone` is one string.
+     `Scheduler._fire_zone_effects` fires occupant effects at turn boundaries.
+     `ability_schema.md` declares `entity_enters_zone` /
+     `entity_starts_turn_in_zone` / `entity_leaves_zone`.
+   - **DEAD IN PRODUCTION:** **`move_entity` has ZERO production callers** — only
+     `tests/test_zone_emanation.py` and `tests/test_zone_buff_aura.py`. Every entity
+     sits in the shared `"melee"` blob for an entire simulation. The only production
+     `Zone` is Silvertail's ally-buff aura (`silvertail.py:496`), a footprint and not
+     movement. **Nothing subscribes to `entity_leaves_zone`.** No enemy policy moves
+     (`BaselineEnemyPolicy`'s budget is ternary: attack / save-damage / pure-control).
+     No reach and no speed, though design.md §3.1 names "footprint vs mover speed
+     gates zone exit" as a mechanic to support.
+   - **Four prerequisites, three tractable and ONE BLOCKING.** (1) a MOVEMENT option
+     in the enemy's action budget, grounded in the census reach distribution that
+     already exists (ranged+both, 20% -> 42% by band); (2) an `entity_leaves_zone`
+     subscriber opening a reaction decision point — a new TRIGGER, not a new verb,
+     with `on_incoming_hit` as the precedent; (3) reach + speed on entities, to say
+     which exits provoke; (4) **THE BLOCKER — the character-side cost.**
+     `enemy_model.md` §9: kiting "forces a melee build to spend movement / forgo
+     attacks, lowering its true uptime below the 'everyone stands in melee for 4
+     rounds' assumption", and needs "an injection point on the
+     character-policy/scheduler side that doesn't exist yet".
+   - **THE COUNTER-INTUITIVE PART, and why this cannot ride along with any definitive
+     run:** a positioning model does not mainly ADD opportunity attacks, it
+     **SUBTRACTS attacks**, at every level of every build, by an amount nobody has
+     measured. Switching it on re-baselines the whole project — the same principle
+     that kept `no-new-dice-outside-combat` frozen through s62.
+   - **A §4 PROVENANCE GAP found on the way, left UNFIXED at the user's call (s62):**
+     `WarAngelAdapter.describe()` returns `build / level / options / daily_plan` and
+     says NOTHING about opportunity attacks, while
+     `BaselineCharacterPolicy.describe_parameters()` spells the same assumption out in
+     full — *"THERE IS NO SPATIAL MODEL, so 'the enemy moves out of reach' is a
+     FREQUENCY and not an event ... **War Angel's convention**"*. So **the build that
+     ORIGINATED the convention does not record it and the build that BORROWED it
+     does**, and an authoritative War Angel artifact buries exactly the assumption
+     that prompted the question. One-field fix, moves no number; carry it here or take
+     it as housekeeping. Shape worth keeping: *a convention documented where it was
+     BORROWED rather than where it ORIGINATED* — same family as s54's "two lists"
+     rule, where the easy list to write is the one you are looking at.
 
 6. **Pause/design → #6 — first full build evaluation (the ORIGINAL entry; #6a/#6b above
    split it in two at the user's direction, s54).** War Angel L1–13/14
