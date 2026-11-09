@@ -197,3 +197,40 @@ class ResourcePool:
             for name, e in self._entries.items()
         )
         return f"ResourcePool({parts})"
+
+
+# ---------------------------------------------------------------------------
+# The spend/record PAIR (s62)
+# ---------------------------------------------------------------------------
+
+def spend_recorded(pool: "ResourcePool", name: str, amount: int = 1, *,
+                   telemetry=None) -> bool:
+    """Consume *amount* of *name* AND record it in the §13 economy channel.
+
+    Why this exists, and why it is a function rather than a convention: spending a
+    resource is a TWO-CALL SEQUENCE — ``pool.consume(name, amount)`` followed by
+    ``telemetry.record_resource(name, amount)`` — and the scheduler performed both
+    at its six call sites while every out-of-combat caller performed only the first.
+    The channel therefore had TWO WRITERS and reported ONE of them, so
+    ``spell_slots_per_day`` read 1.022 against 9.908 actually spent at War Angel L13
+    (a 9.7x undercount) and ``limited_resources_per_day`` missed every Hit Die and
+    every daily-plan Channel Divinity. Both metrics' declared definitions say "per
+    adventuring day" without qualification, so both were false as implemented.
+
+    This is the s54 seam lesson applied to a sequence rather than to a number: when
+    an ordering must always hold, extract it so both callers share it instead of
+    trusting each site to remember. The enforcement is
+    ``test_every_resource_spend_reaches_the_economy_channel``, which asserts the
+    invariant end to end — a guard, unlike a convention, that cannot go stale.
+
+    ``telemetry`` is duck-typed (anything with ``record_resource``) to keep this
+    module free of a telemetry import, and ``None`` is legal: a caller with no
+    accumulator in scope still spends correctly, it simply records nothing. Nothing
+    is recorded when the consume FAILS, so a refused spend cannot inflate the
+    channel. The return value is ``consume``'s, because callers branch on it
+    (``silvertail`` spends a slot inside an ``and`` chain).
+    """
+    ok = pool.consume(name, amount)
+    if ok and telemetry is not None:
+        telemetry.record_resource(name, amount)
+    return ok

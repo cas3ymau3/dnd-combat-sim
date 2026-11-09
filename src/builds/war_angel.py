@@ -71,7 +71,7 @@ from ..policy import (
     MissResponse,
     SaveRerollResponse,
 )
-from ..resources import ResourceEntry, ResourcePool
+from ..resources import ResourceEntry, ResourcePool, spend_recorded
 from . import enemy_stats          # THE enemy-Entity constructor (evaluation_framework.md §3.4)
 # PB is the UNIVERSAL character track, not this build's rule (PROGRESS item 5b, s61):
 # imported rather than restated so `war_angel.proficiency_bonus` still resolves for any
@@ -1316,11 +1316,13 @@ class WarAngelDailyPlan:
             if self._mw_plus2_used < self._mw_plus2_budget:
                 self._mw.cast(minute, MAGIC_WEAPON_DURATION_MIN, MAGIC_WEAPON_PLUS2)
                 self._mw_plus2_used += 1
-                self.character.resources.consume("spell_slot_3")
+                spend_recorded(self.character.resources, "spell_slot_3",
+                               telemetry=ctx.telemetry)
             else:
                 self._mw.cast(minute, MAGIC_WEAPON_DURATION_MIN, MAGIC_WEAPON_PLUS1)
                 self._mw_plus1_used += 1
-                self.character.resources.consume("spell_slot_2")
+                spend_recorded(self.character.resources, "spell_slot_2",
+                               telemetry=ctx.telemetry)
 
         # Sync the entity's modifier stack to the strongest MW tier active this
         # combat (0 = inactive → no modifier).
@@ -1331,8 +1333,8 @@ class WarAngelDailyPlan:
         # _run_combat, after this hook) is irrelevant for these because Bless
         # rides the modifier stack and concentration lives in a dedicated
         # Entity field — neither is touched by StatusSet.clear().
-        self._sync_bless()
-        self._sync_shield_of_faith()
+        self._sync_bless(telemetry=ctx.telemetry)
+        self._sync_shield_of_faith(telemetry=ctx.telemetry)
 
     def _sync_magic_weapon(self, bonus: int) -> None:
         self.character.remove_modifier("magic_weapon")
@@ -1345,7 +1347,7 @@ class WarAngelDailyPlan:
             ):
                 self.character.add_modifier(mod)
 
-    def _sync_bless(self) -> None:
+    def _sync_bless(self, *, telemetry=None) -> None:
         """Re-cast Bless for this combat if a cleric L1 slot remains.
 
         Bless is a rolled-dice modifier (+1d4) on both attack rolls and CON
@@ -1359,14 +1361,15 @@ class WarAngelDailyPlan:
         self.character.remove_modifier("bless")
         self.character.concentration = None
         if self.character.resources.available("spell_slot_1") >= 1:
-            self.character.resources.consume("spell_slot_1")
+            spend_recorded(self.character.resources, "spell_slot_1",
+                           telemetry=telemetry)
             # Bless's modifiers (+1d4 on attack_bonus + con_save) come FROM DATA
             # via the effect-interpreter, replacing the hand-built Modifiers.
             for mod in interpret_modifiers(BLESS, source="bless"):
                 self.character.add_modifier(mod)
             self.character.concentration = "bless"
 
-    def _sync_shield_of_faith(self) -> None:
+    def _sync_shield_of_faith(self, *, telemetry=None) -> None:
         """Re-cast Shield of Faith (War God's Blessing) for this combat if a
         Channel Divinity charge remains: +2 AC, non-concentration, whole combat.
 
@@ -1378,7 +1381,8 @@ class WarAngelDailyPlan:
             return
         self.character.remove_modifier("shield_of_faith")
         if self.character.resources.available("channel_divinity") >= 1:
-            self.character.resources.consume("channel_divinity")
+            spend_recorded(self.character.resources, "channel_divinity",
+                           telemetry=telemetry)
             # +2 AC comes FROM DATA (war_gods_blessing, a flat apply_modifier).
             for mod in interpret_modifiers(
                 WAR_GODS_BLESSING, source="shield_of_faith"
@@ -1399,7 +1403,8 @@ class WarAngelDailyPlan:
             return
         # PoH consumes a level-2 slot and acts as a short-rest-equivalent
         # recharge (War Priest, Channel Divinity, pact slot, …).
-        self.character.resources.consume("spell_slot_2")
+        spend_recorded(self.character.resources, "spell_slot_2",
+                       telemetry=ctx.telemetry)
         for entity in ctx.entities:
             entity.resources.restore_sr()
         # PRAYER OF HEALING DOES TWO JOBS, and until s45 this hook modelled only

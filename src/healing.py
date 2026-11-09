@@ -47,6 +47,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable
 
+from .resources import spend_recorded
+
 if TYPE_CHECKING:                                    # pragma: no cover
     from .entity import Entity
     from .rng import SeededRNG
@@ -327,7 +329,7 @@ def spend_hit_dice_at_short_rest(
             continue
         spent_already = maximum - remaining
         amount = spec.mean_field_value(n, spent_already)
-        entity.resources.consume("hit_dice", n)
+        spend_recorded(entity.resources, "hit_dice", n, telemetry=telemetry)
         got = entity.heal(amount)
         if got <= 0:
             continue
@@ -398,7 +400,7 @@ def spend_summon_hit_dice(
             spent += 1
         if spent <= 0:
             continue
-        entity.resources.consume("hit_dice", spent)
+        spend_recorded(entity.resources, "hit_dice", spent, telemetry=telemetry)
         got = entity.heal(amount)          # capped at max_hp by category (§4)
         if got <= 0:
             continue

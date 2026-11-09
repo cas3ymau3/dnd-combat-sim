@@ -40,6 +40,15 @@ now, and none of them is War-Angel-specific:
    construction, and no build factory installs one.
 3. **resource economy** — ``CombatTelemetry.record_resource`` exists but resolution
    has no call site for it, so the channel is scaffolding, not data.
+   **LIVE SINCE, AND HALF-FED UNTIL s62.** Resolution did get its six call sites (all
+   in ``Scheduler``), which is why this entry stopped being re-raised — but every
+   OUT-OF-COMBAT spender kept calling ``pool.consume`` without the paired
+   ``record_resource``, so the channel had two writers and reported one.  At War
+   Angel L13 ``spell_slots_per_day`` read 1.022 against 9.908 actually spent.  Fixed
+   by ``resources.spend_recorded`` and pinned by
+   ``tests/test_economy_channel.py``; the residual ``on_combat_start`` path is named
+   there.  Worth keeping as a record of the shape: a channel going from DEAD to
+   PARTIALLY fed looks exactly like a channel going live, and nothing re-checked it.
 
 Each metric therefore declares an ``availability`` predicate returning a REASON
 string when the run cannot produce it.  The report renders those as explicit
