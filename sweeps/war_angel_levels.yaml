@@ -25,7 +25,9 @@
 # Cost: ~47 minutes for all 16 cells (~3.5 ms/day measured over the level set).
 sweep_schema_version: 1
 name: war_angel_levels
-description: War Angel L1-16 vs the standardized baseline enemy, quick tier.
+description: >-
+  War Angel L1-16 vs the standardized baseline enemy at the STANDARD tier (50,000
+  days/cell). The definitive #6b evaluation (PROGRESS item 5c).
 base:
   enemy: baseline
   n_days: 50000
