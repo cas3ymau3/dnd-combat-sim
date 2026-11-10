@@ -627,15 +627,37 @@ from #1 + the control-prior constants (§6).
 
 ## 9. Enemy behavior — movement & targeting (connection points; mostly deferred)
 
+> **SUPERSEDED IN PART BY `design/positioning.md` (s63). Read that first.** The
+> arc now has its own design record, built from the 33-guide corpus rather than
+> from this document's enemy-side vantage, and it CORRECTS this section on two
+> points:
+>
+> 1. **The direction.** This section models only *enemy kites character*, and
+>    states the consequence as a loss of character uptime. The corpus asks
+>    overwhelmingly for the MIRROR — **11 of 33 guides name kiting as a tactic
+>    and in every one the CHARACTER is the kiter** (positioning.md §2/§3). The
+>    2024 rules make the subtraction conditional (Disengage is an ACTION, so a
+>    multiattacking monster eats the AoO rather than paying for it; movement is
+>    not an action, so a character closes an equal-speed gap for free), and the
+>    measured dominant term is **+46% DPR, not negative** (positioning.md §4.1).
+>    Do not plan this arc as a downward re-baseline.
+> 2. **The numbers below.** "20% → 40% with CR" is loose and hides the shape.
+>    Cadence-weighted ranged+both is **20.1 / 34.0 / 45.1 / 43.6** — it PEAKS at
+>    band 11-16 and DIPS at 17+, i.e. it is not monotonic (positioning.md §4.3).
+>
+> The connection points below stand; only the framing and the figures are
+> corrected.
+
 Two behavior axes the user raised. Both belong primarily to the downstream
 **positioning / targeting arc** (§10 step 4), but they have real connection
 points to this work, recorded here so they are not lost.
 
 - **Movement (melee vs kiting)** — *does* connect to the census. The **reach**
-  distribution (ranged + both share, climbing 20% → 40% with CR, §4) is the
-  empirical hook: a kiting enemy forces a melee build to spend movement / forgo
-  attacks, lowering its true uptime below the "everyone stands in melee for 4
-  rounds" assumption. v1 models this as the **kiting-fraction toggle** (§7),
+  distribution (ranged + both share, **20.1 / 34.0 / 45.1 / 43.6% by band**, §4)
+  is the empirical hook: a kiting enemy forces a melee build to spend movement /
+  forgo attacks, lowering its true uptime below the "everyone stands in melee
+  for 4 rounds" assumption — **but only where it can out-pace the character, and
+  the project holds no speed data at all; see positioning.md §3.1 and §7.3.** v1 models this as the **kiting-fraction toggle** (§7),
   grounded to the band ranged share, default OFF (full uptime) so it doesn't
   silently move baselines. The *real* model — zones, opportunity attacks,
   approach turns — is the deferred arc (`Entity.zone` / `move_entity` / `range_`
@@ -755,6 +777,12 @@ later arc.
   produce by itself (it has no lever over the character's turn). Needs a real
   injection point from the positioning arc (§9) before it can be a toggle at all —
   building a policy-side stub now would be dead config with nothing consuming it.
+  - **s63: the injection point is not merely ABSENT, it is FAIL-OPEN.** `movement`
+    is in the closed `Cost` vocabulary (`taxonomy.COSTS`) and in no economy pool,
+    and the scheduler drained with `if cost in econ` — so a movement-cost choice
+    resolved for free (measured: five emitted, five resolved). Closed in s63 by a
+    partition over the vocabulary that REFUSES an unmodelled cost
+    (`tests/test_cost_partition.py`); see `design/positioning.md` §7.4/§9.1.
 - **AoE share — NOT wired (step 6 scope call, s41).** The census `aoe_share` column
   is frozen and available (`enemy_stats` doesn't expose it because nothing consumes
   it), but it only matters once the sim models a MULTI-character party (Evasion /
