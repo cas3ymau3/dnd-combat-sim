@@ -387,6 +387,13 @@ sneak-attack + improved-critical stack) as the first hard coverage test.
 - **Movement open questions from the original notes** (moveable objects, forced
   movement details, mounts) are largely resolved by the zone model but need
   concrete rules when the spatial layer is built.
+  - **s63: the spatial layer now has a design record — `design/positioning.md`**
+    (roadmap item 5d), built from the 33-guide corpus. It carries the seven
+    requirements, the five prerequisites (two of them blocking), the re-baseline
+    protocol, and the corrections it makes to `enemy_model.md` §9. **Note for §2's
+    action-economy list: `movement` is named there as a resource and has never been
+    modelled as one** — it is in `taxonomy.COSTS`, in no economy pool, and until s63
+    resolved for free. It now refuses (positioning.md §7.4).
 
 ---
 

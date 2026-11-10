@@ -737,6 +737,18 @@ not rows**: s46 cut 51 declarations to 22 while the estimated-cell count fell on
 
 #### Metric-set review log
 
+- **Session 63 (2026-11-10) — NOT DUE, AND THIS SESSION IS NOT REGISTRY-TOUCHING.**
+  Verified rather than asserted: `src/evaluation/metrics.py` is absent from
+  `git diff --stat origin/main`, so **zero `MetricDef`s changed** — the protocol's own
+  "count DECLARATIONS, not rows" unit, and the s52/s56/s59/s60/s62 precedent. The
+  startup handoff flagged that a positioning model *"plausibly adds an uptime metric"*
+  and would therefore make the session registry-touching; **it did not, because 5d
+  landed as DESIGN and nothing serialized.** The output SHAPE question (per-feature
+  ritual step 4) is consequently still OPEN and belongs to the build phase — and
+  `positioning.md` §6 already records the shape constraint it will face: the arc's
+  emergent AoO count is naturally per ROUND and per (attacker, target) pair, while
+  `aoo_per_combat` is declared per COMBAT, and `reactions_per_round` already reports per
+  round. **Settle that before anything writes it.**
 - **Session 62 (2026-11-09) — NO REVIEW DUE; ONE RUN ANYWAY, AND IT IS CONSUMED. 27
   declarations walked against a 16-level MEASURED FRAME, ZERO CUT.** The ruling, stated
   at startup rather than left ambiguous for a fourth session: **rendering the registry
@@ -1028,6 +1040,19 @@ start, if `Last reviewed` is ≥2 sessions old, PROMPT the user: "want to reset 
 config tweaks?"** — then bump the marker below. The user explicitly asked to be reminded
 (session 30) so these don't silently accumulate.
 
+- **Session 63 (2026-11-10) — NOT DUE (last reviewed s62, so the next review is s64).
+  BUT NOTE FOR s64: THE CONNECTOR QUESTION NOW FIRES.** s63 decided to reopen the
+  monster census for a SPEED pass, which needs the Claude-in-Chrome connector and the
+  per-machine allowlist — both torn down at the s36 close. **This is the first session
+  since s36 where the standing MCP note's condition is actually met ("Raise it only if
+  a session actually needs a connector"), so s64 must raise it at startup rather than
+  skipping it**, and must record what gets re-enabled on the "Currently disabled" line
+  so the close-out can tear it back down.
+  Stated at startup and moved past, per the handoff. Nothing accumulated: 5d was design
+  plus two zero-number fixes, pure Python. The container's missing `pytest` recurred for
+  the **thirteenth** session running (`pip install pytest`) — a property of the cloud
+  container, NOT a config tweak to revert. **Connectors were NOT raised** (the standing
+  note's condition: "Currently disabled" is empty and 5d needed none).
 - **Last reviewed for reset: session 62 (2026-11-09) — nothing to reset (raised with the
   user at startup; marker bumped per the >=2-session rule).** The s36 tear-down still
   stands (allowlist at the git/python/pytest baseline; Chrome OFF). s61 and s62 were both
@@ -2276,6 +2301,231 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
 ---
 
 ## Done
+
+- **ROADMAP ITEM 5d — THE POSITIONING ARC, SCOPED. THE PREMISE WAS INVERTED, AND THE
+  BLOCKER IS FAIL-OPEN RATHER THAN ABSENT (2026-11-10, session 63).** Design-first
+  pass at the user's direction, started from the 33-GUIDE CORPUS rather than from War
+  Angel: *"I don't want the positioning model framework to be built just around war
+  angel ... make sure it is sufficiently broad such that we aren't reinventing it once
+  we get down to the specific builds."* **`design/positioning.md` (492 lines) is the
+  arc's design record.** Two zero-number fixes shipped with it. **1350 tests passing**
+  (1339 + 11 new) + 1 skipped, full suite in foreground once (6m02s). Both
+  golden-bearing files **BYTE-IDENTICAL to `origin/main`** (`git diff --exit-code`
+  clean), so "zero numbers moved" is an assertion and not a hope. Guided Strike
+  deferred to a later session (user).
+
+  ### THE PREMISE WAS INVERTED — the survey's main finding
+  `enemy_model.md` §9 and roadmap item 5d both state the arc mainly SUBTRACTS attacks
+  and re-baselines the project DOWNWARD. **Three independent checks say the dominant
+  term is additive and large.**
+  - **The rules make the subtraction CONDITIONAL** (verified per the per-feature
+    ritual, not recalled): **Disengage is an ACTION**, so a multiattacking monster
+    must forfeit its whole Multiattack to deny one AoO and will instead EAT it; and
+    **movement is not an action**, so a 30ft character closes a 30ft gap for free and
+    keeps its full Attack action. The character forgoes attacks only where the gap
+    EXCEEDS its speed — i.e. the enemy must out-pace it, and Dash costs the enemy its
+    own attack.
+  - **The corpus asks for the MIRROR direction, 11 guides to 0.** `kite`/`kiting`
+    appears in **11 of 33 guides and in every one the CHARACTER is the kiter**.
+    `20_the_wardancer`'s damage loop IS a positioning loop (Tavern Brawler shove-kite);
+    `37_white_dragon_warrior` is built end-to-end on Sentinel + grapple + nets to
+    *"lock enemies within our fog cloud"*; `32_silvertails_blessing` — ALREADY
+    MODELLED — states its tactic as *"kite in/out w/o provoking AoOs"*. §9 models only
+    enemy-kites-character, which no guide describes. **Labelled as weak evidence on
+    its own** (these are character-side documents), but the census agrees the modal
+    enemy PURSUES: 54.9-79.8% of cadence-weighted enemy actions are melee-only.
+  - **MEASURED, and it is large** (declared subject, L11, 6,000 days, sweeping
+    `aoo_per_combat`): **~1.71 DPR per opportunity attack, linearly** (1.7106/1.7146/
+    1.7097 per step); 1 → 4 is **+5.12 DPR = +46.3%**. Scaled by the band-11-16 ranged
+    share, a crude mixed estimate is ≈+20%. **An order of magnitude larger than the
+    Guided Strike defect (0.74%) that occupied s62.** And **at 4 the subject is
+    reaction-SATURATED at exactly 1.0/round** — the economy cap — so an
+    AoO-every-round model leaves NO reaction for the other five consumer classes.
+
+  > So: the arc has an additive term that is measured, large and reliable, and a
+  > subtractive term gated on a speed differential **for which the project holds no
+  > data at all**. Planning it as a downward re-baseline gets the SIGN wrong.
+
+  ### THE CORPUS SURVEY (the deliverable the user asked for)
+  26 of 33 guides carry explicit positioning/reaction tactical language; 26 of 33
+  mention reactions. `speed` 31/33, `slow` 28/33, `push` 23/33, `fly` 22/33, `Dash`
+  21/33, `Disengage` 21/33, `topple` 18/33, `reach` 18/33, `Misty Step` 18/33,
+  `grapple` 16/33, `nets` 15/33. **Seven requirements (R1-R7) derived from six
+  distinct positioning patterns, NONE of them War Angel's**, and the reaction is
+  contended by **six consumer classes** of which two (reaction-MOVEMENT and positional
+  DENIAL) have no engine representation at all.
+  - **TWO FALSE POSITIVES CAUGHT WHILE COUNTING, both recorded because each would have
+    inflated the case.** `Sentinel` matches 8 guides but is mostly the **Sentinel
+    SHIELD magic item** (advantage on initiative/perception — nothing positional);
+    **only 2 take the FEAT**. And `grapple`/`fly` first counted **0/33** because the
+    pattern used `\|` under `grep -E`, which matches a literal pipe — the true counts
+    are 16/33 and 22/33. A corpus count is a measurement and deserves the same
+    scepticism as a DPR.
+  - **Three of the six deferred weapon masteries are purely POSITIONAL** —
+    `topple`/`slow`/`push`, deferred at `verbs.py:162` — and they are 2024 core
+    mechanics available to every weapon build. The arc unblocks them.
+
+  ### FIX 1 — THE BLOCKER IS FAIL-OPEN, WHICH IS WORSE THAN ABSENT
+  Item 5d records the character-side cost as *"an injection point that doesn't exist
+  yet"*. It exists and is wrong. `src/taxonomy.py:135` puts **`"movement"` in the
+  closed `Cost` vocabulary**; `DEFAULT_RESOURCES` grants action/bonus_action/reaction
+  only; the drain is `if cost in econ` — so movement **fell through unmetered**.
+  Measured, five choices in one turn: `action` 1 resolved, `bonus_action` 1, **`movement`
+  5**, `free` 5. **A naive implementation emitting `Choice(cost="movement")` got free
+  unlimited movement and no error, so the attack-SUBTRACTION the arc exists to model
+  would never have happened while looking like it had.** The s62 shape again: live at
+  one end and wrong, which is harder to notice than dead at both.
+  - Closed as a **PARTITION over the closed vocabulary** — every member of
+    `taxonomy.COSTS` is metered, explicitly unmetered (`free`/`none`), or UNMODELLED,
+    and an unmodelled cost RAISES. Raises rather than skips because a skip reads as
+    *"could not afford it"*, a different and plausible-looking answer.
+  - **A partition cannot go stale**, which a blocklist on `"movement"` would: a seventh
+    cost must be classified or raise on first use. That is s62's lesson (enforce with a
+    test, not a docstring) applied to a VOCABULARY, and
+    `test_movement_is_the_only_unmodelled_cost` asserts an EQUALITY so that modelling
+    movement must come back and empty the set.
+
+  ### FIX 2 — THE §4 PROVENANCE GAP (found s62, left unfixed at the user's call)
+  `WarAngelAdapter.describe()` recorded nothing about opportunity attacks while
+  `BaselineCharacterPolicy.describe_parameters()` spells the same assumption out in
+  full **and credits it to War Angel**. Now records the count, that it is NOT a
+  declared option (hardcoded `_aoo_round`, unlike the baseline's `aoo_per_combat`), and
+  the assumption verbatim. **Moves no number**: `described` reaches only the report's
+  provenance block (`report.py:673`), is absent from `config_hash`, and no availability
+  predicate reads it (its last reader was the baked-in enemy path, deleted s52).
+
+  ### THE REACTION DOUBLE-BOOK IS QUANTIFIED, AND #6b's SCOPE BOUND IS NARROWER THAN IT READS
+  War Angel, 4,000 days. Flourish Parry is live at L14-16 only, so L13 is a clean
+  control arm: `reactions_per_round` = **0.2500 ± 0.0000** (L13) vs **0.3288 / 0.3325 /
+  0.3309** (L14/15/16). So the overage is **~0.081 reactions/round — ~33% more
+  reactions than the economy permits — and EXACTLY ZERO at L1-L13.** #6b's bound as
+  written reads as though it reached all sixteen levels; it reaches three. The average
+  never approaches the 1.0 cap, so the collision only bites on rounds carrying both
+  — ≈2% of rounds if independent, **an inference from the aggregate and labelled as
+  one, not a direct count**.
+  - **L13's 0.2500 ± 0.0000 is exact, and naming what makes it exact is the point**
+    (s54's rule): the AoO is a DECLARED CONSTANT, one per combat pre-rolled onto one of
+    four rounds, so every combat contributes exactly one reaction and the variance is
+    structurally zero. **A declared constant has a visible signature in the output and
+    this is it** — under the arc that row acquires variance.
+
+  ### THE SEAM CHECK AND ROLL CALL, RUN AT DESIGN TIME (both paid)
+  The seam check found the arc's actual deliverable: it **converts THREE declared
+  constants into emergent quantities** — `aoo_per_combat`, melee uptime implicit in
+  `rounds_per_combat=4`, and one reaction serving two consumers — each a two-writer
+  risk of exactly s62-finding-3's shape. All three dormancy answers appear at once:
+  #1 *not equal, unconnected*; #2 *equal for a reason that stops* (uptime ≡ 1.0 because
+  nothing moves); #3 **the third and worst answer — already unequal where nobody
+  looks**, which is what §4.2 then quantified. Plus the same quantity at two STAGES
+  (AoO decided at policy time today, at resolution time under the arc — a plan and an
+  event, which cannot agree) and two SCOPES (declared per COMBAT, emergent per ROUND;
+  `reactions_per_round` already reports per round, so the registry is on the emergent
+  side and the declaration is not). The roll call's empty cells named the untested
+  values: `movement` (fixed), reach at 10ft, **speed at ANY value**, and
+  `entity_leaves_zone` subscribed.
+
+  ### FIVE PREREQUISITES, NOT FOUR — AND PREREQUISITE 3 SPLITS
+  Item 5d lists four, "three tractable and ONE BLOCKING". **(3) reach + speed SPLITS:
+  reach is census-grounded; SPEED HAS NO DATA ANYWHERE IN THE PROJECT** — verified
+  across every table in `reference/data/`, no speed column and no flight column, and
+  the band table carries neither size nor speed. Since §3.1 makes the whole subtractive
+  term a function of the speed differential, **the one quantity that decides the arc's
+  SIGN is the one with no empirical basis**, and sourcing it means reopening the
+  census/Chrome arc that s36 closed — a user decision. A **fifth** prerequisite is
+  added: a reaction-CONTENTION model (R7), which the arc cannot land without, and whose
+  "does the intercept start debiting?" half moves War Angel L14-16 on its own.
+
+  ### CENSUS REACH CORRECTED IN BOTH PRIOR RECORDS
+  Cadence-weighted ranged+both is **20.1 / 34.0 / 45.1 / 43.6**. `enemy_model.md` §9
+  said "20% → 40% with CR" and item 5d "20% -> 42% by band"; **the series is NOT
+  monotonic** — it peaks at band 11-16 and DIPS at 17+. Both records fixed, and §9 now
+  carries a superseded-in-part header pointing at `positioning.md`.
+
+  ### THE DESIGN REVIEW — the user reshaped this mid-session, and it is where the
+  ### real content came from
+  The session opened as "design record + two zero-number fixes". The user then asked
+  to **start from a HIGH LEVEL across the whole build corpus** rather than around War
+  Angel, and walked an eight-category reaction taxonomy against it. **Four of the
+  conclusions below overturn something this session had already stated confidently**,
+  which is the record worth keeping.
+  - **THE HEADLINE MOVED FOUR TIMES, and all four are preserved in the document.**
+    (1) item 5d's "downward"; (2) **+46.3%** (measured, but it is ONE CELL of the
+    movement matrix, not the arc); (3) **"crosses zero"** — negative at band 0-4,
+    positive at 11-16 — which turned out to be the `m = 0` corner; (4) the current
+    one, **+9% to +21%, positive at every band, rising with the ranged share**.
+    Each correction came from the user adding a constraint, not from re-measuring.
+  - **THE SPATIAL MODEL IS LOCKED (§12.0).** Infinite-width band; distance as real
+    scalar state with **NO per-turn reset**; combat starts at `d0 = S_c`. Two
+    intermediate proposals are recorded as REJECTED with reasons: a per-turn reset
+    **deletes the movement economy**, which is the very character-side cost §7.4
+    names as the arc's blocker; and arena-length-`= S_c` confounds speed with
+    room-to-run. The master condition:
+    > **`S_c + p + (R_c − R_e) > S_e`**
+    Three character-side terms — speed, free forced movement, reach advantage — all
+    in FEET and interchangeable foot for foot. **DASH DROPS OUT**: Dash is the
+    enemy's Action and so is Multiattack, so a Dashing enemy buys adjacency and
+    deals nothing. *Being reached is harmless; being attacked is not.* That
+    corrected an intermediate `S_c + p > 2*S_e`, where the user had the right
+    answer by the wrong mechanism (the chasing enemy pays part of the return leg,
+    so the factor 2 comes from Dash, not from a round trip).
+  - **THE PROVOCATION COST IS BUILD-DECLARED AND NOT GENERALIZABLE** (user's
+    correction). Forced movement is free and does not provoke; a feature Disengage
+    costs a bonus action; walking away costs one AoO. **Monk Step of the Wind /
+    Patient Defense DOES cost a bonus action** — `16_bounty_hunter:109`'s *"for
+    free"* means no FOCUS POINT, which this session initially conflated.
+  - **PARTY RETARGETING WAS THE LARGEST SINGLE CORRECTION.** The melee x melee cell
+    is NOT zero: a melee enemy that wants a different party member must leave the
+    character's reach to reach them. `_ally_roster` uses UNIFORM weights, so the
+    enemy wants someone else on 75% of its turns (per-ROUND commitment, user) —
+    making `m`, the probability that the new target is outside reach, the dominant
+    term in the whole re-baseline, and **unmeasurable**. Set to **1/3 by the user's
+    experience**, documented as a visible assumption.
+  - **AND THE TWO DECISIONS CALIBRATE EACH OTHER EXACTLY:**
+    `4 rounds x 0.75 retarget x 1/3 = 1.000 AoO/combat`, which is precisely the
+    convention the model declares today. So the whole re-baseline is attributable
+    to the RANGED-enemy cell, and the sign is positive everywhere under BOTH
+    readings of `reach_both` — retiring the warning that the `both` choice was
+    first-order. **The exactness is CONTINGENT on uniform weights at
+    `party_size=4`**, and `m` is explicitly NOT to be re-derived to preserve it
+    (user): the melee cell SHOULD move with the threat class.
+  - **THREAT CLASS IS ITS OWN VOCABULARY, NOT keyed 1:1 to the movement type**, and
+    the reason is a sign trap: for retargeting the rate is `(1 - p_char) * m`, so
+    **higher threat means FEWER opportunity attacks**. The naive expectation holds
+    only through **OCCUPANCY**, which is much larger — movement type drives the rate,
+    threat class modulates it in the opposite direction. ±5pp is a ±20% TANKING
+    knob and only a ∓6.7% AoO knob.
+  - **ENEMY REACH IS A PER-COMBAT DRAW from {5,10,15,20}ft** (user), not a per-tier
+    constant, so a kiting build is never shut off at high tier. **Sourced from SIZE,
+    which closes s36's deliberate deferral** ("deferred to the enemy-behavior
+    formalization" — this arc), so NO new census is needed for it. P(5ft) by band:
+    **86.1 / 59.1 / 51.1 / 25.7%** — at 17+ still about ONE COMBAT PER DAY at
+    standard reach. The condition degrades smoothly (a push-mastery kiter escapes
+    99/92/83/43% by band; a plain melee build 0% everywhere, correctly).
+    - A MEASURED NULL worth not re-deriving: conditioning size on melee-capability
+      changes the distribution **not at all** (300/303, 126/126, 44/46, 35/35), so
+      there is no selection effect. The two census tables ARE joinable (508/508).
+    - An internal check that passed: the "glaive kiter" and "fast kiter" columns are
+      **IDENTICAL**, confirming the reach/speed equivalence empirically as well as
+      algebraically.
+  - **CONDITIONAL KITING ROUTES (§12.0f)**: push and slow need a HIT, topple a hit
+    AND a failed CON save, so the free route can FAIL. Two consequences —
+    **accuracy BUYS DEFENCE** for a kiting build (a coupling nothing in the model
+    has today), and **architecturally the retreat is a POST-ROLL decision point**,
+    so Phase 1 must not model movement as a turn-start commitment.
+  - **A SECOND FAIL-OPEN, same family as §7.4 (§12.9):** five of the eight members
+    of `taxonomy.COMBAT_MODALITIES` have no machinery while its comment says the
+    tuple is the subset that does — **Disengage among them**, which §12.5 makes
+    load-bearing.
+  - **ONE CORRECTION OF A CLAIM THIS SESSION ALMOST SHIPPED:** "slow is worth twice
+    push per foot" was stated as a crisp falsifiable prediction and is **FALSE** —
+    it was downstream of the `2*S_e` form. Under the locked condition it is **1:1**.
+    Caught before it reached the document as a prediction.
+
+  ### RE-CHECKED, NOT PAID (the s61 lesson)
+  All four of item 5d's status claims HELD: `move_entity` has zero production callers
+  (only the two zone test files); nothing subscribes to `entity_leaves_zone`, which
+  exists **only** as a row in `ability_schema.md:93` — no engine code mentions the
+  string at all; no reach and no speed on `Entity`; the enemy budget is ternary.
 
 - **ROADMAP ITEM 5c — #6b, THE DEFINITIVE RE-EVALUATION. WAR ANGEL L1-16 AT THE
   STANDARD TIER (2026-11-09, session 62).** 16 cells, **800,000 simulated days**,
@@ -7225,8 +7475,30 @@ Engine prerequisites, in the order we built them:
 
 ### NEXT STEP — AGREED ROADMAP (re-planned session 33, 2026-06-24; RESEQUENCED s54)
 
-> **NEXT TASK = item 5d below (THE POSITIONING / OPPORTUNITY-ATTACK ARC), with item 6
-> (the first full build evaluation) now resting on #6b's completed data. Item 5c
+> **NEXT TASK = THE MONSTER SPEED CENSUS (item 5d's last data prerequisite; user,
+> s63). THIS REOPENS THE EMPIRICAL/CHROME CENSUS WORKFLOW THAT s36 CLOSED — so the
+> NEXT SESSION NEEDS THE CHROME CONNECTOR RE-ENABLED, the first time since s36 that
+> PROGRESS's standing MCP note actually applies. RAISE IT AT STARTUP.** Spec:
+> `design/positioning.md` §12.0i; workflow already LOCKED in
+> `design/enemy_profile.md` "Census workflow" and reusable as-is. Scope is ONE
+> scalar per monster — **`speed = max(walk, climb, fly, swim, burrow)`, the HIGHEST
+> listed**, because that is what the creature uses in its intended habitat and the
+> walk speed would systematically overstate every kiting build. Output shape already
+> settled: `speed` joins `monster_profile_monsters.csv` beside `size`; the aggregator
+> adds a per-band **DISTRIBUTION** (not just a mean — the escape condition is a STEP
+> function) to `monster_profile_by_band.csv`. **Then Phase 0** (threat class +
+> per-round targeting), then Phases 1-5.
+>
+> **OLD POINTER (superseded):** NEXT TASK = item 5d's BUILD phase.
+> 5d's DESIGN pass is DONE (s63): `design/positioning.md` is the arc's design record,
+> built from the 33-guide corpus at the user's direction, and two zero-number fixes
+> shipped with it (the `movement` fail-open, the §4 AoO provenance gap). **THE PREMISE
+> IS INVERTED from what item 5d assumed** — the measured dominant term is +46% DPR, not
+> negative, and the subtractive term is gated on a speed differential the project has
+> NO DATA for. **FOUR OPEN QUESTIONS FOR THE USER before any build work**:
+> positioning.md §11 (speed data; does the intercept start debiting; which kiting
+> direction first; does `aoo_per_combat` survive). Item 6 (the first full build
+> evaluation) rests on #6b's completed data. Item 5c
 > (#6b, THE DEFINITIVE RE-EVALUATION) IS DONE (s62)** — War Angel L1-16 at the
 > standard tier, 800,000 days, engine `a09a3ce` clean, no manifest warnings, §11
 > scoring rendered. The user reshaped it from a numeric before/after into a
@@ -7758,6 +8030,21 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
    assumes a FIXED number of opportunity attacks per combat, and the goal is a spatial
    model where enemies provoke by moving out of reach. **Status verified in s62, not
    recalled.**
+   - ~~**DESIGN PASS**~~ **DONE (s63) — `design/positioning.md` (~1,300 lines),
+     READ IT FIRST, and read §12 and §13 BEFORE anything earlier in that file: §12
+     is binding and supersedes §3/§5/§7.3/§10/§11 where they differ, and §13 is the
+     phase plan. The sketch below is superseded on two points.** Built from the 33-guide corpus at the
+     user's direction rather than from War Angel (the arc's degenerate case). **(a) THE
+     PREMISE BELOW IS INVERTED**: the measured dominant term is **+1.71 DPR per
+     opportunity attack, +46.3% over the 1→4 span**, not a subtraction — Disengage is an
+     ACTION so a multiattacking monster eats the AoO, movement is not an action so an
+     equal-speed gap closes for free, and 11 of 33 guides name kiting with the CHARACTER
+     as the kiter (§9 models only the enemy-side case, which no guide describes).
+     **(b) THERE ARE FIVE PREREQUISITES, NOT FOUR, AND TWO BLOCK**: prerequisite (3)
+     splits, because **speed data does not exist anywhere in the project** and the
+     subtractive term's sign depends on it; and a fifth, a reaction-CONTENTION model, is
+     added. **(c) The blocker (4) is FAIL-OPEN, not absent** — fixed in s63. **FOUR OPEN
+     QUESTIONS FOR THE USER** at positioning.md §11 gate the build phase.
    - **BUILT (substrate 7b):** `src/zones.py` — `Zone` (emanation anchored to its
      owner, or static), `ZoneEffectSpec`, `ZoneBuffSpec`, `Zone.contains()`,
      `move_entity()` (verb 11). `Entity.zone` is one string.
@@ -7787,7 +8074,11 @@ FINAL data (no re-freeze / re-wire after the data changes underneath it).**
      **SUBTRACTS attacks**, at every level of every build, by an amount nobody has
      measured. Switching it on re-baselines the whole project — the same principle
      that kept `no-new-dice-outside-combat` frozen through s62.
-   - **A §4 PROVENANCE GAP found on the way, left UNFIXED at the user's call (s62):**
+   - ~~**A §4 PROVENANCE GAP found on the way, left UNFIXED at the user's call (s62)**~~
+     **FIXED (s63)** — `WarAngelAdapter.describe()` now records the AoO count, that it is
+     NOT a declared option (hardcoded, unlike the baseline's `aoo_per_combat`), the
+     assumption verbatim, and that the reaction double-book is confined to L14-16. Moves
+     no number (`described` reaches only the report's provenance block). Original entry:
      `WarAngelAdapter.describe()` returns `build / level / options / daily_plan` and
      says NOTHING about opportunity attacks, while
      `BaselineCharacterPolicy.describe_parameters()` spells the same assumption out in

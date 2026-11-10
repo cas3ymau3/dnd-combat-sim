@@ -108,11 +108,55 @@ class WarAngelAdapter:
         return runner, roster
 
     def describe(self, config: "RunConfig") -> dict[str, Any]:
+        """§4 provenance for this build.
+
+        ``opportunity_attacks`` records the SPATIAL assumption, which this adapter
+        omitted until s63 (design/positioning.md §9.2).  It is not cosmetic: War
+        Angel ORIGINATED the convention that the framework's own baseline subject
+        then borrowed, and ``BaselineCharacterPolicy.describe_parameters()`` spells
+        it out in full AND CREDITS IT HERE — so the build that invented it recorded
+        nothing while the build that inherited it documented it, and an
+        authoritative War Angel artifact buried exactly the assumption that
+        prompted the positioning arc.
+
+        Unlike the baseline subject's ``aoo_per_combat``, this build's count is NOT
+        a declared option — it is hardcoded at one per combat (``war_angel.py``'s
+        ``_aoo_round``), collapsed by the guide from five AoO timing slots, so there
+        is no option for §4 to resolve and the assumption has to be stated outright.
+
+        This is provenance only and moves no number: ``described`` reaches the
+        report's provenance block and nothing else (it is absent from
+        ``config_hash``, and no availability predicate reads it since s52 deleted
+        the baked-in enemy path).
+        """
         return {
             "build": self.name,
             "level": config.level,
             "options": {},
             "daily_plan": config.level >= 5,     # Magic Weapon / Prayer of Healing hooks
+            "opportunity_attacks": {
+                "per_combat": 1,
+                "declared": False,
+                "source": "war_angel.WarAngelPolicy._aoo_round (hardcoded)",
+                "assumption": (
+                    "THERE IS NO SPATIAL MODEL, so 'the enemy moves out of reach' "
+                    "is a FREQUENCY and not an event: one opportunity attack per "
+                    "combat, its round pre-rolled uniformly over rounds_per_combat. "
+                    "The guide reached the count by collapsing five AoO timing "
+                    "slots into one. This is the convention the framework's "
+                    "baseline subject borrowed as its aoo_per_combat default."
+                ),
+                "reaction_double_books_from_level_14": config.level >= 14,
+                "reaction_note": (
+                    "From L14 Flourish Parry and the opportunity attack both fire "
+                    "off ONE reaction, as the guide prices them (war_angel.py:1187): "
+                    "the AoO debits the turn economy and the defender-side intercept "
+                    "does not. Measured overage ~0.081 reactions/round at L14-16 and "
+                    "exactly zero below L14 (design/positioning.md §4.2). Harmless "
+                    "for an absolute reading under a fixed basis; it is why #6b may "
+                    "not be used to compare policies."
+                ),
+            },
         }
 
     def forced_save_abilities(self, config: "RunConfig") -> "frozenset[str]":

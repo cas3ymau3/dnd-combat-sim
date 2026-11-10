@@ -40,6 +40,7 @@ from .events import (
     TurnStartEvent,
     make_tick,
 )
+from .taxonomy import COSTS
 from .verbs import (
     resolve_attack_roll,
     resolve_control_save,
@@ -70,6 +71,29 @@ DEFAULT_RESOURCES = {
     "bonus_action": 1,
     "reaction": 1,
 }
+
+# Costs that deliberately spend no turn-level economy: a follow-up whose slot was
+# already paid for (Extra Attack), or an effect that genuinely costs nothing.
+UNMETERED_COSTS = frozenset({"free", "none"})
+
+# A PARTITION over the closed `Cost` vocabulary (`taxonomy.COSTS`): every cost is
+# either METERED (a key of DEFAULT_RESOURCES, drained once per turn) or explicitly
+# UNMETERED (above).  Anything in neither set is DECLARED but not modelled, and the
+# drain below — `if cost in econ` — would let it through unmetered, which is
+# indistinguishable from "free" in the output.
+#
+# `"movement"` is exactly that case today (design/positioning.md §7.4): it is in
+# `taxonomy.COSTS`, it is in no economy pool, and before this guard a policy could
+# emit five movement-cost attacks in one turn and resolve all five.  That is the
+# character-side injection point the positioning arc needs, and a silent pass means
+# the attack-SUBTRACTION the arc exists to model would never happen while looking
+# like it had.  So an unmodelled cost REFUSES rather than resolving — the project's
+# own rule that a declared parameter must deliver its declared value or refuse.
+#
+# Stated as a partition rather than as a blocklist on purpose: it cannot go stale.
+# Adding a cost to the taxonomy forces it to be classified here or raise on first
+# use, instead of relying on whoever adds it to remember this drain exists.
+UNMODELLED_COSTS = frozenset(COSTS) - frozenset(DEFAULT_RESOURCES) - UNMETERED_COSTS
 
 
 class Scheduler:
@@ -766,6 +790,19 @@ class Scheduler:
         seq = self._fire_zone_effects(actor, round_, turn_idx, start_seq=1)
         for choice in choices:
             cost = choice.cost
+
+            # --- Unmodelled cost: refuse rather than resolve for free ---
+            # See UNMODELLED_COSTS above and design/positioning.md §7.4.  Raising
+            # (not skipping) because this is a MODELLING gap, not an affordability
+            # one: skipping would read as "the character could not afford it",
+            # which is a different and plausible-looking answer.
+            if cost in UNMODELLED_COSTS:
+                raise NotImplementedError(
+                    f"{actor.name} emitted a choice costing {cost!r}, which is "
+                    f"declared in taxonomy.COSTS but is not metered by the turn "
+                    f"economy and is not explicitly unmetered. Resolving it would "
+                    f"spend nothing — see design/positioning.md §7.4."
+                )
 
             # --- Action economy check ---
             if cost in econ and econ[cost] < 1:
