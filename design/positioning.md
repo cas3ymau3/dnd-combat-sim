@@ -591,12 +591,31 @@ once already.**
 iff it can end its movement within its own reach:
 
 ```
-enemy attacks  iff  G ≤ S_e + R_e
+enemy attacks  iff  G <= S_e + R_e
 
-character achieves  G = R_c + p + g_m    at cost  (d − R_c) + g_m ≤ S_c
-      escape  iff  p + g_m > S_e
-      sustained from adjacency  iff  S_c + p > S_e
+character achieves  G = R_c + p + g_m    at cost  (d - R_c) + g_m <= S_c
+      escape  iff  p + g_m > S_e - (R_c - R_e)
+
+THE MASTER CONDITION (sustained, from contact):
+
+      S_c  +  p  +  (R_c - R_e)   >   S_e
 ```
+
+**REACH IS ASYMMETRIC and it folds in as a third character-side term in the SAME
+CURRENCY (user, s63).** `R_c` is the CHARACTER's reach — a function of the weapon
+in hand, or of the spell for a War Caster reactive cast — and `R_e` is the
+ENEMY's, drawn per combat (§12.0h). Speed, free forced movement and reach
+advantage are interchangeable foot for foot: **a 5ft reach advantage is worth
+exactly 5ft of speed or 5ft of push.** Grid-verified: a glaive character (10ft)
+attacks from 10 and withdraws 30 to `G = 40`, and the enemy walking 30 ends at
+10ft and **cannot reach**; the identical 5ft-reach character reaches only
+`G = 35`, the enemy ends at 5ft and **attacks**. That is why
+`25_the_voice_of_heaven` buys a whip to go with War Caster.
+
+The equivalence is also confirmed empirically rather than only algebraically: in
+§12.0h's table the "glaive kiter" and "fast kiter" columns are **identical**,
+because +5ft of reach and +15ft of speed land the same side of the threshold
+against the same reach distribution.
 
 where `p` is free forced movement per turn and `g_m` is movement spent
 withdrawing. Grid-verified: a 30ft character with no push withdraws from
@@ -654,6 +673,13 @@ free forced movement > a bonus-action Disengage > walking > standing in melee.
   it **reverses this document's earlier conclusion that a per-band scalar would
   do** (first-draft §12.0.4). Escape should be a PROBABILITY over the band's
   speed distribution.
+- **Enemy reach is SOURCED (§12.0h)** — from the per-monster size distribution
+  already in the frozen census, via a declared size→reach mapping, drawn per
+  combat. **No new census needed**, and it closes s36's size deferral. So of the
+  two reach/speed data items, only SPEED remains outstanding.
+- **Character reach per (build, level)** — a function of the weapon in hand (or
+  the spell, for a War Caster reactive cast), so it follows the same per-level
+  declaration pattern as AC, the saves and the threat class.
 - **Character speed per (build, level)** — verified absent from every `LEVELS`
   row of all three builds. Derivable like AC and the six saves (race base +
   Monk Unarmored Movement + Barbarian Fast Movement + boons), so it follows the
@@ -904,6 +930,86 @@ with the band's ranged share.** That is the fourth and current headline, and the
 three it replaces are all recorded above: "downward" (item 5d), "+46.3%" (§3.3,
 one cell), and "crosses zero" (§12.0c, the `m = 0` corner).
 
+### 12.0h ENEMY REACH — a PER-COMBAT DRAW from {5, 10, 15, 20} ft (user, s63)
+
+**DECIDED: not a constant within a tier.** Each combat draws the enemy's reach,
+with larger reaches more likely in higher bands. The user's reason is a modelling
+one rather than a realism one, and it is the right call:
+
+> *"if a kiting character never fights any enemies with limited reach in later
+> tiers, it can severely hamper their apparent combat effectiveness. There will
+> still be enemies with standard reach across all levels of play, they just
+> become less common. So we don't want to penalize strategies that depend on
+> kiting/forced movement too much at higher tiers, even though that is a
+> realistic trend."*
+
+This shares its cadence with the movement-type draw (§12.0d), which is already
+per combat — so the two are drawn together and the arc adds **two** per-combat
+quantities, not one.
+
+**THE SOURCE IS SIZE, AND IT CLOSES A DEFERRAL FROM s36.** The census `reach`
+column is CATEGORICAL (melee 573 / ranged 260 / both 64 ability rows) and carries
+no distance. But `monster_profile_monsters.csv` holds **size per monster**, which
+`enemy_model.md` §10 captured raw and left deliberately uninterpreted — *"whether
+to gate size-dependent character mechanics on a per-band size scalar is deferred
+to **the enemy-behavior formalization**."* This arc is that formalization, so
+**size finally has its consumer and nothing new needs censusing.**
+
+**A DECLARED size → reach mapping** (an assumption like `m`, not a census fact:
+in 5e reach is a property of the attack, and size only correlates):
+
+| size | reach |
+|---|---|
+| Tiny / Small / Medium | 5ft |
+| Large | 5ft (0.5), 10ft (0.5) |
+| Huge | 10ft (0.6), 15ft (0.4) |
+| Gargantuan | 15ft (0.5), 20ft (0.5) |
+
+**A MEASURED NULL, recorded so nobody re-derives it:** conditioning the size
+distribution on being melee-capable (having any ability with reach `melee`/`both`)
+changes it **not at all** — 300/303, 126/126, 44/46 and 35/35 monsters qualify
+per band. So there is no selection effect and the unconditional size distribution
+is the right input. The two census tables ARE joinable (508/508 monsters overlap),
+which is how this was checked rather than assumed.
+
+**The resulting per-band reach distribution:**
+
+| band | n | 5ft | 10ft | 15ft | 20ft | E[reach] |
+|---|---:|---:|---:|---:|---:|---:|
+| 0-4 | 303 | **86.1%** | 12.9% | 0.9% | 0.0% | 5.74 ft |
+| 5-10 | 126 | **59.1%** | 32.8% | 7.7% | 0.4% | 7.47 ft |
+| 11-16 | 46 | **51.1%** | 32.0% | 13.7% | 3.3% | 8.46 ft |
+| 17+ | 35 | **25.7%** | 17.7% | 32.3% | 24.3% | 12.76 ft |
+
+> **The number that answers the concern: at 17+ a kiting build still meets a
+> standard-reach enemy in 25.7% of combats — about ONE COMBAT PER ADVENTURING
+> DAY** at four combats a day. The realistic trend is preserved (86% → 26%)
+> without ever switching kiting off.
+
+**AND THE CONDITION DEGRADES GRACEFULLY, which is the test of whether the
+mechanism is any good.** `P(sustained escape)` by archetype, from the master
+condition against the reach distribution above — **illustrative at `S_e = 30`,
+since the enemy SPEED distribution is still the outstanding data item (§12.0)**:
+
+| archetype | 0-4 | 5-10 | 11-16 | 17+ |
+|---|---:|---:|---:|---:|
+| plain melee 30ft, 5ft reach, no push | 0.0% | 0.0% | 0.0% | 0.0% |
+| push-mastery kiter 30ft, push 10 | 99.1% | 91.9% | 83.0% | **43.4%** |
+| glaive kiter 30ft, 10ft reach, push 10 | 100.0% | 99.6% | 96.7% | 75.7% |
+| fast kiter 45ft, no push | 100.0% | 99.6% | 96.7% | 75.7% |
+| fast + push, 45ft, push 10 | 100.0% | 100.0% | 100.0% | 100.0% |
+
+Three things to note. A plain melee build **never** escapes, at any band, which
+is correct — it is not a kiting build and the model should not hand it a
+defensive edge. The push-mastery kiter **degrades smoothly** (99 → 92 → 83 → 43)
+rather than falling off a cliff, which is exactly what the per-combat draw was
+for. And the glaive and fast columns are **identical**, which is the
+reach/speed equivalence confirmed empirically.
+
+A fully-invested kiter reads 100% at every band, which may be too generous — but
+it is a heavy investment, and `S_e` is a distribution too, so this will move once
+enemy speed is measured. Flagged rather than tuned.
+
 ### 12.0g THREAT CLASS — SEQUENCED FIRST, and declared per (build, LEVEL)
 
 **DECIDED (user, s63).** §3.5.4's threat class replaces `_ally_roster`'s uniform
@@ -924,6 +1030,53 @@ placeholder and then re-calibrated.
   decision record.
 - **It changes `P(retarget)` and therefore the melee x melee AoO rate**, which is
   the dependency that put it first.
+- **IT IS ITS OWN CLOSED VOCABULARY, NOT keyed 1:1 to the movement type
+  (DECIDED, user, s63).** The movement type supplies a DEFAULT; it does not supply
+  the value. Two reasons. A grappler/tank and a plain melee striker are both
+  movement-type 2 and should carry very different threat, which a 1:1 mapping
+  cannot express — and §3.5.4 was already headed for a threat CLASS supplying
+  per-entity weights. And:
+
+> **THE TWO POINT IN OPPOSITE DIRECTIONS, so collapsing them would bake in a sign
+> error.** For the retargeting channel the rate is `(1 - p_char) * m`, so being
+> targeted MORE means the enemy leaves LESS often and the character gets FEWER
+> opportunity attacks:
+>
+> | type | `p_char` | retarget | AoO/combat | vs base | dmg taken |
+> |---|---:|---:|---:|---:|---:|
+> | melee | 0.30 | 0.70 | 0.933 | **-6.7%** | **+20.0%** |
+> | kiting | 0.25 | 0.75 | 1.000 | — | — |
+> | ranged | 0.20 | 0.80 | 1.067 | **+6.7%** | **-20.0%** |
+>
+> The naive expectation ("melee provokes more") is nonetheless right, but through
+> a DIFFERENT and much larger effect: **OCCUPANCY.** The retarget-AoO requires the
+> enemy to be inside the character's reach at all, so it barely fires for a ranged
+> character that is never in contact, and fires every round for a melee one.
+>
+> **So: movement type drives the AoO rate through occupancy (large), and threat
+> class modulates it through retention (small, opposite sign).** Net ordering is
+> melee ≈ kiting >> ranged ≈ 0. Confirmed with the user (s63): threat class *"is
+> more about how much incoming damage the character is taking versus how many
+> times they are getting to make AoOs, with the occupancy factor being the biggest
+> driver (rather than retargeting)."*
+
+- **`m` STAYS FIXED AT 1/3 — do NOT adjust it to preserve the 1-AoO-per-combat
+  convention (DECIDED, user, s63).** The melee x melee cell SHOULD move with the
+  threat class; that is the mechanism, not drift: *"the whole point is that
+  different threat classes will provoke more or less AoOs by virtue of being
+  targeted more often."* The exact 1.000 at uniform weights (§12.0e) is therefore
+  a property of the uniform BASELINE and is recorded as such, not a target to
+  hold.
+- **The declared starting spread is ±5pp** (melee 0.30 / kiting 0.25 / ranged
+  0.20, user). Its asymmetry should be understood before reading results:
+  ±5pp on a 0.25 base is **±20% relative on damage taken** but only **∓6.7% on
+  retarget-AoOs**, so it is a substantial TANKING knob and a negligible AoO knob.
+  Representable without quantization trouble: weights are integers summing to 100
+  for the `roll_one(100)` stream property, and `30 + 24 + 23 + 23 = 100` works
+  (the stand-ins are interchangeable, so the 1pt asymmetry is immaterial).
+- **PREDICTION for Phase 0 to measure, not assume:** since nothing reads
+  character HP, threat class should **barely move DPR** and **substantially move
+  the defensive panel** (`net_damage_taken_per_round`, the mitigation channel).
 
 
 
@@ -1183,7 +1336,9 @@ let an unimplemented member refuse — when Phase 2 lands.
 Phases are ordered by what each one BUYS, not by implementation convenience.
 Every phase ships **default-OFF** per §8.
 
-**Phase 0 — THE THREAT CLASS (§12.0g), sequenced FIRST.** §3.5.4's threat class
+**Phase 0 — THE THREAT CLASS (§12.0g), sequenced FIRST.** Its own closed
+vocabulary (NOT keyed 1:1 to the movement type), with the movement type supplying
+a default; declared per (build, LEVEL); `m` fixed at 1/3; ±5pp starting spread. §3.5.4's threat class
 replaces `_ally_roster`'s uniform weights; declared per (build, LEVEL) alongside
 the movement type (§12.0b), since both affect tactics and targeting. It goes
 first because `P(retarget)` sets the melee x melee AoO rate, and calibrating `m`
