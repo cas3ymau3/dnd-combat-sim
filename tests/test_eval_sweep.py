@@ -792,7 +792,12 @@ def test_the_shipped_declaration_resolves(tmp_path):
     assert len(cells) == len(decl.cells())
     assert {c.config.build for c in cells} == {"war_angel"}
     assert all(c.config.enemy == "baseline" for c in cells)
-    assert all(c.config.day_tier == "quick" for c in cells)
+    # STANDARD, not quick, since s62: the definitive #6b run must not publish an
+    # artifact carrying §9.1's `precision` warning, and a level sweep gets no
+    # pairing benefit (every level draws its own `(purpose, owner)` substream
+    # because the character is named `WarAngel-L{level}`), so each cell's interval
+    # has to be bought with days rather than with common random numbers.
+    assert all(c.config.day_tier == "standard" for c in cells)
     assert decl.schema_version == SWEEP_SCHEMA_VERSION
 
 

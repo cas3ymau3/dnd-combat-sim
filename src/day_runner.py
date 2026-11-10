@@ -305,12 +305,23 @@ class BeforeCombatContext:
         The full entity list — hook applies/removes modifiers directly.
     rng:
         The shared RNG (for any randomized pre-combat choice).
+    telemetry:
+        The day's BETWEEN-COMBAT telemetry accumulator (§13) — the same object
+        ``BetweenCombatsContext`` carries, because a pre-combat cast and a
+        between-combats cast are both things that happen with no Scheduler running
+        and both belong to the DAY (healing.md §10.4). Added s62: without it a
+        daily plan could spend a resource but had nowhere to record it, so the
+        economy channel reported only the scheduler's spends and
+        ``spell_slots_per_day`` undercounted by up to 9.7x. Spend through
+        ``resources.spend_recorded(..., telemetry=ctx.telemetry)`` rather than
+        calling ``consume`` directly.
     """
     combat_num: int
     combat_start_minute: int
     combat_times: list[int]
     entities: list["Entity"]
     rng: "SeededRNG"
+    telemetry: CombatTelemetry = field(default_factory=CombatTelemetry)
 
 
 BeforeCombatHook = Callable[[BeforeCombatContext], None]
@@ -454,6 +465,7 @@ class DayRunner:
                     combat_times=combat_times,
                     entities=self.entities,
                     rng=self.rng,
+                    telemetry=between_telemetry,
                 )
                 self.before_combat(ctx)
 
