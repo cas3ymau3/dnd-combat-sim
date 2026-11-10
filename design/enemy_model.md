@@ -670,6 +670,14 @@ points to this work, recorded here so they are not lost.
   focus a target it has grappled / that is marked, spread vs focus-fire. These are
   designer priors, not census facts. Recommendation: keep them in the
   positioning/targeting arc; a v1 stub stays with the existing weighted roster.
+- ~~**The genuine coupling**~~ **ADDRESSED IN DESIGN (s63): `design/positioning.md`
+  §12.0j.** The advantage-seeking/targeting coupling this bullet defers to "the
+  targeting/positioning arc" now has its rule: an ORDINAL preference over advantage
+  states (per `design.md` §3.5, never EV maximization), with a `q` drawn from the
+  census `type` mix and capped at 0.75. AC deliberately does NOT feed targeting
+  (double-count + perverse incentive + it is EV maximization with extra steps), and
+  the "targeting tendencies are designer priors, not census facts" layer this
+  section names is held as the `1 − q` residual rather than enumerated. Original:
 - **The genuine coupling** (why these arcs touch §5/§6): the SOFT-control branch
   (restrained / prone / blinded character) makes the character easier to hit
   (attacks at advantage), so control pressure (§6), targeting (advantage-seeking),
