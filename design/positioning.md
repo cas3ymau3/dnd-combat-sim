@@ -779,6 +779,112 @@ with the census reach mix:
 > enemy acts first it is 3, which moves band 5-10 to ≈ +0.03 and band 11-16 to
 > ≈ +0.60. **The qualitative conclusion is robust across 3-vs-4 and across the
 > `both` choice; only the magnitude moves.**
+>
+> **BUT IT IS NOT ROBUST TO PARTY RETARGETING — see §12.0e, which supersedes the
+> sign-crossing above.** The zero in the melee x melee cell assumed the enemy
+> only ever wants to attack our character. It does not: at `party_size=4` with
+> uniform weights it wants someone else on ~94% of its turns, and reaching them
+> may force it out of the character's reach. The sign-crossing holds only at
+> `m = 0`.
+
+### 12.0e PARTY RETARGETING — the melee×melee cell is NOT zero, and this now DOMINATES
+
+**Raised by the user, s63, and it is the largest single correction in this
+document.** §12.0c concluded that two melee combatants both want contact, so
+nobody leaves reach and the AoO count is zero. **That ignored the party.**
+
+The model already has the enemy spreading attacks over a friendly roster. So:
+
+- A **ranged** enemy can attack any party member from where it stands — no
+  movement, no provocation. Positioning is irrelevant to its retargeting.
+- A **melee** enemy in melee with the character that wants to attack a DIFFERENT
+  party member **must move, and provokes** (user). We deliberately do **not**
+  model party-member locations, so we assume a party member is always reachable
+  once it leaves the character's reach.
+- But some party members may be reachable **without** leaving the character's
+  reach, which provokes nothing. So the rate is probabilistic.
+
+**The retarget probability is already in the model, and it is high.**
+`evaluation/enemy.py:_ally_roster` uses **UNIFORM** integer weights over the
+friendlies, so at `party_size=4` (1 character + 3 stand-ins) each draws **25**:
+
+| `n_attacks` | P(every swing on the character) | **P(wants someone else)** |
+|---:|---:|---:|
+| 1 | 0.2500 | **0.7500** |
+| 2 | 0.0625 | **0.9375** |
+| 3 | 0.0156 | 0.9844 |
+
+So at the usual `n_attacks=2`, the enemy wants to hit someone other than the
+character on **~94% of its turns**. Let `m` = P(the chosen target is outside the
+character's reach | retargeting). The enemy moves at most once per turn and the
+character has one reaction, so:
+
+```
+melee x melee AoO per round  = 0.94 * m   (capped at 1)
+melee x melee AoO per combat = 3.75 * m
+```
+
+**`m` IS NOW THE DOMINANT PARAMETER IN THE ENTIRE RE-BASELINE, AND IT IS
+UNMEASURABLE.** Combining with §12.0c's measured per-AoO values and the census
+reach mix, `E[AoO/combat] = P_melee*3.75m + P_ranged*4` against the declared 1.0:
+
+| band | per-AoO | m=0 | m=0.27 | m=0.5 | m=1.0 |
+|---|---:|---:|---:|---:|---:|
+| 0-4 (lvl 3) | 1.264 | **-0.25** | +0.77 | +1.64 | +3.54 |
+| 11-16 (lvl 11) | 1.715 | **+1.38** | +2.33 | +3.14 | +4.90 |
+
+> **So §12.0c's band-dependent sign-crossing holds ONLY at `m = 0`.** For any
+> `m` above ~0.1 the re-baseline is **positive everywhere and dominated by a
+> declared parameter with no empirical basis.** That is an uncomfortable result
+> and it is recorded rather than smoothed: `m` MUST be a swept sensitivity axis
+> with its value in provenance, never a buried default.
+
+**A CONVENTION-PRESERVING ANCHOR FOR `m`, which beats guessing.** Setting
+`3.75*m = 1.0` gives **`m` ~ 0.27**, which reproduces the existing
+1-AoO-per-combat convention *in the melee x melee cell*. That confines the
+re-baseline to the ranged-enemy cell, where it is attributable to a modelled
+mechanism rather than to a new free parameter. **This is an anchor, NOT a
+validation** — the convention comes from the user's own guide, and CLAUDE.md is
+explicit that no number in the guides is an external validation source.
+
+**AND THIS COUPLES THE ARC TO §3.5.4, WHICH WAS NOT ON ANY DEPENDENCY LIST.** The
+uniform weights are described in the code itself as *"a PLACEHOLDER with its
+replacement already designed: §3.5.4's threat class"*. Under threat weighting the
+character — a melee threat — would draw MORE attacks, which LOWERS the retarget
+rate and therefore lowers the melee x melee AoO rate. So the arc's magnitude
+depends on a placeholder, and the two must be settled together.
+
+### 12.0f CONDITIONAL KITING ROUTES — the free route can FAIL
+
+**Raised by the user, s63.** Several of the corpus's kiting tactics are
+**conditional**: they need an attack to land, or a save to fail, before they
+produce the gap.
+
+- **push / slow** — require a **hit**.
+- **topple** — requires a hit **and** a failed CON save (doubly conditional).
+- Tavern Brawler's shove — requires a hit with an unarmed strike.
+
+So §12.0's condition-B route is not simply "declared and free". On a **miss** the
+free gap never materialises, and the character falls back to a provoking retreat
+or to standing in melee:
+
+```
+E[enemy output | kiting] = P(hit)*0 + P(miss)*(22.0 walking | 44.0 standing)
+```
+
+**Two consequences.**
+
+1. **Accuracy buys defence for a kiting build.** The defensive value scales with
+   the hit rate — a real emergent coupling the model produces for free, and a
+   genuinely new output, since nothing today connects to-hit to damage taken.
+2. **ARCHITECTURAL: the retreat is a POST-ROLL decision point, not a turn-start
+   plan.** The policy cannot decide its movement at turn start, because it does
+   not yet know whether the push landed. Movement must be a decision point the
+   engine opens **after the attack resolves** — exactly the existing miss/hit
+   decider seam (CLAUDE.md #7: *"decision points are events the engine opens for
+   the policy to fill"*). **So Phase 1 must NOT model movement as a turn-start
+   commitment.** Recorded here because getting it wrong would be an abstraction
+   leak discovered late.
 
 ### 12.0d TWO DESIGN DECISIONS THE TYPOLOGY FORCES
 
@@ -976,8 +1082,10 @@ Every phase ships **default-OFF** per §8.
 **Phase 1 — the spatial substrate.** `reach` on entities (5/10ft); a typed
 **exit event** carrying its exit KIND (own-speed/action/BA/reaction → provokes;
 forced/teleport → does not; Disengage → does not, unless Sentinel);
-`within_reach(A, B)` readable from the policy snapshot as a pure read (CLAUDE.md
-#7). No speed. **The exit-kind vocabulary is the load-bearing decision of the
+`distance(A, B)` and `within_reach(A, B)` readable from the policy snapshot as a
+pure read (CLAUDE.md #7). No speed. **Movement must NOT be a turn-start
+commitment** — §12.0f shows the kiting retreat depends on whether the attack
+landed, so it is a post-roll decision point. **The exit-kind vocabulary is the load-bearing decision of the
 whole arc** — get it right and §12.3's three masteries, 18 guides' teleports and
 Sentinel all become data.
 
@@ -995,7 +1103,12 @@ defender-side intercept starts debiting (§7.5). **This is the phase that lifts
 since it moves only War Angel L14-16 (§4.2) and needs no spatial model at all.
 Worth doing first for that reason.
 
-**Phase 4 — speed, kiting and trapping (REBUILT on §12.0's locked model).** Not
+**Phase 4 — speed, kiting and trapping (REBUILT on §12.0's locked model).**
+Carries §12.0e's `m` (the retarget-requires-movement probability) as a **swept
+axis with provenance, not a default**, settled together with §3.5.4's threat
+class, since the uniform party weights it depends on are a placeholder; and
+§12.0f's conditional routes, whose retreat decision is a POST-ROLL decision
+point rather than a turn-start plan. Not
 zone-exit gating any more: the mechanism is the **geometry condition
 `S_c + p > S_e`** against a **build-declared provocation route** (§12.0 condition
 B). Deliverables: character speed per (build, level); enemy speed as a
