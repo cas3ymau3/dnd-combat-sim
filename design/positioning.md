@@ -9,6 +9,12 @@
 > framing this document corrects — see §3**), and `src/zones.py` (substrate 7b,
 > the parts already built).
 >
+> **§12 IS BINDING AND SUPERSEDES §3, §7.3, §5, §10 AND §11 WHERE THEY DIFFER.**
+> It records the decisions from the s63 review with the user — above all **the
+> ENGAGEMENT GUARANTEE (§12.0)**, which scopes the arc's subtractive term OUT by
+> decision and thereby dissolves the speed blocker §7.3 names. **§13 is the
+> build plan.** Read §12 and §13 before acting on anything earlier in this file.
+>
 > **This design starts from the 33-guide corpus, not from War Angel** (user,
 > s63). War Angel is the arc's *degenerate* case, and building the model around
 > it is the specific failure this document exists to avoid.
@@ -173,6 +179,11 @@ cadence-weighted enemy actions are melee-only** (§4.3). The modal enemy pursues
 > differential **for which the project holds no data at all** (§7.3). Planning
 > this arc as a downward re-baseline would get the sign wrong. Planning it as
 > "numbers move, direction known per build" is right.
+>
+> **UPDATED BY §12.0 (s63 review): the subtractive term is now scoped OUT by
+> decision**, so the additive term stands unopposed and the re-baseline direction
+> is **KNOWN AND UPWARD** with the magnitude §4.1 bounds. That is a stronger
+> position than the "direction unknown" this paragraph settled for.
 
 ---
 
@@ -342,7 +353,17 @@ A new **trigger**, not a new verb, with `on_incoming_hit` as the precedent
 (`policy.py`'s defender-side intercept). Nothing subscribes today. This is the
 decision point where class A and class B of §2.2 finally compete for one slot.
 
-### 7.3 Reach AND speed on entities — **SPLITS: reach is grounded, SPEED IS A SECOND BLOCKER**
+### 7.3 Reach AND speed on entities — **SPLITS; and the SPEED half is RESOLVED by §12.0**
+
+> **SUPERSEDED IN PART (s63 review).** This section's conclusion — that speed is
+> a second blocker, because the subtractive term's sign depends on a speed
+> differential with no data — **no longer holds**, because §12.0's ENGAGEMENT
+> GUARANTEE scopes the pursuit problem out by decision. Speed is still needed,
+> but only to gate ZONE EXIT against a footprint, which needs a **per-band
+> mean-field scalar** rather than a distribution. **The census does NOT need
+> reopening**, which withdraws option (b)/(c) below. The reasoning is kept
+> because the measurement that forced the question stands.
+
 Item 5d lists this as tractable. Half of it is not.
 
 - **Reach is grounded.** The census carries a `reach` column, cadence-weighted
@@ -477,7 +498,21 @@ the baked-in enemy path, deleted in s52.
 
 ---
 
-## 11. OPEN QUESTIONS FOR THE USER
+## 11. OPEN QUESTIONS FOR THE USER — **ALL FOUR ANSWERED IN THE s63 REVIEW**
+
+> 1. **Speed data → ANSWERED by §12.0:** standardize on the engagement
+>    guarantee; speed becomes a per-band mean-field scalar for zone exit only,
+>    and the census stays closed.
+> 2. **Does the intercept start debiting → STILL OPEN, and §13 Phase 3 proposes
+>    landing it FIRST**, separately, since it moves only War Angel L14-16 and
+>    needs no spatial model.
+> 3. **Which direction first → ANSWERED:** both, via §12.5's build-declared
+>    Disengage cost, which is what makes the enemy feed AoOs while the corpus's
+>    kiting builds deny them cheaply. The asymmetry does the work, not a choice
+>    of direction.
+> 4. **Does `aoo_per_combat` survive → STILL OPEN**, settled in §13 Phase 2.
+>
+> Original text:
 
 1. **Speed data (§7.3)** — reopen the census, hand-enter the Monster Manual
    distribution for band representatives, or standardize on equal speed and make
@@ -490,3 +525,268 @@ the baked-in enemy path, deleted in s52.
    larger prize and the one with no prior design at all.
 4. **Does `aoo_per_combat` survive as an override, or get deleted (§6, row 1)?**
    Keeping it is a second writer of an emergent quantity.
+
+---
+
+## 12. DECISIONS TAKEN (session 63 review with the user)
+
+This section is binding and supersedes §3, §7.3, §10 and §11 where they differ.
+It is the outcome of walking the user's own eight-category reaction taxonomy
+against the corpus survey.
+
+### 12.0 THE ENGAGEMENT GUARANTEE — the decision that shapes everything else
+
+**Decided (user, s63).** The combat area is defined so that **any entity can
+reach any other within its normal movement, and never has to Dash to engage.**
+The model is explicitly not about whether a character can get into melee:
+
+> *"I don't really want to push the model into one where enemies with high speed
+> just run away from the character and force us to use our action to dash up to
+> them. That's not really what this model is for ... the model is meant to focus
+> on DPR conditional on the character being able to deploy its damaging
+> resources efficiently/effectively."*
+
+**Five consequences, and they are large:**
+
+1. **The arc's SUBTRACTIVE term is scoped OUT by decision, not blocked by
+   missing data.** §7.3 called speed a second blocker because the subtraction's
+   sign depended on a speed differential nobody had measured. Under the
+   guarantee there is no pursuit problem to measure. **The blocker dissolves
+   into a deliberate modelling boundary**, which is a far better place to be.
+2. **The measured additive term (§4.1, +1.71 DPR per opportunity attack, +46.3%
+   over the 1→4 span) now stands unopposed.** The re-baseline direction is
+   therefore **KNOWN AND UPWARD**, not unknown. §8's protocol keeps its "state
+   the expected sign in advance" step and the sign is now positive with a
+   measured magnitude.
+3. **Speed's only remaining job is ZONE EXIT** — which is exactly the mechanic
+   `design.md` §3.1 already names: *"footprint vs. mover speed gates zone
+   exit."* Speed is compared against a zone's footprint, never against another
+   entity's speed.
+4. **The enemy speed-data requirement collapses.** Not a distribution for chase
+   mechanics: a **per-band mean-field scalar** answering "can it clear a
+   footprint-F zone this turn?", with a §7-style toggle. Hand-enterable, or a
+   single declared default. **The census/Chrome arc does NOT need reopening** —
+   which withdraws §7.3's most expensive option.
+5. **The range-band pressure largely dissolves too (see §12.6).** If the arena
+   is about one move across, a 30ft reaction range covers it by construction.
+
+**Accepted lost realism, recorded qualitatively and NOT quantified** (user's
+explicit call): high-mobility builds are **undervalued** — they cannot cash in
+an enemy's inability to close, and kiting-for-safety earns no survivability
+credit. Note it in the per-build qualitative notes, as the guides already do.
+This is the [[standardized-dpr-baseline-not-realism]] family: a bound on what
+the number means, not a defect in it.
+
+### 12.1 The user's eight categories, as accepted
+
+Character-side reactions the model must account for. Spatial implication in the
+third column — **that is the only column the spatial layer reads.**
+
+| # | category | what the SPATIAL model must answer |
+|---|---|---|
+| 1 | standard opportunity attack | is the enemy leaving my reach, and HOW (§12.5)? |
+| 2 | War Caster reactive spell (single-target, attack roll — typically True Strike) | same trigger as 1; **reach is bought to widen it** (a whip, `25_the_voice_of_heaven`) |
+| 3 | self-defensive (Defensive Duelist, Flourish Parry, Stone Endurance, Deflect Attacks — some multi-tiered) | is the attacker within melee reach of me? |
+| 4 | ally-defensive (Interception, Protection) | is the ally within R of me (**R=5ft — one of the few genuinely binding ranges**)? |
+| 5 | condition create/prevent | within R (mostly 30ft ⇒ non-binding, §12.6) |
+| 6 | on enemy death | **DEFERRED — §12.8** |
+| 7 | spell-granted / spell-as-reaction (Blinding Retort, Hellish Rebuke, Counterspell) | within the spell's own R |
+| 8 | Readied action | **DEFERRED — §12.7** |
+| **9** | **reaction MOVEMENT (self or ally)** | **NEW — accepted as an oversight (user). The only category whose EFFECT is a spatial change** |
+
+**Category 9's corpus instances**, all four distinct: Wardancer L4 College of
+Dance (*"reaction to expend a BI and move up to 1/2 your speed"*, non-provoking);
+`25_the_voice_of_heaven` granting an **ALLY** *"reaction to move up to speed w/o
+provoking OAs"* (category 4 crossed with 9); Psionic Feystepper's Misty Escape
+(reaction **teleport** on taking damage) and Duplicitous Target (reaction
+**position swap** with a willing creature within 30ft).
+
+### 12.2 Sentinel — RULED
+
+- **Halt**: a hit with an opportunity attack sets the target's Speed to **0 for
+  the rest of the turn**. Under §12.0 this is the model's primary *trapping*
+  mechanic, not a damage rider: it ends the exit.
+- **Guardian**: an opportunity attack triggers when a creature within 5ft
+  **takes the Disengage action** (or hits someone other than you). So Sentinel is
+  **the only thing in the corpus that defeats Disengage**, and
+  `37_white_dragon_warrior` is built end-to-end on it.
+- **RULED (user, s63): a War Caster reactive spell used in place of the
+  opportunity attack does NOT proc Halt.** Settled as a decision rather than
+  left to interpretation; currently moot (no guide takes both feats) but it must
+  not be re-litigated when one does.
+- Only **2 of 33** guides take the FEAT; the other six matches are the Sentinel
+  *Shield* item.
+
+### 12.3 Forced movement and teleportation DO NOT provoke — CONFIRMED
+
+The 2024 trigger is leaving reach using an *action, bonus action, reaction, or
+one of its speeds*. Being shoved is none of those; teleporting is not either.
+**Several kiting builds depend on this** (user). Consequences:
+
+- `20_the_wardancer`'s Tavern-Brawler shove-kite loop generates **zero**
+  opportunity attacks for anyone. Its value is damage plus denying the enemy its
+  melee — not AoO farming.
+- `26_the_shadow_giant:70` states the corollary as a tactic: **"push mastery
+  will auto-disengage if you hit with the rapier"** — forced movement is a
+  *free* Disengage, costing no action economy at all.
+- The three deferred positional masteries split asymmetrically: **push** exits
+  reach with no AoO; **slow** (−10ft) is a speed DEBUFF that feeds §12.0's
+  trapping mechanic; **topple** makes standing cost half movement.
+- Teleports (18/33 guides) are AoO-free exits.
+
+### 12.4 Mounts — the AoO carries a TARGET CHOICE
+
+**New from the user, s63.** When a mounted rider leaves an enemy's reach, **the
+enemy chooses whether to target the mount or the rider.** That choice is a real
+build axis: Mounted Combatant redirects attacks aimed at the mount onto the
+rider (veer), and `42_lost_voice_of_the_old_ones` uses a deer familiar
+specifically to discourage targeting the mount while kiting. So the enemy AoO is
+not just "attack the provoker" — it needs a target selection over
+{mount, rider}, which the existing trait-weighted friendly roster (design §3.5)
+is the natural place for. Mount and rider share a zone and move at the mount's
+speed (`design.md` §3.1), and the rider spends none of its own movement.
+
+### 12.5 Disengage — to be MODELLED, and its cost is BUILD-DECLARED
+
+**Decided (user, s63): add the mechanical realism, as part of this arc.**
+
+What it does: a declared action that consumes action economy and prevents
+movement from provoking opportunity attacks for the turn — **unless the
+observer has Sentinel or equivalent** (§12.2).
+
+**The cost is NOT a constant, and the asymmetry is the design's whole point:**
+
+| actor | what Disengage costs | therefore |
+|---|---|---|
+| the baseline enemy | an **Action** — i.e. its entire Multiattack | almost never worth it to deny ONE opportunity attack ⇒ **it eats the AoO** |
+| Rogue (Cunning Action) | a **bonus action** | cheap |
+| Monk (Patient Defense) | a **bonus action, FREE in 2024** (`16_bounty_hunter:109`: *"patient defense (PD) to disengage as a BA for free"*, Dodge too for a focus point) | nearly free |
+| Barbarian Wildheart (eagle) | **BA Disengage + Dash** (`17_feyheart_barbarian:157`) | nearly free |
+| Nimble Escape | **BA disengage or hide** (`18_witchdoctor:30`) | nearly free |
+| anyone with push mastery | **nothing** — forced movement (§12.3) | free |
+
+So Disengage is a **cost-tagged modality with a per-build declared cost**, not a
+fixed Action. This asymmetry is what makes the enemy feed the character
+opportunity attacks (§3.1) while the corpus's kiting builds deny them cheaply —
+and it is therefore load-bearing for the §4.1 magnitude.
+
+> **RULES-VERIFICATION FLAG.** The exact 2024 *Player's Handbook* wording for
+> Disengage itself could not be retrieved from an official source; the web
+> results were secondary or 2014-era. What IS verified: the bonus-action
+> variants above, from the user's own 2024-based guides at the cited lines, and
+> the trigger/Disengage interaction from §3.1's search. **Open and unconfirmed:
+> whether 2024 Disengage grants anything BESIDES provocation immunity.** Confirm
+> against the PHB or SRD 5.2 before implementing, per the per-feature ritual.
+
+### 12.6 Range bands — DEFERRED, and the arena is why
+
+**The user's objection is correct and my §5/§9 derivation was biased.** I derived
+range bands from the ranges attached to *reaction* features (5/20/30/45/55/60ft,
+30ft modal). But ranges govern **non-reaction** abilities too, so the reaction
+corpus is a biased sample and the arc must not settle a general
+spatial-resolution question from it.
+
+**And under §12.0 the question is mostly moot.** If the arena is about one move
+across, then:
+
+- a **30ft+** reaction range covers the whole arena ⇒ **satisfied by
+  construction**, always has a legal target, needs no spatial check;
+- **5ft** ranges (Interception, Protection, Sentinel Guardian) are genuinely
+  binding and need a real check;
+- **melee reach (5 vs 10ft)** is the one distinction that must be modelled
+  properly.
+
+> So the spatial layer needs **ONE relation — `within_reach(A, B)` — plus zone
+> membership for hazard zones.** Not a global zone lattice, not range bands.
+> That is a large simplification and it is forced by the user's own constraint
+> rather than chosen for convenience.
+
+Range bands return as a general question when a non-reaction ability makes them
+bind — most likely alongside multi-character party support and the AoE share
+(§10). Not this arc.
+
+### 12.7 Readied actions — DEFERRED, with the canonical case recorded
+
+Zero of 33 guides mention readying an action, so this is deferred on **evidence**
+rather than judgement. But the user named the case that will force it, and it is
+recorded so it is recognised rather than re-derived:
+
+> A **hasted rogue** gets two Attack actions. It spends the first on its own turn
+> to proc Sneak Attack, then **readies** the second with any trigger to get Sneak
+> Attack again on an enemy's turn. A **melee** rogue already achieves this with a
+> standard opportunity attack; a **ranged** rogue cannot — so the readied action
+> is what lets a hand-crossbow or pistol rogue reach **two Sneak Attacks per
+> round**.
+
+Build it when a real build forces it (user). Note that `Ready` is already in
+`taxonomy.MODALITIES` **and wrongly in `COMBAT_MODALITIES`** (§12.9).
+
+### 12.8 On-death reactions — DEFERRED, and the gap is wider than finite HP
+
+Fiend warlock's Dark One's Blessing and similar trigger on an enemy dropping
+within range. Deferred, and the reason is structural rather than just
+`mode="finite_hp"` being unwired:
+
+> **The model fields ONE enemy, so if it dies the COMBAT ENDS** (user). There is
+> no BBEG-plus-adds roster for on-death reactions to fire against repeatedly, so
+> even with finite HP staging in place the gap is several steps wide, not one.
+
+Recorded so the finite-HP mode is not mistaken for sufficient.
+
+### 12.9 A SECOND fail-open found in the same family as §7.4
+
+`taxonomy.COMBAT_MODALITIES` is documented as *"the subset that has
+combat-resolution machinery in the engine"* and lists `Attack`, `Magic`,
+`Use Ability`, `Dash`, `Disengage`, `Dodge`, `Help`, `Ready`. **Five of those
+eight have no machinery anywhere** — the only non-`taxonomy.py` hits for
+Dash/Disengage/Dodge/Help/Ready are two comments. So the comment asserts
+machinery that does not exist, in the MODALITY vocabulary, exactly as §7.4 found
+in the COST vocabulary.
+
+This matters directly: §12.5 makes Disengage load-bearing, and it does not
+exist for either side today. Fix it the same way — classify the vocabulary and
+let an unimplemented member refuse — when Phase 2 lands.
+
+---
+
+## 13. THE BUILD PLAN
+
+Phases are ordered by what each one BUYS, not by implementation convenience.
+Every phase ships **default-OFF** per §8.
+
+**Phase 1 — the spatial substrate.** `reach` on entities (5/10ft); a typed
+**exit event** carrying its exit KIND (own-speed/action/BA/reaction → provokes;
+forced/teleport → does not; Disengage → does not, unless Sentinel);
+`within_reach(A, B)` readable from the policy snapshot as a pure read (CLAUDE.md
+#7). No speed. **The exit-kind vocabulary is the load-bearing decision of the
+whole arc** — get it right and §12.3's three masteries, 18 guides' teleports and
+Sentinel all become data.
+
+**Phase 2 — the two opportunity attacks, and THE RE-BASELINE.** The character
+AoO as a subscriber to the exit event, replacing the declared `aoo_per_combat`
+(§6 row 1 — decide override-vs-delete); the enemy AoO as **one**
+`baseline_attack_dice` roll (no scaling — §12.5's table in the review, already
+per-swing); Disengage as a cost-tagged modality with a build-declared cost
+(§12.5); the mount/rider target choice (§12.4). **This is the phase that moves
+every number, upward, by a magnitude §4.1 already bounds.** Fix §12.9 here.
+
+**Phase 3 — reaction contention.** One slot, nine categories. Settle whether the
+defender-side intercept starts debiting (§7.5). **This is the phase that lifts
+#6b's scope bound** — and its intercept half can land EARLIER and separately,
+since it moves only War Angel L14-16 (§4.2) and needs no spatial model at all.
+Worth doing first for that reason.
+
+**Phase 4 — speed and trapping.** The per-band mean-field speed scalar (§12.0.4);
+footprint-vs-speed gating zone exit (`design.md` §3.1); `slow`, Sentinel's Halt
+and grapple as speed modifiers; the value of holding an enemy in a hazard zone.
+**This is what makes `37_white_dragon_warrior` modellable at all**, and under
+§12.0 it is the ONLY thing speed is for.
+
+**Phase 5 — reaction movement (category 9).** Self and ally movement reactions,
+reaction teleports, position swaps. Needs Phase 1's exit kinds (all of these are
+non-provoking) and Phase 3's contention.
+
+**Deferred with named reasons, not silently:** readied actions (§12.7, zero
+corpus support, canonical case recorded), on-death reactions (§12.8, one-enemy
+model), range bands (§12.6, biased sample + mostly moot under the arena),
+targeting tendencies and a grid (§10).
