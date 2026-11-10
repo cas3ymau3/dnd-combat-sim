@@ -173,6 +173,18 @@ Plus per-band monster count + tagging coverage.
 
 ## Census workflow (LOCKED — built for throughput + resumability)
 
+> **REOPENED IN s63 FOR A SPEED PASS (user), the first time since s36 closed the
+> empirical/Chrome arc.** `design/positioning.md` §12.0i is the spec. Scope: ONE
+> scalar per monster — `speed = max(walk, climb, fly, swim, burrow)`, the HIGHEST
+> listed, because that is what the creature uses in its intended habitat; taking
+> the walk speed would systematically understate the enemy's ability to close and
+> so overstate every kiting build. Far lighter than the reach/control passes (no
+> codebook judgement, no per-ability tagging). Output: `speed` joins
+> `monster_profile_monsters.csv` beside `size`; the aggregator adds a per-band
+> speed DISTRIBUTION (not just a mean) to `monster_profile_by_band.csv`.
+> **The Chrome connector + per-machine allowlist were torn down at the s36 close
+> and must be re-enabled first.**
+
 Treat Chrome as a **text-fetch tool, not a vision tool**. All via the Claude-in-Chrome
 `javascript_tool` (authenticated same-origin `fetch()` with `credentials:'include'`):
 

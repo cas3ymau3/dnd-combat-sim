@@ -1010,6 +1010,58 @@ A fully-invested kiter reads 100% at every band, which may be too generous — b
 it is a heavy investment, and `S_e` is a distribution too, so this will move once
 enemy speed is measured. Flagged rather than tuned.
 
+### 12.0i ENEMY SPEED — THE CENSUS WORKFLOW REOPENS (user, s63)
+
+**DECIDED: get average speeds per band from the actual Monster Manual entries.**
+This is the last input the master condition needs, and the only one not already
+in the frozen census. It **reopens the empirical/Chrome census workflow that s36
+deliberately closed** — the first time since then — so it is a deliberate
+reversal and is recorded as one.
+
+**THE TAGGING RULE (user, s63), and it is the thing that would be got wrong from
+intuition:**
+
+> Monsters often list several speeds — walking, climbing, flying, swimming.
+> **Take the HIGHEST**, because that is most often what the creature will use in
+> its intended habitat.
+
+So `speed` is `max(walk, climb, fly, swim, burrow)` per monster, not the walking
+speed. A flying monster's 60ft fly speed is its real closing speed, and taking
+the walk speed would systematically understate the enemy's ability to close and
+therefore systematically OVERSTATE every kiting build.
+
+**WHAT TO RUN.** The workflow is already LOCKED in `design/enemy_profile.md`
+"Census workflow" and is reusable as-is — treat Chrome as a text-fetch tool via
+`javascript_tool` + same-origin `fetch()`, build the 510-monster index, then fetch
+statblocks in batches of ~6. Its locked gotchas still apply (`[class*="stat-block"]`
+by substring, full slug href, no query-string URLs returned, wrap in
+`(async()=>{…})()`).
+
+**This pass is far lighter than the reach/control censuses**: speed is ONE field
+per monster, read straight off the statblock header, with no codebook judgement
+and no per-ability tagging. It is a single scalar per monster, not 897 ability
+rows.
+
+**OUTPUT SHAPE — settled here, before anything serializes it** (per-feature ritual
+step 4):
+
+- **Per-monster `speed` joins `monster_profile_monsters.csv`**, which already
+  holds the other per-monster facts including `size`. Same grain, same table.
+- **The aggregator adds a per-band speed summary to `monster_profile_by_band.csv`**,
+  the frozen band table every `enemy_stats.band_*()` accessor already reads.
+- **A DISTRIBUTION, not just a mean.** §12.0's data note is explicit about why:
+  `S_c + p + (R_c − R_e) > S_e` is a STEP function, so a mean-field speed sitting
+  near a character's threshold turns a coin-flip into a certainty. Record enough to
+  draw from — at minimum a small histogram over the natural buckets (e.g. 20/25/30/
+  40/50/60+), to be drawn **per combat** alongside reach and movement type (§12.0d,
+  §12.0h).
+
+**CONNECTOR NOTE FOR THE NEXT SESSION.** The Chrome connector and its per-machine
+allowlist were torn down at the s36 close. **They must be re-enabled before this
+work can start** — which makes the next session the first since s36 where
+PROGRESS's standing MCP note actually applies, so raise it at startup rather than
+skipping it.
+
 ### 12.0g THREAT CLASS — SEQUENCED FIRST, and declared per (build, LEVEL)
 
 **DECIDED (user, s63).** §3.5.4's threat class replaces `_ally_roster`'s uniform
