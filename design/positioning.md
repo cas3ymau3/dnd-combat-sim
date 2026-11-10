@@ -172,6 +172,13 @@ cadence-weighted enemy actions are melee-only** (§4.3). The modal enemy pursues
 
 ### 3.3 The magnitude is measured, and it is large and positive
 
+> **CORRECTED BY §12.0c (s63 review): the +46% below is the value of ONE CELL of
+> the movement matrix (melee character vs ranged enemy), not of the arc.** Under
+> the locked typology a melee-type enemy never leaves reach, so it generates ZERO
+> opportunity attacks, and melee-only is 54.9-79.8% of cadence-weighted enemy
+> actions. The arc's real re-baseline is **band-dependent and crosses zero** —
+> negative at band 0-4, ≈zero at 5-10, positive from 11-16. Read §12.0c.
+
 §4.1. The arc's measured dominant term is **+46%**, not negative.
 
 > **The honest summary:** positioning has an additive term that is measured,
@@ -192,6 +199,11 @@ cadence-weighted enemy actions are melee-only** (§4.3). The modal enemy pursues
 All at engine `a56ae31` (clean), seed 20261110, `enemy="baseline"`.
 
 ### 4.1 What an opportunity attack is worth
+
+> **SCOPE (corrected, §12.0c):** this measures the value of an AoO COUNT, which
+> is sound and is reused by §12.0c. What it does NOT establish is that the arc
+> delivers 4 per combat — that holds only against a ranged-type enemy. The
+> headline percentage here is a CELL value, not the arc's effect.
 
 The framework's declared subject at L11, 6,000 days, sweeping the declared
 `aoo_per_combat` option:
@@ -534,7 +546,120 @@ This section is binding and supersedes §3, §7.3, §10 and §11 where they diff
 It is the outcome of walking the user's own eight-category reaction taxonomy
 against the corpus survey.
 
-### 12.0 THE ENGAGEMENT GUARANTEE — the decision that shapes everything else
+### 12.0 THE SPATIAL MODEL — LOCKED (user, s63)
+
+> **This replaces the first draft of §12.0, which proposed a bounded arena of
+> declared size. Two intermediate proposals were worked and REJECTED on
+> measurement/argument, and both rejections are recorded because each was
+> plausible and the reasons are not recoverable from the final form.**
+
+**THE MODEL.**
+
+1. **An infinite-width band.** No corners, so a fleeing entity is never trapped
+   and forced movement always has room. (The bounded arena of the first draft had
+   a cornering problem: in a bounded space pursuit eventually succeeds regardless
+   of speed, because the fleeing side runs out of room and must pass the pursuer.)
+2. **Distance is REAL SCALAR STATE** — `distance(character, enemy)` in feet,
+   updated by both sides' movement and by forced movement. **There is no per-turn
+   reset.**
+   - **REJECTED: re-placing the enemy at `S_c` at every character turn start.**
+     It would delete the MOVEMENT ECONOMY — position would be handed to the
+     character each turn regardless of what it spent, so closing and withdrawing
+     would never trade off. That economy is precisely the character-side cost
+     §7.4 names as the arc's blocker, and a reset re-creates that fail-open at the
+     design level: `Choice(cost="movement")` goes back to meaning nothing.
+   - **REJECTED: arena length = `S_c`.** It confounds speed with room-to-run, so
+     a fast build's survivability cannot be separated from the larger space its
+     speed conjured. Under the infinite band there is no arena length at all, so
+     the question dissolves rather than needing a declared constant.
+3. **Combat starts at `d₀ = S_c`** (the character's speed). This is the
+   ENGAGEMENT GUARANTEE in its final form — the character can always close in one
+   move and never spends a turn walking to the fight. **It is build-dependent by
+   design** (user): a build-dependent *environment* is not the failure a
+   build-dependent *enemy* would be, because the enemy is the instrument held
+   fixed while the environment is where the measurement happens.
+   - **Priced:** closing from `S_c` costs `S_c − R_c`, leaving nothing to withdraw
+     with, so **round 1 the character attacks and ends in melee.** With
+     `rounds_per_combat = 4` the kiting benefit is **3 rounds of 4**, not 4.
+4. **Forced movement and teleportation never provoke** (§12.3), and forced
+   movement costs the character no movement at all.
+
+**THE TWO CONDITIONS — independent, and tangling them produced a wrong answer
+once already.**
+
+**(A) GEOMETRY — can the character get beyond walk-in range?** The enemy attacks
+iff it can end its movement within its own reach:
+
+```
+enemy attacks  iff  G ≤ S_e + R_e
+
+character achieves  G = R_c + p + g_m    at cost  (d − R_c) + g_m ≤ S_c
+      escape  iff  p + g_m > S_e
+      sustained from adjacency  iff  S_c + p > S_e
+```
+
+where `p` is free forced movement per turn and `g_m` is movement spent
+withdrawing. Grid-verified: a 30ft character with no push withdraws from
+adjacency to `G = 35`, the enemy walks 30 to 5ft and **attacks** — no escape;
+**with 5ft of push** it reaches `G = 40`, the enemy walks 30 to 10ft and cannot
+reach. That 5ft flip is why push mastery is load-bearing for the corpus's kiting
+builds, and `26_the_shadow_giant:70` states it outright: *"push mastery will
+auto-disengage if you hit with the rapier."*
+
+**DASH DROPS OUT, and this corrected an intermediate `S_c + p > 2·S_e`.** A
+melee enemy that cannot reach should Dash — but **Dash is its Action and
+Multiattack is its Action**, so a Dashing enemy buys adjacency and deals
+nothing. *Being reached is harmless; being attacked is not.* So the condition is
+against the enemy's WALK speed. Stated generally, with `c` the enemy's realized
+closing distance, escape is `S_c + p > c`; only the walk case binds, because a
+non-chaser is not melee-ing and a Dasher cannot attack.
+
+> **CORRECTION, recorded because it was briefly stated as a crisp falsifiable
+> prediction and is FALSE:** slow is *not* worth twice push per foot. That was
+> downstream of the `2·S_e` form, where the enemy's speed entered doubled. Under
+> `S_c + p > S_e` a slow of `s` and a push of `p` each move the threshold by the
+> same amount — **1:1**.
+
+**(B) PROVOCATION — does getting out cost an opportunity attack?**
+**BUILD-DECLARED, and NOT generalizable** (user: *"There are lots of builds that
+kite, and only some of them are monks ... the idea behind kiting builds will be
+to leverage game mechanics (like weapon masteries such as push) to
+'auto-disengage' without having to spend action economy resources"*):
+
+| route out of reach | action-economy cost | provokes? |
+|---|---|---|
+| forced movement (push / shove mastery) | **none** | **no** — the enemy is moved, it is not moving |
+| Disengage via a class feature | a **bonus action** (Cunning Action; Monk Patient Defense — a BA is always spent, *"for free"* in `16_bounty_hunter:109` means no FOCUS POINT) | no |
+| Disengage as an Action | the **Action** — self-defeating, no attack | no |
+| teleport (Misty Step etc.) | varies (BA + slot) | no |
+| simply walk away | none | **YES — one opportunity attack** |
+
+**WHAT KITING IS WORTH.** Against a melee-type enemy at L11
+(`baseline_attack_dice` = 22.0 per swing, `baseline_n_attacks` = 2 → 44.0/round):
+
+| character's route | enemy output that round |
+|---|---:|
+| cannot satisfy (A) | **44.0** — full Multiattack |
+| walks away (provokes) | **22.0** — one AoO swing only |
+| pushes, Disengages, or teleports | **0** |
+
+So the mechanism rewards exactly what the corpus leverages, in the right order:
+free forced movement > a bonus-action Disengage > walking > standing in melee.
+
+**TWO DATA PREREQUISITES, both real work.**
+
+- **Enemy speed as a DISTRIBUTION, not a scalar.** `p + g_m > S_e` is a step
+  function, so a mean-field speed sitting near the character's threshold turns a
+  coin-flip into a certainty. This is the one place mean-field misleads most, and
+  it **reverses this document's earlier conclusion that a per-band scalar would
+  do** (first-draft §12.0.4). Escape should be a PROBABILITY over the band's
+  speed distribution.
+- **Character speed per (build, level)** — verified absent from every `LEVELS`
+  row of all three builds. Derivable like AC and the six saves (race base +
+  Monk Unarmored Movement + Barbarian Fast Movement + boons), so it follows the
+  §14 sparse-build-data pattern, across all 27 modelled pairs.
+
+### 12.0a THE SUPERSEDED FIRST DRAFT — the engagement guarantee as originally written
 
 **Decided (user, s63).** The combat area is defined so that **any entity can
 reach any other within its normal movement, and never has to Dash to engage.**
@@ -576,6 +701,100 @@ an enemy's inability to close, and kiting-for-safety earns no survivability
 credit. Note it in the per-build qualitative notes, as the guides already do.
 This is the [[standardized-dpr-baseline-not-realism]] family: a bound on what
 the number means, not a defect in it.
+
+### 12.0b MOVEMENT TYPOLOGY — three character types, two enemy types (user, s63)
+
+**Declared per (build, LEVEL), not per build**, because builds switch: at
+`26_the_shadow_giant:270` *"we officially switch over to preferring melee combat
+with our warhammer."*
+
+**Character types** (a property of the build's policy — "policies are code"):
+
+1. **Ranged attacker** — does not approach; attacks from range; retreats if the
+   enemy closes into melee. Prioritizes movement/spells/abilities that keep it
+   out of melee reach.
+2. **Melee attacker** — approaches and STAYS in melee; chases enemies that want
+   to shoot. Does not want to disengage or move away. **Includes grapplers and
+   high-AC tanks**, and may use SLOWING tactics to keep enemies in range (which
+   is `37_white_dragon_warrior`'s whole build).
+3. **Kiting attacker** — approaches, makes melee attacks, retreats back out of
+   melee and ideally out of reach of the follow-up. Uses mounts, movement
+   abilities, push mastery and other forced movement / teleport / disengage
+   routes to get out WITHOUT provoking (§12.0 condition B).
+
+**Enemy types — and they are GROUNDED IN THE CENSUS, not invented.** The frozen
+`reach` column maps straight onto them:
+
+1. **Melee attacker** (`reach_melee`: 79.8 / 66.0 / 54.9 / 56.4% by band) — closes
+   and attacks from melee; does **not** flee when approached, and therefore
+   **never provokes an opportunity attack.**
+2. **Ranged attacker** (`reach_ranged`: 12.3 / 21.7 / 32.2 / 37.8%) — avoids
+   melee; spends movement to get out of melee when it starts its turn adjacent,
+   **provoking.**
+
+`reach_both` (7.8 / 12.3 / 12.9 / 5.8%) is a **DECLARED CHOICE** between the two,
+and §12.0c shows it is first-order: it decides the SIGN of the re-baseline in
+band 5-10.
+
+### 12.0c THE 3x2 MATRIX — and it OVERTURNS this document's own headline
+
+| | **Enemy 1: melee** | **Enemy 2: ranged** |
+|---|---|---|
+| **Char 1: ranged** | enemy closes; char retreats; char eats the enemy's AoO unless its route is free; a Dashing enemy deals nothing | static exchange, **no AoOs either way** |
+| **Char 2: melee** | **both stand in melee — ZERO AoOs** | **char gets one AoO per round** |
+| **Char 3: kiting** | char kites; needs `S_c + p > S_e`; converts the enemy's Multiattack into one AoO swing or nothing | behaves like Char 2 — it gets AoOs and kiting adds nothing |
+
+**Only three of six cells produce an opportunity attack at all**, and the
+decisive cell is `Char 2 x Enemy 1`: two melee combatants both want contact, so
+**nobody leaves reach and the correct count is ZERO** — where the model today
+declares **one per combat**.
+
+**So the AoO count is `P(enemy is ranged-type) x 4`, against a declared 1.0.**
+Measured per-AoO value (baseline subject, 6,000 days, seed 20261110), combined
+with the census reach mix:
+
+| lvl | band | DPR per AoO | wide `E[AoO]` | narrow | wide ΔDPR | narrow ΔDPR |
+|---:|---|---:|---:|---:|---:|---:|
+| 3 | 0-4 | 1.2642 ± 0.0207 | 0.80 | 0.49 | **−0.25** | **−0.64** |
+| 8 | 5-10 | 1.6931 ± 0.0296 | 1.36 | 0.87 | **+0.61** | **−0.22** |
+| 11 | 11-16 | 1.7146 ± 0.0301 | 1.80 | 1.29 | **+1.38** | **+0.49** |
+| 16 | 11-16 | 1.6959 ± 0.0302 | 1.80 | 1.29 | **+1.36** | **+0.49** |
+
+("wide" treats `both` as ranged-type, "narrow" as melee-type.)
+
+> **THIS CORRECTS §3.3 AND §4.1's HEADLINE.** Those report **+46.3%**, measured
+> by sweeping `aoo_per_combat` 1→4 — i.e. assuming an opportunity attack EVERY
+> ROUND. Under the typology that happens only against a **ranged-type** enemy,
+> and melee-only is **54.9-79.8%** of cadence-weighted enemy actions. The +46.3%
+> is therefore the value of the `Char 2 x Enemy 2` CELL, **not of the arc**.
+>
+> **The arc's actual re-baseline is band-dependent and CROSSES ZERO:** negative
+> at band 0-4, approximately zero in band 5-10 (sign set by the `both` choice),
+> positive from 11-16 up. Neither "downward" (item 5d) nor "upward" (§3.3) was
+> right, and **the typology is what revealed it** — not a new measurement of the
+> same thing.
+>
+> **Magnitude bracket, stated rather than hidden:** the count uses 4 AoOs per
+> 4-round combat, which assumes the character acts first in round 1. If the
+> enemy acts first it is 3, which moves band 5-10 to ≈ +0.03 and band 11-16 to
+> ≈ +0.60. **The qualitative conclusion is robust across 3-vs-4 and across the
+> `both` choice; only the magnitude moves.**
+
+### 12.0d TWO DESIGN DECISIONS THE TYPOLOGY FORCES
+
+1. **Enemy movement type must be drawn PER COMBAT, not per round.** Every other
+   enemy axis (attack-vs-save mix, control budget) is a per-ROUND draw, but a
+   creature that is melee one round and ranged the next produces incoherent
+   movement — it would teleport between behaviours. So this is **the first
+   quantity in the enemy model that must be fixed for a whole combat.**
+   Consequence to price: 4 draws per day instead of ~16, so **more variance per
+   day**, which bears on convergence and therefore on day-count tiers.
+2. **The ranged enemy's step-out choice should be a DECLARED TOGGLE.** Starting
+   its turn adjacent, it can (a) step out, eat one opportunity attack, and shoot
+   cleanly, or (b) shoot from melee at disadvantage and provoke nothing. Both
+   cost roughly one swing's worth, so the choice is not obvious and must not be
+   assumed — and it directly sets the character's AoO rate in the one cell that
+   generates them.
 
 ### 12.1 The user's eight categories, as accepted
 
@@ -776,11 +995,18 @@ defender-side intercept starts debiting (§7.5). **This is the phase that lifts
 since it moves only War Angel L14-16 (§4.2) and needs no spatial model at all.
 Worth doing first for that reason.
 
-**Phase 4 — speed and trapping.** The per-band mean-field speed scalar (§12.0.4);
-footprint-vs-speed gating zone exit (`design.md` §3.1); `slow`, Sentinel's Halt
-and grapple as speed modifiers; the value of holding an enemy in a hazard zone.
-**This is what makes `37_white_dragon_warrior` modellable at all**, and under
-§12.0 it is the ONLY thing speed is for.
+**Phase 4 — speed, kiting and trapping (REBUILT on §12.0's locked model).** Not
+zone-exit gating any more: the mechanism is the **geometry condition
+`S_c + p > S_e`** against a **build-declared provocation route** (§12.0 condition
+B). Deliverables: character speed per (build, level); enemy speed as a
+**distribution** per band, with escape resolved as a PROBABILITY rather than a
+threshold on a mean; the three character types and two enemy types (§12.0b) as
+declared policy attributes; the per-COMBAT enemy-type draw and the ranged-enemy
+step-out toggle (§12.0d); `slow`, Sentinel's Halt and grapple as speed
+modifiers; forced movement as free, non-provoking gap. **This is what makes
+`37_white_dragon_warrior` and the corpus's eleven kiting builds modellable at
+all**, and it is where the band-dependent re-baseline of §12.0c is measured
+rather than predicted.
 
 **Phase 5 — reaction movement (category 9).** Self and ally movement reactions,
 reaction teleports, position swaps. Needs Phase 1's exit kinds (all of these are
