@@ -1062,6 +1062,160 @@ work can start** — which makes the next session the first since s36 where
 PROGRESS's standing MCP note actually applies, so raise it at startup rather than
 skipping it.
 
+### 12.0j TARGETING AND ADVANTAGE — taunts, and how much the enemy optimizes (user, s63)
+
+**THE HARD PART WAS ALREADY DECIDED, and the decision is the right one.**
+`design.md` §3.5: *"When using attack rolls, the enemy prefers targets it has
+advantage against, then even, **avoids disadvantage**."* That is an ORDINAL
+preference over advantage states, **not expected-damage maximization** — exactly
+the middle ground the user was looking for. And `enemy_model.md` §9 defers the
+soft-control advantage coupling to this arc by name. So this section builds a
+decided rule rather than making a new one.
+
+**The case is live in the corpus.** `20_the_wardancer:380` takes **Goading
+Attack** (*"WIS save or disadvantage on attacks against others"*) and uses it in
+its named combos (`goad + disengage`, lines 450-458); `25_the_voice_of_heaven:46`
+takes **Compelled Duel** via Fey-Touched. The engine already has
+advantage/disadvantage with RAW cancellation (`verbs.roll_d20`) and the `sapped`
+status — **only the targeting RESPONSE is missing.**
+
+#### THREE LAYERS, SEPARATED — and the separation is the design
+
+| layer | what it is | status |
+|---|---|---|
+| **Threat class** (declared) | how much the enemy *wants* to attack you — marks, menace, the melee tag | Phase 0, §12.0g |
+| **Advantage-state preference** (modelled, ORDINAL) | whether the enemy *avoids* a target because attacking it is penalized | this section |
+| **AC and flat to-hit penalties** | **DO NOT feed targeting** | decided below |
+
+**AC STAYS OUT OF TARGETING (DECIDED, user, s63).** It is realistic that a
+monster avoids the armored one, and the realism cost is accepted and recorded
+qualitatively — the same treatment as the high-mobility undervaluation (§12.0).
+Three reasons it stays out:
+
+1. **It double-counts AC** — once as misses, once as avoidance.
+2. **It is PERVERSE.** If AC lowered targeting probability, investing in AC would
+   make a build *worse at tanking*, inverting what a tank is for. The threat class
+   is the knob that says "attack me"; AC is not.
+3. **It is EV maximization with extra steps.** An ordinal preference over three
+   discrete advantage states is bounded. AC-sensitivity is CONTINUOUS, and once
+   continuous hit probability is traded against target choice, the model IS the
+   maximizer this section exists to avoid. Excluding AC is what keeps it on the
+   right side of that line.
+
+**THE FILTER THAT FALLS OUT: only effects that penalize attacks DIFFERENTIALLY
+ACROSS TARGETS shift targeting.**
+
+- **Taunts DO** (Goading Attack, Compelled Duel): they do not make the tank more
+  attractive, they put **the other targets** at disadvantage. That is the whole
+  mechanism.
+- **Bane, sap, Blade Ward do NOT**: they penalize the attacker's rolls against
+  everyone equally, so they shift no relative attractiveness. A
+  character-ONLY defensive debuff would perversely push the enemy *away*, which
+  is a second reason for the filter.
+- **Protection fighting style CANNOT**, conveniently: it is a reaction resolved
+  after the attack is declared, so it cannot inform selection.
+
+#### `q` — HOW MUCH THE ENEMY ROUTES AROUND DISADVANTAGE
+
+With probability `q` the enemy re-picks among non-disadvantaged targets; with
+`1 − q` it attacks anyway. One interpretable scalar, the same shape as `m` and
+`soft_factor` — but unlike `m` it is **GROUNDED**, from the `type` column already
+in `monster_profile_monsters.csv`.
+
+**`q` IS A PREFERENCE WEIGHT, NOT A COMPETENCE MEASURE (user, s63), and the
+naming matters.** Calling it "tactical awareness" would imply that attacking into
+disadvantage is a *mistake*. It often is not:
+
+> *"A smart monster might still make an attack against a target with
+> disadvantage, if that target is doing something important (like concentrating
+> on a spell) or if they have a story-based reason to do so (attacking their
+> nemesis)."*
+
+So **`q` is capped at 0.75** (user), and the residual `1 − q ≥ 0.25` has a
+principled reading rather than being a fudge: **it IS the unmodelled
+targeting-priors layer**, which `enemy_model.md` §9 explicitly calls *"designer
+priors, not census facts"* and leaves out of this arc. Held as a mean field
+instead of enumerated. (The concentration case is particularly apt, since the
+model DOES track concentration — so "attack the caster anyway" is a real tactic
+the priors layer would one day express.)
+
+**`q = 0.75 × awareness_share`**, where `awareness_share = 1 − P(beast / ooze /
+plant / construct)` per band — a DECLARED type→awareness mapping, the same shape
+as §12.0h's size→reach:
+
+| band | n | low-awareness share | awareness | **`q`** |
+|---|---:|---:|---:|---:|
+| 0-4 | 303 | 37.3% | 62.7% | **0.470** |
+| 5-10 | 126 | 13.5% | 86.5% | **0.649** |
+| 11-16 | 46 | 4.3% | 95.7% | **0.717** |
+| 17+ | 35 | 5.7% | 94.3% | **0.707** |
+
+The story matches play: at low level you fight beasts that charge the nearest
+thing; at high level you fight dragons and celestials that pick their target. **So
+taunt tech and disadvantage-avoidance both matter MORE at high tier** — a testable
+prediction rather than an assumption.
+
+**Two alternatives considered and rejected, recorded so they are not re-proposed:**
+
+| band | **chosen** `0.75 × aw` | renormalised so max band = 0.75 | hard cap `min(0.75, aw)` |
+|---|---:|---:|---:|
+| 0-4 | **0.470** | 0.492 | 0.627 |
+| 5-10 | **0.649** | 0.678 | 0.750 |
+| 11-16 | **0.717** | 0.750 | 0.750 |
+| 17+ | **0.707** | 0.739 | 0.750 |
+
+Renormalising makes every band's value depend on which band happens to be
+highest, so a future census edit would move all four. The hard cap **FLATTENS
+bands 5-10 through 17+ to 0.750 and destroys the gradient** the data provides,
+which is the one thing grounding `q` bought. The chosen form keeps the ceiling
+explicit and the gradient exactly proportional.
+
+#### THE INTERACTION, MEASURED RATHER THAN ASSUMED: a taunt largely swamps the threat class
+
+`P(character | taunt up) = p_char + (1 − p_char)·q` (re-pick among
+non-disadvantaged, which with a taunt up is the character alone):
+
+| band | `q` | melee (0.30) | kiting (0.25) | ranged (0.20) | spread |
+|---|---:|---:|---:|---:|---:|
+| 0-4 | 0.470 | 0.629 | 0.603 | 0.576 | **5.3pp** |
+| 11-16 | 0.717 | 0.802 | 0.788 | 0.774 | **2.8pp** |
+
+Against **10.0pp** with no taunt. So a taunt compresses the ±5pp threat spread to
+~3pp at high tier. **This is correct behaviour** — a taunt should override
+ordinary threat — but it must be recorded, because it means **threat class will
+look nearly inert in a taunt-heavy build**, and a future session comparing threat
+classes on such a build would otherwise read that as a bug.
+
+#### `q` IS INERT FOR ALL THREE SHIPPED BUILDS — by DATA, not by a toggle
+
+Verified: no shipped build creates a target-differential penalty. War Angel's
+`sapped` (`verbs.py:157`) puts the ENEMY's next attack at disadvantage
+**regardless of whom it targets**, so it is attacker-side and the filter excludes
+it. So landing this section **moves zero numbers** on the current corpus — a
+stronger guarantee than default-OFF, because there is no flag to forget.
+
+#### THE TANKING-CREDIT GAP — DEFERRED, and labelled loudly (DECIDED, user, s63)
+
+**This is the gap that actually makes tank evaluation unfair, and it is NOT a
+targeting gap.** Even with perfect targeting response, the model cannot VALUE
+absorbing damage for the party:
+
+- `damage_taken_per_round_by_role` DOES record the redirection, so a taunt is
+  **visible**;
+- but `PARTY_MEMBER_HP = 10**9` (`character_stats.py:412`), so stand-ins never
+  die, and `dpr_by_role[allies]` is a declared TRUE ZERO because they never act;
+- so damage to the party has **zero downstream consequence**, and a taunt reads as
+  a **pure cost**: it raises the character's `net_damage_taken_per_round` and buys
+  nothing scoreable.
+
+**Deferred to §3.3's multi-character party** (user), because crediting it needs
+allies that can die AND contribute output — a much larger lift than this arc. The
+fix is **NOT** to compensate by fudging targeting. Instead: report the redirection
+as its own output and **label the missing credit in the panel**. The framework's
+locked "no composite build score" helps here — there is no single number to get
+wrong, only a panel where absorption reads positive in one row and negative in
+another, with the interpretation left to the reader.
+
 ### 12.0g THREAT CLASS — SEQUENCED FIRST, and declared per (build, LEVEL)
 
 **DECIDED (user, s63).** §3.5.4's threat class replaces `_ally_roster`'s uniform
@@ -1390,7 +1544,12 @@ Every phase ships **default-OFF** per §8.
 
 **Phase 0 — THE THREAT CLASS (§12.0g), sequenced FIRST.** Its own closed
 vocabulary (NOT keyed 1:1 to the movement type), with the movement type supplying
-a default; declared per (build, LEVEL); `m` fixed at 1/3; ±5pp starting spread. §3.5.4's threat class
+a default; declared per (build, LEVEL); `m` fixed at 1/3; ±5pp starting spread.
+**Also lands §12.0j's ordinal advantage preference and `q`**, which belong here
+because they are the other half of target selection — and which move ZERO numbers
+on the current corpus, since no shipped build creates a target-differential
+penalty. Record that threat class will read as nearly inert in a taunt-heavy
+build (§12.0j's interaction table) before anyone measures it and calls it a bug. §3.5.4's threat class
 replaces `_ally_roster`'s uniform weights; declared per (build, LEVEL) alongside
 the movement type (§12.0b), since both affect tactics and targeting. It goes
 first because `P(retarget)` sets the melee x melee AoO rate, and calibrating `m`
@@ -1449,4 +1608,8 @@ non-provoking) and Phase 3's contention.
 **Deferred with named reasons, not silently:** readied actions (§12.7, zero
 corpus support, canonical case recorded), on-death reactions (§12.8, one-enemy
 model), range bands (§12.6, biased sample + mostly moot under the arena),
-targeting tendencies and a grid (§10).
+**the TANKING CREDIT (§12.0j — needs allies that can die and that contribute
+output, i.e. §3.3's multi-character party; the redirection is visible in
+`damage_taken_per_round_by_role` but nothing values it, so a taunt can only read
+as a cost until then)**, the targeting-PRIORS layer (§12.0j — held as `1 − q`,
+the mean field inside the 0.75 ceiling), and a grid (§10).

@@ -2521,6 +2521,56 @@ config tweaks?"** — then bump the marker below. The user explicitly asked to b
     it was downstream of the `2*S_e` form. Under the locked condition it is **1:1**.
     Caught before it reached the document as a prediction.
 
+  ### TARGETING AND ADVANTAGE — raised at the close, and §3.5 had already decided it
+  The user raised taunting and advantage/disadvantage after the session was being wrapped
+  up (**`positioning.md` §12.0j**, its own PR). The tension was real — it seems unfair to
+  evaluate a taunting tank if targeting ignores the taunt, but a damage-MAXIMIZING enemy
+  would overstate how much the party soaks. **`design.md` §3.5 had already settled it:
+  "the enemy prefers targets it has advantage against, then even, avoids disadvantage"** —
+  an ORDINAL preference, never EV maximization — and `enemy_model.md` §9 already deferred
+  the coupling to this arc by name. So the middle ground was decided and merely unbuilt.
+  - **The corpus confirms it is live:** `20_the_wardancer:380` takes **Goading Attack**
+    (*"WIS save or disadvantage on attacks against others"*) and uses it in named combos;
+    `25_the_voice_of_heaven:46` takes **Compelled Duel**. The engine already has
+    advantage/disadvantage with RAW cancellation; only the targeting RESPONSE is missing.
+  - **AC STAYS OUT OF TARGETING (user).** Claude argued against the user's stated
+    instinct here and the user agreed: it double-counts AC, it is PERVERSE (if AC lowered
+    targeting, investing in AC would make a build worse at TANKING), and it is EV
+    maximization with extra steps, because AC is continuous where an advantage state is
+    one of three. The realism cost is accepted and recorded qualitatively.
+  - **The filter that falls out:** only effects that penalize attacks DIFFERENTIALLY
+    ACROSS TARGETS shift targeting. Taunts do (they disadvantage the OTHERS). Bane/sap/
+    Blade Ward do not (attacker-side, equal against everyone). Protection cannot (it is
+    a reaction resolved after the attack is declared).
+  - **`q` IS A PREFERENCE WEIGHT, NOT A COMPETENCE MEASURE, and the user's reframing
+    fixed a conceptual error in Claude's first proposal.** Claude had called it tactical
+    awareness, which implies attacking into disadvantage is a MISTAKE — often it is not
+    (the target is concentrating, or is a nemesis). So **`q` is capped at 0.75** and the
+    residual `1 − q >= 0.25` **IS the unmodelled targeting-PRIORS layer** that
+    `enemy_model.md` §9 calls "designer priors, not census facts", held as a mean field
+    rather than enumerated. `q = 0.75 x awareness_share` from the census `type` column:
+    **0.470 / 0.649 / 0.717 / 0.707** by band. Two alternatives are recorded as rejected
+    — renormalising makes every band depend on which is highest, and a hard
+    `min(0.75, aw)` FLATTENS the top three bands to 0.750 and destroys the gradient that
+    grounding `q` bought in the first place.
+  - **MEASURED INTERACTION:** a taunt compresses the ±5pp threat spread from **10.0pp to
+    5.3pp (band 0-4) and 2.8pp (band 11-16)**. Correct behaviour — a taunt should
+    override ordinary threat — but recorded because **threat class will read as nearly
+    INERT in a taunt-heavy build**, and a later session would otherwise call that a bug.
+  - **`q` IS INERT FOR ALL THREE SHIPPED BUILDS, BY DATA RATHER THAN BY A TOGGLE.**
+    Verified: War Angel's `sapped` disadvantages the enemy's next attack REGARDLESS of
+    target, so it is attacker-side and the filter excludes it. No shipped build creates a
+    target-differential penalty, so this moves zero numbers — a stronger guarantee than
+    default-OFF, because there is no flag to forget.
+  - **THE TANKING-CREDIT GAP IS THE REAL UNFAIRNESS, AND IT IS NOT A TARGETING GAP.**
+    `damage_taken_per_round_by_role` records the redirection, so a taunt is VISIBLE — but
+    `PARTY_MEMBER_HP = 10**9` so stand-ins never die, and `dpr_by_role[allies]` is a
+    declared TRUE ZERO because they never act. So party damage has ZERO downstream
+    consequence and a taunt reads as a PURE COST. **Deferred to §3.3's multi-character
+    party (user)**, with the fix being to label the missing credit rather than to fudge
+    targeting — helped by the locked "no composite build score", which means there is no
+    single number to get wrong.
+
   ### RE-CHECKED, NOT PAID (the s61 lesson)
   All four of item 5d's status claims HELD: `move_entity` has zero production callers
   (only the two zone test files); nothing subscribes to `entity_leaves_zone`, which
