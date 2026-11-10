@@ -814,15 +814,118 @@ friendlies, so at `party_size=4` (1 character + 3 stand-ins) each draws **25**:
 | 2 | 0.0625 | **0.9375** |
 | 3 | 0.0156 | 0.9844 |
 
-So at the usual `n_attacks=2`, the enemy wants to hit someone other than the
-character on **~94% of its turns**. Let `m` = P(the chosen target is outside the
-character's reach | retargeting). The enemy moves at most once per turn and the
-character has one reaction, so:
+**DECIDED (user, s63): targeting commits PER ROUND, not per attack.** If the
+enemy aims its first attack at the character, all its subsequent attacks that
+round go to the character too (or at minimum switching is very improbable). The
+mechanic is meant to capture *"the enemy decides it wants a different target that
+ROUND"*, not per swing. This **changes the retarget probability from 0.9375 to
+0.7500** at `n_attacks=2` — one draw per round, not `n` independent draws — and
+`src/builds/enemy.py` must change accordingly (it currently pre-rolls
+`[_weighted_pick(rng) for _ in range(n_attacks)]`).
+
+> **It is MEAN-PRESERVING, which bounds what it can move.** Expected attacks on
+> the character per round is `0.25 x n_attacks` either way (independent: `n`
+> draws at 25%; committed: one draw at 25% delivering all `n`). Only the
+> CORRELATION changes, so damage taken keeps its mean and gains variance.
+> Whether it is BIT-IDENTICAL is build-dependent and must be MEASURED, not
+> assumed: party stand-ins take `baseline_ac(level)`
+> (`character_stats.make_party_member`), which **equals** the baseline subject's
+> own AC — so for that subject a swapped target resolves against the same number
+> and nothing downstream diverges — but War Angel's `char_ac` comes from its own
+> `LEVELS` row and does not. It can also be made draw-count-preserving by
+> continuing to draw `n_attacks` values and using only the first.
+
+Let `m` = P(the chosen target is outside the character's reach | retargeting).
+The enemy moves at most once per turn and the character has one reaction, so:
 
 ```
-melee x melee AoO per round  = 0.94 * m   (capped at 1)
-melee x melee AoO per combat = 3.75 * m
+melee x melee AoO per round  = 0.75 * m   (capped at 1)
+melee x melee AoO per combat = 4 * 0.75 * m = 3 * m
 ```
+
+**DECIDED (user, s63): `m = 1/3`.** From experience, and the user is explicit
+that it is empirically ungrounded and cannot be made otherwise — *"It's just a
+real constraint on the realism we are building into this framework ... let's just
+make sure this value is documented and visible as an assumption."* So it is
+recorded here, belongs in §4 provenance on every run, and stays a swept
+sensitivity axis.
+
+> ### THE TWO DECISIONS ARE MUTUALLY CALIBRATING, AND THE RESULT IS EXACT
+>
+> ```
+> 4 rounds  x  0.75 retarget  x  1/3  =  1.000 AoO per combat
+> ```
+>
+> **The melee x melee cell reproduces the 1-AoO-per-combat convention the model
+> declares today, EXACTLY.** Per-round commitment and `m = 1/3` were decided
+> independently and land on the existing baseline. Three consequences:
+>
+> 1. **The entire re-baseline is attributable to the RANGED-enemy cell**, where it
+>    comes from a modelled mechanism rather than from a free parameter.
+> 2. **The sign is now POSITIVE EVERYWHERE under BOTH readings of `both`** — so
+>    the `reach_both` choice no longer sets the sign, only the magnitude. That
+>    retires the "first-order" warning this section carried an hour ago.
+> 3. §12.0c's band-dependent sign-crossing is **superseded**: it was the `m = 0`
+>    corner, and `m = 0` is now excluded by decision.
+>
+> **CONTINGENT, and this is the catch:** the exactness rests on **uniform weights
+> at `party_size = 4`**, i.e. on the very placeholder the threat class (§12.0g) is
+> about to replace. Under uniform weights `P(retarget) = 1 - 1/party_size`, so the
+> melee cell is `4 * (1 - 1/party_size) * m`:
+>
+> | `party_size` | melee x melee AoO/combat |
+> |---:|---:|
+> | 1 (solo basis) | **0.000** — no allies, so no retargeting at all |
+> | 2 | 0.667 |
+> | 3 | 0.889 |
+> | **4 (the declared default)** | **1.000** |
+> | 5 | 1.067 |
+>
+> So the coincidence is specific to the declared default, and **once the threat
+> class changes the weights, either `m` is re-derived to preserve the convention
+> or the melee cell is allowed to move as part of the re-baseline.** That is a
+> decision to make deliberately, not to let drift — and it is exactly why the
+> threat class is sequenced FIRST.
+
+**THE RE-BASELINE UNDER THE LOCKED PARAMETERS.** `E[AoO/combat] =
+P_melee x 1.0 + P_ranged x 4`, against the declared 1.0, with the measured
+per-AoO values. **Baseline-subject figures — they bound the SHAPE, and are not
+War Angel predictions**, whose per-AoO value differs (more on-hit riders):
+
+| band | lvl | DPR per AoO | `E[AoO]` wide | ΔDPR | % | narrow | ΔDPR | % |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0-4 | 3 | 1.2642 | 1.603 | +0.76 | **+14.6%** | 1.369 | +0.47 | **+8.9%** |
+| 5-10 | 8 | 1.6931 | 2.020 | +1.73 | **+15.8%** | 1.651 | +1.10 | **+10.1%** |
+| 11-16 | 11 | 1.7146 | 2.353 | +2.32 | **+21.0%** | 1.966 | +1.66 | **+15.0%** |
+| 17+ | 16 | 1.6959 | 2.308 | +2.22 | **+20.0%** | 2.134 | +1.92 | **+17.4%** |
+
+**So the arc's predicted effect is +9% to +21%, positive at every band, rising
+with the band's ranged share.** That is the fourth and current headline, and the
+three it replaces are all recorded above: "downward" (item 5d), "+46.3%" (§3.3,
+one cell), and "crosses zero" (§12.0c, the `m = 0` corner).
+
+### 12.0g THREAT CLASS — SEQUENCED FIRST, and declared per (build, LEVEL)
+
+**DECIDED (user, s63).** §3.5.4's threat class replaces `_ally_roster`'s uniform
+weights, and it lands **before** Phase 1 so that `m` is not calibrated against a
+placeholder and then re-calibrated.
+
+- **It is a per-(build, LEVEL) declaration** (user): every build defines its
+  character's threat class at every level. Same shape as AC and the six saves —
+  a `LEVELS` row field, following the §14 sparse-build-data pattern.
+- **It affects BOTH targeting probability AND tactics** (user), so it is coupled
+  to the movement typology (§12.0b): a high-threat melee build is both targeted
+  more AND wants to stay in contact. The two declarations should be settled
+  together rather than one at a time.
+- **It will move numbers, and which ones must be measured.** Changing the
+  character's weight changes who absorbs swings. If nothing reads character HP
+  the DPR may be untouched while `net_damage_taken_per_round` and the mitigation
+  channel move — but that is a prediction, not a result, and it needs its own
+  decision record.
+- **It changes `P(retarget)` and therefore the melee x melee AoO rate**, which is
+  the dependency that put it first.
+
+
 
 **`m` IS NOW THE DOMINANT PARAMETER IN THE ENTIRE RE-BASELINE, AND IT IS
 UNMEASURABLE.** Combining with §12.0c's measured per-AoO values and the census
@@ -839,13 +942,14 @@ reach mix, `E[AoO/combat] = P_melee*3.75m + P_ranged*4` against the declared 1.0
 > and it is recorded rather than smoothed: `m` MUST be a swept sensitivity axis
 > with its value in provenance, never a buried default.
 
-**A CONVENTION-PRESERVING ANCHOR FOR `m`, which beats guessing.** Setting
-`3.75*m = 1.0` gives **`m` ~ 0.27**, which reproduces the existing
-1-AoO-per-combat convention *in the melee x melee cell*. That confines the
-re-baseline to the ranged-enemy cell, where it is attributable to a modelled
-mechanism rather than to a new free parameter. **This is an anchor, NOT a
-validation** — the convention comes from the user's own guide, and CLAUDE.md is
-explicit that no number in the guides is an external validation source.
+~~**A CONVENTION-PRESERVING ANCHOR FOR `m`.**~~ **SUPERSEDED:** the anchor
+proposed `m ~ 0.27` under the per-ATTACK retarget rate of 0.9375. Under the
+per-ROUND commitment now decided, the rate is 0.75 and the user's experiential
+`m = 1/3` reproduces the convention EXACTLY, so no anchor is needed. Kept
+because the two arrived at nearly the same place by independent routes, which is
+weak mutual corroboration and worth not forgetting. **Neither is a validation** —
+the convention is from the user's own guide, and CLAUDE.md is explicit that no
+number in the guides is an external validation source.
 
 **AND THIS COUPLES THE ARC TO §3.5.4, WHICH WAS NOT ON ANY DEPENDENCY LIST.** The
 uniform weights are described in the code itself as *"a PLACEHOLDER with its
@@ -1078,6 +1182,16 @@ let an unimplemented member refuse — when Phase 2 lands.
 
 Phases are ordered by what each one BUYS, not by implementation convenience.
 Every phase ships **default-OFF** per §8.
+
+**Phase 0 — THE THREAT CLASS (§12.0g), sequenced FIRST.** §3.5.4's threat class
+replaces `_ally_roster`'s uniform weights; declared per (build, LEVEL) alongside
+the movement type (§12.0b), since both affect tactics and targeting. It goes
+first because `P(retarget)` sets the melee x melee AoO rate, and calibrating `m`
+against a placeholder would mean calibrating twice. Needs its own re-baseline
+decision record: it changes who absorbs swings, which may leave DPR untouched
+while moving the damage-taken and mitigation channels — a prediction to measure,
+not assume. **Also lands the per-ROUND targeting commitment** (§12.0e), which is
+mean-preserving but not necessarily bit-identical.
 
 **Phase 1 — the spatial substrate.** `reach` on entities (5/10ft); a typed
 **exit event** carrying its exit KIND (own-speed/action/BA/reaction → provokes;
